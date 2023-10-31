@@ -1,7 +1,12 @@
 import moment from "moment/moment";
 import { useFeature } from "flagged";
 
-import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
+import {
+  DevicesMap,
+  QueriedDeviceType,
+  QueriedFacility,
+  QueriedTestOrder,
+} from "../QueueItem";
 import { displayFullName } from "../../utils";
 import { MULTIPLEX_DISEASES } from "../../testResults/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
@@ -35,15 +40,29 @@ export function useTestOrderPatient(testOrder: QueriedTestOrder) {
   return { patientFullName, patientDateOfBirth };
 }
 
+const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
+  return deviceTypes.map((d) => {
+    d.supportedDiseaseTestPerformed = d.supportedDiseaseTestPerformed.filter(
+      (supportedTest) => supportedTest.supportedDisease.name !== "HIV"
+    );
+    return d;
+  });
+};
+
 export function useDeviceTypeOptions(
   facility: QueriedFacility,
   state: TestFormState
 ) {
   const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
+  const hivEnabled = useFeature("hivEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
   if (!singleEntryRsvEnabled) {
     deviceTypes = filterRsvFromAllDevices(deviceTypes);
+  }
+
+  if (!hivEnabled) {
+    deviceTypes = filterHIVFromAllDevices(deviceTypes);
   }
 
   let deviceTypeOptions = [...deviceTypes].sort(alphabetizeByName).map((d) => ({
@@ -114,7 +133,9 @@ export function alphabetizeByName(
   return 0;
 }
 
-export const doesDeviceSupportMultiplex = (
+// This used to be doesDeviceSupportMultiplex, but now that additional diseases
+// are being added in, this is no longer a binary. We should update logic where this is still used
+export const doesDeviceSupportNonCovid = (
   deviceId: string,
   devicesMap: DevicesMap
 ) => {

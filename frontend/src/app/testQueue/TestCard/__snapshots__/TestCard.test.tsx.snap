@@ -289,6 +289,12 @@ Object {
                           FluOnly
                         </option>
                         <option
+                          aria-selected="false"
+                          value="DEVICE-7-ID"
+                        >
+                          HIV device
+                        </option>
+                        <option
                           aria-selected="true"
                           value="DEVICE-1-ID"
                         >
@@ -361,87 +367,95 @@ Object {
                     data-testid="formGroup"
                   >
                     <div
-                      class="usa-form-group prime-radio__group"
+                      class="grid-row grid-gap"
                     >
-                      <fieldset
-                        class="usa-fieldset prime-radios"
-                        data-testid="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        id="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      <div
+                        class="grid-col-auto"
                       >
-                        <legend
-                          class="usa-legend"
-                        >
-                          COVID-19 result
-                          <abbr
-                            class="usa-hint usa-hint--required"
-                            title="required"
-                          >
-                             
-                            *
-                          </abbr>
-                        </legend>
                         <div
-                          class=""
+                          class="usa-form-group prime-radio__group"
                         >
-                          <div
-                            class="usa-radio"
+                          <fieldset
+                            class="usa-fieldset prime-radios"
+                            data-testid="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                            id="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           >
-                            <input
-                              class="usa-radio__input"
-                              data-required="true"
-                              id="3-val-POSITIVE"
-                              name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                              type="radio"
-                              value="POSITIVE"
-                            />
-                            <label
-                              class="usa-radio__label"
-                              data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                              for="3-val-POSITIVE"
+                            <legend
+                              class="usa-legend"
                             >
-                              Positive (+)
-                            </label>
-                          </div>
-                          <div
-                            class="usa-radio"
-                          >
-                            <input
-                              class="usa-radio__input"
-                              data-required="true"
-                              id="3-val-NEGATIVE"
-                              name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                              type="radio"
-                              value="NEGATIVE"
-                            />
-                            <label
-                              class="usa-radio__label"
-                              data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                              for="3-val-NEGATIVE"
+                              COVID-19 result
+                              <abbr
+                                class="usa-hint usa-hint--required"
+                                title="required"
+                              >
+                                 
+                                *
+                              </abbr>
+                            </legend>
+                            <div
+                              class=""
                             >
-                              Negative (-)
-                            </label>
-                          </div>
-                          <div
-                            class="usa-radio"
-                          >
-                            <input
-                              class="usa-radio__input"
-                              data-required="true"
-                              id="3-val-UNDETERMINED"
-                              name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                              type="radio"
-                              value="UNDETERMINED"
-                            />
-                            <label
-                              class="usa-radio__label"
-                              data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                              for="3-val-UNDETERMINED"
-                            >
-                              Inconclusive
-                            </label>
-                          </div>
+                              <div
+                                class="usa-radio"
+                              >
+                                <input
+                                  class="usa-radio__input"
+                                  data-required="true"
+                                  id="3-val-POSITIVE"
+                                  name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                                  type="radio"
+                                  value="POSITIVE"
+                                />
+                                <label
+                                  class="usa-radio__label"
+                                  data-cy="radio-group-option-POSITIVE"
+                                  for="3-val-POSITIVE"
+                                >
+                                  Positive (+)
+                                </label>
+                              </div>
+                              <div
+                                class="usa-radio"
+                              >
+                                <input
+                                  class="usa-radio__input"
+                                  data-required="true"
+                                  id="3-val-NEGATIVE"
+                                  name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                                  type="radio"
+                                  value="NEGATIVE"
+                                />
+                                <label
+                                  class="usa-radio__label"
+                                  data-cy="radio-group-option-NEGATIVE"
+                                  for="3-val-NEGATIVE"
+                                >
+                                  Negative (-)
+                                </label>
+                              </div>
+                              <div
+                                class="usa-radio"
+                              >
+                                <input
+                                  class="usa-radio__input"
+                                  data-required="true"
+                                  id="3-val-UNDETERMINED"
+                                  name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                                  type="radio"
+                                  value="UNDETERMINED"
+                                />
+                                <label
+                                  class="usa-radio__label"
+                                  data-cy="radio-group-option-UNDETERMINED"
+                                  for="3-val-UNDETERMINED"
+                                >
+                                  Inconclusive
+                                </label>
+                              </div>
+                            </div>
+                          </fieldset>
                         </div>
-                      </fieldset>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -487,7 +501,7 @@ Object {
                                 />
                                 <label
                                   class="usa-radio__label"
-                                  data-cy="radio-group-option-pregnancy-77386006"
+                                  data-cy="radio-group-option-77386006"
                                   for="4-val-77386006"
                                 >
                                   Yes
@@ -506,7 +520,7 @@ Object {
                                 />
                                 <label
                                   class="usa-radio__label"
-                                  data-cy="radio-group-option-pregnancy-60001007"
+                                  data-cy="radio-group-option-60001007"
                                   for="4-val-60001007"
                                 >
                                   No
@@ -525,7 +539,7 @@ Object {
                                 />
                                 <label
                                   class="usa-radio__label"
-                                  data-cy="radio-group-option-pregnancy-261665006"
+                                  data-cy="radio-group-option-261665006"
                                   for="4-val-261665006"
                                 >
                                   Prefer not to answer
@@ -571,7 +585,7 @@ Object {
                                 />
                                 <label
                                   class="usa-radio__label"
-                                  data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
+                                  data-cy="radio-group-option-YES"
                                   for="5-val-YES"
                                 >
                                   Yes
@@ -591,7 +605,7 @@ Object {
                                 />
                                 <label
                                   class="usa-radio__label"
-                                  data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
+                                  data-cy="radio-group-option-NO"
                                   for="5-val-NO"
                                 >
                                   No

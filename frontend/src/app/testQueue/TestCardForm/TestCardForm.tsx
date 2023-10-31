@@ -14,8 +14,9 @@ import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
-import { MULTIPLEX_DISEASES } from "../../testResults/constants";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import {
+  MultiplexResultInput,
   useEditQueueItemMutation,
   useSubmitQueueItemMutation,
   useUpdateAoeMutation,
@@ -35,13 +36,6 @@ import {
   TestFormActionCase,
   TestFormState,
 } from "./TestCardFormReducer";
-import CovidResultInputGroup, {
-  validateCovidResultInput,
-} from "./diseaseSpecificComponents/CovidResultInputGroup";
-import MultiplexResultInputGroup, {
-  convertFromMultiplexResultInputs,
-  validateMultiplexResultState,
-} from "./diseaseSpecificComponents/MultiplexResultInputGroup";
 import CovidAoEForm, {
   parseSymptoms,
 } from "./diseaseSpecificComponents/CovidAoEForm";
@@ -49,7 +43,7 @@ import {
   AOEFormOption,
   areAOEAnswersComplete,
   convertFromMultiplexResponse,
-  doesDeviceSupportMultiplex,
+  doesDeviceSupportNonCovid,
   showTestResultDeliveryStatusAlert,
   useAOEFormOption,
   useAppInsightTestCardEvents,
@@ -58,6 +52,7 @@ import {
   useTestOrderPatient,
 } from "./TestCardForm.utils";
 import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
+import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
 
 const DEBOUNCE_TIME = 300;
 
@@ -117,7 +112,7 @@ const TestCardForm = ({
 
   const { patientFullName } = useTestOrderPatient(testOrder);
 
-  const deviceSupportsMultiplex = doesDeviceSupportMultiplex(
+  const deviceSupportsMultiplex = doesDeviceSupportNonCovid(
     state.deviceId,
     devicesMap
   );
@@ -207,7 +202,7 @@ const TestCardForm = ({
   };
 
   const updateTestOrder = async () => {
-    const resultsToSave = doesDeviceSupportMultiplex(state.deviceId, devicesMap)
+    const resultsToSave = doesDeviceSupportNonCovid(state.deviceId, devicesMap)
       ? state.testResults
       : state.testResults.filter(
           (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
@@ -249,17 +244,32 @@ const TestCardForm = ({
   };
 
   const validateTestResults = () => {
-    if (deviceSupportsMultiplex) {
-      const multiplexResults = convertFromMultiplexResultInputs(
-        state.testResults
+    const supportedDiseaseNames =
+      state.devicesMap
+        .get(state.deviceId)
+        ?.supportedDiseaseTestPerformed.map(
+          (supportedTest) => supportedTest.supportedDisease.name
+        ) ?? [];
+    let validResults: MultiplexResultInput[] = [];
+    state.testResults.forEach((result) => {
+      // check that result's disease name is supported by the current device
+      const hasSupportedDiseaseName = supportedDiseaseNames.some(
+        (diseaseName) => diseaseName === result.diseaseName
       );
-      return validateMultiplexResultState(
-        multiplexResults,
-        state.deviceId,
-        devicesMap
-      );
+      const isFilled =
+        result.testResult === TEST_RESULTS.POSITIVE ||
+        result.testResult === TEST_RESULTS.NEGATIVE ||
+        result.testResult === TEST_RESULTS.UNDETERMINED;
+
+      if (isFilled && hasSupportedDiseaseName) {
+        validResults.push(result);
+      }
+    });
+    if (validResults.length === 0) {
+      return "Please enter a valid test result.";
     }
-    return validateCovidResultInput(state.testResults);
+
+    return "";
   };
 
   // derived state, not expensive to calculate every render and avoids unnecessary tracked state
@@ -323,7 +333,8 @@ const TestCardForm = ({
         deviceTypeId: state.deviceId,
         specimenTypeId: state.specimenId,
         dateTested: state.dateTested,
-        results: doesDeviceSupportMultiplex(state.deviceId, devicesMap)
+        // Should we filter results to only send results supported by the selected device?
+        results: doesDeviceSupportNonCovid(state.deviceId, devicesMap)
           ? state.testResults
           : state.testResults.filter(
               (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
@@ -511,31 +522,18 @@ const TestCardForm = ({
         </div>
         <div className="grid-row grid-gap">
           <FormGroup>
-            {deviceSupportsMultiplex ? (
-              <MultiplexResultInputGroup
-                queueItemId={testOrder.internalId}
-                testResults={state.testResults}
-                deviceId={state.deviceId}
-                devicesMap={devicesMap}
-                onChange={(results) =>
-                  dispatch({
-                    type: TestFormActionCase.UPDATE_TEST_RESULT,
-                    payload: results,
-                  })
-                }
-              ></MultiplexResultInputGroup>
-            ) : (
-              <CovidResultInputGroup
-                queueItemId={testOrder.internalId}
-                testResults={state.testResults}
-                onChange={(results) =>
-                  dispatch({
-                    type: TestFormActionCase.UPDATE_TEST_RESULT,
-                    payload: results,
-                  })
-                }
-              />
-            )}
+            <TestResultInputGroup
+              testOrderId={testOrder.internalId}
+              testResults={state.testResults}
+              deviceId={state.deviceId}
+              devicesMap={devicesMap}
+              onChange={(results) =>
+                dispatch({
+                  type: TestFormActionCase.UPDATE_TEST_RESULT,
+                  payload: results,
+                })
+              }
+            ></TestResultInputGroup>
           </FormGroup>
         </div>
         {whichAOEFormOption === AOEFormOption.COVID && (

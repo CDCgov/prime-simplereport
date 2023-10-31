@@ -217,88 +217,96 @@ Object {
             data-testid="formGroup"
           >
             <div
-              class="usa-form-group prime-radio__group"
+              class="grid-row grid-gap"
             >
-              <fieldset
-                class="usa-fieldset prime-radios"
-                data-testid="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                id="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+              <div
+                class="grid-col-auto"
               >
-                <legend
-                  class="usa-legend"
-                >
-                  COVID-19 result
-                  <abbr
-                    class="usa-hint usa-hint--required"
-                    title="required"
-                  >
-                     
-                    *
-                  </abbr>
-                </legend>
                 <div
-                  class=""
+                  class="usa-form-group prime-radio__group"
                 >
-                  <div
-                    class="usa-radio"
+                  <fieldset
+                    class="usa-fieldset prime-radios"
+                    data-testid="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
-                    <input
-                      checked=""
-                      class="usa-radio__input"
-                      data-required="true"
-                      id="3-val-POSITIVE"
-                      name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                      type="radio"
-                      value="POSITIVE"
-                    />
-                    <label
-                      class="usa-radio__label"
-                      data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                      for="3-val-POSITIVE"
+                    <legend
+                      class="usa-legend"
                     >
-                      Positive (+)
-                    </label>
-                  </div>
-                  <div
-                    class="usa-radio"
-                  >
-                    <input
-                      class="usa-radio__input"
-                      data-required="true"
-                      id="3-val-NEGATIVE"
-                      name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                      type="radio"
-                      value="NEGATIVE"
-                    />
-                    <label
-                      class="usa-radio__label"
-                      data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                      for="3-val-NEGATIVE"
+                      COVID-19 result
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </legend>
+                    <div
+                      class=""
                     >
-                      Negative (-)
-                    </label>
-                  </div>
-                  <div
-                    class="usa-radio"
-                  >
-                    <input
-                      class="usa-radio__input"
-                      data-required="true"
-                      id="3-val-UNDETERMINED"
-                      name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                      type="radio"
-                      value="UNDETERMINED"
-                    />
-                    <label
-                      class="usa-radio__label"
-                      data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                      for="3-val-UNDETERMINED"
-                    >
-                      Inconclusive
-                    </label>
-                  </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          checked=""
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="3-val-POSITIVE"
+                          name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="POSITIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-POSITIVE"
+                          for="3-val-POSITIVE"
+                        >
+                          Positive (+)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="3-val-NEGATIVE"
+                          name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="NEGATIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-NEGATIVE"
+                          for="3-val-NEGATIVE"
+                        >
+                          Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="3-val-UNDETERMINED"
+                          name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="UNDETERMINED"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-UNDETERMINED"
+                          for="3-val-UNDETERMINED"
+                        >
+                          Inconclusive
+                        </label>
+                      </div>
+                    </div>
+                  </fieldset>
                 </div>
-              </fieldset>
+              </div>
             </div>
           </div>
         </div>
@@ -344,7 +352,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-77386006"
+                          data-cy="radio-group-option-77386006"
                           for="4-val-77386006"
                         >
                           Yes
@@ -363,7 +371,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-60001007"
+                          data-cy="radio-group-option-60001007"
                           for="4-val-60001007"
                         >
                           No
@@ -382,7 +390,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-261665006"
+                          data-cy="radio-group-option-261665006"
                           for="4-val-261665006"
                         >
                           Prefer not to answer
@@ -428,7 +436,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
+                          data-cy="radio-group-option-YES"
                           for="5-val-YES"
                         >
                           Yes
@@ -448,7 +456,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
+                          data-cy="radio-group-option-NO"
                           for="5-val-NO"
                         >
                           No
@@ -791,88 +799,96 @@ Object {
           data-testid="formGroup"
         >
           <div
-            class="usa-form-group prime-radio__group"
+            class="grid-row grid-gap"
           >
-            <fieldset
-              class="usa-fieldset prime-radios"
-              data-testid="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-              id="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+            <div
+              class="grid-col-auto"
             >
-              <legend
-                class="usa-legend"
-              >
-                COVID-19 result
-                <abbr
-                  class="usa-hint usa-hint--required"
-                  title="required"
-                >
-                   
-                  *
-                </abbr>
-              </legend>
               <div
-                class=""
+                class="usa-form-group prime-radio__group"
               >
-                <div
-                  class="usa-radio"
+                <fieldset
+                  class="usa-fieldset prime-radios"
+                  data-testid="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
-                  <input
-                    checked=""
-                    class="usa-radio__input"
-                    data-required="true"
-                    id="3-val-POSITIVE"
-                    name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    type="radio"
-                    value="POSITIVE"
-                  />
-                  <label
-                    class="usa-radio__label"
-                    data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                    for="3-val-POSITIVE"
+                  <legend
+                    class="usa-legend"
                   >
-                    Positive (+)
-                  </label>
-                </div>
-                <div
-                  class="usa-radio"
-                >
-                  <input
-                    class="usa-radio__input"
-                    data-required="true"
-                    id="3-val-NEGATIVE"
-                    name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    type="radio"
-                    value="NEGATIVE"
-                  />
-                  <label
-                    class="usa-radio__label"
-                    data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                    for="3-val-NEGATIVE"
+                    COVID-19 result
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </legend>
+                  <div
+                    class=""
                   >
-                    Negative (-)
-                  </label>
-                </div>
-                <div
-                  class="usa-radio"
-                >
-                  <input
-                    class="usa-radio__input"
-                    data-required="true"
-                    id="3-val-UNDETERMINED"
-                    name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    type="radio"
-                    value="UNDETERMINED"
-                  />
-                  <label
-                    class="usa-radio__label"
-                    data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                    for="3-val-UNDETERMINED"
-                  >
-                    Inconclusive
-                  </label>
-                </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        checked=""
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="3-val-POSITIVE"
+                        name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="POSITIVE"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-POSITIVE"
+                        for="3-val-POSITIVE"
+                      >
+                        Positive (+)
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="3-val-NEGATIVE"
+                        name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="NEGATIVE"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-NEGATIVE"
+                        for="3-val-NEGATIVE"
+                      >
+                        Negative (-)
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="3-val-UNDETERMINED"
+                        name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="UNDETERMINED"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-UNDETERMINED"
+                        for="3-val-UNDETERMINED"
+                      >
+                        Inconclusive
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
               </div>
-            </fieldset>
+            </div>
           </div>
         </div>
       </div>
@@ -918,7 +934,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-77386006"
+                        data-cy="radio-group-option-77386006"
                         for="4-val-77386006"
                       >
                         Yes
@@ -937,7 +953,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-60001007"
+                        data-cy="radio-group-option-60001007"
                         for="4-val-60001007"
                       >
                         No
@@ -956,7 +972,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-261665006"
+                        data-cy="radio-group-option-261665006"
                         for="4-val-261665006"
                       >
                         Prefer not to answer
@@ -1002,7 +1018,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
+                        data-cy="radio-group-option-YES"
                         for="5-val-YES"
                       >
                         Yes
@@ -1022,7 +1038,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
+                        data-cy="radio-group-option-NO"
                         for="5-val-NO"
                       >
                         No
@@ -1204,7 +1220,7 @@ Object {
             >
               <label
                 class="usa-label"
-                for="14"
+                for="13"
               >
                 <span
                   class="usa-tooltip usa-text-with-tooltip"
@@ -1301,7 +1317,7 @@ Object {
             >
               <label
                 class="usa-label"
-                for="15"
+                for="14"
               >
                 Specimen type
                 <abbr
@@ -1354,20 +1370,13 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    data-testid="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
                     >
                       Flu A result
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -1377,16 +1386,16 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
-                          id="16-val-POSITIVE"
-                          name="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          data-required="false"
+                          id="15-val-POSITIVE"
+                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="POSITIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                          for="16-val-POSITIVE"
+                          data-cy="radio-group-option-POSITIVE"
+                          for="15-val-POSITIVE"
                         >
                           Positive (+)
                         </label>
@@ -1396,18 +1405,38 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
-                          id="16-val-NEGATIVE"
-                          name="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          data-required="false"
+                          id="15-val-NEGATIVE"
+                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="NEGATIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                          for="16-val-NEGATIVE"
+                          data-cy="radio-group-option-NEGATIVE"
+                          for="15-val-NEGATIVE"
                         >
                           Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          checked=""
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="15-val-UNDETERMINED"
+                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="UNDETERMINED"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-UNDETERMINED"
+                          for="15-val-UNDETERMINED"
+                        >
+                          Inconclusive
                         </label>
                       </div>
                     </div>
@@ -1422,20 +1451,13 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    data-testid="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
                     >
                       Flu B result
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -1445,16 +1467,16 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
-                          id="17-val-POSITIVE"
-                          name="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          data-required="false"
+                          id="16-val-POSITIVE"
+                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="POSITIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                          for="17-val-POSITIVE"
+                          data-cy="radio-group-option-POSITIVE"
+                          for="16-val-POSITIVE"
                         >
                           Positive (+)
                         </label>
@@ -1464,112 +1486,43 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
-                          id="17-val-NEGATIVE"
-                          name="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          data-required="false"
+                          id="16-val-NEGATIVE"
+                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="NEGATIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                          for="17-val-NEGATIVE"
+                          data-cy="radio-group-option-NEGATIVE"
+                          for="16-val-NEGATIVE"
                         >
                           Negative (-)
                         </label>
                       </div>
-                    </div>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="prime-test-result-submit grid-row"
-            >
-              <div
-                class="grid-col-fill"
-              >
-                <div
-                  class="usa-form-group"
-                >
-                  <fieldset
-                    class="usa-fieldset prime-checkboxes"
-                  >
-                    <legend
-                      class="usa-legend usa-sr-only"
-                    >
-                      Inconclusive tests
-                    </legend>
-                    <div
-                      class="checkboxes"
-                    >
                       <div
-                        class="usa-checkbox"
+                        class="usa-radio"
                       >
                         <input
                           checked=""
-                          class="usa-checkbox__input"
-                          id="18-val-0"
-                          name="inconclusive-tests"
-                          type="checkbox"
-                          value="inconclusive"
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="16-val-UNDETERMINED"
+                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="UNDETERMINED"
                         />
                         <label
-                          class="usa-checkbox__label"
-                          for="18-val-0"
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-UNDETERMINED"
+                          for="16-val-UNDETERMINED"
                         >
-                          Mark test as inconclusive
+                          Inconclusive
                         </label>
                       </div>
                     </div>
                   </fieldset>
                 </div>
-              </div>
-              <div
-                class="grid-col-auto"
-              >
-                <span
-                  class="usa-tooltip usa-text-with-tooltip"
-                  data-testid="tooltipWrapper"
-                >
-                  <button
-                    aria-describedby="tooltip-1000000"
-                    aria-label="Results info tooltip"
-                    class="usa-button usa-button--unstyled usa-tooltip__trigger"
-                    data-testid="triggerElement"
-                    position="top"
-                    tabindex="0"
-                    title=""
-                    wrapperclasses="usa-text-with-tooltip"
-                  >
-                    <svg
-                      alt-text="info"
-                      aria-hidden="true"
-                      class="svg-inline--fa fa-circle-info info-circle-icon"
-                      data-icon="circle-info"
-                      data-prefix="fas"
-                      focusable="false"
-                      role="img"
-                      viewBox="0 0 512 512"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </button>
-                  <span
-                    aria-hidden="true"
-                    class="usa-tooltip__body"
-                    data-testid="tooltipBody"
-                    id="tooltip-1000000"
-                    role="tooltip"
-                    title="Flu results are only reported to California at this time."
-                  >
-                    Flu results are only reported to California at this time.
-                  </span>
-                </span>
               </div>
             </div>
           </div>
@@ -1764,7 +1717,7 @@ Object {
           >
             <label
               class="usa-label"
-              for="14"
+              for="13"
             >
               <span
                 class="usa-tooltip usa-text-with-tooltip"
@@ -1861,7 +1814,7 @@ Object {
           >
             <label
               class="usa-label"
-              for="15"
+              for="14"
             >
               Specimen type
               <abbr
@@ -1914,20 +1867,13 @@ Object {
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  data-testid="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
                   >
                     Flu A result
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
-                    >
-                       
-                      *
-                    </abbr>
                   </legend>
                   <div
                     class=""
@@ -1937,16 +1883,16 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="true"
-                        id="16-val-POSITIVE"
-                        name="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        data-required="false"
+                        id="15-val-POSITIVE"
+                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="POSITIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                        for="16-val-POSITIVE"
+                        data-cy="radio-group-option-POSITIVE"
+                        for="15-val-POSITIVE"
                       >
                         Positive (+)
                       </label>
@@ -1956,18 +1902,38 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="true"
-                        id="16-val-NEGATIVE"
-                        name="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        data-required="false"
+                        id="15-val-NEGATIVE"
+                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="NEGATIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                        for="16-val-NEGATIVE"
+                        data-cy="radio-group-option-NEGATIVE"
+                        for="15-val-NEGATIVE"
                       >
                         Negative (-)
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        checked=""
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="15-val-UNDETERMINED"
+                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="UNDETERMINED"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-UNDETERMINED"
+                        for="15-val-UNDETERMINED"
+                      >
+                        Inconclusive
                       </label>
                     </div>
                   </div>
@@ -1982,20 +1948,13 @@ Object {
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  data-testid="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
                   >
                     Flu B result
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
-                    >
-                       
-                      *
-                    </abbr>
                   </legend>
                   <div
                     class=""
@@ -2005,16 +1964,16 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="true"
-                        id="17-val-POSITIVE"
-                        name="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        data-required="false"
+                        id="16-val-POSITIVE"
+                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="POSITIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                        for="17-val-POSITIVE"
+                        data-cy="radio-group-option-POSITIVE"
+                        for="16-val-POSITIVE"
                       >
                         Positive (+)
                       </label>
@@ -2024,112 +1983,43 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="true"
-                        id="17-val-NEGATIVE"
-                        name="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        data-required="false"
+                        id="16-val-NEGATIVE"
+                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="NEGATIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                        for="17-val-NEGATIVE"
+                        data-cy="radio-group-option-NEGATIVE"
+                        for="16-val-NEGATIVE"
                       >
                         Negative (-)
                       </label>
                     </div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="prime-test-result-submit grid-row"
-          >
-            <div
-              class="grid-col-fill"
-            >
-              <div
-                class="usa-form-group"
-              >
-                <fieldset
-                  class="usa-fieldset prime-checkboxes"
-                >
-                  <legend
-                    class="usa-legend usa-sr-only"
-                  >
-                    Inconclusive tests
-                  </legend>
-                  <div
-                    class="checkboxes"
-                  >
                     <div
-                      class="usa-checkbox"
+                      class="usa-radio"
                     >
                       <input
                         checked=""
-                        class="usa-checkbox__input"
-                        id="18-val-0"
-                        name="inconclusive-tests"
-                        type="checkbox"
-                        value="inconclusive"
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="16-val-UNDETERMINED"
+                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="UNDETERMINED"
                       />
                       <label
-                        class="usa-checkbox__label"
-                        for="18-val-0"
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-UNDETERMINED"
+                        for="16-val-UNDETERMINED"
                       >
-                        Mark test as inconclusive
+                        Inconclusive
                       </label>
                     </div>
                   </div>
                 </fieldset>
               </div>
-            </div>
-            <div
-              class="grid-col-auto"
-            >
-              <span
-                class="usa-tooltip usa-text-with-tooltip"
-                data-testid="tooltipWrapper"
-              >
-                <button
-                  aria-describedby="tooltip-1000000"
-                  aria-label="Results info tooltip"
-                  class="usa-button usa-button--unstyled usa-tooltip__trigger"
-                  data-testid="triggerElement"
-                  position="top"
-                  tabindex="0"
-                  title=""
-                  wrapperclasses="usa-text-with-tooltip"
-                >
-                  <svg
-                    alt-text="info"
-                    aria-hidden="true"
-                    class="svg-inline--fa fa-circle-info info-circle-icon"
-                    data-icon="circle-info"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    viewBox="0 0 512 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
-                <span
-                  aria-hidden="true"
-                  class="usa-tooltip__body"
-                  data-testid="tooltipBody"
-                  id="tooltip-1000000"
-                  role="tooltip"
-                  title="Flu results are only reported to California at this time."
-                >
-                  Flu results are only reported to California at this time.
-                </span>
-              </span>
             </div>
           </div>
         </div>
@@ -2453,20 +2343,13 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    data-testid="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
                     >
                       COVID-19 result
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -2476,15 +2359,15 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="8-val-POSITIVE"
-                          name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="POSITIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
+                          data-cy="radio-group-option-POSITIVE"
                           for="8-val-POSITIVE"
                         >
                           Positive (+)
@@ -2496,18 +2379,37 @@ Object {
                         <input
                           checked=""
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="8-val-NEGATIVE"
-                          name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="NEGATIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
+                          data-cy="radio-group-option-NEGATIVE"
                           for="8-val-NEGATIVE"
                         >
                           Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="8-val-UNDETERMINED"
+                          name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="UNDETERMINED"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-UNDETERMINED"
+                          for="8-val-UNDETERMINED"
+                        >
+                          Inconclusive
                         </label>
                       </div>
                     </div>
@@ -2522,20 +2424,13 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    data-testid="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
                     >
                       Flu A result
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -2545,15 +2440,15 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="9-val-POSITIVE"
-                          name="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="POSITIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
+                          data-cy="radio-group-option-POSITIVE"
                           for="9-val-POSITIVE"
                         >
                           Positive (+)
@@ -2565,18 +2460,37 @@ Object {
                         <input
                           checked=""
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="9-val-NEGATIVE"
-                          name="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="NEGATIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
+                          data-cy="radio-group-option-NEGATIVE"
                           for="9-val-NEGATIVE"
                         >
                           Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="9-val-UNDETERMINED"
+                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="UNDETERMINED"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-UNDETERMINED"
+                          for="9-val-UNDETERMINED"
+                        >
+                          Inconclusive
                         </label>
                       </div>
                     </div>
@@ -2591,20 +2505,13 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    data-testid="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
                     >
                       Flu B result
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -2614,15 +2521,15 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="10-val-POSITIVE"
-                          name="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="POSITIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
+                          data-cy="radio-group-option-POSITIVE"
                           for="10-val-POSITIVE"
                         >
                           Positive (+)
@@ -2634,111 +2541,42 @@ Object {
                         <input
                           checked=""
                           class="usa-radio__input"
-                          data-required="true"
+                          data-required="false"
                           id="10-val-NEGATIVE"
-                          name="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="NEGATIVE"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
+                          data-cy="radio-group-option-NEGATIVE"
                           for="10-val-NEGATIVE"
                         >
                           Negative (-)
                         </label>
                       </div>
-                    </div>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="prime-test-result-submit grid-row"
-            >
-              <div
-                class="grid-col-fill"
-              >
-                <div
-                  class="usa-form-group"
-                >
-                  <fieldset
-                    class="usa-fieldset prime-checkboxes"
-                  >
-                    <legend
-                      class="usa-legend usa-sr-only"
-                    >
-                      Inconclusive tests
-                    </legend>
-                    <div
-                      class="checkboxes"
-                    >
                       <div
-                        class="usa-checkbox"
+                        class="usa-radio"
                       >
                         <input
-                          class="usa-checkbox__input"
-                          id="11-val-0"
-                          name="inconclusive-tests"
-                          type="checkbox"
-                          value="inconclusive"
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="10-val-UNDETERMINED"
+                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="UNDETERMINED"
                         />
                         <label
-                          class="usa-checkbox__label"
-                          for="11-val-0"
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-UNDETERMINED"
+                          for="10-val-UNDETERMINED"
                         >
-                          Mark test as inconclusive
+                          Inconclusive
                         </label>
                       </div>
                     </div>
                   </fieldset>
                 </div>
-              </div>
-              <div
-                class="grid-col-auto"
-              >
-                <span
-                  class="usa-tooltip usa-text-with-tooltip"
-                  data-testid="tooltipWrapper"
-                >
-                  <button
-                    aria-describedby="tooltip-1000000"
-                    aria-label="Results info tooltip"
-                    class="usa-button usa-button--unstyled usa-tooltip__trigger"
-                    data-testid="triggerElement"
-                    position="top"
-                    tabindex="0"
-                    title=""
-                    wrapperclasses="usa-text-with-tooltip"
-                  >
-                    <svg
-                      alt-text="info"
-                      aria-hidden="true"
-                      class="svg-inline--fa fa-circle-info info-circle-icon"
-                      data-icon="circle-info"
-                      data-prefix="fas"
-                      focusable="false"
-                      role="img"
-                      viewBox="0 0 512 512"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </button>
-                  <span
-                    aria-hidden="true"
-                    class="usa-tooltip__body"
-                    data-testid="tooltipBody"
-                    id="tooltip-1000000"
-                    role="tooltip"
-                    title="COVID-19 results are reported to your public health department. Flu results are only reported to California at this time."
-                  >
-                    COVID-19 results are reported to your public health department. Flu results are only reported to California at this time.
-                  </span>
-                </span>
               </div>
             </div>
           </div>
@@ -2778,15 +2616,15 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="12-val-77386006"
+                          id="11-val-77386006"
                           name="pregnancy"
                           type="radio"
                           value="77386006"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-77386006"
-                          for="12-val-77386006"
+                          data-cy="radio-group-option-77386006"
+                          for="11-val-77386006"
                         >
                           Yes
                         </label>
@@ -2797,15 +2635,15 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="12-val-60001007"
+                          id="11-val-60001007"
                           name="pregnancy"
                           type="radio"
                           value="60001007"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-60001007"
-                          for="12-val-60001007"
+                          data-cy="radio-group-option-60001007"
+                          for="11-val-60001007"
                         >
                           No
                         </label>
@@ -2816,15 +2654,15 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="12-val-261665006"
+                          id="11-val-261665006"
                           name="pregnancy"
                           type="radio"
                           value="261665006"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-261665006"
-                          for="12-val-261665006"
+                          data-cy="radio-group-option-261665006"
+                          for="11-val-261665006"
                         >
                           Prefer not to answer
                         </label>
@@ -2862,15 +2700,15 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="13-val-YES"
+                          id="12-val-YES"
                           name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="YES"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
-                          for="13-val-YES"
+                          data-cy="radio-group-option-YES"
+                          for="12-val-YES"
                         >
                           Yes
                         </label>
@@ -2882,15 +2720,15 @@ Object {
                           checked=""
                           class="usa-radio__input"
                           data-required="false"
-                          id="13-val-NO"
+                          id="12-val-NO"
                           name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="NO"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
-                          for="13-val-NO"
+                          data-cy="radio-group-option-NO"
+                          for="12-val-NO"
                         >
                           No
                         </label>
@@ -3242,20 +3080,13 @@ Object {
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  data-testid="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
                   >
                     COVID-19 result
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
-                    >
-                       
-                      *
-                    </abbr>
                   </legend>
                   <div
                     class=""
@@ -3265,15 +3096,15 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="true"
+                        data-required="false"
                         id="8-val-POSITIVE"
-                        name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="POSITIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
+                        data-cy="radio-group-option-POSITIVE"
                         for="8-val-POSITIVE"
                       >
                         Positive (+)
@@ -3285,18 +3116,37 @@ Object {
                       <input
                         checked=""
                         class="usa-radio__input"
-                        data-required="true"
+                        data-required="false"
                         id="8-val-NEGATIVE"
-                        name="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="NEGATIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
+                        data-cy="radio-group-option-NEGATIVE"
                         for="8-val-NEGATIVE"
                       >
                         Negative (-)
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="8-val-UNDETERMINED"
+                        name="COVID-19-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="UNDETERMINED"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-UNDETERMINED"
+                        for="8-val-UNDETERMINED"
+                      >
+                        Inconclusive
                       </label>
                     </div>
                   </div>
@@ -3311,20 +3161,13 @@ Object {
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  data-testid="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
                   >
                     Flu A result
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
-                    >
-                       
-                      *
-                    </abbr>
                   </legend>
                   <div
                     class=""
@@ -3334,15 +3177,15 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="true"
+                        data-required="false"
                         id="9-val-POSITIVE"
-                        name="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="POSITIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
+                        data-cy="radio-group-option-POSITIVE"
                         for="9-val-POSITIVE"
                       >
                         Positive (+)
@@ -3354,18 +3197,37 @@ Object {
                       <input
                         checked=""
                         class="usa-radio__input"
-                        data-required="true"
+                        data-required="false"
                         id="9-val-NEGATIVE"
-                        name="flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="NEGATIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
+                        data-cy="radio-group-option-NEGATIVE"
                         for="9-val-NEGATIVE"
                       >
                         Negative (-)
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="9-val-UNDETERMINED"
+                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="UNDETERMINED"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-UNDETERMINED"
+                        for="9-val-UNDETERMINED"
+                      >
+                        Inconclusive
                       </label>
                     </div>
                   </div>
@@ -3380,20 +3242,13 @@ Object {
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  data-testid="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
                   >
                     Flu B result
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
-                    >
-                       
-                      *
-                    </abbr>
                   </legend>
                   <div
                     class=""
@@ -3403,15 +3258,15 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="true"
+                        data-required="false"
                         id="10-val-POSITIVE"
-                        name="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="POSITIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
+                        data-cy="radio-group-option-POSITIVE"
                         for="10-val-POSITIVE"
                       >
                         Positive (+)
@@ -3423,111 +3278,42 @@ Object {
                       <input
                         checked=""
                         class="usa-radio__input"
-                        data-required="true"
+                        data-required="false"
                         id="10-val-NEGATIVE"
-                        name="flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="NEGATIVE"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
+                        data-cy="radio-group-option-NEGATIVE"
                         for="10-val-NEGATIVE"
                       >
                         Negative (-)
                       </label>
                     </div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="prime-test-result-submit grid-row"
-          >
-            <div
-              class="grid-col-fill"
-            >
-              <div
-                class="usa-form-group"
-              >
-                <fieldset
-                  class="usa-fieldset prime-checkboxes"
-                >
-                  <legend
-                    class="usa-legend usa-sr-only"
-                  >
-                    Inconclusive tests
-                  </legend>
-                  <div
-                    class="checkboxes"
-                  >
                     <div
-                      class="usa-checkbox"
+                      class="usa-radio"
                     >
                       <input
-                        class="usa-checkbox__input"
-                        id="11-val-0"
-                        name="inconclusive-tests"
-                        type="checkbox"
-                        value="inconclusive"
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="10-val-UNDETERMINED"
+                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="UNDETERMINED"
                       />
                       <label
-                        class="usa-checkbox__label"
-                        for="11-val-0"
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-UNDETERMINED"
+                        for="10-val-UNDETERMINED"
                       >
-                        Mark test as inconclusive
+                        Inconclusive
                       </label>
                     </div>
                   </div>
                 </fieldset>
               </div>
-            </div>
-            <div
-              class="grid-col-auto"
-            >
-              <span
-                class="usa-tooltip usa-text-with-tooltip"
-                data-testid="tooltipWrapper"
-              >
-                <button
-                  aria-describedby="tooltip-1000000"
-                  aria-label="Results info tooltip"
-                  class="usa-button usa-button--unstyled usa-tooltip__trigger"
-                  data-testid="triggerElement"
-                  position="top"
-                  tabindex="0"
-                  title=""
-                  wrapperclasses="usa-text-with-tooltip"
-                >
-                  <svg
-                    alt-text="info"
-                    aria-hidden="true"
-                    class="svg-inline--fa fa-circle-info info-circle-icon"
-                    data-icon="circle-info"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    viewBox="0 0 512 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </button>
-                <span
-                  aria-hidden="true"
-                  class="usa-tooltip__body"
-                  data-testid="tooltipBody"
-                  id="tooltip-1000000"
-                  role="tooltip"
-                  title="COVID-19 results are reported to your public health department. Flu results are only reported to California at this time."
-                >
-                  COVID-19 results are reported to your public health department. Flu results are only reported to California at this time.
-                </span>
-              </span>
             </div>
           </div>
         </div>
@@ -3567,15 +3353,15 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="12-val-77386006"
+                        id="11-val-77386006"
                         name="pregnancy"
                         type="radio"
                         value="77386006"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-77386006"
-                        for="12-val-77386006"
+                        data-cy="radio-group-option-77386006"
+                        for="11-val-77386006"
                       >
                         Yes
                       </label>
@@ -3586,15 +3372,15 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="12-val-60001007"
+                        id="11-val-60001007"
                         name="pregnancy"
                         type="radio"
                         value="60001007"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-60001007"
-                        for="12-val-60001007"
+                        data-cy="radio-group-option-60001007"
+                        for="11-val-60001007"
                       >
                         No
                       </label>
@@ -3605,15 +3391,15 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="12-val-261665006"
+                        id="11-val-261665006"
                         name="pregnancy"
                         type="radio"
                         value="261665006"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-261665006"
-                        for="12-val-261665006"
+                        data-cy="radio-group-option-261665006"
+                        for="11-val-261665006"
                       >
                         Prefer not to answer
                       </label>
@@ -3651,15 +3437,15 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="13-val-YES"
+                        id="12-val-YES"
                         name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="YES"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
-                        for="13-val-YES"
+                        data-cy="radio-group-option-YES"
+                        for="12-val-YES"
                       >
                         Yes
                       </label>
@@ -3671,15 +3457,15 @@ Object {
                         checked=""
                         class="usa-radio__input"
                         data-required="false"
-                        id="13-val-NO"
+                        id="12-val-NO"
                         name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="NO"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
-                        for="13-val-NO"
+                        data-cy="radio-group-option-NO"
+                        for="12-val-NO"
                       >
                         No
                       </label>

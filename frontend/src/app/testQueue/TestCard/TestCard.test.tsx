@@ -32,6 +32,7 @@ import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
 import mockSupportedDiseaseMultiplex, {
   mockSupportedDiseaseFlu,
 } from "../mocks/mockSupportedDiseaseMultiplex";
+import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
@@ -53,12 +54,15 @@ const updatedTimeString = "10:05";
 
 const setStartTestPatientIdMock = jest.fn();
 
+const DEVICE_OPTIONS_LENGTH = 7;
+
 const device1Name = "LumiraDX";
 const device2Name = "Abbott BinaxNow";
 const device3Name = "BD Veritor";
 const device4Name = "Multiplex";
 const device5Name = "MultiplexAndCovidOnly";
 const device6Name = "FluOnly";
+const device7Name = "HIV device";
 
 const device1Id = "DEVICE-1-ID";
 const device2Id = "DEVICE-2-ID";
@@ -66,6 +70,7 @@ const device3Id = "DEVICE-3-ID";
 const device4Id = "DEVICE-4-ID";
 const device5Id = "DEVICE-5-ID";
 const device6Id = "DEVICE-6-ID";
+const device7Id = "DEVICE-7-ID";
 
 const deletedDeviceId = "DELETED-DEVICE-ID";
 const deletedDeviceName = "Deleted";
@@ -74,6 +79,8 @@ const specimen1Name = "Swab of internal nose";
 const specimen1Id = "SPECIMEN-1-ID";
 const specimen2Name = "Nasopharyngeal swab";
 const specimen2Id = "SPECIMEN-2-ID";
+const specimen3Id = "Venous blood specimen";
+const specimen3Name = "SPECIMEN-3-ID";
 
 const deletedSpecimenId = "DELETED-SPECIMEN-ID";
 
@@ -262,7 +269,41 @@ describe("TestCard", () => {
           },
         ],
       },
+      {
+        internalId: device7Id,
+        name: device7Name,
+        testLength: 15,
+        supportedDiseaseTestPerformed: [
+          ...mockSupportedDiseaseTestPerformedHIV,
+        ],
+        swabTypes: [
+          {
+            name: specimen3Name,
+            internalId: specimen3Id,
+            typeCode: "122555007",
+          },
+        ],
+      },
     ],
+  };
+
+  const DEFAULT_DEVICE_ORDER = [
+    device1Name,
+    device2Name,
+    device3Name,
+    device4Name,
+    device5Name,
+    device6Name,
+    device7Name,
+  ].sort((a, b) => a.localeCompare(b));
+
+  const expectDeviceOrder = (
+    deviceDropdown: HTMLSelectElement,
+    deviceNameOrder: string[] = DEFAULT_DEVICE_ORDER
+  ) => {
+    deviceNameOrder.forEach((deviceName, index) => {
+      expect(deviceDropdown.options[index].label).toEqual(deviceName);
+    });
   };
 
   const devicesMap = new Map();
@@ -400,13 +441,8 @@ describe("TestCard", () => {
       "device-type-dropdown"
     )) as HTMLSelectElement;
 
-    expect(deviceDropdown.options.length).toEqual(6);
-    expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
-    expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
-    expect(deviceDropdown.options[2].label).toEqual("FluOnly");
-    expect(deviceDropdown.options[3].label).toEqual("LumiraDX");
-    expect(deviceDropdown.options[4].label).toEqual("Multiplex");
-    expect(deviceDropdown.options[5].label).toEqual("MultiplexAndCovidOnly");
+    expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+    expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
     await user.selectOptions(deviceDropdown, "Abbott BinaxNow");
 
@@ -528,14 +564,8 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ props, mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(7);
-      expect(deviceDropdown.options[0].label).toEqual("");
-      expect(deviceDropdown.options[1].label).toEqual("Abbott BinaxNow");
-      expect(deviceDropdown.options[2].label).toEqual("BD Veritor");
-      expect(deviceDropdown.options[3].label).toEqual("FluOnly");
-      expect(deviceDropdown.options[4].label).toEqual("LumiraDX");
-      expect(deviceDropdown.options[5].label).toEqual("Multiplex");
-      expect(deviceDropdown.options[6].label).toEqual("MultiplexAndCovidOnly");
+      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH + 1);
+      expectDeviceOrder(deviceDropdown, ["", ...DEFAULT_DEVICE_ORDER]);
 
       expect(deviceDropdown.value).toEqual("");
 
@@ -665,13 +695,8 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ props, mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(6);
-      expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
-      expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
-      expect(deviceDropdown.options[2].label).toEqual("FluOnly");
-      expect(deviceDropdown.options[3].label).toEqual("LumiraDX");
-      expect(deviceDropdown.options[4].label).toEqual("Multiplex");
-      expect(deviceDropdown.options[5].label).toEqual("MultiplexAndCovidOnly");
+      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
       expect(deviceDropdown.value).toEqual(device2Id);
 
       const swabDropdown = await getSpecimenTypeDropdown();
@@ -971,13 +996,8 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(6);
-      expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
-      expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
-      expect(deviceDropdown.options[2].label).toEqual("FluOnly");
-      expect(deviceDropdown.options[3].label).toEqual("LumiraDX");
-      expect(deviceDropdown.options[4].label).toEqual("Multiplex");
-      expect(deviceDropdown.options[5].label).toEqual("MultiplexAndCovidOnly");
+      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
       // Change device type to multiplex
       await user.selectOptions(deviceDropdown, device4Name);
@@ -985,7 +1005,7 @@ describe("TestCard", () => {
       // select results
       await user.click(
         within(
-          screen.getByTestId(`covid-test-result-${testOrderInfo.internalId}`)
+          screen.getByTestId(`COVID-19-test-result-${testOrderInfo.internalId}`)
         ).getByLabelText("Positive", { exact: false })
       );
 
@@ -1284,13 +1304,8 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(6);
-      expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
-      expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
-      expect(deviceDropdown.options[2].label).toEqual("FluOnly");
-      expect(deviceDropdown.options[3].label).toEqual("LumiraDX");
-      expect(deviceDropdown.options[4].label).toEqual("Multiplex");
-      expect(deviceDropdown.options[5].label).toEqual("MultiplexAndCovidOnly");
+      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
       // select results
       await user.click(screen.getByLabelText("Positive", { exact: false }));
@@ -1349,19 +1364,60 @@ describe("TestCard", () => {
       expect(screen.queryByText("Flu B result")).not.toBeInTheDocument();
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(6);
-      expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
-      expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
-      expect(deviceDropdown.options[2].label).toEqual("FluOnly");
-      expect(deviceDropdown.options[3].label).toEqual("LumiraDX");
-      expect(deviceDropdown.options[4].label).toEqual("Multiplex");
-      expect(deviceDropdown.options[5].label).toEqual("MultiplexAndCovidOnly");
+      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
       // Change device type to a multiplex device
       await user.selectOptions(deviceDropdown, device4Name);
 
       expect(screen.getByText("Flu A result")).toBeInTheDocument();
       expect(screen.getByText("Flu B result")).toBeInTheDocument();
+    });
+
+    it("shows radio button for HIV when an HIV device is chosen", async function () {
+      const mocks = [
+        {
+          request: {
+            query: EDIT_QUEUE_ITEM,
+            variables: {
+              id: testOrderInfo.internalId,
+              deviceTypeId: device4Id,
+              specimenTypeId: specimen1Id,
+              results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
+              dateTested: null,
+            } as EDIT_QUEUE_ITEM_VARIABLES,
+          },
+          result: {
+            data: {
+              editQueueItem: {
+                results: [
+                  {
+                    disease: { name: "COVID-19" },
+                    testResult: "POSITIVE",
+                  },
+                ],
+                dateTested: null,
+                deviceType: {
+                  internalId: device4Id,
+                  testLength: 10,
+                },
+              },
+            } as EDIT_QUEUE_ITEM_DATA,
+          },
+        },
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      expect(screen.queryByText("HIV result")).not.toBeInTheDocument();
+
+      const deviceDropdown = await getDeviceTypeDropdown();
+      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+
+      await user.selectOptions(deviceDropdown, device7Name);
+      // eslint-disable-next-line testing-library/no-debugging-utils
+      // screen.logTestingPlaygroundURL();
+
+      expect(screen.getByText("HIV result")).toBeInTheDocument();
     });
 
     it("should show no AOE questions when a flu only device is chosen", async function () {
@@ -1400,13 +1456,8 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(6);
-      expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
-      expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
-      expect(deviceDropdown.options[2].label).toEqual("FluOnly");
-      expect(deviceDropdown.options[3].label).toEqual("LumiraDX");
-      expect(deviceDropdown.options[4].label).toEqual("Multiplex");
-      expect(deviceDropdown.options[5].label).toEqual("MultiplexAndCovidOnly");
+      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
       // Change device type to a flu only device
       await user.selectOptions(deviceDropdown, device6Name);
