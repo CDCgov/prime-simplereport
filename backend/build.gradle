@@ -17,6 +17,7 @@ sourceCompatibility = '17'
 ext {
     set('springCloudVersion', "2021.0.3")
     set('oktaVersion', "13.0.2")
+    set('jackson.version', '2.15.1') // keep until springboot 3.1+
 }
 repositories {
     mavenCentral()
