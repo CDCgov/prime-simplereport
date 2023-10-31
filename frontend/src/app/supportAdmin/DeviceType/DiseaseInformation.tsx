@@ -139,7 +139,7 @@ const DiseaseInformation = ({
         <div className="tablet:grid-col">
           <TextInput
             name={`supportedDiseases.${index}.equipmentUidType`}
-            label="Equipment Uid Type"
+            label="Uid Type"
             disabled={disabled}
             className={"margin-top-1"}
             value={values?.[index]?.equipmentUidType}

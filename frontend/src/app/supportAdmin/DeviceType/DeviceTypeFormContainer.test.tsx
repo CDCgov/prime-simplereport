@@ -103,9 +103,9 @@ describe("DeviceTypeFormContainer", () => {
       "COVID-19"
     );
 
-    await user.type(screen.getByLabelText("Test performed code *"), "1920-12");
+    await user.type(screen.getByLabelText("Test performed *"), "1920-12");
 
-    await user.type(screen.getByLabelText("Test ordered code *"), "2102-91");
+    await user.type(screen.getByLabelText("Test ordered *"), "2102-91");
     await user.click(screen.getByText("Save changes"));
 
     await waitFor(() =>
