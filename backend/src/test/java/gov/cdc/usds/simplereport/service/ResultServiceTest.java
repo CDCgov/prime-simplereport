@@ -200,7 +200,7 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                   r ->
                       personB
                           .getInternalId()
-                          .equals(r.getTestOrder().getPatient().getInternalId())));
+                          .equals(r.getTestEvent().getPatient().getInternalId())));
     }
 
     @Test
@@ -218,7 +218,7 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                   r ->
                       personA
                           .getInternalId()
-                          .equals(r.getTestOrder().getPatient().getInternalId())));
+                          .equals(r.getTestEvent().getPatient().getInternalId())));
     }
 
     @Test
@@ -238,9 +238,9 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                   10)
               .toList();
       assertEquals(3, res.size());
-      assertEquals(SECOND_TEST_DATE, res.get(0).getTestOrder().getDateTested());
-      assertEquals(SECOND_TEST_DATE, res.get(1).getTestOrder().getDateTested());
-      assertEquals(SECOND_TEST_DATE, res.get(2).getTestOrder().getDateTested());
+      assertEquals(SECOND_TEST_DATE, res.get(0).getTestEvent().getDateTested());
+      assertEquals(SECOND_TEST_DATE, res.get(1).getTestEvent().getDateTested());
+      assertEquals(SECOND_TEST_DATE, res.get(2).getTestEvent().getDateTested());
     }
   }
 
