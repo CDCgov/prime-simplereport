@@ -335,6 +335,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
@@ -358,6 +359,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
     // WHEN
     sut.processResultCSV(input);
@@ -377,6 +379,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
@@ -401,6 +404,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -441,6 +445,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
@@ -594,6 +599,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
     // WHEN
     sut.processResultCSV(input);
@@ -689,6 +695,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
     // WHEN
     sut.processResultCSV(input);
@@ -716,6 +723,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
     // WHEN
     sut.processResultCSV(input);
@@ -752,6 +760,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
     // WHEN
     sut.processResultCSV(input);
