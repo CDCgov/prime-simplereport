@@ -67,6 +67,15 @@ export type AggregateFacilityMetrics = {
   totalTestCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
+export type AoE = {
+  __typename?: "AoE";
+  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
+  pregnancy?: Maybe<Scalars["String"]["output"]>;
+  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
+  symptoms?: Maybe<Scalars["String"]["output"]>;
+};
+
 export type ApiUser = {
   __typename?: "ApiUser";
   email: Scalars["String"]["output"];
@@ -507,6 +516,9 @@ export type MutationUpdateRegistrationLinkArgs = {
 };
 
 export type MutationUpdateTimeOfTestQuestionsArgs = {
+  genderOfSexualPartners?: InputMaybe<
+    Array<InputMaybe<Scalars["String"]["input"]>>
+  >;
   noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
   patientId: Scalars["ID"]["input"];
   pregnancy?: InputMaybe<Scalars["String"]["input"]>;
@@ -951,6 +963,7 @@ export type TestOrder = {
   dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
   deviceType: DeviceType;
   facility: Facility;
+  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
   id: Scalars["ID"]["output"];
   /** @deprecated alias for 'id' */
   internalId: Scalars["ID"]["output"];
@@ -973,6 +986,7 @@ export type TestResult = {
   dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
+  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
   internalId?: Maybe<Scalars["ID"]["output"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
   patient?: Maybe<Patient>;
