@@ -129,7 +129,7 @@ public class TestResultUploadService {
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public List<TestResultUpload> processResultCSV(InputStream csvStream) {
-    List<TestResultUpload> uploadSummary = new ArrayList<TestResultUpload>();
+    List<TestResultUpload> uploadSummary = new ArrayList<>();
     var submissionId = UUID.randomUUID();
     Organization org = _orgService.getCurrentOrganization();
 
@@ -153,14 +153,16 @@ public class TestResultUploadService {
         try {
           processCovidResponse(covidSubmission.get())
               .ifPresent(upload -> uploadSummary.add(upload));
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
           log.error("Error processing csv in bulk result upload", e);
+          Thread.currentThread().interrupt();
         }
         try {
           processUniversalResponse(universalSubmission.get())
               .ifPresent(upload -> uploadSummary.add(upload));
-        } catch (ExecutionException | InterruptedException e) {
+        } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
           log.error("Error processing FHIR in bulk result upload", e);
+          Thread.currentThread().interrupt();
         }
       }
     } catch (IOException e) {
@@ -368,29 +370,23 @@ public class TestResultUploadService {
   }
 
   private CompletableFuture<UniversalSubmissionSummary> submitResultsAsFhir(
-      ByteArrayInputStream content, Organization org, UUID submissionId) {
+      ByteArrayInputStream content, Organization org, UUID submissionId)
+      throws CsvProcessingException {
     // send to report stream
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
               if (fhirEnabled) {
-                try {
-                  long start = System.currentTimeMillis();
-                  // convert csv to fhir and serialize to json
-                  FHIRBundleRecord fhirBundleWithMeta =
-                      fhirConverter.convertToFhirBundles(content, org.getInternalId());
-                  UploadResponse response =
-                      uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
-                  log.info(
-                      "FHIR submitted in "
-                          + (System.currentTimeMillis() - start)
-                          + " milliseconds");
+                long start = System.currentTimeMillis();
+                // convert csv to fhir and serialize to json
+                FHIRBundleRecord fhirBundleWithMeta =
+                    fhirConverter.convertToFhirBundles(content, org.getInternalId());
+                UploadResponse response = uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
+                log.info(
+                    "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
 
-                  return new UniversalSubmissionSummary(
-                      submissionId, org, response, fhirBundleWithMeta.metadata());
-                } catch (CsvProcessingException e) {
-                  Thread.currentThread().interrupt();
-                }
+                return new UniversalSubmissionSummary(
+                    submissionId, org, response, fhirBundleWithMeta.metadata());
               }
               return null;
             }));
@@ -458,25 +454,20 @@ public class TestResultUploadService {
 
   private Optional<TestResultUpload> processCovidResponse(CovidSubmissionSummary submissionSummary)
       throws DependencyFailureException {
-    try {
-      if (submissionSummary.processingException() instanceof DependencyFailureException) {
-        throw (DependencyFailureException) submissionSummary.processingException();
-      }
+    if (submissionSummary.processingException() instanceof DependencyFailureException) {
+      throw (DependencyFailureException) submissionSummary.processingException();
+    }
 
-      if (submissionSummary.submissionResponse() != null) {
-        HashMap<String, Integer> diseaseReported = new HashMap<>();
-        diseaseReported.put(
-            "COVID-19", submissionSummary.submissionResponse().getReportItemCount());
+    if (submissionSummary.submissionResponse() != null) {
+      HashMap<String, Integer> diseaseReported = new HashMap<>();
+      diseaseReported.put("COVID-19", submissionSummary.submissionResponse().getReportItemCount());
 
-        return saveSubmissionToDb(
-            submissionSummary.submissionResponse(),
-            submissionSummary.org(),
-            submissionSummary.submissionId(),
-            Pipeline.COVID,
-            diseaseReported);
-      }
-    } catch (CsvProcessingException e) {
-      Thread.currentThread().interrupt();
+      return saveSubmissionToDb(
+          submissionSummary.submissionResponse(),
+          submissionSummary.org(),
+          submissionSummary.submissionId(),
+          Pipeline.COVID,
+          diseaseReported);
     }
     return Optional.empty();
   }
