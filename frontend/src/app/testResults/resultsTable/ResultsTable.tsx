@@ -175,7 +175,7 @@ const generateResultRows = (
               r.patient?.middleName,
               r.patient?.lastName
             )}
-            onClick={() => setDetailsModalId(r.id)}
+            onClick={() => setDetailsModalId(r.testEventId)}
             className="sr-link__primary"
           />
           <span className="display-block text-base font-ui-2xs">

@@ -1,6 +1,7 @@
 const data = [
   {
     id: "0969da96-b211-41cd-ba61-002181f0918d",
+    testEventId: "0969da96-b211-41cd-ba61-002181f0918d",
     dateAdded: "2021-03-19T19:27:21.052Z",
     dateTested: "2021-03-17T19:27:23.806Z",
     disease: "COVID-19",
