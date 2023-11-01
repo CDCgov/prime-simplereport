@@ -880,6 +880,7 @@ export type Result = {
   id: Scalars["ID"]["output"];
   patient: Patient;
   reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
+  testEventId: Scalars["ID"]["output"];
   testResult: Scalars["String"]["output"];
 };
 
@@ -2543,6 +2544,7 @@ export type GetResultsMultiplexWithCountQuery = {
     content?: Array<{
       __typename?: "Result";
       id: string;
+      testEventId: string;
       dateAdded: string;
       dateTested: any;
       disease: string;
@@ -7655,6 +7657,7 @@ export const GetResultsMultiplexWithCountDocument = gql`
     ) {
       content {
         id
+        testEventId
         dateAdded
         dateTested
         disease

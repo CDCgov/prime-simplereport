@@ -12,6 +12,7 @@ import lombok.Getter;
 @Getter
 public class TestResultsListItem {
   private final UUID id;
+  private final UUID testEventId;
   private final Facility facility;
   private final Person patient;
   private final Date dateAdded;
@@ -26,6 +27,7 @@ public class TestResultsListItem {
 
   public TestResultsListItem(Result result) {
     this.id = result.getTestOrder().getTestEvent().getInternalId();
+    this.testEventId = result.getTestOrder().getTestEvent().getInternalId();
     this.facility = result.getTestOrder().getFacility();
     this.patient = result.getTestOrder().getPatient();
     this.dateAdded = result.getTestOrder().getDateTested();
