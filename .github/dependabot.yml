@@ -1,7 +1,15 @@
-# Issue to track batching updates feature: https://github.com/github/roadmap/issues/148
-
 version: 2
 updates:
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    reviewers:
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/backend"
@@ -10,9 +18,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-backendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/backend/db-setup"
@@ -21,9 +28,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-backendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/cypress"
@@ -32,9 +38,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-frontendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/frontend"
@@ -43,9 +48,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-frontendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/nginx"
@@ -54,9 +58,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-backendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/ops/services/container_instances/db_client/image"
@@ -65,21 +68,18 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-backendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "github-actions"
-    # this checks the .github/workflows directory by default
-    # any other directory for github-actions seems broken at the moment
     directory: "/"
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "gradle"
     directory: "/backend"
@@ -88,9 +88,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-backendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -99,9 +98,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-frontendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
       
   - package-ecosystem: "npm"
     directory: "/frontend"
@@ -110,9 +108,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-frontendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
       
   - package-ecosystem: "npm"
     directory: "/cypress"
@@ -121,9 +118,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-frontendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "npm"
     directory: "/ops/services/app_functions/report_stream_batched_publisher/functions"
@@ -132,9 +128,8 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
-      - "cdcgov/simplereport-frontendreviews"
+      - "cdcgov/simplereport-devsecops"
+      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "terraform"
     directory: "/ops/global"
@@ -143,8 +138,7 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
+      - "cdcgov/simplereport-devsecops"
 
   - package-ecosystem: "terraform"
     directory: "/ops/services/okta-global"
@@ -153,8 +147,7 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
+      - "cdcgov/simplereport-devsecops"
 
   - package-ecosystem: "terraform"
     directory: "/ops/test"
@@ -163,8 +156,7 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
+      - "cdcgov/simplereport-devsecops"
 
   - package-ecosystem: "terraform"
     directory: "/ops/test/persistent"
@@ -173,5 +165,4 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alismx"
-      - "rin-skylight"
+      - "cdcgov/simplereport-devsecops"
