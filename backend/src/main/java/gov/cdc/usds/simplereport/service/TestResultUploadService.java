@@ -151,15 +151,13 @@ public class TestResultUploadService {
             submitResultsAsFhir(new ByteArrayInputStream(content), org, submissionId);
 
         try {
-          processCovidResponse(covidSubmission.get())
-              .ifPresent(upload -> uploadSummary.add(upload));
+          processCovidResponse(covidSubmission.get()).ifPresent(uploadSummary::add);
         } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
           log.error("Error processing csv in bulk result upload", e);
           Thread.currentThread().interrupt();
         }
         try {
-          processUniversalResponse(universalSubmission.get())
-              .ifPresent(upload -> uploadSummary.add(upload));
+          processUniversalResponse(universalSubmission.get()).ifPresent(uploadSummary::add);
         } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
           log.error("Error processing FHIR in bulk result upload", e);
           Thread.currentThread().interrupt();
