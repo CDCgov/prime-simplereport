@@ -25,7 +25,7 @@ public class TestResultsListItem {
   private final ApiUser createdBy;
 
   public TestResultsListItem(Result result) {
-    this.id = result.getTestOrder().getInternalId();
+    this.id = result.getTestOrder().getTestEvent().getInternalId();
     this.facility = result.getTestOrder().getFacility();
     this.patient = result.getTestOrder().getPatient();
     this.dateAdded = result.getTestOrder().getDateTested();
