@@ -26,10 +26,12 @@ import gov.cdc.usds.simplereport.db.model.ResultUploadError;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.UploadDiseaseDetails;
+import gov.cdc.usds.simplereport.db.model.auxiliary.CovidSubmissionSummary;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.UniversalSubmissionSummary;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -134,35 +136,30 @@ public class TestResultUploadService {
     try {
       byte[] content = csvStream.readAllBytes();
 
+      Optional<TestResultUpload> dataValidationErrors =
+          performDataValidations(content, org, submissionId);
+
+      if (dataValidationErrors.isPresent()) {
+        uploadSummary.add(dataValidationErrors.get());
+        return uploadSummary;
+      }
+
       if (content.length > 0) {
-        Optional<TestResultUpload> dataValidationErrors =
-            performDataValidations(content, org, submissionId);
-
-        if (dataValidationErrors.isPresent()) {
-          uploadSummary.add(dataValidationErrors.get());
-          return uploadSummary;
-        }
-
-        CompletableFuture<TestResultUpload> covidSubmission =
+        CompletableFuture<CovidSubmissionSummary> covidSubmission =
             submitResultsAsCsv(content, org, submissionId);
-        CompletableFuture<TestResultUpload> universalSubmission =
+        CompletableFuture<UniversalSubmissionSummary> universalSubmission =
             submitResultsAsFhir(new ByteArrayInputStream(content), org, submissionId);
 
-        CompletableFuture.allOf(covidSubmission, universalSubmission)
-            .thenAccept(
-                __ -> {
-                  try {
-                    uploadSummary.add(covidSubmission.get());
-                  } catch (ExecutionException | InterruptedException e) {
-                    log.error("Error processing csv in bulk result upload", e);
-                  }
-                  try {
-                    uploadSummary.add(universalSubmission.get());
-                  } catch (ExecutionException | InterruptedException e) {
-                    log.error("Error processing FHIR in bulk result upload", e);
-                  }
-                })
-            .join();
+        try {
+          uploadSummary.add(processCovidResponse(covidSubmission.get()));
+        } catch (ExecutionException | InterruptedException e) {
+          log.error("Error processing csv in bulk result upload", e);
+        }
+        try {
+          uploadSummary.add(processUniversalResponse(universalSubmission.get()));
+        } catch (ExecutionException | InterruptedException e) {
+          log.error("Error processing FHIR in bulk result upload", e);
+        }
       }
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
@@ -368,7 +365,7 @@ public class TestResultUploadService {
     return _client.fetchAccessToken(requestBody);
   }
 
-  private CompletableFuture<TestResultUpload> submitResultsAsFhir(
+  private CompletableFuture<UniversalSubmissionSummary> submitResultsAsFhir(
       ByteArrayInputStream content, Organization org, UUID submissionId) {
     // send to report stream
     return CompletableFuture.supplyAsync(
@@ -387,14 +384,8 @@ public class TestResultUploadService {
                           + (System.currentTimeMillis() - start)
                           + " milliseconds");
 
-                  if (response != null) {
-                    return saveSubmissionToDb(
-                        response,
-                        org,
-                        submissionId,
-                        Pipeline.UNIVERSAL,
-                        fhirBundleWithMeta.metadata());
-                  }
+                  return new UniversalSubmissionSummary(
+                      submissionId, org, response, fhirBundleWithMeta.metadata());
                 } catch (CsvProcessingException e) {
                   Thread.currentThread().interrupt();
                 }
@@ -403,66 +394,88 @@ public class TestResultUploadService {
             }));
   }
 
-  private CompletableFuture<TestResultUpload> submitResultsAsCsv(
+  private TestResultUpload processUniversalResponse(UniversalSubmissionSummary submissionSummary) {
+    if (submissionSummary != null && submissionSummary.submissionResponse() != null) {
+      return saveSubmissionToDb(
+          submissionSummary.submissionResponse(),
+          submissionSummary.org(),
+          submissionSummary.submissionId(),
+          Pipeline.UNIVERSAL,
+          submissionSummary.reportedDiseases());
+    }
+    return null;
+  }
+
+  private CompletableFuture<CovidSubmissionSummary> submitResultsAsCsv(
       byte[] content, Organization org, UUID submissionId) {
     return CompletableFuture.supplyAsync(
-            withMDC(
-                () -> {
-                  long start = System.currentTimeMillis();
-                  FutureResult<UploadResponse, Exception> result;
-                  var csvContent = transformCsvContent(content);
-                  if (csvContent.length == 0) {
-                    return FutureResult.<UploadResponse, Exception>builder()
-                        .error(new EmptyCsvException())
-                        .build();
-                  }
-                  try {
-                    result =
-                        FutureResult.<UploadResponse, Exception>builder()
-                            .value(_client.uploadCSV(csvContent))
-                            .build();
-                  } catch (FeignException e) {
-                    log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
-                    try {
-                      UploadResponse value =
-                          mapper.readValue(e.contentUTF8(), UploadResponse.class);
-                      result =
-                          FutureResult.<UploadResponse, Exception>builder().value(value).build();
-
-                    } catch (JsonProcessingException ex) {
-                      log.error("Unable to parse Report Stream response.", ex);
-                      result =
-                          FutureResult.<UploadResponse, Exception>builder()
-                              .error(
-                                  new DependencyFailureException(
-                                      "Unable to parse Report Stream response."))
-                              .build();
-                    }
-                  }
-                  log.info(
-                      "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
-
-                  return result;
-                }))
-        .thenApply(
-            response -> {
-              try {
-                if (response.getError() instanceof DependencyFailureException) {
-                  throw (DependencyFailureException) response.getError();
-                }
-
-                if (response.getValue() != null) {
-                  HashMap<String, Integer> diseaseReported = new HashMap<>();
-                  diseaseReported.put("COVID-19", response.getValue().getReportItemCount());
-
-                  return saveSubmissionToDb(
-                      response.getValue(), org, submissionId, Pipeline.COVID, diseaseReported);
-                }
-              } catch (CsvProcessingException e) {
-                Thread.currentThread().interrupt();
+        withMDC(
+            () -> {
+              long start = System.currentTimeMillis();
+              FutureResult<UploadResponse, Exception> result;
+              var csvContent = transformCsvContent(content);
+              if (csvContent.length == 0) {
+                return new CovidSubmissionSummary(
+                    submissionId, org, null, new EmptyCsvException(), null);
               }
-              return null;
-            });
+              try {
+                result =
+                    FutureResult.<UploadResponse, Exception>builder()
+                        .value(_client.uploadCSV(csvContent))
+                        .build();
+              } catch (FeignException e) {
+                log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
+                try {
+                  UploadResponse value = mapper.readValue(e.contentUTF8(), UploadResponse.class);
+                  result = FutureResult.<UploadResponse, Exception>builder().value(value).build();
+
+                } catch (JsonProcessingException ex) {
+                  log.error("Unable to parse Report Stream response.", ex);
+                  result =
+                      FutureResult.<UploadResponse, Exception>builder()
+                          .error(
+                              new DependencyFailureException(
+                                  "Unable to parse Report Stream response."))
+                          .build();
+                }
+              }
+              log.info(
+                  "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+
+              HashMap<String, Integer> diseaseReported = new HashMap<>();
+
+              if (result.getValue() != null) {
+                diseaseReported.put("COVID-19", result.getValue().getReportItemCount());
+              }
+
+              return new CovidSubmissionSummary(
+                  submissionId, org, result.getValue(), result.getError(), diseaseReported);
+            }));
+  }
+
+  private TestResultUpload processCovidResponse(CovidSubmissionSummary submissionSummary)
+      throws DependencyFailureException {
+    try {
+      if (submissionSummary.processingException() instanceof DependencyFailureException) {
+        throw (DependencyFailureException) submissionSummary.processingException();
+      }
+
+      if (submissionSummary.submissionResponse() != null) {
+        HashMap<String, Integer> diseaseReported = new HashMap<>();
+        diseaseReported.put(
+            "COVID-19", submissionSummary.submissionResponse().getReportItemCount());
+
+        return saveSubmissionToDb(
+            submissionSummary.submissionResponse(),
+            submissionSummary.org(),
+            submissionSummary.submissionId(),
+            Pipeline.COVID,
+            diseaseReported);
+      }
+    } catch (CsvProcessingException e) {
+      Thread.currentThread().interrupt();
+    }
+    return null;
   }
 
   private UploadResponse parseFeignException(FeignException e) {
@@ -494,7 +507,7 @@ public class TestResultUploadService {
                   .organization(org)
                   .destination(pipeline)
                   .errors(response.getErrors())
-                  .warnings(response.getErrors())
+                  .warnings(response.getWarnings())
                   .build());
 
       List<UploadDiseaseDetails> diseaseDetails = new ArrayList<>();
@@ -519,6 +532,7 @@ public class TestResultUploadService {
                         new ResultUploadError(finalResult, org, feedbackMessage, submissionId))
                 .toList());
       }
+      return uploadRecord;
     }
     return null;
   }

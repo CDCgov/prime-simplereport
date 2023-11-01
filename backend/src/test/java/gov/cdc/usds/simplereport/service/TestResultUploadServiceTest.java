@@ -32,6 +32,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
+import gov.cdc.usds.simplereport.db.repository.UploadDiseaseDetailsRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
@@ -84,6 +85,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private DataHubClient dataHubMock;
   @Mock private TestResultUploadRepository repoMock;
   @Mock private ResultUploadErrorRepository errorRepoMock;
+  @Mock private UploadDiseaseDetailsRepository uploadDiseaseDetailsRepository;
   @Mock private OrganizationService orgServiceMock;
   @Mock private ResultsUploaderCachingService resultsUploaderCachingServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
