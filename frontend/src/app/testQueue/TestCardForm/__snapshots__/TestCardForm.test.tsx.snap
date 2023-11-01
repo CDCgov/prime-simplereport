@@ -253,7 +253,7 @@ Object {
                     />
                     <label
                       class="usa-radio__label"
-                      data-cy="radio-group-option-POSITIVE"
+                      data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                       for="3-val-POSITIVE"
                     >
                       Positive (+)
@@ -272,7 +272,7 @@ Object {
                     />
                     <label
                       class="usa-radio__label"
-                      data-cy="radio-group-option-NEGATIVE"
+                      data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                       for="3-val-NEGATIVE"
                     >
                       Negative (-)
@@ -291,7 +291,7 @@ Object {
                     />
                     <label
                       class="usa-radio__label"
-                      data-cy="radio-group-option-UNDETERMINED"
+                      data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
                       for="3-val-UNDETERMINED"
                     >
                       Inconclusive
@@ -344,7 +344,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-77386006"
+                          data-cy="radio-group-option-pregnancy-77386006"
                           for="4-val-77386006"
                         >
                           Yes
@@ -363,7 +363,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-60001007"
+                          data-cy="radio-group-option-pregnancy-60001007"
                           for="4-val-60001007"
                         >
                           No
@@ -382,7 +382,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-261665006"
+                          data-cy="radio-group-option-pregnancy-261665006"
                           for="4-val-261665006"
                         >
                           Prefer not to answer
@@ -428,7 +428,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-YES"
+                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
                           for="5-val-YES"
                         >
                           Yes
@@ -448,7 +448,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NO"
+                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
                           for="5-val-NO"
                         >
                           No
@@ -827,7 +827,7 @@ Object {
                   />
                   <label
                     class="usa-radio__label"
-                    data-cy="radio-group-option-POSITIVE"
+                    data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                     for="3-val-POSITIVE"
                   >
                     Positive (+)
@@ -846,7 +846,7 @@ Object {
                   />
                   <label
                     class="usa-radio__label"
-                    data-cy="radio-group-option-NEGATIVE"
+                    data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                     for="3-val-NEGATIVE"
                   >
                     Negative (-)
@@ -865,7 +865,7 @@ Object {
                   />
                   <label
                     class="usa-radio__label"
-                    data-cy="radio-group-option-UNDETERMINED"
+                    data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
                     for="3-val-UNDETERMINED"
                   >
                     Inconclusive
@@ -918,7 +918,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-77386006"
+                        data-cy="radio-group-option-pregnancy-77386006"
                         for="4-val-77386006"
                       >
                         Yes
@@ -937,7 +937,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-60001007"
+                        data-cy="radio-group-option-pregnancy-60001007"
                         for="4-val-60001007"
                       >
                         No
@@ -956,7 +956,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-261665006"
+                        data-cy="radio-group-option-pregnancy-261665006"
                         for="4-val-261665006"
                       >
                         Prefer not to answer
@@ -1002,7 +1002,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-YES"
+                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
                         for="5-val-YES"
                       >
                         Yes
@@ -1022,7 +1022,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NO"
+                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
                         for="5-val-NO"
                       >
                         No
@@ -1385,7 +1385,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                           for="16-val-POSITIVE"
                         >
                           Positive (+)
@@ -1404,7 +1404,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                           for="16-val-NEGATIVE"
                         >
                           Negative (-)
@@ -1453,7 +1453,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                           for="17-val-POSITIVE"
                         >
                           Positive (+)
@@ -1472,7 +1472,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                           for="17-val-NEGATIVE"
                         >
                           Negative (-)
@@ -1945,7 +1945,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-POSITIVE"
+                        data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                         for="16-val-POSITIVE"
                       >
                         Positive (+)
@@ -1964,7 +1964,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NEGATIVE"
+                        data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                         for="16-val-NEGATIVE"
                       >
                         Negative (-)
@@ -2013,7 +2013,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-POSITIVE"
+                        data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                         for="17-val-POSITIVE"
                       >
                         Positive (+)
@@ -2032,7 +2032,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NEGATIVE"
+                        data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                         for="17-val-NEGATIVE"
                       >
                         Negative (-)
@@ -2484,7 +2484,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                           for="8-val-POSITIVE"
                         >
                           Positive (+)
@@ -2504,7 +2504,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                           for="8-val-NEGATIVE"
                         >
                           Negative (-)
@@ -2553,7 +2553,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                           for="9-val-POSITIVE"
                         >
                           Positive (+)
@@ -2573,7 +2573,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                           for="9-val-NEGATIVE"
                         >
                           Negative (-)
@@ -2622,7 +2622,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                           for="10-val-POSITIVE"
                         >
                           Positive (+)
@@ -2642,7 +2642,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                           for="10-val-NEGATIVE"
                         >
                           Negative (-)
@@ -2785,7 +2785,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-77386006"
+                          data-cy="radio-group-option-pregnancy-77386006"
                           for="12-val-77386006"
                         >
                           Yes
@@ -2804,7 +2804,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-60001007"
+                          data-cy="radio-group-option-pregnancy-60001007"
                           for="12-val-60001007"
                         >
                           No
@@ -2823,7 +2823,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-261665006"
+                          data-cy="radio-group-option-pregnancy-261665006"
                           for="12-val-261665006"
                         >
                           Prefer not to answer
@@ -2869,7 +2869,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-YES"
+                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
                           for="13-val-YES"
                         >
                           Yes
@@ -2889,7 +2889,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NO"
+                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
                           for="13-val-NO"
                         >
                           No
@@ -3273,7 +3273,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-POSITIVE"
+                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                         for="8-val-POSITIVE"
                       >
                         Positive (+)
@@ -3293,7 +3293,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NEGATIVE"
+                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                         for="8-val-NEGATIVE"
                       >
                         Negative (-)
@@ -3342,7 +3342,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-POSITIVE"
+                        data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                         for="9-val-POSITIVE"
                       >
                         Positive (+)
@@ -3362,7 +3362,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NEGATIVE"
+                        data-cy="radio-group-option-flu-a-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                         for="9-val-NEGATIVE"
                       >
                         Negative (-)
@@ -3411,7 +3411,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-POSITIVE"
+                        data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                         for="10-val-POSITIVE"
                       >
                         Positive (+)
@@ -3431,7 +3431,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NEGATIVE"
+                        data-cy="radio-group-option-flu-b-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                         for="10-val-NEGATIVE"
                       >
                         Negative (-)
@@ -3574,7 +3574,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-77386006"
+                        data-cy="radio-group-option-pregnancy-77386006"
                         for="12-val-77386006"
                       >
                         Yes
@@ -3593,7 +3593,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-60001007"
+                        data-cy="radio-group-option-pregnancy-60001007"
                         for="12-val-60001007"
                       >
                         No
@@ -3612,7 +3612,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-261665006"
+                        data-cy="radio-group-option-pregnancy-261665006"
                         for="12-val-261665006"
                       >
                         Prefer not to answer
@@ -3658,7 +3658,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-YES"
+                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
                         for="13-val-YES"
                       >
                         Yes
@@ -3678,7 +3678,7 @@ Object {
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NO"
+                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
                         for="13-val-NO"
                       >
                         No

@@ -464,6 +464,12 @@ resource "azurerm_application_gateway" "load_balancer" {
   firewall_policy_id = var.firewall_policy_id
 
   tags = var.tags
+
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 

@@ -1749,6 +1749,7 @@ export type GetDeviceTypeListQuery = {
       testPerformedLoincCode: string;
       testkitNameId?: string | null;
       equipmentUid?: string | null;
+      equipmentUidType?: string | null;
       testOrderedLoincCode?: string | null;
       supportedDisease: {
         __typename?: "SupportedDisease";
@@ -2568,6 +2569,11 @@ export type GetResultsMultiplexWithCountQuery = {
         gender?: string | null;
         role?: string | null;
         email?: string | null;
+        phoneNumbers?: Array<{
+          __typename?: "PhoneNumber";
+          type?: PhoneType | null;
+          number?: string | null;
+        } | null> | null;
       };
       createdBy?: {
         __typename?: "ApiUser";
@@ -5053,6 +5059,7 @@ export const GetDeviceTypeListDocument = gql`
         testPerformedLoincCode
         testkitNameId
         equipmentUid
+        equipmentUidType
         testOrderedLoincCode
       }
       testLength
@@ -7671,6 +7678,10 @@ export const GetResultsMultiplexWithCountDocument = gql`
           gender
           role
           email
+          phoneNumbers {
+            type
+            number
+          }
         }
         createdBy {
           nameInfo {

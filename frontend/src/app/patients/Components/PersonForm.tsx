@@ -400,6 +400,7 @@ const PersonForm = (props: Props) => {
             field="firstName"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
+            dataCy="personForm-firstName-input"
           />
           <Input
             {...commonInputProps}
@@ -413,6 +414,7 @@ const PersonForm = (props: Props) => {
             label={t("patient.form.general.lastName")}
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
+            dataCy="personForm-lastName-input"
           />
         </div>
         <div className="usa-form">
@@ -424,12 +426,14 @@ const PersonForm = (props: Props) => {
             options={ROLE_VALUES}
             defaultOption={t("common.defaultDropdownOption")}
             defaultSelect={true}
+            dataCy={"personForm-role-input"}
           />
           {patient.role === "STUDENT" && (
             <Input
               {...commonInputProps}
               field="lookupId"
               label={t("patient.form.general.studentId")}
+              dataCy={"personForm-lookupId-input"}
             />
           )}
           {view !== PersonFormView.SELF_REGISTRATION && (
@@ -442,6 +446,7 @@ const PersonForm = (props: Props) => {
               validationStatus={validationStatus}
               errors={errors}
               hidden={props.hideFacilitySelect}
+              dataCy={"personForm-facility-input"}
             />
           )}
           <div className="usa-form-group">
@@ -480,6 +485,7 @@ const PersonForm = (props: Props) => {
             disabled={view === PersonFormView.PXP}
             min={formatDate(new Date("Jan 1, 1900"))}
             max={formatDate(new Date())}
+            dataCy="personForm-dob-input"
           />
         </div>
       </FormGroup>

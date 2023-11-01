@@ -28,6 +28,8 @@ export interface Item {
 export const specificSchemaBuilder = (facilityId: string | null) => {
   const validUuid = facilityId && validate(facilityId) ? facilityId : "";
   const deviceCodeLookupLink = `<a href="${process.env.PUBLIC_URL}/results/upload/submit/code-lookup?facility=${validUuid}" class="usa-link" target="_blank" rel="noreferrer noopener">device code lookup tool</a>`;
+  const livdSpreadsheetLink =
+    '<a href="https://www.cdc.gov/csels/dls/livd-codes.html#anchor_88680" class="usa-link" target="_blank" rel="noreferrer noopener">SARS-CoV-2 LIVD Test Codes spreadsheet</a>';
 
   return {
     fields: [
@@ -247,6 +249,40 @@ export const specificSchemaBuilder = (facilityId: string | null) => {
                 description: [
                   "The name of the device or test kit used for testing.",
                   `Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
+                ],
+              },
+              {
+                name: "Test kit name ID",
+                colHeader: "test_kit_name_id",
+                required: false,
+                requested: false,
+
+                examples: [
+                  "CareStart COVID-19 IgM/IgG_Access Bio, Inc.",
+                  "BD Veritor System for Rapid Detection of SARS-CoV-2 & Flu A+B_Becton, Dickinson and Company (BD)",
+                  "00884999049222",
+                ],
+                description: [
+                  "If you want to include this value, you can find it in the CDC’s " +
+                    `${livdSpreadsheetLink}, under Testkit ` +
+                    "Name ID (column M).",
+                ],
+              },
+              {
+                name: "Equipment model ID",
+                colHeader: "equipment_model_id",
+                required: false,
+                requested: false,
+
+                examples: [
+                  "No Equipment",
+                  "BD Veritor Plus System_Becton Dickinson",
+                  "00884999048034",
+                ],
+                description: [
+                  "If you want to include this value, you can find it in the CDC’s " +
+                    `${livdSpreadsheetLink}, under Equipment ` +
+                    "UID (column O).",
                 ],
               },
               {
