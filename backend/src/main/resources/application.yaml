@@ -170,7 +170,7 @@ features:
   hivEnabled: true
   singleEntryRsvEnabled: true
   agnosticEnabled: true
-  testCardRefactorEnabled: true
+  testCardRefactorEnabled: false
   agnosticBulkUploadEnabled: true
 slack:
   hook:

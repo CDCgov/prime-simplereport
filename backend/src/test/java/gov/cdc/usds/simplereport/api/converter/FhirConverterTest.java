@@ -948,7 +948,7 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_noSymptoms_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null);
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null, null);
     String testId = "fakeId";
 
     var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
@@ -965,7 +965,8 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_symptomatic_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4));
+    var answers =
+        new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4), null);
     String testId = "fakeId";
 
     var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
@@ -984,7 +985,7 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_employedInHealthcare_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null);
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
     var actual = fhirConverter.convertToAOEObservations(testId, answers, true, null);
@@ -1003,7 +1004,7 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_residesInCongregateSetting_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null);
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
     var actual = fhirConverter.convertToAOEObservations(testId, answers, null, true);
@@ -1022,7 +1023,7 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_pregnancyStatus_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey("77386006", Map.of("fake", false), null, null);
+    var answers = new AskOnEntrySurvey("77386006", Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
     var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
@@ -1042,7 +1043,8 @@ class FhirConverterTest {
   @Test
   void convertToAoeObservation_allAOE_matchesJson() throws IOException {
     var answers =
-        new AskOnEntrySurvey("102874004", Map.of("fake", true), false, LocalDate.of(2023, 3, 4));
+        new AskOnEntrySurvey(
+            "102874004", Map.of("fake", true), false, LocalDate.of(2023, 3, 4), null);
     String testId = "fakeId";
 
     var actual = fhirConverter.convertToAOEObservations(testId, answers, false, false);
@@ -1059,7 +1061,7 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_noAnswer_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null);
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null, null);
     String testId = "fakeId";
 
     var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
@@ -1641,7 +1643,7 @@ class FhirConverterTest {
             "Adventurer of the cosmos");
     var testOrder = new TestOrder(person, facility);
     var answers =
-        new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));
+        new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null, null));
     testOrder.setAskOnEntrySurvey(answers);
 
     var covidResult =

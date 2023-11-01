@@ -469,24 +469,17 @@ public class TestOrderService {
       String pregnancy,
       Map<String, Boolean> symptoms,
       LocalDate symptomOnsetDate,
-      Boolean noSymptoms) {
+      Boolean noSymptoms,
+      List<String> genderOfSexualPartners) {
+
     TestOrder order = retrieveTestOrder(patientId);
-
-    updateTimeOfTest(order, pregnancy, symptoms, symptomOnsetDate, noSymptoms);
-  }
-
-  private void updateTimeOfTest(
-      TestOrder order,
-      String pregnancy,
-      Map<String, Boolean> symptoms,
-      LocalDate symptomOnsetDate,
-      Boolean noSymptoms) {
     PatientAnswers answers = order.getAskOnEntrySurvey();
     AskOnEntrySurvey survey = answers.getSurvey();
     survey.setPregnancy(pregnancy);
     survey.setSymptoms(symptoms);
     survey.setNoSymptoms(noSymptoms);
     survey.setSymptomOnsetDate(symptomOnsetDate);
+    survey.setGenderOfSexualPartners(genderOfSexualPartners);
     answers.setSurvey(survey);
     _patientAnswersRepo.save(answers);
   }

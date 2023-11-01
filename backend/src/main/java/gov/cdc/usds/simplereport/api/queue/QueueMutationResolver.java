@@ -91,12 +91,13 @@ public class QueueMutationResolver {
       @Argument String symptoms,
       @Argument LocalDate symptomOnset,
       @Argument Boolean noSymptoms,
+      @Argument List<String> genderOfSexualPartners,
       @Argument TestResultDeliveryPreference testResultDelivery) {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
     testOrderService.updateTimeOfTestQuestions(
-        patientId, pregnancy, symptomsMap, symptomOnset, noSymptoms);
+        patientId, pregnancy, symptomsMap, symptomOnset, noSymptoms, genderOfSexualPartners);
 
     personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
   }

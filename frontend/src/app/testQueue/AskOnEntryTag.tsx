@@ -4,6 +4,9 @@ import { AoEAnswers } from "./AoEForm/AoEForm";
 
 export const areAnswersComplete = (answers: AoEAnswers) => {
   if (!answers.noSymptoms) {
+    if (answers.symptoms == null) {
+      return false;
+    }
     const symptoms = JSON.parse(answers.symptoms);
     const filled = Object.values(symptoms).some((v) => String(v) === "true");
     if (!filled || !answers.symptomOnset) {

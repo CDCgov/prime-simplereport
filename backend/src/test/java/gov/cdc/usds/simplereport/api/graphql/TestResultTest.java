@@ -138,7 +138,7 @@ class TestResultTest extends BaseGraphqlTest {
     Map<String, Boolean> symptoms = Map.of("25064002", true);
     LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
     _dataFactory.createTestOrder(
-        p, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
+        p, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate, null));
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     List<MultiplexResultInput> results = new ArrayList<>();
@@ -201,9 +201,9 @@ class TestResultTest extends BaseGraphqlTest {
     LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
 
     _dataFactory.createTestOrder(
-        p1, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
+        p1, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate, null));
     _dataFactory.createTestOrder(
-        p2, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
+        p2, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate, null));
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     // The test default standard user is configured to access _site by default,
