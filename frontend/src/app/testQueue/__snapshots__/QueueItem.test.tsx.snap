@@ -365,7 +365,7 @@ exports[`QueueItem matches snapshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-POSITIVE"
+                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                         for="3-val-POSITIVE"
                       >
                         Positive (+)
@@ -384,7 +384,7 @@ exports[`QueueItem matches snapshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NEGATIVE"
+                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                         for="3-val-NEGATIVE"
                       >
                         Negative (-)
@@ -403,7 +403,7 @@ exports[`QueueItem matches snapshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-UNDETERMINED"
+                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
                         for="3-val-UNDETERMINED"
                       >
                         Inconclusive

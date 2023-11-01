@@ -29,6 +29,11 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
       webhook_properties = var.wiki_docs_json
     }
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_metric_alert" "mem_util" {
@@ -56,6 +61,11 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
       webhook_properties = var.wiki_docs_json
     }
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
@@ -70,6 +80,11 @@ resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
   action_group {
     ids             = var.action_group_ids
     webhook_payload = var.wiki_docs_text
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }
 
@@ -110,6 +125,11 @@ ${local.skip_on_weekends}
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_4xx_errors" {
@@ -149,6 +169,11 @@ ${local.skip_on_weekends}
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_401_410" {
@@ -178,6 +203,11 @@ ${local.skip_on_weekends}
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "http_5xx_errors" {
@@ -206,6 +236,11 @@ ${local.skip_on_weekends}
   action {
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }
 
@@ -238,6 +273,11 @@ ${local.skip_on_weekends}
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "bulk_results_upload" {
@@ -269,6 +309,11 @@ requests
     operator  = "GreaterThan"
     threshold = 0
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_batched_uploader_400" {
@@ -298,6 +343,11 @@ customEvents
   trigger {
     operator  = "GreaterThan"
     threshold = 0
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }
 
@@ -329,6 +379,11 @@ customEvents
     operator  = "GreaterThan"
     threshold = 0
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_single_failure_detected" {
@@ -359,6 +414,11 @@ ${local.skip_on_weekends}
   action {
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }
 
@@ -413,5 +473,10 @@ and duration >= 180000
   action {
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }

@@ -45,7 +45,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-flu-a-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="13-val-POSITIVE"
                 >
                   Positive (+)
@@ -64,7 +64,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-flu-a-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="13-val-NEGATIVE"
                 >
                   Negative (-)
@@ -113,7 +113,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-flu-b-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="14-val-POSITIVE"
                 >
                   Positive (+)
@@ -132,7 +132,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-flu-b-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="14-val-NEGATIVE"
                 >
                   Negative (-)
@@ -300,7 +300,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="9-val-POSITIVE"
                 >
                   Positive (+)
@@ -319,7 +319,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="9-val-NEGATIVE"
                 >
                   Negative (-)
@@ -368,7 +368,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-flu-a-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="10-val-POSITIVE"
                 >
                   Positive (+)
@@ -387,7 +387,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-flu-a-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="10-val-NEGATIVE"
                 >
                   Negative (-)
@@ -436,7 +436,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-flu-b-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="11-val-POSITIVE"
                 >
                   Positive (+)
@@ -455,7 +455,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-flu-b-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="11-val-NEGATIVE"
                 >
                   Negative (-)
@@ -623,7 +623,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="5-val-POSITIVE"
                 >
                   Positive (+)
@@ -643,7 +643,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="5-val-NEGATIVE"
                 >
                   Negative (-)
@@ -692,7 +692,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-flu-a-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="6-val-POSITIVE"
                 >
                   Positive (+)
@@ -712,7 +712,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-flu-a-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="6-val-NEGATIVE"
                 >
                   Negative (-)
@@ -761,7 +761,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-flu-b-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="7-val-POSITIVE"
                 >
                   Positive (+)
@@ -781,7 +781,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-flu-b-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="7-val-NEGATIVE"
                 >
                   Negative (-)
@@ -949,7 +949,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="1-val-POSITIVE"
                 >
                   Positive (+)
@@ -968,7 +968,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="1-val-NEGATIVE"
                 >
                   Negative (-)
@@ -1018,7 +1018,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-flu-a-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="2-val-POSITIVE"
                 >
                   Positive (+)
@@ -1037,7 +1037,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-flu-a-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="2-val-NEGATIVE"
                 >
                   Negative (-)
@@ -1087,7 +1087,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-POSITIVE"
+                  data-cy="radio-group-option-flu-b-test-result-QUEUE-ITEM-ID-POSITIVE"
                   for="3-val-POSITIVE"
                 >
                   Positive (+)
@@ -1106,7 +1106,7 @@ Object {
                 />
                 <label
                   class="usa-radio__label"
-                  data-cy="radio-group-option-NEGATIVE"
+                  data-cy="radio-group-option-flu-b-test-result-QUEUE-ITEM-ID-NEGATIVE"
                   for="3-val-NEGATIVE"
                 >
                   Negative (-)

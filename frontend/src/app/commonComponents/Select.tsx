@@ -24,6 +24,7 @@ interface Props<T> {
   selectClassName?: string;
   disabled?: boolean;
   className?: string;
+  dataCy?: string;
   registrationProps?: UseFormRegisterReturn<any>;
 }
 
@@ -42,6 +43,7 @@ const Select = <T extends string>({
   selectClassName,
   disabled,
   className,
+  dataCy,
   registrationProps,
 }: Props<T>): React.ReactElement => {
   const onChangeWrapper = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -64,6 +66,7 @@ const Select = <T extends string>({
       selectClassName={selectClassName}
       disabled={disabled}
       className={className}
+      dataCy={dataCy}
       registrationProps={registrationProps}
     />
   );

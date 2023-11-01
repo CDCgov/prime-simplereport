@@ -100,6 +100,9 @@ resource "azurerm_linux_function_app" "functions" {
     SIMPLE_REPORT_CB_TOKEN           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
   }
   lifecycle {
+    ignore_changes = [
+      tags
+    ]
     replace_triggered_by = [
       azurerm_service_plan.asp
     ]
