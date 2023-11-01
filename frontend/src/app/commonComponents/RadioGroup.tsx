@@ -127,7 +127,7 @@ const RadioGroup = <T extends string>({
                   <label
                     className={labelClasses}
                     htmlFor={uid(c.value)}
-                    data-cy={`radio-group-option-${c.value}`}
+                    data-cy={`radio-group-option-${name}-${c.value}`}
                   >
                     {c.label}
                     {c.labelDescription && (

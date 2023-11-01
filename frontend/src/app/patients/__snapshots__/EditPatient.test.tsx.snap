@@ -103,7 +103,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <label
                     class="usa-label"
                     for="103"
-                    id="label-for-103"
                   >
                     First name
                     <abbr
@@ -118,6 +117,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     aria-disabled="false"
                     aria-required="true"
                     class="usa-input"
+                    data-cy="personForm-firstName-input"
                     id="103"
                     name="firstName"
                     type="text"
@@ -130,7 +130,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <label
                     class="usa-label"
                     for="104"
-                    id="label-for-104"
                   >
                     Middle name
                   </label>
@@ -150,7 +149,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <label
                     class="usa-label"
                     for="105"
-                    id="label-for-105"
                   >
                     Last name
                     <abbr
@@ -165,6 +163,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     aria-disabled="false"
                     aria-required="true"
                     class="usa-input"
+                    data-cy="personForm-lastName-input"
                     id="105"
                     name="lastName"
                     type="text"
@@ -187,6 +186,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <select
                     aria-required="false"
                     class="usa-select"
+                    data-cy="personForm-role-input"
                     id="106"
                     name="role"
                   >
@@ -240,6 +240,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <select
                     aria-required="true"
                     class="usa-select"
+                    data-cy="personForm-facility-input"
                     id="107"
                     name="facilityId"
                   >
@@ -1925,7 +1926,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <label
                     class="usa-label"
                     for="108"
-                    id="label-for-108"
                   >
                     Date of birth (mm/dd/yyyy)
                     <abbr
@@ -1940,6 +1940,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     aria-disabled="false"
                     aria-required="true"
                     class="usa-input"
+                    data-cy="personForm-dob-input"
                     id="108"
                     max="2021-08-01"
                     min="1900-01-01"
@@ -2004,7 +2005,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         <label
                           class="usa-label"
                           for="109"
-                          id="label-for-109"
                         >
                           Primary phone number
                           <abbr
@@ -2018,6 +2018,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         <input
                           aria-required="true"
                           class="usa-input"
+                          data-cy="phone-input-0"
                           data-testid="phoneInput-0"
                           id="109"
                           name="number"
@@ -2063,7 +2064,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                             />
                             <label
                               class="usa-radio__label"
-                              data-cy="radio-group-option-MOBILE"
+                              data-cy="radio-group-option-phoneType-0-MOBILE"
                               for="110-val-MOBILE"
                             >
                               Mobile
@@ -2082,7 +2083,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                             />
                             <label
                               class="usa-radio__label"
-                              data-cy="radio-group-option-LANDLINE"
+                              data-cy="radio-group-option-phoneType-0-LANDLINE"
                               for="110-val-LANDLINE"
                             >
                               Landline
@@ -2143,7 +2144,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                           />
                           <label
                             class="usa-radio__label"
-                            data-cy="radio-group-option-SMS"
+                            data-cy="radio-group-option-testResultDeliveryText-SMS"
                             for="111-val-SMS"
                           >
                             Yes, text all mobile numbers on file.
@@ -2163,7 +2164,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                           />
                           <label
                             class="usa-radio__label"
-                            data-cy="radio-group-option-NONE"
+                            data-cy="radio-group-option-testResultDeliveryText-NONE"
                             for="111-val-NONE"
                           >
                             No
@@ -2196,7 +2197,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         <label
                           class="usa-label"
                           for="112"
-                          id="label-for-112"
                         >
                           Email address
                         </label>
@@ -2264,7 +2264,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-EMAIL"
+                          data-cy="radio-group-option-testResultDeliveryEmail-EMAIL"
                           for="113-val-EMAIL"
                         >
                           Yes
@@ -2284,7 +2284,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NONE"
+                          data-cy="radio-group-option-testResultDeliveryEmail-NONE"
                           for="113-val-NONE"
                         >
                           No
@@ -3926,7 +3926,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <label
                       class="usa-label"
                       for="115"
-                      id="label-for-115"
                     >
                       Street address 1
                       <abbr
@@ -3940,6 +3939,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <input
                       aria-required="true"
                       class="usa-input"
+                      data-cy="street-input"
                       id="115"
                       name="street"
                       type="text"
@@ -3956,7 +3956,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <label
                       class="usa-label"
                       for="116"
-                      id="label-for-116"
                     >
                       Street address 2
                     </label>
@@ -3979,7 +3978,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <label
                       class="usa-label"
                       for="117"
-                      id="label-for-117"
                     >
                       City
                       <abbr
@@ -3993,6 +3991,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <input
                       aria-required="true"
                       class="usa-input"
+                      data-cy="city-input"
                       id="117"
                       name="city"
                       type="text"
@@ -4005,7 +4004,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <label
                       class="usa-label"
                       for="118"
-                      id="label-for-118"
                     >
                       County
                     </label>
@@ -4104,7 +4102,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-native"
+                        data-cy="radio-group-option-race-native"
                         for="119-val-native"
                       >
                         American Indian/Alaskan Native
@@ -4123,7 +4121,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-asian"
+                        data-cy="radio-group-option-race-asian"
                         for="119-val-asian"
                       >
                         Asian
@@ -4142,7 +4140,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-black"
+                        data-cy="radio-group-option-race-black"
                         for="119-val-black"
                       >
                         Black/African American
@@ -4161,7 +4159,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pacific"
+                        data-cy="radio-group-option-race-pacific"
                         for="119-val-pacific"
                       >
                         Native Hawaiian/other Pacific Islander
@@ -4180,7 +4178,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-white"
+                        data-cy="radio-group-option-race-white"
                         for="119-val-white"
                       >
                         White
@@ -4199,7 +4197,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-other"
+                        data-cy="radio-group-option-race-other"
                         for="119-val-other"
                       >
                         Other
@@ -4218,7 +4216,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-refused"
+                        data-cy="radio-group-option-race-refused"
                         for="119-val-refused"
                       >
                         Prefer not to answer
@@ -4548,7 +4546,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-hispanic"
+                        data-cy="radio-group-option-ethnicity-hispanic"
                         for="120-val-hispanic"
                       >
                         Yes
@@ -4567,7 +4565,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-not_hispanic"
+                        data-cy="radio-group-option-ethnicity-not_hispanic"
                         for="120-val-not_hispanic"
                       >
                         No
@@ -4586,7 +4584,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-refused"
+                        data-cy="radio-group-option-ethnicity-refused"
                         for="120-val-refused"
                       >
                         Prefer not to answer
@@ -4624,7 +4622,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-female"
+                        data-cy="radio-group-option-genderIdentity-female"
                         for="121-val-female"
                       >
                         Female
@@ -4643,7 +4641,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-male"
+                        data-cy="radio-group-option-genderIdentity-male"
                         for="121-val-male"
                       >
                         Male
@@ -4662,7 +4660,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-transwoman"
+                        data-cy="radio-group-option-genderIdentity-transwoman"
                         for="121-val-transwoman"
                       >
                         Trans femme or transwoman
@@ -4681,7 +4679,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-transman"
+                        data-cy="radio-group-option-genderIdentity-transman"
                         for="121-val-transman"
                       >
                         Trans masculine or transman
@@ -4700,7 +4698,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-nonbinary"
+                        data-cy="radio-group-option-genderIdentity-nonbinary"
                         for="121-val-nonbinary"
                       >
                         Nonbinary or gender non-conforming
@@ -4719,7 +4717,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-other"
+                        data-cy="radio-group-option-genderIdentity-other"
                         for="121-val-other"
                       >
                         Gender identity not listed here
@@ -4738,7 +4736,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-refused"
+                        data-cy="radio-group-option-genderIdentity-refused"
                         for="121-val-refused"
                       >
                         Prefer not to answer
@@ -4788,7 +4786,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-female"
+                        data-cy="radio-group-option-gender-female"
                         for="122-val-female"
                       >
                         Female
@@ -4807,7 +4805,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-male"
+                        data-cy="radio-group-option-gender-male"
                         for="122-val-male"
                       >
                         Male
@@ -4826,7 +4824,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-other"
+                        data-cy="radio-group-option-gender-other"
                         for="122-val-other"
                       >
                         Other
@@ -4845,7 +4843,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-refused"
+                        data-cy="radio-group-option-gender-refused"
                         for="122-val-refused"
                       >
                         Prefer not to answer
@@ -4902,7 +4900,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-YES"
+                        data-cy="radio-group-option-residentCongregateSetting-YES"
                         for="123-val-YES"
                       >
                         Yes
@@ -4921,7 +4919,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NO"
+                        data-cy="radio-group-option-residentCongregateSetting-NO"
                         for="123-val-NO"
                       >
                         No
@@ -4940,7 +4938,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NOT_SURE"
+                        data-cy="radio-group-option-residentCongregateSetting-NOT_SURE"
                         for="123-val-NOT_SURE"
                       >
                         Not sure
@@ -4979,7 +4977,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-YES"
+                        data-cy="radio-group-option-employedInHealthcare-YES"
                         for="124-val-YES"
                       >
                         Yes
@@ -4998,7 +4996,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NO"
+                        data-cy="radio-group-option-employedInHealthcare-NO"
                         for="124-val-NO"
                       >
                         No
@@ -5017,7 +5015,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NOT_SURE"
+                        data-cy="radio-group-option-employedInHealthcare-NOT_SURE"
                         for="124-val-NOT_SURE"
                       >
                         Not sure

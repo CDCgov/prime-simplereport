@@ -1144,14 +1144,9 @@ describe("TestCard", () => {
         ).toBeChecked()
       );
 
-      await user.type(
-        screen.getByLabelText("When did the patient's symptoms start?"),
-        "2023-08-15"
-      );
+      await user.type(screen.getByTestId("symptom-date"), "2023-08-15");
       await waitFor(() =>
-        expect(
-          screen.getByLabelText("When did the patient's symptoms start?")
-        ).toHaveValue("2023-08-15")
+        expect(screen.getByTestId("symptom-date")).toHaveValue("2023-08-15")
       );
 
       expect(trackEventMock).toHaveBeenCalledWith({

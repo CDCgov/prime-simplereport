@@ -71,6 +71,7 @@ const PersonAddressField: React.FC<PersonAddressFieldProps> = (
               field="street"
               label={t("patient.form.contact.street1")}
               required
+              dataCy={"street-input"}
             />
           </div>
           <div className="usa-form">
@@ -86,6 +87,7 @@ const PersonAddressField: React.FC<PersonAddressFieldProps> = (
               field="city"
               label={t("patient.form.contact.city")}
               required
+              dataCy={"city-input"}
             />
             {view !== PersonFormView.SELF_REGISTRATION && (
               <Input
@@ -111,6 +113,7 @@ const PersonAddressField: React.FC<PersonAddressFieldProps> = (
                     validationStatus={errors.state ? "error" : undefined}
                     errorMessage={errors.state}
                     required
+                    dataCy={"state-input"}
                   />
                 </div>
                 <div className="mobile-lg:grid-col-6">
@@ -119,6 +122,7 @@ const PersonAddressField: React.FC<PersonAddressFieldProps> = (
                     field="zipCode"
                     label={t("patient.form.contact.zip")}
                     required
+                    dataCy={"zip-input"}
                   />
                 </div>
               </div>

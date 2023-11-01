@@ -701,6 +701,7 @@ export type Query = {
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
+  organizationsByName?: Maybe<Array<Maybe<Organization>>>;
   patient?: Maybe<Patient>;
   patientExists?: Maybe<Scalars["Boolean"]["output"]>;
   patientExistsWithoutZip?: Maybe<Scalars["Boolean"]["output"]>;
@@ -748,6 +749,10 @@ export type QueryOrganizationLevelDashboardMetricsArgs = {
 
 export type QueryOrganizationsArgs = {
   identityVerified?: InputMaybe<Scalars["Boolean"]["input"]>;
+};
+
+export type QueryOrganizationsByNameArgs = {
+  name: Scalars["String"]["input"];
 };
 
 export type QueryPatientArgs = {
@@ -2563,6 +2568,11 @@ export type GetResultsMultiplexWithCountQuery = {
         gender?: string | null;
         role?: string | null;
         email?: string | null;
+        phoneNumbers?: Array<{
+          __typename?: "PhoneNumber";
+          type?: PhoneType | null;
+          number?: string | null;
+        } | null> | null;
       };
       createdBy?: {
         __typename?: "ApiUser";
@@ -7666,6 +7676,10 @@ export const GetResultsMultiplexWithCountDocument = gql`
           gender
           role
           email
+          phoneNumbers {
+            type
+            number
+          }
         }
         createdBy {
           nameInfo {

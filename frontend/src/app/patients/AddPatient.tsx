@@ -315,6 +315,7 @@ const AddPatient = () => {
         label={
           loading ? `${t("common.button.saving")}...` : t("common.button.save")
         }
+        dataCy={"add-patient-save-button"}
       />
     </>
   );
@@ -344,7 +345,7 @@ const AddPatient = () => {
   }
 
   return (
-    <div className={"prime-edit-patient prime-home"}>
+    <div className={"prime-edit-patient prime-home"} data-cy="add-patient-page">
       <div className={"grid-container margin-bottom-4 maxw-desktop-lg"}>
         <DuplicatePatientModal
           showModal={

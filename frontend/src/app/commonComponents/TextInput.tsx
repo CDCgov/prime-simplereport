@@ -44,6 +44,7 @@ interface Props {
   labelClassName?: string;
   min?: number | string;
   max?: number | string;
+  dataCy?: string;
   registrationProps?: UseFormRegisterReturn<any>;
 }
 
@@ -74,6 +75,7 @@ export const TextInput = ({
   labelClassName,
   min,
   max,
+  dataCy,
   registrationProps,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
@@ -96,7 +98,6 @@ export const TextInput = ({
               labelClassName
             )}
             htmlFor={id}
-            id={`label-for-${id}`}
             aria-describedby={ariaDescribedBy}
           >
             {required ? <Required label={label} /> : <Optional label={label} />}
@@ -130,6 +131,7 @@ export const TextInput = ({
             ref={inputRef}
             data-format={format}
             data-format-message={formatMessage}
+            data-cy={dataCy}
             {...inputProps}
             {...(validationStatus === "error"
               ? { "aria-describedby": `error_${id}`, "aria-invalid": true }

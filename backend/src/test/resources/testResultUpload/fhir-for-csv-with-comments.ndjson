@@ -448,6 +448,15 @@
         "identifier": [
           {
             "value": "543212134"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MNI"
+                }
+              ]
+            }
           }
         ],
         "manufacturer": "Acme",
@@ -1237,6 +1246,15 @@
         "identifier": [
           {
             "value": "543212134"
+          },
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MNI"
+                }
+              ]
+            }
           }
         ],
         "manufacturer": "Acme",

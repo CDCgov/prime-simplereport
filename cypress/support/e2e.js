@@ -31,8 +31,8 @@ const getDobFormat = () => {
 // Generate a random patient
 export const generatePatient = () => {
   const patient = {};
-  patient.firstName = faker.name.firstName();
-  patient.lastName = faker.name.lastName();
+  patient.firstName = faker.person.firstName();
+  patient.lastName = faker.person.lastName();
   patient.fullName = `${patient.lastName}, ${patient.firstName}`;
   patient.dob = dayjs(
     faker.date.between({ from: "1920-01-01", to: "2002-12-31" }),
@@ -44,7 +44,7 @@ export const generatePatient = () => {
   patient.city = "Definitely not Washington";
   patient.state = "DC";
   patient.zip = "20503";
-  patient.studentId = faker.datatype.uuid();
+  patient.studentId = faker.string.uuid();
   return patient;
 };
 
