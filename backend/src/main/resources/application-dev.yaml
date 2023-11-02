@@ -26,6 +26,3 @@ twilio:
   enabled: false
 datahub:
   url: "https://staging.prime.cdc.gov/"
-okta:
-  oauth2:
-    client-id: ${OKTA_OAUTH2_CLIENT_ID:MISSING}
