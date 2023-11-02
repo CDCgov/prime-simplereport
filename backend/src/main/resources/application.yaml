@@ -1,6 +1,7 @@
 spring:
   profiles:
     group:
+      test: no-security, no-okta-mgmt, no-okta-auth, no-experian
       dev: no-security, no-okta-mgmt, server-debug, create-sample-data, local, no-okta-auth
       e2e: server-debug, create-sample-devices
       okta-local: server-debug, create-sample-devices
