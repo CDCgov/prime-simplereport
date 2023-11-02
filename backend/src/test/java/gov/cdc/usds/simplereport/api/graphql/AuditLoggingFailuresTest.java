@@ -115,7 +115,9 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     args.put("symptoms", "{}");
     args.put("noSymptoms", true);
     String clientErrorMessage =
-        assertThrows(WebClientRequestException.class, () -> runQuery("update-time-of-test", args))
+        assertThrows(
+                WebClientRequestException.class,
+                () -> runQuery("update-time-of-test-questions", args))
             .getMessage();
     assertEquals(
         "Request processing failed: header: Something went wrong; body: Please check for errors and try again",
