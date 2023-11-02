@@ -146,22 +146,12 @@ public class TestResultUploadService {
 
       if (content.length > 0) {
         CompletableFuture<CovidSubmissionSummary> covidSubmission =
-            submitResultsAsCsv(content, org, submissionId);
+            submitResultsToCovidPipeline(content, org, submissionId);
         CompletableFuture<UniversalSubmissionSummary> universalSubmission =
-            submitResultsAsFhir(new ByteArrayInputStream(content), org, submissionId);
+            submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
 
-        try {
-          processCovidResponse(covidSubmission.get()).ifPresent(uploadSummary::add);
-        } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
-          log.error("Error processing csv in bulk result upload", e);
-          Thread.currentThread().interrupt();
-        }
-        try {
-          processUniversalResponse(universalSubmission.get()).ifPresent(uploadSummary::add);
-        } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
-          log.error("Error processing FHIR in bulk result upload", e);
-          Thread.currentThread().interrupt();
-        }
+        processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
+        processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
@@ -367,7 +357,7 @@ public class TestResultUploadService {
     return _client.fetchAccessToken(requestBody);
   }
 
-  private CompletableFuture<UniversalSubmissionSummary> submitResultsAsFhir(
+  private CompletableFuture<UniversalSubmissionSummary> submitResultsToUniversalPipeline(
       ByteArrayInputStream content, Organization org, UUID submissionId)
       throws CsvProcessingException {
     // send to report stream
@@ -390,20 +380,27 @@ public class TestResultUploadService {
             }));
   }
 
-  private Optional<TestResultUpload> processUniversalResponse(
-      UniversalSubmissionSummary submissionSummary) {
-    if (submissionSummary != null && submissionSummary.submissionResponse() != null) {
-      return saveSubmissionToDb(
-          submissionSummary.submissionResponse(),
-          submissionSummary.org(),
-          submissionSummary.submissionId(),
-          Pipeline.UNIVERSAL,
-          submissionSummary.reportedDiseases());
+  private Optional<TestResultUpload> processUniversalPipelineResponse(
+      CompletableFuture<UniversalSubmissionSummary> futureSubmissionSummary) {
+    try {
+      UniversalSubmissionSummary submissionSummary = futureSubmissionSummary.get();
+      if (submissionSummary != null && submissionSummary.submissionResponse() != null) {
+        return saveSubmissionToDb(
+            submissionSummary.submissionResponse(),
+            submissionSummary.org(),
+            submissionSummary.submissionId(),
+            Pipeline.UNIVERSAL,
+            submissionSummary.reportedDiseases());
+      }
+    } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
+      log.error("Error processing FHIR in bulk result upload", e);
+      Thread.currentThread().interrupt();
     }
+
     return Optional.empty();
   }
 
-  private CompletableFuture<CovidSubmissionSummary> submitResultsAsCsv(
+  private CompletableFuture<CovidSubmissionSummary> submitResultsToCovidPipeline(
       byte[] content, Organization org, UUID submissionId) {
     return CompletableFuture.supplyAsync(
         withMDC(
@@ -450,23 +447,28 @@ public class TestResultUploadService {
             }));
   }
 
-  private Optional<TestResultUpload> processCovidResponse(CovidSubmissionSummary submissionSummary)
+  private Optional<TestResultUpload> processCovidPipelineResponse(
+      CompletableFuture<CovidSubmissionSummary> futureSubmissionSummary)
       throws DependencyFailureException {
-    if (submissionSummary.processingException() instanceof DependencyFailureException) {
-      throw (DependencyFailureException) submissionSummary.processingException();
+    try {
+      CovidSubmissionSummary submissionSummary = futureSubmissionSummary.get();
+      if (submissionSummary.processingException() instanceof DependencyFailureException) {
+        throw (DependencyFailureException) submissionSummary.processingException();
+      }
+
+      if (submissionSummary.submissionResponse() != null) {
+        return saveSubmissionToDb(
+            submissionSummary.submissionResponse(),
+            submissionSummary.org(),
+            submissionSummary.submissionId(),
+            Pipeline.COVID,
+            submissionSummary.reportedDiseases());
+      }
+    } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
+      log.error("Error processing csv in bulk result upload", e);
+      Thread.currentThread().interrupt();
     }
 
-    if (submissionSummary.submissionResponse() != null) {
-      HashMap<String, Integer> diseaseReported = new HashMap<>();
-      diseaseReported.put("COVID-19", submissionSummary.submissionResponse().getReportItemCount());
-
-      return saveSubmissionToDb(
-          submissionSummary.submissionResponse(),
-          submissionSummary.org(),
-          submissionSummary.submissionId(),
-          Pipeline.COVID,
-          diseaseReported);
-    }
     return Optional.empty();
   }
 
