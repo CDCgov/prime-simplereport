@@ -204,6 +204,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getGender()).isEqualTo("female");
     assertThat(patient.getEthnicity()).isEqualTo("hispanic");
     assertThat(patient.getCountry()).isEqualTo("USA");
+    assertThat(patient.getEmails()).isEmpty();
     assertThat(patient.getEmployedInHealthcare()).isFalse();
     assertThat(patient.getResidentCongregateSetting()).isFalse();
     assertThat(patient.getGenderIdentity()).isNull();
