@@ -248,14 +248,6 @@ type Patient
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
 
-type AoE {
-  pregnancy: String
-  noSymptoms: Boolean
-  symptoms: String
-  symptomOnset: LocalDate
-  genderOfSexualPartners: [String]
-}
-
 # TestResult and TestOrder should have the same properties
 type TestOrder {
   id: ID!

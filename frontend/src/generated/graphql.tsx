@@ -67,15 +67,6 @@ export type AggregateFacilityMetrics = {
   totalTestCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
-export type AoE = {
-  __typename?: "AoE";
-  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
-  noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
-  pregnancy?: Maybe<Scalars["String"]["output"]>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
-  symptoms?: Maybe<Scalars["String"]["output"]>;
-};
-
 export type ApiUser = {
   __typename?: "ApiUser";
   email: Scalars["String"]["output"];
