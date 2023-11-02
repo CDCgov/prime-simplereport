@@ -41,12 +41,18 @@ export function useTestOrderPatient(testOrder: QueriedTestOrder) {
 }
 
 const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
-  return deviceTypes.map((d) => {
-    d.supportedDiseaseTestPerformed = d.supportedDiseaseTestPerformed.filter(
-      (supportedTest) => supportedTest.supportedDisease.name !== "HIV"
-    );
-    return d;
+  const filteredDeviceTypes = deviceTypes.map((d) => {
+    return {
+      ...d,
+      supportedDiseaseTestPerformed: d.supportedDiseaseTestPerformed.filter(
+        (t) => t.supportedDisease.name !== "HIV"
+      ),
+    };
   });
+
+  return filteredDeviceTypes.filter(
+    (d) => d.supportedDiseaseTestPerformed.length > 0
+  );
 };
 
 export function useDeviceTypeOptions(
