@@ -444,7 +444,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-POSITIVE"
+                                    data-cy="radio-group-option-COVID-19-test-result-abc-POSITIVE"
                                     for="9-val-POSITIVE"
                                   >
                                     Positive (+)
@@ -463,7 +463,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-NEGATIVE"
+                                    data-cy="radio-group-option-COVID-19-test-result-abc-NEGATIVE"
                                     for="9-val-NEGATIVE"
                                   >
                                     Negative (-)
@@ -482,7 +482,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-UNDETERMINED"
+                                    data-cy="radio-group-option-COVID-19-test-result-abc-UNDETERMINED"
                                     for="9-val-UNDETERMINED"
                                   >
                                     Inconclusive
@@ -537,7 +537,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-77386006"
+                                    data-cy="radio-group-option-pregnancy-77386006"
                                     for="10-val-77386006"
                                   >
                                     Yes
@@ -556,7 +556,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-60001007"
+                                    data-cy="radio-group-option-pregnancy-60001007"
                                     for="10-val-60001007"
                                   >
                                     No
@@ -575,7 +575,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-261665006"
+                                    data-cy="radio-group-option-pregnancy-261665006"
                                     for="10-val-261665006"
                                   >
                                     Prefer not to answer
@@ -622,7 +622,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-YES"
+                                    data-cy="radio-group-option-has-any-symptoms-abc-YES"
                                     for="11-val-YES"
                                   >
                                     Yes
@@ -641,7 +641,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-NO"
+                                    data-cy="radio-group-option-has-any-symptoms-abc-NO"
                                     for="11-val-NO"
                                   >
                                     No
@@ -1398,7 +1398,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-POSITIVE"
+                                    data-cy="radio-group-option-COVID-19-test-result-def-POSITIVE"
                                     for="16-val-POSITIVE"
                                   >
                                     Positive (+)
@@ -1417,7 +1417,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-NEGATIVE"
+                                    data-cy="radio-group-option-COVID-19-test-result-def-NEGATIVE"
                                     for="16-val-NEGATIVE"
                                   >
                                     Negative (-)
@@ -1436,7 +1436,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-UNDETERMINED"
+                                    data-cy="radio-group-option-COVID-19-test-result-def-UNDETERMINED"
                                     for="16-val-UNDETERMINED"
                                   >
                                     Inconclusive
@@ -1491,7 +1491,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-77386006"
+                                    data-cy="radio-group-option-pregnancy-77386006"
                                     for="17-val-77386006"
                                   >
                                     Yes
@@ -1510,7 +1510,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-60001007"
+                                    data-cy="radio-group-option-pregnancy-60001007"
                                     for="17-val-60001007"
                                   >
                                     No
@@ -1529,7 +1529,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-261665006"
+                                    data-cy="radio-group-option-pregnancy-261665006"
                                     for="17-val-261665006"
                                   >
                                     Prefer not to answer
@@ -1576,7 +1576,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-YES"
+                                    data-cy="radio-group-option-has-any-symptoms-def-YES"
                                     for="18-val-YES"
                                   >
                                     Yes
@@ -1595,7 +1595,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-NO"
+                                    data-cy="radio-group-option-has-any-symptoms-def-NO"
                                     for="18-val-NO"
                                   >
                                     No
@@ -2383,7 +2383,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-covid-test-result-abc-POSITIVE"
                           for="3-val-POSITIVE"
                         >
                           Positive (+)
@@ -2402,7 +2402,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-covid-test-result-abc-NEGATIVE"
                           for="3-val-NEGATIVE"
                         >
                           Negative (-)
@@ -2421,7 +2421,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-UNDETERMINED"
+                          data-cy="radio-group-option-covid-test-result-abc-UNDETERMINED"
                           for="3-val-UNDETERMINED"
                         >
                           Inconclusive
@@ -2803,7 +2803,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-covid-test-result-def-POSITIVE"
                           for="6-val-POSITIVE"
                         >
                           Positive (+)
@@ -2822,7 +2822,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-covid-test-result-def-NEGATIVE"
                           for="6-val-NEGATIVE"
                         >
                           Negative (-)
@@ -2841,7 +2841,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-UNDETERMINED"
+                          data-cy="radio-group-option-covid-test-result-def-UNDETERMINED"
                           for="6-val-UNDETERMINED"
                         >
                           Inconclusive

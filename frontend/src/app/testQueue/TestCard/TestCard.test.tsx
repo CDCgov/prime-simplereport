@@ -10,6 +10,7 @@ import {
 } from "@testing-library/react";
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
+import * as flaggedMock from "flagged";
 
 import { getAppInsights } from "../../TelemetryService";
 import * as srToast from "../../utils/srToast";
@@ -54,7 +55,8 @@ const updatedTimeString = "10:05";
 
 const setStartTestPatientIdMock = jest.fn();
 
-const DEVICE_OPTIONS_LENGTH = 7;
+// 6 instead of 7 because HIV devices are filtered out when HIV feature flag is disabled
+const DEFAULT_DEVICE_OPTIONS_LENGTH = 6;
 
 const device1Name = "LumiraDX";
 const device2Name = "Abbott BinaxNow";
@@ -294,7 +296,6 @@ describe("TestCard", () => {
     device4Name,
     device5Name,
     device6Name,
-    device7Name,
   ].sort((a, b) => a.localeCompare(b));
 
   const expectDeviceOrder = (
@@ -441,7 +442,9 @@ describe("TestCard", () => {
       "device-type-dropdown"
     )) as HTMLSelectElement;
 
-    expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+    expect(deviceDropdown.options.length).toEqual(
+      DEFAULT_DEVICE_OPTIONS_LENGTH
+    );
     expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
     await user.selectOptions(deviceDropdown, "Abbott BinaxNow");
@@ -564,7 +567,9 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ props, mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH + 1);
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH + 1
+      );
       expectDeviceOrder(deviceDropdown, ["", ...DEFAULT_DEVICE_ORDER]);
 
       expect(deviceDropdown.value).toEqual("");
@@ -695,7 +700,9 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ props, mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH
+      );
       expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
       expect(deviceDropdown.value).toEqual(device2Id);
 
@@ -996,7 +1003,9 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH
+      );
       expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
       // Change device type to multiplex
@@ -1304,7 +1313,9 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH
+      );
       expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
       // select results
@@ -1364,7 +1375,9 @@ describe("TestCard", () => {
       expect(screen.queryByText("Flu B result")).not.toBeInTheDocument();
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH
+      );
       expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
       // Change device type to a multiplex device
@@ -1374,16 +1387,18 @@ describe("TestCard", () => {
       expect(screen.getByText("Flu B result")).toBeInTheDocument();
     });
 
-    it("shows radio button for HIV when an HIV device is chosen", async function () {
+    it("shows radio buttons for HIV when an HIV device is chosen", async function () {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
       const mocks = [
         {
           request: {
             query: EDIT_QUEUE_ITEM,
             variables: {
               id: testOrderInfo.internalId,
-              deviceTypeId: device4Id,
-              specimenTypeId: specimen1Id,
-              results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
+              deviceTypeId: device7Id,
+              specimenTypeId: specimen3Id,
+              results: [{ diseaseName: "HIV", testResult: "POSITIVE" }],
               dateTested: null,
             } as EDIT_QUEUE_ITEM_VARIABLES,
           },
@@ -1392,14 +1407,14 @@ describe("TestCard", () => {
               editQueueItem: {
                 results: [
                   {
-                    disease: { name: "COVID-19" },
+                    disease: { name: "HIV" },
                     testResult: "POSITIVE",
                   },
                 ],
                 dateTested: null,
                 deviceType: {
-                  internalId: device4Id,
-                  testLength: 10,
+                  internalId: device7Id,
+                  testLength: 15,
                 },
               },
             } as EDIT_QUEUE_ITEM_DATA,
@@ -1411,12 +1426,11 @@ describe("TestCard", () => {
       expect(screen.queryByText("HIV result")).not.toBeInTheDocument();
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH + 1
+      );
 
       await user.selectOptions(deviceDropdown, device7Name);
-      // eslint-disable-next-line testing-library/no-debugging-utils
-      // screen.logTestingPlaygroundURL();
-
       expect(screen.getByText("HIV result")).toBeInTheDocument();
     });
 
@@ -1456,7 +1470,9 @@ describe("TestCard", () => {
       const { user } = await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(DEVICE_OPTIONS_LENGTH);
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH
+      );
       expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
       // Change device type to a flu only device
