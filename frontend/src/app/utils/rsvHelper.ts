@@ -33,10 +33,9 @@ export function filterRsvFromAllDevices<AmbiguousDeviceType extends DeviceType>(
 ) {
   let filteredDevices = deviceTypes.map((d) => {
     // deviceTypes is passed by reference, so we need to return copy of device with updated field to ensure original array is not modified
-    return {
-      ...d,
-      supportedDiseaseTestPerformed: filterRsvFromSingleDevice(d),
-    };
+    const filteredDevice = { ...d };
+    filteredDevice.supportedDiseaseTestPerformed = filterRsvFromSingleDevice(d);
+    return filteredDevice;
   });
   filteredDevices = filteredDevices.filter(
     (d) => d.supportedDiseaseTestPerformed.length > 0
