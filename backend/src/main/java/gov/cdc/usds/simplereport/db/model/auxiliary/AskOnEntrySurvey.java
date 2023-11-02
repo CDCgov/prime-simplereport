@@ -35,7 +35,7 @@ public class AskOnEntrySurvey {
       LocalDate symptomOnsetDate,
       List<String> genderOfSexualPartners) {
     this.pregnancy = pregnancy;
-    this.symptoms = symptoms;
+    this.symptoms = (symptoms != null && symptoms.isEmpty()) ? null : symptoms;
     this.noSymptoms = noSymptoms;
     this.symptomOnsetDate = symptomOnsetDate;
     this.genderOfSexualPartners = genderOfSexualPartners;
