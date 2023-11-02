@@ -138,7 +138,9 @@ class TestResultTest extends BaseGraphqlTest {
     Map<String, Boolean> symptoms = Map.of("25064002", true);
     LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
     _dataFactory.createTestOrder(
-        p, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate, null));
+        p,
+        _site,
+        new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate, List.of("male")));
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     List<MultiplexResultInput> results = new ArrayList<>();
@@ -169,6 +171,7 @@ class TestResultTest extends BaseGraphqlTest {
     assertEquals("false", testResults.get(0).get("noSymptoms").asText());
     assertEquals("77386006", testResults.get(0).get("pregnancy").asText());
     assertEquals("2020-09-15", testResults.get(0).get("symptomOnset").asText());
+    assertEquals("[\"male\"]", testResults.get(0).get("genderOfSexualPartners").toString());
     testResults
         .get(0)
         .get("results")
