@@ -62,12 +62,9 @@ describe("create new device", () => {
     await waitFor(() =>
       expect(screen.getAllByText("This is a required field")).toHaveLength(3)
     );
-    await user.selectOptions(
-      screen.getByLabelText("Supported disease *"),
-      "COVID-19"
-    );
-    await addValue(user, "Test performed code *", "1920-12");
-    await addValue(user, "Test ordered code *", "2102-91");
+    await user.selectOptions(screen.getByLabelText("Disease *"), "COVID-19");
+    await addValue(user, "Test performed *", "1920-12");
+    await addValue(user, "Test ordered *", "2102-91");
     await waitFor(() =>
       expect(
         screen.queryByText("This is a required field")
@@ -83,15 +80,9 @@ describe("create new device", () => {
       await addValue(user, "Test length", "10");
       await user.click(screen.getByText("Swab (445297001)", { exact: false }));
 
-      await user.selectOptions(
-        screen.getByLabelText("Supported disease *"),
-        "COVID-19"
-      );
-      await user.type(
-        screen.getByLabelText("Test performed code *"),
-        "1920-12"
-      );
-      await user.type(screen.getByLabelText("Test ordered code *"), "2102-91");
+      await user.selectOptions(screen.getByLabelText("Disease *"), "COVID-19");
+      await user.type(screen.getByLabelText("Test performed *"), "1920-12");
+      await user.type(screen.getByLabelText("Test ordered *"), "2102-91");
       await user.type(
         screen.getByLabelText("Testkit Name Id"),
         "testkitNameId123"
@@ -100,6 +91,8 @@ describe("create new device", () => {
         screen.getByLabelText("Equipment Uid"),
         "equipmentUid321"
       );
+
+      await user.type(screen.getByLabelText("Uid Type"), "equipmentUidType123");
     };
 
     it("enables the save button", async () => {
@@ -127,6 +120,7 @@ describe("create new device", () => {
               testPerformedLoincCode: "1920-12",
               testkitNameId: "testkitNameId123",
               equipmentUid: "equipmentUid321",
+              equipmentUidType: "equipmentUidType123",
               testOrderedLoincCode: "2102-91",
             },
           ],
@@ -272,9 +266,9 @@ describe("update existing devices", () => {
       const modelInput = screen.getByLabelText("Model", { exact: false });
       const snomedInput = screen.getAllByTestId("multi-select-toggle")[0];
       const pillContainer = screen.getAllByTestId("pill-container")[0];
-      const supportedDisease = screen.getAllByLabelText("Supported disease *");
-      const testPerformed = screen.getAllByLabelText("Test performed code *");
-      const testOrdered = screen.getAllByLabelText("Test ordered code *");
+      const supportedDisease = screen.getAllByLabelText("Disease *");
+      const testPerformed = screen.getAllByLabelText("Test performed *");
+      const testOrdered = screen.getAllByLabelText("Test ordered *");
       const testkitNameId = screen.getAllByLabelText("Testkit Name Id");
       const equipmentUid = screen.getAllByLabelText("Equipment Uid");
 
@@ -326,8 +320,8 @@ describe("update existing devices", () => {
         "Fission Energizer"
       );
 
-      const supportedDisease = screen.getAllByLabelText("Supported disease *");
-      const testPerformed = screen.getAllByLabelText("Test performed code *");
+      const supportedDisease = screen.getAllByLabelText("Disease *");
+      const testPerformed = screen.getAllByLabelText("Test performed *");
 
       expect(supportedDisease).toHaveLength(3);
       expect(testPerformed).toHaveLength(3);
@@ -365,7 +359,7 @@ describe("update existing devices", () => {
 
       expect(
         screen
-          .getAllByLabelText("Supported disease *")
+          .getAllByLabelText("Disease *")
           .map((disease) => (disease as HTMLInputElement).value)
       ).toEqual([
         "177cfdfa-1ce5-404f-bd39-5492f87868f4",
@@ -375,7 +369,7 @@ describe("update existing devices", () => {
       await user.click(screen.getAllByLabelText("Delete disease")[0]);
       expect(
         screen
-          .getAllByLabelText("Supported disease *")
+          .getAllByLabelText("Disease *")
           .map((disease) => (disease as HTMLInputElement).value)
       ).toEqual([
         "177cfdfa-1ce5-404f-bd39-5492f87868f4",
@@ -422,21 +416,21 @@ describe("update existing devices", () => {
         await addValue(user, "Model", "X");
         await user.click(snomedInput);
         await user.click(within(snomedList).getByText("eye"));
-        await clearAndEnterInput(user, "Test ordered code *", "LP 321");
+        await clearAndEnterInput(user, "Test ordered *", "LP 321");
 
         await user.click(screen.getByText("Add another disease"));
 
         await user.selectOptions(
-          screen.getAllByLabelText("Supported disease *")[1],
+          screen.getAllByLabelText("Disease *")[1],
           "Flu A"
         );
 
         await user.type(
-          screen.getAllByLabelText("Test performed code *")[1],
+          screen.getAllByLabelText("Test performed *")[1],
           "LP 123"
         );
         await user.type(
-          screen.getAllByLabelText("Test ordered code *")[1],
+          screen.getAllByLabelText("Test ordered *")[1],
           "LP 444"
         );
         await user.type(
@@ -446,6 +440,11 @@ describe("update existing devices", () => {
         await user.type(
           screen.getAllByLabelText("Equipment Uid")[1],
           "equipmentUid321"
+        );
+
+        await user.type(
+          screen.getAllByLabelText("Uid Type")[1],
+          "equipmentUidType123"
         );
 
         await user.click(screen.getByText("Save changes"));
@@ -464,6 +463,7 @@ describe("update existing devices", () => {
                 supportedDisease: "177cfdfa-1ce5-404f-bd39-5492f87868f4",
                 testOrderedLoincCode: "LP 321",
                 equipmentUid: "equipmentUid123",
+                equipmentUidType: "equipmentUidType123",
                 testkitNameId: "testkitNameId123",
               },
               {
@@ -471,6 +471,7 @@ describe("update existing devices", () => {
                 testPerformedLoincCode: "LP 123",
                 testOrderedLoincCode: "LP 444",
                 equipmentUid: "equipmentUid321",
+                equipmentUidType: "equipmentUidType123",
                 testkitNameId: "testkitNameId123",
               },
             ],
@@ -484,8 +485,8 @@ describe("update existing devices", () => {
           "Tesla Emitter"
         );
 
-        await clearAndEnterInput(user, "Test performed code *", "950-9501");
-        await clearAndEnterInput(user, "Test ordered code *", "1059-059");
+        await clearAndEnterInput(user, "Test performed *", "950-9501");
+        await clearAndEnterInput(user, "Test ordered *", "1059-059");
         await user.click(screen.getByText("Save changes"));
 
         await waitFor(() =>
@@ -499,6 +500,7 @@ describe("update existing devices", () => {
             supportedDiseaseTestPerformed: [
               {
                 equipmentUid: "equipmentUid123",
+                equipmentUidType: "equipmentUidType123",
                 supportedDisease: "177cfdfa-1ce5-404f-bd39-5492f87868f4",
                 testPerformedLoincCode: "950-9501",
                 testOrderedLoincCode: "1059-059",

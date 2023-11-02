@@ -46,7 +46,7 @@ const DiseaseInformation = ({
       <div className="grid-row grid-gap" key={index}>
         <div className="tablet:grid-col">
           <Select
-            label={"Supported disease"}
+            label={"Disease"}
             options={supportedDiseaseOptions}
             disabled={disabled}
             required
@@ -71,7 +71,7 @@ const DiseaseInformation = ({
         <div className="tablet:grid-col">
           <TextInput
             name={`supportedDiseases.${index}.testPerformedLoincCode`}
-            label="Test performed code"
+            label="Test performed"
             disabled={disabled}
             required
             className={"margin-top-1"}
@@ -93,7 +93,7 @@ const DiseaseInformation = ({
         <div className="tablet:grid-col">
           <TextInput
             name={`supportedDiseases.${index}.testOrderedLoincCode`}
-            label="Test ordered code"
+            label="Test ordered"
             disabled={disabled}
             required
             className={"margin-top-1"}
@@ -133,6 +133,18 @@ const DiseaseInformation = ({
             value={values?.[index]?.equipmentUid}
             registrationProps={register(
               `supportedDiseases.${index}.equipmentUid` as const
+            )}
+          />
+        </div>
+        <div className="tablet:grid-col">
+          <TextInput
+            name={`supportedDiseases.${index}.equipmentUidType`}
+            label="Uid Type"
+            disabled={disabled}
+            className={"margin-top-1"}
+            value={values?.[index]?.equipmentUidType}
+            registrationProps={register(
+              `supportedDiseases.${index}.equipmentUidType` as const
             )}
           />
         </div>

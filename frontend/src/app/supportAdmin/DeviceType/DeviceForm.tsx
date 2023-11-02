@@ -14,6 +14,7 @@ import DiseaseInformation from "./DiseaseInformation";
 
 export type SupportedDiseasesFormData = {
   equipmentUid?: string;
+  equipmentUidType?: string;
   supportedDisease: string;
   testPerformedLoincCode: string;
   testOrderedLoincCode?: string;
@@ -57,6 +58,7 @@ const DeviceForm = (props: Props) => {
           supportedDisease: "",
           testPerformedLoincCode: "",
           equipmentUid: "",
+          equipmentUidType: "",
           testkitNameId: "",
           testOrderedLoincCode: "",
         },
@@ -87,6 +89,11 @@ const DeviceForm = (props: Props) => {
             // @ts-ignore
             convertedSupportedDisease["equipmentUid"] =
               supportedDisease.equipmentUid;
+          }
+          if (supportedDisease.equipmentUidType) {
+            // @ts-ignore
+            convertedSupportedDisease["equipmentUidType"] =
+              supportedDisease.equipmentUidType;
           }
           if (supportedDisease.testkitNameId) {
             // @ts-ignore
@@ -161,6 +168,7 @@ const DeviceForm = (props: Props) => {
                   diseaseTestPerformed.testPerformedLoincCode,
                 testkitNameId: diseaseTestPerformed.testkitNameId,
                 equipmentUid: diseaseTestPerformed.equipmentUid,
+                equipmentUidType: diseaseTestPerformed.equipmentUidType,
                 testOrderedLoincCode: diseaseTestPerformed.testOrderedLoincCode,
               })
             ),

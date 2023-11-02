@@ -530,7 +530,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                           class="usa-label"
                           for="6"
                         >
-                          Supported disease
+                          Disease
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"
@@ -574,7 +574,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                           class="usa-label"
                           for="7"
                         >
-                          Test performed code
+                          Test performed
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"
@@ -605,7 +605,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                           class="usa-label"
                           for="8"
                         >
-                          Test ordered code
+                          Test ordered
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"
@@ -669,6 +669,30 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                           disabled=""
                           id="10"
                           name="supportedDiseases.0.equipmentUid"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="11"
+                        >
+                          Uid Type
+                        </label>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="11"
+                          name="supportedDiseases.0.equipmentUidType"
                           type="text"
                           value=""
                         />
