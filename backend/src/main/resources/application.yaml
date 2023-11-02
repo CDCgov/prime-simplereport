@@ -5,7 +5,6 @@ spring:
       dev: no-security, no-okta-mgmt, server-debug, create-sample-data, local, no-okta-auth
       e2e: server-debug, create-sample-devices
       okta-local: server-debug, create-sample-devices
-      auth-dev: server-debug
       azure-dev: okta-dev, server-debug
       azure-dev2: okta-dev2, server-debug
       azure-dev3: okta-dev3, server-debug
