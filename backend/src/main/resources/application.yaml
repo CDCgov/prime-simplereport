@@ -1,6 +1,24 @@
 spring:
-  config:
-    use-legacy-processing: true
+  profiles:
+    group:
+      dev: no-security, no-okta-mgmt, server-debug, create-sample-data, local, no-okta-auth
+      e2e: server-debug, create-sample-devices
+      okta-local: server-debug, create-sample-devices
+      auth-dev: server-debug
+      azure-dev: okta-dev, server-debug
+      azure-dev2: okta-dev2, server-debug
+      azure-dev3: okta-dev3, server-debug
+      azure-dev4: okta-dev4, server-debug
+      azure-dev5: okta-dev5, server-debug
+      azure-dev6: okta-dev6, server-debug
+      azure-dev7: okta-dev7, server-debug
+      azure-pentest: okta-pentest
+      azure-training: no-security, no-okta-mgmt, create-sample-data, no-okta-auth
+      azure-test: okta-test, server-debug
+      azure-demo: no-security, no-okta-mgmt, create-sample-data, no-okta-auth
+      azure-stg: okta-stg
+      azure-prod: okta-prod
+      prod: okta-prod
   main:
     banner-mode: "OFF"
   datasource:

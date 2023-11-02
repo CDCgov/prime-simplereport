@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 @Getter
+@AllArgsConstructor
 public class DeviceTypeDisease extends IdentifiedEntity {
 
   @Column(name = "device_type_id")
