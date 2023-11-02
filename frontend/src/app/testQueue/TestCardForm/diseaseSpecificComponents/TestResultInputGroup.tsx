@@ -75,46 +75,44 @@ export const TestResultInputGroup = ({
   };
 
   return (
-    <>
-      <div className="grid-row grid-gap">
-        {supportedDiseaseTests.map((supportedTest) => {
-          const buttons: RadioGroupOptions<string> = [
-            {
-              value: TEST_RESULTS.POSITIVE,
-              label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
-            },
-            {
-              value: TEST_RESULTS.NEGATIVE,
-              label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
-            },
-            {
-              value: TEST_RESULTS.UNDETERMINED,
-              label: `${TEST_RESULT_DESCRIPTIONS.UNDETERMINED}`,
-            },
-          ];
+    <div className="grid-row grid-gap">
+      {supportedDiseaseTests.map((supportedTest) => {
+        const buttons: RadioGroupOptions<string> = [
+          {
+            value: TEST_RESULTS.POSITIVE,
+            label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
+          },
+          {
+            value: TEST_RESULTS.NEGATIVE,
+            label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
+          },
+          {
+            value: TEST_RESULTS.UNDETERMINED,
+            label: `${TEST_RESULT_DESCRIPTIONS.UNDETERMINED}`,
+          },
+        ];
 
-          return (
-            <div
-              className="grid-col-auto"
-              key={`${supportedTest.supportedDisease.internalId}`}
-            >
-              <RadioGroup
-                legend={`${supportedTest.supportedDisease.name} result`}
-                buttons={buttons}
-                name={`${supportedTest.supportedDisease.name}-test-result-${testOrderId}`}
-                selectedRadio={
-                  testResultRecords[supportedTest.supportedDisease.name]
-                }
-                wrapperClassName="prime-radio__group"
-                required={isSingleDiseaseTest}
-                onChange={(testResult) =>
-                  handleResultChange(supportedTest, testResult as TEST_RESULTS)
-                }
-              ></RadioGroup>
-            </div>
-          );
-        })}
-      </div>
-    </>
+        return (
+          <div
+            className="grid-col-auto"
+            key={`${supportedTest.supportedDisease.internalId}`}
+          >
+            <RadioGroup
+              legend={`${supportedTest.supportedDisease.name} result`}
+              buttons={buttons}
+              name={`${supportedTest.supportedDisease.name}-test-result-${testOrderId}`}
+              selectedRadio={
+                testResultRecords[supportedTest.supportedDisease.name]
+              }
+              wrapperClassName="prime-radio__group"
+              required={isSingleDiseaseTest}
+              onChange={(testResult) =>
+                handleResultChange(supportedTest, testResult as TEST_RESULTS)
+              }
+            ></RadioGroup>
+          </div>
+        );
+      })}
+    </div>
   );
 };
