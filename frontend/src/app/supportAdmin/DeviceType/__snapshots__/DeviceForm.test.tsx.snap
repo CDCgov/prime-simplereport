@@ -568,7 +568,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                           class="usa-label"
                           for="50"
                         >
-                          Supported disease
+                          Disease
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"

@@ -98,10 +98,7 @@ describe("DeviceTypeFormContainer", () => {
     await user.click(screen.getAllByTestId("multi-select-input")[1]);
     await user.click(screen.getAllByText("COVID-19")[0]);
 
-    await user.selectOptions(
-      screen.getByLabelText("Supported disease *"),
-      "COVID-19"
-    );
+    await user.selectOptions(screen.getByLabelText("Disease *"), "COVID-19");
 
     await user.type(screen.getByLabelText("Test performed *"), "1920-12");
 

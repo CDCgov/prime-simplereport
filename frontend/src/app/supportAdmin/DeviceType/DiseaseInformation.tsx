@@ -46,7 +46,7 @@ const DiseaseInformation = ({
       <div className="grid-row grid-gap" key={index}>
         <div className="tablet:grid-col">
           <Select
-            label={"Supported disease"}
+            label={"Disease"}
             options={supportedDiseaseOptions}
             disabled={disabled}
             required

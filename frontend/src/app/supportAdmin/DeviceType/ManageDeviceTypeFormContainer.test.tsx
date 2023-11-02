@@ -163,10 +163,7 @@ describe("ManageDeviceTypeFormContainer", () => {
     await addValue(user, "Manufacturer", " LLC");
     await addValue(user, "Model", "D");
 
-    await user.selectOptions(
-      screen.getByLabelText("Supported disease *"),
-      "COVID-19"
-    );
+    await user.selectOptions(screen.getByLabelText("Disease *"), "COVID-19");
 
     await user.clear(screen.getByLabelText("Test performed *"));
 

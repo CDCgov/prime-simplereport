@@ -530,7 +530,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                           class="usa-label"
                           for="6"
                         >
-                          Supported disease
+                          Disease
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"
