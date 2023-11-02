@@ -112,11 +112,6 @@ const TestCardForm = ({
 
   const { patientFullName } = useTestOrderPatient(testOrder);
 
-  const deviceSupportsMultiplex = doesDeviceSupportNonCovid(
-    state.deviceId,
-    devicesMap
-  );
-
   const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
 
   /**
