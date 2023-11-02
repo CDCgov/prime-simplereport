@@ -163,18 +163,15 @@ describe("ManageDeviceTypeFormContainer", () => {
     await addValue(user, "Manufacturer", " LLC");
     await addValue(user, "Model", "D");
 
-    await user.selectOptions(
-      screen.getByLabelText("Supported disease *"),
-      "COVID-19"
-    );
+    await user.selectOptions(screen.getByLabelText("Disease *"), "COVID-19");
 
-    await user.clear(screen.getByLabelText("Test performed code *"));
+    await user.clear(screen.getByLabelText("Test performed *"));
 
-    await user.type(screen.getByLabelText("Test performed code *"), "LP 123");
+    await user.type(screen.getByLabelText("Test performed *"), "LP 123");
 
-    await user.clear(screen.getByLabelText("Test ordered code *"));
+    await user.clear(screen.getByLabelText("Test ordered *"));
 
-    await user.type(screen.getByLabelText("Test ordered code *"), "LP 321");
+    await user.type(screen.getByLabelText("Test ordered *"), "LP 321");
 
     expect(screen.getByText("Save changes")).toBeEnabled();
 
@@ -197,6 +194,7 @@ describe("ManageDeviceTypeFormContainer", () => {
               testOrderedLoincCode: "LP 321",
               testkitNameId: "testkitNameId123",
               equipmentUid: "equipmentUid123",
+              equipmentUidType: "equipmentUidType123",
             },
           ],
         },
