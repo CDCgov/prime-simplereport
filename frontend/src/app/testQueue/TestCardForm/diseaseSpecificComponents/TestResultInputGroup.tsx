@@ -94,7 +94,10 @@ export const TestResultInputGroup = ({
           ];
 
           return (
-            <div className="grid-col-auto">
+            <div
+              className="grid-col-auto"
+              key={`${supportedTest.supportedDisease.internalId}`}
+            >
               <RadioGroup
                 legend={`${supportedTest.supportedDisease.name} result`}
                 buttons={buttons}
