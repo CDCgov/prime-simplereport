@@ -2,7 +2,7 @@ import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import React, { Ref } from "react";
 import { ComboBoxRef } from "@trussworks/react-uswds";
 
-import ComboBox from "../../commonComponents/ComboBox";
+import ComboBox from "../../designSystem/ComboBox/ComboBox";
 import Button from "../../commonComponents/Button/Button";
 import SupportHomeLink from "../SupportHomeLink";
 import { Option } from "../../commonComponents/Dropdown";

@@ -7,7 +7,7 @@ import { Option } from "../../commonComponents/Select";
 import Button from "../../commonComponents/Button/Button";
 import { unarchivePatientTitle } from "../pageTitles";
 import SupportHomeLink from "../SupportHomeLink";
-import ComboBox from "../../commonComponents/ComboBox";
+import ComboBox from "../../designSystem/ComboBox/ComboBox";
 
 interface UnarchivePatientProps {
   orgOptions: Option<string>[];
