@@ -1218,4 +1218,10 @@ a[href^='https:']:not([href*='simplereport.gov']) {
     right: auto;
     content: "External.";
   }
+
+  &::after {
+    margin-top: unset;
+    bottom: 0;
+    height: 100%;
+  }
 }
