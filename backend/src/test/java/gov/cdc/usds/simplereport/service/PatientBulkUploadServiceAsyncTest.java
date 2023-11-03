@@ -204,6 +204,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getGender()).isEqualTo("female");
     assertThat(patient.getEthnicity()).isEqualTo("hispanic");
     assertThat(patient.getCountry()).isEqualTo("USA");
+    assertThat(patient.getEmails()).isEmpty();
     assertThat(patient.getEmployedInHealthcare()).isFalse();
     assertThat(patient.getResidentCongregateSetting()).isFalse();
     assertThat(patient.getGenderIdentity()).isNull();
@@ -251,7 +252,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getCountry()).isEqualTo("USA");
     assertThat(patient.getEmployedInHealthcare()).isNull();
     assertThat(patient.getResidentCongregateSetting()).isNull();
-    assertThat(patient.getGenderIdentity()).isEmpty();
+    assertThat(patient.getGenderIdentity()).isNull();
     assertThat(patient.getNotes()).isEmpty();
 
     List<PhoneNumber> phoneNumbers =
