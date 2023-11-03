@@ -69,7 +69,8 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
             className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em"
           >
             <ComboBox
-              name={"Organization"}
+              label={"Organization"}
+              name={"organization-select"}
               id={"manage-facility-org-select"}
               options={organizationOptions}
               onChange={(val) => {
@@ -85,7 +86,8 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
             className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em"
           >
             <ComboBox
-              name={"Testing facility"}
+              label={"Testing facility"}
+              name={"facility-select"}
               id={"manage-facility-facility-select"}
               options={facilityOptions}
               onChange={(val) => onSelectFacility(val)}

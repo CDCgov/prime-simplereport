@@ -71,6 +71,7 @@ const UnarchivePatientFilters = ({
             className={"desktop:grid-col-4 mobile-lg:grid-col-12"}
           >
             <ComboBox
+              label={"Organization"}
               name={"Organization"}
               id={"unarchive-patient-org-select"}
               required={true}
@@ -85,6 +86,7 @@ const UnarchivePatientFilters = ({
             className={"desktop:grid-col-4 mobile-lg:grid-col-12"}
           >
             <ComboBox
+              label={"Testing facility"}
               name={"Testing facility"}
               id={"unarchive-patient-facility-select"}
               required={true}
