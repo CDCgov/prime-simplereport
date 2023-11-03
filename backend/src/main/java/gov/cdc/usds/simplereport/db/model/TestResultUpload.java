@@ -12,9 +12,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.List;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -56,8 +59,8 @@ public class TestResultUpload extends AuditedEntity {
   @Type(JsonBinaryType.class)
   private FeedbackMessage[] errors;
 
-  @Column()
-  @Type(type = "pg_enum")
+  @Column(columnDefinition = "PIPELINE")
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Enumerated(EnumType.STRING)
   private Pipeline destination;
 
