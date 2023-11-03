@@ -35,6 +35,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -125,14 +126,14 @@ public class PatientBulkUploadServiceAsync {
                 .country(country)
                 .role(parsePersonRole(extractedData.getRole().getValue(), false))
                 .emails(
-                    extractedData.getEmail().getValue() == null
+                    StringUtils.isBlank(extractedData.getEmail().getValue())
                         ? Collections.emptyList()
                         : List.of(extractedData.getEmail().getValue()))
                 .race(convertRaceToDatabaseValue(extractedData.getRace().getValue()))
                 .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
                 .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
                 .genderIdentity(
-                    extractedData.getGenderIdentity().getValue() == null
+                    StringUtils.isBlank(extractedData.getGenderIdentity().getValue())
                         ? null
                         : convertGenderIdentityToDatabaseValue(
                             extractedData.getGenderIdentity().getValue()))
