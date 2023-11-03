@@ -1,3 +1,5 @@
+import { Alert } from "@trussworks/react-uswds";
+
 import {
   MultiplexResultInput,
   SupportedDiseaseTestPerformed,
@@ -52,9 +54,12 @@ export const TestResultInputGroup = ({
     devicesMap.get(deviceId)?.supportedDiseaseTestPerformed ?? [];
 
   if (supportedDiseaseTests.length === 0) {
-    // still show covid only as a default?
-    // or show an error message?
-    return <></>;
+    return (
+      <Alert headingLevel={"h3"} type={"error"}>
+        This device doesn't have any supported disease tests configured. Please
+        ask your organization admin to add the correct test.
+      </Alert>
+    );
   }
 
   supportedDiseaseTests.sort((a, b) =>
