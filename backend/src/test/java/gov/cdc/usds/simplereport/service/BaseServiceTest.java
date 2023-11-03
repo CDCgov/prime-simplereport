@@ -24,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Base class for service-level integration. Avoids setting up servlet and web security, but sets up
@@ -41,6 +42,7 @@ import org.springframework.security.access.AccessDeniedException;
     })
 @Import({SliceTestConfiguration.class, DataSourceConfiguration.class})
 @WithSimpleReportStandardUser
+@ActiveProfiles("test")
 public abstract class BaseServiceTest<T> {
 
   @Autowired private DbTruncator _truncator;

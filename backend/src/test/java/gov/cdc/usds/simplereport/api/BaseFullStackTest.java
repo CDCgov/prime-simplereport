@@ -33,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -46,6 +47,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
     webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = {"hibernate.query.interceptor.error-level=EXCEPTION"})
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 public abstract class BaseFullStackTest {
 
   @Autowired private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;

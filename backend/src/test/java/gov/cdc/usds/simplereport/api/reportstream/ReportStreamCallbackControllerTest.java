@@ -70,7 +70,7 @@ class ReportStreamCallbackControllerTest extends BaseFullStackTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("x-functions-key", "WATERMELON") // configured in application-default.yaml
+            .header("x-functions-key", "WATERMELON") // configured in application-test.yaml
             .content(requestBody);
 
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());
