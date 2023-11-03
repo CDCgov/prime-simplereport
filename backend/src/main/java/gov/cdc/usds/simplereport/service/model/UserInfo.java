@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service.model;
 
+import static java.lang.String.CASE_INSENSITIVE_ORDER;
+
 import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
@@ -37,7 +39,7 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
     List<Facility> facilityList =
         orgwrapper.map(OrganizationRoles::getFacilities).orElse(Set.of()).stream()
             .collect(Collectors.toList());
-    facilityList.sort(Comparator.comparing(Facility::getFacilityName));
+    facilityList.sort(Comparator.comparing(Facility::getFacilityName, CASE_INSENSITIVE_ORDER));
     this.facilities = facilityList;
     this.isAdmin = isAdmin;
   }
