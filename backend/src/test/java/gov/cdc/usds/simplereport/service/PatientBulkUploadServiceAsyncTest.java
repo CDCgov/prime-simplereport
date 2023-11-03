@@ -252,7 +252,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getCountry()).isEqualTo("USA");
     assertThat(patient.getEmployedInHealthcare()).isNull();
     assertThat(patient.getResidentCongregateSetting()).isNull();
-    assertThat(patient.getGenderIdentity()).isEmpty();
+    assertThat(patient.getGenderIdentity()).isNull();
     assertThat(patient.getNotes()).isEmpty();
 
     List<PhoneNumber> phoneNumbers =
