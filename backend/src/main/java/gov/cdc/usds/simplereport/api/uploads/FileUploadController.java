@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,7 +77,7 @@ public class FileUploadController {
   }
 
   @PostMapping(RESULT_UPLOAD)
-  public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
+  public List<TestResultUpload> handleResultsUpload(@RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);
 
     try (InputStream resultsUpload = file.getInputStream()) {

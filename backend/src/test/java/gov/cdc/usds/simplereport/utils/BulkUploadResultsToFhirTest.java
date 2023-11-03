@@ -15,6 +15,7 @@ import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.ByteArrayInputStream;
@@ -98,7 +99,8 @@ public class BulkUploadResultsToFhirTest {
   @Test
   void convertExistingCsv_success() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
+    FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
 
     var first = serializedBundles.get(0);
     var deserializedBundle = (Bundle) parser.parseResource(first);
@@ -107,7 +109,7 @@ public class BulkUploadResultsToFhirTest {
             .map(Bundle.BundleEntryComponent::getFullUrl)
             .collect(Collectors.toList());
 
-    verify(resultsUploaderCachingService, times(1)).getModelAndTestPerformedCodeToDeviceMap();
+    verify(resultsUploaderCachingService, times(2)).getModelAndTestPerformedCodeToDeviceMap();
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(19);
     assertThat(resourceUrls).hasSize(19);
@@ -116,9 +118,9 @@ public class BulkUploadResultsToFhirTest {
   @Test
   void allFieldsCsv_TestOrderedCodeMapped() throws IOException {
     byte[] input = loadCsv("testResultUpload/test-results-upload-all-fields.csv").readAllBytes();
-
-    var serializedBundles =
+    FHIRBundleRecord bundleRecord =
         sut.convertToFhirBundles(new ByteArrayInputStream(input), UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
     var mappingIterator = getIteratorForCsv(new ByteArrayInputStream(input));
 
     int index = 0;
@@ -151,8 +153,10 @@ public class BulkUploadResultsToFhirTest {
   void validCsv_TestOrderedCodeDefaultedToPerformedCode() throws IOException {
     byte[] input = loadCsv("testResultUpload/test-results-upload-valid.csv").readAllBytes();
 
-    var serializedBundles =
+    FHIRBundleRecord bundleRecord =
         sut.convertToFhirBundles(new ByteArrayInputStream(input), UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
+
     var mappingIterator = getIteratorForCsv(new ByteArrayInputStream(input));
 
     int index = 0;
@@ -184,7 +188,8 @@ public class BulkUploadResultsToFhirTest {
   @Test
   void convertExistingCsv_aoeQuestionsMapped() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-all-fields.csv");
-    var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
+    FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
 
     var asymptomaticNotCongregateSettingEntry = serializedBundles.get(0);
     var deserializedAsymptomaticNotCongregateEntry =
@@ -221,8 +226,8 @@ public class BulkUploadResultsToFhirTest {
   @Test
   void convertExistingCsv_observationValuesPresent() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-
-    var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
+    FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
 
     var first = serializedBundles.get(0);
     var deserializedBundle = (Bundle) parser.parseResource(first);
@@ -293,9 +298,10 @@ public class BulkUploadResultsToFhirTest {
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
-    var serializedBundles =
+    FHIRBundleRecord bundleRecord =
         sut.convertToFhirBundles(
             csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    var serializedBundles = bundleRecord.serializedBundle();
     String actualBundleString = serializedBundles.get(0);
 
     InputStream jsonStream =
@@ -333,9 +339,11 @@ public class BulkUploadResultsToFhirTest {
     InputStream csvStream =
         loadCsv("testResultUpload/test-results-upload-valid-with-specimenType-loinc.csv");
 
-    var serializedBundles =
+    FHIRBundleRecord bundleRecord =
         sut.convertToFhirBundles(
             csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    var serializedBundles = bundleRecord.serializedBundle();
+
     String actualBundles = String.join("\n", serializedBundles);
 
     InputStream jsonStream =
@@ -368,9 +376,10 @@ public class BulkUploadResultsToFhirTest {
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid-with-comments.csv");
 
-    var serializedBundles =
+    FHIRBundleRecord bundleRecord =
         sut.convertToFhirBundles(
             csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    var serializedBundles = bundleRecord.serializedBundle();
     String actualBundles = String.join("\n", serializedBundles);
 
     InputStream jsonStream = getJsonStream("testResultUpload/fhir-for-csv-with-comments.ndjson");
@@ -402,9 +411,10 @@ public class BulkUploadResultsToFhirTest {
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
 
-    var serializedBundles =
+    FHIRBundleRecord bundleRecord =
         sut.convertToFhirBundles(
             csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    var serializedBundles = bundleRecord.serializedBundle();
     String actualBundles = String.join("\n", serializedBundles);
 
     InputStream jsonStream = getJsonStream("testResultUpload/fhir-for-csv-with-flu-only.ndjson");
@@ -437,9 +447,10 @@ public class BulkUploadResultsToFhirTest {
     InputStream csvStream =
         loadCsv("testResultUpload/test-results-upload-valid-different-results.csv");
 
-    var serializedBundles =
+    FHIRBundleRecord bundleRecord =
         sut.convertToFhirBundles(
             csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    var serializedBundles = bundleRecord.serializedBundle();
     String actualBundles = String.join("\n", serializedBundles);
 
     InputStream jsonStream =
@@ -475,7 +486,8 @@ public class BulkUploadResultsToFhirTest {
     var orderTestDate = Instant.parse("2021-12-20T04:00:00-07:00");
     var testResultDate = Instant.parse("2021-12-23T14:00:00-06:00");
 
-    var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
+    FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
     var first = serializedBundles.get(0);
     var deserializedBundle = (Bundle) parser.parseResource(first);
 

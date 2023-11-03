@@ -168,13 +168,15 @@ describe("Uploads", () => {
           .mockImplementation(() => {
             return Promise.resolve(
               new Response(
-                JSON.stringify({
-                  reportId: "fake-report-id",
-                  status: "FINISHED",
-                  recordsCount: 1,
-                  warnings: [],
-                  errors: [],
-                }),
+                JSON.stringify([
+                  {
+                    reportId: "fake-report-id",
+                    status: "FINISHED",
+                    recordsCount: 1,
+                    warnings: [],
+                    errors: [],
+                  },
+                ]),
                 { status: 200 }
               )
             );
@@ -273,18 +275,20 @@ describe("Uploads", () => {
       jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
         return Promise.resolve(
           new Response(
-            JSON.stringify({
-              reportId: null,
-              status: "ERROR",
-              recordsCount: 1,
-              warnings: [],
-              errors: [
-                {
-                  message: "missing required column",
-                  scope: "report",
-                },
-              ],
-            }),
+            JSON.stringify([
+              {
+                reportId: null,
+                status: "ERROR",
+                recordsCount: 1,
+                warnings: [],
+                errors: [
+                  {
+                    message: "missing required column",
+                    scope: "report",
+                  },
+                ],
+              },
+            ]),
             { status: 200 }
           )
         );

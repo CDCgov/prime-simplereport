@@ -5,7 +5,9 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -39,6 +41,8 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
 
   @Autowired private TestResultUploadService testResultUploadService;
 
+  @Autowired private SupportedDiseaseRepository supportedDiseaseRepository;
+
   @BeforeEach
   void setup() {
     mockCreationTime("2020-01-01 00:00");
@@ -54,6 +58,8 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
             30,
             currentOrganization,
             null,
+            null,
+            Pipeline.COVID,
             null));
 
     mockCreationTime("2021-02-17 00:00");
@@ -65,6 +71,8 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
             20,
             currentOrganization,
             null,
+            null,
+            Pipeline.UNIVERSAL,
             null));
 
     mockCreationTime("2022-02-17 00:00");
@@ -76,6 +84,8 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
             10,
             currentOrganization,
             null,
+            null,
+            Pipeline.COVID,
             null));
   }
 
@@ -151,6 +161,8 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
             20,
             currentOrganization,
             null,
+            null,
+            Pipeline.COVID,
             null));
 
     // WHEN
