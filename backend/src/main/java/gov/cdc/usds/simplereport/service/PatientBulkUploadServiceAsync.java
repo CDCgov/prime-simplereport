@@ -101,7 +101,7 @@ public class PatientBulkUploadServiceAsync {
 
         StreetAddress address = getUnknownStreetAddress();
 
-        if (Boolean.FALSE.equals(isAddressUnknown(state, zip, street))) {
+        if (!isAddressUnknown(state, zip, street)) {
           // Fetch address information
           address =
               addressValidationService.getValidatedAddress(

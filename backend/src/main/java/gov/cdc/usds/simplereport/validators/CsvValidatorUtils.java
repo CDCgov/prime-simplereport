@@ -54,6 +54,7 @@ import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.utils.UnknownAddressUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -224,8 +225,15 @@ public class CsvValidatorUtils {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
   }
 
-  private static String getInValidValueErrorMessage(String rowValue, String columnName) {
+  private static String getInvalidValueErrorMessage(String rowValue, String columnName) {
     return rowValue + " is not an acceptable value for the " + columnName + " column.";
+  }
+
+  public static String getInvalidAddressErrorMessage(String rowValue, String columnName) {
+    return rowValue
+        + " is not an acceptable value for the "
+        + columnName
+        + " column unless street, state, and zip_code values are also unknown.";
   }
 
   private static String getRequiredValueErrorMessage(String columnName) {
@@ -256,7 +264,7 @@ public class CsvValidatorUtils {
         errors.add(
             FeedbackMessage.builder()
                 .scope(ITEM_SCOPE)
-                .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+                .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
                 .errorType(ResultUploadErrorType.INVALID_DATA)
                 .source(ResultUploadErrorSource.SIMPLE_REPORT)
                 .fieldRequired(true)
@@ -271,7 +279,7 @@ public class CsvValidatorUtils {
       errors.add(
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
-              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .fieldRequired(true)
@@ -314,6 +322,35 @@ public class CsvValidatorUtils {
     return validateInSet(input, VALID_COUNTRY_CODES);
   }
 
+  public static List<FeedbackMessage> validatePartialUnkAddress(
+      ValueOrError stateInput, ValueOrError zipInput, ValueOrError streetInput) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    List<ValueOrError> addressInputs = new ArrayList<>(List.of(stateInput, zipInput, streetInput));
+    addressInputs.forEach(
+        addressInput -> {
+          boolean isUnk =
+              UnknownAddressUtils.isAddressSectionUnk(
+                  addressInput.getValue(),
+                  UnknownAddressUtils.unknownAddressMap().get(addressInput.getHeader()));
+          if (isUnk) {
+            errors.add(
+                FeedbackMessage.builder()
+                    .scope(ITEM_SCOPE)
+                    .fieldHeader(addressInput.getHeader())
+                    .message(
+                        getInvalidAddressErrorMessage(
+                            addressInput.getValue(), addressInput.getHeader()))
+                    .errorType(ResultUploadErrorType.INVALID_DATA)
+                    .build());
+          }
+        });
+    // only return errors if some values are unknown
+    if (errors.stream().count() != addressInputs.stream().count()) {
+      return errors;
+    }
+    return new ArrayList<>();
+  }
+
   public static List<FeedbackMessage> validateTestResultStatus(ValueOrError input) {
     return validateInSet(input, TEST_RESULT_STATUS_VALUES);
   }
@@ -351,7 +388,7 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .fieldRequired(input.isRequired())
@@ -384,7 +421,7 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(false)
               .build());
@@ -562,7 +599,7 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
               .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
               .build());
@@ -582,7 +619,7 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
               .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())

@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.validators;
 
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getInvalidAddressErrorMessage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.test_util.TestErrorMessageUtil;
+import gov.cdc.usds.simplereport.utils.UnknownAddressUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +124,22 @@ class PatientUploadRowTest {
     requiredFields.forEach(
         fieldName ->
             assertThat(messages).contains("File is missing data in the " + fieldName + " column."));
+  }
+
+  @Test
+  void validateIndividualFields_returnsErrorsForPartialUnknownAddress() {
+    Map<String, String> withPartialUnknownAddressField = validRowMap;
+    String stateHeader = "state";
+    withPartialUnknownAddressField.replace(stateHeader, UnknownAddressUtils.ADDRESS_STATE_UNKNOWN);
+
+    PatientUploadRow patientUploadRow = new PatientUploadRow(withPartialUnknownAddressField);
+
+    List<FeedbackMessage> actual = patientUploadRow.validateIndividualValues();
+
+    assertThat(actual).hasSize(1);
+    assertThat(actual.get(0).getMessage())
+        .isEqualTo(
+            getInvalidAddressErrorMessage(UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader));
   }
 
   @Test

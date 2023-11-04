@@ -1,12 +1,14 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getInvalidAddressErrorMessage;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePartialUnkAddress;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
@@ -20,8 +22,11 @@ import com.fasterxml.jackson.core.io.ContentReference;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.utils.UnknownAddressUtils;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -115,6 +120,32 @@ class CsvValidatorUtilsTest {
   void validCountryCode() {
     var countryCode = new ValueOrError("USA", "country");
     assertThat(validateCountry(countryCode)).isEmpty();
+  }
+
+  @Test
+  void validUnknownAddress() {
+    ValueOrError state = new ValueOrError(UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, "state");
+    ValueOrError zip = new ValueOrError(UnknownAddressUtils.ADDRESS_ZIP_UNKNOWN, "zip_code");
+    ValueOrError street = new ValueOrError(UnknownAddressUtils.ADDRESS_STREET_UNKNOWN, "street");
+    assertThat(validatePartialUnkAddress(state, zip, street)).isEmpty();
+  }
+
+  @Test
+  void invalidUnknownAddress() {
+    String stateHeader = "state";
+    String streetHeader = "street";
+    ValueOrError state = new ValueOrError(UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader);
+    ValueOrError zip = new ValueOrError("07026", "zip_code");
+    ValueOrError street =
+        new ValueOrError(UnknownAddressUtils.ADDRESS_STREET_UNKNOWN, streetHeader);
+    List<FeedbackMessage> feedbackMessages = validatePartialUnkAddress(state, zip, street);
+    assertThat(feedbackMessages.get(0).getMessage())
+        .isEqualTo(
+            getInvalidAddressErrorMessage(UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader));
+    assertThat(feedbackMessages.get(1).getMessage())
+        .isEqualTo(
+            getInvalidAddressErrorMessage(
+                UnknownAddressUtils.ADDRESS_STREET_UNKNOWN, streetHeader));
   }
 
   @Test
