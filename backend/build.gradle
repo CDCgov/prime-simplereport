@@ -87,7 +87,7 @@ dependencies {
     implementation 'com.microsoft.azure:applicationinsights-core:3.4.17'
 
     // Twilio for SMS
-    implementation 'com.twilio.sdk:twilio:9.9.1'
+    implementation group: "com.twilio.sdk", name: "twilio", version: "9.14.0"
 
     // SendGrid for Email
     implementation 'com.sendgrid:sendgrid-java'
