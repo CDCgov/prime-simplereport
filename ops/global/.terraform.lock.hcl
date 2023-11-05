@@ -2,22 +2,22 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.terraform.io/hashicorp/azurerm" {
-  version     = "3.71.0"
+  version     = "3.79.0"
   constraints = "~> 3.55"
   hashes = [
-    "h1:QI0iaPNi0qAOIbXptd4ZObi0D5X1jojom5774GtEspA=",
-    "zh:06f0d225b1711dfad256ff33134f878acc8f84624d9da66b075b075cc4d75892",
-    "zh:09ff74056818babe02ea5a633bffe2b8223eaf79916dc1db169651ef7725c22f",
-    "zh:27687e0f8458e6d88ebea94352eb523f56e8f5cdc468268af8f38dc4a4265bf4",
-    "zh:2d81bfab3c6a9b897fa8fbb5256c9e5a944e6ecbf7f73a2a3e2b53a2c4fbcfc5",
-    "zh:4cfc744cfc37aeeeecd82800c70e2591b38447af9e3c51bcbf06a5efe842ed65",
-    "zh:734fbb81508b264f772a076338ddf1c7b25534d2007a1738a7d55587478ed258",
-    "zh:9a5502c364f58073599fff8cdd8adc32e7f7bcd00a4d9b57d2fff678fd8a8319",
-    "zh:9bc528f7e78dbfd106f94b741b68dedd3dd3d31c3defcddcc1972c8e52a6b7db",
-    "zh:c30db03d877f9a7ae0c19d3fd338bbf95cdddbf6df1023709dbfa99689abac14",
-    "zh:c51d4065145b8f4ca45fc9a0f3ca7f2d933bc0302af2eead74f3ce64a9221ae8",
-    "zh:e23029fc7f81723795d7da770131adb1ce6f4d32f0a57eb75d47e036a0a19833",
+    "h1:7Bf5Bagy9v33QKJKlFN2++WjE/E5UIElfpC/7sqUMV8=",
+    "zh:0cd62eff55944be5bee31b376b410f07232227490b902af8f4785021edeb707f",
+    "zh:168128566331d18b89565205ed78a6a64c3f55a2555956f7e4c15773de56905c",
+    "zh:63068b268ae4080fe3e33f75c174e83ed2355b5812ec62a29e5f7c7e71399ab9",
+    "zh:6e88c32eafc7c01d9564bca18f2e47a7f54f2fec1b64700f3f7a6f927757a034",
+    "zh:8f1f40fc00bc22eb5ea4fa6a4b4815d2a44a2a7ba086cadf2a37366f8fa65c88",
+    "zh:96e6309019a0367bb77bec52cd0bcbd049ac943e7a28ed0b7635b8e9ed5776d3",
+    "zh:ba4840eb4da0df74adfe9bf59ff7e63d4a38c1ae0028c93c06285d766fc06f0f",
+    "zh:dd49b4cc241251077dbdbae5137f03f1d66873408b0b43d3ff5f98fa254ffca4",
+    "zh:e0a99adb8b1c1b951e2b19c677fb4c1ba78350b829f0ff73aa141ec1bc1ecd8b",
+    "zh:ee523758d5b17fd04fa869b7f6ad92f1b321eaaa9e1508609dcca1577dee3c44",
     "zh:f569b65999264a9416862bca5cd2a6177d94ccb0424f3a4ef424428912b9cb3c",
+    "zh:fbc79c9a3cc63e6f3f154cdca23b8ccb6de86495c0b9ae605bea50072c514032",
   ]
 }
 
