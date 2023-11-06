@@ -229,11 +229,23 @@ public class CsvValidatorUtils {
     return rowValue + " is not an acceptable value for the " + columnName + " column.";
   }
 
-  public static String getInvalidAddressErrorMessage(String rowValue, String columnName) {
-    return rowValue
-        + " is not an acceptable value for the "
+  private static List<String> getOtherUnkAddressColumnNames(String columnName) {
+    Set<String> columnNames = UnknownAddressUtils.unknownAddressMap().keySet();
+    columnNames.remove(columnName);
+    return new ArrayList<>(columnNames);
+  }
+
+  public static String getInvalidUnknownAddressErrorMessage(String rowValue, String columnName) {
+    List<String> otherUnkAddressColumns = getOtherUnkAddressColumnNames(columnName);
+    String otherColumnsMsg =
+        otherUnkAddressColumns.get(0) + " and " + otherUnkAddressColumns.get(1);
+    return "If you include "
+        + rowValue
+        + " in the "
         + columnName
-        + " column unless street, state, and zip_code values are also unknown.";
+        + " column, make sure the values in the "
+        + otherColumnsMsg
+        + " columns also indicate the address is unknown.";
   }
 
   private static String getRequiredValueErrorMessage(String columnName) {
@@ -338,7 +350,7 @@ public class CsvValidatorUtils {
                     .scope(ITEM_SCOPE)
                     .fieldHeader(addressInput.getHeader())
                     .message(
-                        getInvalidAddressErrorMessage(
+                        getInvalidUnknownAddressErrorMessage(
                             addressInput.getValue(), addressInput.getHeader()))
                     .errorType(ResultUploadErrorType.INVALID_DATA)
                     .build());

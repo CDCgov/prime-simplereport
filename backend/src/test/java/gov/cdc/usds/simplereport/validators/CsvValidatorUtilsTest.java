@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getInvalidAddressErrorMessage;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getInvalidUnknownAddressErrorMessage;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
@@ -141,10 +141,11 @@ class CsvValidatorUtilsTest {
     List<FeedbackMessage> feedbackMessages = validatePartialUnkAddress(state, zip, street);
     assertThat(feedbackMessages.get(0).getMessage())
         .isEqualTo(
-            getInvalidAddressErrorMessage(UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader));
+            getInvalidUnknownAddressErrorMessage(
+                UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader));
     assertThat(feedbackMessages.get(1).getMessage())
         .isEqualTo(
-            getInvalidAddressErrorMessage(
+            getInvalidUnknownAddressErrorMessage(
                 UnknownAddressUtils.ADDRESS_STREET_UNKNOWN, streetHeader));
   }
 

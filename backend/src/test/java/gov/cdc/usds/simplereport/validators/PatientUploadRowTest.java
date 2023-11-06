@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.validators;
 
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getInvalidAddressErrorMessage;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getInvalidUnknownAddressErrorMessage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
@@ -139,7 +139,8 @@ class PatientUploadRowTest {
     assertThat(actual).hasSize(1);
     assertThat(actual.get(0).getMessage())
         .isEqualTo(
-            getInvalidAddressErrorMessage(UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader));
+            getInvalidUnknownAddressErrorMessage(
+                UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader));
   }
 
   @Test
