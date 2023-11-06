@@ -9,6 +9,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static gov.cdc.usds.simplereport.api.uploads.FileUploadController.TEXT_CSV_CONTENT_TYPE;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,6 +74,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
     properties.setProperty("commit.time", "1688565766");
     ReflectionTestUtils.setField(
         bulkUploadResultsToFhir, "gitProperties", new GitProperties(properties));
+    when(_tokenAuth.createRSAJWT(any(), any(), any(), any())).thenReturn("generatedToken");
 
     var responseFile =
         getClass().getClassLoader().getResourceAsStream("responses/datahub-response.json");
@@ -93,7 +95,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
         WireMock.post(urlEqualTo("/api/token"))
             .withRequestBody(
                 equalTo(
-                    "scope=simple_report.*.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=null"))
+                    "scope=simple_report.*.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=generatedToken"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(HttpStatus.OK.value())
@@ -112,7 +114,6 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
 
   @Test
   void CSVUpload() throws Exception {
-
     var sampleFhirMessage =
         IOUtils.toString(
             Objects.requireNonNull(

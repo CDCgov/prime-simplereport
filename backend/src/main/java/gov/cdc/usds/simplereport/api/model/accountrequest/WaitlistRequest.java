@@ -3,9 +3,9 @@ package gov.cdc.usds.simplereport.api.model.accountrequest;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
-import javax.validation.constraints.NotNull;
 
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 public class WaitlistRequest implements TemplateVariablesProvider {

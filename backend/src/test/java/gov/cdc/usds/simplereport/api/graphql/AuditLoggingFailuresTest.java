@@ -45,7 +45,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 /**
@@ -60,7 +59,6 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
  * in any case what the graphql tests use, so there is no additional cost).
  */
 @Slf4j
-@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class AuditLoggingFailuresTest extends BaseGraphqlTest {
 
   @Autowired private TestRestTemplate _restTemplate;
@@ -107,7 +105,6 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     assertEquals(List.of("submitQueueItem"), event.getGraphqlErrorPaths());
   }
 
-  // I tweaked the behavior to not return the original error message in order to improve security
   @Test
   void graphqlQuery_auditFailure_noDataReturned() {
     doThrow(new IllegalArgumentException("naughty naughty"))
@@ -121,7 +118,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         assertThrows(WebClientRequestException.class, () -> runQuery("update-time-of-test", args))
             .getMessage();
     assertEquals(
-        "Request processing failed; nested exception is header: Something went wrong; body: Please check for errors and try again; nested exception is org.springframework.web.util.NestedServletException: Request processing failed; nested exception is header: Something went wrong; body: Please check for errors and try again",
+        "Request processing failed: header: Something went wrong; body: Please check for errors and try again",
         clientErrorMessage);
   }
 

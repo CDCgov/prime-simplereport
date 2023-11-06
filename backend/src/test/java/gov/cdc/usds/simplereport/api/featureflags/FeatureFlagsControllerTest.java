@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class FeatureFlagsControllerTest {
-
   private FeatureFlagsController featureFlagsController;
   private final FeatureFlagsConfig _mockFeatureFlagConfig = new FeatureFlagsConfig(null);
 

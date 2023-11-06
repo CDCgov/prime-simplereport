@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import java.util.List;
 import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "simple-report.sendgrid")
 public final class SendGridProperties {
@@ -17,7 +16,6 @@ public final class SendGridProperties {
   private final List<String> waitlistRecipient;
   private final Map<EmailProviderTemplate, String> dynamicTemplates;
 
-  @ConstructorBinding
   public SendGridProperties(
       boolean enabled,
       String apiKey,

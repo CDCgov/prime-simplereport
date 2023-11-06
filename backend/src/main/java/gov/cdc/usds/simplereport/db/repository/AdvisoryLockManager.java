@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
-import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.data.jpa.repository.Query;
 
 /** A mix-in repository for entity repositories that manage processes that use advisory locks. */
 public interface AdvisoryLockManager {
@@ -11,9 +11,9 @@ public interface AdvisoryLockManager {
    */
   int TEST_ORDER_LOCK_SCOPE = 895417283;
 
-  @Procedure("pg_try_advisory_lock")
+  @Query(value = "select pg_try_advisory_lock(:lockCategory, :lock)", nativeQuery = true)
   boolean tryLock(int lockCategory, int lock);
 
-  @Procedure("pg_advisory_unlock")
+  @Query(value = "select pg_advisory_unlock(:lockCategory, :lock)", nativeQuery = true)
   boolean unlock(int lockCategory, int lock);
 }

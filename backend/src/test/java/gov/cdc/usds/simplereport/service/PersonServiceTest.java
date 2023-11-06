@@ -39,9 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @SuppressWarnings("checkstyle:MagicNumber")
 class PersonServiceTest extends BaseServiceTest<PersonService> {
 
@@ -645,7 +643,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             // no orgExternalId provided
             () -> _service.setIsDeleted(charlesId, true, null));
     // site admin needs to ghost into organization to delete this patient
-    assertEquals("Access is denied", caught.getMessage());
+    assertEquals("Access Denied", caught.getMessage());
   }
 
   @Test
@@ -976,7 +974,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatients(
                     null, 0, 100, ArchivedStatus.ARCHIVED, "ma", false, externalId));
-    assertThat(err1.getMessage()).contains("Access is denied");
+    assertThat(err1.getMessage()).contains("Access Denied");
 
     AccessDeniedException err2 =
         assertThrows(
@@ -984,7 +982,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatientsCount(
                     null, ArchivedStatus.UNARCHIVED, null, false, externalId));
-    assertThat(err2.getMessage()).contains("Access is denied");
+    assertThat(err2.getMessage()).contains("Access Denied");
 
     AccessDeniedException err3 =
         assertThrows(
@@ -992,7 +990,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatients(
                     site1Id, 0, 100, ArchivedStatus.UNARCHIVED, "ma", false, externalId));
-    assertThat(err3.getMessage()).contains("Access is denied");
+    assertThat(err3.getMessage()).contains("Access Denied");
 
     AccessDeniedException err4 =
         assertThrows(
@@ -1000,7 +998,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatientsCount(
                     site1Id, ArchivedStatus.UNARCHIVED, null, false, externalId));
-    assertThat(err4.getMessage()).contains("Access is denied");
+    assertThat(err4.getMessage()).contains("Access Denied");
   }
 
   @Test

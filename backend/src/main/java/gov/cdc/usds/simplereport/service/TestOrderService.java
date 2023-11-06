@@ -34,6 +34,8 @@ import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,8 +45,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -111,7 +111,10 @@ public class TestOrderService {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
-      order.on(cb.equal(root.get(IdentifiedEntity_.internalId), order.get(TestOrder_.testEvent)));
+      order.on(
+          cb.equal(
+              root.get(IdentifiedEntity_.internalId),
+              order.get(TestOrder_.testEvent).get(IdentifiedEntity_.internalId)));
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
       query.distinct(true);
 

@@ -32,11 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestPropertySource(
-    properties = {
-      "hibernate.query.interceptor.error-level=ERROR",
-      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
-    })
+@TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   private static final int STANDARD_TEST_LENGTH = 15;
