@@ -22,12 +22,14 @@ interface Props {
 type TestResultRecord = Record<string, TEST_RESULTS>;
 
 const convertTestResultRecordToArray = (testResultRecord: TestResultRecord) => {
-  return Object.entries(testResultRecord).map((entry): MultiplexResultInput => {
-    return {
-      diseaseName: entry[0],
-      testResult: entry[1],
-    };
-  });
+  return Object.entries(testResultRecord).map(
+    ([diseaseName, testResult]): MultiplexResultInput => {
+      return {
+        diseaseName: diseaseName,
+        testResult: testResult,
+      };
+    }
+  );
 };
 
 const convertMultiplexResultArrayToRecord = (
