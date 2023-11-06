@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.service.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import javax.validation.constraints.NotNull;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /**
  * A container for all the attributes we extract from our OIDC token (initially just the username

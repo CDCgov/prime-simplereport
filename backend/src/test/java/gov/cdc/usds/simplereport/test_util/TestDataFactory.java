@@ -178,7 +178,7 @@ public class TestDataFactory {
 
   public Facility createValidFacility(Organization org, String facilityName) {
     DeviceType defaultDevice = getGenericDevice();
-    SpecimenType defaultSpecimen = getGenericSpecimen();
+    SpecimenType defaultSpecimen = genericSpecimenType;
 
     List<DeviceType> configuredDevices = new ArrayList<>();
     configuredDevices.add(defaultDevice);

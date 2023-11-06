@@ -26,6 +26,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -36,8 +38,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -55,7 +55,10 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
-      order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
+      order.on(
+          cb.equal(
+              root.get(TestEvent_.internalId),
+              order.get(TestOrder_.testEvent).get(TestEvent_.internalId)));
       query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
 
       Predicate p = cb.conjunction();

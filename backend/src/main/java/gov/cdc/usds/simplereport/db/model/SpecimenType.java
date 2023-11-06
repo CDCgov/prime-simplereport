@@ -2,10 +2,10 @@ package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.validators.NumericCode;
 import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import org.hibernate.annotations.NaturalId;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /** A SNOMED-registered specimen type that can be used by one or more {@link DeviceType}s. */
 @Entity

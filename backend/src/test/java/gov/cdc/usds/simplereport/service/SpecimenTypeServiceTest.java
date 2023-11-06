@@ -12,11 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.TransactionSystemException;
 
-@TestPropertySource(
-    properties = {
-      "hibernate.query.interceptor.error-level=ERROR",
-      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
-    })
+@TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService> {
 
   @Autowired private SpecimenTypeRepository specimenTypeRepository;

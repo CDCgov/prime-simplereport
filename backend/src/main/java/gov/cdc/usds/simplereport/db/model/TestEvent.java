@@ -9,19 +9,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
@@ -31,19 +32,21 @@ import org.hibernate.annotations.Type;
 @Getter
 @Entity
 @Immutable
-@AttributeOverride(name = "result", column = @Column(nullable = false))
+@AttributeOverride(
+    name = "result",
+    column = @Column(nullable = false, columnDefinition = "TEST_RESULT"))
 @Slf4j
 public class TestEvent extends BaseTestInfo {
   @Column
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private Person patientData;
 
   @Column
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private Provider providerData;
 
   @Column
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private AskOnEntrySurvey surveyData;
 
   @JsonIgnore

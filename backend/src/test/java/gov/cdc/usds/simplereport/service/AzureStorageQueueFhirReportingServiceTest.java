@@ -20,11 +20,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class AzureStorageQueueFhirReportingServiceTest {
   @Autowired GitProperties gitProperties;
   @Autowired FhirConverter fhirConverter;

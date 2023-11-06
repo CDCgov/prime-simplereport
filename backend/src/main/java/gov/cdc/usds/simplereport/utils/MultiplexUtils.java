@@ -1,12 +1,12 @@
 package gov.cdc.usds.simplereport.utils;
 
-import com.vladmihalcea.hibernate.util.StringUtils;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 
 public class MultiplexUtils {
   private MultiplexUtils() {}

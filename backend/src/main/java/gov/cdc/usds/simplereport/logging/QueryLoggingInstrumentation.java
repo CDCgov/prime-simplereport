@@ -13,11 +13,11 @@ import graphql.execution.instrumentation.parameters.InstrumentationValidationPar
 import graphql.language.Field;
 import graphql.language.OperationDefinition;
 import graphql.validation.ValidationError;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
