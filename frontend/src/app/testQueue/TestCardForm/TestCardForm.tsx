@@ -217,7 +217,7 @@ const TestCardForm = ({
     }
   };
 
-  const validateDateTested = () => {
+  const getDateTestedError = () => {
     const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
     if (!state.dateTested && !useCurrentTime) {
       return "Test date can't be empty";
@@ -235,10 +235,16 @@ const TestCardForm = ({
     if (state.dateTested && dateTested > new Date()) {
       return "Test date can't be in the future.";
     }
-    return "";
+    return null;
   };
 
-  const validateTestResults = () => {
+  const getDeviceTypeError = () =>
+    deviceTypeIsInvalid ? "Please select a device." : null;
+
+  const getSpecimenTypeError = () =>
+    specimenTypeIsInvalid ? "Please select a specimen type." : null;
+
+  const getTestResultsError = () => {
     const supportedDiseaseNames =
       state.devicesMap
         .get(state.deviceId)
@@ -264,29 +270,24 @@ const TestCardForm = ({
       return "Please enter a valid test result.";
     }
 
-    return "";
+    return null;
   };
 
-  // derived state, not expensive to calculate every render and avoids unnecessary tracked state
-  const dateTestedError = validateDateTested();
-  const deviceTypeError = deviceTypeIsInvalid ? "Please select a device." : "";
-  const specimenTypeError = specimenTypeIsInvalid
-    ? "Please select a specimen type."
-    : "";
-  const testResultsError = validateTestResults();
+  const dateTestedError = getDateTestedError();
+  const deviceTypeError = getDeviceTypeError();
+  const specimenTypeError = getSpecimenTypeError();
+  const testResultsError = getTestResultsError();
 
-  const showDateTestedError = dateTestedError.length > 0;
+  const showTestResultsError = hasAttemptedSubmit && testResultsError !== null;
 
-  const showTestResultsError =
-    hasAttemptedSubmit && testResultsError.length > 0;
-
-  const isCorrection = testOrder.correctionStatus === "CORRECTED";
-  const reasonForCorrection =
-    testOrder.reasonForCorrection as TestCorrectionReason;
-
+  // only show warning if date tested has no error
   const showDateMonthsAgoWarning =
     moment(state.dateTested) < moment().subtract(6, "months") &&
-    dateTestedError.length === 0;
+    dateTestedError === null;
+
+  const showCorrectionWarning = testOrder.correctionStatus === "CORRECTED";
+  const reasonForCorrection =
+    testOrder.reasonForCorrection as TestCorrectionReason;
 
   const validateForm = () => {
     if (dateTestedError) {
@@ -302,10 +303,10 @@ const TestCardForm = ({
       showError(testResultsError, "Invalid test results");
     }
     return (
-      !dateTestedError &&
-      !deviceTypeError &&
-      !specimenTypeError &&
-      !testResultsError
+      dateTestedError === null &&
+      deviceTypeError === null &&
+      specimenTypeError === null &&
+      testResultsError === null
     );
   };
 
@@ -357,7 +358,7 @@ const TestCardForm = ({
       />
       <div className="grid-container">
         {/* error and warning alerts */}
-        {isCorrection && (
+        {showCorrectionWarning && (
           <Alert type="warning" headingLevel="h4" className="margin-top-2">
             <strong>Correction: </strong>
             {reasonForCorrection in TestCorrectionReasons
@@ -403,8 +404,8 @@ const TestCardForm = ({
                   }
                 }}
                 required={true}
-                validationStatus={showDateTestedError ? "error" : undefined}
-                errorMessage={showDateTestedError && dateTestedError}
+                validationStatus={dateTestedError ? "error" : undefined}
+                errorMessage={dateTestedError}
               ></TextInput>
             </div>
             <div className="grid-col-auto display-flex">
@@ -425,7 +426,7 @@ const TestCardForm = ({
                     });
                   }
                 }}
-                validationStatus={showDateTestedError ? "error" : undefined}
+                validationStatus={dateTestedError ? "error" : undefined}
               ></TextInput>
             </div>
           </div>
@@ -485,7 +486,7 @@ const TestCardForm = ({
               className="card-dropdown"
               data-testid="device-type-dropdown"
               errorMessage={deviceTypeError}
-              validationStatus={deviceTypeIsInvalid ? "error" : undefined}
+              validationStatus={deviceTypeError ? "error" : undefined}
               required={true}
             />
           </div>
@@ -510,7 +511,7 @@ const TestCardForm = ({
               data-testid="specimen-type-dropdown"
               disabled={specimenTypeOptions.length === 0}
               errorMessage={specimenTypeError}
-              validationStatus={specimenTypeIsInvalid ? "error" : undefined}
+              validationStatus={specimenTypeError ? "error" : undefined}
               required={true}
             />
           </div>
