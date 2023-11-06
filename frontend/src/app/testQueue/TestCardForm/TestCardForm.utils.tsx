@@ -8,7 +8,7 @@ import {
   QueriedTestOrder,
 } from "../QueueItem";
 import { displayFullName } from "../../utils";
-import { MULTIPLEX_DISEASES } from "../../testResults/constants";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
 import { getAppInsights } from "../../TelemetryService";
 import {
@@ -202,10 +202,15 @@ export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
 export const convertFromMultiplexResponse = (
   responseResult: QueriedTestOrder["results"]
 ): MultiplexResultInput[] => {
-  return responseResult.map((result) => ({
-    diseaseName: result.disease?.name,
-    testResult: result.testResult,
-  }));
+  return responseResult.map((result) => {
+    const isResultValidEnum = Object.values<string>(TEST_RESULTS).includes(
+      result.testResult
+    );
+    return {
+      diseaseName: result.disease?.name,
+      testResult: isResultValidEnum ? result.testResult : TEST_RESULTS.UNKNOWN,
+    };
+  });
 };
 
 export const areAOEAnswersComplete = (
