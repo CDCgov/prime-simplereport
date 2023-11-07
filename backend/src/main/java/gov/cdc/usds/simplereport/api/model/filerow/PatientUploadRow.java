@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model.filerow;
 
+import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.isAddressUnknown;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
@@ -7,6 +8,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEma
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGenderIdentity;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePartialUnkAddress;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumberType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
@@ -138,10 +140,14 @@ public class PatientUploadRow implements FileRow {
     errors.addAll(validateYesNoAnswer(employedInHealthcare));
     errors.addAll(validateRole(role));
 
-    // address
-    errors.addAll(validateState(state));
-    errors.addAll(validateZipCode(zipCode));
-    errors.addAll(validateCountry(country));
+    if (!isAddressUnknown(state.getValue(), zipCode.getValue(), street.getValue())) {
+      // address
+      errors.addAll(validateState(state));
+      errors.addAll(validateZipCode(zipCode));
+      errors.addAll(validateCountry(country));
+      // check if partial unknown address values
+      errors.addAll(validatePartialUnkAddress(state, zipCode, street));
+    }
 
     // contact info
     errors.addAll(validatePhoneNumber(phoneNumber));
