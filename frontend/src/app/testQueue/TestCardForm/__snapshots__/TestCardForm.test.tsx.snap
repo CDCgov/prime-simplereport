@@ -220,7 +220,7 @@ Object {
               class="grid-row grid-gap"
             >
               <div
-                class="grid-col-auto"
+                class="grid-col-auto test-result-input-radio-group-column"
               >
                 <div
                   class="usa-form-group prime-radio__group"
@@ -802,7 +802,7 @@ Object {
             class="grid-row grid-gap"
           >
             <div
-              class="grid-col-auto"
+              class="grid-col-auto test-result-input-radio-group-column"
             >
               <div
                 class="usa-form-group prime-radio__group"
@@ -1363,7 +1363,7 @@ Object {
               class="grid-row grid-gap"
             >
               <div
-                class="grid-col-auto"
+                class="grid-col-auto test-result-input-radio-group-column"
               >
                 <div
                   class="usa-form-group prime-radio__group"
@@ -1444,7 +1444,7 @@ Object {
                 </div>
               </div>
               <div
-                class="grid-col-auto"
+                class="grid-col-auto test-result-input-radio-group-column"
               >
                 <div
                   class="usa-form-group prime-radio__group"
@@ -1860,7 +1860,7 @@ Object {
             class="grid-row grid-gap"
           >
             <div
-              class="grid-col-auto"
+              class="grid-col-auto test-result-input-radio-group-column"
             >
               <div
                 class="usa-form-group prime-radio__group"
@@ -1941,7 +1941,7 @@ Object {
               </div>
             </div>
             <div
-              class="grid-col-auto"
+              class="grid-col-auto test-result-input-radio-group-column"
             >
               <div
                 class="usa-form-group prime-radio__group"
@@ -2336,7 +2336,7 @@ Object {
               class="grid-row grid-gap"
             >
               <div
-                class="grid-col-auto"
+                class="grid-col-auto test-result-input-radio-group-column"
               >
                 <div
                   class="usa-form-group prime-radio__group"
@@ -2417,7 +2417,7 @@ Object {
                 </div>
               </div>
               <div
-                class="grid-col-auto"
+                class="grid-col-auto test-result-input-radio-group-column"
               >
                 <div
                   class="usa-form-group prime-radio__group"
@@ -2498,7 +2498,7 @@ Object {
                 </div>
               </div>
               <div
-                class="grid-col-auto"
+                class="grid-col-auto test-result-input-radio-group-column"
               >
                 <div
                   class="usa-form-group prime-radio__group"
@@ -3073,7 +3073,7 @@ Object {
             class="grid-row grid-gap"
           >
             <div
-              class="grid-col-auto"
+              class="grid-col-auto test-result-input-radio-group-column"
             >
               <div
                 class="usa-form-group prime-radio__group"
@@ -3154,7 +3154,7 @@ Object {
               </div>
             </div>
             <div
-              class="grid-col-auto"
+              class="grid-col-auto test-result-input-radio-group-column"
             >
               <div
                 class="usa-form-group prime-radio__group"
@@ -3235,7 +3235,7 @@ Object {
               </div>
             </div>
             <div
-              class="grid-col-auto"
+              class="grid-col-auto test-result-input-radio-group-column"
             >
               <div
                 class="usa-form-group prime-radio__group"

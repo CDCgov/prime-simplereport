@@ -10,6 +10,7 @@ import RadioGroup, {
 } from "../../../commonComponents/RadioGroup";
 import { TEST_RESULTS } from "../../../testResults/constants";
 import { TEST_RESULT_DESCRIPTIONS } from "../../../constants";
+import "./TestResultInputGroup.scss";
 
 interface Props {
   testOrderId: string;
@@ -120,7 +121,7 @@ export const TestResultInputGroup = ({
 
         return (
           <div
-            className="grid-col-auto"
+            className="grid-col-auto test-result-input-radio-group-column"
             key={`${supportedTest.supportedDisease.internalId}`}
           >
             <RadioGroup
