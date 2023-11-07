@@ -139,25 +139,6 @@ export function alphabetizeByName(
   return 0;
 }
 
-// This used to be doesDeviceSupportMultiplex, but now that additional diseases
-// are being added in, this is no longer a binary. We should update logic where this is still used
-export const doesDeviceSupportNonCovid = (
-  deviceId: string,
-  devicesMap: DevicesMap
-) => {
-  if (devicesMap.has(deviceId)) {
-    return (
-      devicesMap
-        .get(deviceId)!
-        .supportedDiseaseTestPerformed.filter(
-          (disease) =>
-            disease.supportedDisease.name !== MULTIPLEX_DISEASES.COVID_19
-        ).length > 0
-    );
-  }
-  return false;
-};
-
 export const isDeviceFluOnly = (deviceId: string, devicesMap: DevicesMap) => {
   if (devicesMap.has(deviceId)) {
     const supportedDiseaseTests =

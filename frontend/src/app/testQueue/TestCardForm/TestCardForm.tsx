@@ -14,7 +14,7 @@ import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
+import { TEST_RESULTS } from "../../testResults/constants";
 import {
   MultiplexResultInput,
   useEditQueueItemMutation,
@@ -43,7 +43,6 @@ import {
   AOEFormOption,
   areAOEAnswersComplete,
   convertFromMultiplexResponse,
-  doesDeviceSupportNonCovid,
   showTestResultDeliveryStatusAlert,
   useAOEFormOption,
   useAppInsightTestCardEvents,
@@ -197,19 +196,13 @@ const TestCardForm = ({
   };
 
   const updateTestOrder = async () => {
-    const resultsToSave = doesDeviceSupportNonCovid(state.deviceId, devicesMap)
-      ? state.testResults
-      : state.testResults.filter(
-          (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
-        );
-
     const response = await editQueueItem({
       variables: {
         id: testOrder.internalId,
         deviceTypeId: state.deviceId,
         dateTested: state.dateTested,
         specimenTypeId: state.specimenId,
-        results: resultsToSave,
+        results: state.testResults,
       },
     });
     if (!response.data) {
@@ -329,12 +322,7 @@ const TestCardForm = ({
         deviceTypeId: state.deviceId,
         specimenTypeId: state.specimenId,
         dateTested: state.dateTested,
-        // Should we filter results to only send results supported by the selected device?
-        results: doesDeviceSupportNonCovid(state.deviceId, devicesMap)
-          ? state.testResults
-          : state.testResults.filter(
-              (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
-            ),
+        results: state.testResults,
       },
     });
     showTestResultDeliveryStatusAlert(
