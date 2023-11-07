@@ -12,10 +12,12 @@ import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import java.util.Collection;
 import java.util.Date;
@@ -35,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ResultService {
   private final ResultRepository resultRepository;
-  private final DiseaseService diseaseService;
   private final OrganizationService organizationService;
 
   private Specification<Result> buildResultSearchFilter(
@@ -48,8 +49,13 @@ public class ResultService {
       Date endDate) {
     return (root, query, cb) -> {
       Join<Result, TestEvent> testEventJoin = root.join(Result_.testEvent);
+      Join<TestEvent, TestOrder> testOrderJoin = testEventJoin.join(TestEvent_.order);
       Join<TestEvent, Person> personJoin = testEventJoin.join(TestEvent_.patient);
       Predicate p = cb.conjunction();
+      Path<UUID> latestTestEventUUID =
+          testOrderJoin.get(TestOrder_.testEvent).get(IdentifiedEntity_.internalId);
+
+      p = cb.and(p, cb.equal(testEventJoin.get(IdentifiedEntity_.internalId), latestTestEventUUID));
 
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
       query.distinct(true);
