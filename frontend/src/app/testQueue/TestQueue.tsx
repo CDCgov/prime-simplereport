@@ -257,7 +257,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             onExiting={onEmptyQueueExiting}
             timeout={transitionDuration}
           >
-            {emptyQueueMessage(canUseCsvUploader)}
+            {testCardRefactorEnabled ? (
+              <li className={"list-style-none"}>
+                {emptyQueueMessage(canUseCsvUploader)}
+              </li>
+            ) : (
+              emptyQueueMessage(canUseCsvUploader)
+            )}
           </CSSTransition>
         )}
       </TransitionGroup>
