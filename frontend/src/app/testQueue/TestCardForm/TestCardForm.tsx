@@ -451,7 +451,7 @@ const TestCardForm = ({
           </div>
         </div>
         <div
-          className="grid-row grid-gap margin-top-2"
+          className="grid-row grid-gap"
           data-testid="device-type-dropdown-container"
         >
           <div className="grid-col-auto">

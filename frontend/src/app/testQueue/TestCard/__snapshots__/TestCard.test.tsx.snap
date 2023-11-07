@@ -195,7 +195,7 @@ Object {
                 </div>
               </div>
               <div
-                class="grid-row grid-gap margin-top-2"
+                class="grid-row grid-gap"
                 data-testid="device-type-dropdown-container"
               >
                 <div
