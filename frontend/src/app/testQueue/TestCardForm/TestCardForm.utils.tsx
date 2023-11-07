@@ -40,25 +40,26 @@ export function useTestOrderPatient(testOrder: QueriedTestOrder) {
   return { patientFullName, patientDateOfBirth };
 }
 
+const filterHIVFromDevice = (deviceType: QueriedDeviceType) => {
+  const filteredSupportedTests =
+    deviceType.supportedDiseaseTestPerformed.filter(
+      (t) => t.supportedDisease.name !== "HIV"
+    );
+  return {
+    ...deviceType,
+    supportedDiseaseTestPerformed: filteredSupportedTests,
+  };
+};
+
 const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
-  const filteredDeviceTypes = deviceTypes.map((d) => {
-    return {
-      ...d,
-      supportedDiseaseTestPerformed: d.supportedDiseaseTestPerformed.filter(
-        (t) => t.supportedDisease.name !== "HIV"
-      ),
-    };
-  });
+  const filteredDeviceTypes = deviceTypes.map((d) => filterHIVFromDevice(d));
 
   return filteredDeviceTypes.filter(
     (d) => d.supportedDiseaseTestPerformed.length > 0
   );
 };
 
-export function useDeviceTypeOptions(
-  facility: QueriedFacility,
-  state: TestFormState
-) {
+export function useFilteredDeviceTypes(facility: QueriedFacility) {
   const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
   const hivEnabled = useFeature("hivEnabled");
 
@@ -70,7 +71,13 @@ export function useDeviceTypeOptions(
   if (!hivEnabled) {
     deviceTypes = filterHIVFromAllDevices(deviceTypes);
   }
+  return deviceTypes;
+}
 
+export function useDeviceTypeOptions(
+  deviceTypes: QueriedDeviceType[],
+  state: TestFormState
+) {
   let deviceTypeOptions = [...deviceTypes].sort(alphabetizeByName).map((d) => ({
     label: d.name,
     value: d.internalId,

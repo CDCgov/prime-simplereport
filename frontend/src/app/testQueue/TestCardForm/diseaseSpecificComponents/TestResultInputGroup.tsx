@@ -4,7 +4,7 @@ import {
   MultiplexResultInput,
   SupportedDiseaseTestPerformed,
 } from "../../../../generated/graphql";
-import { DevicesMap } from "../../QueueItem";
+import { QueriedDeviceType } from "../../QueueItem";
 import RadioGroup, {
   RadioGroupOptions,
 } from "../../../commonComponents/RadioGroup";
@@ -15,7 +15,7 @@ interface Props {
   testOrderId: string;
   testResults: MultiplexResultInput[];
   deviceId: string;
-  devicesMap: DevicesMap;
+  deviceTypes: QueriedDeviceType[];
   onChange: (value: MultiplexResultInput[]) => void;
 }
 
@@ -65,14 +65,13 @@ export const TestResultInputGroup = ({
   testOrderId,
   testResults,
   deviceId,
-  devicesMap,
+  deviceTypes,
   onChange,
 }: Props) => {
-  const unfilteredDiseaseTests =
-    devicesMap.get(deviceId)?.supportedDiseaseTestPerformed ?? [];
+  const selectedDevice = deviceTypes.find((x) => x.internalId === deviceId);
 
   const supportedDiseaseTests = filterDuplicateDiseaseTests(
-    unfilteredDiseaseTests
+    selectedDevice?.supportedDiseaseTestPerformed ?? []
   );
 
   if (supportedDiseaseTests.length === 0) {

@@ -10,7 +10,7 @@ export type DeviceWithoutModelOrManufacturer = Omit<
 >;
 type DeviceType = DeviceWithoutModelOrManufacturer | FacilityFormDeviceType;
 
-function filterRsvFromSingleDevice(device: DeviceType) {
+export function filterRsvFromSingleDevice(device: DeviceType) {
   const supportedDiseaseArray =
     device.supportedDiseaseTestPerformed as SupportedDisease[];
 

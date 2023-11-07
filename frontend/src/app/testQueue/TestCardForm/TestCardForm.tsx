@@ -47,6 +47,7 @@ import {
   useAOEFormOption,
   useAppInsightTestCardEvents,
   useDeviceTypeOptions,
+  useFilteredDeviceTypes,
   useSpecimenTypeOptions,
   useTestOrderPatient,
 } from "./TestCardForm.utils";
@@ -102,8 +103,10 @@ const TestCardForm = ({
 
   const submitModalRef = useRef<ModalRef>(null);
 
+  const filteredDeviceTypes = useFilteredDeviceTypes(facility);
+
   const { deviceTypeOptions, deviceTypeIsInvalid } = useDeviceTypeOptions(
-    facility,
+    filteredDeviceTypes,
     state
   );
   const { specimenTypeOptions, specimenTypeIsInvalid } =
@@ -510,7 +513,7 @@ const TestCardForm = ({
               testOrderId={testOrder.internalId}
               testResults={state.testResults}
               deviceId={state.deviceId}
-              devicesMap={devicesMap}
+              deviceTypes={filteredDeviceTypes}
               onChange={(results) =>
                 dispatch({
                   type: TestFormActionCase.UPDATE_TEST_RESULT,
