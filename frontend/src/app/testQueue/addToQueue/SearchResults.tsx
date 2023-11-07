@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Navigate, useLocation } from "react-router-dom";
+import { useFeature } from "flagged";
 
 import Button from "../../commonComponents/Button/Button";
 import AoEModalForm from "../AoEForm/AoEModalForm";
@@ -17,6 +18,7 @@ interface SearchResultsProps {
   dropDownRef?: React.RefObject<HTMLDivElement>;
   selectedPatient?: Patient;
   canAddPatient: boolean;
+  addPatientToQueue?: (patient: Patient) => Promise<void>;
 }
 
 export interface QueueProps extends SearchResultsProps {
@@ -41,7 +43,11 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     loading,
     dropDownRef,
     selectedPatient,
+    addPatientToQueue,
   } = props;
+  const testCardRefactorEnabled = useFeature(
+    "testCardRefactorEnabled"
+  ) as boolean;
 
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
@@ -72,6 +78,18 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     return <Navigate to={redirect} />;
   }
 
+  const handleBeginTestClick = (patient: Patient) => {
+    if (testCardRefactorEnabled && addPatientToQueue) {
+      return addPatientToQueue(patient);
+    }
+
+    // existing logic
+    setDialogPatient(patient);
+    // this will always be true because the "Begin test" button
+    // is only available when canAddToTestQueue is true
+    setCanAddToQueue(true);
+  };
+
   const actionByPage = (patient: Patient, idx: Number) => {
     if (props.page === "queue") {
       const canAddToTestQueue =
@@ -81,10 +99,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           variant="unstyled"
           label="Begin test"
           ariaDescribedBy={`name${idx} birthdate${idx}`}
-          onClick={() => {
-            setDialogPatient(patient);
-            setCanAddToQueue(canAddToTestQueue);
-          }}
+          onClick={() => handleBeginTestClick(patient)}
         />
       ) : (
         "Test in progress"
@@ -182,14 +197,16 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
 
   return (
     <>
-      <AoEModalForm
-        isOpen={props.page === "queue" && dialogPatient !== null}
-        patient={dialogPatient}
-        onClose={() => {
-          setDialogPatient(null);
-        }}
-        saveCallback={handleSaveCallback}
-      />
+      {!testCardRefactorEnabled && (
+        <AoEModalForm
+          isOpen={props.page === "queue" && dialogPatient !== null}
+          patient={dialogPatient}
+          onClose={() => {
+            setDialogPatient(null);
+          }}
+          saveCallback={handleSaveCallback}
+        />
+      )}
       {shouldShowSuggestions && results}
     </>
   );

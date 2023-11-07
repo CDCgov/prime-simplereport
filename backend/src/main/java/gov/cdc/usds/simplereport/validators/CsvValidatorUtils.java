@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
+import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_LITERAL;
@@ -142,6 +143,7 @@ public class CsvValidatorUtils {
           "u", UNKNOWN_LITERAL,
           "a", "ambiguous",
           "n", "not applicable");
+
   private static final Set<String> ETHNICITY_VALUES =
       Set.of(
           HISPANIC_CODE, HISPANIC_LITERAL,
@@ -298,6 +300,10 @@ public class CsvValidatorUtils {
 
   public static List<FeedbackMessage> validateBiologicalSex(ValueOrError input) {
     return validateInSet(input, GENDER_VALUES);
+  }
+
+  public static List<FeedbackMessage> validateGenderIdentity(ValueOrError input) {
+    return validateInSet(input, GENDER_IDENTITIES);
   }
 
   public static List<FeedbackMessage> validateState(ValueOrError input) {
@@ -463,6 +469,14 @@ public class CsvValidatorUtils {
     } catch (IOException e) {
       throw new IllegalArgumentException(e.getMessage());
     }
+  }
+
+  /* Values need to be lower case to play nice with frontend */
+  public static String convertGenderIdentityToDatabaseValue(String genderIdentity) {
+    if (genderIdentity != null) {
+      return genderIdentity.toLowerCase();
+    }
+    return "";
   }
 
   /* The acceptable values for race and ethnicity don't map to the values expected in our database. */

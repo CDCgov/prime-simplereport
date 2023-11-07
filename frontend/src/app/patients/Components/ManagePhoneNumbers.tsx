@@ -246,6 +246,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
                 validateField(idx, "type");
               }}
               errors={errors[idx] || {}}
+              dataCy={`phone-input-${idx}`}
             />
             {!isPrimary && (
               <div className="flex-align-self-end">

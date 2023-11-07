@@ -6,6 +6,7 @@ import com.okta.sdk.resource.api.ApplicationGroupsApi;
 import com.okta.sdk.resource.api.GroupApi;
 import com.okta.sdk.resource.api.UserApi;
 import com.okta.sdk.resource.client.ApiException;
+import com.okta.sdk.resource.common.PagedList;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.model.Application;
 import com.okta.sdk.resource.model.Error;
@@ -31,6 +32,7 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -71,6 +73,7 @@ public class LiveOktaRepository implements OktaRepository {
   private final String adminGroupName;
 
   private static final String OKTA_ORG_PROFILE_MATCHER = "profile.name sw \"";
+  private static final int OKTA_PAGE_SIZE = 500;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
@@ -211,19 +214,29 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public Set<String> getAllUsersForOrganization(Organization org) {
-    Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
-    var groupUsers = groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), null, null);
-    return groupUsers.stream()
+    return getAllUsersForOrg(org).stream()
         .map(u -> u.getProfile().getLogin())
         .collect(Collectors.toUnmodifiableSet());
   }
 
   @Override
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
-    Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
-    var groupUsers = groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), null, null);
-    return groupUsers.stream()
+    return getAllUsersForOrg(org).stream()
         .collect(Collectors.toMap(u -> u.getProfile().getLogin(), User::getStatus));
+  }
+
+  private List<User> getAllUsersForOrg(Organization org) {
+    PagedList<User> pagedUserList = new PagedList<>();
+    List<User> allUsers = new ArrayList<>();
+    Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
+    do {
+      pagedUserList =
+          (PagedList<User>)
+              groupApi.listGroupUsers(
+                  orgDefaultOktaGroup.getId(), pagedUserList.getAfter(), OKTA_PAGE_SIZE);
+      allUsers.addAll(pagedUserList);
+    } while (pagedUserList.hasMoreItems());
+    return allUsers;
   }
 
   private Group getDefaultOktaGroup(Organization org) {

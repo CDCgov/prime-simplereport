@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import {
   DequeuedMessageItem,
   QueueClient,
@@ -48,7 +48,7 @@ export function getQueueClient(queueName: string) {
 }
 
 export async function dequeueMessages(
-  context: Context,
+  context: InvocationContext,
   queueClient: QueueClient,
 ): Promise<DequeuedMessageItem[]> {
   context.log(`Queue: ${queueClient.name}. Receiving messages`);
@@ -81,7 +81,7 @@ export async function dequeueMessages(
 }
 
 export async function minimumMessagesAvailable(
-  context: Context,
+  context: InvocationContext,
   queueClient: QueueClient,
 ) {
   const queueProperties = await queueClient.getProperties();
@@ -113,7 +113,7 @@ export async function publishToQueue(
   );
 }
 export async function deleteSuccessfullyParsedMessages(
-  context: Context,
+  context: InvocationContext,
   queueClient: QueueClient,
   messages: DequeuedMessageItem[],
   parseFailure: { [k: string]: boolean },
@@ -170,7 +170,7 @@ export async function deleteSuccessfullyParsedMessages(
 }
 
 export async function reportExceptions(
-  context: Context,
+  context: InvocationContext,
   queueClient: QueueClient,
   response: ReportStreamResponse,
   eventQueueName: string,
@@ -199,7 +199,7 @@ export async function reportExceptions(
 
 const responsesFrom = function (
   queueName: string,
-  context: Context,
+  context: InvocationContext,
   err: ReportStreamError,
   isError: boolean,
 ): ReportStreamCallbackRequest[] {

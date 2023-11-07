@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * A base test for Spring Data repository tests. Comes pre-wired with a standard API user to attach
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Import;
 // isolation between test cases (data could be passed between tests using instance variables). Don't
 // pass data between test cases using instance variables!
 @TestInstance(Lifecycle.PER_CLASS)
+@ActiveProfiles("test")
 public abstract class BaseRepositoryTest {
 
   @Autowired private DbTruncator _truncator;

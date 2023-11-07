@@ -106,12 +106,6 @@ exports[`QueueItem matches snapshot 1`] = `
                 class="timer-button timer-reset"
                 data-testid="timer"
               >
-                <span
-                  role="timer"
-                >
-                  15:00
-                </span>
-                 
                 <svg
                   alt-text="stopwatch"
                   aria-hidden="true"
@@ -128,6 +122,13 @@ exports[`QueueItem matches snapshot 1`] = `
                     fill="currentColor"
                   />
                 </svg>
+                <span
+                  class="margin-left-1"
+                  role="timer"
+                >
+                  Start timer
+                </span>
+                 
               </button>
             </div>
             <div
@@ -364,7 +365,7 @@ exports[`QueueItem matches snapshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-POSITIVE"
+                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
                         for="3-val-POSITIVE"
                       >
                         Positive (+)
@@ -383,7 +384,7 @@ exports[`QueueItem matches snapshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-NEGATIVE"
+                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
                         for="3-val-NEGATIVE"
                       >
                         Negative (-)
@@ -402,7 +403,7 @@ exports[`QueueItem matches snapshot 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-UNDETERMINED"
+                        data-cy="radio-group-option-covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
                         for="3-val-UNDETERMINED"
                       >
                         Inconclusive

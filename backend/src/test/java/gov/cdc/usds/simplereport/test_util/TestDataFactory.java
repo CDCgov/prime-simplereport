@@ -178,7 +178,7 @@ public class TestDataFactory {
 
   public Facility createValidFacility(Organization org, String facilityName) {
     DeviceType defaultDevice = getGenericDevice();
-    SpecimenType defaultSpecimen = getGenericSpecimen();
+    SpecimenType defaultSpecimen = genericSpecimenType;
 
     List<DeviceType> configuredDevices = new ArrayList<>();
     configuredDevices.add(defaultDevice);
@@ -412,7 +412,7 @@ public class TestDataFactory {
     var errors = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
     var upload =
         new TestResultUpload(
-            reportId, UUID.randomUUID(), status, 0, organization, warnings, errors);
+            reportId, UUID.randomUUID(), status, 0, organization, warnings, errors, null, null);
     var saved = testResultUploadRepository.save(upload);
     return saved;
   }
@@ -482,6 +482,7 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
+
     Result orderResult = new Result(diseaseService.covid(), r);
     resultService.addResultsToTestOrder(o, List.of(orderResult));
 
@@ -501,6 +502,11 @@ public class TestDataFactory {
     return createTestEvent(p, f, r, false);
   }
 
+  public TestEvent createTestEventWithDate(Person p, Facility f, TestResult r, Date d) {
+    var a = createEmptySurvey();
+    return createTestEvent(p, f, a, r, d);
+  }
+
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
     Result orderResult = new Result(diseaseService.covid(), r);
@@ -518,14 +524,16 @@ public class TestDataFactory {
     return e;
   }
 
-  public TestEvent createMultiplexTestEvent(
+  public TestEvent createMultiplexTestEventWithDate(
       Person person,
       Facility facility,
       TestResult covidResult,
       TestResult fluAResult,
       TestResult fluBResult,
-      Boolean hasPriorTests) {
+      Boolean hasPriorTests,
+      Date date) {
     TestOrder order = createTestOrder(person, facility);
+    order.setDateTestedBackdate(date);
 
     var results =
         List.of(
@@ -547,6 +555,17 @@ public class TestDataFactory {
     testOrderRepository.save(order);
 
     return event;
+  }
+
+  public TestEvent createMultiplexTestEvent(
+      Person person,
+      Facility facility,
+      TestResult covidResult,
+      TestResult fluAResult,
+      TestResult fluBResult,
+      Boolean hasPriorTests) {
+    return createMultiplexTestEventWithDate(
+        person, facility, covidResult, fluAResult, fluBResult, hasPriorTests, new Date());
   }
 
   public TestEvent createTestEventCorrection(

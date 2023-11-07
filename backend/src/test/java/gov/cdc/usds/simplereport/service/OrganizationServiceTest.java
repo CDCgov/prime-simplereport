@@ -42,9 +42,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private TestDataFactory testDataFactory;
@@ -308,10 +306,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void adminUpdateOrganization_not_allowed() {
-    AccessDeniedException caught =
-        assertThrows(
-            AccessDeniedException.class, () -> _service.updateOrganization("Foo org", "k12"));
-    assertEquals("Access is denied", caught.getMessage());
+    assertSecurityError(() -> _service.updateOrganization("Foo org", "k12"));
   }
 
   @Test

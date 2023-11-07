@@ -326,22 +326,8 @@ const UploadForm: React.FC<UploadFormProps> = ({
         });
       } else {
         const response = await res.json();
-
-        if (response?.reportId) {
-          setReportId(response?.reportId);
-          setFileValid(true);
-          appInsights?.trackEvent({
-            name: "Spreadsheet upload success",
-            properties: {
-              "report ID": response.reportId,
-              org: orgName,
-              user: user?.email,
-              uploadType: uploadType,
-            },
-          });
-        }
-
-        if (response?.errors?.length) {
+        // failed upload due to validation errors
+        if (response?.length === 1 && response[0].errors?.length) {
           setErrorMessage(
             <>
               Please resolve the errors below and{" "}
@@ -349,12 +335,24 @@ const UploadForm: React.FC<UploadFormProps> = ({
               file has not been accepted.
             </>
           );
-          setErrors(groupErrors(response.errors));
+          setErrors(groupErrors(response[0].errors));
           setFileValid(false);
           appInsights?.trackEvent({
             name: "Spreadsheet upload validation failure",
             properties: {
-              errors: response.errors,
+              errors: response[0].errors,
+              org: orgName,
+              user: user?.email,
+              uploadType: uploadType,
+            },
+          });
+        } else if (response?.length > 0 && response[0]?.reportId) {
+          setReportId(response[0]?.reportId);
+          setFileValid(true);
+          appInsights?.trackEvent({
+            name: "Spreadsheet upload success",
+            properties: {
+              "report ID": response[0]?.reportId,
               org: orgName,
               user: user?.email,
               uploadType: uploadType,

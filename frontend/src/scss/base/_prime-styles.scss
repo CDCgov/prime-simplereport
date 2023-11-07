@@ -1,6 +1,7 @@
 @use "../settings" as *;
 @use "../components" as *;
 @use "@uswds/uswds/packages/usa-prose";
+@use "@uswds/uswds/packages/usa-link";
 
 .prime-home {
   background-color: color("base-lightest");
@@ -1204,5 +1205,23 @@ abbr.usa-hint.usa-hint--required {
     .usa-legend {
       font-weight: bold;
     }
+  }
+}
+
+a[href^='http:']:not([href*='simplereport.gov']),
+a[href^='https:']:not([href*='simplereport.gov']) {
+  @extend .usa-link--external;
+
+  &::before {
+    position: absolute;
+    left: -999em;
+    right: auto;
+    content: "External.";
+  }
+
+  &::after {
+    margin-top: unset;
+    bottom: 0;
+    height: 100%;
   }
 }

@@ -25,12 +25,6 @@ public interface FacilityRepository extends EternalAuditedEntityRepository<Facil
           + " e.organization = :org and e.id = :id")
   Optional<Facility> findByOrganizationAndInternalIdAllowDeleted(Organization org, UUID id);
 
-  @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.organization = :org and e.id = :id")
-  Optional<Facility> findByOrganizationAndInternalId(Organization org, UUID id);
-
-  @Query(EternalAuditedEntityRepository.BASE_QUERY + " and organization_id IN (:orgIds)")
-  List<Facility> findAllByOrganizationInternalIdIn(Collection<UUID> orgIds);
-
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.organization = :org and e.id in :ids")
   Set<Facility> findAllByOrganizationAndInternalId(Organization org, Collection<UUID> ids);
 

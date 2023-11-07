@@ -44,6 +44,7 @@ interface Props {
   labelClassName?: string;
   min?: number | string;
   max?: number | string;
+  dataCy?: string;
   registrationProps?: UseFormRegisterReturn<any>;
 }
 
@@ -74,6 +75,7 @@ export const TextInput = ({
   labelClassName,
   min,
   max,
+  dataCy,
   registrationProps,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
@@ -112,7 +114,6 @@ export const TextInput = ({
               "usa-input",
               validationStatus === "error" && "usa-input--error"
             )}
-            id={id}
             data-testid={idString}
             name={name}
             value={value || ""}
@@ -130,11 +131,13 @@ export const TextInput = ({
             ref={inputRef}
             data-format={format}
             data-format-message={formatMessage}
+            data-cy={dataCy}
             {...inputProps}
             {...(validationStatus === "error"
               ? { "aria-describedby": `error_${id}`, "aria-invalid": true }
               : null)}
             {...registrationProps}
+            id={id}
           />
         </div>
       )}

@@ -8,13 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class FeatureFlagsControllerTest {
-
   private FeatureFlagsController featureFlagsController;
   private final FeatureFlagsConfig _mockFeatureFlagConfig = new FeatureFlagsConfig(null);
 
   @BeforeEach
   void setup() {
-    _mockFeatureFlagConfig.setRsvEnabled(true);
     this.featureFlagsController = new FeatureFlagsController();
     ReflectionTestUtils.setField(
         this.featureFlagsController, "featureFlags", _mockFeatureFlagConfig);

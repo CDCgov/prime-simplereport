@@ -68,6 +68,24 @@ public class OrganizationResolver {
   }
 
   /**
+   * Retrieves a list of all organizations, filtered by name
+   *
+   * @return a list of organizations
+   */
+  @QueryMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<ApiOrganization> organizationsByName(@Argument String name) {
+    List<Organization> orgs = _organizationService.getOrganizationsByName(name);
+    if (orgs.isEmpty()) {
+      return List.of();
+    } else {
+      return orgs.stream()
+          .map(o -> new ApiOrganization(o, _organizationService.getFacilities(o)))
+          .collect(Collectors.toList());
+    }
+  }
+
+  /**
    * Retrieves a list of all pending organizations AND organization queue items
    *
    * @return a list of pending organizations

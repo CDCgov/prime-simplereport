@@ -22,6 +22,7 @@ const duplicateSupportedDiseaseTestPerformed = {
   },
   testPerformedLoincCode: "0000-0",
   equipmentUid: "equipmentUid987",
+  equipmentUidType: "equipmentUidType987",
   testkitNameId: "testkitNameId987",
   testOrderedLoincCode: "9999-9",
 };

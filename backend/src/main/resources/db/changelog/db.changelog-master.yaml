@@ -915,10 +915,10 @@ databaseChangeLog:
       # we may want a check constraint on patient.facility (and arguably
       # test_order.facility and test_event.facility as well) to make sure that
       # the facility belongs to the correct organization
+      validCheckSum:
+        - 8:51b3552459ab927ea72a8c091bf69211
+        - 8:d2e0d1d37413eac3fe88ca3a88d3e0de
       changes:
-        - dropConstraint:
-            tableName: organization
-            constraintName: uk__facility__name
         - renameColumn:
             tableName: organization
             oldColumnName: facility_name
@@ -933,7 +933,6 @@ databaseChangeLog:
             columns:
               - column:
                   name: facility_id
-                  afterColumn: organization_id
                   type: uuid
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   remarks: The facility where this person is expected to be tested (null if they will be tested at multiple sites)
@@ -946,7 +945,6 @@ databaseChangeLog:
             columns:
               - column:
                   name: facility_id
-                  afterColumn: organization_id
                   type: uuid
                   remarks: The facility where this test took place.
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
@@ -961,7 +959,6 @@ databaseChangeLog:
             columns:
               - column:
                   name: facility_id
-                  afterColumn: organization_id
                   type: uuid
                   remarks: The facility where this test was ordered.
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
@@ -976,7 +973,6 @@ databaseChangeLog:
             columns:
               - column:
                   name: facility_id
-                  afterColumn: organization_id
                   type: uuid
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
@@ -1056,12 +1052,10 @@ databaseChangeLog:
             oldColumnName: organization_name
             newColumnName: facility_name
             remarks: The human-readable name for this organization.
-        - addConstraint:
+        - addUniqueConstraint:
             tableName: organization
             constraintName: uk__facility__name
-            constraints:
-              nullable: false
-              unique: true
+            columnNames: facility_name
   - changeSet:
       id: date-tested-backdate
       author: tbest@cdc.gov
@@ -2315,6 +2309,9 @@ databaseChangeLog:
       id: add-phone-number-table
       author: nathan@skylight.digital
       comment: Add table to track user phone numbers
+      validCheckSum:
+        - 8:70c3b4930cb139d68729c7b9c9187463
+        - 8:d833c548817f8b2f40cdc0018a86b965
       changes:
           - sql:
             remarks: Create the enumerations needed for tracking a phone number's type
@@ -2361,7 +2358,6 @@ databaseChangeLog:
               columns:
                 - column:
                     name: primary_phone_internal_id
-                    afterColumn: telephone
                     type: uuid
                     remarks: The identifier of the primary phone number for this patient
                     constraints:
@@ -2532,6 +2528,7 @@ databaseChangeLog:
       id: add-patient-preferences-to-person-view
       author: nathan@skylight.digital
       comment: Add person patient preferences to person_no_phi_view
+      validCheckSum: 8:957f60dca60b0971750078ad7303f89c
       changes:
         - dropView:
             viewName: person_no_phi_view
@@ -2601,13 +2598,13 @@ databaseChangeLog:
       id: add-organization-type
       author: nicholas.a.scialli@omb.eop.gov
       comment: Add type of organization.
+      validCheckSum: 8:a6b23862076020822dea6e1aac746d36
       changes:
         - addColumn:
             tableName: organization
             columns:
               - column:
                   name: organization_type
-                  afterColumn: organization_name
                   type: text
                   remarks: The type of organization
   - changeSet:
@@ -3443,6 +3440,9 @@ databaseChangeLog:
       id: add-emails-to-patient
       author: nathan@skylight.digital
       comment: add emails column to person table to allow multiple patient emails
+      validCheckSum:
+        - 8:b46ba26e6035ee8c27fbf634e4dfaa3e
+        - 8:5dc7634e2ce3740dd0d94b231e0cb235
       changes:
         - tagDatabase:
             tag: add-emails-to-patient
@@ -3452,7 +3452,6 @@ databaseChangeLog:
               - column:
                   name: emails
                   type: text[]
-                  afterColumn: email
                   remarks: All patient email addresses
         - sql:
             remarks: Populate new `emails` column with value from patient `email`
@@ -3481,6 +3480,7 @@ databaseChangeLog:
       id: add-specimen_type_id-to-test_event
       author: zedd@skylight.digital
       comment: add specimen_type_id to test event
+      validCheckSum: 8:8a4646ea60b59027e637fc0c91b3ecdb
       changes:
         - tagDatabase:
             tag: add-specimen_type_id-to-test_event
@@ -3489,7 +3489,6 @@ databaseChangeLog:
             columns:
               - column:
                   name: specimen_type_id
-                  afterColumn: device_type_id
                   remarks: The specimen type for this test event.
                   type: uuid
                   constraints:
@@ -3500,6 +3499,7 @@ databaseChangeLog:
       id: add-specimen_type_id-to-test_order
       author: zedd@skylight.digital
       comment: add specimen_type_id to test order
+      validCheckSum:   8:9cf8c0055fd13dd7c6d387500abea5c7
       changes:
         - tagDatabase:
             tag: add-specimen_type_id-to-test_order
@@ -3508,7 +3508,6 @@ databaseChangeLog:
             columns:
               - column:
                   name: specimen_type_id
-                  afterColumn: device_type_id
                   remarks: The specimen type for this test order.
                   type: uuid
                   constraints:
@@ -4093,6 +4092,7 @@ databaseChangeLog:
       id: insert-multiplex-flag
       author: johanna@skylight.digital
       comment: inserts multiplex flag in table
+      validCheckSum: 8:bbd2169d631bd3ba169a396908b8ad27
       changes:
         - tagDatabase:
             tag: insert-multiplex-flag
@@ -4116,8 +4116,9 @@ databaseChangeLog:
                 migration_user_id
               FROM migration_user
       rollback:
-        truncateTable:
-          tableName: feature_flag
+        - delete:
+            tableName: feature_flag
+            where: name='multiplexEnabled'
   - changeSet:
       id: add-index-patient_link-created_at
       author: zedd@skylight.digital
@@ -5097,3 +5098,124 @@ databaseChangeLog:
                   name: equipment_uid_type
                   type: text
                   remarks: Equipment UID from LIVD sync to be used in the universal pipeline
+  - changeSet:
+      id: add-disease_and_destination-columns-to-upload
+      author: tsv7@cdc.gov
+      comment: Add disease and destination(COVID|UNIVERSAL) columns to upload table
+      changes:
+        - tagDatabase:
+            tag: add-disease_and_destination-columns-to-upload
+        - sql:
+            remarks: Create the enumerations needed for pipeline types.
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.PIPELINE as ENUM('COVID', 'UNIVERSAL');
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: destination
+                  type: ${database.defaultSchemaName}.PIPELINE
+                  remarks: the pipeline where the results were sent to
+              - column:
+                  name: supported_disease_id
+                  remarks: The disease that was reported.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__upload__supported_disease_id
+                    referencedTableName: supported_disease
+                    referencedColumnNames: internal_id
+      rollback:
+        dropColumn:
+          tableName: upload
+          columnName: supported_disease_id
+        sql: |
+          DROP TYPE ${database.defaultSchemaName}.PIPELINE CASCADE;
+  - changeSet:
+      id: create-upload_disease_details-table
+      author: tsv7@cdc.gov
+      comment: creates upload_disease_details table and drops the disease_id column from upload table
+      changes:
+        - tagDatabase:
+            tag: create-upload_disease_details-table
+        - dropColumn:
+            tableName: upload
+            columnName: supported_disease_id
+        - createTable:
+            tableName: upload_disease_details
+            remarks: contains details of each of the diseases reported in the bulk upload.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: upload_id
+                  remarks: the upload internal id.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__upload_disease_details__upload
+                    references: upload
+              - column:
+                  name: supported_disease_id
+                  remarks: The supported disease reported in the upload.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__upload_disease_details__supported_disease
+                    references: supported_disease
+              - column:
+                  name: records_count
+                  remarks: The number of records uploaded for the disease.
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.upload_disease_details TO ${noPhiUsername};
+      rollback:
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: supported_disease_id
+                  remarks: The disease that was reported.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__upload__supported_disease_id
+                    referencedTableName: supported_disease
+                    referencedColumnNames: internal_id
+        - dropTable:
+            tableName: upload_disease_details

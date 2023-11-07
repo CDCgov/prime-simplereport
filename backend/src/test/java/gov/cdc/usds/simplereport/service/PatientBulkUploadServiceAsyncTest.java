@@ -49,11 +49,7 @@ import org.springframework.test.context.TestPropertySource;
  * We can't use the standard BaseServiceTest here because this service is async and requires a request context to operate.
  * BaseFullStackTest doesn't have the authorization setup required for an authenticated test, but BaseGraphqlTest does.
  */
-@TestPropertySource(
-    properties = {
-      "hibernate.query.interceptor.error-level=ERROR",
-      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
-    })
+@TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
 class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
 
@@ -109,6 +105,9 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getEthnicity()).isEqualTo("not_hispanic");
     assertThat(patient.getBirthDate()).isEqualTo(LocalDate.of(1980, 11, 3));
     assertThat(patient.getGender()).isEqualTo("female");
+    assertThat(patient.getGenderIdentity()).isEqualTo("female");
+    assertThat(patient.getNotes()).isEqualTo("some address note");
+
     assertThat(patient.getRole()).isEqualTo(PersonRole.STAFF);
 
     assertThat(patient.getCountry()).isEqualTo("USA");
@@ -201,8 +200,11 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getGender()).isEqualTo("female");
     assertThat(patient.getEthnicity()).isEqualTo("hispanic");
     assertThat(patient.getCountry()).isEqualTo("USA");
+    assertThat(patient.getEmails()).isEmpty();
     assertThat(patient.getEmployedInHealthcare()).isFalse();
     assertThat(patient.getResidentCongregateSetting()).isFalse();
+    assertThat(patient.getGenderIdentity()).isNull();
+    assertThat(patient.getNotes()).isNull();
 
     List<PhoneNumber> phoneNumbers =
         phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());
@@ -246,6 +248,8 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getCountry()).isEqualTo("USA");
     assertThat(patient.getEmployedInHealthcare()).isNull();
     assertThat(patient.getResidentCongregateSetting()).isNull();
+    assertThat(patient.getGenderIdentity()).isNull();
+    assertThat(patient.getNotes()).isEmpty();
 
     List<PhoneNumber> phoneNumbers =
         phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());

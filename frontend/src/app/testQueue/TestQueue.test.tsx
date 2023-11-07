@@ -10,6 +10,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
+import * as flaggedMock from "flagged";
 
 import {
   GetFacilityQueueDocument,
@@ -34,6 +35,7 @@ describe("TestQueue", () => {
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
 
+  const today = new Date("2023-10-17").getTime();
   const renderWithUser = (mocks: any[]) => ({
     user: userEvent.setup(),
     ...render(
@@ -49,6 +51,7 @@ describe("TestQueue", () => {
 
   beforeEach(() => {
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
+    jest.spyOn(Date, "now").mockImplementation(() => today);
 
     store = mockStore({
       organization: {
@@ -68,6 +71,7 @@ describe("TestQueue", () => {
 
   afterEach(() => {
     jest.spyOn(global.Math, "random").mockRestore();
+    jest.spyOn(Date, "now").mockRestore();
   });
 
   it("should render the test queue", async () => {
@@ -91,6 +95,33 @@ describe("TestQueue", () => {
 
     expect(await screen.findByText("Doe, John A"));
     expect(await screen.findByText("Smith, Jane"));
+    expect(container).toMatchSnapshot();
+  });
+
+  it("should render the new test card when feature enabled", async () => {
+    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
+    const { container } = render(
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <Provider store={store}>
+            <TestQueue activeFacilityId="a1" />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByLabelText(
+          `Search for a ${PATIENT_TERM} to start their test`
+        )
+      )
+    );
+
+    expect(await screen.findByText("Doe, John A"));
+    expect(await screen.findByText("Smith, Jane"));
+    expect(screen.getAllByText("Submit results").length > 0).toBeTruthy();
     expect(container).toMatchSnapshot();
   });
 

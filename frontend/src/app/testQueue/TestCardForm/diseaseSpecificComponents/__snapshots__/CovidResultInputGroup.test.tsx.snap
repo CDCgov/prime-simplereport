@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CovidResultInputGroup matches snapshot 1`] = `
+Object {
+  "container": <div>
+    <div
+      class="usa-form-group prime-radio__group"
+    >
+      <fieldset
+        class="usa-fieldset prime-radios"
+        data-testid="covid-test-result-QUEUE-ITEM-ID"
+        id="covid-test-result-QUEUE-ITEM-ID"
+      >
+        <legend
+          class="usa-legend"
+        >
+          COVID-19 result
+          <abbr
+            class="usa-hint usa-hint--required"
+            title="required"
+          >
+             
+            *
+          </abbr>
+        </legend>
+        <div
+          class=""
+        >
+          <div
+            class="usa-radio"
+          >
+            <input
+              class="usa-radio__input"
+              data-required="true"
+              id="1-val-POSITIVE"
+              name="covid-test-result-QUEUE-ITEM-ID"
+              type="radio"
+              value="POSITIVE"
+            />
+            <label
+              class="usa-radio__label"
+              data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-POSITIVE"
+              for="1-val-POSITIVE"
+            >
+              Positive (+)
+            </label>
+          </div>
+          <div
+            class="usa-radio"
+          >
+            <input
+              class="usa-radio__input"
+              data-required="true"
+              id="1-val-NEGATIVE"
+              name="covid-test-result-QUEUE-ITEM-ID"
+              type="radio"
+              value="NEGATIVE"
+            />
+            <label
+              class="usa-radio__label"
+              data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-NEGATIVE"
+              for="1-val-NEGATIVE"
+            >
+              Negative (-)
+            </label>
+          </div>
+          <div
+            class="usa-radio"
+          >
+            <input
+              class="usa-radio__input"
+              data-required="true"
+              id="1-val-UNDETERMINED"
+              name="covid-test-result-QUEUE-ITEM-ID"
+              type="radio"
+              value="UNDETERMINED"
+            />
+            <label
+              class="usa-radio__label"
+              data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-UNDETERMINED"
+              for="1-val-UNDETERMINED"
+            >
+              Inconclusive
+            </label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+  </div>,
+  "user": Object {
+    "clear": [Function],
+    "click": [Function],
+    "copy": [Function],
+    "cut": [Function],
+    "dblClick": [Function],
+    "deselectOptions": [Function],
+    "hover": [Function],
+    "keyboard": [Function],
+    "paste": [Function],
+    "pointer": [Function],
+    "selectOptions": [Function],
+    "setup": [Function],
+    "tab": [Function],
+    "tripleClick": [Function],
+    "type": [Function],
+    "unhover": [Function],
+    "upload": [Function],
+  },
+}
+`;

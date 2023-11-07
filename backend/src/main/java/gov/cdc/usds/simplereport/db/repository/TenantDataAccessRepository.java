@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 public interface TenantDataAccessRepository
     extends EternalAuditedEntityRepository<TenantDataAccess> {
 
-  @Query(BASE_QUERY + " and api_user_internal_id = :uuid and e.expiresAt > NOW()")
+  @Query(
+      BASE_QUERY + " and grantedToApiUser.internalId = :uuid and e.expiresAt > current_timestamp()")
   List<TenantDataAccess> findValidByApiUserId(UUID uuid);
 }

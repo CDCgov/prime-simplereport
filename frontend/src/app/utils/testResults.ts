@@ -52,7 +52,7 @@ export function hasPositiveFluResults(results: MultiplexResults): boolean {
   );
 }
 
-export function haCovidResults(results: MultiplexResults): boolean {
+export function hasCovidResults(results: MultiplexResults): boolean {
   return (
     results.filter((multiplexResult: MultiplexResult) =>
       multiplexResult.disease.name.includes("COVID-19")

@@ -14,7 +14,7 @@ import {
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
 import { ReportStreamError, ReportStreamResponse } from "./types";
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 
 jest.mock("../config", () => ({
   ENV: {
@@ -38,10 +38,10 @@ const storageSharedKeyCredentialMock =
   >;
 
 const context = {
+  error: jest.fn(),
   log: jest.fn(),
-  traceContext: { traceparent: "asdf" },
-} as jest.MockedObject<Context>;
-context.log.error = jest.fn();
+  traceContext: { traceParent: "asdf" },
+} as jest.MockedObject<InvocationContext>;
 
 describe("Queue Handlers", () => {
   describe("getQueueClient", () => {

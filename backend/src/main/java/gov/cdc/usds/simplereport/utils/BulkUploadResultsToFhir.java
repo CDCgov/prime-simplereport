@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUN
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_HOSPITALIZED;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ICU;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
@@ -33,6 +34,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -47,6 +49,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -103,7 +106,9 @@ public class BulkUploadResultsToFhir {
     yesNoToBooleanMap.put("", null);
   }
 
-  public List<String> convertToFhirBundles(InputStream csvStream, UUID orgId) {
+  public FHIRBundleRecord convertToFhirBundles(InputStream csvStream, UUID orgId) {
+    // create bundle meta
+    HashMap<String, Integer> diseasesReported = new HashMap<>();
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     while (valueIterator.hasNext()) {
@@ -115,7 +120,15 @@ public class BulkUploadResultsToFhir {
         log.error("Unable to parse csv.", ex);
         continue;
       }
-      var fileRow = new TestResultRow(row);
+      TestResultRow fileRow = new TestResultRow(row);
+
+      Optional<String> disease =
+          getDiseaseFromDeviceSpecs(
+              fileRow.getEquipmentModelName().getValue(),
+              fileRow.getTestPerformedCode().getValue());
+      if (disease.isPresent()) {
+        diseasesReported.put(disease.get(), diseasesReported.getOrDefault(disease.get(), 0) + 1);
+      }
 
       var future =
           CompletableFuture.supplyAsync(() -> convertRowToFhirBundle(fileRow, orgId))
@@ -140,7 +153,7 @@ public class BulkUploadResultsToFhir {
 
     // Clear cache to free memory
     resultsUploaderCachingService.clearAddressTimezoneLookupCache();
-    return bundles;
+    return new FHIRBundleRecord(bundles, diseasesReported);
   }
 
   public List<String> convertToConditionAgnosticFhirBundles(InputStream csvStream) {
@@ -329,6 +342,7 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderId().getValue());
 
     String equipmentUid = null;
+    String equipmentUidType = null;
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
@@ -352,6 +366,9 @@ public class BulkUploadResultsToFhir {
       equipmentUid =
           fhirConverter.getCommonDiseaseValue(
               deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+      equipmentUidType =
+          fhirConverter.getCommonDiseaseValue(
+              deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUidType);
       testKitNameId =
           fhirConverter.getCommonDiseaseValue(
               deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
@@ -388,7 +405,8 @@ public class BulkUploadResultsToFhir {
     testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
 
     var device =
-        fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString(), equipmentUid);
+        fhirConverter.convertToDevice(
+            manufacturer, modelName, deviceId.toString(), equipmentUid, equipmentUidType);
 
     String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
     String specimenName = getSpecimenTypeName(specimenCode);
@@ -627,5 +645,31 @@ public class BulkUploadResultsToFhir {
       default:
         return DiagnosticReport.DiagnosticReportStatus.FINAL;
     }
+  }
+
+  public Optional<String> getDiseaseFromDeviceSpecs(
+      String equipmentModelName, String testPerformedCode) {
+
+    var matchingDevice =
+        resultsUploaderCachingService
+            .getModelAndTestPerformedCodeToDeviceMap()
+            .get(ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
+
+    if (matchingDevice != null) {
+      List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+          matchingDevice.getSupportedDiseaseTestPerformed().stream()
+              .filter(
+                  disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
+              .toList();
+
+      if (!deviceTypeDiseaseEntries.isEmpty()) {
+        return deviceTypeDiseaseEntries.stream()
+            .findFirst()
+            .map(DeviceTypeDisease::getSupportedDisease)
+            .map(SupportedDisease::getName);
+      }
+    }
+
+    return Optional.ofNullable(diseaseSpecificLoincMap.get(testPerformedCode));
   }
 }

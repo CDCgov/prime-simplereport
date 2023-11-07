@@ -98,36 +98,40 @@ query GetFacilityResultsForCsvWithCount(
   }
 }
 
-query GetFacilityResultsMultiplexWithCount(
+query GetResultsMultiplexWithCount(
   $facilityId: ID
   $patientId: ID
   $result: String
   $role: String
+  $disease: String
   $startDate: DateTime
   $endDate: DateTime
   $pageNumber: Int
   $pageSize: Int
 ) {
-  testResultsPage(
+  resultsPage(
     facilityId: $facilityId
     patientId: $patientId
     result: $result
     role: $role
+    disease: $disease
     startDate: $startDate
     endDate: $endDate
     pageNumber: $pageNumber
     pageSize: $pageSize
   ) {
     content {
-      internalId
+      id
+      dateAdded
       dateTested
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
+      disease
+      testResult
       correctionStatus
+      reasonForCorrection
+      facility {
+        name
+        isDeleted
+      }
       deviceType {
         internalId
         name
@@ -139,7 +143,7 @@ query GetFacilityResultsMultiplexWithCount(
         lastName
         birthDate
         gender
-        lookupId
+        role
         email
         phoneNumbers {
           type
@@ -149,15 +153,9 @@ query GetFacilityResultsMultiplexWithCount(
       createdBy {
         nameInfo {
           firstName
+          middleName
           lastName
         }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-        isDeleted
       }
     }
     totalElements

@@ -270,7 +270,7 @@ export const DetachedManagePatients = ({
           id={"add-patient"}
           buttonContent={
             <>
-              <span className={"margin-right-1"}>
+              <span className={"margin-right-1"} data-cy="add-patients-button">
                 Add {PATIENT_TERM_PLURAL}
               </span>
               <FontAwesomeIcon icon={faCaretDown as IconProp} />
@@ -317,11 +317,11 @@ export const DetachedManagePatients = ({
   }
 
   return (
-    <div className="prime-home flex-1">
+    <div className="prime-home flex-1" data-cy="manage-patients-page">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
-            <div className="usa-card__header">
+            <div className="usa-card__header" data-cy="manage-patients-header">
               <div className="display-flex flex-align-center">
                 <h1 className="font-sans-lg margin-y-0">
                   {PATIENT_TERM_PLURAL_CAP}
@@ -356,6 +356,7 @@ export const DetachedManagePatients = ({
                   subsequentFocusId === FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER
                 }
                 showSubmitButton={false}
+                dataCy="manage-patients-search-input"
               />
             </div>
             <div className="usa-card__body sr-patient-list">

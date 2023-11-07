@@ -8,24 +8,29 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -71,7 +76,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
    * https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/tribal.valuesets
    */
   @Getter
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   @Column
   private List<String> tribalAffiliation;
 
@@ -91,7 +96,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Column private String email;
 
-  @Type(type = "list-array")
+  @Type(ListArrayType.class)
   @Column
   private List<String> emails = new ArrayList<>();
 
@@ -106,8 +111,9 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Getter @Column private String preferredLanguage;
 
-  @Type(type = "pg_enum")
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Enumerated(EnumType.STRING)
+  @Column(columnDefinition = "TEST_RESULT_DELIVERY")
   private TestResultDeliveryPreference testResultDeliveryPreference;
 
   protected Person() {
@@ -161,6 +167,56 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.preferredLanguage = preferredLanguage;
     this.testResultDeliveryPreference = testResultDeliveryPreference;
     this.notes = notes;
+  }
+
+  @Builder
+  public Person(
+      Organization organization,
+      Facility facility,
+      String lookupId,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      LocalDate birthDate,
+      StreetAddress address,
+      String country,
+      PersonRole role,
+      List<String> emails,
+      String race,
+      String ethnicity,
+      List<String> tribalAffiliation,
+      String gender,
+      String genderIdentity,
+      Boolean residentCongregateSetting,
+      Boolean employedInHealthcare,
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDeliveryPreference,
+      String notes) {
+
+    this(
+        organization,
+        lookupId,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        birthDate,
+        address,
+        country,
+        role,
+        emails,
+        race,
+        ethnicity,
+        tribalAffiliation,
+        gender,
+        genderIdentity,
+        residentCongregateSetting,
+        employedInHealthcare,
+        preferredLanguage,
+        testResultDeliveryPreference,
+        notes);
+    this.facility = facility;
   }
 
   public Person(

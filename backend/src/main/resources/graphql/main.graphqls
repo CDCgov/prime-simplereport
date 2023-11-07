@@ -253,7 +253,9 @@ type TestOrder {
   id: ID!
   internalId: ID! @deprecated(reason: "alias for 'id'")
   patient: Patient!
+  facility: Facility!
   dateAdded: String!
+  dateUpdated: DateTime
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String
@@ -290,9 +292,29 @@ type TestResultsPage {
   content: [TestResult]
 }
 
+type Result {
+  id: ID!
+  facility: Facility!
+  patient: Patient!
+  dateAdded: String!
+  dateUpdated: DateTime
+  deviceType: DeviceType!
+  disease: String!
+  testResult: String!
+  dateTested: DateTime!
+  correctionStatus: String
+  reasonForCorrection: String
+  createdBy: ApiUser
+}
+
+type ResultsPage {
+  totalElements: Int
+  content: [Result]
+}
+
 type MultiplexResult {
-  disease: SupportedDisease
-  testResult: String
+  disease: SupportedDisease!
+  testResult: String!
 }
 
 input MultiplexResultInput {
@@ -468,6 +490,17 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  resultsPage(
+    facilityId: ID
+    patientId: ID
+    result: String
+    role: String
+    disease: String
+    startDate: DateTime
+    endDate: DateTime
+    pageNumber: Int = 0
+    pageSize: Int = 5000
+  ): ResultsPage @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   organizationLevelDashboardMetrics(
     startDate: DateTime!
     endDate: DateTime!

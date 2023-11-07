@@ -1,12 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
