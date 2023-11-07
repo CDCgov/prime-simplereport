@@ -285,7 +285,11 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             addPatientToQueue={addPatientToQueue}
           />
         </div>
-        {createQueueItems(data.queue)}
+        {testCardRefactorEnabled ? (
+          <ul className={"test-card-list"}>{createQueueItems(data.queue)}</ul>
+        ) : (
+          createQueueItems(data.queue)
+        )}
       </div>
     </div>
   );

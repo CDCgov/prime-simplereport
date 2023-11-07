@@ -57,12 +57,12 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
           </form>
         </div>
       </div>
-      <div
-        data-testid="test-card-abc"
+      <ul
+        class="test-card-list"
       >
         <li
           class="usa-card list-style-none margin-bottom-1em test-card-container"
-          data-testid="Card"
+          data-testid="test-card-abc"
         >
           <div
             class="usa-card__container"
@@ -1010,13 +1010,9 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
             </div>
           </div>
         </li>
-      </div>
-      <div
-        data-testid="test-card-def"
-      >
         <li
           class="usa-card list-style-none margin-bottom-1em test-card-container"
-          data-testid="Card"
+          data-testid="test-card-def"
         >
           <div
             class="usa-card__container"
@@ -1964,7 +1960,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
             </div>
           </div>
         </li>
-      </div>
+      </ul>
     </div>
   </div>
 </div>
