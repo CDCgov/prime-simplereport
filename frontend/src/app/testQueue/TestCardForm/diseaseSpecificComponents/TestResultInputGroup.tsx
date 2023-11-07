@@ -45,6 +45,22 @@ const convertMultiplexResultArrayToRecord = (
   return testResultRecords;
 };
 
+const filterDuplicateDiseaseTests = (
+  diseaseTests: SupportedDiseaseTestPerformed[]
+) => {
+  const uniqueDiseases = new Set();
+  const filteredList = [];
+
+  for (const diseaseTest of diseaseTests) {
+    if (!uniqueDiseases.has(diseaseTest.supportedDisease.name)) {
+      uniqueDiseases.add(diseaseTest.supportedDisease.name);
+      filteredList.push(diseaseTest);
+    }
+  }
+
+  return filteredList;
+};
+
 export const TestResultInputGroup = ({
   testOrderId,
   testResults,
@@ -52,8 +68,12 @@ export const TestResultInputGroup = ({
   devicesMap,
   onChange,
 }: Props) => {
-  const supportedDiseaseTests =
+  const unfilteredDiseaseTests =
     devicesMap.get(deviceId)?.supportedDiseaseTestPerformed ?? [];
+
+  const supportedDiseaseTests = filterDuplicateDiseaseTests(
+    unfilteredDiseaseTests
+  );
 
   if (supportedDiseaseTests.length === 0) {
     return (
