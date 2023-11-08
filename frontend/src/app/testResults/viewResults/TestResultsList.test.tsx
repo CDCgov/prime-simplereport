@@ -7,7 +7,6 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import { GetAllFacilitiesDocument } from "../../../generated/graphql";
 import { appPermissions } from "../../permissions";
-import COVID_MOCK_DATA from "../mocks/resultsCovid.mock";
 import {
   mocks,
   mocksWithMultiplex,
@@ -34,12 +33,6 @@ const store = mockStore({
   ],
   facility: { id: "1", name: "Facility 1" },
 });
-
-const testResults = {
-  data: {
-    resultsPage: COVID_MOCK_DATA,
-  },
-};
 
 jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useAppInsightsContext: () => {},

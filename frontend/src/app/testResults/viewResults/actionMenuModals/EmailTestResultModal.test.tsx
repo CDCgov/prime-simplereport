@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
 import * as srToast from "../../../utils/srToast";
@@ -14,7 +13,6 @@ import EmailTestResultModal, {
 } from "./EmailTestResultModal";
 
 const mockCloseModal = jest.fn();
-let mockResendSuccessValue = true;
 
 jest.mock("react-modal", () => (props: any) => {
   return <div>{props.children}</div>;
@@ -132,7 +130,6 @@ describe("EmailTestResultModal", () => {
     });
 
     it("should show error message when failing to email", async () => {
-      mockResendSuccessValue = false;
       const { user } = setup(
         getEmailTestResultModalWithMocks(
           {
@@ -148,7 +145,7 @@ describe("EmailTestResultModal", () => {
       );
 
       await screen.findByText("Email result?");
-      await userEvent.click(screen.getByText("Send result"));
+      await user.click(screen.getByText("Send result"));
       await waitFor(() =>
         expect(alertSpy).toHaveBeenCalledWith(
           "error",
