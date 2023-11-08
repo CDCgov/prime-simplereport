@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import * as srToast from "../utils/srToast";
+import * as srToast from "../../../utils/srToast";
 
 import EmailTestResultModal from "./EmailTestResultModal";
 
@@ -59,6 +59,7 @@ describe("EmailTestResultModal", () => {
     let component: any;
     component = render(
       <EmailTestResultModal
+        isOpen={true}
         testResultId={"super-fancy-id"}
         closeModal={mockCloseModal}
       />
@@ -79,6 +80,7 @@ describe("EmailTestResultModal", () => {
     it("should resend the test results email and show success message", async () => {
       render(
         <EmailTestResultModal
+          isOpen={true}
           testResultId={"super-fancy-id"}
           closeModal={mockCloseModal}
         />
@@ -99,6 +101,7 @@ describe("EmailTestResultModal", () => {
       mockResendSuccessValue = false;
       render(
         <EmailTestResultModal
+          isOpen={true}
           testResultId={"super-fancy-id"}
           closeModal={mockCloseModal}
         />

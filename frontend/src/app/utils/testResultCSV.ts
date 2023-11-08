@@ -1,6 +1,9 @@
 import moment from "moment";
 
-import { byDateTested, Results } from "../testResults/TestResultsList";
+import {
+  byDateTested,
+  Results,
+} from "../testResults/viewResults/TestResultsList";
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 
 import { symptomsStringToArray, hasSymptomsForView } from "./symptoms";

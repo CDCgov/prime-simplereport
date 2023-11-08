@@ -66,21 +66,10 @@ describe("Method generateTableHeaders", () => {
 });
 
 describe("Component ResultsTable", () => {
-  const setPrintModalIdFn = jest.fn();
-  const setMarkCorrectionIdFn = jest.fn();
-  const setDetailsModalIdFn = jest.fn();
-  const setTextModalIdFn = jest.fn();
-  const setEmailModalTestResultIdFn = jest.fn();
-
   it("checks table without results", () => {
     render(
       <ResultsTable
         results={[]}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
         hasMultiplexResults={false}
         hasFacility={false}
       />
@@ -95,11 +84,6 @@ describe("Component ResultsTable", () => {
     render(
       <ResultsTable
         results={[TEST_RESULT_COVID.content[0] as unknown as Result]}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
         hasMultiplexResults={false}
         hasFacility={false}
       />
@@ -114,11 +98,6 @@ describe("Component ResultsTable", () => {
     render(
       <ResultsTable
         results={TEST_RESULTS_MULTIPLEX_CONTENT}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
         hasMultiplexResults={true}
         hasFacility={false}
       />
@@ -139,11 +118,6 @@ describe("Component ResultsTable", () => {
     render(
       <ResultsTable
         results={TEST_RESULTS_MULTIPLEX_CONTENT}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
         hasMultiplexResults={true}
         hasFacility={false}
       />
@@ -163,11 +137,6 @@ describe("Component ResultsTable", () => {
       ...render(
         <ResultsTable
           results={results}
-          setPrintModalId={setPrintModalIdFn}
-          setMarkCorrectionId={setMarkCorrectionIdFn}
-          setDetailsModalId={setDetailsModalIdFn}
-          setTextModalId={setTextModalIdFn}
-          setEmailModalTestResultId={setEmailModalTestResultIdFn}
           hasMultiplexResults={false}
           hasFacility={false}
         />

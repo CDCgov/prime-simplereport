@@ -3,18 +3,19 @@ import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 
-import Button from "../commonComponents/Button/Button";
-import { displayFullName } from "../utils";
-import { showSuccess } from "../utils/srToast";
-import "./TestResultCorrectionModal.scss";
+import Button from "../../../commonComponents/Button/Button";
+import { displayFullName } from "../../../utils";
+import { showSuccess } from "../../../utils/srToast";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
-} from "../commonComponents/QueryWrapper";
-import Dropdown from "../commonComponents/Dropdown";
-import RadioGroup from "../commonComponents/RadioGroup";
-import Required from "../commonComponents/Required";
-import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+} from "../../../commonComponents/QueryWrapper";
+import Dropdown from "../../../commonComponents/Dropdown";
+import RadioGroup from "../../../commonComponents/RadioGroup";
+import Required from "../../../commonComponents/Required";
+import { useSelectedFacility } from "../../../facilitySelect/useSelectedFacility";
+
+import "./TestResultCorrectionModal.scss";
 
 export enum TestCorrectionReason {
   DUPLICATE_TEST = "DUPLICATE_TEST",
@@ -108,7 +109,7 @@ export const MARK_TEST_AS_CORRECTION = gql`
   }
 `;
 
-interface Props {
+interface DetachedTestResultCorrectionModalProps {
   data: any; // testQuery result
   isFacilityDeleted: boolean;
   testResultId: string | undefined;
@@ -120,7 +121,7 @@ export const DetachedTestResultCorrectionModal = ({
   data,
   closeModal,
   isFacilityDeleted = false,
-}: Props) => {
+}: DetachedTestResultCorrectionModalProps) => {
   const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
   const [markTestAsCorrection] = useMutation(MARK_TEST_AS_CORRECTION);
   const { patient } = data.testResult;
@@ -184,13 +185,7 @@ export const DetachedTestResultCorrectionModal = ({
     return "";
   };
   return (
-    <Modal
-      isOpen={true}
-      className="sr-test-correction-modal-content"
-      overlayClassName="sr-test-correction-modal-overlay"
-      contentLabel="Correct result"
-      onRequestClose={closeModal}
-    >
+    <>
       <h3 className="modal__heading">
         Correct result for{" "}
         {displayFullName(patient.firstName, null, patient.lastName, true)}
@@ -267,19 +262,33 @@ export const DetachedTestResultCorrectionModal = ({
           }}
         />
       </div>
-    </Modal>
+    </>
   );
 };
+interface TestResultCorrectionModalProps
+  extends DetachedTestResultCorrectionModalProps {
+  isOpen: boolean;
+}
 
 const TestResultCorrectionModal = (
-  props: Omit<Props, InjectedQueryWrapperProps>
+  props: Omit<TestResultCorrectionModalProps, InjectedQueryWrapperProps>
 ) => (
-  <QueryWrapper<Props>
-    query={testQuery}
-    queryOptions={{ variables: { id: props.testResultId } }}
-    Component={DetachedTestResultCorrectionModal}
-    componentProps={{ ...props }}
-  />
+  <Modal
+    isOpen={props.isOpen}
+    className="sr-test-correction-modal-content"
+    overlayClassName="sr-test-correction-modal-overlay"
+    contentLabel="Correct result"
+    onRequestClose={props.closeModal}
+  >
+    {props.testResultId && (
+      <QueryWrapper<TestResultCorrectionModalProps>
+        query={testQuery}
+        queryOptions={{ variables: { id: props.testResultId } }}
+        Component={DetachedTestResultCorrectionModal}
+        componentProps={{ ...props }}
+      />
+    )}
+  </Modal>
 );
 
 export default TestResultCorrectionModal;

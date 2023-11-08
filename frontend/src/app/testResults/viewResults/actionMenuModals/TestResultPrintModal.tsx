@@ -3,22 +3,22 @@ import Modal from "react-modal";
 import classnames from "classnames";
 import { useTranslation } from "react-i18next";
 
-import Button from "../commonComponents/Button/Button";
-import MultiplexResultsGuidance from "../commonComponents/MultiplexResultsGuidance";
-import TestResultsList from "../commonComponents/TestResultsList";
+import Button from "../../../commonComponents/Button/Button";
+import MultiplexResultsGuidance from "../../../commonComponents/MultiplexResultsGuidance";
+import TestResultsList from "../../../commonComponents/TestResultsList";
 import "./TestResultPrintModal.scss";
-import logo from "../../img/simplereport-logo-black.svg";
-import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import LanguageToggler from "../../patientApp/LanguageToggler";
-import { GetTestResultForPrintDocument } from "../../generated/graphql";
-import { displayFullName } from "../utils";
-import { formatDateWithTimeOption } from "../utils/date";
+import logo from "../../../../img/simplereport-logo-black.svg";
+import { QueryWrapper } from "../../../commonComponents/QueryWrapper";
+import LanguageToggler from "../../../../patientApp/LanguageToggler";
+import { GetTestResultForPrintDocument } from "../../../../generated/graphql";
+import { displayFullName } from "../../../utils";
+import { formatDateWithTimeOption } from "../../../utils/date";
 import {
   hasCovidResults,
   hasMultiplexResults,
   hasPositiveFluResults,
-} from "../utils/testResults";
-import { setLanguage } from "../utils/languages";
+} from "../../../utils/testResults";
+import { setLanguage } from "../../../utils/languages";
 
 interface OrderingProvider {
   firstName: string;
@@ -55,7 +55,7 @@ export interface TestResult {
 }
 
 interface StaticTestResultModalProps {
-  testResultId: string | undefined;
+  testResultId: string;
   testResult: TestResult;
   hardcodedPrintDate?: string;
 }
@@ -203,9 +203,9 @@ export const StaticTestResultModal = ({
   );
 };
 
-export interface TestResultPrintModalProps {
+interface DetachedTestResultPrintModalProps {
   data: any; // testQuery result
-  testResultId: string | undefined;
+  testResultId: string;
   closeModal: () => void;
   hardcodedPrintDate?: string;
 }
@@ -215,7 +215,7 @@ export const DetachedTestResultPrintModal = ({
   data,
   closeModal,
   hardcodedPrintDate,
-}: TestResultPrintModalProps) => {
+}: DetachedTestResultPrintModalProps) => {
   const { t } = useTranslation();
 
   const buttonGroup = (
@@ -233,13 +233,7 @@ export const DetachedTestResultPrintModal = ({
   );
 
   return (
-    <Modal
-      isOpen={true}
-      className="sr-test-results-modal-content"
-      overlayClassName="sr-test-results-modal-overlay"
-      contentLabel="Printable test result"
-      onRequestClose={closeModal}
-    >
+    <>
       <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print">
         <LanguageToggler />
         {buttonGroup}
@@ -250,19 +244,33 @@ export const DetachedTestResultPrintModal = ({
         hardcodedPrintDate={hardcodedPrintDate}
       />
       {buttonGroup}
-    </Modal>
+    </>
   );
 };
 
+export interface TestResultPrintModalProps
+  extends DetachedTestResultPrintModalProps {
+  isOpen: boolean;
+}
 const TestResultPrintModal = (
   props: Omit<TestResultPrintModalProps, "data">
 ) => (
-  <QueryWrapper<TestResultPrintModalProps>
-    query={GetTestResultForPrintDocument}
-    queryOptions={{ variables: { id: props.testResultId } }}
-    Component={DetachedTestResultPrintModal}
-    componentProps={{ ...props }}
-  />
+  <Modal
+    isOpen={props.isOpen}
+    className="sr-test-results-modal-content"
+    overlayClassName="sr-test-results-modal-overlay"
+    contentLabel="Printable test result"
+    onRequestClose={props.closeModal}
+  >
+    {props.testResultId && (
+      <QueryWrapper<TestResultPrintModalProps>
+        query={GetTestResultForPrintDocument}
+        queryOptions={{ variables: { id: props.testResultId } }}
+        Component={DetachedTestResultPrintModal}
+        componentProps={{ ...props }}
+      />
+    )}
+  </Modal>
 );
 
 export default TestResultPrintModal;

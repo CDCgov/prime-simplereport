@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 const CleanTestResultsList = () => {
   const navigate = useNavigate();

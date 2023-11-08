@@ -28,7 +28,7 @@ import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 import {
   TestCorrectionReason,
   TestCorrectionReasons,
-} from "../testResults/TestResultCorrectionModal";
+} from "../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
 import MultiplexResultInputForm from "../testResults/MultiplexResultInputForm";
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
 import {

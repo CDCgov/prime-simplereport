@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
 import { ApolloError } from "@apollo/client";
 
-import { showError } from "../utils/srToast";
-import { parseDataForCSV } from "../utils/testResultCSV";
-import Button from "../commonComponents/Button/Button";
+import { showError } from "../../utils/srToast";
+import { parseDataForCSV } from "../../utils/testResultCSV";
+import Button from "../../commonComponents/Button/Button";
 import {
   useGetFacilityResultsForCsvWithCountLazyQuery,
   GetFacilityResultsForCsvWithCountQuery,
-} from "../../generated/graphql";
+} from "../../../generated/graphql";
 
 import { ALL_FACILITIES_ID, ResultsQueryVariables } from "./TestResultsList";
 

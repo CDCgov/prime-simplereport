@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import classnames from "classnames";
 import moment from "moment";
 
@@ -8,9 +8,16 @@ import Button from "../../commonComponents/Button/Button";
 import { displayFullName, facilityDisplayName } from "../../utils";
 import { formatDateWithTimeOption } from "../../utils/date";
 import { ActionsMenu } from "../../commonComponents/ActionsMenu";
-import { byDateTested } from "../TestResultsList";
 import { toLowerCaseHyphenate } from "../../utils/text";
 import { PhoneNumber, Maybe, Result } from "../../../generated/graphql";
+import { waitForElement } from "../../utils/elements";
+
+import { byDateTested } from "./TestResultsList";
+import TestResultPrintModal from "./actionMenuModals/TestResultPrintModal";
+import TestResultTextModal from "./actionMenuModals/TestResultTextModal";
+import EmailTestResultModal from "./actionMenuModals/EmailTestResultModal";
+import TestResultCorrectionModal from "./actionMenuModals/TestResultCorrectionModal";
+import TestResultDetailsModal from "./actionMenuModals/TestResultDetailsModal";
 
 export const TEST_RESULT_ARIA_TIME_FORMAT = "MMMM Do YYYY, h:mm:ss a";
 
@@ -62,25 +69,19 @@ export const generateTableHeaders = (hasFacility: boolean) => (
 );
 
 function createActionItemList(
-  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  onActionSelect: Dispatch<SetStateAction<ActionInformation>>,
   r: Result,
-  setEmailModalTestResultId: Dispatch<
-    SetStateAction<Maybe<string> | undefined>
-  >,
-  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
-  removed: boolean,
-  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
-  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>
+  removed: boolean
 ) {
   const actionItems = [];
   actionItems.push({
     name: "Print result",
-    action: () => setPrintModalId(r.id),
+    action: () => onActionSelect({ modalType: "PRINT", testResult: r }),
   });
   if (r.patient?.email) {
     actionItems.push({
       name: "Email result",
-      action: () => setEmailModalTestResultId(r.id),
+      action: () => onActionSelect({ modalType: "EMAIL", testResult: r }),
     });
   }
 
@@ -91,32 +92,26 @@ function createActionItemList(
   ) {
     actionItems.push({
       name: "Text result",
-      action: () => setTextModalId(r.id),
+      action: () => onActionSelect({ modalType: "TEXT", testResult: r }),
     });
   }
 
   if (!removed) {
     actionItems.push({
       name: "Correct result",
-      action: () => setMarkCorrectionId(r.id),
+      action: () => onActionSelect({ modalType: "CORRECTION", testResult: r }),
     });
   }
   actionItems.push({
     name: "View details",
-    action: () => setDetailsModalId(r.id),
+    action: () => onActionSelect({ modalType: "DETAILS", testResult: r }),
   });
   return actionItems;
 }
 
 const generateResultRows = (
   testResults: Array<Result>,
-  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
-  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
-  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
-  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
-  setEmailModalTestResultId: Dispatch<
-    SetStateAction<Maybe<string> | undefined>
-  >,
+  onActionSelect: Dispatch<SetStateAction<ActionInformation>>,
   hasMultiplexResults: boolean,
   hasFacility: boolean
 ) => {
@@ -134,16 +129,7 @@ const generateResultRows = (
     const removed = r.correctionStatus === "REMOVED";
 
     let diseaseIdName = toLowerCaseHyphenate(r.disease);
-
-    const actionItems = createActionItemList(
-      setPrintModalId,
-      r,
-      setEmailModalTestResultId,
-      setTextModalId,
-      removed,
-      setMarkCorrectionId,
-      setDetailsModalId
-    );
+    const actionItems = createActionItemList(onActionSelect, r, removed);
     const getResultCellHTML = () => {
       return (
         <td
@@ -175,7 +161,9 @@ const generateResultRows = (
               r.patient?.middleName,
               r.patient?.lastName
             )}
-            onClick={() => setDetailsModalId(r.id)}
+            onClick={() =>
+              onActionSelect({ modalType: "DETAILS", testResult: r })
+            }
             className="sr-link__primary"
           />
           <span className="display-block text-base font-ui-2xs">
@@ -214,45 +202,117 @@ const generateResultRows = (
 
 interface ResultsTableListProps {
   results: Array<Result>;
-  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
-  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
-  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
-  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
-  setEmailModalTestResultId: Dispatch<
-    SetStateAction<Maybe<string> | undefined>
-  >;
   hasMultiplexResults: boolean;
   hasFacility: boolean;
 }
 
+type ActionInformation = {
+  modalType: "NONE" | "PRINT" | "CORRECTION" | "TEXT" | "DETAILS" | "EMAIL";
+  testResult: Result | undefined;
+};
+
 const ResultsTable = ({
   results,
-  setPrintModalId,
-  setMarkCorrectionId,
-  setDetailsModalId,
-  setTextModalId,
-  setEmailModalTestResultId,
   hasMultiplexResults,
   hasFacility,
 }: ResultsTableListProps) => {
+  /**
+   * Modals and selected test result handlers
+   */
+
+  const [actionSelected, setActionSelected] = useState<ActionInformation>({
+    modalType: "NONE",
+    testResult: undefined,
+  });
+
+  const dismissModal = () => {
+    setActionSelected(
+      (prevState): ActionInformation => ({ ...prevState, modalType: "NONE" })
+    );
+  };
+
+  const setFocusOnActionMenu = (actionName: string) => {
+    const buttonSelector = `#action_${actionSelected?.testResult?.id}`;
+    const printButtonSelector = `#${actionName}_${actionSelected?.testResult?.id}`;
+    waitForElement(buttonSelector).then((actionButton) => {
+      (actionButton as HTMLElement)?.click();
+      waitForElement(printButtonSelector).then((printButton) => {
+        (printButton as HTMLElement)?.focus();
+        const event = new MouseEvent("mouseover", {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+        });
+        printButton?.dispatchEvent(event);
+      });
+    });
+  };
+
+  /**
+   * HTML
+   */
+
   return (
-    <table className="usa-table usa-table--borderless width-full">
-      <thead className="sr-element__sr-only">
-        {generateTableHeaders(hasFacility)}
-      </thead>
-      <tbody data-testid={"filtered-results"}>
-        {generateResultRows(
-          results,
-          setPrintModalId,
-          setMarkCorrectionId,
-          setDetailsModalId,
-          setTextModalId,
-          setEmailModalTestResultId,
-          hasMultiplexResults,
-          hasFacility
-        )}
-      </tbody>
-    </table>
+    <div title="filtered-result">
+      <table className="usa-table usa-table--borderless width-full">
+        <thead className="sr-element__sr-only">
+          {generateTableHeaders(hasFacility)}
+        </thead>
+        <tbody data-testid={"filtered-results"}>
+          {generateResultRows(
+            results,
+            setActionSelected,
+            hasMultiplexResults,
+            hasFacility
+          )}
+        </tbody>
+      </table>
+      <TestResultPrintModal
+        isOpen={actionSelected.modalType === "PRINT"}
+        testResultId={actionSelected?.testResult?.id as string}
+        closeModal={() => {
+          setFocusOnActionMenu("print");
+          dismissModal();
+        }}
+      />
+      <TestResultTextModal
+        isOpen={actionSelected.modalType === "TEXT"}
+        testResultId={actionSelected?.testResult?.id as string}
+        closeModal={() => {
+          setFocusOnActionMenu("text");
+          dismissModal();
+        }}
+      />
+      <EmailTestResultModal
+        isOpen={actionSelected.modalType === "EMAIL"}
+        testResultId={actionSelected?.testResult?.id as string}
+        closeModal={() => {
+          setFocusOnActionMenu("email");
+          dismissModal();
+        }}
+      />
+      <TestResultCorrectionModal
+        isOpen={actionSelected.modalType === "CORRECTION"}
+        testResultId={actionSelected?.testResult?.id as string}
+        isFacilityDeleted={
+          results.find(
+            (result) => result?.id === actionSelected?.testResult?.id
+          )?.facility?.isDeleted ?? false
+        }
+        closeModal={() => {
+          setFocusOnActionMenu("correct");
+          dismissModal();
+        }}
+      />
+      <TestResultDetailsModal
+        isOpen={actionSelected.modalType === "DETAILS"}
+        testResult={actionSelected.testResult}
+        closeModal={() => {
+          setFocusOnActionMenu("view");
+          dismissModal();
+        }}
+      />
+    </div>
   );
 };
 

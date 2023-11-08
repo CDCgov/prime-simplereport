@@ -8,16 +8,16 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 import {
   GetAllFacilitiesDocument,
   GetResultsMultiplexWithCountQuery,
-} from "../../generated/graphql";
-import { appPermissions } from "../permissions";
+} from "../../../generated/graphql";
+import { appPermissions } from "../../permissions";
+import COVID_MOCK_DATA from "../mocks/resultsCovid.mock";
+import { mocks, mocksWithMultiplex } from "../mocks/queries.mock";
+import { facilities } from "../mocks/facilities.mock";
 
 import TestResultsList, {
   ALL_FACILITIES_ID,
   DetachedTestResultsList,
 } from "./TestResultsList";
-import COVID_MOCK_DATA from "./mocks/resultsCovid.mock";
-import { mocks, mocksWithMultiplex } from "./mocks/queries.mock";
-import { facilities } from "./mocks/facilities.mock";
 
 const mockStore = configureStore([]);
 const store = mockStore({

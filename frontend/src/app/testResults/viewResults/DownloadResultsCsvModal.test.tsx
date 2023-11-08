@@ -3,7 +3,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import ReactDOM from "react-dom";
 import userEvent from "@testing-library/user-event";
 
-import { GetFacilityResultsForCsvWithCountDocument } from "../../generated/graphql";
+import { GetFacilityResultsForCsvWithCountDocument } from "../../../generated/graphql";
 
 import { DownloadResultsCsvModal } from "./DownloadResultsCsvModal";
 

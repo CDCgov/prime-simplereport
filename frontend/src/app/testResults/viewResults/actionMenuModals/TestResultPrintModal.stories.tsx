@@ -53,6 +53,7 @@ const testResult = {
 
 const defaultProps: TestResultPrintModalProps = {
   data: { testResult } as any,
+  isOpen: true,
   testResultId: uniqueId(),
   closeModal: () => {},
   hardcodedPrintDate: "8/24/2021, 9:44:25 AM",

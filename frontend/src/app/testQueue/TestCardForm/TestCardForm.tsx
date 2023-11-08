@@ -26,7 +26,7 @@ import "./TestCardForm.scss";
 import {
   TestCorrectionReason,
   TestCorrectionReasons,
-} from "../../testResults/TestResultCorrectionModal";
+} from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
 import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
 import { QueueItemSubmitLoader } from "../QueueItemSubmitLoader";
 

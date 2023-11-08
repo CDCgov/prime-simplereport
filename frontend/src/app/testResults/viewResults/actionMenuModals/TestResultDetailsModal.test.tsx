@@ -68,7 +68,6 @@ describe("non-multiplex TestResultDetailsModal", () => {
     component = render(
       <DetachedTestResultDetailsModal
         data={{ testResult: nonMultiplexTestResult }}
-        testResultId="id"
         closeModal={() => {}}
       />
     );
@@ -100,7 +99,6 @@ describe("Multiplex TestResultDetailsModal", () => {
     component = render(
       <DetachedTestResultDetailsModal
         data={{ testResult: multiplexTestResult }}
-        testResultId="id"
         closeModal={() => {}}
       />
     );
