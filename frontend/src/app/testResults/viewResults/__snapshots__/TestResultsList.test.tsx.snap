@@ -138,7 +138,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <input
                 class="usa-input"
                 id="start-date"
-                max="2022-09-26"
+                max="2023-11-08"
                 min="2000-01-01"
                 type="date"
                 value=""
@@ -157,7 +157,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <input
                 class="usa-input"
                 id="end-date"
-                max="2022-09-26"
+                max="2023-11-08"
                 min="2000-01-01"
                 type="date"
                 value=""

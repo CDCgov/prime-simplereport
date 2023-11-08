@@ -7,14 +7,8 @@ import Pagination from "../../commonComponents/Pagination";
 import { TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import "./TestResultsList.scss";
 import Button from "../../commonComponents/Button/Button";
-import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
-import {
-  MIN_SEARCH_CHARACTER_COUNT,
-  SEARCH_DEBOUNCE_TIME,
-} from "../../testQueue/constants";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 import {
-  GetResultsMultiplexWithCountQuery,
   Result,
   useGetResultsMultiplexWithCountQuery,
 } from "../../../generated/graphql";
@@ -34,23 +28,6 @@ export const byDateTested = (a: any, b: any) => {
   if (a.dateTested < b.dateTested) return 1;
   return -1;
 };
-
-/**
- * DetachedTestResultsList
- */
-
-interface DetachedTestResultsListProps {
-  data: GetResultsMultiplexWithCountQuery | undefined;
-  loading: boolean;
-  pageNumber: number;
-  entriesPerPage: number;
-  totalEntries: number;
-  filterParams: FilterParams;
-  setFilterParams: (filter: keyof FilterParams) => (val: string | null) => void;
-  clearFilterParams: () => void;
-  activeFacilityId: string;
-  maxDate?: string;
-}
 
 const getResultCountText = (
   totalEntries: number,
@@ -74,6 +51,19 @@ const isClearFilterBtnDisabled = (
   );
 };
 
+export interface DateRangeFilter {
+  startDate: string | null;
+  endDate: string | null;
+  startDateError: string | undefined;
+  endDateError: string | undefined;
+}
+
+const dateRangeInitialState = {
+  startDate: "0",
+  endDate: "0",
+  startDateError: undefined,
+  endDateError: undefined,
+};
 export interface ResultsQueryVariables {
   patientId?: string | null;
   facilityId: string | null;
@@ -90,7 +80,7 @@ const TestResultsList = () => {
   useDocumentTitle("Results");
 
   /**
-   * Handling of filters by url
+   * Handling of setting filters in url
    */
   const urlParams = useParams();
 
@@ -118,30 +108,30 @@ const TestResultsList = () => {
     });
   };
 
-  const [queryString, debounced, setDebounced] = useDebounce("", {
-    debounceTime: SEARCH_DEBOUNCE_TIME,
-    runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
-  });
-
   const setFilterParams = (key: keyof FilterParams) => (val: string | null) => {
     filter({ [key]: val });
   };
 
-  const [startDateError, setStartDateError] = useState<string | undefined>();
-  const [endDateError, setEndDateError] = useState<string | undefined>();
-  const [startDate, setStartDate] = useState<string | null>("0");
-  const [endDate, setEndDate] = useState<string | null>("0");
+  /**
+   * Filter controls integration
+   */
+  const [dateRangeFilter, setDateRangeFilter] = useState<DateRangeFilter>(
+    dateRangeInitialState
+  );
 
   const handleClearFilters = () => {
-    setDebounced("");
     navigate({
       pathname: "/results/1",
       search: new URLSearchParams({ facility: activeFacilityId }).toString(),
     });
     (document.getElementById("start-date") as HTMLInputElement).value = "";
     (document.getElementById("end-date") as HTMLInputElement).value = "";
-    setStartDateError("");
-    setEndDateError("");
+    setDateRangeFilter({
+      startDate: "",
+      endDate: "",
+      startDateError: undefined,
+      endDateError: undefined,
+    });
   };
 
   /**
@@ -232,15 +222,9 @@ const TestResultsList = () => {
             data={data}
             setFilterParams={setFilterParams}
             filterParams={filterParams}
-            startDate={startDate}
-            setEndDate={setEndDate}
+            dateRange={dateRangeFilter}
+            setDateRange={setDateRangeFilter}
             activeFacilityId={activeFacilityId}
-            endDate={endDate}
-            endDateError={endDateError}
-            setEndDateError={setEndDateError}
-            setStartDate={setStartDate}
-            setStartDateError={setStartDateError}
-            startDateError={startDateError}
           />
           <table
             className="usa-table usa-table--borderless width-full"

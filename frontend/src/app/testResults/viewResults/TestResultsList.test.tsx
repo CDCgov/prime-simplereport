@@ -7,17 +7,13 @@ import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
   GetAllFacilitiesDocument,
-  GetResultsMultiplexWithCountQuery,
 } from "../../../generated/graphql";
 import { appPermissions } from "../../permissions";
 import COVID_MOCK_DATA from "../mocks/resultsCovid.mock";
 import { mocks, mocksWithMultiplex } from "../mocks/queries.mock";
 import { facilities } from "../mocks/facilities.mock";
 
-import TestResultsList, {
-  ALL_FACILITIES_ID,
-  DetachedTestResultsList,
-} from "./TestResultsList";
+import TestResultsList, { ALL_FACILITIES_ID } from "./TestResultsList";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -64,18 +60,7 @@ describe("TestResultsList", () => {
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <DetachedTestResultsList
-              data={testResults.data as GetResultsMultiplexWithCountQuery}
-              pageNumber={1}
-              entriesPerPage={20}
-              totalEntries={testResults.data.resultsPage.totalElements}
-              filterParams={{}}
-              setFilterParams={() => () => {}}
-              clearFilterParams={() => {}}
-              activeFacilityId={"1"}
-              loading={false}
-              maxDate="2022-09-26"
-            />
+            <TestResultsList />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -836,22 +821,12 @@ describe("TestResultsList", () => {
   });
 
   describe("clear filter button", () => {
+    // TodO we need to setup some initial filters
     const elementToTest = (filterParams: FilterParams) => (
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <DetachedTestResultsList
-              data={testResults.data as GetResultsMultiplexWithCountQuery}
-              pageNumber={1}
-              entriesPerPage={20}
-              totalEntries={testResults.data.resultsPage.totalElements}
-              filterParams={filterParams}
-              setFilterParams={() => () => {}}
-              clearFilterParams={() => {}}
-              activeFacilityId={"1"}
-              loading={false}
-              maxDate="2022-09-26"
-            />
+            <TestResultsList />
           </MockedProvider>
         </Provider>
       </WithRouter>

@@ -1,5 +1,11 @@
 import { Label } from "@trussworks/react-uswds";
-import React, { ChangeEventHandler, useEffect, useMemo } from "react";
+import React, {
+  ChangeEventHandler,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+} from "react";
 import moment from "moment/moment";
 import { useLazyQuery } from "@apollo/client";
 
@@ -33,7 +39,7 @@ import {
 } from "../../testQueue/constants";
 import useComponentVisible from "../../commonComponents/ComponentVisible";
 
-import { ALL_FACILITIES_ID } from "./TestResultsList";
+import { ALL_FACILITIES_ID, DateRangeFilter } from "./TestResultsList";
 
 const getFilteredPatientName = (
   params: FilterParams,
@@ -54,30 +60,18 @@ const getFilteredPatientName = (
 interface TestResultsFiltersProps {
   data: any;
   activeFacilityId: string;
-  filterParams: any;
-  setFilterParams: Function;
-  startDate: any;
-  endDate: any;
-  startDateError: any;
-  endDateError: any;
-  setStartDate: Function;
-  setEndDate: Function;
-  setEndDateError: any;
-  setStartDateError: any;
+  filterParams: FilterParams;
+  setFilterParams: (key: keyof FilterParams) => (val: string | null) => void;
+  dateRange: DateRangeFilter;
+  setDateRange: Dispatch<SetStateAction<DateRangeFilter>>;
 }
 const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
   data,
-  startDate,
-  endDate,
-  startDateError,
-  endDateError,
-  setStartDate,
-  setEndDate,
+  dateRange,
+  setDateRange,
   activeFacilityId,
   filterParams,
   setFilterParams,
-  setStartDateError,
-  setEndDateError,
 }) => {
   const isOrgAdmin = hasPermission(
     useAppSelector((state) => state.user.permissions),
@@ -161,41 +155,58 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
   /**
    * Date range filters
    */
+
+  const { startDate, endDate, startDateError, endDateError } = dateRange;
   const maxDate = moment().format("YYYY-MM-DD");
 
   const processStartDate = (value: string | undefined) => {
     if (value) {
       if (!isValidDate(value, true)) {
-        setStartDateError("Date must be in format MM/DD/YYYY");
+        setDateRange((prevState) => ({
+          ...prevState,
+          startDate: "Date must be in format MM/DD/YYYY",
+        }));
       } else {
         const startDate = moment(value, "YYYY-MM-DD").startOf("day");
-        setStartDateError(undefined);
-        setStartDate(startDate.toISOString());
+        setDateRange((prevState) => ({
+          ...prevState,
+          startDate: startDate.toISOString(),
+          startDateError: undefined,
+        }));
       }
     } else {
-      setStartDate("");
+      setDateRange((prevState) => ({ ...prevState, startDate: "" }));
     }
   };
 
   const processEndDate = (value: string | undefined) => {
     if (value) {
       if (!isValidDate(value)) {
-        setEndDateError("Date must be in format MM/DD/YYYY");
+        setDateRange((prevState) => ({
+          ...prevState,
+          endDateError: "Date must be in format MM/DD/YYYY",
+        }));
       } else {
         const endDate = moment(value, "YYYY-MM-DD").endOf("day");
         if (
           isValidDate(filterParams.startDate || "") &&
           endDate.isBefore(moment(filterParams.startDate))
         ) {
-          setEndDateError("End date cannot be before start date");
-          setEndDate("");
+          setDateRange((prevState) => ({
+            ...prevState,
+            endDateError: "End date cannot be before start date",
+            endDate: "",
+          }));
         } else {
-          setEndDateError(undefined);
-          setEndDate(endDate.toISOString());
+          setDateRange((prevState) => ({
+            ...prevState,
+            endDateError: undefined,
+            endDate: endDate.toISOString(),
+          }));
         }
       }
     } else {
-      setEndDate("");
+      setDateRange((prevState) => ({ ...prevState, endDate: "" }));
     }
   };
 
@@ -281,8 +292,6 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
     [endDate],
     SEARCH_DEBOUNCE_TIME
   );
-
-  // Todo check if we can set the building and the affecting of the url (navigation) here as it triggers because the filters change
 
   /**
    * HTML
