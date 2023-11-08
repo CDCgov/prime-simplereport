@@ -9,8 +9,12 @@ import "jest-location-mock";
 import ReactModal from "react-modal";
 import moment from "moment";
 import { toHaveNoViolations } from "jest-axe";
+import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 
 fetchMock.enableMocks();
+
+loadDevMessages();
+loadErrorMessages();
 
 jest.mock("@microsoft/applicationinsights-react-js", () => {
   return {

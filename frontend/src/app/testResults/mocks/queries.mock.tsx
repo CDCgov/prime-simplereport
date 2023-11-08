@@ -31,7 +31,24 @@ import resultForEmail from "./resultForEmail";
 import resultForViewing from "./resultForViewing";
 import resultForCorrection from "./resultForCorrection";
 
+export const mockWithFacilityAndPositiveResult = {
+  request: {
+    query: GetResultsMultiplexWithCountDocument,
+    variables: {
+      facilityId: "1",
+      pageNumber: 0,
+      pageSize: 20,
+      result: "POSITIVE",
+    },
+  },
+  result: {
+    data: {
+      resultsPage: testResults,
+    },
+  },
+};
 export const mocks = [
+  mockWithFacilityAndPositiveResult,
   {
     request: {
       query: GetResultsMultiplexWithCountDocument,

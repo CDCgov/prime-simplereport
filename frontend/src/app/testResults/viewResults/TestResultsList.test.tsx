@@ -5,12 +5,14 @@ import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
-import {
-  GetAllFacilitiesDocument,
-} from "../../../generated/graphql";
+import { GetAllFacilitiesDocument } from "../../../generated/graphql";
 import { appPermissions } from "../../permissions";
 import COVID_MOCK_DATA from "../mocks/resultsCovid.mock";
-import { mocks, mocksWithMultiplex } from "../mocks/queries.mock";
+import {
+  mocks,
+  mocksWithMultiplex,
+  mockWithFacilityAndPositiveResult,
+} from "../mocks/queries.mock";
 import { facilities } from "../mocks/facilities.mock";
 
 import TestResultsList, { ALL_FACILITIES_ID } from "./TestResultsList";
@@ -45,11 +47,15 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
 }));
 
 type WithRouterProps = {
+  initialUrl?: string;
   children: React.ReactNode;
 };
 
-const WithRouter: React.FC<WithRouterProps> = ({ children }) => (
-  <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
+const WithRouter: React.FC<WithRouterProps> = ({
+  children,
+  initialUrl = "?facility=1",
+}) => (
+  <MemoryRouter initialEntries={[{ search: initialUrl }]}>
     {children}
   </MemoryRouter>
 );
@@ -821,27 +827,37 @@ describe("TestResultsList", () => {
   });
 
   describe("clear filter button", () => {
-    // TodO we need to setup some initial filters
-    const elementToTest = (filterParams: FilterParams) => (
-      <WithRouter>
+    const elementToTest = (urlFilters?: string, responseMocks = mocks) => (
+      <WithRouter initialUrl={urlFilters}>
         <Provider store={store}>
-          <MockedProvider mocks={mocks}>
+          <MockedProvider mocks={responseMocks}>
             <TestResultsList />
           </MockedProvider>
         </Provider>
       </WithRouter>
     );
+
     it("should be disabled when no filters are applied", () => {
-      render(elementToTest({}));
+      render(elementToTest());
       expect(screen.getByText("Clear filters")).toBeDisabled();
     });
+
     it("should be disabled when testing only filter applied is facility is active facility", () => {
-      render(elementToTest({ filterFacilityId: "1" }));
+      render(elementToTest("facility=1"));
       expect(screen.getByText("Clear filters")).toBeDisabled();
     });
-    it("should be enabled filters are applied", () => {
-      render(elementToTest({ result: "Positive" }));
-      expect(screen.getByText("Clear filters")).toBeEnabled();
+
+    it("should be enabled when filters are applied", async () => {
+      render(
+        elementToTest("facility=1&result=POSITIVE", [
+          mockWithFacilityAndPositiveResult,
+        ])
+      );
+      await waitFor(() =>
+        expect(
+          screen.getByRole("button", { name: /clear filters/i })
+        ).toBeEnabled()
+      );
     });
   });
 });

@@ -71,13 +71,14 @@ const DetachedEmailTestResultModal = ({
     </>
   );
 };
-interface EmailTestResultModalProps extends DetachedEmailTestResultModalProps {
+export type EmailTestResultModalProps = Omit<
+  DetachedEmailTestResultModalProps,
+  "data"
+> & {
   isOpen: boolean;
-}
+};
 
-const EmailTestResultModal = (
-  props: Omit<EmailTestResultModalProps, "data">
-) => (
+const EmailTestResultModal = (props: EmailTestResultModalProps) => (
   <Modal
     isOpen={props.isOpen}
     className="email-test-result-modal-content"
@@ -86,7 +87,7 @@ const EmailTestResultModal = (
     onRequestClose={props.closeModal}
   >
     {props.testResultId && (
-      <QueryWrapper<EmailTestResultModalProps>
+      <QueryWrapper<DetachedEmailTestResultModalProps>
         query={GetTestResultForResendingEmailsDocument}
         queryOptions={{ variables: { id: props.testResultId } }}
         Component={DetachedEmailTestResultModal}
