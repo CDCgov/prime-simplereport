@@ -2,12 +2,12 @@ import React from "react";
 import { useFeature } from "flagged";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
-import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
 import "./ManageDevices.scss";
 import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
 import { filterRsvFromAllDevices } from "../../../utils/rsvHelper";
+import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];

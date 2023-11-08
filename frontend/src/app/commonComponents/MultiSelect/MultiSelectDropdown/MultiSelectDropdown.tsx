@@ -39,6 +39,7 @@ export enum FocusMode {
   Input,
   Item,
 }
+
 export interface RegistrationProps {
   inputTextRef?: Ref<any>;
   setFocus: Function;
@@ -266,7 +267,7 @@ export const MultiSelectDropdown = ({
       !newTarget ||
       (newTarget instanceof Node && !containerRef.current?.contains(newTarget));
 
-    if (newTargetIsOutside && !state.isExtended) {
+    if (newTargetIsOutside && !state.isOpen) {
       dispatch({ type: ActionTypes.BLUR });
     }
   };
@@ -307,11 +308,14 @@ export const MultiSelectDropdown = ({
         onChange={(e): void =>
           dispatch({ type: ActionTypes.UPDATE_FILTER, value: e.target.value })
         }
-        onClick={(): void => dispatch({ type: ActionTypes.OPEN_LIST })}
+        onClick={(): void => {
+          dispatch({ type: ActionTypes.OPEN_LIST });
+        }}
         onBlur={handleInputBlur}
         onKeyDown={handleInputKeyDown(dispatch, state, selectOption)}
         value={state.inputValue}
         focused={state.focusMode === FocusMode.Input}
+        // focused={false}
         role="combobox"
         aria-label={placeholder}
         aria-labelledby={`label-for-${id}`}
