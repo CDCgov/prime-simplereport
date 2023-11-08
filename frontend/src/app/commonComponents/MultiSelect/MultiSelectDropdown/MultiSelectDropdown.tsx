@@ -315,7 +315,6 @@ export const MultiSelectDropdown = ({
         onKeyDown={handleInputKeyDown(dispatch, state, selectOption)}
         value={state.inputValue}
         focused={state.focusMode === FocusMode.Input}
-        // focused={false}
         role="combobox"
         aria-label={placeholder}
         aria-labelledby={`label-for-${id}`}
