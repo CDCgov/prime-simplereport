@@ -694,7 +694,7 @@ describe("MultiSelectDropdown component", () => {
       );
 
       user.click(screen.getByTestId("multi-select-input"));
-      fireEvent.blur(screen.getByTestId("multi-select-input"));
+      user.click(document.body);
 
       expect(screen.getByTestId("multi-select-input")).toHaveAttribute(
         "aria-expanded",
