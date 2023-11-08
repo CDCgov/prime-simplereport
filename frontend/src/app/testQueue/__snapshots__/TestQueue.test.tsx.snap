@@ -513,8 +513,8 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           >
                             <fieldset
                               class="usa-fieldset prime-radios"
-                              data-testid="pregnancy"
-                              id="pregnancy"
+                              data-testid="pregnancy-abc"
+                              id="pregnancy-abc"
                             >
                               <legend
                                 class="usa-legend"
@@ -531,13 +531,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="10-val-77386006"
-                                    name="pregnancy"
+                                    name="pregnancy-abc"
                                     type="radio"
                                     value="77386006"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-77386006"
+                                    data-cy="radio-group-option-pregnancy-abc-77386006"
                                     for="10-val-77386006"
                                   >
                                     Yes
@@ -550,13 +550,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="10-val-60001007"
-                                    name="pregnancy"
+                                    name="pregnancy-abc"
                                     type="radio"
                                     value="60001007"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-60001007"
+                                    data-cy="radio-group-option-pregnancy-abc-60001007"
                                     for="10-val-60001007"
                                   >
                                     No
@@ -569,13 +569,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="10-val-261665006"
-                                    name="pregnancy"
+                                    name="pregnancy-abc"
                                     type="radio"
                                     value="261665006"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-261665006"
+                                    data-cy="radio-group-option-pregnancy-abc-261665006"
                                     for="10-val-261665006"
                                   >
                                     Prefer not to answer
@@ -672,7 +672,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                             id="12"
                             max="2023-10-17"
                             min="2020-01-01"
-                            name="symptom-date"
+                            name="symptom-date-abc"
                             type="date"
                             value=""
                           />
@@ -1463,8 +1463,8 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           >
                             <fieldset
                               class="usa-fieldset prime-radios"
-                              data-testid="pregnancy"
-                              id="pregnancy"
+                              data-testid="pregnancy-def"
+                              id="pregnancy-def"
                             >
                               <legend
                                 class="usa-legend"
@@ -1481,13 +1481,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="17-val-77386006"
-                                    name="pregnancy"
+                                    name="pregnancy-def"
                                     type="radio"
                                     value="77386006"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-77386006"
+                                    data-cy="radio-group-option-pregnancy-def-77386006"
                                     for="17-val-77386006"
                                   >
                                     Yes
@@ -1500,13 +1500,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="17-val-60001007"
-                                    name="pregnancy"
+                                    name="pregnancy-def"
                                     type="radio"
                                     value="60001007"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-60001007"
+                                    data-cy="radio-group-option-pregnancy-def-60001007"
                                     for="17-val-60001007"
                                   >
                                     No
@@ -1519,13 +1519,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="17-val-261665006"
-                                    name="pregnancy"
+                                    name="pregnancy-def"
                                     type="radio"
                                     value="261665006"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-261665006"
+                                    data-cy="radio-group-option-pregnancy-def-261665006"
                                     for="17-val-261665006"
                                   >
                                     Prefer not to answer
@@ -1622,7 +1622,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                             id="19"
                             max="2023-10-17"
                             min="2020-01-01"
-                            name="symptom-date"
+                            name="symptom-date-def"
                             type="date"
                             value=""
                           />

@@ -328,8 +328,8 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="pregnancy"
-                    id="pregnancy"
+                    data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
@@ -346,13 +346,13 @@ Object {
                           class="usa-radio__input"
                           data-required="false"
                           id="4-val-77386006"
-                          name="pregnancy"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="77386006"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-77386006"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
                           for="4-val-77386006"
                         >
                           Yes
@@ -365,13 +365,13 @@ Object {
                           class="usa-radio__input"
                           data-required="false"
                           id="4-val-60001007"
-                          name="pregnancy"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="60001007"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-60001007"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
                           for="4-val-60001007"
                         >
                           No
@@ -384,13 +384,13 @@ Object {
                           class="usa-radio__input"
                           data-required="false"
                           id="4-val-261665006"
-                          name="pregnancy"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="261665006"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-261665006"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
                           for="4-val-261665006"
                         >
                           Prefer not to answer
@@ -910,8 +910,8 @@ Object {
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="pregnancy"
-                  id="pregnancy"
+                  data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
@@ -928,13 +928,13 @@ Object {
                         class="usa-radio__input"
                         data-required="false"
                         id="4-val-77386006"
-                        name="pregnancy"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="77386006"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-77386006"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
                         for="4-val-77386006"
                       >
                         Yes
@@ -947,13 +947,13 @@ Object {
                         class="usa-radio__input"
                         data-required="false"
                         id="4-val-60001007"
-                        name="pregnancy"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="60001007"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-60001007"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
                         for="4-val-60001007"
                       >
                         No
@@ -966,13 +966,13 @@ Object {
                         class="usa-radio__input"
                         data-required="false"
                         id="4-val-261665006"
-                        name="pregnancy"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="261665006"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-261665006"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
                         for="4-val-261665006"
                       >
                         Prefer not to answer
@@ -2599,8 +2599,8 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="pregnancy"
-                    id="pregnancy"
+                    data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
@@ -2617,13 +2617,13 @@ Object {
                           class="usa-radio__input"
                           data-required="false"
                           id="11-val-77386006"
-                          name="pregnancy"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="77386006"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-77386006"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
                           for="11-val-77386006"
                         >
                           Yes
@@ -2636,13 +2636,13 @@ Object {
                           class="usa-radio__input"
                           data-required="false"
                           id="11-val-60001007"
-                          name="pregnancy"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="60001007"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-60001007"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
                           for="11-val-60001007"
                         >
                           No
@@ -2655,13 +2655,13 @@ Object {
                           class="usa-radio__input"
                           data-required="false"
                           id="11-val-261665006"
-                          name="pregnancy"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="261665006"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-261665006"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
                           for="11-val-261665006"
                         >
                           Prefer not to answer
@@ -3336,8 +3336,8 @@ Object {
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="pregnancy"
-                  id="pregnancy"
+                  data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
@@ -3354,13 +3354,13 @@ Object {
                         class="usa-radio__input"
                         data-required="false"
                         id="11-val-77386006"
-                        name="pregnancy"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="77386006"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-77386006"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
                         for="11-val-77386006"
                       >
                         Yes
@@ -3373,13 +3373,13 @@ Object {
                         class="usa-radio__input"
                         data-required="false"
                         id="11-val-60001007"
-                        name="pregnancy"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="60001007"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-60001007"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
                         for="11-val-60001007"
                       >
                         No
@@ -3392,13 +3392,13 @@ Object {
                         class="usa-radio__input"
                         data-required="false"
                         id="11-val-261665006"
-                        name="pregnancy"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="261665006"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-261665006"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
                         for="11-val-261665006"
                       >
                         Prefer not to answer
