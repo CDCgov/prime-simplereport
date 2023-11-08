@@ -683,6 +683,7 @@ describe("MultiSelectDropdown component", () => {
     });
 
     it("hides options list when clicking away and input has focus", () => {
+      const user = userEvent.setup();
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -692,7 +693,7 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      fireEvent.click(screen.getByTestId("multi-select-input"));
+      user.click(screen.getByTestId("multi-select-input"));
       fireEvent.blur(screen.getByTestId("multi-select-input"));
 
       expect(screen.getByTestId("multi-select-input")).toHaveAttribute(
