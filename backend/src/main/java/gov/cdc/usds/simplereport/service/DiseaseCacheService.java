@@ -4,11 +4,11 @@ import static gov.cdc.usds.simplereport.config.CachingConfig.SUPPORTED_DISEASE_I
 
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
+import jakarta.transaction.Transactional;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;

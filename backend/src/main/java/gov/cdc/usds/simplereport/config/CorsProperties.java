@@ -2,10 +2,8 @@ package gov.cdc.usds.simplereport.config;
 
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "simple-report.cors")
-@ConstructorBinding
 public class CorsProperties {
 
   private final List<String> allowedOrigins;

@@ -1,10 +1,8 @@
 package gov.cdc.usds.simplereport.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "simple-report.authorization")
-@ConstructorBinding
 public class AuthorizationProperties {
 
   private final String roleClaim;

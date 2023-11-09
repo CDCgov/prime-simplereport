@@ -1,10 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class OrganizationScopedEternalEntity extends EternalAuditedEntity

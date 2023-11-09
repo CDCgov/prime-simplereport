@@ -15,10 +15,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "simple-report-initialization")
-@ConstructorBinding
 @RequiredArgsConstructor
 @Getter
 public class InitialSetupProperties {

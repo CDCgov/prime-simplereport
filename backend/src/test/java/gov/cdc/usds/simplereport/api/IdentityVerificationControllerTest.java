@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.api.accountrequest.IdentityVerificationControll
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequestOrganizationCreateTemplate;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
+import gov.cdc.usds.simplereport.config.DevSecurityConfiguration;
 import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
@@ -51,6 +52,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
   DemoAuthenticationConfiguration.class,
   DemoExperianService.class,
   DemoOktaRepository.class,
+  DevSecurityConfiguration.class
 })
 @WebMvcTest(
     controllers = IdentityVerificationController.class,

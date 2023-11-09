@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -110,6 +111,26 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
       var res = _service.getOrganizationResults(null, null, null, null, null, null, 0, 10).toList();
 
       assertEquals(7, res.size());
+    }
+
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getOrganizationResults_doesNotShowCorrectEvents() {
+      var testEvent = testDataFactory.createTestEvent(personA, facilityA);
+      testDataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.CORRECTED);
+      var res = _service.getOrganizationResults(null, null, null, null, null, null, 0, 10).toList();
+
+      assertEquals(8, res.size());
+    }
+
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getOrganizationResults_showsRemovedEvents() {
+      var testEvent = testDataFactory.createTestEvent(personA, facilityA);
+      testDataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.REMOVED);
+      var res = _service.getOrganizationResults(null, null, null, null, null, null, 0, 10).toList();
+
+      assertEquals(8, res.size());
     }
 
     @Test

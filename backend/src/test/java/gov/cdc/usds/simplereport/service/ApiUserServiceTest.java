@@ -47,9 +47,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Autowired @SpyBean ApiUserRepository _apiUserRepo;
@@ -488,7 +486,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     AccessDeniedException caught =
         assertThrows(
             AccessDeniedException.class, () -> _service.getUserByLoginEmail("example@email.com"));
-    assertEquals("Access is denied", caught.getMessage());
+    assertEquals("Access Denied", caught.getMessage());
   }
 
   @Test

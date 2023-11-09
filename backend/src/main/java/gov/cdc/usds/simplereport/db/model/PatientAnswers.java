@@ -1,14 +1,15 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import org.hibernate.annotations.Type;
 
 @Entity
 public class PatientAnswers extends AuditedEntity {
   @Column
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private AskOnEntrySurvey askOnEntry;
 
   protected PatientAnswers() {

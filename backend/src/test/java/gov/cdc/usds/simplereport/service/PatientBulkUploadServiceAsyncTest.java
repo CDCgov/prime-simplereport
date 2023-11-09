@@ -49,11 +49,7 @@ import org.springframework.test.context.TestPropertySource;
  * We can't use the standard BaseServiceTest here because this service is async and requires a request context to operate.
  * BaseFullStackTest doesn't have the authorization setup required for an authenticated test, but BaseGraphqlTest does.
  */
-@TestPropertySource(
-    properties = {
-      "hibernate.query.interceptor.error-level=ERROR",
-      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
-    })
+@TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
 class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
 
@@ -250,6 +246,9 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getGender()).isEqualTo("other");
     assertThat(patient.getEthnicity()).isEqualTo("not_hispanic");
     assertThat(patient.getCountry()).isEqualTo("USA");
+    assertThat(patient.getAddress().getStreetOne()).isEqualTo("** Unknown / Not Given **");
+    assertThat(patient.getState()).isEqualTo("NA");
+    assertThat(patient.getZipCode()).isEqualTo("00000");
     assertThat(patient.getEmployedInHealthcare()).isNull();
     assertThat(patient.getResidentCongregateSetting()).isNull();
     assertThat(patient.getGenderIdentity()).isNull();

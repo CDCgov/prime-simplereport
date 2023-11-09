@@ -103,7 +103,7 @@ public class DataSourceConfiguration {
     liquibase.setDataSource(dataSource);
     liquibase.setDefaultSchema(properties.getDefaultSchema());
     liquibase.setDropFirst(properties.isDropFirst());
-    liquibase.setLabels(properties.getLabels());
+    liquibase.setLabelFilter(properties.getLabelFilter());
     liquibase.setRollbackFile(properties.getRollbackFile());
     liquibase.setShouldRun(properties.isEnabled());
     liquibase.setDatabaseChangeLogTable(properties.getDatabaseChangeLogTable());

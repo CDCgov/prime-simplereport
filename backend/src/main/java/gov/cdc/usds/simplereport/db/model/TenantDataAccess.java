@@ -1,12 +1,13 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PermissionsData;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -24,7 +25,7 @@ public class TenantDataAccess extends EternalAuditedEntity {
 
   // contains the authorities to be loaded into Authentication
   @Column(nullable = false)
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private PermissionsData permissionsData;
 
   @Column(nullable = false)

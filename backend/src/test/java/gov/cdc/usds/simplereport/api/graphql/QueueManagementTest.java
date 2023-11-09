@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
+import gov.cdc.usds.simplereport.service.datasource.QueryCountService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.io.IOException;
@@ -33,9 +34,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @WithSimpleReportStandardUser // this is ridiculously sneaky
 class QueueManagementTest extends BaseGraphqlTest {
 
@@ -272,9 +271,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     performEnqueueMutation(variables, Optional.empty());
 
     // get the first query count
-    long startQueryCount = hibernateQueryInterceptor.getQueryCount();
+    long startQueryCount = QueryCountService.get().getSelect();
     fetchQueue();
-    long firstRunCount = hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    long firstRunCount = QueryCountService.get().getSelect() - startQueryCount;
 
     for (int ii = 0; ii < 10; ii++) {
       // add more tests to the queue. (which needs more patients)
@@ -286,9 +285,9 @@ class QueueManagementTest extends BaseGraphqlTest {
       performEnqueueMutation(variables, Optional.empty());
     }
 
-    startQueryCount = hibernateQueryInterceptor.getQueryCount();
+    startQueryCount = QueryCountService.get().getSelect();
     fetchQueue();
-    long secondRunCount = hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    long secondRunCount = QueryCountService.get().getSelect() - startQueryCount;
     assertEquals(firstRunCount, secondRunCount);
   }
 

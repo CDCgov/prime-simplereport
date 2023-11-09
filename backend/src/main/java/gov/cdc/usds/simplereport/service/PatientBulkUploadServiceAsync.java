@@ -4,6 +4,8 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNoUnk;
+import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.getUnknownStreetAddress;
+import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.isAddressUnknown;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertEthnicityToDatabaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertGenderIdentityToDatabaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertRaceToDatabaseValue;
@@ -93,14 +95,22 @@ public class PatientBulkUploadServiceAsync {
 
         PatientUploadRow extractedData = new PatientUploadRow(row);
 
-        // Fetch address information
-        StreetAddress address =
-            addressValidationService.getValidatedAddress(
-                extractedData.getStreet().getValue(),
-                extractedData.getStreet2().getValue(),
-                extractedData.getCity().getValue(),
-                extractedData.getState().getValue(),
-                extractedData.getZipCode().getValue());
+        String street = extractedData.getStreet().getValue();
+        String state = extractedData.getState().getValue();
+        String zip = extractedData.getZipCode().getValue();
+
+        StreetAddress address = getUnknownStreetAddress();
+
+        if (!isAddressUnknown(state, zip, street)) {
+          // Fetch address information
+          address =
+              addressValidationService.getValidatedAddress(
+                  street,
+                  extractedData.getStreet2().getValue(),
+                  extractedData.getCity().getValue(),
+                  state,
+                  zip);
+        }
 
         String country =
             extractedData.getCountry().getValue() == null
