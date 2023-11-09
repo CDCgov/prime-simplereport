@@ -78,22 +78,25 @@ export const TestCard = ({
   };
 
   return (
-    <div
-      data-testid={`test-card-${testOrder.patient.internalId}`}
-      ref={testCardElement}
-    >
+    <>
       <CloseTestCardModal
         closeModalRef={closeModalRef}
         name={patientFullName}
         removeTestFromQueue={removeTestFromQueue}
       />
-      <Card className={"list-style-none margin-bottom-1em test-card-container"}>
+      <Card
+        className={"list-style-none margin-bottom-1em test-card-container"}
+        data-testid={`test-card-${testOrder.patient.internalId}`}
+      >
         <CardHeader
           className={`padding-2 ${
             isExpanded ? "test-card-header-bottom-border" : ""
           }`}
         >
-          <div className="grid-row grid-gap flex-align-center">
+          <div
+            className="grid-row grid-gap flex-align-center"
+            ref={testCardElement}
+          >
             <div className="grid-col-auto margin-top-05">
               <Button
                 variant="unstyled"
@@ -169,6 +172,6 @@ export const TestCard = ({
           </CardBody>
         </div>
       </Card>
-    </div>
+    </>
   );
 };

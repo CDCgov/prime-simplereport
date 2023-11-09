@@ -1,9 +1,14 @@
 import moment from "moment/moment";
 import { useFeature } from "flagged";
 
-import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
+import {
+  DevicesMap,
+  QueriedDeviceType,
+  QueriedFacility,
+  QueriedTestOrder,
+} from "../QueueItem";
 import { displayFullName } from "../../utils";
-import { MULTIPLEX_DISEASES } from "../../testResults/constants";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
 import { getAppInsights } from "../../TelemetryService";
 import {
@@ -35,17 +40,44 @@ export function useTestOrderPatient(testOrder: QueriedTestOrder) {
   return { patientFullName, patientDateOfBirth };
 }
 
-export function useDeviceTypeOptions(
-  facility: QueriedFacility,
-  state: TestFormState
-) {
+const filterHIVFromDevice = (deviceType: QueriedDeviceType) => {
+  const filteredSupportedTests =
+    deviceType.supportedDiseaseTestPerformed.filter(
+      (t) => t.supportedDisease.name !== "HIV"
+    );
+  return {
+    ...deviceType,
+    supportedDiseaseTestPerformed: filteredSupportedTests,
+  };
+};
+
+const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
+  const filteredDeviceTypes = deviceTypes.map((d) => filterHIVFromDevice(d));
+
+  return filteredDeviceTypes.filter(
+    (d) => d.supportedDiseaseTestPerformed.length > 0
+  );
+};
+
+export function useFilteredDeviceTypes(facility: QueriedFacility) {
   const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
+  const hivEnabled = useFeature("hivEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
   if (!singleEntryRsvEnabled) {
     deviceTypes = filterRsvFromAllDevices(deviceTypes);
   }
 
+  if (!hivEnabled) {
+    deviceTypes = filterHIVFromAllDevices(deviceTypes);
+  }
+  return deviceTypes;
+}
+
+export function useDeviceTypeOptions(
+  deviceTypes: QueriedDeviceType[],
+  state: TestFormState
+) {
   let deviceTypeOptions = [...deviceTypes].sort(alphabetizeByName).map((d) => ({
     label: d.name,
     value: d.internalId,
@@ -114,23 +146,6 @@ export function alphabetizeByName(
   return 0;
 }
 
-export const doesDeviceSupportMultiplex = (
-  deviceId: string,
-  devicesMap: DevicesMap
-) => {
-  if (devicesMap.has(deviceId)) {
-    return (
-      devicesMap
-        .get(deviceId)!
-        .supportedDiseaseTestPerformed.filter(
-          (disease) =>
-            disease.supportedDisease.name !== MULTIPLEX_DISEASES.COVID_19
-        ).length > 0
-    );
-  }
-  return false;
-};
-
 export const isDeviceFluOnly = (deviceId: string, devicesMap: DevicesMap) => {
   if (devicesMap.has(deviceId)) {
     const supportedDiseaseTests =
@@ -175,10 +190,15 @@ export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
 export const convertFromMultiplexResponse = (
   responseResult: QueriedTestOrder["results"]
 ): MultiplexResultInput[] => {
-  return responseResult.map((result) => ({
-    diseaseName: result.disease?.name,
-    testResult: result.testResult,
-  }));
+  return responseResult.map((result) => {
+    const isResultValidEnum = Object.values<string>(TEST_RESULTS).includes(
+      result.testResult
+    );
+    return {
+      diseaseName: result.disease?.name,
+      testResult: isResultValidEnum ? result.testResult : TEST_RESULTS.UNKNOWN,
+    };
+  });
 };
 
 export const areAOEAnswersComplete = (

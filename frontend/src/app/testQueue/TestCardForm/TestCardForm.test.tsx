@@ -317,15 +317,15 @@ describe("TestCardForm", () => {
   });
 
   describe("error handling", () => {
-    it("should show error when only parts of results are inconclusive", async () => {
+    it("should show error when no results are filled in", async () => {
       const props = {
         ...testProps,
         testOrder: {
           ...testProps.testOrder,
           results: [
-            { testResult: "UNDETERMINED", disease: { name: "COVID-19" } },
-            { testResult: "POSITIVE", disease: { name: "Flu A" } },
-            { testResult: "POSITIVE", disease: { name: "Flu B" } },
+            { testResult: "UNKNOWN", disease: { name: "COVID-19" } },
+            { testResult: "UNKNOWN", disease: { name: "Flu A" } },
+            { testResult: "UNKNOWN", disease: { name: "Flu B" } },
           ],
         },
       };
@@ -336,61 +336,7 @@ describe("TestCardForm", () => {
       await user.click(screen.getByText("Submit results"));
 
       expect(
-        screen.getByText(
-          "This device only supports inconclusive results if all are inconclusive."
-        )
-      ).toBeInTheDocument();
-    });
-
-    it("should show error when only flu only of results are filled in for covid/flu device", async () => {
-      const tprops = {
-        ...testProps,
-        testOrder: {
-          ...testProps.testOrder,
-          results: [
-            { testResult: "POSITIVE", disease: { name: "Flu A" } },
-            { testResult: "POSITIVE", disease: { name: "Flu B" } },
-          ],
-        },
-      };
-
-      const { user } = await renderTestCardForm({ props: tprops, mocks: [] });
-
-      // Submit to start form validation
-      await user.click(screen.getByText("Submit results"));
-
-      expect(
-        screen.getByText(
-          "Please enter results for all conditions tested with this device."
-        )
-      ).toBeInTheDocument();
-    });
-
-    it("should show error when flu is filled out without covid in ", async () => {
-      const tprops = {
-        ...testProps,
-        testOrder: {
-          ...testProps.testOrder,
-          deviceType: {
-            internalId: multiplexAndCovidOnlyDeviceId,
-            name: multiplexAndCovidOnlyDeviceName,
-            model: multiplexAndCovidOnlyDeviceName,
-            testLength: 15,
-          },
-          results: [
-            { testResult: "POSITIVE", disease: { name: "Flu A" } },
-            { testResult: "POSITIVE", disease: { name: "Flu B" } },
-          ],
-        },
-      };
-
-      const { user } = await renderTestCardForm({ props: tprops, mocks: [] });
-
-      // Submit to start form validation
-      await user.click(screen.getByText("Submit results"));
-
-      expect(
-        screen.getByText("Please enter a COVID-19 test result.")
+        screen.getByText("Please enter a valid test result.")
       ).toBeInTheDocument();
     });
   });
