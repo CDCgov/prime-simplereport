@@ -9,7 +9,7 @@ import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../constants";
 
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
 
-export const testResultMock = {
+const testResult = {
   dateTested: new Date("2022-01-28T17:56:48.143Z"),
   result: "NEGATIVE",
   results: [
@@ -60,7 +60,7 @@ describe("TestResultPrintModal with only COVID results", () => {
     user: userEvent.setup(),
     ...render(
       <DetachedTestResultPrintModal
-        data={{ testResultMock }}
+        data={{ testResult }}
         testResultId="id"
         closeModal={() => {}}
       />
@@ -109,7 +109,7 @@ describe("TestResultPrintModal with multiplex results in SimpleReport App", () =
     // mock multiplex as true
     jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
 
-    const multiplexTestResult = cloneDeep(testResultMock);
+    const multiplexTestResult = cloneDeep(testResult);
     multiplexTestResult.results = [
       {
         disease: { name: MULTIPLEX_DISEASES.FLU_B },
@@ -158,7 +158,7 @@ describe("TestResultPrintModal with multiplex results in Pxp App", () => {
     //mock multiplex as true
     jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
 
-    const multiplexPxpTestResult = cloneDeep(testResultMock);
+    const multiplexPxpTestResult = cloneDeep(testResult);
     multiplexPxpTestResult.results = [
       {
         disease: { name: MULTIPLEX_DISEASES.COVID_19 },
