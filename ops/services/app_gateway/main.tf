@@ -110,6 +110,22 @@ resource "azurerm_application_gateway" "load_balancer" {
     }
   }
 
+  # ------- test -------------------------
+
+  probe {
+    name                                      = "frontend-http"
+    interval                                  = 10
+    path                                      = "${local.app_url}/pxp"
+    pick_host_name_from_backend_http_settings = false
+    protocol                                  = "Https"
+    timeout                                   = 10
+    unhealthy_threshold                       = 3
+
+    match {
+      status_code = [200]
+    }
+  }
+
   # ------- Backend API App -------------------------
   backend_address_pool {
     name         = local.api_backend_pool
