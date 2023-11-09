@@ -113,11 +113,11 @@ resource "azurerm_application_gateway" "load_balancer" {
   # ------- test -------------------------
 
   probe {
-    name = "frontend-http"
-    #     host                                      = "${local.url_prefix}.simplereport.gov"
+    name                                      = "frontend-http"
+    host                                      = "${local.url_prefix}.simplereport.gov"
     interval                                  = 10
-    path                                      = "/app"
-    pick_host_name_from_backend_http_settings = true
+    path                                      = "/app/pxp"
+    pick_host_name_from_backend_http_settings = false
     protocol                                  = "Https"
     timeout                                   = 10
     unhealthy_threshold                       = 3
