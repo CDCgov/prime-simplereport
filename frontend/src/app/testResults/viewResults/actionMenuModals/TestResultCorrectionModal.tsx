@@ -279,7 +279,10 @@ const TestResultCorrectionModal = (
     {props.testResultId && (
       <QueryWrapper<TestResultCorrectionModalProps>
         query={testQuery}
-        queryOptions={{ variables: { id: props.testResultId } }}
+        queryOptions={{
+          variables: { id: props.testResultId },
+          fetchPolicy: "no-cache",
+        }}
         Component={DetachedTestResultCorrectionModal}
         componentProps={{ ...props }}
       />

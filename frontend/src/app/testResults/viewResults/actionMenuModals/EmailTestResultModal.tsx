@@ -89,7 +89,10 @@ const EmailTestResultModal = (props: EmailTestResultModalProps) => (
     {props.testResultId && (
       <QueryWrapper<DetachedEmailTestResultModalProps>
         query={GetTestResultForResendingEmailsDocument}
-        queryOptions={{ variables: { id: props.testResultId } }}
+        queryOptions={{
+          variables: { id: props.testResultId },
+          fetchPolicy: "no-cache",
+        }}
         Component={DetachedEmailTestResultModal}
         componentProps={{ ...props }}
       />

@@ -255,9 +255,7 @@ export type TestResultPrintModalProps = Omit<
 > & {
   isOpen: boolean;
 };
-const TestResultPrintModal = (
-  props: Omit<TestResultPrintModalProps, "data">
-) => (
+const TestResultPrintModal = (props: TestResultPrintModalProps) => (
   <Modal
     isOpen={props.isOpen}
     className="sr-test-results-modal-content"
@@ -268,7 +266,10 @@ const TestResultPrintModal = (
     {props.testResultId && (
       <QueryWrapper<DetachedTestResultPrintModalProps>
         query={GetTestResultForPrintDocument}
-        queryOptions={{ variables: { id: props.testResultId } }}
+        queryOptions={{
+          variables: { id: props.testResultId },
+          fetchPolicy: "no-cache",
+        }}
         Component={DetachedTestResultPrintModal}
         componentProps={{ ...props }}
       />

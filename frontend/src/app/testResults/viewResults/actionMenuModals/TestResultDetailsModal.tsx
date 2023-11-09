@@ -287,7 +287,10 @@ const TestResultDetailsModal = (props: TestResultDetailsModalProps) => (
     {props.testResult?.id && (
       <QueryWrapper<DetachedTestResultDetailsModalProps>
         query={testResultDetailsQuery}
-        queryOptions={{ variables: { id: props.testResult.id } }}
+        queryOptions={{
+          variables: { id: props.testResult.id },
+          fetchPolicy: "no-cache",
+        }}
         Component={DetachedTestResultDetailsModal}
         componentProps={{ ...props }}
         displayLoadingIndicator={false}
