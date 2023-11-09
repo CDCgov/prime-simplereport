@@ -73,7 +73,7 @@ const Template: StoryFn<TestResultPrintModalProps> = (args) => {
 export const Default = Template.bind({});
 const defaultProps: TestResultPrintModalProps = {
   isOpen: true,
-  testResultId: "default",
+  testResultId: "1",
   closeModal: () => {},
   hardcodedPrintDate: "8/24/2021, 9:44:25 AM",
 };
@@ -81,9 +81,7 @@ const defaultProps: TestResultPrintModalProps = {
 Default.args = defaultProps;
 Default.parameters = {
   apolloClient: {
-    mocks: [
-      GetTestResultForPrintDocumentMock({ id: "default" }, { ...testResult }),
-    ],
+    mocks: [GetTestResultForPrintDocumentMock({ id: "1" }, { ...testResult })],
   },
 };
 
@@ -91,14 +89,14 @@ Default.parameters = {
  * Covid positive
  */
 export const WithPositiveCovid = Template.bind({});
-const positiveCovidProps = { ...defaultProps, testResultId: "covid_positive" };
+const positiveCovidProps = { ...defaultProps };
 
 WithPositiveCovid.args = positiveCovidProps;
 WithPositiveCovid.parameters = {
   apolloClient: {
     mocks: [
       GetTestResultForPrintDocumentMock(
-        { id: "covid_positive" },
+        { id: "1" },
         {
           ...testResult,
           results: [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }],
@@ -114,13 +112,12 @@ WithPositiveCovid.parameters = {
 export const WithUndeterminedCovid = Template.bind({});
 WithUndeterminedCovid.args = {
   ...defaultProps,
-  testResultId: "covid_undetermined",
 };
 WithUndeterminedCovid.parameters = {
   apolloClient: {
     mocks: [
       GetTestResultForPrintDocumentMock(
-        { id: "covid_undetermined" },
+        { id: "1" },
         {
           ...testResult,
           results: [
@@ -138,13 +135,12 @@ WithUndeterminedCovid.parameters = {
 export const WithPositiveFluMultiplex = Template.bind({});
 WithPositiveFluMultiplex.args = {
   ...defaultProps,
-  testResultId: "multiplex_positive",
 };
 WithPositiveFluMultiplex.parameters = {
   apolloClient: {
     mocks: [
       GetTestResultForPrintDocumentMock(
-        { id: "multiplex_positive" },
+        { id: "1" },
         {
           ...testResult,
           results: [
@@ -164,13 +160,12 @@ WithPositiveFluMultiplex.parameters = {
 export const WithPositiveCovidMultiplex = Template.bind({});
 WithPositiveCovidMultiplex.args = {
   ...defaultProps,
-  testResultId: "multiplex_covid_positive",
 };
 WithPositiveCovidMultiplex.parameters = {
   apolloClient: {
     mocks: [
       GetTestResultForPrintDocumentMock(
-        { id: "multiplex_covid_positive" },
+        { id: "1" },
         {
           ...testResult,
           results: [
@@ -190,13 +185,12 @@ WithPositiveCovidMultiplex.parameters = {
 export const WithPositiveAllMultiplex = Template.bind({});
 WithPositiveAllMultiplex.args = {
   ...defaultProps,
-  testResultId: "multiplex_all_positive",
 };
 WithPositiveAllMultiplex.parameters = {
   apolloClient: {
     mocks: [
       GetTestResultForPrintDocumentMock(
-        { id: "multiplex_all_positive" },
+        { id: "1" },
         {
           ...testResult,
           results: [
@@ -216,13 +210,12 @@ WithPositiveAllMultiplex.parameters = {
 export const WithNegativeAllMultiplex = Template.bind({});
 WithNegativeAllMultiplex.args = {
   ...defaultProps,
-  testResultId: "multiplex_all_negative",
 };
 WithNegativeAllMultiplex.parameters = {
   apolloClient: {
     mocks: [
       GetTestResultForPrintDocumentMock(
-        { id: "multiplex_all_negative" },
+        { id: "1" },
         {
           ...testResult,
           results: [
@@ -242,13 +235,12 @@ WithNegativeAllMultiplex.parameters = {
 export const WithUndeterminedAllMultiplex = Template.bind({});
 WithUndeterminedAllMultiplex.args = {
   ...defaultProps,
-  testResultId: "multiplex_undetermined",
 };
 WithUndeterminedAllMultiplex.parameters = {
   apolloClient: {
     mocks: [
       GetTestResultForPrintDocumentMock(
-        { id: "multiplex_undetermined" },
+        { id: "1" },
         {
           ...testResult,
           results: [
