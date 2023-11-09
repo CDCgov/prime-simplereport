@@ -267,7 +267,14 @@ export const MultiSelectDropdown = ({
       !newTarget ||
       (newTarget instanceof Node && !containerRef.current?.contains(newTarget));
 
-    if (newTargetIsOutside && !state.isOpen) {
+    const blurConditionsForRegularList =
+      !state.isExtended && newTargetIsOutside;
+
+    // don't blur if we're clicking within the list but outside the input (ie on table labels)
+    const blurConditionsForExtendedList =
+      state.isExtended && newTargetIsOutside && !state.isOpen;
+
+    if (blurConditionsForRegularList || blurConditionsForExtendedList) {
       dispatch({ type: ActionTypes.BLUR });
     }
   };

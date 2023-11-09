@@ -682,20 +682,23 @@ describe("MultiSelectDropdown component", () => {
       expect(screen.getByTestId("multi-select-option-list")).toBeVisible();
     });
 
-    it("hides options list when clicking away and input has focus", () => {
+    it("hides options list when clicking away and input has focus", async () => {
       const user = userEvent.setup();
       render(
-        <MultiSelectDropdown
-          id="favorite-fruit"
-          name="favorite-fruit"
-          options={fruitOptions}
-          onChange={jest.fn()}
-        />
+        <>
+          <MultiSelectDropdown
+            id="favorite-fruit"
+            name="favorite-fruit"
+            options={fruitOptions}
+            onChange={jest.fn()}
+          />
+        </>
       );
 
-      user.click(screen.getByTestId("multi-select-input"));
-      user.click(document.body);
+      await user.click(screen.getByTestId("multi-select-input"));
+      await user.click(document.body);
 
+      expect(screen.getByTestId("multi-select-input")).not.toHaveFocus();
       expect(screen.getByTestId("multi-select-input")).toHaveAttribute(
         "aria-expanded",
         "false"
