@@ -15,6 +15,7 @@ import {
 import { facilities } from "../mocks/facilities.mock";
 
 import TestResultsList, { ALL_FACILITIES_ID } from "./TestResultsList";
+import * as UtilsMock from "./utils";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -54,6 +55,16 @@ const WithRouter: React.FC<WithRouterProps> = ({
 );
 
 describe("TestResultsList", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(UtilsMock, "getTodaysDate")
+      .mockImplementation(() => "2023-11-08");
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("should render a list of tests", async () => {
     const { container } = render(
       <WithRouter>

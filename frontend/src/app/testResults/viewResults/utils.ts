@@ -1,4 +1,5 @@
 import { Location } from "react-router-dom";
+import moment from "moment";
 
 import { getParameterFromUrl } from "../../utils/url";
 
@@ -20,4 +21,8 @@ export function getFiltersFromUrl(url: Location) {
     ...(role && { role: role }),
     ...(filterFacilityId && { filterFacilityId: filterFacilityId }),
   };
+}
+
+export function getTodaysDate(): string {
+  return moment().format("YYYY-MM-DD");
 }

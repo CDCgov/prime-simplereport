@@ -179,9 +179,9 @@ const generateResultRows = (
         {!hasFacility ? (
           <td className="submitted-by-cell">
             {displayFullName(
-              r.createdBy?.firstName,
+              r.createdBy?.nameInfo?.firstName,
               null,
-              r.createdBy?.lastName
+              r.createdBy?.nameInfo?.lastName
             )}
           </td>
         ) : (

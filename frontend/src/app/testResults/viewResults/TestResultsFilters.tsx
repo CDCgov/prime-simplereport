@@ -40,6 +40,7 @@ import {
 import useComponentVisible from "../../commonComponents/ComponentVisible";
 
 import { ALL_FACILITIES_ID, DateRangeFilter } from "./TestResultsList";
+import { getTodaysDate } from "./utils";
 
 const getFilteredPatientName = (
   params: FilterParams,
@@ -172,7 +173,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
    */
 
   const { startDate, endDate, startDateError, endDateError } = dateRange;
-  const maxDate = moment().format("YYYY-MM-DD");
+  const maxDate = getTodaysDate();
 
   const processStartDate = (value: string | undefined) => {
     if (value) {
