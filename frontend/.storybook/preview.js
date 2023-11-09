@@ -1,4 +1,5 @@
 import { initialize, mswLoader } from "msw-storybook-addon";
+import { MockedProvider } from "@apollo/client/testing";
 import "../src/scss/App.scss";
 
 initialize();
@@ -28,6 +29,9 @@ const preview = {
         color: /(background|color)$/i,
         date: /Date$/,
       },
+    },
+    apolloClient: {
+      MockedProvider,
     },
   },
   // Provide the MSW addon loader globally

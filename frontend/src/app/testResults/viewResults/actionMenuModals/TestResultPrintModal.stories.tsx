@@ -1,14 +1,14 @@
 import { Meta, StoryFn } from "@storybook/react";
-import { uniqueId, cloneDeep } from "lodash";
 
-import {
-  DetachedTestResultPrintModal,
+import { GetTestResultForPrintDocument } from "../../../../generated/graphql";
+
+import TestResultPrintModal, {
   TestResultPrintModalProps,
 } from "./TestResultPrintModal";
 
 export default {
   title: "Print test results",
-  component: DetachedTestResultPrintModal,
+  component: TestResultPrintModal,
   parameters: {
     layout: "fullscreen",
   },
@@ -51,83 +51,213 @@ const testResult = {
   },
 };
 
+function GetTestResultForPrintDocumentMock(variables: any, testResult: any) {
+  return {
+    request: {
+      query: GetTestResultForPrintDocument,
+      variables,
+    },
+    result: {
+      data: { testResult },
+    },
+  };
+}
+
+const Template: StoryFn<TestResultPrintModalProps> = (args) => {
+  return <TestResultPrintModal {...args} />;
+};
+
+/**
+ * Default (Covid negative)
+ */
+export const Default = Template.bind({});
 const defaultProps: TestResultPrintModalProps = {
-  data: { testResult } as any,
   isOpen: true,
-  testResultId: uniqueId(),
+  testResultId: "default",
   closeModal: () => {},
   hardcodedPrintDate: "8/24/2021, 9:44:25 AM",
 };
 
-const positiveCovidProps = cloneDeep(defaultProps);
-positiveCovidProps.data.testResult.results = [
-  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
-];
-
-const undeterminedCovidProps = cloneDeep(defaultProps);
-undeterminedCovidProps.data.testResult.results = [
-  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-];
-
-const positiveFluMultiplexProps = cloneDeep(defaultProps);
-positiveFluMultiplexProps.data.testResult.results = [
-  { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
-];
-
-const positiveCovidMultiplexProps = cloneDeep(defaultProps);
-positiveCovidMultiplexProps.data.testResult.results = [
-  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
-  { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
-  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
-];
-
-const positiveAllMultiplexProps = cloneDeep(defaultProps);
-positiveAllMultiplexProps.data.testResult.results = [
-  { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
-  { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-  { disease: { name: "Flu B" }, testResult: "POSITIVE" },
-];
-
-const negativeAllMultiplexProps = cloneDeep(defaultProps);
-negativeAllMultiplexProps.data.testResult.results = [
-  { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
-  { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
-  { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
-];
-
-const undeterminedAllMultiplexProps = cloneDeep(defaultProps);
-undeterminedAllMultiplexProps.data.testResult.results = [
-  { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-  { disease: { name: "Flu A" }, testResult: "UNDETERMINED" },
-  { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
-];
-
-const Template: StoryFn<TestResultPrintModalProps> = (args) => {
-  return <DetachedTestResultPrintModal {...args} />;
+Default.args = defaultProps;
+Default.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock({ id: "default" }, { ...testResult }),
+    ],
+  },
 };
 
-export const Default = Template.bind({});
-Default.args = defaultProps;
-
+/**
+ * Covid positive
+ */
 export const WithPositiveCovid = Template.bind({});
+const positiveCovidProps = { ...defaultProps, testResultId: "covid_positive" };
+
 WithPositiveCovid.args = positiveCovidProps;
+WithPositiveCovid.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "covid_positive" },
+        {
+          ...testResult,
+          results: [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }],
+        }
+      ),
+    ],
+  },
+};
 
+/**
+ * Covid undetermined
+ */
 export const WithUndeterminedCovid = Template.bind({});
-WithUndeterminedCovid.args = undeterminedCovidProps;
+WithUndeterminedCovid.args = {
+  ...defaultProps,
+  testResultId: "covid_undetermined",
+};
+WithUndeterminedCovid.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "covid_undetermined" },
+        {
+          ...testResult,
+          results: [
+            { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+          ],
+        }
+      ),
+    ],
+  },
+};
 
+/**
+ * Multiplex Flu Positive
+ */
 export const WithPositiveFluMultiplex = Template.bind({});
-WithPositiveFluMultiplex.args = positiveFluMultiplexProps;
+WithPositiveFluMultiplex.args = {
+  ...defaultProps,
+  testResultId: "multiplex_positive",
+};
+WithPositiveFluMultiplex.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "multiplex_positive" },
+        {
+          ...testResult,
+          results: [
+            { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+            { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+            { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+          ],
+        }
+      ),
+    ],
+  },
+};
 
+/**
+ * Multiplex covid positive
+ */
 export const WithPositiveCovidMultiplex = Template.bind({});
-WithPositiveCovidMultiplex.args = positiveCovidMultiplexProps;
+WithPositiveCovidMultiplex.args = {
+  ...defaultProps,
+  testResultId: "multiplex_covid_positive",
+};
+WithPositiveCovidMultiplex.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "multiplex_covid_positive" },
+        {
+          ...testResult,
+          results: [
+            { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+            { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+            { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+          ],
+        }
+      ),
+    ],
+  },
+};
 
+/**
+ * Multiplex all positive
+ */
 export const WithPositiveAllMultiplex = Template.bind({});
-WithPositiveAllMultiplex.args = positiveAllMultiplexProps;
+WithPositiveAllMultiplex.args = {
+  ...defaultProps,
+  testResultId: "multiplex_all_positive",
+};
+WithPositiveAllMultiplex.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "multiplex_all_positive" },
+        {
+          ...testResult,
+          results: [
+            { disease: { name: "COVID-19" }, testResult: "POSITIVE" },
+            { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+            { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+          ],
+        }
+      ),
+    ],
+  },
+};
 
+/**
+ * Multiplex all negative
+ */
 export const WithNegativeAllMultiplex = Template.bind({});
-WithNegativeAllMultiplex.args = negativeAllMultiplexProps;
+WithNegativeAllMultiplex.args = {
+  ...defaultProps,
+  testResultId: "multiplex_all_negative",
+};
+WithNegativeAllMultiplex.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "multiplex_all_negative" },
+        {
+          ...testResult,
+          results: [
+            { disease: { name: "COVID-19" }, testResult: "NEGATIVE" },
+            { disease: { name: "Flu A" }, testResult: "NEGATIVE" },
+            { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
+          ],
+        }
+      ),
+    ],
+  },
+};
 
+/**
+ * Multiplex undetermined
+ */
 export const WithUndeterminedAllMultiplex = Template.bind({});
-WithUndeterminedAllMultiplex.args = undeterminedAllMultiplexProps;
+WithUndeterminedAllMultiplex.args = {
+  ...defaultProps,
+  testResultId: "multiplex_undetermined",
+};
+WithUndeterminedAllMultiplex.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "multiplex_undetermined" },
+        {
+          ...testResult,
+          results: [
+            { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
+            { disease: { name: "Flu A" }, testResult: "UNDETERMINED" },
+            { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
+          ],
+        }
+      ),
+    ],
+  },
+};

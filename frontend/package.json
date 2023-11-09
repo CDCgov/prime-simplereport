@@ -227,6 +227,7 @@
     "redux-mock-store": "^1.5.4",
     "sass": "^1.63.6",
     "storybook": "^7.4.6",
+    "storybook-addon-apollo-client": "^5.0.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "typescript": "^5.0.3",

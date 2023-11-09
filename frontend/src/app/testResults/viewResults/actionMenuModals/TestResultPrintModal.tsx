@@ -66,6 +66,7 @@ export const StaticTestResultModal = ({
   hardcodedPrintDate,
 }: StaticTestResultModalProps) => {
   const { t } = useTranslation();
+
   const {
     patient,
     facility,
@@ -248,10 +249,12 @@ export const DetachedTestResultPrintModal = ({
   );
 };
 
-export interface TestResultPrintModalProps
-  extends DetachedTestResultPrintModalProps {
+export type TestResultPrintModalProps = Omit<
+  DetachedTestResultPrintModalProps,
+  "data"
+> & {
   isOpen: boolean;
-}
+};
 const TestResultPrintModal = (
   props: Omit<TestResultPrintModalProps, "data">
 ) => (
@@ -263,7 +266,7 @@ const TestResultPrintModal = (
     onRequestClose={props.closeModal}
   >
     {props.testResultId && (
-      <QueryWrapper<TestResultPrintModalProps>
+      <QueryWrapper<DetachedTestResultPrintModalProps>
         query={GetTestResultForPrintDocument}
         queryOptions={{ variables: { id: props.testResultId } }}
         Component={DetachedTestResultPrintModal}
