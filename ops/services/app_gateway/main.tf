@@ -116,7 +116,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     name                                      = "frontend-http"
     host                                      = "${local.url_prefix}.simplereport.gov"
     interval                                  = 10
-    path                                      = local.app_url
+    path                                      = "/app"
     pick_host_name_from_backend_http_settings = false
     protocol                                  = "Https"
     timeout                                   = 10
