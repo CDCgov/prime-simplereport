@@ -61,7 +61,7 @@ export const DetachedTestResultTextModal = ({
   testResultId,
 }: DetachedTestResultTextModalProps) => {
   const [sendSMS] = useMutation(SEND_SMS);
-  const { patient, dateTested } = data?.testResult;
+  const { patient, dateTested } = data.testResult;
 
   const resendSMS = () => {
     sendSMS({

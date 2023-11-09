@@ -51,7 +51,7 @@ export const DownloadResultsCsvModal = ({
     facilityId:
       filterParams.filterFacilityId === ALL_FACILITIES_ID
         ? null
-        : filterParams.filterFacilityId || activeFacilityId,
+        : filterParams.filterFacilityId ?? activeFacilityId,
     pageNumber: 0,
     pageSize: totalEntries,
     ...filterParams,

@@ -47,7 +47,7 @@ const getFilteredPatientName = (
 ) => {
   const firstLoadedContentEntry =
     data?.resultsPage?.content && data?.resultsPage?.content[0];
-  const person = firstLoadedContentEntry && firstLoadedContentEntry.patient;
+  const person = firstLoadedContentEntry?.patient;
   if (params.patientId && person) {
     return displayFullName(
       person.firstName,
@@ -57,6 +57,21 @@ const getFilteredPatientName = (
   }
   return null;
 };
+
+const DateErrorMessage: React.FC<{ message: string | undefined }> = ({
+  message,
+}) => {
+  if (message) {
+    return (
+      <span className="usa-error-message" role="alert">
+        <span className="usa-sr-only">Error: </span>
+        {message}
+      </span>
+    );
+  }
+  return null;
+};
+
 interface TestResultsFiltersProps {
   data: any;
   activeFacilityId: string;
@@ -213,20 +228,6 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
   function getDateOrEmptyString(date: string | null | undefined) {
     return date ? moment(date).format("YYYY-MM-DD") : "";
   }
-
-  const DateErrorMessage: React.FC<{ message: string | undefined }> = ({
-    message,
-  }) => {
-    if (message) {
-      return (
-        <span className="usa-error-message" role="alert">
-          <span className="usa-sr-only">Error: </span>
-          {message}
-        </span>
-      );
-    }
-    return null;
-  };
 
   /**
    * Facility select

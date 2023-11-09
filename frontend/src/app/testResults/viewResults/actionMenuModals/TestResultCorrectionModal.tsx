@@ -219,11 +219,7 @@ export const DetachedTestResultCorrectionModal = ({
             ></textarea>
           </p>
           <RadioGroup
-            legend={
-              <>
-                <strong>Select an action:</strong>
-              </>
-            }
+            legend={<strong>Select an action:</strong>}
             required={true}
             buttons={testCorrectionActionValues}
             selectedRadio={action}

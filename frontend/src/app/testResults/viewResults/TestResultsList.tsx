@@ -147,7 +147,7 @@ const TestResultsList = () => {
     facilityId:
       filterFacilityId === ALL_FACILITIES_ID
         ? null
-        : filterFacilityId || activeFacilityId,
+        : filterFacilityId ?? activeFacilityId,
     pageNumber: pageNumber - 1,
     pageSize: entriesPerPage,
     ...queryParams,
