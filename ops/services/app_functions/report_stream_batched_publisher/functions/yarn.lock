@@ -132,10 +132,10 @@
     "@opentelemetry/instrumentation" "^0.41.2"
     tslib "^2.2.0"
 
-"@azure/storage-queue@^12.15.0":
-  version "12.15.0"
-  resolved "https://registry.yarnpkg.com/@azure/storage-queue/-/storage-queue-12.15.0.tgz#c124d362f5aabb6d1f450cf644d0a7756cb45a77"
-  integrity sha512-qotyfMcmocaT1r9bfX7RyQQnkRJcTXGSG/m6LIchtEsNmqLu3ulVqkOlNM+O0XP9wwJ6Da1XQbWz5jQtrDe3DQ==
+"@azure/storage-queue@^12.16.0":
+  version "12.16.0"
+  resolved "https://registry.yarnpkg.com/@azure/storage-queue/-/storage-queue-12.16.0.tgz#06ce127c8871058c85139d2ba4788390df54f2a0"
+  integrity sha512-HzwzMsNAh2PwLtx9WfXndj9elUr6duDFak5CjM6BxdWhLqf37VywPCWmEzjxuFfrq30c1T34+MjMXnN6YgqRUw==
   dependencies:
     "@azure/abort-controller" "^1.0.0"
     "@azure/core-http" "^3.0.0"
