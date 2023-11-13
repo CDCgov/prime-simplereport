@@ -314,7 +314,9 @@ describe("TestCardForm", () => {
         },
       };
 
-      expect(await renderTestCardForm({ props })).toMatchSnapshot();
+      const { container } = await renderTestCardForm({ props });
+
+      expect(container).toMatchSnapshot();
     });
 
     it("matches snapshot for hiv device", async () => {
