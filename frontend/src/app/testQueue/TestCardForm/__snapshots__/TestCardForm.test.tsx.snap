@@ -1218,7 +1218,7 @@ Object {
             >
               <label
                 class="usa-label"
-                for="17"
+                for="1"
               >
                 <span
                   class="usa-tooltip usa-text-with-tooltip"
@@ -1315,7 +1315,7 @@ Object {
             >
               <label
                 class="usa-label"
-                for="18"
+                for="2"
               >
                 Specimen type
                 <abbr
@@ -1385,7 +1385,7 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="19-val-POSITIVE"
+                          id="3-val-POSITIVE"
                           name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="POSITIVE"
@@ -1393,7 +1393,7 @@ Object {
                         <label
                           class="usa-radio__label"
                           data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                          for="19-val-POSITIVE"
+                          for="3-val-POSITIVE"
                         >
                           Positive (+)
                         </label>
@@ -1404,7 +1404,7 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="19-val-NEGATIVE"
+                          id="3-val-NEGATIVE"
                           name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="NEGATIVE"
@@ -1412,7 +1412,7 @@ Object {
                         <label
                           class="usa-radio__label"
                           data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                          for="19-val-NEGATIVE"
+                          for="3-val-NEGATIVE"
                         >
                           Negative (-)
                         </label>
@@ -1424,7 +1424,7 @@ Object {
                           checked=""
                           class="usa-radio__input"
                           data-required="false"
-                          id="19-val-UNDETERMINED"
+                          id="3-val-UNDETERMINED"
                           name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="UNDETERMINED"
@@ -1432,7 +1432,7 @@ Object {
                         <label
                           class="usa-radio__label"
                           data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                          for="19-val-UNDETERMINED"
+                          for="3-val-UNDETERMINED"
                         >
                           Inconclusive
                         </label>
@@ -1466,7 +1466,7 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="20-val-POSITIVE"
+                          id="4-val-POSITIVE"
                           name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="POSITIVE"
@@ -1474,7 +1474,7 @@ Object {
                         <label
                           class="usa-radio__label"
                           data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                          for="20-val-POSITIVE"
+                          for="4-val-POSITIVE"
                         >
                           Positive (+)
                         </label>
@@ -1485,7 +1485,7 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="20-val-NEGATIVE"
+                          id="4-val-NEGATIVE"
                           name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="NEGATIVE"
@@ -1493,7 +1493,7 @@ Object {
                         <label
                           class="usa-radio__label"
                           data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                          for="20-val-NEGATIVE"
+                          for="4-val-NEGATIVE"
                         >
                           Negative (-)
                         </label>
@@ -1505,7 +1505,7 @@ Object {
                           checked=""
                           class="usa-radio__input"
                           data-required="false"
-                          id="20-val-UNDETERMINED"
+                          id="4-val-UNDETERMINED"
                           name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
                           value="UNDETERMINED"
@@ -1513,7 +1513,7 @@ Object {
                         <label
                           class="usa-radio__label"
                           data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                          for="20-val-UNDETERMINED"
+                          for="4-val-UNDETERMINED"
                         >
                           Inconclusive
                         </label>
@@ -1715,7 +1715,7 @@ Object {
           >
             <label
               class="usa-label"
-              for="17"
+              for="1"
             >
               <span
                 class="usa-tooltip usa-text-with-tooltip"
@@ -1812,7 +1812,7 @@ Object {
           >
             <label
               class="usa-label"
-              for="18"
+              for="2"
             >
               Specimen type
               <abbr
@@ -1882,7 +1882,7 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="19-val-POSITIVE"
+                        id="3-val-POSITIVE"
                         name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="POSITIVE"
@@ -1890,7 +1890,7 @@ Object {
                       <label
                         class="usa-radio__label"
                         data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                        for="19-val-POSITIVE"
+                        for="3-val-POSITIVE"
                       >
                         Positive (+)
                       </label>
@@ -1901,7 +1901,7 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="19-val-NEGATIVE"
+                        id="3-val-NEGATIVE"
                         name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="NEGATIVE"
@@ -1909,7 +1909,7 @@ Object {
                       <label
                         class="usa-radio__label"
                         data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                        for="19-val-NEGATIVE"
+                        for="3-val-NEGATIVE"
                       >
                         Negative (-)
                       </label>
@@ -1921,7 +1921,7 @@ Object {
                         checked=""
                         class="usa-radio__input"
                         data-required="false"
-                        id="19-val-UNDETERMINED"
+                        id="3-val-UNDETERMINED"
                         name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="UNDETERMINED"
@@ -1929,7 +1929,7 @@ Object {
                       <label
                         class="usa-radio__label"
                         data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                        for="19-val-UNDETERMINED"
+                        for="3-val-UNDETERMINED"
                       >
                         Inconclusive
                       </label>
@@ -1963,7 +1963,7 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="20-val-POSITIVE"
+                        id="4-val-POSITIVE"
                         name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="POSITIVE"
@@ -1971,7 +1971,7 @@ Object {
                       <label
                         class="usa-radio__label"
                         data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                        for="20-val-POSITIVE"
+                        for="4-val-POSITIVE"
                       >
                         Positive (+)
                       </label>
@@ -1982,7 +1982,7 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="20-val-NEGATIVE"
+                        id="4-val-NEGATIVE"
                         name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="NEGATIVE"
@@ -1990,7 +1990,7 @@ Object {
                       <label
                         class="usa-radio__label"
                         data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                        for="20-val-NEGATIVE"
+                        for="4-val-NEGATIVE"
                       >
                         Negative (-)
                       </label>
@@ -2002,7 +2002,7 @@ Object {
                         checked=""
                         class="usa-radio__input"
                         data-required="false"
-                        id="20-val-UNDETERMINED"
+                        id="4-val-UNDETERMINED"
                         name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
                         value="UNDETERMINED"
@@ -2010,7 +2010,7 @@ Object {
                       <label
                         class="usa-radio__label"
                         data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                        for="20-val-UNDETERMINED"
+                        for="4-val-UNDETERMINED"
                       >
                         Inconclusive
                       </label>
