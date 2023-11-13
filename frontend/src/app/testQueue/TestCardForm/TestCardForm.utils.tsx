@@ -25,6 +25,7 @@ import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
   COVID = "COVID",
+  HIV = "HIV",
   NONE = "NONE",
 }
 
@@ -182,6 +183,15 @@ export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
   if (!hasAnySupportedDiseaseTests(deviceId, devicesMap)) {
     return AOEFormOption.COVID;
   }
+  if (
+    devicesMap
+      .get(deviceId)
+      ?.supportedDiseaseTestPerformed.filter(
+        (x) => x.supportedDisease.name === "HIV"
+      ).length === 1
+  ) {
+    return AOEFormOption.HIV;
+  }
   return isDeviceFluOnly(deviceId, devicesMap)
     ? AOEFormOption.NONE
     : AOEFormOption.COVID;
@@ -206,15 +216,14 @@ export const areAOEAnswersComplete = (
   whichAOE: AOEFormOption
 ) => {
   if (whichAOE === AOEFormOption.COVID) {
-    const isPregnancyAnswered = !!formState.covidAOEResponses.pregnancy;
-    const hasNoSymptoms = formState.covidAOEResponses.noSymptoms;
-    if (formState.covidAOEResponses.noSymptoms === false) {
-      const symptoms = parseSymptoms(formState.covidAOEResponses.symptoms);
+    const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
+    const hasNoSymptoms = formState.aoeResponses.noSymptoms;
+    if (formState.aoeResponses.noSymptoms === false) {
+      const symptoms = parseSymptoms(formState.aoeResponses.symptoms);
       const areSymptomsFilledIn = Object.values(symptoms).some((x) =>
         x.valueOf()
       );
-      const isSymptomOnsetDateAnswered =
-        !!formState.covidAOEResponses.symptomOnset;
+      const isSymptomOnsetDateAnswered = !!formState.aoeResponses.symptomOnset;
       return (
         isPregnancyAnswered &&
         !hasNoSymptoms &&

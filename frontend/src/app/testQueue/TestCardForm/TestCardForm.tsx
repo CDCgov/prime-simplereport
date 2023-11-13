@@ -53,6 +53,7 @@ import {
 } from "./TestCardForm.utils";
 import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
+import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 
 const DEBOUNCE_TIME = 300;
 
@@ -80,11 +81,12 @@ const TestCardForm = ({
     devicesMap: devicesMap,
     specimenId: testOrder.specimenType.internalId ?? "",
     testResults: convertFromMultiplexResponse(testOrder.results),
-    covidAOEResponses: {
+    aoeResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
       symptoms: JSON.stringify(parseSymptoms(testOrder.symptoms)),
+      genderOfSexualPartners: testOrder.genderOfSexualPartners,
     },
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
@@ -176,26 +178,24 @@ const TestCardForm = ({
       updateAOE();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.covidAOEResponses]);
+  }, [state.aoeResponses]);
 
   const updateAOE = async () => {
-    if (whichAOEFormOption === AOEFormOption.COVID) {
-      trackUpdateAoEResponse();
-      await updateAoeMutation({
-        variables: {
-          patientId: testOrder.patient.internalId,
-          noSymptoms: state.covidAOEResponses.noSymptoms,
-          // automatically converts boolean strings like "false" to false
-          symptoms: JSON.stringify(
-            parseSymptoms(state.covidAOEResponses.symptoms)
-          ),
-          symptomOnset: state.covidAOEResponses.symptomOnset
-            ? state.covidAOEResponses.symptomOnset
-            : null,
-          pregnancy: state.covidAOEResponses.pregnancy,
-        },
-      });
-    }
+    trackUpdateAoEResponse();
+    await updateAoeMutation({
+      variables: {
+        patientId: testOrder.patient.internalId,
+        noSymptoms: state.aoeResponses.noSymptoms,
+        // automatically converts boolean strings like "false" to false
+        symptoms: JSON.stringify(parseSymptoms(state.aoeResponses.symptoms)),
+        symptomOnset: state.aoeResponses.symptomOnset
+          ? state.aoeResponses.symptomOnset
+          : null,
+        pregnancy: state.aoeResponses.pregnancy,
+        genderOfSexualPartners:
+          state.aoeResponses.genderOfSexualPartners ?? null,
+      },
+    });
   };
 
   const updateTestOrder = async () => {
@@ -527,10 +527,24 @@ const TestCardForm = ({
           <div className="grid-row grid-gap">
             <CovidAoEForm
               testOrder={testOrder}
-              responses={state.covidAOEResponses}
+              responses={state.aoeResponses}
               onResponseChange={(responses) => {
                 dispatch({
-                  type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+            />
+          </div>
+        )}
+        {whichAOEFormOption === AOEFormOption.HIV && (
+          <div className="grid-row grid-gap">
+            <HIVAoEForm
+              testOrder={testOrder}
+              responses={state.aoeResponses}
+              onResponseChange={(responses) => {
+                dispatch({
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
                   payload: responses,
                 });
               }}

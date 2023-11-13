@@ -1,123 +1,124 @@
 mutation RemovePatientFromQueue($patientId: ID!) {
     removePatientFromQueue(patientId: $patientId)
-  }
+}
 
 mutation EditQueueItem(
-  $id: ID!
-  $deviceTypeId: ID
-  $specimenTypeId: ID
-  $results: [MultiplexResultInput]
-  $dateTested: DateTime
+    $id: ID!
+    $deviceTypeId: ID
+    $specimenTypeId: ID
+    $results: [MultiplexResultInput]
+    $dateTested: DateTime
 ) {
-  editQueueItem(
-    id: $id
-    deviceTypeId: $deviceTypeId
-    specimenTypeId: $specimenTypeId
-    results: $results
-    dateTested: $dateTested
-  ) {
-    results {
-      disease {
-        name
-      }
-      testResult
+    editQueueItem(
+        id: $id
+        deviceTypeId: $deviceTypeId
+        specimenTypeId: $specimenTypeId
+        results: $results
+        dateTested: $dateTested
+    ) {
+        results {
+            disease {
+                name
+            }
+            testResult
+        }
+        dateTested
+        deviceType {
+            internalId
+            testLength
+        }
     }
-    dateTested
-    deviceType {
-      internalId
-      testLength
-    }
-  }
 }
 
 mutation SubmitQueueItem(
-  $patientId: ID!
-  $deviceTypeId: ID!
-  $specimenTypeId: ID!
-  $results: [MultiplexResultInput]!
-  $dateTested: DateTime
+    $patientId: ID!
+    $deviceTypeId: ID!
+    $specimenTypeId: ID!
+    $results: [MultiplexResultInput]!
+    $dateTested: DateTime
 ) {
-  submitQueueItem(
-    patientId: $patientId
-    deviceTypeId: $deviceTypeId
-    specimenTypeId: $specimenTypeId
-    results: $results
-    dateTested: $dateTested
-  ) {
-    testResult {
-      internalId
+    submitQueueItem(
+        patientId: $patientId
+        deviceTypeId: $deviceTypeId
+        specimenTypeId: $specimenTypeId
+        results: $results
+        dateTested: $dateTested
+    ) {
+        testResult {
+            internalId
+        }
+        deliverySuccess
     }
-    deliverySuccess
-  }
 }
 
 query GetFacilityQueue($facilityId: ID!) {
-  queue(facilityId: $facilityId) {
-    internalId
-    pregnancy
-    dateAdded
-    symptoms
-    symptomOnset
-    noSymptoms
-    deviceType {
-      internalId
-      name
-      model
-      testLength
-    }
-    specimenType {
-      internalId
-      name
-      typeCode
-    }
-    patient {
-      internalId
-      telephone
-      birthDate
-      firstName
-      middleName
-      lastName
-      gender
-      testResultDelivery
-      preferredLanguage
-      email
-      emails
-      phoneNumbers {
-        type
-        number
-      }
-    }
-    results {
-      disease {
-        name
-      }
-      testResult
-    }
-    dateTested
-    correctionStatus
-    reasonForCorrection
-  }
-  facility(id: $facilityId) {
-    name
-    id
-    deviceTypes {
-      internalId
-      name
-      testLength
-      supportedDiseaseTestPerformed {
-        testPerformedLoincCode
-        testOrderedLoincCode
-        supportedDisease {
-          internalId
-          name
-          loinc
-        }
-      }
-      swabTypes {
+    queue(facilityId: $facilityId) {
         internalId
-        name
-        typeCode
-      }
+        pregnancy
+        dateAdded
+        symptoms
+        symptomOnset
+        noSymptoms
+        genderOfSexualPartners
+        deviceType {
+            internalId
+            name
+            model
+            testLength
+        }
+        specimenType {
+            internalId
+            name
+            typeCode
+        }
+        patient {
+            internalId
+            telephone
+            birthDate
+            firstName
+            middleName
+            lastName
+            gender
+            testResultDelivery
+            preferredLanguage
+            email
+            emails
+            phoneNumbers {
+                type
+                number
+            }
+        }
+        results {
+            disease {
+                name
+            }
+            testResult
+        }
+        dateTested
+        correctionStatus
+        reasonForCorrection
     }
-  }
+    facility(id: $facilityId) {
+        name
+        id
+        deviceTypes {
+            internalId
+            name
+            testLength
+            supportedDiseaseTestPerformed {
+                testPerformedLoincCode
+                testOrderedLoincCode
+                supportedDisease {
+                    internalId
+                    name
+                    loinc
+                }
+            }
+            swabTypes {
+                internalId
+                name
+                typeCode
+            }
+        }
+    }
 }
