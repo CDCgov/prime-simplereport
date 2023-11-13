@@ -13,6 +13,7 @@ import { AoeQuestionResponses } from "../TestCardFormReducer";
 interface HIVAoeFormProps {
   testOrder: QueriedTestOrder;
   responses: AoeQuestionResponses;
+  hasAttemptedSubmit: boolean;
   onResponseChange: (responses: AoeQuestionResponses) => void;
 }
 
@@ -21,6 +22,7 @@ const pregnancyResponses = getPregnancyResponses();
 export const HIVAoEForm = ({
   testOrder,
   responses,
+  hasAttemptedSubmit,
   onResponseChange,
 }: HIVAoeFormProps) => {
   const onPregnancyChange = (pregnancyCode: PregnancyCode) => {
@@ -36,6 +38,15 @@ export const HIVAoEForm = ({
     });
   };
 
+  const isPregnancyFilled = !!responses.pregnancy;
+  const isGenderOfSexualPartnersAnswered =
+    !!responses.genderOfSexualPartners &&
+    responses.genderOfSexualPartners.length > 0;
+
+  const showPregnancyError = hasAttemptedSubmit && !isPregnancyFilled;
+  const showGenderOfSexualPartnersError =
+    hasAttemptedSubmit && !isGenderOfSexualPartnersAnswered;
+
   return (
     <div
       className="grid-col"
@@ -49,6 +60,11 @@ export const HIVAoEForm = ({
             onChange={onPregnancyChange}
             buttons={pregnancyResponses}
             selectedRadio={responses.pregnancy}
+            required={true}
+            validationStatus={showPregnancyError ? "error" : undefined}
+            errorMessage={
+              showPregnancyError && "Please answer this required question."
+            }
           />
         </div>
       </div>
@@ -59,6 +75,14 @@ export const HIVAoEForm = ({
             options={GENDER_IDENTITY_VALUES}
             onChange={onSexualPartnerGenderChange}
             label={"What is the gender of their sexual partners?"}
+            required={true}
+            validationStatus={
+              showGenderOfSexualPartnersError ? "error" : undefined
+            }
+            errorMessage={
+              showGenderOfSexualPartnersError &&
+              "Please answer this required question."
+            }
           ></MultiSelect>
         </div>
       </div>

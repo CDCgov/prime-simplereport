@@ -118,6 +118,13 @@ const TestCardForm = ({
 
   const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
 
+  // AOE responses required for HIV positive result
+  const hivAOEResponsesRequired =
+    whichAOEFormOption === AOEFormOption.HIV &&
+    state.testResults.some(
+      (x) => x.diseaseName === "HIV" && x.testResult === TEST_RESULTS.POSITIVE
+    );
+
   /**
    * When backend sends an updated test order, update the form state
    * see refetch function and periodic polling on TestQueue useGetFacilityQueueQuery
@@ -269,10 +276,21 @@ const TestCardForm = ({
     return null;
   };
 
+  const getAOEError = () => {
+    if (
+      hivAOEResponsesRequired &&
+      !areAOEAnswersComplete(state, AOEFormOption.HIV)
+    ) {
+      return "Please answer all required questions.";
+    }
+    return null;
+  };
+
   const dateTestedError = getDateTestedError();
   const deviceTypeError = getDeviceTypeError();
   const specimenTypeError = getSpecimenTypeError();
   const testResultsError = getTestResultsError();
+  const aoeError = getAOEError();
 
   const showTestResultsError = hasAttemptedSubmit && testResultsError !== null;
 
@@ -298,11 +316,15 @@ const TestCardForm = ({
     if (testResultsError) {
       showError(testResultsError, "Invalid test results");
     }
+    if (aoeError) {
+      showError(aoeError, "Invalid test questionnaire");
+    }
     return (
       dateTestedError === null &&
       deviceTypeError === null &&
       specimenTypeError === null &&
-      testResultsError === null
+      testResultsError === null &&
+      aoeError === null
     );
   };
 
@@ -537,11 +559,12 @@ const TestCardForm = ({
             />
           </div>
         )}
-        {whichAOEFormOption === AOEFormOption.HIV && (
+        {hivAOEResponsesRequired && (
           <div className="grid-row grid-gap">
             <HIVAoEForm
               testOrder={testOrder}
               responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
               onResponseChange={(responses) => {
                 dispatch({
                   type: TestFormActionCase.UPDATE_AOE_RESPONSES,

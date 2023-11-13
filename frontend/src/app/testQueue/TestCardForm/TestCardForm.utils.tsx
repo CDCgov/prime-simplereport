@@ -233,6 +233,16 @@ export const areAOEAnswersComplete = (
     }
     return isPregnancyAnswered && hasNoSymptoms;
   }
+  const hasPositiveHIVResult = formState.testResults.some(
+    (x) => x.diseaseName === "HIV" && x.testResult === TEST_RESULTS.POSITIVE
+  );
+  if (whichAOE === AOEFormOption.HIV && hasPositiveHIVResult) {
+    const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
+    const isGenderOfSexualPartnersAnswered =
+      !!formState.aoeResponses.genderOfSexualPartners &&
+      formState.aoeResponses.genderOfSexualPartners.length > 0;
+    return isPregnancyAnswered && isGenderOfSexualPartnersAnswered;
+  }
   return true;
 };
 

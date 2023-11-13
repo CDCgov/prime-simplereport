@@ -1436,7 +1436,7 @@ describe("TestCard", () => {
       expect(screen.getByText("HIV result")).toBeInTheDocument();
     });
 
-    it("shows HIV AOE questions when an HIV device is chosen", async function () {
+    it("shows required HIV AOE questions when a positive HIV result is present", async function () {
       jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
 
       const mocks = [
@@ -1473,8 +1473,15 @@ describe("TestCard", () => {
 
       const { user } = await renderQueueItem({ mocks });
       const deviceDropdown = await getDeviceTypeDropdown();
+
       await user.selectOptions(deviceDropdown, device7Name);
       expect(screen.getByText("HIV result")).toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
       expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
       expect(
         screen.getByText("What is the gender of their sexual partners?")
@@ -1483,6 +1490,60 @@ describe("TestCard", () => {
         screen.queryByText(
           "Is the patient currently experiencing any symptoms?"
         )
+      ).not.toBeInTheDocument();
+    });
+
+    it("hides AOE questions when there is no positive HIV result", async function () {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
+      const mocks = [
+        {
+          request: {
+            query: EDIT_QUEUE_ITEM,
+            variables: {
+              id: testOrderInfo.internalId,
+              deviceTypeId: device7Id,
+              specimenTypeId: specimen3Id,
+              results: [{ diseaseName: "HIV", testResult: "UNKNOWN" }],
+              dateTested: null,
+            } as EDIT_QUEUE_ITEM_VARIABLES,
+          },
+          result: {
+            data: {
+              editQueueItem: {
+                results: [
+                  {
+                    disease: { name: "HIV" },
+                    testResult: "UNKNOWN",
+                  },
+                ],
+                dateTested: null,
+                deviceType: {
+                  internalId: device7Id,
+                  testLength: 15,
+                },
+              },
+            } as EDIT_QUEUE_ITEM_DATA,
+          },
+        },
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device7Name);
+      expect(screen.getByText("HIV result")).toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
       ).not.toBeInTheDocument();
     });
 
