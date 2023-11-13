@@ -112,6 +112,7 @@ export const testCardFormReducer = (
         specimenId:
           prevState.devicesMap.get(payload)?.swabTypes[0].internalId ??
           prevState.specimenId,
+        testResults: [],
         dirty: true,
       };
     }
@@ -147,6 +148,8 @@ export const testCardFormReducer = (
 
       if (prevState.deviceId !== payload.deviceType.internalId) {
         resultState.deviceId = payload.deviceType.internalId;
+        // clear test results if device id has changed
+        resultState.testResults = [];
       }
       if (prevState.specimenId !== payload.specimenType.internalId) {
         resultState.specimenId = payload.specimenType.internalId;

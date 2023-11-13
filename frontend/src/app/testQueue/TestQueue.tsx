@@ -257,7 +257,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             onExiting={onEmptyQueueExiting}
             timeout={transitionDuration}
           >
-            {emptyQueueMessage(canUseCsvUploader)}
+            {testCardRefactorEnabled ? (
+              <li className={"list-style-none"}>
+                {emptyQueueMessage(canUseCsvUploader)}
+              </li>
+            ) : (
+              emptyQueueMessage(canUseCsvUploader)
+            )}
           </CSSTransition>
         )}
       </TransitionGroup>
@@ -285,7 +291,11 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             addPatientToQueue={addPatientToQueue}
           />
         </div>
-        {createQueueItems(data.queue)}
+        {testCardRefactorEnabled ? (
+          <ul className={"test-card-list"}>{createQueueItems(data.queue)}</ul>
+        ) : (
+          createQueueItems(data.queue)
+        )}
       </div>
     </div>
   );

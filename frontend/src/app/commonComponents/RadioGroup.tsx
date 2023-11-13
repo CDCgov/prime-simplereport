@@ -6,7 +6,7 @@ import { UseFormRegisterReturn } from "react-hook-form";
 import Required from "./Required";
 import Optional from "./Optional";
 
-type Options<T> = {
+export type RadioGroupOptions<T> = {
   label: React.ReactNode;
   value: T;
   labelDescription?: string;
@@ -19,7 +19,7 @@ interface Props<T> {
   name?: string;
   legend?: React.ReactNode;
   legendSrOnly?: boolean;
-  buttons: Options<T>;
+  buttons: RadioGroupOptions<T>;
   className?: string;
   wrapperClassName?: string;
   required?: boolean;

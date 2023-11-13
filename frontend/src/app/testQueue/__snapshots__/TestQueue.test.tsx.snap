@@ -57,12 +57,12 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
           </form>
         </div>
       </div>
-      <div
-        data-testid="test-card-abc"
+      <ul
+        class="test-card-list"
       >
         <li
           class="usa-card list-style-none margin-bottom-1em test-card-container"
-          data-testid="Card"
+          data-testid="test-card-abc"
         >
           <div
             class="usa-card__container"
@@ -252,7 +252,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                     </div>
                   </div>
                   <div
-                    class="grid-row grid-gap margin-top-2"
+                    class="grid-row grid-gap"
                     data-testid="device-type-dropdown-container"
                   >
                     <div
@@ -403,87 +403,95 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                       data-testid="formGroup"
                     >
                       <div
-                        class="usa-form-group prime-radio__group"
+                        class="grid-row grid-gap"
                       >
-                        <fieldset
-                          class="usa-fieldset prime-radios"
-                          data-testid="covid-test-result-abc"
-                          id="covid-test-result-abc"
+                        <div
+                          class="grid-col-auto test-result-input-radio-group-column"
                         >
-                          <legend
-                            class="usa-legend"
-                          >
-                            COVID-19 result
-                            <abbr
-                              class="usa-hint usa-hint--required"
-                              title="required"
-                            >
-                               
-                              *
-                            </abbr>
-                          </legend>
                           <div
-                            class=""
+                            class="usa-form-group prime-radio__group"
                           >
-                            <div
-                              class="usa-radio"
+                            <fieldset
+                              class="usa-fieldset prime-radios"
+                              data-testid="COVID-19-test-result-abc"
+                              id="COVID-19-test-result-abc"
                             >
-                              <input
-                                class="usa-radio__input"
-                                data-required="true"
-                                id="9-val-POSITIVE"
-                                name="covid-test-result-abc"
-                                type="radio"
-                                value="POSITIVE"
-                              />
-                              <label
-                                class="usa-radio__label"
-                                data-cy="radio-group-option-covid-test-result-abc-POSITIVE"
-                                for="9-val-POSITIVE"
+                              <legend
+                                class="usa-legend"
                               >
-                                Positive (+)
-                              </label>
-                            </div>
-                            <div
-                              class="usa-radio"
-                            >
-                              <input
-                                class="usa-radio__input"
-                                data-required="true"
-                                id="9-val-NEGATIVE"
-                                name="covid-test-result-abc"
-                                type="radio"
-                                value="NEGATIVE"
-                              />
-                              <label
-                                class="usa-radio__label"
-                                data-cy="radio-group-option-covid-test-result-abc-NEGATIVE"
-                                for="9-val-NEGATIVE"
+                                COVID-19 result
+                                <abbr
+                                  class="usa-hint usa-hint--required"
+                                  title="required"
+                                >
+                                   
+                                  *
+                                </abbr>
+                              </legend>
+                              <div
+                                class=""
                               >
-                                Negative (-)
-                              </label>
-                            </div>
-                            <div
-                              class="usa-radio"
-                            >
-                              <input
-                                class="usa-radio__input"
-                                data-required="true"
-                                id="9-val-UNDETERMINED"
-                                name="covid-test-result-abc"
-                                type="radio"
-                                value="UNDETERMINED"
-                              />
-                              <label
-                                class="usa-radio__label"
-                                data-cy="radio-group-option-covid-test-result-abc-UNDETERMINED"
-                                for="9-val-UNDETERMINED"
-                              >
-                                Inconclusive
-                              </label>
-                            </div>
+                                <div
+                                  class="usa-radio"
+                                >
+                                  <input
+                                    class="usa-radio__input"
+                                    data-required="true"
+                                    id="9-val-POSITIVE"
+                                    name="COVID-19-test-result-abc"
+                                    type="radio"
+                                    value="POSITIVE"
+                                  />
+                                  <label
+                                    class="usa-radio__label"
+                                    data-cy="radio-group-option-COVID-19-test-result-abc-POSITIVE"
+                                    for="9-val-POSITIVE"
+                                  >
+                                    Positive (+)
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-radio"
+                                >
+                                  <input
+                                    class="usa-radio__input"
+                                    data-required="true"
+                                    id="9-val-NEGATIVE"
+                                    name="COVID-19-test-result-abc"
+                                    type="radio"
+                                    value="NEGATIVE"
+                                  />
+                                  <label
+                                    class="usa-radio__label"
+                                    data-cy="radio-group-option-COVID-19-test-result-abc-NEGATIVE"
+                                    for="9-val-NEGATIVE"
+                                  >
+                                    Negative (-)
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-radio"
+                                >
+                                  <input
+                                    class="usa-radio__input"
+                                    data-required="true"
+                                    id="9-val-UNDETERMINED"
+                                    name="COVID-19-test-result-abc"
+                                    type="radio"
+                                    value="UNDETERMINED"
+                                  />
+                                  <label
+                                    class="usa-radio__label"
+                                    data-cy="radio-group-option-COVID-19-test-result-abc-UNDETERMINED"
+                                    for="9-val-UNDETERMINED"
+                                  >
+                                    Inconclusive
+                                  </label>
+                                </div>
+                              </div>
+                            </fieldset>
                           </div>
-                        </fieldset>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -505,8 +513,8 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           >
                             <fieldset
                               class="usa-fieldset prime-radios"
-                              data-testid="pregnancy"
-                              id="pregnancy"
+                              data-testid="pregnancy-abc"
+                              id="pregnancy-abc"
                             >
                               <legend
                                 class="usa-legend"
@@ -523,13 +531,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="10-val-77386006"
-                                    name="pregnancy"
+                                    name="pregnancy-abc"
                                     type="radio"
                                     value="77386006"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-77386006"
+                                    data-cy="radio-group-option-pregnancy-abc-77386006"
                                     for="10-val-77386006"
                                   >
                                     Yes
@@ -542,13 +550,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="10-val-60001007"
-                                    name="pregnancy"
+                                    name="pregnancy-abc"
                                     type="radio"
                                     value="60001007"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-60001007"
+                                    data-cy="radio-group-option-pregnancy-abc-60001007"
                                     for="10-val-60001007"
                                   >
                                     No
@@ -561,13 +569,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="10-val-261665006"
-                                    name="pregnancy"
+                                    name="pregnancy-abc"
                                     type="radio"
                                     value="261665006"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-261665006"
+                                    data-cy="radio-group-option-pregnancy-abc-261665006"
                                     for="10-val-261665006"
                                   >
                                     Prefer not to answer
@@ -664,7 +672,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                             id="12"
                             max="2023-10-17"
                             min="2020-01-01"
-                            name="symptom-date"
+                            name="symptom-date-abc"
                             type="date"
                             value=""
                           />
@@ -1002,13 +1010,9 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
             </div>
           </div>
         </li>
-      </div>
-      <div
-        data-testid="test-card-def"
-      >
         <li
           class="usa-card list-style-none margin-bottom-1em test-card-container"
-          data-testid="Card"
+          data-testid="test-card-def"
         >
           <div
             class="usa-card__container"
@@ -1198,7 +1202,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                     </div>
                   </div>
                   <div
-                    class="grid-row grid-gap margin-top-2"
+                    class="grid-row grid-gap"
                     data-testid="device-type-dropdown-container"
                   >
                     <div
@@ -1349,87 +1353,95 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                       data-testid="formGroup"
                     >
                       <div
-                        class="usa-form-group prime-radio__group"
+                        class="grid-row grid-gap"
                       >
-                        <fieldset
-                          class="usa-fieldset prime-radios"
-                          data-testid="covid-test-result-def"
-                          id="covid-test-result-def"
+                        <div
+                          class="grid-col-auto test-result-input-radio-group-column"
                         >
-                          <legend
-                            class="usa-legend"
-                          >
-                            COVID-19 result
-                            <abbr
-                              class="usa-hint usa-hint--required"
-                              title="required"
-                            >
-                               
-                              *
-                            </abbr>
-                          </legend>
                           <div
-                            class=""
+                            class="usa-form-group prime-radio__group"
                           >
-                            <div
-                              class="usa-radio"
+                            <fieldset
+                              class="usa-fieldset prime-radios"
+                              data-testid="COVID-19-test-result-def"
+                              id="COVID-19-test-result-def"
                             >
-                              <input
-                                class="usa-radio__input"
-                                data-required="true"
-                                id="16-val-POSITIVE"
-                                name="covid-test-result-def"
-                                type="radio"
-                                value="POSITIVE"
-                              />
-                              <label
-                                class="usa-radio__label"
-                                data-cy="radio-group-option-covid-test-result-def-POSITIVE"
-                                for="16-val-POSITIVE"
+                              <legend
+                                class="usa-legend"
                               >
-                                Positive (+)
-                              </label>
-                            </div>
-                            <div
-                              class="usa-radio"
-                            >
-                              <input
-                                class="usa-radio__input"
-                                data-required="true"
-                                id="16-val-NEGATIVE"
-                                name="covid-test-result-def"
-                                type="radio"
-                                value="NEGATIVE"
-                              />
-                              <label
-                                class="usa-radio__label"
-                                data-cy="radio-group-option-covid-test-result-def-NEGATIVE"
-                                for="16-val-NEGATIVE"
+                                COVID-19 result
+                                <abbr
+                                  class="usa-hint usa-hint--required"
+                                  title="required"
+                                >
+                                   
+                                  *
+                                </abbr>
+                              </legend>
+                              <div
+                                class=""
                               >
-                                Negative (-)
-                              </label>
-                            </div>
-                            <div
-                              class="usa-radio"
-                            >
-                              <input
-                                class="usa-radio__input"
-                                data-required="true"
-                                id="16-val-UNDETERMINED"
-                                name="covid-test-result-def"
-                                type="radio"
-                                value="UNDETERMINED"
-                              />
-                              <label
-                                class="usa-radio__label"
-                                data-cy="radio-group-option-covid-test-result-def-UNDETERMINED"
-                                for="16-val-UNDETERMINED"
-                              >
-                                Inconclusive
-                              </label>
-                            </div>
+                                <div
+                                  class="usa-radio"
+                                >
+                                  <input
+                                    class="usa-radio__input"
+                                    data-required="true"
+                                    id="16-val-POSITIVE"
+                                    name="COVID-19-test-result-def"
+                                    type="radio"
+                                    value="POSITIVE"
+                                  />
+                                  <label
+                                    class="usa-radio__label"
+                                    data-cy="radio-group-option-COVID-19-test-result-def-POSITIVE"
+                                    for="16-val-POSITIVE"
+                                  >
+                                    Positive (+)
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-radio"
+                                >
+                                  <input
+                                    class="usa-radio__input"
+                                    data-required="true"
+                                    id="16-val-NEGATIVE"
+                                    name="COVID-19-test-result-def"
+                                    type="radio"
+                                    value="NEGATIVE"
+                                  />
+                                  <label
+                                    class="usa-radio__label"
+                                    data-cy="radio-group-option-COVID-19-test-result-def-NEGATIVE"
+                                    for="16-val-NEGATIVE"
+                                  >
+                                    Negative (-)
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-radio"
+                                >
+                                  <input
+                                    class="usa-radio__input"
+                                    data-required="true"
+                                    id="16-val-UNDETERMINED"
+                                    name="COVID-19-test-result-def"
+                                    type="radio"
+                                    value="UNDETERMINED"
+                                  />
+                                  <label
+                                    class="usa-radio__label"
+                                    data-cy="radio-group-option-COVID-19-test-result-def-UNDETERMINED"
+                                    for="16-val-UNDETERMINED"
+                                  >
+                                    Inconclusive
+                                  </label>
+                                </div>
+                              </div>
+                            </fieldset>
                           </div>
-                        </fieldset>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1451,8 +1463,8 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           >
                             <fieldset
                               class="usa-fieldset prime-radios"
-                              data-testid="pregnancy"
-                              id="pregnancy"
+                              data-testid="pregnancy-def"
+                              id="pregnancy-def"
                             >
                               <legend
                                 class="usa-legend"
@@ -1469,13 +1481,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="17-val-77386006"
-                                    name="pregnancy"
+                                    name="pregnancy-def"
                                     type="radio"
                                     value="77386006"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-77386006"
+                                    data-cy="radio-group-option-pregnancy-def-77386006"
                                     for="17-val-77386006"
                                   >
                                     Yes
@@ -1488,13 +1500,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="17-val-60001007"
-                                    name="pregnancy"
+                                    name="pregnancy-def"
                                     type="radio"
                                     value="60001007"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-60001007"
+                                    data-cy="radio-group-option-pregnancy-def-60001007"
                                     for="17-val-60001007"
                                   >
                                     No
@@ -1507,13 +1519,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                                     class="usa-radio__input"
                                     data-required="false"
                                     id="17-val-261665006"
-                                    name="pregnancy"
+                                    name="pregnancy-def"
                                     type="radio"
                                     value="261665006"
                                   />
                                   <label
                                     class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-261665006"
+                                    data-cy="radio-group-option-pregnancy-def-261665006"
                                     for="17-val-261665006"
                                   >
                                     Prefer not to answer
@@ -1610,7 +1622,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                             id="19"
                             max="2023-10-17"
                             min="2020-01-01"
-                            name="symptom-date"
+                            name="symptom-date-def"
                             type="date"
                             value=""
                           />
@@ -1948,7 +1960,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
             </div>
           </div>
         </li>
-      </div>
+      </ul>
     </div>
   </div>
 </div>

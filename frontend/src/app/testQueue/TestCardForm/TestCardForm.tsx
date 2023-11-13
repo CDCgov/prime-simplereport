@@ -14,8 +14,9 @@ import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
-import { MULTIPLEX_DISEASES } from "../../testResults/constants";
+import { TEST_RESULTS } from "../../testResults/constants";
 import {
+  MultiplexResultInput,
   useEditQueueItemMutation,
   useSubmitQueueItemMutation,
   useUpdateAoeMutation,
@@ -35,13 +36,6 @@ import {
   TestFormActionCase,
   TestFormState,
 } from "./TestCardFormReducer";
-import CovidResultInputGroup, {
-  validateCovidResultInput,
-} from "./diseaseSpecificComponents/CovidResultInputGroup";
-import MultiplexResultInputGroup, {
-  convertFromMultiplexResultInputs,
-  validateMultiplexResultState,
-} from "./diseaseSpecificComponents/MultiplexResultInputGroup";
 import CovidAoEForm, {
   parseSymptoms,
 } from "./diseaseSpecificComponents/CovidAoEForm";
@@ -49,15 +43,16 @@ import {
   AOEFormOption,
   areAOEAnswersComplete,
   convertFromMultiplexResponse,
-  doesDeviceSupportMultiplex,
   showTestResultDeliveryStatusAlert,
   useAOEFormOption,
   useAppInsightTestCardEvents,
   useDeviceTypeOptions,
+  useFilteredDeviceTypes,
   useSpecimenTypeOptions,
   useTestOrderPatient,
 } from "./TestCardForm.utils";
 import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
+import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
 
 const DEBOUNCE_TIME = 300;
 
@@ -108,19 +103,16 @@ const TestCardForm = ({
 
   const submitModalRef = useRef<ModalRef>(null);
 
+  const filteredDeviceTypes = useFilteredDeviceTypes(facility);
+
   const { deviceTypeOptions, deviceTypeIsInvalid } = useDeviceTypeOptions(
-    facility,
+    filteredDeviceTypes,
     state
   );
   const { specimenTypeOptions, specimenTypeIsInvalid } =
     useSpecimenTypeOptions(state);
 
   const { patientFullName } = useTestOrderPatient(testOrder);
-
-  const deviceSupportsMultiplex = doesDeviceSupportMultiplex(
-    state.deviceId,
-    devicesMap
-  );
 
   const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
 
@@ -207,19 +199,13 @@ const TestCardForm = ({
   };
 
   const updateTestOrder = async () => {
-    const resultsToSave = doesDeviceSupportMultiplex(state.deviceId, devicesMap)
-      ? state.testResults
-      : state.testResults.filter(
-          (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
-        );
-
     const response = await editQueueItem({
       variables: {
         id: testOrder.internalId,
         deviceTypeId: state.deviceId,
         dateTested: state.dateTested,
         specimenTypeId: state.specimenId,
-        results: resultsToSave,
+        results: state.testResults,
       },
     });
     if (!response.data) {
@@ -227,7 +213,7 @@ const TestCardForm = ({
     }
   };
 
-  const validateDateTested = () => {
+  const getDateTestedError = () => {
     const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
     if (!state.dateTested && !useCurrentTime) {
       return "Test date can't be empty";
@@ -245,43 +231,59 @@ const TestCardForm = ({
     if (state.dateTested && dateTested > new Date()) {
       return "Test date can't be in the future.";
     }
-    return "";
+    return null;
   };
 
-  const validateTestResults = () => {
-    if (deviceSupportsMultiplex) {
-      const multiplexResults = convertFromMultiplexResultInputs(
-        state.testResults
+  const getDeviceTypeError = () =>
+    deviceTypeIsInvalid ? "Please select a device." : null;
+
+  const getSpecimenTypeError = () =>
+    specimenTypeIsInvalid ? "Please select a specimen type." : null;
+
+  const getTestResultsError = () => {
+    const supportedDiseaseNames =
+      state.devicesMap
+        .get(state.deviceId)
+        ?.supportedDiseaseTestPerformed.map(
+          (supportedTest) => supportedTest.supportedDisease.name
+        ) ?? [];
+    let validResults: MultiplexResultInput[] = [];
+    state.testResults.forEach((result) => {
+      // check that result's disease name is supported by the current device
+      const hasSupportedDiseaseName = supportedDiseaseNames.some(
+        (diseaseName) => diseaseName === result.diseaseName
       );
-      return validateMultiplexResultState(
-        multiplexResults,
-        state.deviceId,
-        devicesMap
-      );
+      const isFilled =
+        result.testResult === TEST_RESULTS.POSITIVE ||
+        result.testResult === TEST_RESULTS.NEGATIVE ||
+        result.testResult === TEST_RESULTS.UNDETERMINED;
+
+      if (isFilled && hasSupportedDiseaseName) {
+        validResults.push(result);
+      }
+    });
+    if (validResults.length === 0) {
+      return "Please enter a valid test result.";
     }
-    return validateCovidResultInput(state.testResults);
+
+    return null;
   };
 
-  // derived state, not expensive to calculate every render and avoids unnecessary tracked state
-  const dateTestedError = validateDateTested();
-  const deviceTypeError = deviceTypeIsInvalid ? "Please select a device." : "";
-  const specimenTypeError = specimenTypeIsInvalid
-    ? "Please select a specimen type."
-    : "";
-  const testResultsError = validateTestResults();
+  const dateTestedError = getDateTestedError();
+  const deviceTypeError = getDeviceTypeError();
+  const specimenTypeError = getSpecimenTypeError();
+  const testResultsError = getTestResultsError();
 
-  const showDateTestedError = dateTestedError.length > 0;
+  const showTestResultsError = hasAttemptedSubmit && testResultsError !== null;
 
-  const showTestResultsError =
-    hasAttemptedSubmit && testResultsError.length > 0;
-
-  const isCorrection = testOrder.correctionStatus === "CORRECTED";
-  const reasonForCorrection =
-    testOrder.reasonForCorrection as TestCorrectionReason;
-
+  // only show warning if date tested has no error
   const showDateMonthsAgoWarning =
     moment(state.dateTested) < moment().subtract(6, "months") &&
-    dateTestedError.length === 0;
+    dateTestedError === null;
+
+  const showCorrectionWarning = testOrder.correctionStatus === "CORRECTED";
+  const reasonForCorrection =
+    testOrder.reasonForCorrection as TestCorrectionReason;
 
   const validateForm = () => {
     if (dateTestedError) {
@@ -297,10 +299,10 @@ const TestCardForm = ({
       showError(testResultsError, "Invalid test results");
     }
     return (
-      !dateTestedError &&
-      !deviceTypeError &&
-      !specimenTypeError &&
-      !testResultsError
+      dateTestedError === null &&
+      deviceTypeError === null &&
+      specimenTypeError === null &&
+      testResultsError === null
     );
   };
 
@@ -323,11 +325,7 @@ const TestCardForm = ({
         deviceTypeId: state.deviceId,
         specimenTypeId: state.specimenId,
         dateTested: state.dateTested,
-        results: doesDeviceSupportMultiplex(state.deviceId, devicesMap)
-          ? state.testResults
-          : state.testResults.filter(
-              (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
-            ),
+        results: state.testResults,
       },
     });
     showTestResultDeliveryStatusAlert(
@@ -351,7 +349,7 @@ const TestCardForm = ({
       />
       <div className="grid-container">
         {/* error and warning alerts */}
-        {isCorrection && (
+        {showCorrectionWarning && (
           <Alert type="warning" headingLevel="h4" className="margin-top-2">
             <strong>Correction: </strong>
             {reasonForCorrection in TestCorrectionReasons
@@ -397,8 +395,8 @@ const TestCardForm = ({
                   }
                 }}
                 required={true}
-                validationStatus={showDateTestedError ? "error" : undefined}
-                errorMessage={showDateTestedError && dateTestedError}
+                validationStatus={dateTestedError ? "error" : undefined}
+                errorMessage={dateTestedError}
               ></TextInput>
             </div>
             <div className="grid-col-auto display-flex">
@@ -419,7 +417,7 @@ const TestCardForm = ({
                     });
                   }
                 }}
-                validationStatus={showDateTestedError ? "error" : undefined}
+                validationStatus={dateTestedError ? "error" : undefined}
               ></TextInput>
             </div>
           </div>
@@ -453,7 +451,7 @@ const TestCardForm = ({
           </div>
         </div>
         <div
-          className="grid-row grid-gap margin-top-2"
+          className="grid-row grid-gap"
           data-testid="device-type-dropdown-container"
         >
           <div className="grid-col-auto">
@@ -479,7 +477,7 @@ const TestCardForm = ({
               className="card-dropdown"
               data-testid="device-type-dropdown"
               errorMessage={deviceTypeError}
-              validationStatus={deviceTypeIsInvalid ? "error" : undefined}
+              validationStatus={deviceTypeError ? "error" : undefined}
               required={true}
             />
           </div>
@@ -504,38 +502,25 @@ const TestCardForm = ({
               data-testid="specimen-type-dropdown"
               disabled={specimenTypeOptions.length === 0}
               errorMessage={specimenTypeError}
-              validationStatus={specimenTypeIsInvalid ? "error" : undefined}
+              validationStatus={specimenTypeError ? "error" : undefined}
               required={true}
             />
           </div>
         </div>
         <div className="grid-row grid-gap">
           <FormGroup>
-            {deviceSupportsMultiplex ? (
-              <MultiplexResultInputGroup
-                queueItemId={testOrder.internalId}
-                testResults={state.testResults}
-                deviceId={state.deviceId}
-                devicesMap={devicesMap}
-                onChange={(results) =>
-                  dispatch({
-                    type: TestFormActionCase.UPDATE_TEST_RESULT,
-                    payload: results,
-                  })
-                }
-              ></MultiplexResultInputGroup>
-            ) : (
-              <CovidResultInputGroup
-                queueItemId={testOrder.internalId}
-                testResults={state.testResults}
-                onChange={(results) =>
-                  dispatch({
-                    type: TestFormActionCase.UPDATE_TEST_RESULT,
-                    payload: results,
-                  })
-                }
-              />
-            )}
+            <TestResultInputGroup
+              testOrderId={testOrder.internalId}
+              testResults={state.testResults}
+              deviceId={state.deviceId}
+              deviceTypes={filteredDeviceTypes}
+              onChange={(results) =>
+                dispatch({
+                  type: TestFormActionCase.UPDATE_TEST_RESULT,
+                  payload: results,
+                })
+              }
+            ></TestResultInputGroup>
           </FormGroup>
         </div>
         {whichAOEFormOption === AOEFormOption.COVID && (

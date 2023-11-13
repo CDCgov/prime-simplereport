@@ -101,7 +101,7 @@ const CovidAoEForm = ({
         <div className="grid-col-auto">
           <RadioGroup
             legend="Is the patient pregnant?"
-            name="pregnancy"
+            name={`pregnancy-${testOrder.internalId}`}
             onChange={onPregnancyChange}
             buttons={pregnancyResponses}
             selectedRadio={responses.pregnancy}
@@ -123,7 +123,7 @@ const CovidAoEForm = ({
           <div className="grid-row grid-gap">
             <TextInput
               data-testid="symptom-date"
-              name="symptom-date"
+              name={`symptom-date-${testOrder.internalId}`}
               type="date"
               label="When did the patient's symptoms start?"
               aria-label="Symptom onset date"
