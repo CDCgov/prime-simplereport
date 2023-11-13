@@ -112,7 +112,6 @@ function createActionItemList(
 const generateResultRows = (
   testResults: Array<Result>,
   onActionSelect: Dispatch<SetStateAction<ActionInformation>>,
-  hasMultiplexResults: boolean,
   hasFacility: boolean
 ) => {
   if (testResults.length === 0) {
@@ -202,7 +201,6 @@ const generateResultRows = (
 
 interface ResultsTableListProps {
   results: Array<Result>;
-  hasMultiplexResults: boolean;
   hasFacility: boolean;
 }
 
@@ -211,11 +209,7 @@ type ActionInformation = {
   testResult: Result | undefined;
 };
 
-const ResultsTable = ({
-  results,
-  hasMultiplexResults,
-  hasFacility,
-}: ResultsTableListProps) => {
+const ResultsTable = ({ results, hasFacility }: ResultsTableListProps) => {
   /**
    * Modals and selected test result handlers
    */
@@ -259,12 +253,7 @@ const ResultsTable = ({
           {generateTableHeaders(hasFacility)}
         </thead>
         <tbody data-testid={"filtered-results"}>
-          {generateResultRows(
-            results,
-            setActionSelected,
-            hasMultiplexResults,
-            hasFacility
-          )}
+          {generateResultRows(results, setActionSelected, hasFacility)}
         </tbody>
       </table>
       <TestResultPrintModal

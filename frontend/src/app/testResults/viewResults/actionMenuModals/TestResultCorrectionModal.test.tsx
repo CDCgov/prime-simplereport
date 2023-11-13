@@ -85,12 +85,6 @@ const renderModal = (
 describe("TestResultCorrectionModal", () => {
   let component: any;
 
-  /*beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-  });*/
-
   it("renders the correction reason dropdown menu", async () => {
     renderModal(false, []);
 

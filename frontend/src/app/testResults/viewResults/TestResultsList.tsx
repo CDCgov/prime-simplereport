@@ -168,12 +168,6 @@ const TestResultsList = () => {
     filterParams.filterFacilityId === ALL_FACILITIES_ID ||
     activeFacilityId === ALL_FACILITIES_ID;
 
-  const hasMultiplexResults = testResults.some(
-    (result: any) =>
-      result.results?.length &&
-      result.results.some((r: any) => r.disease.name !== "COVID-19")
-  );
-
   /**
    * HTML (content)
    */
@@ -235,7 +229,6 @@ const TestResultsList = () => {
         </div>
         <ResultsTable
           results={testResults as Result[]}
-          hasMultiplexResults={hasMultiplexResults}
           hasFacility={displayFacilityColumn}
         />
         <div className="usa-card__footer">
