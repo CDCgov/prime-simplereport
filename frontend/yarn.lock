@@ -4997,10 +4997,10 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trussworks/react-uswds@5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@trussworks/react-uswds/-/react-uswds-5.0.0.tgz#b0ffb65c8568f35ada4ab5e87bad143566cc14c1"
-  integrity sha512-nOUnwiIosQFPKUeBMoDw9OoS2WG0TZl6cGrJmrL70i20ECFMYRaj/CCV+DnB1npuNg3PNzcdED9tuInRndfk4Q==
+"@trussworks/react-uswds@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@trussworks/react-uswds/-/react-uswds-5.1.1.tgz#77b536132adf0e893c0738f4e7db5012af6130e2"
+  integrity sha512-SAlgEIFGCIKyV5aQjIi8dBUwLGdqNkbDHDvXPPWyySlhJkut5MNmZQ73BpFTxke6WqJreljkApPubMWUPiynlw==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"
