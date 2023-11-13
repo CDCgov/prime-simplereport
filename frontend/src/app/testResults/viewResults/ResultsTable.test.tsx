@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
-import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
 import { Result } from "../../../generated/graphql";
 import { toLowerCaseHyphenate } from "../../utils/text";
 
@@ -66,60 +65,18 @@ describe("Method generateTableHeaders", () => {
 });
 
 describe("Component ResultsTable", () => {
-  const setPrintModalIdFn = jest.fn();
-  const setMarkCorrectionIdFn = jest.fn();
-  const setDetailsModalIdFn = jest.fn();
-  const setTextModalIdFn = jest.fn();
-  const setEmailModalTestResultIdFn = jest.fn();
-
   it("checks table without results", () => {
-    render(
-      <ResultsTable
-        results={[]}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
-        hasMultiplexResults={false}
-        hasFacility={false}
-      />
-    );
+    render(<ResultsTable results={[]} hasFacility={false} />);
 
     expect(
       screen.getByRole("cell", { name: /no results/i })
     ).toBeInTheDocument();
   });
 
-  it("checks table with covid results", () => {
-    render(
-      <ResultsTable
-        results={[TEST_RESULT_COVID.content[0] as unknown as Result]}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
-        hasMultiplexResults={false}
-        hasFacility={false}
-      />
-    );
-
-    expect(screen.getByTestId("covid-19-result")).toHaveTextContent("Negative");
-    expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
-    expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
-  });
-
   it("checks table with multiplex results", () => {
     render(
       <ResultsTable
         results={TEST_RESULTS_MULTIPLEX_CONTENT}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
-        hasMultiplexResults={true}
         hasFacility={false}
       />
     );
@@ -139,12 +96,6 @@ describe("Component ResultsTable", () => {
     render(
       <ResultsTable
         results={TEST_RESULTS_MULTIPLEX_CONTENT}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
-        hasMultiplexResults={true}
         hasFacility={false}
       />
     );
@@ -160,18 +111,7 @@ describe("Component ResultsTable", () => {
   describe("actions menu", () => {
     const renderWithUser = (results: Result[]) => ({
       user: userEvent.setup(),
-      ...render(
-        <ResultsTable
-          results={results}
-          setPrintModalId={setPrintModalIdFn}
-          setMarkCorrectionId={setMarkCorrectionIdFn}
-          setDetailsModalId={setDetailsModalIdFn}
-          setTextModalId={setTextModalIdFn}
-          setEmailModalTestResultId={setEmailModalTestResultIdFn}
-          hasMultiplexResults={false}
-          hasFacility={false}
-        />
-      ),
+      ...render(<ResultsTable results={results} hasFacility={false} />),
     });
 
     describe("text result action", () => {

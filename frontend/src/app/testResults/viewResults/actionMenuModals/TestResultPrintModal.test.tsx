@@ -5,8 +5,9 @@ import MockDate from "mockdate";
 import ReactDOM from "react-dom";
 import * as flaggedMock from "flagged";
 
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../constants";
+
 import { DetachedTestResultPrintModal } from "./TestResultPrintModal";
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
 const testResult = {
   dateTested: new Date("2022-01-28T17:56:48.143Z"),

@@ -2,22 +2,24 @@ import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
 
-import iconClose from "../../img/close.svg";
-import "./TestResultPrintModal.scss";
-import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import { formatFullName } from "../utils/user";
-import { symptomsStringToArray } from "../utils/symptoms";
+import iconClose from "../../../../img/close.svg";
+import { QueryWrapper } from "../../../commonComponents/QueryWrapper";
+import { formatFullName } from "../../../utils/user";
+import { symptomsStringToArray } from "../../../utils/symptoms";
+import { Result as ResponseResult } from "../../../../generated/graphql";
 import {
   PregnancyCode,
   pregnancyMap,
-} from "../../patientApp/timeOfTest/constants";
+} from "../../../../patientApp/timeOfTest/constants";
 import {
   getResultByDiseaseName,
   hasMultiplexResults,
-} from "../utils/testResults";
-import { formatDateWithTimeOption } from "../utils/date";
+} from "../../../utils/testResults";
+import { displayFullName } from "../../../utils";
+import { formatDateWithTimeOption } from "../../../utils/date";
+import { MULTIPLEX_DISEASES } from "../../constants";
 
-import { MULTIPLEX_DISEASES } from "./constants";
+import "./TestResultPrintModal.scss";
 
 type Result = {
   dateTested: string;
@@ -84,24 +86,30 @@ const containerClasses =
   "width-full font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1";
 const strikeClasses = "text-base text-strike";
 
-interface Props {
+interface TestResultDetailsModalProps {
+  isOpen: boolean;
+  testResult: ResponseResult | undefined;
+  closeModal: () => void;
+}
+interface DetachedTestResultDetailsModalProps {
   data: { testResult: Nullable<Result> };
-  testResultId: string;
   closeModal: () => void;
 }
 
-export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
-  const {
-    dateTested,
-    results,
-    correctionStatus,
-    symptoms,
-    symptomOnset,
-    pregnancy,
-    deviceType,
-    patient,
-    createdBy,
-  } = { ...data?.testResult };
+export const DetachedTestResultDetailsModal = ({
+  data,
+  closeModal,
+}: DetachedTestResultDetailsModalProps) => {
+  const dateTested = data?.testResult.dateTested;
+
+  const results = data?.testResult.results;
+  const correctionStatus = data?.testResult.correctionStatus;
+  const symptoms = data?.testResult.symptoms;
+  const symptomOnset = data?.testResult.symptomOnset;
+  const pregnancy = data?.testResult.pregnancy;
+  const deviceType = data?.testResult.deviceType;
+  const patient = data?.testResult.patient;
+  const createdBy = data?.testResult.createdBy;
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
@@ -122,22 +130,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     );
   }
   return (
-    <Modal
-      isOpen={true}
-      style={{
-        content: {
-          maxHeight: "90vh",
-          width: "50em",
-          position: "initial",
-        },
-      }}
-      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      contentLabel={`Result details for ${
-        patient ? formatFullName(patient) : "selected patient"
-      }`}
-      ariaHideApp={process.env.NODE_ENV !== "test"}
-      onRequestClose={closeModal}
-    >
+    <>
       <div className="display-flex flex-justify">
         <h1
           id="result-detail-title"
@@ -264,18 +257,46 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           />
         </tbody>
       </table>
-    </Modal>
+    </>
   );
 };
 
-const TestResultDetailsModal = (props: Omit<Props, "data">) => (
-  <QueryWrapper<Props>
-    query={testResultDetailsQuery}
-    queryOptions={{ variables: { id: props.testResultId } }}
-    Component={DetachedTestResultDetailsModal}
-    componentProps={{ ...props }}
-    displayLoadingIndicator={false}
-  />
+const TestResultDetailsModal = (props: TestResultDetailsModalProps) => (
+  <Modal
+    isOpen={props.isOpen}
+    style={{
+      content: {
+        maxHeight: "90vh",
+        width: "50em",
+        position: "initial",
+      },
+    }}
+    overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+    contentLabel={`Result details for ${
+      props.testResult?.patient
+        ? displayFullName(
+            props.testResult.patient.firstName,
+            props.testResult.patient.middleName,
+            props.testResult.patient.lastName
+          )
+        : "selected patient"
+    }`}
+    ariaHideApp={process.env.NODE_ENV !== "test"}
+    onRequestClose={props.closeModal}
+  >
+    {props.testResult?.id && (
+      <QueryWrapper<DetachedTestResultDetailsModalProps>
+        query={testResultDetailsQuery}
+        queryOptions={{
+          variables: { id: props.testResult.id },
+          fetchPolicy: "no-cache",
+        }}
+        Component={DetachedTestResultDetailsModal}
+        componentProps={{ ...props }}
+        displayLoadingIndicator={false}
+      />
+    )}
+  </Modal>
 );
 
 export default TestResultDetailsModal;

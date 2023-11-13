@@ -1,15 +1,15 @@
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 
-import Button from "../commonComponents/Button/Button";
-import { showAlertNotification } from "../utils/srToast";
-import { formatFullName } from "../utils/user";
+import Button from "../../../commonComponents/Button/Button";
+import { showAlertNotification } from "../../../utils/srToast";
+import { formatFullName } from "../../../utils/user";
 import "./TestResultCorrectionModal.scss";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
-} from "../commonComponents/QueryWrapper";
-import { formatDateLong } from "../utils/date";
+} from "../../../commonComponents/QueryWrapper";
+import { formatDateLong } from "../../../utils/date";
 
 export const testQuery = gql`
   query getTestResultForText($id: ID!) {
@@ -35,7 +35,7 @@ export const SEND_SMS = gql`
   }
 `;
 
-interface Props {
+interface DetachedTestResultTextModalProps {
   data: any; // testQuery result
   testResultId: string | undefined;
   closeModal: () => void;
@@ -59,10 +59,10 @@ export const DetachedTestResultTextModal = ({
   data,
   closeModal,
   testResultId,
-}: Props) => {
+}: DetachedTestResultTextModalProps) => {
   const [sendSMS] = useMutation(SEND_SMS);
-  const { patient } = data.testResult;
-  const { dateTested } = data.testResult;
+  const { patient, dateTested } = data.testResult;
+
   const resendSMS = () => {
     sendSMS({
       variables: {
@@ -82,16 +82,9 @@ export const DetachedTestResultTextModal = ({
   };
 
   return (
-    <Modal
-      isOpen={true}
-      className="sr-test-correction-modal-content"
-      overlayClassName="sr-test-correction-modal-overlay"
-      contentLabel="Printable test result"
-      onRequestClose={closeModal}
-    >
+    <>
       <h3>Text result?</h3>
       <p>
-        {" "}
         {formatFullName(patient)} test result from {formatDateLong(dateTested)}{" "}
         will be sent to the following numbers:
       </p>
@@ -102,17 +95,35 @@ export const DetachedTestResultTextModal = ({
         <Button variant="unstyled" label="Cancel" onClick={closeModal} />
         <Button label="Send result" onClick={resendSMS} />
       </div>
-    </Modal>
+    </>
   );
 };
 
-const TestResultTextModal = (props: Omit<Props, InjectedQueryWrapperProps>) => (
-  <QueryWrapper<Props>
-    query={testQuery}
-    queryOptions={{ variables: { id: props.testResultId } }}
-    Component={DetachedTestResultTextModal}
-    componentProps={{ ...props }}
-  />
+interface TestResultTextModalProps extends DetachedTestResultTextModalProps {
+  isOpen: boolean;
+}
+const TestResultTextModal = (
+  props: Omit<TestResultTextModalProps, InjectedQueryWrapperProps>
+) => (
+  <Modal
+    isOpen={props.isOpen}
+    className="sr-test-correction-modal-content"
+    overlayClassName="sr-test-correction-modal-overlay"
+    contentLabel="Printable test result"
+    onRequestClose={props.closeModal}
+  >
+    {props.testResultId && (
+      <QueryWrapper<TestResultTextModalProps>
+        query={testQuery}
+        queryOptions={{
+          variables: { id: props.testResultId },
+          fetchPolicy: "no-cache",
+        }}
+        Component={DetachedTestResultTextModal}
+        componentProps={{ ...props }}
+      />
+    )}
+  </Modal>
 );
 
 export default TestResultTextModal;

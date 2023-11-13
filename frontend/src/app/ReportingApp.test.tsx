@@ -39,10 +39,10 @@ jest.mock("./VersionService", () => ({
     enforce: jest.fn(),
   },
 }));
-jest.mock("./testResults/CleanTestResultsList", () => {
+jest.mock("./testResults/viewResults/CleanTestResultsList", () => {
   return () => <p>CleanTestResultsList</p>;
 });
-jest.mock("./testResults/TestResultsList", () => {
+jest.mock("./testResults/viewResults/TestResultsList", () => {
   return () => <p>TestResultsList</p>;
 });
 jest.mock("./TelemetryService", () => ({

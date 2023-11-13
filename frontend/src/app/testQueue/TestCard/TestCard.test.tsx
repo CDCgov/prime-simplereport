@@ -27,7 +27,7 @@ import {
   UpdateAoeMutation as UPDATE_AOE_DATA,
 } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
-import { TestCorrectionReason } from "../../testResults/TestResultCorrectionModal";
+import { TestCorrectionReason } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
 import { QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
 import mockSupportedDiseaseMultiplex, {

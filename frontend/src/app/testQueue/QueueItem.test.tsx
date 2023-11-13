@@ -32,7 +32,7 @@ import {
 } from "../../generated/graphql";
 import SRToastContainer from "../commonComponents/SRToastContainer";
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
-import { TestCorrectionReason } from "../testResults/TestResultCorrectionModal";
+import { TestCorrectionReason } from "../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
 
 import QueueItem, {
   QueriedFacility,

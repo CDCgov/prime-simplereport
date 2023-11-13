@@ -5,19 +5,17 @@ import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent, { UserEvent } from "@testing-library/user-event";
 
+import { GetAllFacilitiesDocument } from "../../../generated/graphql";
+import { appPermissions } from "../../permissions";
 import {
-  GetAllFacilitiesDocument,
-  GetResultsMultiplexWithCountQuery,
-} from "../../generated/graphql";
-import { appPermissions } from "../permissions";
+  mocks,
+  mocksWithMultiplex,
+  mockWithFacilityAndPositiveResult,
+} from "../mocks/queries.mock";
+import { facilities } from "../mocks/facilities.mock";
 
-import TestResultsList, {
-  ALL_FACILITIES_ID,
-  DetachedTestResultsList,
-} from "./TestResultsList";
-import COVID_MOCK_DATA from "./mocks/resultsCovid.mock";
-import { mocks, mocksWithMultiplex } from "./mocks/queries.mock";
-import { facilities } from "./mocks/facilities.mock";
+import TestResultsList, { ALL_FACILITIES_ID } from "./TestResultsList";
+import * as UtilsMock from "./utils";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -37,45 +35,42 @@ const store = mockStore({
   facility: { id: "1", name: "Facility 1" },
 });
 
-const testResults = {
-  data: {
-    resultsPage: COVID_MOCK_DATA,
-  },
-};
-
 jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useAppInsightsContext: () => {},
   useTrackEvent: jest.fn(),
 }));
 
 type WithRouterProps = {
+  initialUrl?: string;
   children: React.ReactNode;
 };
 
-const WithRouter: React.FC<WithRouterProps> = ({ children }) => (
-  <MemoryRouter initialEntries={[{ search: "?facility=1" }]}>
+const WithRouter: React.FC<WithRouterProps> = ({
+  children,
+  initialUrl = "?facility=1",
+}) => (
+  <MemoryRouter initialEntries={[{ search: initialUrl }]}>
     {children}
   </MemoryRouter>
 );
 
 describe("TestResultsList", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(UtilsMock, "getTodaysDate")
+      .mockImplementation(() => "2023-11-08");
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("should render a list of tests", async () => {
     const { container } = render(
       <WithRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
-            <DetachedTestResultsList
-              data={testResults.data as GetResultsMultiplexWithCountQuery}
-              pageNumber={1}
-              entriesPerPage={20}
-              totalEntries={testResults.data.resultsPage.totalElements}
-              filterParams={{}}
-              setFilterParams={() => () => {}}
-              clearFilterParams={() => {}}
-              activeFacilityId={"1"}
-              loading={false}
-              maxDate="2022-09-26"
-            />
+            <TestResultsList />
           </MockedProvider>
         </Provider>
       </WithRouter>
@@ -836,37 +831,37 @@ describe("TestResultsList", () => {
   });
 
   describe("clear filter button", () => {
-    const elementToTest = (filterParams: FilterParams) => (
-      <WithRouter>
+    const elementToTest = (urlFilters?: string, responseMocks = mocks) => (
+      <WithRouter initialUrl={urlFilters}>
         <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <DetachedTestResultsList
-              data={testResults.data as GetResultsMultiplexWithCountQuery}
-              pageNumber={1}
-              entriesPerPage={20}
-              totalEntries={testResults.data.resultsPage.totalElements}
-              filterParams={filterParams}
-              setFilterParams={() => () => {}}
-              clearFilterParams={() => {}}
-              activeFacilityId={"1"}
-              loading={false}
-              maxDate="2022-09-26"
-            />
+          <MockedProvider mocks={responseMocks}>
+            <TestResultsList />
           </MockedProvider>
         </Provider>
       </WithRouter>
     );
+
     it("should be disabled when no filters are applied", () => {
-      render(elementToTest({}));
+      render(elementToTest());
       expect(screen.getByText("Clear filters")).toBeDisabled();
     });
+
     it("should be disabled when testing only filter applied is facility is active facility", () => {
-      render(elementToTest({ filterFacilityId: "1" }));
+      render(elementToTest("facility=1"));
       expect(screen.getByText("Clear filters")).toBeDisabled();
     });
-    it("should be enabled filters are applied", () => {
-      render(elementToTest({ result: "Positive" }));
-      expect(screen.getByText("Clear filters")).toBeEnabled();
+
+    it("should be enabled when filters are applied", async () => {
+      render(
+        elementToTest("facility=1&result=POSITIVE", [
+          mockWithFacilityAndPositiveResult,
+        ])
+      );
+      await waitFor(() =>
+        expect(
+          screen.getByRole("button", { name: /clear filters/i })
+        ).toBeEnabled()
+      );
     });
   });
 });

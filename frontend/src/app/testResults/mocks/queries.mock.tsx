@@ -9,7 +9,7 @@ import {
   GetResultsMultiplexWithCountDocument,
   ArchivedStatus,
 } from "../../../generated/graphql";
-import { testResultDetailsQuery } from "../TestResultDetailsModal";
+import { testResultDetailsQuery } from "../viewResults/actionMenuModals/TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
 
 import testResults from "./resultsCovid.mock";
@@ -31,7 +31,24 @@ import resultForEmail from "./resultForEmail";
 import resultForViewing from "./resultForViewing";
 import resultForCorrection from "./resultForCorrection";
 
+export const mockWithFacilityAndPositiveResult = {
+  request: {
+    query: GetResultsMultiplexWithCountDocument,
+    variables: {
+      facilityId: "1",
+      pageNumber: 0,
+      pageSize: 20,
+      result: "POSITIVE",
+    },
+  },
+  result: {
+    data: {
+      resultsPage: testResults,
+    },
+  },
+};
 export const mocks = [
+  mockWithFacilityAndPositiveResult,
   {
     request: {
       query: GetResultsMultiplexWithCountDocument,

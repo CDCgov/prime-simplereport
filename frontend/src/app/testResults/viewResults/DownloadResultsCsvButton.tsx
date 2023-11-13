@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
-import Button from "../commonComponents/Button/Button";
+import Button from "../../commonComponents/Button/Button";
 
 import DownloadResultsCsvModal from "./DownloadResultsCsvModal";
 

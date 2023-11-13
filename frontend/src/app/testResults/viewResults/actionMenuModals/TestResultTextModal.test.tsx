@@ -7,7 +7,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
-import * as srToast from "../utils/srToast";
+import * as srToast from "../../../utils/srToast";
 
 import TestResultTextModal, {
   DetachedTestResultTextModal,
@@ -132,6 +132,7 @@ describe("TestResultTextModal", () => {
       render(
         <MockedProvider mocks={mocks}>
           <TestResultTextModal
+            isOpen={true}
             testResultId={"super-fancy-id"}
             closeModal={mockCloseModal}
           />
@@ -140,7 +141,7 @@ describe("TestResultTextModal", () => {
 
       await waitForElementToBeRemoved(() => screen.queryByText("Loading"));
 
-      userEvent.click(screen.getByText("Send result"));
+      await userEvent.click(screen.getByText("Send result"));
 
       await waitFor(() => expect(mockCloseModal).toHaveBeenCalled());
 

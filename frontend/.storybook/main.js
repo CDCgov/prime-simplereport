@@ -4,6 +4,7 @@ module.exports = {
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
+    "storybook-addon-apollo-client",
     "@storybook/preset-create-react-app",
   ],
   webpackFinal: async (config) => {

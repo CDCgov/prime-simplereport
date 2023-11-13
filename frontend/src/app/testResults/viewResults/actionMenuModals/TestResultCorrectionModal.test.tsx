@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -85,12 +84,6 @@ const renderModal = (
 
 describe("TestResultCorrectionModal", () => {
   let component: any;
-
-  beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-  });
 
   it("renders the correction reason dropdown menu", async () => {
     renderModal(false, []);
@@ -324,9 +317,7 @@ describe("TestResultCorrectionModal", () => {
     it("prevents submission if additional details not populated", async () => {
       const { user } = renderModal(false, mocks);
       await selectOther(user);
-      const correctionActionOption = screen.getByLabelText(
-        TestCorrectionActions.CORRECT_RESULT
-      );
+      const correctionActionOption = screen.getByLabelText(/Correct result/i);
       await user.click(correctionActionOption);
 
       const submitButton = await screen.findByText("Yes, I'm sure");
@@ -341,9 +332,7 @@ describe("TestResultCorrectionModal", () => {
       );
       await user.type(additionalDetails, "no");
 
-      const correctionActionOption = screen.getByLabelText(
-        TestCorrectionActions.CORRECT_RESULT
-      );
+      const correctionActionOption = screen.getByLabelText(/Correct result/i);
       await user.click(correctionActionOption);
 
       const submitButton = await screen.findByText("Yes, I'm sure");

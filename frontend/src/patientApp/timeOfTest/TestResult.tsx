@@ -5,7 +5,7 @@ import React from "react";
 import { formatFullName } from "../../app/utils/user";
 import { RootState } from "../../app/store";
 import { VerifyV2Response } from "../PxpApiService";
-import { StaticTestResultModal } from "../../app/testResults/TestResultPrintModal";
+import { StaticTestResultModal } from "../../app/testResults/viewResults/actionMenuModals/TestResultPrintModal";
 import Button from "../../app/commonComponents/Button/Button";
 import MultiplexResultsGuidance from "../../app/commonComponents/MultiplexResultsGuidance";
 import TestResultsList from "../../app/commonComponents/TestResultsList";
