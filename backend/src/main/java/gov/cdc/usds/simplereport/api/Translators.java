@@ -379,6 +379,9 @@ public class Translators {
   }
 
   public static Map<String, Boolean> parseSymptoms(String symptoms) {
+    if (symptoms == null) {
+      return Collections.emptyMap();
+    }
     Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
     JSONObject symptomsJSONObject = new JSONObject(symptoms);
     Iterator<?> keys = symptomsJSONObject.keys();

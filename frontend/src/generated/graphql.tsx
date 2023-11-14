@@ -507,6 +507,9 @@ export type MutationUpdateRegistrationLinkArgs = {
 };
 
 export type MutationUpdateTimeOfTestQuestionsArgs = {
+  genderOfSexualPartners?: InputMaybe<
+    Array<InputMaybe<Scalars["String"]["input"]>>
+  >;
   noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
   patientId: Scalars["ID"]["input"];
   pregnancy?: InputMaybe<Scalars["String"]["input"]>;
@@ -951,6 +954,7 @@ export type TestOrder = {
   dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
   deviceType: DeviceType;
   facility: Facility;
+  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
   id: Scalars["ID"]["output"];
   /** @deprecated alias for 'id' */
   internalId: Scalars["ID"]["output"];
@@ -973,6 +977,7 @@ export type TestResult = {
   dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
+  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
   internalId?: Maybe<Scalars["ID"]["output"]>;
   noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
   patient?: Maybe<Patient>;

@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -82,6 +83,11 @@ public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
   @SchemaMapping(typeName = "TestResult", field = "symptomOnset")
   public LocalDate getSymptomOnset(TestEvent testEvent) {
     return getSurvey(testEvent).getSymptomOnsetDate();
+  }
+
+  @SchemaMapping(typeName = "TestResult", field = "genderOfSexualPartners")
+  public List<String> getGenderOfSexualPartners(TestEvent testEvent) {
+    return getSurvey(testEvent).getGenderOfSexualPartners();
   }
 
   @SchemaMapping(typeName = "TestResult", field = "facility")

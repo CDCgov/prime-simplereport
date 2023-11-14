@@ -881,7 +881,8 @@ public class FhirConverter {
     Boolean symptomatic = null;
     if (Boolean.TRUE.equals(surveyData.getNoSymptoms())) {
       symptomatic = false;
-    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
+    } else if (surveyData.getSymptoms() != null
+        && surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
       symptomatic = true;
     } // implied else: AoE form was not completed. Symptomatic set to null
 

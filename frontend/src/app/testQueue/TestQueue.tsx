@@ -14,7 +14,6 @@ import {
   useAddPatientToQueueMutation,
   useRemovePatientFromQueueMutation,
 } from "../../generated/graphql";
-import { getSymptomsAllFalse } from "../../patientApp/timeOfTest/constants";
 import { getAppInsights } from "../TelemetryService";
 import { Patient } from "../patients/ManagePatients";
 
@@ -168,7 +167,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         variables: {
           facilityId: facility.id,
           patientId: patient.internalId,
-          symptoms: JSON.stringify(getSymptomsAllFalse()),
+          symptoms: null,
           pregnancy: null,
           symptomOnset: null,
           noSymptoms: null,

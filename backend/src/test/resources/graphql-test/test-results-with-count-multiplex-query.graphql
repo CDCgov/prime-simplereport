@@ -29,6 +29,7 @@ query GetFacilityResultsWithCountMultiplex(
       noSymptoms
       pregnancy
       symptomOnset
+      genderOfSexualPartners
     }
 
     totalElements

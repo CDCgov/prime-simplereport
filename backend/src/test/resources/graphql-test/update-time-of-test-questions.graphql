@@ -4,6 +4,7 @@ mutation UpdateAOE(
   $symptomOnset: LocalDate
   $pregnancy: String
   $noSymptoms: Boolean
+  $genderOfSexualPartners: [String]
 ) {
   updateTimeOfTestQuestions(
     patientId: $patientId
@@ -11,5 +12,6 @@ mutation UpdateAOE(
     symptoms: $symptoms
     noSymptoms: $noSymptoms
     symptomOnset: $symptomOnset
+    genderOfSexualPartners: $genderOfSexualPartners
   )
 }
