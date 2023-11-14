@@ -4,17 +4,13 @@ import { Form } from "@trussworks/react-uswds";
 import ComboBox from "./ComboBox";
 import { fruits } from "./fruits";
 
+// ### USWDS 3.0 ComboBox component
+//
+// Source: https://designsystem.digital.gov/components/combo-box
 export default {
   title: "Components/Combo box",
   component: ComboBox,
   tags: ["autodocs"],
-  // ### USWDS 3.0 ComboBox component
-  //
-  // Source: https://designsystem.digital.gov/components/combo-box
-  // `,
-  //       },
-  //     },
-  //   },
 };
 
 const noop = (): void => {
