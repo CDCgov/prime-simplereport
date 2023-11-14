@@ -37,7 +37,9 @@ const AgnosticUploadContainer = () => {
     <UploadForm
       alert={alert}
       uploadType={"Agnostic"}
-      spreadsheetTemplateLocation={""}
+      spreadsheetTemplateLocation={
+        "/assets/resources/condition_agnostic_test_result_example_11_13_2023.csv"
+      }
       uploadGuideLocation={"/results/agnostic/upload/submit/guide"}
       uploadResults={FileUploadService.uploadConditionAgnostic}
     />
