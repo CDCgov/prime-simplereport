@@ -53,7 +53,6 @@ public class BulkUploadResultsToFhirTest {
   final IParser parser = ctx.newJsonParser();
   private final UUIDGenerator uuidGenerator = new UUIDGenerator();
   private final DateGenerator dateGenerator = new DateGenerator();
-
   BulkUploadResultsToFhir sut;
 
   @BeforeAll
@@ -535,5 +534,77 @@ public class BulkUploadResultsToFhirTest {
         .isEqualTo(organizations.get(1).getAddress().get(0).getState());
     assertThat(organizations.get(0).getAddress().get(0).getPostalCode())
         .isEqualTo(organizations.get(1).getAddress().get(0).getPostalCode());
+  }
+
+  @Test
+  void convertExistingCsv_setsOrderingProviderTimezone_forNoTimezoneInDates() {
+    when(resultsUploaderCachingService.getZoneIdByAddress(any()))
+        .thenReturn(ZoneId.of("US/Mountain"));
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-dates-no-timezone.csv");
+
+    Instant orderTestDate = Instant.parse("2021-12-19T12:00:00-07:00");
+    Instant specimenCollectionDate = Instant.parse("2021-12-20T12:00:00-07:00");
+    Instant testResultDate = Instant.parse("2021-12-23T12:00:00-07:00");
+
+    FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
+    var first = serializedBundles.get(0);
+    var deserializedBundle = (Bundle) parser.parseResource(first);
+
+    var specimen =
+        (Specimen)
+            deserializedBundle.getEntry().stream()
+                .filter(entry -> entry.getFullUrl().contains("Specimen/"))
+                .findFirst()
+                .get()
+                .getResource();
+
+    var diagnosticReport =
+        (DiagnosticReport)
+            deserializedBundle.getEntry().stream()
+                .filter(entry -> entry.getFullUrl().contains("DiagnosticReport/"))
+                .findFirst()
+                .get()
+                .getResource();
+    assertThat(((DateTimeType) specimen.getCollection().getCollected()).getValue())
+        .isEqualTo(specimenCollectionDate);
+    assertThat(specimen.getReceivedTime()).isEqualTo(orderTestDate);
+    assertThat(diagnosticReport.getIssued()).isEqualTo(testResultDate);
+  }
+
+  @Test
+  void convertExistingCsv_setsEasternTimeDefaultTimeZone_forIncorrectOrderingProviderAddress() {
+    // mock invalid address response
+    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenReturn(null);
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-dates-no-timezone.csv");
+
+    Instant orderTestDate = Instant.parse("2021-12-19T12:00:00-05:00");
+    Instant specimenCollectionDate = Instant.parse("2021-12-20T12:00:00-05:00");
+    Instant testResultDate = Instant.parse("2021-12-23T12:00:00-05:00");
+
+    FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
+    var first = serializedBundles.get(0);
+    var deserializedBundle = (Bundle) parser.parseResource(first);
+
+    var specimen =
+        (Specimen)
+            deserializedBundle.getEntry().stream()
+                .filter(entry -> entry.getFullUrl().contains("Specimen/"))
+                .findFirst()
+                .get()
+                .getResource();
+
+    var diagnosticReport =
+        (DiagnosticReport)
+            deserializedBundle.getEntry().stream()
+                .filter(entry -> entry.getFullUrl().contains("DiagnosticReport/"))
+                .findFirst()
+                .get()
+                .getResource();
+    assertThat(((DateTimeType) specimen.getCollection().getCollected()).getValue())
+        .isEqualTo(specimenCollectionDate);
+    assertThat(specimen.getReceivedTime()).isEqualTo(orderTestDate);
+    assertThat(diagnosticReport.getIssued()).isEqualTo(testResultDate);
   }
 }

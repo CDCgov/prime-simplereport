@@ -227,7 +227,7 @@ public class BulkUploadResultsToFhir {
     // which is a different moment of time and potentially even a different day
     var testResultDate =
         convertToZonedDateTime(
-            row.getTestResultDate().getValue(), resultsUploaderCachingService, testingLabAddr);
+            row.getTestResultDate().getValue(), resultsUploaderCachingService, providerAddr);
 
     var orderTestDate =
         convertToZonedDateTime(
@@ -242,19 +242,17 @@ public class BulkUploadResultsToFhir {
             : orderTestDate;
 
     var testingLabSpecimenReceivedDate =
-        StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
+        StringUtils.isNotBlank(row.getTestingLabSpecimenReceivedDate().getValue())
             ? convertToZonedDateTime(
                 row.getTestingLabSpecimenReceivedDate().getValue(),
                 resultsUploaderCachingService,
-                testingLabAddr)
+                providerAddr)
             : orderTestDate;
 
     var dateResultReleased =
         StringUtils.isNotBlank(row.getDateResultReleased().getValue())
             ? convertToZonedDateTime(
-                row.getDateResultReleased().getValue(),
-                resultsUploaderCachingService,
-                testingLabAddr)
+                row.getDateResultReleased().getValue(), resultsUploaderCachingService, providerAddr)
             : testResultDate;
 
     List<PhoneNumber> patientPhoneNumbers =

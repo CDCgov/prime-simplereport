@@ -344,7 +344,7 @@ export const specificSchemaBuilder = (facilityId: string | null) => {
                 examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
                 description: [
                   "Include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
-                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).",
                 ],
               },
               {
@@ -358,7 +358,7 @@ export const specificSchemaBuilder = (facilityId: string | null) => {
                 description: [
                   'Leave this field blank if it’s the same as <a href="#order_test_date" class="usa-link">order_test_date</a>. SimpleReport will default to the <a href="#order_test_date" class="usa-link">order_test_date</a> value.',
                   "For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
-                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).",
                 ],
               },
               {
@@ -372,7 +372,7 @@ export const specificSchemaBuilder = (facilityId: string | null) => {
                 description: [
                   'Leave this field blank if it’s the same as <a href="#order_test_date" class="usa-link">order_test_date</a>. SimpleReport will default to the <a href="#order_test_date" class="usa-link">order_test_date</a> value.',
                   "For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
-                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).",
                 ],
               },
               {
@@ -385,7 +385,7 @@ export const specificSchemaBuilder = (facilityId: string | null) => {
                 examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
                 description: [
                   "Include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
-                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).",
                 ],
               },
               {
@@ -399,7 +399,7 @@ export const specificSchemaBuilder = (facilityId: string | null) => {
                 description: [
                   'Leave this field blank if it’s the same as <a href="#test_result_date" class="usa-link">test_result_date</a>. SimpleReport will default to the <a href="#test_result_date" class="usa-link">test_result_date</a> value.',
                   "For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
-                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).",
                 ],
               },
             ],

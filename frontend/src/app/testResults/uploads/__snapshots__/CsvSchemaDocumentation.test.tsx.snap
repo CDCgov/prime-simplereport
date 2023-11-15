@@ -2742,7 +2742,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 <div
                   class="margin-bottom-1"
                 >
-                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
             </div>
@@ -2884,7 +2884,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 <div
                   class="margin-bottom-1"
                 >
-                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
             </div>
@@ -3026,7 +3026,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 <div
                   class="margin-bottom-1"
                 >
-                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
             </div>
@@ -3149,7 +3149,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 <div
                   class="margin-bottom-1"
                 >
-                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
             </div>
@@ -3291,7 +3291,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 <div
                   class="margin-bottom-1"
                 >
-                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
             </div>
