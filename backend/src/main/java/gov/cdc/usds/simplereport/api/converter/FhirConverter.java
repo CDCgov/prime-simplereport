@@ -58,6 +58,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFIL
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
@@ -615,6 +617,20 @@ public class FhirConverter {
     var specimen = new Specimen();
     specimen.setId(props.getId());
     specimen.addIdentifier().setValue(props.getIdentifier());
+
+    var collection = specimen.getCollection();
+    var collectionCodeableConcept = collection.getBodySite();
+    var collectionCoding = collectionCodeableConcept.addCoding();
+    collectionCoding.setSystem(SNOMED_CODE_SYSTEM);
+    collectionCoding.setCode(
+        Optional.of(props)
+            .map(ConvertToSpecimenProps::getCollectionCode)
+            .orElse(DEFAULT_LOCATION_CODE));
+    collectionCodeableConcept.setText(
+        Optional.of(props)
+            .map(ConvertToSpecimenProps::getCollectionName)
+            .orElse(DEFAULT_LOCATION_NAME));
+
     if (StringUtils.isNotBlank(props.getSpecimenCode())) {
       var codeableConcept = specimen.getType();
       var coding = codeableConcept.addCoding();
@@ -622,17 +638,7 @@ public class FhirConverter {
       coding.setCode(props.getSpecimenCode());
       codeableConcept.setText(props.getSpecimenName());
     }
-    if (StringUtils.isNotBlank(props.getCollectionCode())) {
-      var collection = specimen.getCollection();
-      var codeableConcept = collection.getBodySite();
-      var coding = codeableConcept.addCoding();
-      coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(props.getCollectionCode());
-      codeableConcept.setText(props.getCollectionName());
-    }
-
     if (props.getCollectionDate() != null) {
-      var collection = specimen.getCollection();
       collection.setCollected(convertToDateTimeType(props.getCollectionDate()));
     }
 

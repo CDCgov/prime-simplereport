@@ -75,10 +75,14 @@ public class TestEventExport {
   }
 
   private String genderUnknown = "U";
-  private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
+  public static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
   // "Internal nose structure"
   // values pulled from
   // https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
+
+  public static final String DEFAULT_LOCATION_NAME =
+      "Internal nose structure (body structure)"; // http://snomed.info/id/53342003
+
   private final Map<String, String> genderMap =
       Map.of(
           "male", "M",
