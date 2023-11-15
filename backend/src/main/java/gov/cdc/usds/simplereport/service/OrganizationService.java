@@ -4,6 +4,8 @@ import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -471,18 +473,18 @@ public class OrganizationService {
   }
 
   public List<UUID> getOrgAdminUserIds(UUID orgId) {
-    log.info("Get list of things", orgId);
-
-    // TODO: error handle this
-    Organization org = organizationRepository.findById(orgId).orElseThrow();
+    Organization org =
+        organizationRepository.findById(orgId).orElseThrow(NonexistentOrgException::new);
     List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
 
     List<UUID> adminIds =
         adminUserEmails.stream()
             .map(
                 email -> {
-                  // TODO: error handle this
-                  ApiUser foundUser = apiUserRepository.findByLoginEmail(email).orElseThrow();
+                  ApiUser foundUser =
+                      apiUserRepository
+                          .findByLoginEmail(email)
+                          .orElseThrow(NonexistentUserException::new);
                   return foundUser.getInternalId();
                 })
             .collect(Collectors.toList());
