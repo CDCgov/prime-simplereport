@@ -125,4 +125,10 @@ public class OrganizationResolver {
   public FacilityStats facilityStats(@Argument UUID facilityId) {
     return this._organizationService.getFacilityStats(facilityId);
   }
+
+  @QueryMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<UUID> getOrgAdminUserIds(@Argument UUID orgId) {
+    return _organizationService.getOrgAdminUserIds(orgId);
+  }
 }

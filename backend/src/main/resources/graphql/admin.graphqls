@@ -7,6 +7,7 @@ extend type Query {
   pendingOrganizations: [PendingOrganization!]!
   organization(id: ID!): Organization
   facilityStats(facilityId: ID!): FacilityStats
+  getOrgAdminUserIds(orgId: ID!): [ID]
 }
 extend type Mutation {
   resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean!): Boolean

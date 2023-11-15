@@ -466,4 +466,9 @@ public class OrganizationService {
   public UUID getPermissibleOrgId(UUID orgId) {
     return orgId != null ? orgId : getCurrentOrganization().getInternalId();
   }
+
+  public List<UUID> getOrgAdminUserIds(UUID orgId) {
+    log.info("Get list of things", orgId);
+    return List.of();
+  }
 }

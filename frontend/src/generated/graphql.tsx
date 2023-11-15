@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -701,6 +700,7 @@ export type Query = {
   facilities?: Maybe<Array<Maybe<Facility>>>;
   facility?: Maybe<Facility>;
   facilityStats?: Maybe<FacilityStats>;
+  getOrgAdminUserIds?: Maybe<Array<Maybe<Scalars["ID"]["output"]>>>;
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
@@ -739,6 +739,10 @@ export type QueryFacilityArgs = {
 
 export type QueryFacilityStatsArgs = {
   facilityId: Scalars["ID"]["input"];
+};
+
+export type QueryGetOrgAdminUserIdsArgs = {
+  orgId: Scalars["ID"]["input"];
 };
 
 export type QueryOrganizationArgs = {
