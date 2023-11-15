@@ -472,6 +472,7 @@ public class OrganizationService {
     return orgId != null ? orgId : getCurrentOrganization().getInternalId();
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<UUID> getOrgAdminUserIds(UUID orgId) {
     Organization org =
         organizationRepository.findById(orgId).orElseThrow(NonexistentOrgException::new);
