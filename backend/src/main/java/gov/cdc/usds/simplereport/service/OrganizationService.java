@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
@@ -13,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
@@ -40,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class OrganizationService {
+  private final ApiUserRepository apiUserRepository;
 
   private final OrganizationRepository organizationRepository;
   private final FacilityRepository facilityRepository;
@@ -469,6 +472,20 @@ public class OrganizationService {
 
   public List<UUID> getOrgAdminUserIds(UUID orgId) {
     log.info("Get list of things", orgId);
-    return List.of();
+
+    // TODO: error handle this
+    Organization org = organizationRepository.findById(orgId).orElseThrow();
+    List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
+
+    List<UUID> adminIds =
+        adminUserEmails.stream()
+            .map(
+                email -> {
+                  // TODO: error handle this
+                  ApiUser foundUser = apiUserRepository.findByLoginEmail(email).orElseThrow();
+                  return foundUser.getInternalId();
+                })
+            .collect(Collectors.toList());
+    return adminIds;
   }
 }
