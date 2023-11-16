@@ -645,7 +645,7 @@ public class FhirConverter {
     specimen.setId(props.getId());
     specimen.addIdentifier().setValue(props.getIdentifier());
 
-    specimen = setCollectionCodingAndName(specimen, props);
+    setCollectionCodingAndName(specimen, props);
 
     if (StringUtils.isNotBlank(props.getSpecimenCode())) {
       CodeableConcept codeableConcept = specimen.getType();
