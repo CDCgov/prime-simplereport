@@ -25,17 +25,13 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
 
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
-    if (testEvent.getResults().stream()
-        .anyMatch(result -> !COVID_LOINC.equals(result.getDisease().getLoinc()))) {
-      log.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
-      var parser = context.newJsonParser();
-      return queueClient
-          .sendMessage(
-              parser.encodeResourceToString(
-                  fhirConverter.createFhirBundle(testEvent, gitProperties, processingModeCode)))
-          .toFuture()
-          .thenApply(result -> null);
-    }
-    return CompletableFuture.completedFuture(null);
+    log.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
+    var parser = context.newJsonParser();
+    return queueClient
+        .sendMessage(
+            parser.encodeResourceToString(
+                fhirConverter.createFhirBundle(testEvent, gitProperties, processingModeCode)))
+        .toFuture()
+        .thenApply(result -> null);
   }
 }

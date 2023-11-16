@@ -69,9 +69,10 @@ class AzureStorageQueueFhirReportingServiceTest {
     var context = spy(FhirContext.class);
     var client = mock(QueueAsyncClient.class);
     AzureStorageQueueFhirReportingService service =
-        new AzureStorageQueueFhirReportingService(context, client, null, fhirConverter);
+        new AzureStorageQueueFhirReportingService(context, client, gitProperties, fhirConverter);
 
     var multiplexTestEvent = createCovidTestEvent();
+    ReflectionTestUtils.setField(multiplexTestEvent, "internalId", UUID.randomUUID());
     ReflectionTestUtils.setField(multiplexTestEvent.getPatient(), "internalId", UUID.randomUUID());
     ReflectionTestUtils.setField(
         multiplexTestEvent.getPatient(),
@@ -90,8 +91,9 @@ class AzureStorageQueueFhirReportingServiceTest {
         .getResults()
         .forEach(result -> ReflectionTestUtils.setField(result, "internalId", UUID.randomUUID()));
 
+    when(client.sendMessage(anyString())).thenReturn(Mono.create(MonoSink::success));
     service.reportAsync(multiplexTestEvent);
-    verify(context, times(0)).newJsonParser();
-    verify(client, times(0)).sendMessage(anyString());
+    verify(context, times(1)).newJsonParser();
+    verify(client, times(1)).sendMessage(anyString());
   }
 }
