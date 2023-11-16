@@ -69,7 +69,7 @@ export const HIVAoEForm = ({
         </div>
       </div>
       <div className="grid-row">
-        <div className="grid-col-auto">
+        <div className="tablet:grid-col-6">
           <MultiSelect
             name={`sexual-partner-gender-${testOrder.internalId}`}
             options={GENDER_IDENTITY_VALUES}
