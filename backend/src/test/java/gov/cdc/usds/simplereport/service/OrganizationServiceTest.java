@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -57,6 +58,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Autowired @SpyBean private OktaRepository oktaRepository;
   @Autowired @SpyBean private PersonRepository personRepository;
   @Autowired ApiUserRepository _apiUserRepo;
+  @Autowired private DemoUserConfiguration userConfiguration;
 
   @BeforeEach
   void setupData() {
@@ -462,13 +464,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void getOrgAdminUserIds_success() {
     Organization createdOrg = _dataFactory.saveValidOrganization();
+    List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(createdOrg);
 
-    // Admin users defined in application-default profile
     List<UUID> expectedIds =
-        List.of(
-            _apiUserRepo.findByLoginEmail("notruby@example.com").get().getInternalId(),
-            _apiUserRepo.findByLoginEmail("admin@example.com").get().getInternalId(),
-            _apiUserRepo.findByLoginEmail("captain@pirate.com").get().getInternalId());
+        adminUserEmails.stream()
+            .map(email -> _apiUserRepo.findByLoginEmail(email).get().getInternalId())
+            .collect(Collectors.toList());
 
     List<UUID> adminIds = _service.getOrgAdminUserIds(createdOrg.getInternalId());
     assertThat(adminIds).isEqualTo(expectedIds);
