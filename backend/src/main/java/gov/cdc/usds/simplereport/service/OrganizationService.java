@@ -478,17 +478,15 @@ public class OrganizationService {
         organizationRepository.findById(orgId).orElseThrow(NonexistentOrgException::new);
     List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
 
-    List<UUID> adminIds =
-        adminUserEmails.stream()
-            .map(
-                email -> {
-                  ApiUser foundUser =
-                      apiUserRepository
-                          .findByLoginEmail(email)
-                          .orElseThrow(NonexistentUserException::new);
-                  return foundUser.getInternalId();
-                })
-            .collect(Collectors.toList());
-    return adminIds;
+    return adminUserEmails.stream()
+        .map(
+            email -> {
+              ApiUser foundUser =
+                  apiUserRepository
+                      .findByLoginEmail(email)
+                      .orElseThrow(NonexistentUserException::new);
+              return foundUser.getInternalId();
+            })
+        .collect(Collectors.toList());
   }
 }
