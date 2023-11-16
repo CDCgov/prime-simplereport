@@ -613,32 +613,49 @@ public class FhirConverter {
     return device;
   }
 
+  // https://github.com/CDCgov/prime-simplereport/pull/6955#discussion_r1395360817
+  private Specimen setCollectionCodingAndName(Specimen specimen, ConvertToSpecimenProps props) {
+    boolean collectionCodeProvided = StringUtils.isNotBlank(props.getCollectionCode());
+    boolean collectionLocationNameProvided = StringUtils.isNotBlank(props.getCollectionName());
+
+    String collectionCodeToSet = DEFAULT_LOCATION_CODE;
+    String collectionLocationNameToSet = null;
+
+    if (collectionCodeProvided && !collectionLocationNameProvided) {
+      collectionCodeToSet = props.getCollectionCode();
+    } else if (collectionCodeProvided && collectionLocationNameProvided) {
+      collectionCodeToSet = props.getCollectionCode();
+      collectionLocationNameToSet = props.getCollectionName();
+    } else {
+      collectionLocationNameToSet = DEFAULT_LOCATION_NAME;
+    }
+
+    Specimen.SpecimenCollectionComponent collection = specimen.getCollection();
+    CodeableConcept collectionCodeableConcept = collection.getBodySite();
+    Coding collectionCoding = collectionCodeableConcept.addCoding();
+    collectionCoding.setSystem(SNOMED_CODE_SYSTEM);
+    collectionCoding.setCode(collectionCodeToSet);
+    collectionCodeableConcept.setText(collectionLocationNameToSet);
+
+    return specimen;
+  }
+
   public Specimen convertToSpecimen(ConvertToSpecimenProps props) {
-    var specimen = new Specimen();
+    Specimen specimen = new Specimen();
     specimen.setId(props.getId());
     specimen.addIdentifier().setValue(props.getIdentifier());
 
-    var collection = specimen.getCollection();
-    var collectionCodeableConcept = collection.getBodySite();
-    var collectionCoding = collectionCodeableConcept.addCoding();
-    collectionCoding.setSystem(SNOMED_CODE_SYSTEM);
-    collectionCoding.setCode(
-        Optional.of(props)
-            .map(ConvertToSpecimenProps::getCollectionCode)
-            .orElse(DEFAULT_LOCATION_CODE));
-    collectionCodeableConcept.setText(
-        Optional.of(props)
-            .map(ConvertToSpecimenProps::getCollectionName)
-            .orElse(DEFAULT_LOCATION_NAME));
+    specimen = setCollectionCodingAndName(specimen, props);
 
     if (StringUtils.isNotBlank(props.getSpecimenCode())) {
-      var codeableConcept = specimen.getType();
-      var coding = codeableConcept.addCoding();
+      CodeableConcept codeableConcept = specimen.getType();
+      Coding coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
       coding.setCode(props.getSpecimenCode());
       codeableConcept.setText(props.getSpecimenName());
     }
     if (props.getCollectionDate() != null) {
+      Specimen.SpecimenCollectionComponent collection = specimen.getCollection();
       collection.setCollected(convertToDateTimeType(props.getCollectionDate()));
     }
 

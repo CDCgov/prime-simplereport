@@ -1747,4 +1747,50 @@ class FhirConverterTest {
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, JSONCompareMode.NON_EXTENSIBLE);
   }
+
+  // https://github.com/CDCgov/prime-simplereport/pull/6955#discussion_r1395360817
+  @Test
+  void convertToSpecimen_withCollectionCodeAndName_useProvided() {
+    ConvertToSpecimenProps props =
+        ConvertToSpecimenProps.builder()
+            .collectionCode("Some collection code")
+            .collectionName("Some collection name")
+            .build();
+
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo("Some collection code");
+    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo("Some collection name");
+  }
+
+  @Test
+  void convertToSpecimen_withCollectionCodeAndWithoutName_setsCodeButLeavesNameBlank() {
+    ConvertToSpecimenProps props =
+        ConvertToSpecimenProps.builder().collectionCode("Some collection code").build();
+
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo("Some collection code");
+    assertThat(specimen.getCollection().getBodySite().getText()).isBlank();
+  }
+
+  @Test
+  void convertToSpecimen_withoutCollectionCodeAndWithName_useDefaults() {
+    ConvertToSpecimenProps props =
+        ConvertToSpecimenProps.builder().collectionName("Some collection name").build();
+
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo(DEFAULT_LOCATION_CODE);
+    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
+  }
+
+  @Test
+  void convertToSpecimen_withoutCollectionCodeAndName_useDefaults() {
+    ConvertToSpecimenProps props = ConvertToSpecimenProps.builder().build();
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo(DEFAULT_LOCATION_CODE);
+    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
+  }
 }
