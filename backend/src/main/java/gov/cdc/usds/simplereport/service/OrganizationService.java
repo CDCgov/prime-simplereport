@@ -27,6 +27,7 @@ import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -489,7 +490,7 @@ public class OrganizationService {
               }
               return foundUser.map(user -> user.getInternalId()).orElse(null);
             })
-        .filter(userId -> userId != null)
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 }
