@@ -345,7 +345,16 @@
         },
         "receivedTime": "2021-12-22T14:00:00-06:00",
         "collection": {
-          "collectedDateTime": "2021-12-21T14:00:00-06:00"
+          "collectedDateTime": "2021-12-21T14:00:00-06:00",
+          "bodySite": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "53342003"
+              }
+            ],
+            "text": "Internal nose structure (body structure)"
+          }
         }
       }
     },
@@ -1169,7 +1178,16 @@
         },
         "receivedTime": "2021-12-22T14:00:00-06:00",
         "collection": {
-          "collectedDateTime": "2021-12-21T14:00:00-06:00"
+          "collectedDateTime": "2021-12-21T14:00:00-06:00",
+          "bodySite": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "53342003"
+              }
+            ],
+            "text": "Internal nose structure (body structure)"
+          }
         }
       }
     },

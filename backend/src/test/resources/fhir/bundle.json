@@ -321,6 +321,15 @@
         },
         "receivedTime": "2023-07-14T15:45:34+00:00",
         "collection": {
+          "bodySite": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "53342003"
+              }
+            ],
+            "text": "Internal nose structure (body structure)"
+          },
           "collectedDateTime": "2023-07-14T15:45:34+00:00"
         }
       }

@@ -58,6 +58,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFIL
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
@@ -611,28 +613,49 @@ public class FhirConverter {
     return device;
   }
 
+  // https://github.com/CDCgov/prime-simplereport/pull/6955#discussion_r1395360817
+  private Specimen setCollectionCodingAndName(Specimen specimen, ConvertToSpecimenProps props) {
+    boolean collectionCodeProvided = StringUtils.isNotBlank(props.getCollectionCode());
+    boolean collectionLocationNameProvided = StringUtils.isNotBlank(props.getCollectionName());
+
+    String collectionCodeToSet = DEFAULT_LOCATION_CODE;
+    String collectionLocationNameToSet = null;
+
+    if (collectionCodeProvided && !collectionLocationNameProvided) {
+      collectionCodeToSet = props.getCollectionCode();
+    } else if (collectionCodeProvided && collectionLocationNameProvided) {
+      collectionCodeToSet = props.getCollectionCode();
+      collectionLocationNameToSet = props.getCollectionName();
+    } else {
+      collectionLocationNameToSet = DEFAULT_LOCATION_NAME;
+    }
+
+    Specimen.SpecimenCollectionComponent collection = specimen.getCollection();
+    CodeableConcept collectionCodeableConcept = collection.getBodySite();
+    Coding collectionCoding = collectionCodeableConcept.addCoding();
+    collectionCoding.setSystem(SNOMED_CODE_SYSTEM);
+    collectionCoding.setCode(collectionCodeToSet);
+    collectionCodeableConcept.setText(collectionLocationNameToSet);
+
+    return specimen;
+  }
+
   public Specimen convertToSpecimen(ConvertToSpecimenProps props) {
-    var specimen = new Specimen();
+    Specimen specimen = new Specimen();
     specimen.setId(props.getId());
     specimen.addIdentifier().setValue(props.getIdentifier());
+
+    setCollectionCodingAndName(specimen, props);
+
     if (StringUtils.isNotBlank(props.getSpecimenCode())) {
-      var codeableConcept = specimen.getType();
-      var coding = codeableConcept.addCoding();
+      CodeableConcept codeableConcept = specimen.getType();
+      Coding coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
       coding.setCode(props.getSpecimenCode());
       codeableConcept.setText(props.getSpecimenName());
     }
-    if (StringUtils.isNotBlank(props.getCollectionCode())) {
-      var collection = specimen.getCollection();
-      var codeableConcept = collection.getBodySite();
-      var coding = codeableConcept.addCoding();
-      coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(props.getCollectionCode());
-      codeableConcept.setText(props.getCollectionName());
-    }
-
     if (props.getCollectionDate() != null) {
-      var collection = specimen.getCollection();
+      Specimen.SpecimenCollectionComponent collection = specimen.getCollection();
       collection.setCollected(convertToDateTimeType(props.getCollectionDate()));
     }
 

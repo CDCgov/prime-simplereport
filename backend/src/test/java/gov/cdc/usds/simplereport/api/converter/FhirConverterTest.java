@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
@@ -588,8 +590,8 @@ class FhirConverterTest {
             ConvertToSpecimenProps.builder()
                 .specimenCode("258500001")
                 .specimenName("Nasopharyngeal swab")
-                .collectionCode("53342003")
-                .collectionName("Internal nose structure (body structure)")
+                .collectionCode("53342003 but not the default one")
+                .collectionName("Internal nose structure (body structure) but not the default one")
                 .id("id-123")
                 .identifier("uuid-123")
                 .collectionDate(collectionDate)
@@ -607,9 +609,9 @@ class FhirConverterTest {
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
         .isEqualTo(snomedCode);
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo("53342003");
+        .isEqualTo("53342003 but not the default one");
     assertThat(actual.getCollection().getBodySite().getText())
-        .isEqualTo("Internal nose structure (body structure)");
+        .isEqualTo("Internal nose structure (body structure) but not the default one");
     assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
         .isEqualTo("2023-06-22T16:38:00Z");
   }
@@ -621,8 +623,9 @@ class FhirConverterTest {
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
     assertThat(actual.getType().getCoding()).isEmpty();
-    assertThat(actual.getCollection().getBodySite().getText()).isNull();
-    assertThat(actual.getCollection().getBodySite().getCoding()).isEmpty();
+    assertThat(actual.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo(DEFAULT_LOCATION_CODE);
     assertThat(actual.getCollection().getCollected()).isNull();
     assertThat(actual.getReceivedTime()).isNull();
   }
@@ -668,7 +671,7 @@ class FhirConverterTest {
   @Test
   void convertToSpecimen_SpecimenType_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
+    SpecimenType specimenType = new SpecimenType("nasal", "40001");
     ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
 
     var actual =
@@ -1743,5 +1746,51 @@ class FhirConverterTest {
                 .getValue());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, JSONCompareMode.NON_EXTENSIBLE);
+  }
+
+  // https://github.com/CDCgov/prime-simplereport/pull/6955#discussion_r1395360817
+  @Test
+  void convertToSpecimen_withCollectionCodeAndName_useProvided() {
+    ConvertToSpecimenProps props =
+        ConvertToSpecimenProps.builder()
+            .collectionCode("Some collection code")
+            .collectionName("Some collection name")
+            .build();
+
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo("Some collection code");
+    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo("Some collection name");
+  }
+
+  @Test
+  void convertToSpecimen_withCollectionCodeAndWithoutName_setsCodeButLeavesNameBlank() {
+    ConvertToSpecimenProps props =
+        ConvertToSpecimenProps.builder().collectionCode("Some collection code").build();
+
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo("Some collection code");
+    assertThat(specimen.getCollection().getBodySite().getText()).isBlank();
+  }
+
+  @Test
+  void convertToSpecimen_withoutCollectionCodeAndWithName_useDefaults() {
+    ConvertToSpecimenProps props =
+        ConvertToSpecimenProps.builder().collectionName("Some collection name").build();
+
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo(DEFAULT_LOCATION_CODE);
+    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
+  }
+
+  @Test
+  void convertToSpecimen_withoutCollectionCodeAndName_useDefaults() {
+    ConvertToSpecimenProps props = ConvertToSpecimenProps.builder().build();
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo(DEFAULT_LOCATION_CODE);
+    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
   }
 }
