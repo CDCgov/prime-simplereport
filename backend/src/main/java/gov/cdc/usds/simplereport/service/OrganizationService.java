@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
-import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -481,12 +480,16 @@ public class OrganizationService {
     return adminUserEmails.stream()
         .map(
             email -> {
-              ApiUser foundUser =
-                  apiUserRepository
-                      .findByLoginEmail(email)
-                      .orElseThrow(NonexistentUserException::new);
-              return foundUser.getInternalId();
+              Optional<ApiUser> foundUser = apiUserRepository.findByLoginEmail(email);
+              if (foundUser.isEmpty()) {
+                log.warn(
+                    "Query for admin users in organization ",
+                    orgId,
+                    " found a user in Okta but not in the database. Skipping...");
+              }
+              return foundUser.map(user -> user.getInternalId()).orElse(null);
             })
+        .filter(userId -> userId != null)
         .collect(Collectors.toList());
   }
 }

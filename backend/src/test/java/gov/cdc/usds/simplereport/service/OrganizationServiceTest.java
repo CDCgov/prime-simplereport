@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
-import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -478,20 +477,25 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void getOrgAdminUserIds_throws_forNonExistentOrg() {
-    assertThrows(
-        NonexistentOrgException.class,
-        () -> _service.getOrgAdminUserIds(UUID.fromString("5ebf893a-bb57-48ca-8fc2-1ef6b25e465b")));
+    UUID mismatchedUUID = UUID.fromString("5ebf893a-bb57-48ca-8fc2-1ef6b25e465b");
+    assertThrows(NonexistentOrgException.class, () -> _service.getOrgAdminUserIds(mismatchedUUID));
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getOrgAdminUserIds_throws_forNonExistentUserInOrg() {
+  void getOrgAdminUserIds_skipsUser_forNonExistentUserInOrg() {
     Organization createdOrg = _dataFactory.saveValidOrganization();
+    List<String> listWithAnExtraEmail = oktaRepository.fetchAdminUserEmail(createdOrg);
+    listWithAnExtraEmail.add("nonexistent@example.com");
 
-    when(oktaRepository.fetchAdminUserEmail(createdOrg))
-        .thenReturn(List.of("nonexistent@example.com"));
-    assertThrows(
-        NonexistentUserException.class,
-        () -> _service.getOrgAdminUserIds(createdOrg.getInternalId()));
+    when(oktaRepository.fetchAdminUserEmail(createdOrg)).thenReturn(listWithAnExtraEmail);
+    List<UUID> expectedIds =
+        listWithAnExtraEmail.stream()
+            .filter(email -> email != "nonexistent@example.com")
+            .map(email -> _apiUserRepo.findByLoginEmail(email).get().getInternalId())
+            .collect(Collectors.toList());
+
+    List<UUID> adminIds = _service.getOrgAdminUserIds(createdOrg.getInternalId());
+    assertThat(adminIds).isEqualTo(expectedIds);
   }
 }
