@@ -90,7 +90,7 @@ exports[`Agnostic specific upload container test passes axe tests 1`] = `
                   Download the
                    
                   <a
-                    href=""
+                    href="/assets/resources/condition_agnostic_test_result_example_11_13_2023.csv"
                   >
                     spreadsheet template
                   </a>
