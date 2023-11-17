@@ -4,8 +4,10 @@ import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
@@ -13,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
@@ -24,6 +27,7 @@ import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -40,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class OrganizationService {
+  private final ApiUserRepository apiUserRepository;
 
   private final OrganizationRepository organizationRepository;
   private final FacilityRepository facilityRepository;
@@ -465,5 +470,27 @@ public class OrganizationService {
   @AuthorizationConfiguration.RequirePermissionToAccessOrg
   public UUID getPermissibleOrgId(UUID orgId) {
     return orgId != null ? orgId : getCurrentOrganization().getInternalId();
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<UUID> getOrgAdminUserIds(UUID orgId) {
+    Organization org =
+        organizationRepository.findById(orgId).orElseThrow(NonexistentOrgException::new);
+    List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
+
+    return adminUserEmails.stream()
+        .map(
+            email -> {
+              Optional<ApiUser> foundUser = apiUserRepository.findByLoginEmail(email);
+              if (foundUser.isEmpty()) {
+                log.warn(
+                    "Query for admin users in organization "
+                        + orgId
+                        + " found a user in Okta but not in the database. Skipping...");
+              }
+              return foundUser.map(user -> user.getInternalId()).orElse(null);
+            })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 }

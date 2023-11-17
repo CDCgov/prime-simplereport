@@ -10,16 +10,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
@@ -52,6 +56,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Autowired private DeviceTypeRepository deviceTypeRepository;
   @Autowired @SpyBean private OktaRepository oktaRepository;
   @Autowired @SpyBean private PersonRepository personRepository;
+  @Autowired ApiUserRepository _apiUserRepo;
+  @Autowired private DemoUserConfiguration userConfiguration;
 
   @BeforeEach
   void setupData() {
@@ -451,5 +457,45 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
       assertThat(updatedFacility.getDeviceTypes()).hasSize(2);
     }
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getOrgAdminUserIds_success() {
+    Organization createdOrg = _dataFactory.saveValidOrganization();
+    List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(createdOrg);
+
+    List<UUID> expectedIds =
+        adminUserEmails.stream()
+            .map(email -> _apiUserRepo.findByLoginEmail(email).get().getInternalId())
+            .collect(Collectors.toList());
+
+    List<UUID> adminIds = _service.getOrgAdminUserIds(createdOrg.getInternalId());
+    assertThat(adminIds).isEqualTo(expectedIds);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getOrgAdminUserIds_throws_forNonExistentOrg() {
+    UUID mismatchedUUID = UUID.fromString("5ebf893a-bb57-48ca-8fc2-1ef6b25e465b");
+    assertThrows(NonexistentOrgException.class, () -> _service.getOrgAdminUserIds(mismatchedUUID));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getOrgAdminUserIds_skipsUser_forNonExistentUserInOrg() {
+    Organization createdOrg = _dataFactory.saveValidOrganization();
+    List<String> listWithAnExtraEmail = oktaRepository.fetchAdminUserEmail(createdOrg);
+    listWithAnExtraEmail.add("nonexistent@example.com");
+
+    when(oktaRepository.fetchAdminUserEmail(createdOrg)).thenReturn(listWithAnExtraEmail);
+    List<UUID> expectedIds =
+        listWithAnExtraEmail.stream()
+            .filter(email -> !email.equals("nonexistent@example.com"))
+            .map(email -> _apiUserRepo.findByLoginEmail(email).get().getInternalId())
+            .collect(Collectors.toList());
+
+    List<UUID> adminIds = _service.getOrgAdminUserIds(createdOrg.getInternalId());
+    assertThat(adminIds).isEqualTo(expectedIds);
   }
 }

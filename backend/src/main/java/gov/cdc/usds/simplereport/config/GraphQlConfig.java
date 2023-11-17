@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
 import gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException;
@@ -63,6 +64,12 @@ public class GraphQlConfig {
 
       if (exception instanceof NonexistentUserException) {
         String errorMessage = String.format("header: Cannot find user.; %s", defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
+      }
+
+      if (exception instanceof NonexistentOrgException) {
+        String errorMessage =
+            String.format("header: Cannot find organization.; %s", defaultErrorBody);
         return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
