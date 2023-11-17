@@ -491,7 +491,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     when(oktaRepository.fetchAdminUserEmail(createdOrg)).thenReturn(listWithAnExtraEmail);
     List<UUID> expectedIds =
         listWithAnExtraEmail.stream()
-            .filter(email -> email != "nonexistent@example.com")
+            .filter(email -> !email.equals("nonexistent@example.com"))
             .map(email -> _apiUserRepo.findByLoginEmail(email).get().getInternalId())
             .collect(Collectors.toList());
 

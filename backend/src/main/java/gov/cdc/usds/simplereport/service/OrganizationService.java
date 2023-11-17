@@ -483,9 +483,9 @@ public class OrganizationService {
               Optional<ApiUser> foundUser = apiUserRepository.findByLoginEmail(email);
               if (foundUser.isEmpty()) {
                 log.warn(
-                    "Query for admin users in organization ",
-                    orgId,
-                    " found a user in Okta but not in the database. Skipping...");
+                    "Query for admin users in organization "
+                        + orgId
+                        + " found a user in Okta but not in the database. Skipping...");
               }
               return foundUser.map(user -> user.getInternalId()).orElse(null);
             })
