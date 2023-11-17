@@ -1142,6 +1142,406 @@ Object {
 `;
 
 exports[`TestCardForm initial state matches snapshot for flu device 1`] = `
+<div>
+  <div
+    aria-hidden="true"
+    class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+  >
+    <h4
+      class="margin-top-6 margin-bottom-5"
+    >
+      Submitting test data for 
+      Dixon, Althea Hedda Mclaughlin
+      ...
+    </h4>
+    <img
+      alt="submitting"
+      class="square-5"
+      src="loader.svg"
+    />
+  </div>
+  <div
+    class="grid-container"
+  >
+    <div
+      class="grid-row grid-gap"
+    >
+      <div
+        class="grid-col-auto"
+      >
+        <label
+          class="usa-label margin-top-3"
+          data-testid="label"
+          for="current-date-time"
+        >
+          Test date and time
+           
+          <abbr
+            class="usa-hint usa-hint--required"
+            title="required"
+          >
+            *
+          </abbr>
+        </label>
+        <div
+          class="usa-checkbox"
+          data-testid="checkbox"
+        >
+          <input
+            checked=""
+            class="usa-checkbox__input"
+            id="current-date-time-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+            name="current-date-time"
+            type="checkbox"
+          />
+          <label
+            class="usa-checkbox__label"
+            for="current-date-time-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+          >
+            Current date and time
+          </label>
+        </div>
+      </div>
+    </div>
+    <div
+      class="grid-row grid-gap"
+      data-testid="device-type-dropdown-container"
+    >
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-dropdown  card-dropdown"
+        >
+          <label
+            class="usa-label"
+            for="13"
+          >
+            <span
+              class="usa-tooltip usa-text-with-tooltip"
+              data-testid="tooltipWrapper"
+            >
+              <button
+                aria-describedby="tooltip-1000000"
+                aria-label=""
+                class="usa-button usa-button--unstyled usa-tooltip__trigger"
+                data-testid="triggerElement"
+                position="right"
+                tabindex="0"
+                title=""
+                wrapperclasses="usa-text-with-tooltip"
+              >
+                Test device
+                <svg
+                  alt-text="info"
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-circle-info info-circle-icon"
+                  data-icon="circle-info"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </button>
+              <span
+                aria-hidden="true"
+                class="usa-tooltip__body"
+                data-testid="tooltipBody"
+                id="tooltip-1000000"
+                role="tooltip"
+                title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+              >
+                Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
+              </span>
+            </span>
+            <abbr
+              class="usa-hint usa-hint--required"
+              title="required"
+            >
+               
+              *
+            </abbr>
+          </label>
+          <select
+            aria-label="Test device"
+            aria-required="true"
+            class="usa-select"
+            data-testid="device-type-dropdown"
+            id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+            name="testDevice"
+          >
+            <option
+              aria-selected="true"
+              value="FLU-DEVICE-ID"
+            >
+              FLU
+            </option>
+            <option
+              aria-selected="false"
+              value="COVID-DEVICE-ID"
+            >
+              LumiraDX
+            </option>
+            <option
+              aria-selected="false"
+              value="MULTIPLEX-DEVICE-ID"
+            >
+              Multiplex
+            </option>
+            <option
+              aria-selected="false"
+              value="MULTIPLEX-COVID-DEVICE-ID"
+            >
+              MultiplexAndCovidOnly
+            </option>
+          </select>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+        data-testid="specimen-type-dropdown-container"
+      >
+        <div
+          class="usa-form-group prime-dropdown  card-dropdown"
+        >
+          <label
+            class="usa-label"
+            for="14"
+          >
+            Specimen type
+            <abbr
+              class="usa-hint usa-hint--required"
+              title="required"
+            >
+               
+              *
+            </abbr>
+          </label>
+          <select
+            aria-label="Specimen type"
+            aria-required="true"
+            class="usa-select"
+            data-testid="specimen-type-dropdown"
+            id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+            name="specimenType"
+          >
+            <option
+              aria-selected="false"
+              value="SPECIMEN-2-ID"
+            >
+              Nasopharyngeal swab
+            </option>
+            <option
+              aria-selected="true"
+              value="SPECIMEN-1-ID"
+            >
+              Swab of internal nose
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div
+      class="grid-row grid-gap"
+    >
+      <div
+        class="usa-form-group"
+        data-testid="formGroup"
+      >
+        <div
+          class="grid-row grid-gap"
+        >
+          <div
+            class="grid-col-auto test-result-input-radio-group-column"
+          >
+            <div
+              class="usa-form-group prime-radio__group"
+            >
+              <fieldset
+                class="usa-fieldset prime-radios"
+                data-testid="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                id="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+              >
+                <legend
+                  class="usa-legend"
+                >
+                  Flu A result
+                </legend>
+                <div
+                  class=""
+                >
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="15-val-POSITIVE"
+                      name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="POSITIVE"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
+                      for="15-val-POSITIVE"
+                    >
+                      Positive (+)
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="15-val-NEGATIVE"
+                      name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="NEGATIVE"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
+                      for="15-val-NEGATIVE"
+                    >
+                      Negative (-)
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      checked=""
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="15-val-UNDETERMINED"
+                      name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="UNDETERMINED"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
+                      for="15-val-UNDETERMINED"
+                    >
+                      Inconclusive
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div
+            class="grid-col-auto test-result-input-radio-group-column"
+          >
+            <div
+              class="usa-form-group prime-radio__group"
+            >
+              <fieldset
+                class="usa-fieldset prime-radios"
+                data-testid="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                id="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+              >
+                <legend
+                  class="usa-legend"
+                >
+                  Flu B result
+                </legend>
+                <div
+                  class=""
+                >
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="16-val-POSITIVE"
+                      name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="POSITIVE"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
+                      for="16-val-POSITIVE"
+                    >
+                      Positive (+)
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="16-val-NEGATIVE"
+                      name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="NEGATIVE"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
+                      for="16-val-NEGATIVE"
+                    >
+                      Negative (-)
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      checked=""
+                      class="usa-radio__input"
+                      data-required="false"
+                      id="16-val-UNDETERMINED"
+                      name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="UNDETERMINED"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
+                      for="16-val-UNDETERMINED"
+                    >
+                      Inconclusive
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="grid-row margin-top-4"
+    >
+      <div
+        class="grid-col-auto"
+      >
+        <button
+          class="usa-button"
+          data-testid="button"
+          type="button"
+        >
+          Submit results
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TestCardForm initial state matches snapshot for hiv device 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body
@@ -1216,11 +1616,11 @@ Object {
             class="grid-col-auto"
           >
             <div
-              class="usa-form-group prime-dropdown  card-dropdown"
+              class="usa-form-group prime-dropdown  usa-form-group--error card-dropdown"
             >
               <label
-                class="usa-label"
-                for="13"
+                class="usa-label usa-label--error"
+                for="17"
               >
                 <span
                   class="usa-tooltip usa-text-with-tooltip"
@@ -1273,16 +1673,34 @@ Object {
                   *
                 </abbr>
               </label>
+              <div
+                class="usa-error-message"
+                id="error_17"
+                role="alert"
+              >
+                <span
+                  class="usa-sr-only"
+                >
+                  Error: 
+                </span>
+                Please select a device.
+              </div>
               <select
+                aria-describedby="error_17"
+                aria-invalid="true"
                 aria-label="Test device"
                 aria-required="true"
-                class="usa-select"
+                class="usa-select usa-input--error"
                 data-testid="device-type-dropdown"
                 id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
                 name="testDevice"
               >
                 <option
-                  aria-selected="true"
+                  aria-selected="false"
+                  value=""
+                />
+                <option
+                  aria-selected="false"
                   value="FLU-DEVICE-ID"
                 >
                   FLU
@@ -1317,7 +1735,7 @@ Object {
             >
               <label
                 class="usa-label"
-                for="14"
+                for="18"
               >
                 Specimen type
                 <abbr
@@ -1333,22 +1751,10 @@ Object {
                 aria-required="true"
                 class="usa-select"
                 data-testid="specimen-type-dropdown"
+                disabled=""
                 id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
                 name="specimenType"
-              >
-                <option
-                  aria-selected="false"
-                  value="SPECIMEN-2-ID"
-                >
-                  Nasopharyngeal swab
-                </option>
-                <option
-                  aria-selected="true"
-                  value="SPECIMEN-1-ID"
-                >
-                  Swab of internal nose
-                </option>
-              </select>
+              />
             </div>
           </div>
         </div>
@@ -1360,23 +1766,46 @@ Object {
             data-testid="formGroup"
           >
             <div
-              class="grid-row grid-gap"
+              class="usa-alert usa-alert--error"
+              data-testid="alert"
             >
               <div
-                class="grid-col-auto test-result-input-radio-group-column"
+                class="usa-alert__body"
+              >
+                <p
+                  class="usa-alert__text"
+                >
+                  This device doesn't have any supported disease tests configured. Please ask your organization admin to add the correct test.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="grid-row grid-gap"
+        >
+          <div
+            class="grid-col-auto"
+            id="covid-aoe-form"
+          >
+            <div
+              class="grid-row"
+            >
+              <div
+                class="grid-col-auto"
               >
                 <div
-                  class="usa-form-group prime-radio__group"
+                  class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
                     >
-                      Flu A result
+                      Is the patient pregnant?
                     </legend>
                     <div
                       class=""
@@ -1387,17 +1816,17 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="15-val-POSITIVE"
-                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          id="19-val-77386006"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
-                          value="POSITIVE"
+                          value="77386006"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                          for="15-val-POSITIVE"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
+                          for="19-val-77386006"
                         >
-                          Positive (+)
+                          Yes
                         </label>
                       </div>
                       <div
@@ -1406,58 +1835,61 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="15-val-NEGATIVE"
-                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          id="19-val-60001007"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
-                          value="NEGATIVE"
+                          value="60001007"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                          for="15-val-NEGATIVE"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
+                          for="19-val-60001007"
                         >
-                          Negative (-)
+                          No
                         </label>
                       </div>
                       <div
                         class="usa-radio"
                       >
                         <input
-                          checked=""
                           class="usa-radio__input"
                           data-required="false"
-                          id="15-val-UNDETERMINED"
-                          name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          id="19-val-261665006"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
-                          value="UNDETERMINED"
+                          value="261665006"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                          for="15-val-UNDETERMINED"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
+                          for="19-val-261665006"
                         >
-                          Inconclusive
+                          Prefer not to answer
                         </label>
                       </div>
                     </div>
                   </fieldset>
                 </div>
               </div>
+            </div>
+            <div
+              class="grid-row"
+            >
               <div
-                class="grid-col-auto test-result-input-radio-group-column"
+                class="grid-col-auto"
               >
                 <div
-                  class="usa-form-group prime-radio__group"
+                  class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
-                    data-testid="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    data-testid="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                   >
                     <legend
                       class="usa-legend"
                     >
-                      Flu B result
+                      Is the patient currently experiencing any symptoms?
                     </legend>
                     <div
                       class=""
@@ -1468,36 +1900,17 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="16-val-POSITIVE"
-                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          id="20-val-YES"
+                          name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
-                          value="POSITIVE"
+                          value="YES"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                          for="16-val-POSITIVE"
+                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
+                          for="20-val-YES"
                         >
-                          Positive (+)
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="16-val-NEGATIVE"
-                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                          type="radio"
-                          value="NEGATIVE"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                          for="16-val-NEGATIVE"
-                        >
-                          Negative (-)
+                          Yes
                         </label>
                       </div>
                       <div
@@ -1507,17 +1920,17 @@ Object {
                           checked=""
                           class="usa-radio__input"
                           data-required="false"
-                          id="16-val-UNDETERMINED"
-                          name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          id="20-val-NO"
+                          name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
-                          value="UNDETERMINED"
+                          value="NO"
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                          for="16-val-UNDETERMINED"
+                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
+                          for="20-val-NO"
                         >
-                          Inconclusive
+                          No
                         </label>
                       </div>
                     </div>
@@ -1713,11 +2126,11 @@ Object {
           class="grid-col-auto"
         >
           <div
-            class="usa-form-group prime-dropdown  card-dropdown"
+            class="usa-form-group prime-dropdown  usa-form-group--error card-dropdown"
           >
             <label
-              class="usa-label"
-              for="13"
+              class="usa-label usa-label--error"
+              for="17"
             >
               <span
                 class="usa-tooltip usa-text-with-tooltip"
@@ -1770,16 +2183,34 @@ Object {
                 *
               </abbr>
             </label>
+            <div
+              class="usa-error-message"
+              id="error_17"
+              role="alert"
+            >
+              <span
+                class="usa-sr-only"
+              >
+                Error: 
+              </span>
+              Please select a device.
+            </div>
             <select
+              aria-describedby="error_17"
+              aria-invalid="true"
               aria-label="Test device"
               aria-required="true"
-              class="usa-select"
+              class="usa-select usa-input--error"
               data-testid="device-type-dropdown"
               id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
               name="testDevice"
             >
               <option
-                aria-selected="true"
+                aria-selected="false"
+                value=""
+              />
+              <option
+                aria-selected="false"
                 value="FLU-DEVICE-ID"
               >
                 FLU
@@ -1814,7 +2245,7 @@ Object {
           >
             <label
               class="usa-label"
-              for="14"
+              for="18"
             >
               Specimen type
               <abbr
@@ -1830,22 +2261,10 @@ Object {
               aria-required="true"
               class="usa-select"
               data-testid="specimen-type-dropdown"
+              disabled=""
               id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
               name="specimenType"
-            >
-              <option
-                aria-selected="false"
-                value="SPECIMEN-2-ID"
-              >
-                Nasopharyngeal swab
-              </option>
-              <option
-                aria-selected="true"
-                value="SPECIMEN-1-ID"
-              >
-                Swab of internal nose
-              </option>
-            </select>
+            />
           </div>
         </div>
       </div>
@@ -1857,23 +2276,46 @@ Object {
           data-testid="formGroup"
         >
           <div
-            class="grid-row grid-gap"
+            class="usa-alert usa-alert--error"
+            data-testid="alert"
           >
             <div
-              class="grid-col-auto test-result-input-radio-group-column"
+              class="usa-alert__body"
+            >
+              <p
+                class="usa-alert__text"
+              >
+                This device doesn't have any supported disease tests configured. Please ask your organization admin to add the correct test.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="grid-row grid-gap"
+      >
+        <div
+          class="grid-col-auto"
+          id="covid-aoe-form"
+        >
+          <div
+            class="grid-row"
+          >
+            <div
+              class="grid-col-auto"
             >
               <div
-                class="usa-form-group prime-radio__group"
+                class="usa-form-group"
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
                   >
-                    Flu A result
+                    Is the patient pregnant?
                   </legend>
                   <div
                     class=""
@@ -1884,17 +2326,17 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="15-val-POSITIVE"
-                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        id="19-val-77386006"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
-                        value="POSITIVE"
+                        value="77386006"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                        for="15-val-POSITIVE"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
+                        for="19-val-77386006"
                       >
-                        Positive (+)
+                        Yes
                       </label>
                     </div>
                     <div
@@ -1903,58 +2345,61 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="15-val-NEGATIVE"
-                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        id="19-val-60001007"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
-                        value="NEGATIVE"
+                        value="60001007"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                        for="15-val-NEGATIVE"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
+                        for="19-val-60001007"
                       >
-                        Negative (-)
+                        No
                       </label>
                     </div>
                     <div
                       class="usa-radio"
                     >
                       <input
-                        checked=""
                         class="usa-radio__input"
                         data-required="false"
-                        id="15-val-UNDETERMINED"
-                        name="Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        id="19-val-261665006"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
-                        value="UNDETERMINED"
+                        value="261665006"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-Flu A-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                        for="15-val-UNDETERMINED"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
+                        for="19-val-261665006"
                       >
-                        Inconclusive
+                        Prefer not to answer
                       </label>
                     </div>
                   </div>
                 </fieldset>
               </div>
             </div>
+          </div>
+          <div
+            class="grid-row"
+          >
             <div
-              class="grid-col-auto test-result-input-radio-group-column"
+              class="grid-col-auto"
             >
               <div
-                class="usa-form-group prime-radio__group"
+                class="usa-form-group"
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  data-testid="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 >
                   <legend
                     class="usa-legend"
                   >
-                    Flu B result
+                    Is the patient currently experiencing any symptoms?
                   </legend>
                   <div
                     class=""
@@ -1965,36 +2410,17 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="16-val-POSITIVE"
-                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        id="20-val-YES"
+                        name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
-                        value="POSITIVE"
+                        value="YES"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-POSITIVE"
-                        for="16-val-POSITIVE"
+                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
+                        for="20-val-YES"
                       >
-                        Positive (+)
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="16-val-NEGATIVE"
-                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="NEGATIVE"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NEGATIVE"
-                        for="16-val-NEGATIVE"
-                      >
-                        Negative (-)
+                        Yes
                       </label>
                     </div>
                     <div
@@ -2004,17 +2430,17 @@ Object {
                         checked=""
                         class="usa-radio__input"
                         data-required="false"
-                        id="16-val-UNDETERMINED"
-                        name="Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        id="20-val-NO"
+                        name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
-                        value="UNDETERMINED"
+                        value="NO"
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-Flu B-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39-UNDETERMINED"
-                        for="16-val-UNDETERMINED"
+                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
+                        for="20-val-NO"
                       >
-                        Inconclusive
+                        No
                       </label>
                     </div>
                   </div>

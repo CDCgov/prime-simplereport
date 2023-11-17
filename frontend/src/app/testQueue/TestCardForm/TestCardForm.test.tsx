@@ -23,11 +23,13 @@ const covidDeviceName = "LumiraDX";
 const multiplexDeviceName = "Multiplex";
 const multiplexAndCovidOnlyDeviceName = "MultiplexAndCovidOnly";
 const fluDeviceName = "FLU";
+const hivDeviceName = "HIV";
 
 const covidDeviceId = "COVID-DEVICE-ID";
 const multiplexDeviceId = "MULTIPLEX-DEVICE-ID";
 const multiplexAndCovidOnlyDeviceId = "MULTIPLEX-COVID-DEVICE-ID";
 const fluDeviceId = "FLU-DEVICE-ID";
+const hivDeviceId = "HIV-DEVICE-ID";
 
 const specimen1Name = "Swab of internal nose";
 const specimen1Id = "SPECIMEN-1-ID";
@@ -307,6 +309,26 @@ describe("TestCardForm", () => {
             internalId: fluDeviceId,
             name: fluDeviceName,
             model: fluDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      const { container } = await renderTestCardForm({ props });
+
+      expect(container).toMatchSnapshot();
+    });
+
+    it("matches snapshot for hiv device", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "UNDETERMINED", disease: { name: "HIV" } }],
+          deviceType: {
+            internalId: hivDeviceId,
+            name: hivDeviceName,
+            model: hivDeviceName,
             testLength: 15,
           },
         },

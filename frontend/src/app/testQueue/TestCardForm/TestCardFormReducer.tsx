@@ -15,14 +15,15 @@ export interface TestFormState {
   devicesMap: DevicesMap;
   specimenId: string;
   testResults: MultiplexResultInput[];
-  covidAOEResponses: CovidAoeQuestionResponses;
+  aoeResponses: AoeQuestionResponses;
 }
 
-export interface CovidAoeQuestionResponses {
+export interface AoeQuestionResponses {
   pregnancy?: PregnancyCode;
   noSymptoms?: boolean | null;
   symptoms?: string | null;
   symptomOnset?: string;
+  genderOfSexualPartners?: (string | null)[] | null;
 }
 
 export enum TestFormActionCase {
@@ -32,7 +33,7 @@ export enum TestFormActionCase {
   UPDATE_DEVICES_MAP = "UPDATE_DEVICES_MAP",
   UPDATE_SPECIMEN_ID = "UPDATE_SPECIMEN_ID",
   UPDATE_TEST_RESULT = "UPDATE_TEST_RESULT",
-  UPDATE_COVID_AOE_RESPONSES = "UPDATE_COVID_AOE_RESPONSES",
+  UPDATE_AOE_RESPONSES = "UPDATE_AOE_RESPONSES",
   UPDATE_DIRTY_STATE = "UPDATE_DIRTY_STATE",
   UPDATE_WITH_CHANGES_FROM_SERVER = "UPDATE_WITH_CHANGES_FROM_SERVER",
 }
@@ -54,8 +55,8 @@ export type TestFormAction =
       payload: MultiplexResultInput[];
     }
   | {
-      type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES;
-      payload: CovidAoeQuestionResponses;
+      type: TestFormActionCase.UPDATE_AOE_RESPONSES;
+      payload: AoeQuestionResponses;
     }
   | {
       type: TestFormActionCase.UPDATE_DIRTY_STATE;
@@ -130,11 +131,11 @@ export const testCardFormReducer = (
         dirty: true,
       };
     }
-    case TestFormActionCase.UPDATE_COVID_AOE_RESPONSES: {
+    case TestFormActionCase.UPDATE_AOE_RESPONSES: {
       return {
         ...prevState,
         dirty: true,
-        covidAOEResponses: payload,
+        aoeResponses: payload,
       };
     }
     case TestFormActionCase.UPDATE_DIRTY_STATE: {
@@ -173,9 +174,10 @@ export const testCardFormReducer = (
         symptoms: JSON.stringify(parseSymptoms(payload.symptoms)),
         symptomOnset: payload.symptomOnset,
         pregnancy: payload.pregnancy,
-      } as CovidAoeQuestionResponses;
-      if (!isEqual(aoeAnswers, prevState.covidAOEResponses)) {
-        resultState.covidAOEResponses = aoeAnswers;
+        genderOfSexualPartners: payload.genderOfSexualPartners,
+      } as AoeQuestionResponses;
+      if (!isEqual(aoeAnswers, prevState.aoeResponses)) {
+        resultState.aoeResponses = aoeAnswers;
       }
 
       return resultState;

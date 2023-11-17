@@ -74,6 +74,7 @@ mutation UpdateAOE(
   $pregnancy: String
   $noSymptoms: Boolean
   $testResultDelivery: TestResultDeliveryPreference
+  $genderOfSexualPartners: [String]
 ) {
   updateTimeOfTestQuestions(
     patientId: $patientId
@@ -82,5 +83,6 @@ mutation UpdateAOE(
     noSymptoms: $noSymptoms
     symptomOnset: $symptomOnset
     testResultDelivery: $testResultDelivery
+    genderOfSexualPartners: $genderOfSexualPartners
   )
 }

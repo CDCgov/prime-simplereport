@@ -12,12 +12,12 @@ import {
   PregnancyCode,
 } from "../../../../patientApp/timeOfTest/constants";
 import { QueriedTestOrder } from "../../QueueItem";
-import { CovidAoeQuestionResponses } from "../TestCardFormReducer";
+import { AoeQuestionResponses } from "../TestCardFormReducer";
 
 export interface CovidAoEFormProps {
   testOrder: QueriedTestOrder;
-  responses: CovidAoeQuestionResponses;
-  onResponseChange: (responses: CovidAoeQuestionResponses) => void;
+  responses: AoeQuestionResponses;
+  onResponseChange: (responses: AoeQuestionResponses) => void;
 }
 
 const pregnancyResponses = getPregnancyResponses();

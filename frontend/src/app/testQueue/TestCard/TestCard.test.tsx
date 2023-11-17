@@ -81,8 +81,8 @@ const specimen1Name = "Swab of internal nose";
 const specimen1Id = "SPECIMEN-1-ID";
 const specimen2Name = "Nasopharyngeal swab";
 const specimen2Id = "SPECIMEN-2-ID";
-const specimen3Id = "Venous blood specimen";
-const specimen3Name = "SPECIMEN-3-ID";
+const specimen3Name = "Venous blood specimen";
+const specimen3Id = "SPECIMEN-3-ID";
 
 const deletedSpecimenId = "DELETED-SPECIMEN-ID";
 
@@ -1131,6 +1131,7 @@ describe("TestCard", () => {
                 '{"25064002":false,"36955009":false,"43724002":false,"44169009":false,"49727002":false,"62315008":false,"64531003":false,"68235000":false,"68962001":false,"84229001":false,"103001002":false,"162397003":false,"230145002":false,"267036007":false,"422400008":false,"422587007":false,"426000000":false}',
               symptomOnset: null,
               noSymptoms: false,
+              genderOfSexualPartners: null,
             } as UPDATE_AOE_VARIABLES,
           },
           result: {
@@ -1148,6 +1149,7 @@ describe("TestCard", () => {
                 '{"25064002":false,"36955009":false,"43724002":false,"44169009":false,"49727002":false,"62315008":false,"64531003":false,"68235000":false,"68962001":false,"84229001":false,"103001002":false,"162397003":false,"230145002":false,"267036007":false,"422400008":false,"422587007":false,"426000000":false}',
               symptomOnset: "2023-08-15",
               noSymptoms: false,
+              genderOfSexualPartners: null,
             } as UPDATE_AOE_VARIABLES,
           },
           result: {
@@ -1432,6 +1434,117 @@ describe("TestCard", () => {
 
       await user.selectOptions(deviceDropdown, device7Name);
       expect(screen.getByText("HIV result")).toBeInTheDocument();
+    });
+
+    it("shows required HIV AOE questions when a positive HIV result is present", async function () {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
+      const mocks = [
+        {
+          request: {
+            query: EDIT_QUEUE_ITEM,
+            variables: {
+              id: testOrderInfo.internalId,
+              deviceTypeId: device7Id,
+              specimenTypeId: specimen3Id,
+              results: [{ diseaseName: "HIV", testResult: "POSITIVE" }],
+              dateTested: null,
+            } as EDIT_QUEUE_ITEM_VARIABLES,
+          },
+          result: {
+            data: {
+              editQueueItem: {
+                results: [
+                  {
+                    disease: { name: "HIV" },
+                    testResult: "POSITIVE",
+                  },
+                ],
+                dateTested: null,
+                deviceType: {
+                  internalId: device7Id,
+                  testLength: 15,
+                },
+              },
+            } as EDIT_QUEUE_ITEM_DATA,
+          },
+        },
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device7Name);
+      expect(screen.getByText("HIV result")).toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+      expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
+      expect(
+        screen.getByText("What is the gender of their sexual partners?")
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing any symptoms?"
+        )
+      ).not.toBeInTheDocument();
+    });
+
+    it("hides AOE questions when there is no positive HIV result", async function () {
+      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+
+      const mocks = [
+        {
+          request: {
+            query: EDIT_QUEUE_ITEM,
+            variables: {
+              id: testOrderInfo.internalId,
+              deviceTypeId: device7Id,
+              specimenTypeId: specimen3Id,
+              results: [{ diseaseName: "HIV", testResult: "UNKNOWN" }],
+              dateTested: null,
+            } as EDIT_QUEUE_ITEM_VARIABLES,
+          },
+          result: {
+            data: {
+              editQueueItem: {
+                results: [
+                  {
+                    disease: { name: "HIV" },
+                    testResult: "UNKNOWN",
+                  },
+                ],
+                dateTested: null,
+                deviceType: {
+                  internalId: device7Id,
+                  testLength: 15,
+                },
+              },
+            } as EDIT_QUEUE_ITEM_DATA,
+          },
+        },
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device7Name);
+      expect(screen.getByText("HIV result")).toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
     });
 
     it("should show no AOE questions when a flu only device is chosen", async function () {

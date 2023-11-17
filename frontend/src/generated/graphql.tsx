@@ -2144,6 +2144,10 @@ export type UpdateAoeMutationVariables = Exact<{
   pregnancy?: InputMaybe<Scalars["String"]["input"]>;
   noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+  genderOfSexualPartners?: InputMaybe<
+    | Array<InputMaybe<Scalars["String"]["input"]>>
+    | InputMaybe<Scalars["String"]["input"]>
+  >;
 }>;
 
 export type UpdateAoeMutation = {
@@ -2221,6 +2225,7 @@ export type GetFacilityQueueQuery = {
     symptoms?: string | null;
     symptomOnset?: any | null;
     noSymptoms?: boolean | null;
+    genderOfSexualPartners?: Array<string | null> | null;
     dateTested?: any | null;
     correctionStatus?: string | null;
     reasonForCorrection?: string | null;
@@ -6633,6 +6638,7 @@ export const UpdateAoeDocument = gql`
     $pregnancy: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
+    $genderOfSexualPartners: [String]
   ) {
     updateTimeOfTestQuestions(
       patientId: $patientId
@@ -6641,6 +6647,7 @@ export const UpdateAoeDocument = gql`
       noSymptoms: $noSymptoms
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
+      genderOfSexualPartners: $genderOfSexualPartners
     )
   }
 `;
@@ -6668,6 +6675,7 @@ export type UpdateAoeMutationFn = Apollo.MutationFunction<
  *      pregnancy: // value for 'pregnancy'
  *      noSymptoms: // value for 'noSymptoms'
  *      testResultDelivery: // value for 'testResultDelivery'
+ *      genderOfSexualPartners: // value for 'genderOfSexualPartners'
  *   },
  * });
  */
@@ -6893,6 +6901,7 @@ export const GetFacilityQueueDocument = gql`
       symptoms
       symptomOnset
       noSymptoms
+      genderOfSexualPartners
       deviceType {
         internalId
         name
