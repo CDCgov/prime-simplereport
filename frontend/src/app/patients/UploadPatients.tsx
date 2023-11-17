@@ -190,6 +190,7 @@ const UploadPatients = () => {
     return async (event: React.ChangeEvent<HTMLInputElement>) => {
       try {
         if (!event?.currentTarget?.files?.length) {
+          setButtonIsDisabled(true);
           return; //no files
         }
         const currentFile = event.currentTarget.files.item(0);
