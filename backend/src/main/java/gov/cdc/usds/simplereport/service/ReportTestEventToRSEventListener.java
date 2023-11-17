@@ -37,7 +37,7 @@ public class ReportTestEventToRSEventListener {
       testEventReportingService.report(savedEvent);
     }
 
-    if (savedEvent.hasFluResult() && fhirReportingEnabled) {
+    if (fhirReportingEnabled) {
       fhirQueueReportingService.report(savedEvent);
     }
   }

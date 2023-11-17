@@ -187,7 +187,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(testEventArgumentCaptor.capture());
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService).report(any());
     TestEvent sentEvent = testEventArgumentCaptor.getValue();
     TestResult testResult = sentEvent.getCovidTestResult().get();
     assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
@@ -236,7 +236,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         null);
 
     verify(testEventReportingService).report(any());
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService).report(any());
 
     List<TestEvent> testEvents =
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
@@ -257,7 +257,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
     assertThat(testEvents.get(1).getPatientHasPriorTests()).isTrue();
     verify(testEventReportingService, times(2)).report(any());
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService, times(2)).report(any());
   }
 
   @Test
@@ -408,7 +408,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
     verify(testEventReportingService).report(any());
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService).report(any());
   }
 
   @Test
@@ -454,7 +454,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
     verify(testEventReportingService).report(any());
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService).report(any());
   }
 
   @Test
@@ -563,7 +563,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(any());
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService).report(any());
 
     List<MultiplexResultInput> negativeCovidResult = makeCovidOnlyResult(TestResult.NEGATIVE);
 
@@ -575,7 +575,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the second event is sent to storage queue
     verify(testEventReportingService, times(2)).report(any());
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService, times(2)).report(any());
   }
 
   @Test
@@ -934,7 +934,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertTrue(res.getDeliverySuccess());
     verifyNoInteractions(testResultsDeliveryService);
     verify(testEventReportingService).report(any());
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService).report(any());
   }
 
   @Test
@@ -1466,7 +1466,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
     verify(testEventReportingService).report(deleteMarkerEvent);
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService).report(any());
   }
 
   @Test
@@ -2149,7 +2149,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(correctedTestEvent);
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(fhirQueueReportingService).report(any());
   }
 
   @Test
