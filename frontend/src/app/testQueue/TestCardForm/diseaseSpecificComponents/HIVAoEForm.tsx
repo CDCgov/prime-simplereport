@@ -47,6 +47,13 @@ export const HIVAoEForm = ({
   const showGenderOfSexualPartnersError =
     hasAttemptedSubmit && !isGenderOfSexualPartnersAnswered;
 
+  const selectedGenders: string[] = [];
+  responses.genderOfSexualPartners?.forEach((g) => {
+    if (g) {
+      selectedGenders.push(g);
+    }
+  });
+
   return (
     <div
       className="grid-col"
@@ -74,6 +81,7 @@ export const HIVAoEForm = ({
             name={`sexual-partner-gender-${testOrder.internalId}`}
             options={GENDER_IDENTITY_VALUES}
             onChange={onSexualPartnerGenderChange}
+            initialSelectedValues={selectedGenders}
             label={"What is the gender of their sexual partners?"}
             required={true}
             validationStatus={
