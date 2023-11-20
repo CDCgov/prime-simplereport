@@ -123,14 +123,14 @@ const client = new ApolloClient({
 });
 const routes = createRoutesFromElements(
   <Route element={<AppRouterShell />}>
-    <Route path="health/*" element={<HealthChecks />} />
-    <Route path="pxp/*" element={<PatientApp />} />
-    <Route path="uac/*" element={<AccountCreationApp />} />
-    <Route path="sign-up/*" element={<SignUpApp />} />
-    <Route path="register/:registrationLink" element={<SelfRegistration />} />
-    <Route path="session-timeout" element={<SessionTimeout />} />
-    <Route path="reload-app" element={<Navigate to="/" />} />
-    <Route path="*" element={<ReportingApp />} />
+    <Route path="/health/*" element={<HealthChecks />} />
+    <Route path="/pxp/*" element={<PatientApp />} />
+    <Route path="/uac/*" element={<AccountCreationApp />} />
+    <Route path="/sign-up/*" element={<SignUpApp />} />
+    <Route path="/register/:registrationLink" element={<SelfRegistration />} />
+    <Route path="/session-timeout" element={<SessionTimeout />} />
+    <Route path="/reload-app" element={<Navigate to="/" />} />
+    <Route path="/*" element={<ReportingApp />} />
     <Route element={<>Page not found</>} />
   </Route>
 );
