@@ -13,6 +13,7 @@ import {
   Navigate,
   createBrowserRouter,
   createRoutesFromElements,
+  Outlet,
 } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
 import { ErrorResponse, onError } from "@apollo/client/link/error";
@@ -123,7 +124,7 @@ const client = new ApolloClient({
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path={process.env.PUBLIC_URL}>
+    <Route element={<AppRouterShell />}>
       <Route path="/health/*" element={<HealthChecks />} />
       <Route path="/pxp/*" element={<PatientApp />} />
       <Route path="/uac/*" element={<AccountCreationApp />} />
@@ -145,13 +146,19 @@ export const ReactApp = () => (
     <React.StrictMode>
       <Provider store={store}>
         <WithFeatureFlags>
-          <TelemetryProvider>
-            <PrimeErrorBoundary>
-              <RouterProvider router={router} />
-            </PrimeErrorBoundary>
-          </TelemetryProvider>
+          <RouterProvider router={router} />
         </WithFeatureFlags>
       </Provider>
     </React.StrictMode>
   </ApolloProvider>
 );
+
+function AppRouterShell() {
+  return (
+    <TelemetryProvider>
+      <PrimeErrorBoundary>
+        <Outlet />
+      </PrimeErrorBoundary>
+    </TelemetryProvider>
+  );
+}
