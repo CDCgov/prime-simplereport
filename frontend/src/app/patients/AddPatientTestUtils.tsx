@@ -6,6 +6,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import userEvent from "@testing-library/user-event";
 
 import SRToastContainer from "../commonComponents/SRToastContainer";
+import { createGQLWrappedMemoryRouterWithDataApis } from "../utils/reactRouter";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
@@ -225,18 +226,19 @@ const Queue = () => {
 export const renderWithUserWithFacility = () => ({
   user: userEvent.setup(),
   ...render(
-    <>
-      <Provider store={store}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <RouterWithFacility>
-            <Route element={<AddPatient />} path={"/add-patient"} />
-            <Route path={"/patients"} element={<p>Patients!</p>} />
-            <Route path={"/queue"} element={<Queue />} />
-          </RouterWithFacility>
-        </MockedProvider>
-      </Provider>
-      <SRToastContainer />
-    </>
+    createGQLWrappedMemoryRouterWithDataApis(
+      <>
+        <RouterWithFacility>
+          <Route element={<AddPatient />} path={"/add-patient"} />
+          <Route path={"/patients"} element={<p>Patients!</p>} />
+          <Route path={"/queue"} element={<Queue />} />
+        </RouterWithFacility>{" "}
+        <SRToastContainer />{" "}
+      </>,
+      store,
+      mocks,
+      false
+    )
   ),
 });
 

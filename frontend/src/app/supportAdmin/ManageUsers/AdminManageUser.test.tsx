@@ -1,11 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
-import { MockedProvider } from "@apollo/client/testing";
-import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import createMockStore from "redux-mock-store";
-import { Provider } from "react-redux";
 import { configureAxe } from "jest-axe";
+import { MockedResponse } from "@apollo/client/testing/core";
+import { GraphQLError } from "graphql/error";
 
 import {
   EditUserEmailDocument,
@@ -19,6 +18,7 @@ import {
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
 import { OktaUserStatus } from "../../utils/user";
+import { createGQLWrappedMemoryRouterWithDataApis } from "../../utils/reactRouter";
 
 import { AdminManageUser } from "./AdminManageUser";
 import {
@@ -81,19 +81,17 @@ const searchForValidUser = async (
 const mockStore = createMockStore([]);
 const mockedStore = mockStore({ user: { isAdmin: true } });
 
-const renderComponent = (mocks?: any[]) => ({
+const renderComponent = (mocks: MockedResponse[]) => ({
   user: userEvent.setup(),
   ...render(
-    <Provider store={mockedStore}>
-      <MemoryRouter>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <div>
-            <ToastContainer />
-            <AdminManageUser />
-          </div>
-        </MockedProvider>
-      </MemoryRouter>
-    </Provider>
+    createGQLWrappedMemoryRouterWithDataApis(
+      <div>
+        <ToastContainer />
+        <AdminManageUser />
+      </div>,
+      mockedStore,
+      mocks
+    )
   ),
 });
 
@@ -173,28 +171,21 @@ describe("Admin manage users", () => {
       expect(document.body).toMatchSnapshot();
     });
     it("displays user is an admin", async () => {
-      const { user } = renderComponent([
-        {
-          request: {
-            query: FindUserByEmailDocument,
-            variables: { email: "admin@example.com" },
-          },
-          result: {
-            data: null,
-            errors: [
-              {
-                message:
-                  "header: Error finding user email; body: Please escalate this issue to the SimpleReport team.",
-                locations: [],
-                path: ["user"],
-                extensions: {
-                  classification: "ExecutionAborted",
-                },
-              },
-            ],
-          },
+      const mockedResponse = {
+        request: {
+          query: FindUserByEmailDocument,
+          variables: { email: "admin@example.com" },
         },
-      ]);
+        result: {
+          data: undefined,
+          errors: [
+            new GraphQLError(
+              "header: Error finding user email; body: Please escalate this issue to the SimpleReport team."
+            ),
+          ],
+        },
+      };
+      const { user } = renderComponent([mockedResponse as MockedResponse]);
       const searchInput = screen.getByLabelText(
         "Search by email address of user"
       );
@@ -214,16 +205,11 @@ describe("Admin manage users", () => {
             variables: { email: "bob@example.com" },
           },
           result: {
-            data: null,
+            data: undefined,
             errors: [
-              {
-                message: "header: Something went wrong; body: Try again later.",
-                locations: [],
-                path: ["user"],
-                extensions: {
-                  classification: "ExecutionAborted",
-                },
-              },
+              new GraphQLError(
+                "header: Something went wrong; body: Try again later."
+              ),
             ],
           },
         },
