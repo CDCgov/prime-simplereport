@@ -28,10 +28,7 @@ export function createGQLWrappedMemoryRouterWithDataApis(
   );
   const routes = createRoutesFromElements(
     path ? (
-      <>
-        <Route element={<></>} path={"/"} />
-        <Route element={element} path={path} />
-      </>
+      <Route element={element} path={path} />
     ) : (
       <Route element={element} path={"/"} />
     )
