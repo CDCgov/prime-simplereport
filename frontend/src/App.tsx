@@ -121,22 +121,22 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
-
-const router = createBrowserRouter(
-  createRoutesFromElements(
-    <Route path={process.env.PUBLIC_URL} element={<AppRouterShell />}>
-      <Route path="health/*" element={<HealthChecks />} />
-      <Route path="pxp/*" element={<PatientApp />} />
-      <Route path="uac/*" element={<AccountCreationApp />} />
-      <Route path="sign-up/*" element={<SignUpApp />} />
-      <Route path="register/:registrationLink" element={<SelfRegistration />} />
-      <Route path="session-timeout" element={<SessionTimeout />} />
-      <Route path="reload-app" element={<Navigate to="/" />} />
-      <Route path="*" element={<ReportingApp />} />
-      <Route element={<>Page not found</>} />
-    </Route>
-  )
+const routes = createRoutesFromElements(
+  <Route element={<AppRouterShell />}>
+    <Route path="health/*" element={<HealthChecks />} />
+    <Route path="pxp/*" element={<PatientApp />} />
+    <Route path="uac/*" element={<AccountCreationApp />} />
+    <Route path="sign-up/*" element={<SignUpApp />} />
+    <Route path="register/:registrationLink" element={<SelfRegistration />} />
+    <Route path="session-timeout" element={<SessionTimeout />} />
+    <Route path="reload-app" element={<Navigate to="/" />} />
+    <Route path="*" element={<ReportingApp />} />
+    <Route element={<>Page not found</>} />
+  </Route>
 );
+const router = createBrowserRouter(routes, {
+  basename: process.env.PUBLIC_URL,
+});
 
 export const ReactApp = () => (
   <ApolloProvider client={client}>
