@@ -1,8 +1,12 @@
-import { StoryFn, Meta } from "@storybook/react";
+import { Meta } from "@storybook/react";
+import configureStore from "redux-mock-store";
+import React from "react";
+import {
+  reactRouterParameters,
+  withRouter,
+} from "storybook-addon-react-router-v6";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
-import { MemoryRouter } from "react-router-dom";
-import configureStore from "redux-mock-store";
 
 import AddPatient from "./AddPatient";
 
@@ -13,21 +17,29 @@ const store = mockStore({
   organization: { name: "Test Organization" },
 });
 
-export default {
-  title: "Add Patient",
-  component: AddPatient,
-  argTypes: {},
-} as Meta;
-
-const Template: StoryFn = (_args) => (
-  <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
-    <Provider store={store}>
-      <MockedProvider mocks={[]} addTypename={false}>
-        <AddPatient />
-      </MockedProvider>
-    </Provider>
-  </MemoryRouter>
+const element = (
+  <Provider store={store}>
+    <MockedProvider mocks={[]}>
+      <AddPatient />
+    </MockedProvider>
+  </Provider>
 );
 
-export const Default = Template.bind({});
-Default.args = {};
+export default {
+  title: "Add Patient",
+  render: () => element,
+  decorators: [withRouter],
+} as Meta;
+
+export const Default = {
+  parameters: {
+    reactRouter: reactRouterParameters({
+      location: {
+        searchParams: { facility: mockFacilityID },
+      },
+      routing: {
+        path: "/app/add-patient",
+      },
+    }),
+  },
+};
