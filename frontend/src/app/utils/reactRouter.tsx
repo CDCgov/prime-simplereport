@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { MockStoreEnhanced } from "redux-mock-store";
 import { MockedResponse } from "@apollo/client/testing/core";
+import { InitialEntry } from "history";
 
 // https://reactrouter.com/en/main/routers/picking-a-router#testing
 
@@ -17,7 +18,8 @@ export function createGQLWrappedMemoryRouterWithDataApis(
   store: MockStoreEnhanced<unknown, {}>,
   mocks: MockedResponse[],
   addTypename?: boolean,
-  path?: string
+  path?: string,
+  initialEntries?: InitialEntry[]
 ): React.ReactElement {
   const element = (
     <Provider store={store}>
@@ -26,6 +28,7 @@ export function createGQLWrappedMemoryRouterWithDataApis(
       </MockedProvider>
     </Provider>
   );
+
   const routes = createRoutesFromElements(
     path ? (
       <Route element={element} path={path} />
@@ -33,7 +36,9 @@ export function createGQLWrappedMemoryRouterWithDataApis(
       <Route element={element} path={"/"} />
     )
   );
-  const router = createMemoryRouter(routes);
+  const router = initialEntries
+    ? createMemoryRouter(routes, { initialEntries: initialEntries })
+    : createMemoryRouter(routes);
   return <RouterProvider router={router} />;
 }
 

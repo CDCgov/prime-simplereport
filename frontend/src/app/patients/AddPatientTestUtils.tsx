@@ -1,11 +1,19 @@
 import configureStore from "redux-mock-store";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import {
+  createMemoryRouter,
+  createRoutesFromElements,
+  MemoryRouter,
+  Route,
+  RouterProvider,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import React from "react";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
-import userEvent from "@testing-library/user-event";
 
-import SRToastContainer from "../commonComponents/SRToastContainer";
 import { createGQLWrappedMemoryRouterWithDataApis } from "../utils/reactRouter";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
@@ -65,19 +73,15 @@ export const fillOutForm = async (
   }
 };
 
+const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+  <AddPatient />,
+  store,
+  [],
+  false
+);
 export const renderWithUserNoFacility = () => ({
   user: userEvent.setup(),
-  ...render(
-    <Provider store={store}>
-      <MockedProvider mocks={[]} addTypename={false}>
-        <MemoryRouter>
-          <Routes>
-            <Route path="/" element={<AddPatient />} />
-          </Routes>
-        </MemoryRouter>
-      </MockedProvider>
-    </Provider>
-  ),
+  ...render(elementToRender),
 });
 
 const addPatientRequestParams = {
@@ -223,24 +227,6 @@ const Queue = () => {
     </p>
   );
 };
-export const renderWithUserWithFacility = () => ({
-  user: userEvent.setup(),
-  ...render(
-    createGQLWrappedMemoryRouterWithDataApis(
-      <>
-        <RouterWithFacility>
-          <Route element={<AddPatient />} path={"/add-patient"} />
-          <Route path={"/patients"} element={<p>Patients!</p>} />
-          <Route path={"/queue"} element={<Queue />} />
-        </RouterWithFacility>{" "}
-        <SRToastContainer />{" "}
-      </>,
-      store,
-      mocks,
-      false
-    )
-  ),
-});
 
 export const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   children,
@@ -249,3 +235,25 @@ export const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
     <Routes>{children}</Routes>
   </MemoryRouter>
 );
+
+const routes = createRoutesFromElements(
+  <>
+    <Route element={<AddPatient />} path={"/add-patient"} />
+    <Route element={<p>Patients!</p>} path={"/patient"} />
+    <Route element={<Queue />} path={"/queue"} />
+  </>
+);
+const router = createMemoryRouter(routes, {
+  initialEntries: [`/add-patient?facility=${mockFacilityID}`],
+});
+
+export const renderWithUserWithFacility = () => ({
+  user: userEvent.setup(),
+  ...render(
+    <Provider store={store}>
+      <MockedProvider mocks={mocks}>
+        <RouterProvider router={router} />
+      </MockedProvider>
+    </Provider>
+  ),
+});

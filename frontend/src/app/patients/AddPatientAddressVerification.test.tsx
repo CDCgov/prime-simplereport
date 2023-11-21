@@ -137,11 +137,13 @@ describe("Add Patient: All required fields entered and submitting address verifi
         },
       }
     );
+
     await user.click(
       screen.queryAllByText("Save Changes", {
         exact: false,
       })[0]
     );
+
     await screen.findByText(/Invalid ZIP code for this state/i);
   });
 

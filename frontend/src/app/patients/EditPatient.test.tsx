@@ -3,13 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import {
-  createMemoryRouter,
-  createRoutesFromElements,
-  MemoryRouter,
-  Route,
-  RouterProvider,
-} from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import MockDate from "mockdate";
 import * as router from "react-router";
 import React from "react";
@@ -158,23 +152,23 @@ describe("EditPatient", () => {
       fromQueue: boolean
     ) {
       const elementToTest = (
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <EditPatient
-              facilityId={facilityId}
-              patientId={patientId}
-              fromQueue={fromQueue}
-            />
-          </MockedProvider>
-        </Provider>
+        <EditPatient
+          facilityId={facilityId}
+          patientId={patientId}
+          fromQueue={fromQueue}
+        />
       );
-      const route = <Route element={elementToTest} path={"/patient/"} />;
-      const router = createMemoryRouter(createRoutesFromElements(route), {
-        initialEntries: [`/patient?facility=${mockFacilityID}`],
-      });
+      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+        elementToTest,
+        store,
+        mocks,
+        false,
+        "/patient/",
+        [`/patient?facility=${mockFacilityID}`]
+      );
       return {
         user: userEvent.setup(),
-        ...render(<RouterProvider router={router} />),
+        ...render(elementToRender),
       };
     }
 
@@ -313,23 +307,21 @@ describe("EditPatient", () => {
       },
     ];
     const elementToTest = (
-      <Provider store={store}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />
-        </MockedProvider>
-      </Provider>
+      <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />
     );
 
-    const routes = createRoutesFromElements(
-      <Route element={elementToTest} path={"/"} />
+    const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+      elementToTest,
+      store,
+      mocks,
+      false
     );
-    const router = createMemoryRouter(routes);
 
     const renderWithUser = () => ({
       user: userEvent.setup(),
       ...render(
         <>
-          <RouterProvider router={router} />
+          {elementToRender}
           <SRToastContainer />
         </>
       ),
@@ -425,20 +417,16 @@ describe("EditPatient", () => {
     ];
 
     const elementToTest = (
-      <Provider store={store}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />
-        </MockedProvider>
-      </Provider>
+      <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />
     );
-
-    const routes = createRoutesFromElements(
-      <Route element={elementToTest} path={"/"} />
+    const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+      elementToTest,
+      store,
+      mocks
     );
-    const router = createMemoryRouter(routes);
     const renderWithUser = () => ({
       user: userEvent.setup(),
-      ...render(<RouterProvider router={router} />),
+      ...render(elementToRender),
     });
 
     const waitForDataLoad = async () => {
@@ -567,16 +555,15 @@ describe("EditPatient", () => {
   });
 
   describe("form validations", () => {
+    const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+      <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />,
+      store,
+      mocks,
+      false
+    );
     const renderWithUser = () => ({
       user: userEvent.setup(),
-      ...render(
-        createGQLWrappedMemoryRouterWithDataApis(
-          <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />,
-          store,
-          mocks,
-          false
-        )
-      ),
+      ...render(elementToRender),
     });
 
     it("defaults to USA for a patient with country as null", async () => {
@@ -610,14 +597,13 @@ describe("EditPatient", () => {
     beforeEach(async () => {
       const mocksWithNull = [...mocks];
       (mocksWithNull[0].result.data.patient as any).tribalAffiliation = null;
-      render(
-        createGQLWrappedMemoryRouterWithDataApis(
-          <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />,
-          store,
-          mocksWithNull,
-          false
-        )
+      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+        <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />,
+        store,
+        mocksWithNull,
+        false
       );
+      render(elementToRender);
     });
     it("renders", async () => {
       expect(
@@ -627,18 +613,15 @@ describe("EditPatient", () => {
   });
   describe("EditPatientContainer", () => {
     it("doesn't render if no facility is provided", async () => {
-      const element = (
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <EditPatientContainer />
-          </MockedProvider>
-        </Provider>
+      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+        <EditPatientContainer />,
+        store,
+        mocks,
+        true,
+        "/patient/:patientId",
+        [`/patient/5`]
       );
-      const route = <Route element={element} path={"/patient/:patientId"} />;
-      const router = createMemoryRouter(createRoutesFromElements(route), {
-        initialEntries: [`/patient/5`],
-      });
-      render(<RouterProvider router={router} />);
+      render(elementToRender);
       expect(
         await screen.findByText("No facility selected", { exact: false })
       ).toBeInTheDocument();
@@ -649,23 +632,21 @@ describe("EditPatient", () => {
         fromQueue: "true",
       });
 
-      const element = (
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <EditPatientContainer />
-          </MockedProvider>
-        </Provider>
-      );
-      const route = <Route element={element} path={"/patient/:patientId"} />;
-      const router = createMemoryRouter(createRoutesFromElements(route), {
-        initialEntries: [
+      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+        <EditPatientContainer />,
+        store,
+        mocks,
+        true,
+        "/patient/:patientId",
+        [
           {
             pathname: `/patient/${mockPatientID}`,
             search: search.toString(),
           },
-        ],
-      });
-      render(<RouterProvider router={router} />);
+        ]
+      );
+
+      render(elementToRender);
       expect(
         await screen.findByText("Franecki, Eugenia", { exact: false })
       ).toBeInTheDocument();
@@ -678,18 +659,17 @@ describe("EditPatient", () => {
 
   describe("edit patient from conduct tests page", () => {
     beforeEach(async () => {
-      render(
-        createGQLWrappedMemoryRouterWithDataApis(
-          <EditPatient
-            facilityId={mockFacilityID}
-            patientId={mockPatientID}
-            fromQueue={true}
-          />,
-          store,
-          mocks,
-          false
-        )
+      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+        <EditPatient
+          facilityId={mockFacilityID}
+          patientId={mockPatientID}
+          fromQueue={true}
+        />,
+        store,
+        mocks,
+        false
       );
+      render(elementToRender);
     });
     it("shows Conduct tests link and hides Save and start test button", async () => {
       expect(await screen.findByText("Conduct tests")).toBeInTheDocument();

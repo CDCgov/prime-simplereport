@@ -6,13 +6,13 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 import { faker } from "@faker-js/faker";
 
 import * as AppInsightsMock from "../../app/TelemetryService";
 import "../../i18n";
+
+import { createGQLWrappedMemoryRouterWithDataApis } from "../../app/utils/reactRouter";
 
 import { SelfRegistration } from "./SelfRegistration";
 
@@ -46,19 +46,15 @@ const store = mockStore({});
 const originalConsoleError = console.error;
 
 describe("SelfRegistration", () => {
-  const renderWithValidLink = () =>
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-          <Routes>
-            <Route
-              path="/register/:registrationLink"
-              element={<SelfRegistration />}
-            />
-          </Routes>
-        </MemoryRouter>
-      </Provider>
-    );
+  const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+    <SelfRegistration />,
+    store,
+    [],
+    true,
+    "/register/:registrationLink",
+    [`/register/${VALID_LINK}`]
+  );
+  const renderWithValidLink = () => render(elementToRender);
 
   beforeEach(() => {
     // For smartystreets failures
@@ -69,18 +65,15 @@ describe("SelfRegistration", () => {
   });
 
   it("Renders a 404 page for a bad link", async () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={["/register/some-bad-link"]}>
-          <Routes>
-            <Route
-              path="/register/:registrationLink"
-              element={<SelfRegistration />}
-            />
-          </Routes>
-        </MemoryRouter>
-      </Provider>
+    const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+      <SelfRegistration />,
+      store,
+      [],
+      true,
+      "/register/:registrationLink",
+      ["/register/some-bad-link"]
     );
+    render(elementToRender);
 
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
 

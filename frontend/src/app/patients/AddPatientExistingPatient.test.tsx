@@ -1,28 +1,39 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
-import { Route } from "react-router-dom";
+import {
+  createMemoryRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import React from "react";
 
 import AddPatient, { PATIENT_EXISTS } from "./AddPatient";
 import {
   fillOutForm,
   mockFacilityID,
   store,
-  RouterWithFacility,
 } from "./AddPatientTestUtils";
 
 // These tests have been broken down into multiple files so they can execute in parallel
 describe("Add Patient: when attempting to create an existing patient ", () => {
+  const routes = createRoutesFromElements(
+    <>
+      <Route element={<AddPatient />} path={"/add-patient"} />
+      <Route element={<p>Patients!</p>} path={"/patient"} />
+    </>
+  );
+  const router = createMemoryRouter(routes, {
+    initialEntries: [`/add-patient?facility=${mockFacilityID}`],
+  });
   const renderWithUser = (mocks: any[]) => ({
     user: userEvent.setup(),
     ...render(
       <Provider store={store}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <RouterWithFacility>
-            <Route element={<AddPatient />} path={"/add-patient/"} />
-            <Route path={"/patients"} element={<p>Patients!</p>} />
-          </RouterWithFacility>
+        <MockedProvider mocks={mocks}>
+          <RouterProvider router={router} />
         </MockedProvider>
       </Provider>
     ),
