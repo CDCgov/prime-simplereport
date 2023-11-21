@@ -17,24 +17,28 @@ describe("A <Prompt>", () => {
     const routes = createRoutesFromElements(
       <>
         <Route
+          path="/"
           element={
             <>
               <Prompt message="Are you sure?" when={showPrompt} />
               <Outlet />
             </>
           }
-          path={"/"}
-        />
-        <Route
-          path="/"
-          element={
-            <>
-              <p>This is the first page</p>
-              <Link to="some-new-route">Go to a new page</Link>
-            </>
-          }
-        />
-        <Route path="some-new-route" element={<div>Went to a new page!</div>} />
+        >
+          <Route
+            path="/"
+            element={
+              <>
+                <p>This is the first page</p>
+                <Link to="some-new-route">Go to a new page</Link>
+              </>
+            }
+          />
+          <Route
+            path="some-new-route"
+            element={<div>Went to a new page!</div>}
+          />
+        </Route>
       </>
     );
     const router = createMemoryRouter(routes);

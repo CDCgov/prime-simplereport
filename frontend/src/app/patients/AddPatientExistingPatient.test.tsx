@@ -11,11 +11,7 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 
 import AddPatient, { PATIENT_EXISTS } from "./AddPatient";
-import {
-  fillOutForm,
-  mockFacilityID,
-  store,
-} from "./AddPatientTestUtils";
+import { fillOutForm, mockFacilityID, store } from "./AddPatientTestUtils";
 
 // These tests have been broken down into multiple files so they can execute in parallel
 describe("Add Patient: when attempting to create an existing patient ", () => {

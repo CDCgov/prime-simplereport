@@ -11,7 +11,6 @@ import { faker } from "@faker-js/faker";
 
 import * as AppInsightsMock from "../../app/TelemetryService";
 import "../../i18n";
-
 import { createGQLWrappedMemoryRouterWithDataApis } from "../../app/utils/reactRouter";
 
 import { SelfRegistration } from "./SelfRegistration";

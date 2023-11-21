@@ -93,9 +93,7 @@ describe("Add Patient: All required fields entered and submitting address verifi
   it("surfaces an error if invalid zip code for state", async () => {
     const { user } = renderWithUserWithFacility();
     let zipCodeSpy: jest.SpyInstance;
-    zipCodeSpy = jest
-      .spyOn(smartyStreets, "isValidZipCodeForState")
-      .mockReturnValue(true);
+    zipCodeSpy = jest.spyOn(smartyStreets, "isValidZipCodeForState");
     zipCodeSpy.mockReturnValue(false);
     await fillOutForm(
       {
@@ -143,7 +141,6 @@ describe("Add Patient: All required fields entered and submitting address verifi
         exact: false,
       })[0]
     );
-
     await screen.findByText(/Invalid ZIP code for this state/i);
   });
 

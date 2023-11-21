@@ -15,6 +15,7 @@ import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
 
 import { createGQLWrappedMemoryRouterWithDataApis } from "../utils/reactRouter";
+import SRToastContainer from "../commonComponents/SRToastContainer";
 
 import AddPatient, { ADD_PATIENT, PATIENT_EXISTS } from "./AddPatient";
 
@@ -250,10 +251,13 @@ const router = createMemoryRouter(routes, {
 export const renderWithUserWithFacility = () => ({
   user: userEvent.setup(),
   ...render(
-    <Provider store={store}>
-      <MockedProvider mocks={mocks}>
-        <RouterProvider router={router} />
-      </MockedProvider>
-    </Provider>
+    <>
+      <Provider store={store}>
+        <MockedProvider mocks={mocks}>
+          <RouterProvider router={router} />
+        </MockedProvider>
+      </Provider>
+      <SRToastContainer />
+    </>
   ),
 });
