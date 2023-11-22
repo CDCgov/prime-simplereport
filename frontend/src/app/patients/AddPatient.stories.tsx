@@ -1,12 +1,14 @@
 import { Meta } from "@storybook/react";
 import configureStore from "redux-mock-store";
 import React from "react";
-import {
-  reactRouterParameters,
-  withRouter,
-} from "storybook-addon-react-router-v6";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
+import {
+  createMemoryRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 
 import AddPatient from "./AddPatient";
 
@@ -24,20 +26,25 @@ const element = (
     </MockedProvider>
   </Provider>
 );
+
 export default {
   title: "Add Patient",
-  render: () => element,
-  decorators: [withRouter],
 } as Meta;
-export const Default = {
-  parameters: {
-    reactRouter: reactRouterParameters({
-      location: {
-        searchParams: { facility: mockFacilityID },
-      },
-      routing: {
-        path: `/add-patient?facility=${mockFacilityID}`,
-      },
-    }),
-  },
+
+const route = createRoutesFromElements(
+  <>
+    <Route element={element} path={"/add-patient"} />
+    {/* defining these extra routes to the same element so that clicking links
+     within the component doesn't cause 404's */}
+    <Route element={element} path={"/upload-patients"} />
+    <Route element={element} path={"/patients"} />
+  </>
+);
+const router = createMemoryRouter(route, {
+  initialEntries: [`/add-patient?facility=${mockFacilityID}`],
+});
+const Template = (): React.ReactElement => {
+  return <RouterProvider router={router} />;
 };
+
+export const Default = Template.bind({});

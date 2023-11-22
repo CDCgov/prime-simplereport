@@ -8073,11 +8073,6 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==
 
-compare-versions@^6.0.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-6.1.0.tgz#3f2131e3ae93577df111dba133e6db876ffe127a"
-  integrity sha512-LNZQXhqUvqUTotpZ00qLSaify3b4VFD588aRr8MKFw4CMUr98ytzCW5wDH5qx/DEY5kCDXcbcRuCqL0szEf2tg==
-
 compressible@~2.0.16:
   version "2.0.18"
   resolved "https://registry.yarnpkg.com/compressible/-/compressible-2.0.18.tgz#af53cca6b070d4c3c0750fbd77286a6d7cc46fba"
@@ -15890,7 +15885,7 @@ react-i18next@^13.2.0:
     "@babel/runtime" "^7.22.5"
     html-parse-stringify "^3.0.1"
 
-react-inspector@6.0.2, react-inspector@^6.0.0:
+react-inspector@^6.0.0:
   version "6.0.2"
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-6.0.2.tgz#aa3028803550cb6dbd7344816d5c80bf39d07e9d"
   integrity sha512-x+b7LxhmHXjHoU/VrFAzw5iutsILRoYyDq97EDYdFpPLcvqtEzk4ZSZSQjnFPbr5T57tLXnHcqFYoN1pI6u8uQ==
@@ -17236,14 +17231,6 @@ storybook-addon-apollo-client@^5.0.0:
   dependencies:
     "@storybook/components" "^7.0.0"
     tslib "2.5.3"
-
-storybook-addon-react-router-v6@^2.0.10:
-  version "2.0.10"
-  resolved "https://registry.yarnpkg.com/storybook-addon-react-router-v6/-/storybook-addon-react-router-v6-2.0.10.tgz#479bfa374a33d2cbbaf1d6a9ebddd6d35cdec812"
-  integrity sha512-HnrjbujAW1oGCdgvv7W6QKskETNXvt0U5qR2pKD8GXHlqkV9wmWa6HW3J0ks0aiBJBsRrPdEViatrhnRD5RZZw==
-  dependencies:
-    compare-versions "^6.0.0"
-    react-inspector "6.0.2"
 
 storybook@^7.5.2:
   version "7.5.2"
