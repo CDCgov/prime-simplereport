@@ -19,18 +19,16 @@ const store = mockStore({
 
 const element = (
   <Provider store={store}>
-    <MockedProvider mocks={[]}>
+    <MockedProvider mocks={[]} addTypename={false}>
       <AddPatient />
     </MockedProvider>
   </Provider>
 );
-
 export default {
   title: "Add Patient",
   render: () => element,
   decorators: [withRouter],
 } as Meta;
-
 export const Default = {
   parameters: {
     reactRouter: reactRouterParameters({
@@ -38,7 +36,7 @@ export const Default = {
         searchParams: { facility: mockFacilityID },
       },
       routing: {
-        path: "/app/add-patient",
+        path: `/add-patient?facility=${mockFacilityID}`,
       },
     }),
   },
