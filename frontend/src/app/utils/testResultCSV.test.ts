@@ -27,6 +27,12 @@ const data = [
         },
         testResult: "NEGATIVE",
       },
+      {
+        disease: {
+          name: "RSV",
+        },
+        testResult: "UNDETERMINED",
+      },
     ],
     correctionStatus: "REMOVED",
     reasonForCorrection: "DUPLICATE_TEST",
@@ -74,7 +80,7 @@ const data = [
   },
 ];
 
-const result = [
+const resultNoRSV = [
   {
     "COVID-19 result": "Negative",
     "Device manufacturer": "Access Bio, Inc.",
@@ -118,18 +124,66 @@ const result = [
   },
 ];
 
+const result = [
+  {
+    "COVID-19 result": "Negative",
+    "Device manufacturer": "Access Bio, Inc.",
+    "Device model": "CareStart COVID-19 Antigen test*",
+    "Device name": "Access Bio CareStart",
+    "Device swab type": "258500001",
+    "Facility name": "test facility",
+    "Has symptoms": "Unknown",
+    "Patient ID (Student ID, Employee ID, etc.)": null,
+    "Patient city": "Minneapolis",
+    "Patient country": "USA",
+    "Patient county": null,
+    "Patient date of birth": "01/01/1980",
+    "Patient email": "foo@bar.com",
+    "Patient ethnicity": "hispanic",
+    "Patient first name": "John",
+    "Patient full name": "Doe, John E",
+    "Patient gender": "female",
+    "Patient is a resident in a congregate setting": null,
+    "Patient is employed in healthcare": null,
+    "Patient last name": "Doe",
+    "Patient middle name": "E",
+    "Patient phone number": "(123) 456-7890",
+    "Patient preferred language": "English",
+    "Patient race": "white",
+    "Patient role": "STAFF",
+    "Patient state": "MN",
+    "Patient street address": "1234 Green Street",
+    "Patient street address 2": "",
+    "Patient tribal affiliation": "",
+    "Patient zip code": "90210",
+    "Result reported date": "03/13/2022 7:24pm",
+    Submitter: "Doe, Jane",
+    "Symptom onset": "Invalid date",
+    "Symptoms present": "No symptoms",
+    "Test correction reason": "DUPLICATE_TEST",
+    "Test correction status": "REMOVED",
+    "Test date": "06/13/2022 7:24pm",
+    "Flu A result": "Negative",
+    "Flu B result": "Negative",
+    "RSV result": "Inconclusive",
+  },
+];
+
 describe("parseDataForCSV", () => {
   it("parses multiplex data", () => {
-    expect(parseDataForCSV(data)).toEqual(result);
+    expect(parseDataForCSV(true, data)).toEqual(result);
   });
   it("parse data does not fail if tribalAffiliation is null", () => {
     expect(
-      parseDataForCSV([
+      parseDataForCSV(true, [
         {
           ...data[0],
           patient: { ...data[0].patient, tribalAffiliation: null },
         },
       ])
     ).toEqual(result);
+  });
+  it("doesn't include RSV if parameter is false", () => {
+    expect(parseDataForCSV(false, data)).toEqual(resultNoRSV);
   });
 });

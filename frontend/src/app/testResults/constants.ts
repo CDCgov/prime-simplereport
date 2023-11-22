@@ -2,6 +2,7 @@ export enum MULTIPLEX_DISEASES {
   COVID_19 = "COVID-19",
   FLU_A = "Flu A",
   FLU_B = "Flu B",
+  RSV = "RSV",
 }
 
 export enum TEST_RESULTS {
