@@ -154,6 +154,72 @@ describe("DownloadResultsCsvModal with filters and under 20k results", () => {
   });
 });
 
+describe("DownloadResultsCsvModal with disease filter and under 20k results", () => {
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+
+    render(
+      <MockedProvider mocks={[]}>
+        <DownloadResultsCsvModal
+          filterParams={{ disease: "Flu A" }}
+          modalIsOpen={true}
+          closeModal={() => {}}
+          totalEntries={15}
+          activeFacilityId={mockFacilityID}
+        />
+      </MockedProvider>
+    );
+  });
+
+  it("shows correct modal text", async () => {
+    const downloadButton = await screen.findByText("Download results");
+    expect(downloadButton).toBeEnabled();
+    expect(
+      await screen.findByText("Download test results")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Download results with current search filters applied?"
+      )
+    ).toBeInTheDocument();
+  });
+});
+
+describe("DownloadResultsCsvModal with current facility filter and under 20k results", () => {
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+
+    render(
+      <MockedProvider mocks={[]}>
+        <DownloadResultsCsvModal
+          filterParams={{ filterFacilityId: mockFacilityID }}
+          modalIsOpen={true}
+          closeModal={() => {}}
+          totalEntries={15}
+          activeFacilityId={mockFacilityID}
+        />
+      </MockedProvider>
+    );
+  });
+
+  it("shows correct modal text", async () => {
+    const downloadButton = await screen.findByText("Download results");
+    expect(downloadButton).toBeEnabled();
+    expect(
+      await screen.findByText("Download test results")
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        "Download results without any search filters applied?"
+      )
+    ).toBeInTheDocument();
+  });
+});
+
 describe("DownloadResultsCsvModal with over 20k results", () => {
   let component: any;
 

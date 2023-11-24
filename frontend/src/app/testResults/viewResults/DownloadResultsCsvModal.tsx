@@ -38,14 +38,13 @@ export const DownloadResultsCsvModal = ({
   // Disable downloads because backend will hang on over 20k results (#3953)
   const disableDownload = totalEntries > rowsMaxLimit;
 
-  const filtersPresent =
-    filterParams.patientId ||
-    filterParams.startDate ||
-    filterParams.endDate ||
-    filterParams.role ||
-    filterParams.result ||
-    (filterParams.filterFacilityId &&
-      filterParams.filterFacilityId !== activeFacilityId);
+  const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
+    // active facility in the facility filter is the default
+    if (key === "filterFacilityId") {
+      return val !== activeFacilityId;
+    }
+    return val;
+  });
 
   const variables: ResultsQueryVariables = {
     facilityId:
