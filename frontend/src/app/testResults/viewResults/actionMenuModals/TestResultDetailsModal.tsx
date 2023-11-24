@@ -11,10 +11,7 @@ import {
   PregnancyCode,
   pregnancyMap,
 } from "../../../../patientApp/timeOfTest/constants";
-import {
-  getResultByDiseaseName,
-  hasMultiplexResults,
-} from "../../../utils/testResults";
+import { getResultByDiseaseOrNull } from "../../../utils/testResults";
 import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
 import { MULTIPLEX_DISEASES } from "../../constants";
@@ -115,20 +112,18 @@ export const DetachedTestResultDetailsModal = ({
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
   const displayResult: { [diseaseResult: string]: TestResult | null } = {
     covidResult: results
-      ? getResultByDiseaseName(results, MULTIPLEX_DISEASES.COVID_19)
-      : "UNKNOWN",
+      ? getResultByDiseaseOrNull(results, MULTIPLEX_DISEASES.COVID_19)
+      : null,
+    fluAResult: results
+      ? getResultByDiseaseOrNull(results, MULTIPLEX_DISEASES.FLU_A)
+      : null,
+    fluBResult: results
+      ? getResultByDiseaseOrNull(results, MULTIPLEX_DISEASES.FLU_B)
+      : null,
+    rsvResult: results
+      ? getResultByDiseaseOrNull(results, MULTIPLEX_DISEASES.RSV)
+      : null,
   };
-  const multiplexEnabled = results && hasMultiplexResults(results);
-  if (multiplexEnabled) {
-    displayResult["fluAResult"] = getResultByDiseaseName(
-      results,
-      MULTIPLEX_DISEASES.FLU_A
-    );
-    displayResult["fluBResult"] = getResultByDiseaseName(
-      results,
-      MULTIPLEX_DISEASES.FLU_B
-    );
-  }
   return (
     <>
       <div className="display-flex flex-justify">
@@ -191,30 +186,37 @@ export const DetachedTestResultDetailsModal = ({
       <h2 className="font-sans-md margin-top-3">Test information</h2>
       <table className={containerClasses}>
         <tbody>
-          <DetailsRow
-            label="COVID-19 result"
-            value={displayResult["covidResult"]}
-            removed={removed}
-            aria-describedby="result-detail-title"
-          />
-
-          {multiplexEnabled ? (
-            <>
-              <DetailsRow
-                label="Flu A result"
-                value={displayResult["fluAResult"]}
-                removed={removed}
-                aria-describedby="result-detail-title"
-              />
-              <DetailsRow
-                label="Flu B result"
-                value={displayResult["fluBResult"]}
-                removed={removed}
-                aria-describedby="result-detail-title"
-              />
-            </>
-          ) : (
-            <></>
+          {displayResult["covidResult"] && (
+            <DetailsRow
+              label="COVID-19 result"
+              value={displayResult["covidResult"]}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          )}
+          {displayResult["fluAResult"] && (
+            <DetailsRow
+              label="Flu A result"
+              value={displayResult["fluAResult"]}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          )}
+          {displayResult["fluBResult"] && (
+            <DetailsRow
+              label="Flu B result"
+              value={displayResult["fluBResult"]}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          )}
+          {displayResult["rsvResult"] && (
+            <DetailsRow
+              label="RSV result"
+              value={displayResult["rsvResult"]}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
           )}
           <DetailsRow
             label="Test date"
