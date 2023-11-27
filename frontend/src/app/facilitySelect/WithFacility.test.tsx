@@ -2,13 +2,13 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter as Router } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 
 import { appPermissions } from "../permissions";
 import { GetFacilitiesDocument as GET_FACILITY_QUERY } from "../../generated/graphql";
 import i18n from "../../i18n";
+import { createGQLWrappedMemoryRouterWithDataApis } from "../utils/reactRouter";
 
 import WithFacility from "./WithFacility";
 
@@ -201,15 +201,14 @@ describe("WithFacility", () => {
         },
         facilities: [],
       });
+      const WithFacilityElement = <WithFacility>App</WithFacility>;
       render(
         <I18nextProvider i18n={i18n}>
-          <Router>
-            <Provider store={store}>
-              <MockedProvider mocks={mocks} addTypename={false}>
-                <WithFacility>App</WithFacility>
-              </MockedProvider>
-            </Provider>
-          </Router>
+          {createGQLWrappedMemoryRouterWithDataApis(
+            WithFacilityElement,
+            store,
+            mocks
+          )}
         </I18nextProvider>
       );
       expect(

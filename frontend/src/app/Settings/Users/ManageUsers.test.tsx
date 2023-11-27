@@ -1,4 +1,3 @@
-import { MockedProvider } from "@apollo/client/testing";
 import {
   render,
   waitFor,
@@ -6,14 +5,13 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Provider } from "react-redux";
-import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import "../../../i18n";
 import { cloneDeep } from "lodash";
 
 import { displayFullName } from "../../utils";
 import { GetUserDocument, UserPermission } from "../../../generated/graphql";
+import { createGQLWrappedMemoryRouterWithDataApis } from "../../utils/reactRouter";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 import { LimitedUser } from "./ManageUsersContainer";
@@ -278,15 +276,9 @@ type TestContainerProps = {
   children: React.ReactNode;
 };
 
-const TestContainer: React.FC<TestContainerProps> = ({ children }) => (
-  <MemoryRouter>
-    <Provider store={store}>
-      <MockedProvider mocks={mocks}>
-        <>{children}</>
-      </MockedProvider>
-    </Provider>
-  </MemoryRouter>
-);
+const TestContainer: React.FC<TestContainerProps> = ({ children }) => {
+  return createGQLWrappedMemoryRouterWithDataApis(children, store, mocks);
+};
 
 describe("ManageUsers", () => {
   const { reload } = window.location;
@@ -947,28 +939,26 @@ describe("ManageUsers", () => {
         },
       },
     ];
+
+    const element = (
+      <ManageUsers
+        users={users as LimitedUser[]}
+        loggedInUser={loggedInUser}
+        allFacilities={allFacilities}
+        updateUserPrivileges={updateUserPrivileges}
+        addUserToOrg={addUserToOrg}
+        deleteUser={deleteUser}
+        getUsers={getUsers}
+        reactivateUser={reactivateUser}
+        resetUserPassword={() => Promise.resolve()}
+        resetUserMfa={() => Promise.resolve()}
+        resendUserActivationEmail={resendUserActivationEmail}
+        updateUserName={() => Promise.resolve()}
+        updateUserEmail={() => Promise.resolve()}
+      />
+    );
     render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={updatedMocks}>
-            <ManageUsers
-              users={users as LimitedUser[]}
-              loggedInUser={loggedInUser}
-              allFacilities={allFacilities}
-              updateUserPrivileges={updateUserPrivileges}
-              addUserToOrg={addUserToOrg}
-              deleteUser={deleteUser}
-              getUsers={getUsers}
-              reactivateUser={reactivateUser}
-              resetUserPassword={() => Promise.resolve()}
-              resetUserMfa={() => Promise.resolve()}
-              resendUserActivationEmail={resendUserActivationEmail}
-              updateUserName={() => Promise.resolve()}
-              updateUserEmail={() => Promise.resolve()}
-            />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
+      createGQLWrappedMemoryRouterWithDataApis(element, store, updatedMocks)
     );
 
     const user = userEvent.setup();

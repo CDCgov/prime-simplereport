@@ -1,42 +1,53 @@
-import { Link, MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
+import {
+  createMemoryRouter,
+  createRoutesFromElements,
+  Link,
+  Outlet,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import React from "react";
 
 import Prompt from "./Prompt";
 
 describe("A <Prompt>", () => {
-  const renderWithUser = (showPrompt: boolean) => ({
-    user: userEvent.setup(),
-    ...render(
-      <MemoryRouter>
-        <Routes>
+  function renderWithUser(showPrompt: boolean) {
+    const routes = createRoutesFromElements(
+      <>
+        <Route
+          path="/"
+          element={
+            <>
+              <Prompt message="Are you sure?" when={showPrompt} />
+              <Outlet />
+            </>
+          }
+        >
           <Route
             path="/"
             element={
               <>
-                <Prompt message="Are you sure?" when={showPrompt} />
-                <Outlet />
+                <p>This is the first page</p>
+                <Link to="some-new-route">Go to a new page</Link>
               </>
             }
-          >
-            <Route
-              path="/"
-              element={
-                <>
-                  <p>This is the first page</p>
-                  <Link to="some-new-route">Go to a new page</Link>
-                </>
-              }
-            />
-            <Route
-              path="some-new-route"
-              element={<div>Went to a new page!</div>}
-            />
-          </Route>
-        </Routes>
-      </MemoryRouter>
-    ),
-  });
+          />
+          <Route
+            path="some-new-route"
+            element={<div>Went to a new page!</div>}
+          />
+        </Route>
+      </>
+    );
+    const router = createMemoryRouter(routes);
+    return {
+      user: userEvent.setup(),
+      ...render(<RouterProvider router={router} />),
+    };
+  }
+
   it("calls window.confirm with the prompt message", async () => {
     const confirmMock = jest
       .spyOn(window, "confirm")

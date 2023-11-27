@@ -9,9 +9,11 @@ import {
 } from "@apollo/client";
 import {
   Route,
-  BrowserRouter as Router,
-  Routes,
+  RouterProvider,
   Navigate,
+  createBrowserRouter,
+  createRoutesFromElements,
+  Outlet,
 } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
 import { ErrorResponse, onError } from "@apollo/client/link/error";
@@ -119,34 +121,41 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
+const routes = createRoutesFromElements(
+  <Route element={<AppRouterShell />}>
+    <Route path="/health/*" element={<HealthChecks />} />
+    <Route path="/pxp/*" element={<PatientApp />} />
+    <Route path="/uac/*" element={<AccountCreationApp />} />
+    <Route path="/sign-up/*" element={<SignUpApp />} />
+    <Route path="/register/:registrationLink" element={<SelfRegistration />} />
+    <Route path="/session-timeout" element={<SessionTimeout />} />
+    <Route path="/reload-app" element={<Navigate to="/" />} />
+    <Route path="/*" element={<ReportingApp />} />
+    <Route element={<>Page not found</>} />
+  </Route>
+);
+const router = createBrowserRouter(routes, {
+  basename: process.env.PUBLIC_URL,
+});
 
 export const ReactApp = () => (
   <ApolloProvider client={client}>
     <React.StrictMode>
       <Provider store={store}>
         <WithFeatureFlags>
-          <Router basename={process.env.PUBLIC_URL}>
-            <TelemetryProvider>
-              <PrimeErrorBoundary>
-                <Routes>
-                  <Route path="/health/*" element={<HealthChecks />} />
-                  <Route path="/pxp/*" element={<PatientApp />} />
-                  <Route path="/uac/*" element={<AccountCreationApp />} />
-                  <Route path="/sign-up/*" element={<SignUpApp />} />
-                  <Route
-                    path="/register/:registrationLink"
-                    element={<SelfRegistration />}
-                  />
-                  <Route path="/session-timeout" element={<SessionTimeout />} />
-                  <Route path="/reload-app" element={<Navigate to="/" />} />
-                  <Route path="/*" element={<ReportingApp />} />
-                  <Route element={<>Page not found</>} />
-                </Routes>
-              </PrimeErrorBoundary>
-            </TelemetryProvider>
-          </Router>
+          <RouterProvider router={router} />
         </WithFeatureFlags>
       </Provider>
     </React.StrictMode>
   </ApolloProvider>
 );
+
+function AppRouterShell() {
+  return (
+    <TelemetryProvider>
+      <PrimeErrorBoundary>
+        <Outlet />
+      </PrimeErrorBoundary>
+    </TelemetryProvider>
+  );
+}

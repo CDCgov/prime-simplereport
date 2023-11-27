@@ -1,8 +1,14 @@
-import { StoryFn, Meta } from "@storybook/react";
+import { Meta } from "@storybook/react";
+import configureStore from "redux-mock-store";
+import React from "react";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
-import { MemoryRouter } from "react-router-dom";
-import configureStore from "redux-mock-store";
+import {
+  createMemoryRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 
 import AddPatient from "./AddPatient";
 
@@ -13,21 +19,32 @@ const store = mockStore({
   organization: { name: "Test Organization" },
 });
 
-export default {
-  title: "Add Patient",
-  component: AddPatient,
-  argTypes: {},
-} as Meta;
-
-const Template: StoryFn = (_args) => (
-  <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
-    <Provider store={store}>
-      <MockedProvider mocks={[]} addTypename={false}>
-        <AddPatient />
-      </MockedProvider>
-    </Provider>
-  </MemoryRouter>
+const element = (
+  <Provider store={store}>
+    <MockedProvider mocks={[]} addTypename={false}>
+      <AddPatient />
+    </MockedProvider>
+  </Provider>
 );
 
+export default {
+  title: "Add Patient",
+} as Meta;
+
+const route = createRoutesFromElements(
+  <>
+    <Route element={element} path={"/add-patient"} />
+    {/* defining these extra routes to the same element so that clicking links
+     within the component doesn't cause 404's */}
+    <Route element={element} path={"/upload-patients"} />
+    <Route element={element} path={"/patients"} />
+  </>
+);
+const router = createMemoryRouter(route, {
+  initialEntries: [`/add-patient?facility=${mockFacilityID}`],
+});
+const Template = (): React.ReactElement => {
+  return <RouterProvider router={router} />;
+};
+
 export const Default = Template.bind({});
-Default.args = {};

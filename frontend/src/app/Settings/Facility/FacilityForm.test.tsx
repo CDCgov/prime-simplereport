@@ -1,6 +1,5 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
 
 import * as clia from "../../utils/clia";
 import * as state from "../../utils/state";
@@ -9,6 +8,7 @@ import SRToastContainer from "../../commonComponents/SRToastContainer";
 import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 import "../../../i18n";
 import { DeviceType } from "../../../generated/graphql";
+import { createMemoryRouterWithDataApis } from "../../utils/reactRouter";
 
 import FacilityForm from "./FacilityForm";
 
@@ -110,13 +110,13 @@ describe("FacilityForm", () => {
   const renderWithUser = (facility = validFacility) => ({
     user: userEvent.setup(),
     ...render(
-      <MemoryRouter>
+      createMemoryRouterWithDataApis(
         <FacilityForm
           facility={facility}
           deviceTypes={devices}
           saveFacility={saveFacility}
         />
-      </MemoryRouter>
+      )
     ),
   });
 
@@ -668,16 +668,16 @@ describe("FacilityForm", () => {
       getIsValidZipForStateSpy.mockReturnValueOnce(false);
 
       render(
-        <>
-          <MemoryRouter>
+        createMemoryRouterWithDataApis(
+          <>
             <FacilityForm
               facility={validFacility}
               deviceTypes={devices}
               saveFacility={saveFacility}
             />
-          </MemoryRouter>
-          <SRToastContainer />
-        </>
+            <SRToastContainer />
+          </>
+        )
       );
       const user = userEvent.setup();
 
