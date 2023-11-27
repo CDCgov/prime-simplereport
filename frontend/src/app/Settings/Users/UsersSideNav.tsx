@@ -6,8 +6,6 @@ import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg"
 import { displayFullName } from "../../utils";
 import { formatUserStatus } from "../../utils/text";
 import { OktaUserStatus } from "../../utils/user";
-
-
 import "./ManageUsers.scss";
 import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
 import { SEARCH_DEBOUNCE_TIME } from "../../testQueue/constants";
@@ -67,7 +65,7 @@ const UsersSideNav: React.FC<Props> = ({
           aria-owns={getIdsAsString(users)}
           className="usa-sidenav"
         >
-          {filteredUsers.length == 0 && (
+          {filteredUsers.length === 0 && (
             <div
               className={
                 "display-flex flex-column flex-align-center margin-x-3 margin-y-2"
