@@ -32,6 +32,45 @@ exports[`ManageUsersContainer loads the component and displays users successfull
           >
             Users
           </h2>
+          <div
+            class="prime-search-container"
+          >
+            <form
+              class="usa-search usa-search--small prime-search-input display-inline-block"
+              role="search"
+            >
+              <label
+                class="usa-sr-only"
+                for="search-field-small"
+              >
+                Search by name
+              </label>
+              <div>
+                <input
+                  autocomplete="off"
+                  class="usa-input"
+                  id="search-field-small"
+                  name="search"
+                  placeholder="Search by name"
+                  style="border-right: 1px solid;"
+                  type="search"
+                  value=""
+                />
+                <button
+                  class="usa-button"
+                  disabled=""
+                  style="display: none;"
+                  type="submit"
+                >
+                  <img
+                    alt="Search"
+                    class="usa-search__submit-icon"
+                    src="search--white.svg"
+                  />
+                </button>
+              </div>
+            </form>
+          </div>
           <nav
             aria-label="Tertiary navigation"
             class="prime-secondary-nav maxh-tablet-lg overflow-y-scroll"
