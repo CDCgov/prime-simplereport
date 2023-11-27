@@ -161,7 +161,7 @@ const generateResultRows = (
               r.patient?.lastName
             )}
             onClick={() =>
-              onActionSelect({ modalType: "DETAILS", testResult: r })
+              onActionSelect({ modalType: "NAME DETAILS", testResult: r })
             }
             className="sr-link__primary"
           />
@@ -205,7 +205,14 @@ interface ResultsTableListProps {
 }
 
 type ActionInformation = {
-  modalType: "NONE" | "PRINT" | "CORRECTION" | "TEXT" | "DETAILS" | "EMAIL";
+  modalType:
+    | "NONE"
+    | "PRINT"
+    | "CORRECTION"
+    | "TEXT"
+    | "DETAILS"
+    | "EMAIL"
+    | "NAME DETAILS";
   testResult: Result | undefined;
 };
 
@@ -294,10 +301,15 @@ const ResultsTable = ({ results, hasFacility }: ResultsTableListProps) => {
         }}
       />
       <TestResultDetailsModal
-        isOpen={actionSelected.modalType === "DETAILS"}
+        isOpen={
+          actionSelected.modalType === "DETAILS" ||
+          actionSelected.modalType === "NAME DETAILS"
+        }
         testResult={actionSelected.testResult}
         closeModal={() => {
-          setFocusOnActionMenu("view");
+          if (actionSelected.modalType === "DETAILS") {
+            setFocusOnActionMenu("view");
+          }
           dismissModal();
         }}
       />
