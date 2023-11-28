@@ -116,22 +116,6 @@ describe("Component ResultsTable", () => {
   });
 
   it("result details modal populates when patient name is clicked and returns focus to patient name when closed", async () => {
-    const mockStore = configureStore([]);
-    const store = mockStore({
-      organization: {
-        name: "Organization Name",
-      },
-      user: {
-        firstName: "Kim",
-        lastName: "Mendoza",
-      },
-      facilities: [
-        { id: "1", name: "Facility 1" },
-        { id: "2", name: "Facility 2" },
-      ],
-      facility: { id: "1", name: "Facility 1" },
-    });
-
     const renderWithUser = (results: Result[]) => ({
       user: userEvent.setup(),
       ...render(
@@ -229,32 +213,51 @@ describe("Component ResultsTable", () => {
   });
 });
 
-const testToMock =
-  TEST_RESULTS_MULTIPLEX.content[TEST_RESULTS_MULTIPLEX.totalElements - 2];
-const mockResultData = {
-  dateTested: testToMock.dateTested,
-  disease: testToMock.disease,
-  testResult: testToMock.testResult,
-  correctionStatus: testToMock.correctionStatus,
-  deviceType: testToMock.deviceType,
-  patient: testToMock.patient,
-  createdBy: testToMock.createdBy,
-  symptoms: undefined,
-  symptomOnset: undefined,
-  pregnancy: undefined,
-};
-const TestResultDetailsMock = [
-  {
+const mockStore = configureStore([]);
+const store = mockStore({
+  organization: {
+    name: "Organization Name",
+  },
+  user: {
+    firstName: "Kim",
+    lastName: "Mendoza",
+  },
+  facilities: [
+    { id: "1", name: "Facility 1" },
+    { id: "2", name: "Facility 2" },
+  ],
+  facility: { id: "1", name: "Facility 1" },
+});
+
+const mockDataToReturn = TEST_RESULTS_MULTIPLEX.content.map((testToMock) => {
+  const mockResultData = {
+    dateTested: testToMock.dateTested,
+    disease: testToMock.disease,
+    testResult: testToMock.testResult,
+    correctionStatus: testToMock.correctionStatus,
+    deviceType: testToMock.deviceType,
+    patient: testToMock.patient,
+    createdBy: testToMock.createdBy,
+    symptoms: undefined,
+    symptomOnset: undefined,
+    pregnancy: undefined,
+  };
+  return { id: testToMock.id, data: mockResultData };
+});
+
+const TestResultDetailsMock = mockDataToReturn.map((mockData) => {
+  const mockQuery = {
     request: {
       query: GetTestResultDetailsDocument,
       variables: {
-        id: testToMock.id,
+        id: mockData.id,
       },
     },
     result: {
       data: {
-        testResult: mockResultData,
+        testResult: mockData.data,
       },
     },
-  },
-];
+  };
+  return mockQuery;
+});
