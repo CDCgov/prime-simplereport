@@ -588,28 +588,17 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesEscapedCommasInValues() {
+  void uploadService_processCsv_handlesEscapedCommas_inPatientAndAOEValues() {
     // GIVEN
-    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
-    UploadResponse response = buildUploadResponse();
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
-    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
-        .thenReturn(Map.of("nasal swab", "000111222"));
-    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
-    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+    setup_testResultsUpload_withEscapedCommas();
 
     // WHEN
     sut.processResultCSV(input);
 
     // THEN
-    verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
-    var stringContent = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8);
-    final MappingIterator<Map<String, String>> valueIterator =
-        getIteratorForCsv(new ByteArrayInputStream(stringContent.getBytes(StandardCharsets.UTF_8)));
-    var row = new TestResultRow(getNextRow(valueIterator));
+    TestResultRow row = getRowFromUpload(dataHubMock);
 
     assertThat(row.getPatientId().getValue()).isEqualTo("1234");
     assertThat(row.getPatientLastName().getValue()).isEqualTo("Doe");
@@ -629,11 +618,33 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertThat(row.getPatientPreferredLanguage().getValue()).isEmpty();
     assertThat(row.getPatientEmail().getValue()).isEmpty();
 
+    assertThat(row.getPregnant().getValue()).isEqualTo("N");
+    assertThat(row.getEmployedInHealthcare().getValue()).isEqualTo("N");
+    assertThat(row.getSymptomaticForDisease().getValue()).isEqualTo("N");
+    assertThat(row.getIllnessOnsetDate().getValue()).isEmpty();
+    assertThat(row.getResidentCongregateSetting().getValue()).isEqualTo("N");
+    assertThat(row.getResidenceType().getValue()).isEmpty();
+    assertThat(row.getHospitalized().getValue()).isEqualTo("N");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_handlesEscapedCommas_inTestResultValues() {
+    // GIVEN
+    InputStream input =
+        loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
+    setup_testResultsUpload_withEscapedCommas();
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    TestResultRow row = getRowFromUpload(dataHubMock);
+
     assertThat(row.getAccessionNumber().getValue()).isEqualTo("123");
     assertThat(row.getEquipmentModelName().getValue()).isEqualTo("ID NOW");
     assertThat(row.getTestPerformedCode().getValue()).isEqualTo("94534-5");
     assertThat(row.getTestResult().getValue()).isEqualTo("Detected");
-
     assertThat(row.getOrderTestDate().getValue()).isEqualTo("2021-12-20T04:00-08:00");
     assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo("2021-12-21T14:00-05:00");
     assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
@@ -641,6 +652,23 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertThat(row.getTestResultDate().getValue()).isEqualTo("2021-12-23T14:00-08:00");
     assertThat(row.getDateResultReleased().getValue()).isEqualTo("2021-12-24T14:00-05:00");
     assertThat(row.getSpecimenType().getValue()).isEqualTo("000111222");
+    assertThat(row.getComment().getValue()).isEqualTo("Test Comment");
+    assertThat(row.getTestResultStatus().getValue()).isEqualTo("F");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_handlesEscapedCommas_inOrderingProviderAndFacilityValues() {
+    // GIVEN
+    InputStream input =
+        loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
+    setup_testResultsUpload_withEscapedCommas();
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    TestResultRow row = getRowFromUpload(dataHubMock);
 
     assertThat(row.getOrderingProviderId().getValue()).isEqualTo("1013012657");
     assertThat(row.getOrderingProviderLastName().getValue()).isEqualTo("Smith MD");
@@ -653,6 +681,29 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertThat(row.getOrderingProviderZipCode().getValue()).isEqualTo("35228");
     assertThat(row.getOrderingProviderPhoneNumber().getValue()).isEqualTo("205-888-2000");
 
+    assertThat(row.getOrderingFacilityName().getValue()).isEqualTo("My Urgent Care");
+    assertThat(row.getOrderingFacilityStreet().getValue()).isEqualTo("400 Main Street");
+    assertThat(row.getOrderingFacilityStreet2().getValue()).isEqualTo("Suite 100");
+    assertThat(row.getOrderingFacilityCity().getValue()).isEqualTo("Birmingham");
+    assertThat(row.getOrderingFacilityState().getValue()).isEqualTo("AL");
+    assertThat(row.getOrderingFacilityZipCode().getValue()).isEqualTo("35228");
+    assertThat(row.getOrderingFacilityPhoneNumber().getValue()).isEqualTo("205-888-2000");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_handlesEscapedCommas_inTestingLabValues() {
+    // GIVEN
+    InputStream input =
+        loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
+    setup_testResultsUpload_withEscapedCommas();
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    TestResultRow row = getRowFromUpload(dataHubMock);
+
     assertThat(row.getTestingLabClia().getValue()).isEqualTo("01D1058442");
     assertThat(row.getTestingLabName().getValue()).isEqualTo("My Testing Lab, Downtown Office");
     assertThat(row.getTestingLabStreet().getValue()).isEqualTo("300 North Street");
@@ -661,25 +712,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertThat(row.getTestingLabState().getValue()).isEqualTo("AL");
     assertThat(row.getTestingLabZipCode().getValue()).isEqualTo("35228");
     assertThat(row.getTestingLabPhoneNumber().getValue()).isEqualTo("205-888-2000");
-
-    assertThat(row.getPregnant().getValue()).isEqualTo("N");
-    assertThat(row.getEmployedInHealthcare().getValue()).isEqualTo("N");
-    assertThat(row.getSymptomaticForDisease().getValue()).isEqualTo("N");
-    assertThat(row.getIllnessOnsetDate().getValue()).isEmpty();
-    assertThat(row.getResidentCongregateSetting().getValue()).isEqualTo("N");
-    assertThat(row.getResidenceType().getValue()).isEmpty();
-    assertThat(row.getHospitalized().getValue()).isEqualTo("N");
-
-    assertThat(row.getOrderingFacilityName().getValue()).isEqualTo("My Urgent Care");
-    assertThat(row.getOrderingFacilityStreet().getValue()).isEqualTo("400 Main Street");
-    assertThat(row.getOrderingFacilityStreet2().getValue()).isEqualTo("Suite 100");
-    assertThat(row.getOrderingFacilityCity().getValue()).isEqualTo("Birmingham");
-    assertThat(row.getOrderingFacilityState().getValue()).isEqualTo("AL");
-    assertThat(row.getOrderingFacilityZipCode().getValue()).isEqualTo("35228");
-    assertThat(row.getOrderingFacilityPhoneNumber().getValue()).isEqualTo("205-888-2000");
-
-    assertThat(row.getComment().getValue()).isEqualTo("Test Comment");
-    assertThat(row.getTestResultStatus().getValue()).isEqualTo("F");
   }
 
   @Test
@@ -779,5 +811,25 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     response.setErrors(new FeedbackMessage[] {});
     response.setWarnings(new FeedbackMessage[] {});
     return response;
+  }
+
+  void setup_testResultsUpload_withEscapedCommas() {
+    UploadResponse response = buildUploadResponse();
+    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+  }
+
+  @NotNull
+  private static TestResultRow getRowFromUpload(DataHubClient dataHubMock) {
+    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
+    verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
+    String stringContent = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8);
+    final MappingIterator<Map<String, String>> valueIterator =
+        getIteratorForCsv(new ByteArrayInputStream(stringContent.getBytes(StandardCharsets.UTF_8)));
+    return new TestResultRow(getNextRow(valueIterator));
   }
 }

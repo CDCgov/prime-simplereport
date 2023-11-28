@@ -80,7 +80,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  void whoami_standardUser_okResponses() {
+  void whoami_standardUser_okUserInfoAndPermissions() {
     ObjectNode who =
         (ObjectNode) runQuery("current-user-query", "whoDat", null, null).get("whoami");
     assertEquals("Bobbity", who.get("firstName").asText());
@@ -120,7 +120,12 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.SUBMIT_TEST,
             UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         null);
+  }
 
+  @Test
+  void whoami_standardUser_okOrganizationInfo() {
+    ObjectNode who =
+        (ObjectNode) runQuery("current-user-query", "whoDat", null, null).get("whoami");
     JsonNode orgNode = who.path("organization");
     assertTrue(orgNode.has("id"), "'id' field present on organization");
     assertTrue(orgNode.has("internalId"), "'internalId' field present on organization");
