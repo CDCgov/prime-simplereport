@@ -1,10 +1,17 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MockedProvider } from "@apollo/client/testing";
+import configureStore from "redux-mock-store";
+import { Provider } from "react-redux";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
-import { Result } from "../../../generated/graphql";
+import {
+  GetTestResultDetailsDocument,
+  Result,
+} from "../../../generated/graphql";
 import { toLowerCaseHyphenate } from "../../utils/text";
+import PrimeErrorBoundary from "../../PrimeErrorBoundary";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
@@ -108,6 +115,43 @@ describe("Component ResultsTable", () => {
     expect(new Set(userAriaLabels).size).toBe(2);
   });
 
+  it("result details modal populates when patient name is clicked and returns focus to patient name when closed", async () => {
+    const mockStore = configureStore([]);
+    const store = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+      user: {
+        firstName: "Kim",
+        lastName: "Mendoza",
+      },
+      facilities: [
+        { id: "1", name: "Facility 1" },
+        { id: "2", name: "Facility 2" },
+      ],
+      facility: { id: "1", name: "Facility 1" },
+    });
+
+    const renderWithUser = (results: Result[]) => ({
+      user: userEvent.setup(),
+      ...render(
+        <PrimeErrorBoundary>
+          <Provider store={store}>
+            <MockedProvider mocks={TestResultDetailsMock}>
+              <ResultsTable results={results} hasFacility={false} />
+            </MockedProvider>
+          </Provider>
+        </PrimeErrorBoundary>
+      ),
+    });
+
+    const { user } = renderWithUser(TEST_RESULTS_MULTIPLEX_CONTENT);
+    await user.click(screen.getAllByText("Purrington, Rupert G")[0]);
+    expect(screen.getByText("Result details"));
+    await user.click(screen.getByAltText("Close"));
+    expect(screen.getAllByText("Purrington, Rupert G")[0]).toHaveFocus();
+  });
+
   describe("actions menu", () => {
     const renderWithUser = (results: Result[]) => ({
       user: userEvent.setup(),
@@ -184,3 +228,33 @@ describe("Component ResultsTable", () => {
     });
   });
 });
+
+const testToMock =
+  TEST_RESULTS_MULTIPLEX.content[TEST_RESULTS_MULTIPLEX.totalElements - 2];
+const mockResultData = {
+  dateTested: testToMock.dateTested,
+  disease: testToMock.disease,
+  testResult: testToMock.testResult,
+  correctionStatus: testToMock.correctionStatus,
+  deviceType: testToMock.deviceType,
+  patient: testToMock.patient,
+  createdBy: testToMock.createdBy,
+  symptoms: undefined,
+  symptomOnset: undefined,
+  pregnancy: undefined,
+};
+const TestResultDetailsMock = [
+  {
+    request: {
+      query: GetTestResultDetailsDocument,
+      variables: {
+        id: testToMock.id,
+      },
+    },
+    result: {
+      data: {
+        testResult: mockResultData,
+      },
+    },
+  },
+];

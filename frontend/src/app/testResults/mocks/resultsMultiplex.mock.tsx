@@ -149,7 +149,7 @@ const data = [
   {
     ...testThree,
     disease: "Flu A",
-    result: "POSITIVE",
+    testResult: "POSITIVE",
   },
   {
     ...testThree,
