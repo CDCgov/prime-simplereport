@@ -161,7 +161,10 @@ const generateResultRows = (
               r.patient?.lastName
             )}
             onClick={() =>
-              onActionSelect({ modalType: "DETAILS", testResult: r })
+              onActionSelect({
+                modalType: "DETAILS TRIGGERED FROM NAME LINK",
+                testResult: r,
+              })
             }
             className="sr-link__primary"
           />
@@ -205,7 +208,14 @@ interface ResultsTableListProps {
 }
 
 type ActionInformation = {
-  modalType: "NONE" | "PRINT" | "CORRECTION" | "TEXT" | "DETAILS" | "EMAIL";
+  modalType:
+    | "NONE"
+    | "PRINT"
+    | "CORRECTION"
+    | "TEXT"
+    | "DETAILS"
+    | "EMAIL"
+    | "DETAILS TRIGGERED FROM NAME LINK";
   testResult: Result | undefined;
 };
 
@@ -294,10 +304,15 @@ const ResultsTable = ({ results, hasFacility }: ResultsTableListProps) => {
         }}
       />
       <TestResultDetailsModal
-        isOpen={actionSelected.modalType === "DETAILS"}
+        isOpen={
+          actionSelected.modalType === "DETAILS" ||
+          actionSelected.modalType === "DETAILS TRIGGERED FROM NAME LINK"
+        }
         testResult={actionSelected.testResult}
         closeModal={() => {
-          setFocusOnActionMenu("view");
+          if (actionSelected.modalType === "DETAILS") {
+            setFocusOnActionMenu("view");
+          }
           dismissModal();
         }}
       />
