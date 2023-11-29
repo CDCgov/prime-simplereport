@@ -362,7 +362,7 @@ const TestCardForm = ({
   };
 
   return (
-    <>
+    <div className={"prime-queue-item"}>
       <QueueItemSubmitLoader show={submitLoading} name={patientFullName} />
       <IncompleteAOEWarningModal
         submitModalRef={submitModalRef}
@@ -576,13 +576,17 @@ const TestCardForm = ({
         )}
         <div className="grid-row margin-top-4">
           <div className="grid-col-auto">
-            <Button onClick={() => submitForm()} type={"button"}>
+            <Button
+              className={"prime-test-result-submit button"}
+              onClick={() => submitForm()}
+              type={"button"}
+            >
               Submit results
             </Button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

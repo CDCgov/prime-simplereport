@@ -23,7 +23,7 @@ describe("Conducting a COVID test", () => {
     });
   });
 
-  it("searches for the patient", () => {
+  it("conducts a test", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-conduct-test-nav-link").click();
@@ -33,27 +33,11 @@ describe("Conducting a COVID test", () => {
     cy.wait("@GetPatientsByFacilityForQueue");
 
     cy.injectSRAxe();
-    cy.checkAccessibility(); // Conduct Tests page
-  });
-  it("begins a test", () => {
+
     cy.get(".results-dropdown").within(() => {
       cy.get("button.usa-button--unstyled:first-of-type")
         .contains("Begin test")
         .click();
-    });
-
-    cy.get(".ReactModal__Content").contains(
-      "Are you experiencing any of the following symptoms?"
-    );
-
-    // Test a11y on the AoE modal
-    cy.checkAccessibility();
-  });
-  it("fills out the aoe questions and submits", () => {
-    cy.get(".ReactModal__Content").within(() => {
-      cy.get('input[name="no_symptoms"][value="no"]+label').click();
-      cy.get('input[name="pregnancy"][value="60001007"]+label').click();
-      cy.get("#aoe-form-save-button").click();
     });
 
     cy.wait("@AddPatientToQueue");
@@ -61,11 +45,8 @@ describe("Conducting a COVID test", () => {
 
     cy.get(".prime-home").contains(patientName);
 
-    cy.get(queueCard).contains("COVID-19 results");
+    cy.get(queueCard).contains("COVID-19 result");
 
-    cy.checkAccessibility(); // Test Card page
-  });
-  it("completes the test", () => {
     cy.get(queueCard).within(() => {
       cy.get('select[name="testDevice"]').select(covidOnlyDeviceName);
       cy.get('select[name="testDevice"]')
@@ -78,37 +59,69 @@ describe("Conducting a COVID test", () => {
     // then it won't trigger a network call
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
 
-    // Wait for the FacilityQueue results to populate
-    // To be resolved in #6079
-    // https://github.com/CDCgov/prime-simplereport/pull/6464#discussion_r1313361521
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(100);
-    cy.get(queueCard).within(() => {
-      cy.contains("label", "Negative (-)").click();
-    });
+    // ensure submit gets enabled with just the one result input
+    cy.contains("legend", "COVID-19 result")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "Negative (-)").click();
+      });
 
     cy.wait("@EditQueueItem");
 
-    cy.get(queueCard).within(() => {
-      cy.get(".prime-test-result-submit button")
-        .last()
-        .should("be.enabled")
-        .click();
-    });
+    cy.contains("Submit results").should("be.enabled");
+    cy.checkAccessibility();
 
+    // fill out aoe and submit
+    cy.contains("legend", "Is the patient pregnant?")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "Yes").click();
+      });
+
+    cy.contains("legend", "Is the patient currently experiencing any symptoms?")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "No").click();
+      });
+
+    cy.contains("Select any symptoms the patient is experiencing").should(
+      "not.exist",
+    );
+
+    cy.contains("legend", "Is the patient currently experiencing any symptoms?")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "Yes").click();
+      });
+
+    cy.contains("Select any symptoms the patient is experiencing").should(
+      "exist",
+    );
+
+    cy.contains("label", "When did the patient's symptoms start?")
+      .next("input")
+      .type("2021-10-05");
+
+    cy.contains("legend", "Select any symptoms the patient is experiencing")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "Chills").click();
+        cy.contains("label", "Headache").click();
+      });
+    cy.checkAccessibility();
+
+    cy.contains("Submit results").click();
     cy.wait("@SubmitQueueItem");
 
     cy.contains(`Result for ${patientName} was saved and reported.`);
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
-  });
-  it("shows the result on the results table", () => {
+
+    cy.checkAccessibility();
+
     cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
 
-    // Test a11y on the Results page
-    cy.checkAccessibility();
-  });
-  it("stores the patient link", () => {
+    // // stores the patient link
     cy.get(".sr-test-result-row").then(($row) => {
       const dataTestId = $row.attr("data-testid");
       const testEventId = dataTestId.split("-").slice(2, 7).join("-");
@@ -116,5 +129,7 @@ describe("Conducting a COVID test", () => {
       cy.task("setTestEventId", testEventId);
       cy.task("setPatientName", patientName);
     });
+
+    cy.checkAccessibility();
   });
 });
