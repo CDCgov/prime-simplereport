@@ -66,12 +66,10 @@ const UsersSideNav: React.FC<Props> = ({
           className="usa-sidenav"
         >
           {filteredUsers.length === 0 && (
-            <div
-              className={
-                "display-flex flex-column flex-align-center margin-x-3 margin-y-2"
-              }
-            >
-              No results found.
+            <div className={"usa-sidenav__item users-sidenav-item"}>
+              <div className={"padding-105 padding-right-2 padding-left-3"}>
+                No results found.
+              </div>
             </div>
           )}
           {filteredUsers.map((user: LimitedUser) => {
