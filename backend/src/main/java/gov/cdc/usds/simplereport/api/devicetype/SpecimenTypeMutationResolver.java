@@ -13,11 +13,16 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class SpecimenTypeMutationResolver {
 
-  private final SpecimenTypeService specimenTypeService;
+    private final SpecimenTypeService specimenTypeService;
 
-  @MutationMapping
-  public SpecimenType createSpecimenType(@Argument CreateSpecimenType input)
-      throws IllegalGraphqlArgumentException {
-    return specimenTypeService.createSpecimenType(input);
-  }
+    @MutationMapping
+    public SpecimenType createSpecimenType(@Argument CreateSpecimenType input)
+            throws IllegalGraphqlArgumentException {
+        return specimenTypeService.createSpecimenType(input);
+    }
+
+    @MutationMapping
+    public SpecimenType updateSpecimenType(@Argument CreateSpecimenType input) {
+        return specimenTypeService.updateSpecimenType(input);
+    }
 }
