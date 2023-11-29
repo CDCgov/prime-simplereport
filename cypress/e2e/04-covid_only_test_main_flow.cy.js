@@ -23,7 +23,7 @@ describe("Conducting a COVID test", () => {
     });
   });
 
-  it("conducts a test", () => {
+  it("conducts a test from the result page", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-conduct-test-nav-link").click();
@@ -59,17 +59,21 @@ describe("Conducting a COVID test", () => {
     // then it won't trigger a network call
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
 
-    // ensure submit gets enabled with just the one result input
+    cy.contains("Submit results").click();
+    cy.contains("Please enter a valid test result");
+    cy.contains("Invalid test results");
+
     cy.contains("legend", "COVID-19 result")
       .next("div")
       .within(() => {
         cy.contains("label", "Negative (-)").click();
       });
 
-    cy.wait("@EditQueueItem");
+    cy.get(queueCard).within(() => {
+      cy.contains("Please enter a valid test result").should("not.exist");
+    });
 
-    cy.contains("Submit results").should("be.enabled");
-    cy.checkAccessibility();
+    cy.wait("@EditQueueItem");
 
     // fill out aoe and submit
     cy.contains("legend", "Is the patient pregnant?")
@@ -108,6 +112,7 @@ describe("Conducting a COVID test", () => {
         cy.contains("label", "Chills").click();
         cy.contains("label", "Headache").click();
       });
+
     cy.checkAccessibility();
 
     cy.contains("Submit results").click();
@@ -115,8 +120,6 @@ describe("Conducting a COVID test", () => {
 
     cy.contains(`Result for ${patientName} was saved and reported.`);
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
-
-    cy.checkAccessibility();
 
     cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
@@ -132,4 +135,6 @@ describe("Conducting a COVID test", () => {
 
     cy.checkAccessibility();
   });
+
+  it("");
 });
