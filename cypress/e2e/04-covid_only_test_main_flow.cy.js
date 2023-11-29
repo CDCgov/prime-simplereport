@@ -2,7 +2,7 @@ import { loginHooks } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
-describe("Conducting a COVID test", () => {
+describe("Conducting a COVID test from the conduct test screen", () => {
   let patientName, lastName, covidOnlyDeviceName;
   const queueCard = "div.prime-queue-item:last-of-type";
   loginHooks();
