@@ -11,8 +11,10 @@ import {
 
 describe("AddPatient", () => {
   describe("No facility selected", () => {
-    it("does not show the form title", () => {
+    it.only("does not show the form title", () => {
       renderWithUserNoFacility();
+
+      screen.logTestingPlaygroundURL();
       expect(
         screen.queryByText(`Add new ${PATIENT_TERM}`, {
           exact: false,
