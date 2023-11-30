@@ -192,817 +192,821 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                 data-testid="CardBody"
               >
                 <div
-                  aria-hidden="true"
-                  class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
-                >
-                  <h4
-                    class=""
-                  >
-                    Submitting test data for 
-                    Doe, John A
-                    ...
-                  </h4>
-                  <img
-                    alt="submitting"
-                    class="square-5"
-                    src="loader.svg"
-                  />
-                </div>
-                <div
-                  class="grid-container"
+                  class="prime-queue-item"
                 >
                   <div
-                    class="grid-row grid-gap"
+                    aria-hidden="true"
+                    class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
                   >
-                    <div
-                      class="grid-col-auto"
+                    <h4
+                      class=""
                     >
-                      <label
-                        class="usa-label margin-top-3"
-                        data-testid="label"
-                        for="current-date-time"
-                      >
-                        Test date and time
-                         
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                          *
-                        </abbr>
-                      </label>
-                      <div
-                        class="usa-checkbox"
-                        data-testid="checkbox"
-                      >
-                        <input
-                          checked=""
-                          class="usa-checkbox__input"
-                          id="current-date-time-abc"
-                          name="current-date-time"
-                          type="checkbox"
-                        />
-                        <label
-                          class="usa-checkbox__label"
-                          for="current-date-time-abc"
-                        >
-                          Current date and time
-                        </label>
-                      </div>
-                    </div>
+                      Submitting test data for 
+                      Doe, John A
+                      ...
+                    </h4>
+                    <img
+                      alt="submitting"
+                      class="square-5"
+                      src="loader.svg"
+                    />
                   </div>
                   <div
-                    class="grid-row grid-gap"
-                    data-testid="device-type-dropdown-container"
+                    class="grid-container"
                   >
                     <div
-                      class="grid-col-auto"
+                      class="grid-row grid-gap"
                     >
                       <div
-                        class="usa-form-group prime-dropdown  card-dropdown"
+                        class="grid-col-auto"
                       >
                         <label
-                          class="usa-label"
-                          for="7"
+                          class="usa-label margin-top-3"
+                          data-testid="label"
+                          for="current-date-time"
                         >
-                          <span
-                            class="usa-tooltip usa-text-with-tooltip"
-                            data-testid="tooltipWrapper"
-                          >
-                            <button
-                              aria-describedby="tooltip-211111"
-                              aria-label=""
-                              class="usa-button usa-button--unstyled usa-tooltip__trigger"
-                              data-testid="triggerElement"
-                              position="right"
-                              tabindex="0"
-                              title=""
-                              wrapperclasses="usa-text-with-tooltip"
-                            >
-                              Test device
-                              <svg
-                                alt-text="info"
-                                aria-hidden="true"
-                                class="svg-inline--fa fa-circle-info info-circle-icon"
-                                data-icon="circle-info"
-                                data-prefix="fas"
-                                focusable="false"
-                                role="img"
-                                viewBox="0 0 512 512"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
-                                  fill="currentColor"
-                                />
-                              </svg>
-                            </button>
-                            <span
-                              aria-hidden="true"
-                              class="usa-tooltip__body"
-                              data-testid="tooltipBody"
-                              id="tooltip-211111"
-                              role="tooltip"
-                              title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
-                            >
-                              Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
-                            </span>
-                          </span>
+                          Test date and time
+                           
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"
                           >
-                             
                             *
                           </abbr>
                         </label>
-                        <select
-                          aria-label="Test device"
-                          aria-required="true"
-                          class="usa-select"
-                          data-testid="device-type-dropdown"
-                          id="test-device-abc"
-                          name="testDevice"
-                        >
-                          <option
-                            aria-selected="false"
-                            value="5c711888-ba37-4b2e-b347-311ca364efdb"
-                          >
-                            Abbott BinaxNow
-                          </option>
-                          <option
-                            aria-selected="false"
-                            value="32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10"
-                          >
-                            BD Veritor
-                          </option>
-                          <option
-                            aria-selected="true"
-                            value="ee4f40b7-ac32-4709-be0a-56dd77bb9609"
-                          >
-                            LumiraDX
-                          </option>
-                          <option
-                            aria-selected="false"
-                            value="67109f6f-eaee-49d3-b8ff-c61b79a9da8e"
-                          >
-                            Multiplex
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <div
-                      class="grid-col-auto"
-                      data-testid="specimen-type-dropdown-container"
-                    >
-                      <div
-                        class="usa-form-group prime-dropdown  card-dropdown"
-                      >
-                        <label
-                          class="usa-label"
-                          for="8"
-                        >
-                          Specimen type
-                          <abbr
-                            class="usa-hint usa-hint--required"
-                            title="required"
-                          >
-                             
-                            *
-                          </abbr>
-                        </label>
-                        <select
-                          aria-label="Specimen type"
-                          aria-required="true"
-                          class="usa-select"
-                          data-testid="specimen-type-dropdown"
-                          id="specimen-type-abc"
-                          name="specimenType"
-                        >
-                          <option
-                            aria-selected="false"
-                            value="f127ef55-4133-4556-9bca-33615d071e8d"
-                          >
-                            Nasopharyngeal swab
-                          </option>
-                          <option
-                            aria-selected="true"
-                            value="8596682d-6053-4720-8a39-1f5d19ff4ed9"
-                          >
-                            Swab of internal nose
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="grid-row grid-gap"
-                  >
-                    <div
-                      class="usa-form-group"
-                      data-testid="formGroup"
-                    >
-                      <div
-                        class="grid-row grid-gap"
-                      >
                         <div
-                          class="grid-col-auto test-result-input-radio-group-column"
+                          class="usa-checkbox"
+                          data-testid="checkbox"
                         >
-                          <div
-                            class="usa-form-group prime-radio__group"
+                          <input
+                            checked=""
+                            class="usa-checkbox__input"
+                            id="current-date-time-abc"
+                            name="current-date-time"
+                            type="checkbox"
+                          />
+                          <label
+                            class="usa-checkbox__label"
+                            for="current-date-time-abc"
                           >
-                            <fieldset
-                              class="usa-fieldset prime-radios"
-                              data-testid="COVID-19-test-result-abc"
-                              id="COVID-19-test-result-abc"
-                            >
-                              <legend
-                                class="usa-legend"
-                              >
-                                COVID-19 result
-                                <abbr
-                                  class="usa-hint usa-hint--required"
-                                  title="required"
-                                >
-                                   
-                                  *
-                                </abbr>
-                              </legend>
-                              <div
-                                class=""
-                              >
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="true"
-                                    id="9-val-POSITIVE"
-                                    name="COVID-19-test-result-abc"
-                                    type="radio"
-                                    value="POSITIVE"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-COVID-19-test-result-abc-POSITIVE"
-                                    for="9-val-POSITIVE"
-                                  >
-                                    Positive (+)
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="true"
-                                    id="9-val-NEGATIVE"
-                                    name="COVID-19-test-result-abc"
-                                    type="radio"
-                                    value="NEGATIVE"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-COVID-19-test-result-abc-NEGATIVE"
-                                    for="9-val-NEGATIVE"
-                                  >
-                                    Negative (-)
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="true"
-                                    id="9-val-UNDETERMINED"
-                                    name="COVID-19-test-result-abc"
-                                    type="radio"
-                                    value="UNDETERMINED"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-COVID-19-test-result-abc-UNDETERMINED"
-                                    for="9-val-UNDETERMINED"
-                                  >
-                                    Inconclusive
-                                  </label>
-                                </div>
-                              </div>
-                            </fieldset>
-                          </div>
+                            Current date and time
+                          </label>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="grid-row grid-gap"
-                  >
                     <div
-                      class="grid-col-auto"
-                      id="covid-aoe-form"
+                      class="grid-row grid-gap"
+                      data-testid="device-type-dropdown-container"
                     >
                       <div
-                        class="grid-row"
+                        class="grid-col-auto"
                       >
                         <div
-                          class="grid-col-auto"
-                        >
-                          <div
-                            class="usa-form-group"
-                          >
-                            <fieldset
-                              class="usa-fieldset prime-radios"
-                              data-testid="pregnancy-abc"
-                              id="pregnancy-abc"
-                            >
-                              <legend
-                                class="usa-legend"
-                              >
-                                Is the patient pregnant?
-                              </legend>
-                              <div
-                                class=""
-                              >
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="10-val-77386006"
-                                    name="pregnancy-abc"
-                                    type="radio"
-                                    value="77386006"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-abc-77386006"
-                                    for="10-val-77386006"
-                                  >
-                                    Yes
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="10-val-60001007"
-                                    name="pregnancy-abc"
-                                    type="radio"
-                                    value="60001007"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-abc-60001007"
-                                    for="10-val-60001007"
-                                  >
-                                    No
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="10-val-261665006"
-                                    name="pregnancy-abc"
-                                    type="radio"
-                                    value="261665006"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-abc-261665006"
-                                    for="10-val-261665006"
-                                  >
-                                    Prefer not to answer
-                                  </label>
-                                </div>
-                              </div>
-                            </fieldset>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="grid-row"
-                      >
-                        <div
-                          class="grid-col-auto"
-                        >
-                          <div
-                            class="usa-form-group"
-                          >
-                            <fieldset
-                              class="usa-fieldset prime-radios"
-                              data-testid="has-any-symptoms-abc"
-                              id="has-any-symptoms-abc"
-                            >
-                              <legend
-                                class="usa-legend"
-                              >
-                                Is the patient currently experiencing any symptoms?
-                              </legend>
-                              <div
-                                class=""
-                              >
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    checked=""
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="11-val-YES"
-                                    name="has-any-symptoms-abc"
-                                    type="radio"
-                                    value="YES"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-has-any-symptoms-abc-YES"
-                                    for="11-val-YES"
-                                  >
-                                    Yes
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="11-val-NO"
-                                    name="has-any-symptoms-abc"
-                                    type="radio"
-                                    value="NO"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-has-any-symptoms-abc-NO"
-                                    for="11-val-NO"
-                                  >
-                                    No
-                                  </label>
-                                </div>
-                              </div>
-                            </fieldset>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="grid-row grid-gap"
-                      >
-                        <div
-                          class="usa-form-group"
+                          class="usa-form-group prime-dropdown  card-dropdown"
                         >
                           <label
                             class="usa-label"
-                            for="12"
+                            for="7"
                           >
-                            When did the patient's symptoms start?
+                            <span
+                              class="usa-tooltip usa-text-with-tooltip"
+                              data-testid="tooltipWrapper"
+                            >
+                              <button
+                                aria-describedby="tooltip-211111"
+                                aria-label=""
+                                class="usa-button usa-button--unstyled usa-tooltip__trigger"
+                                data-testid="triggerElement"
+                                position="right"
+                                tabindex="0"
+                                title=""
+                                wrapperclasses="usa-text-with-tooltip"
+                              >
+                                Test device
+                                <svg
+                                  alt-text="info"
+                                  aria-hidden="true"
+                                  class="svg-inline--fa fa-circle-info info-circle-icon"
+                                  data-icon="circle-info"
+                                  data-prefix="fas"
+                                  focusable="false"
+                                  role="img"
+                                  viewBox="0 0 512 512"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                                    fill="currentColor"
+                                  />
+                                </svg>
+                              </button>
+                              <span
+                                aria-hidden="true"
+                                class="usa-tooltip__body"
+                                data-testid="tooltipBody"
+                                id="tooltip-211111"
+                                role="tooltip"
+                                title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                              >
+                                Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
+                              </span>
+                            </span>
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
                           </label>
-                          <input
-                            aria-label="Symptom onset date"
-                            aria-required="false"
-                            class="usa-input"
-                            data-testid="symptom-date"
-                            id="12"
-                            max="2023-10-17"
-                            min="2020-01-01"
-                            name="symptom-date-abc"
-                            type="date"
-                            value=""
-                          />
+                          <select
+                            aria-label="Test device"
+                            aria-required="true"
+                            class="usa-select"
+                            data-testid="device-type-dropdown"
+                            id="test-device-abc"
+                            name="testDevice"
+                          >
+                            <option
+                              aria-selected="false"
+                              value="5c711888-ba37-4b2e-b347-311ca364efdb"
+                            >
+                              Abbott BinaxNow
+                            </option>
+                            <option
+                              aria-selected="false"
+                              value="32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10"
+                            >
+                              BD Veritor
+                            </option>
+                            <option
+                              aria-selected="true"
+                              value="ee4f40b7-ac32-4709-be0a-56dd77bb9609"
+                            >
+                              LumiraDX
+                            </option>
+                            <option
+                              aria-selected="false"
+                              value="67109f6f-eaee-49d3-b8ff-c61b79a9da8e"
+                            >
+                              Multiplex
+                            </option>
+                          </select>
                         </div>
                       </div>
                       <div
-                        class="grid-row grid-gap"
+                        class="grid-col-auto"
+                        data-testid="specimen-type-dropdown-container"
                       >
                         <div
-                          class="usa-form-group"
+                          class="usa-form-group prime-dropdown  card-dropdown"
                         >
-                          <fieldset
-                            class="usa-fieldset prime-checkboxes"
+                          <label
+                            class="usa-label"
+                            for="8"
                           >
-                            <legend
-                              class="usa-legend"
+                            Specimen type
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
                             >
-                              Select any symptoms the patient is experiencing
-                            </legend>
-                            <div
-                              class="checkboxes"
+                               
+                              *
+                            </abbr>
+                          </label>
+                          <select
+                            aria-label="Specimen type"
+                            aria-required="true"
+                            class="usa-select"
+                            data-testid="specimen-type-dropdown"
+                            id="specimen-type-abc"
+                            name="specimenType"
+                          >
+                            <option
+                              aria-selected="false"
+                              value="f127ef55-4133-4556-9bca-33615d071e8d"
                             >
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-0"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="426000000"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-0"
-                                >
-                                  Fever over 100.4F
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-1"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="103001002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-1"
-                                >
-                                  Feeling feverish
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-2"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="43724002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-2"
-                                >
-                                  Chills
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-3"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="49727002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-3"
-                                >
-                                  Cough
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-4"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="267036007"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-4"
-                                >
-                                  Shortness of breath
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-5"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="230145002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-5"
-                                >
-                                  Difficulty breathing
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-6"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="84229001"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-6"
-                                >
-                                  Fatigue
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-7"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="68962001"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-7"
-                                >
-                                  Muscle or body aches
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-8"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="25064002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-8"
-                                >
-                                  Headache
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-9"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="36955009"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-9"
-                                >
-                                  New loss of taste
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-10"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="44169009"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-10"
-                                >
-                                  New loss of smell
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-11"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="162397003"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-11"
-                                >
-                                  Sore throat
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-12"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="68235000"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-12"
-                                >
-                                  Nasal congestion
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-13"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="64531003"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-13"
-                                >
-                                  Runny nose
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-14"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="422587007"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-14"
-                                >
-                                  Nausea
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-15"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="422400008"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-15"
-                                >
-                                  Vomiting
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="13-val-16"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="62315008"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="13-val-16"
-                                >
-                                  Diarrhea
-                                </label>
-                              </div>
-                            </div>
-                          </fieldset>
+                              Nasopharyngeal swab
+                            </option>
+                            <option
+                              aria-selected="true"
+                              value="8596682d-6053-4720-8a39-1f5d19ff4ed9"
+                            >
+                              Swab of internal nose
+                            </option>
+                          </select>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="grid-row margin-top-4"
-                  >
                     <div
-                      class="grid-col-auto"
+                      class="grid-row grid-gap"
                     >
-                      <button
-                        class="usa-button"
-                        data-testid="button"
-                        type="button"
+                      <div
+                        class="usa-form-group"
+                        data-testid="formGroup"
                       >
-                        Submit results
-                      </button>
+                        <div
+                          class="grid-row grid-gap"
+                        >
+                          <div
+                            class="grid-col-auto test-result-input-radio-group-column"
+                          >
+                            <div
+                              class="usa-form-group prime-radio__group"
+                            >
+                              <fieldset
+                                class="usa-fieldset prime-radios"
+                                data-testid="COVID-19-test-result-abc"
+                                id="COVID-19-test-result-abc"
+                              >
+                                <legend
+                                  class="usa-legend"
+                                >
+                                  COVID-19 result
+                                  <abbr
+                                    class="usa-hint usa-hint--required"
+                                    title="required"
+                                  >
+                                     
+                                    *
+                                  </abbr>
+                                </legend>
+                                <div
+                                  class=""
+                                >
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="true"
+                                      id="9-val-POSITIVE"
+                                      name="COVID-19-test-result-abc"
+                                      type="radio"
+                                      value="POSITIVE"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-COVID-19-test-result-abc-POSITIVE"
+                                      for="9-val-POSITIVE"
+                                    >
+                                      Positive (+)
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="true"
+                                      id="9-val-NEGATIVE"
+                                      name="COVID-19-test-result-abc"
+                                      type="radio"
+                                      value="NEGATIVE"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-COVID-19-test-result-abc-NEGATIVE"
+                                      for="9-val-NEGATIVE"
+                                    >
+                                      Negative (-)
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="true"
+                                      id="9-val-UNDETERMINED"
+                                      name="COVID-19-test-result-abc"
+                                      type="radio"
+                                      value="UNDETERMINED"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-COVID-19-test-result-abc-UNDETERMINED"
+                                      for="9-val-UNDETERMINED"
+                                    >
+                                      Inconclusive
+                                    </label>
+                                  </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="grid-row grid-gap"
+                    >
+                      <div
+                        class="grid-col-auto"
+                        id="covid-aoe-form"
+                      >
+                        <div
+                          class="grid-row"
+                        >
+                          <div
+                            class="grid-col-auto"
+                          >
+                            <div
+                              class="usa-form-group"
+                            >
+                              <fieldset
+                                class="usa-fieldset prime-radios"
+                                data-testid="pregnancy-abc"
+                                id="pregnancy-abc"
+                              >
+                                <legend
+                                  class="usa-legend"
+                                >
+                                  Is the patient pregnant?
+                                </legend>
+                                <div
+                                  class=""
+                                >
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="10-val-77386006"
+                                      name="pregnancy-abc"
+                                      type="radio"
+                                      value="77386006"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-pregnancy-abc-77386006"
+                                      for="10-val-77386006"
+                                    >
+                                      Yes
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="10-val-60001007"
+                                      name="pregnancy-abc"
+                                      type="radio"
+                                      value="60001007"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-pregnancy-abc-60001007"
+                                      for="10-val-60001007"
+                                    >
+                                      No
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="10-val-261665006"
+                                      name="pregnancy-abc"
+                                      type="radio"
+                                      value="261665006"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-pregnancy-abc-261665006"
+                                      for="10-val-261665006"
+                                    >
+                                      Prefer not to answer
+                                    </label>
+                                  </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="grid-row"
+                        >
+                          <div
+                            class="grid-col-auto"
+                          >
+                            <div
+                              class="usa-form-group"
+                            >
+                              <fieldset
+                                class="usa-fieldset prime-radios"
+                                data-testid="has-any-symptoms-abc"
+                                id="has-any-symptoms-abc"
+                              >
+                                <legend
+                                  class="usa-legend"
+                                >
+                                  Is the patient currently experiencing any symptoms?
+                                </legend>
+                                <div
+                                  class=""
+                                >
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      checked=""
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="11-val-YES"
+                                      name="has-any-symptoms-abc"
+                                      type="radio"
+                                      value="YES"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-has-any-symptoms-abc-YES"
+                                      for="11-val-YES"
+                                    >
+                                      Yes
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="11-val-NO"
+                                      name="has-any-symptoms-abc"
+                                      type="radio"
+                                      value="NO"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-has-any-symptoms-abc-NO"
+                                      for="11-val-NO"
+                                    >
+                                      No
+                                    </label>
+                                  </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="grid-row grid-gap"
+                        >
+                          <div
+                            class="usa-form-group"
+                          >
+                            <label
+                              class="usa-label"
+                              for="12"
+                            >
+                              When did the patient's symptoms start?
+                            </label>
+                            <input
+                              aria-label="Symptom onset date"
+                              aria-required="false"
+                              class="usa-input"
+                              data-testid="symptom-date"
+                              id="12"
+                              max="2023-10-17"
+                              min="2020-01-01"
+                              name="symptom-date-abc"
+                              type="date"
+                              value=""
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="grid-row grid-gap"
+                        >
+                          <div
+                            class="usa-form-group"
+                          >
+                            <fieldset
+                              class="usa-fieldset prime-checkboxes"
+                            >
+                              <legend
+                                class="usa-legend"
+                              >
+                                Select any symptoms the patient is experiencing
+                              </legend>
+                              <div
+                                class="checkboxes"
+                              >
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-0"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="426000000"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-0"
+                                  >
+                                    Fever over 100.4F
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-1"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="103001002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-1"
+                                  >
+                                    Feeling feverish
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-2"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="43724002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-2"
+                                  >
+                                    Chills
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-3"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="49727002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-3"
+                                  >
+                                    Cough
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-4"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="267036007"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-4"
+                                  >
+                                    Shortness of breath
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-5"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="230145002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-5"
+                                  >
+                                    Difficulty breathing
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-6"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="84229001"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-6"
+                                  >
+                                    Fatigue
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-7"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="68962001"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-7"
+                                  >
+                                    Muscle or body aches
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-8"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="25064002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-8"
+                                  >
+                                    Headache
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-9"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="36955009"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-9"
+                                  >
+                                    New loss of taste
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-10"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="44169009"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-10"
+                                  >
+                                    New loss of smell
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-11"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="162397003"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-11"
+                                  >
+                                    Sore throat
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-12"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="68235000"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-12"
+                                  >
+                                    Nasal congestion
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-13"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="64531003"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-13"
+                                  >
+                                    Runny nose
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-14"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="422587007"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-14"
+                                  >
+                                    Nausea
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-15"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="422400008"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-15"
+                                  >
+                                    Vomiting
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="13-val-16"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="62315008"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="13-val-16"
+                                  >
+                                    Diarrhea
+                                  </label>
+                                </div>
+                              </div>
+                            </fieldset>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="grid-row margin-top-4"
+                    >
+                      <div
+                        class="grid-col-auto"
+                      >
+                        <button
+                          class="usa-button prime-test-result-submit button"
+                          data-testid="button"
+                          type="button"
+                        >
+                          Submit results
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1142,817 +1146,821 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                 data-testid="CardBody"
               >
                 <div
-                  aria-hidden="true"
-                  class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
-                >
-                  <h4
-                    class=""
-                  >
-                    Submitting test data for 
-                    Smith, Jane
-                    ...
-                  </h4>
-                  <img
-                    alt="submitting"
-                    class="square-5"
-                    src="loader.svg"
-                  />
-                </div>
-                <div
-                  class="grid-container"
+                  class="prime-queue-item"
                 >
                   <div
-                    class="grid-row grid-gap"
+                    aria-hidden="true"
+                    class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
                   >
-                    <div
-                      class="grid-col-auto"
+                    <h4
+                      class=""
                     >
-                      <label
-                        class="usa-label margin-top-3"
-                        data-testid="label"
-                        for="current-date-time"
-                      >
-                        Test date and time
-                         
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                          *
-                        </abbr>
-                      </label>
-                      <div
-                        class="usa-checkbox"
-                        data-testid="checkbox"
-                      >
-                        <input
-                          checked=""
-                          class="usa-checkbox__input"
-                          id="current-date-time-def"
-                          name="current-date-time"
-                          type="checkbox"
-                        />
-                        <label
-                          class="usa-checkbox__label"
-                          for="current-date-time-def"
-                        >
-                          Current date and time
-                        </label>
-                      </div>
-                    </div>
+                      Submitting test data for 
+                      Smith, Jane
+                      ...
+                    </h4>
+                    <img
+                      alt="submitting"
+                      class="square-5"
+                      src="loader.svg"
+                    />
                   </div>
                   <div
-                    class="grid-row grid-gap"
-                    data-testid="device-type-dropdown-container"
+                    class="grid-container"
                   >
                     <div
-                      class="grid-col-auto"
+                      class="grid-row grid-gap"
                     >
                       <div
-                        class="usa-form-group prime-dropdown  card-dropdown"
+                        class="grid-col-auto"
                       >
                         <label
-                          class="usa-label"
-                          for="14"
+                          class="usa-label margin-top-3"
+                          data-testid="label"
+                          for="current-date-time"
                         >
-                          <span
-                            class="usa-tooltip usa-text-with-tooltip"
-                            data-testid="tooltipWrapper"
-                          >
-                            <button
-                              aria-describedby="tooltip-211111"
-                              aria-label=""
-                              class="usa-button usa-button--unstyled usa-tooltip__trigger"
-                              data-testid="triggerElement"
-                              position="right"
-                              tabindex="0"
-                              title=""
-                              wrapperclasses="usa-text-with-tooltip"
-                            >
-                              Test device
-                              <svg
-                                alt-text="info"
-                                aria-hidden="true"
-                                class="svg-inline--fa fa-circle-info info-circle-icon"
-                                data-icon="circle-info"
-                                data-prefix="fas"
-                                focusable="false"
-                                role="img"
-                                viewBox="0 0 512 512"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
-                                  fill="currentColor"
-                                />
-                              </svg>
-                            </button>
-                            <span
-                              aria-hidden="true"
-                              class="usa-tooltip__body"
-                              data-testid="tooltipBody"
-                              id="tooltip-211111"
-                              role="tooltip"
-                              title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
-                            >
-                              Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
-                            </span>
-                          </span>
+                          Test date and time
+                           
                           <abbr
                             class="usa-hint usa-hint--required"
                             title="required"
                           >
-                             
                             *
                           </abbr>
                         </label>
-                        <select
-                          aria-label="Test device"
-                          aria-required="true"
-                          class="usa-select"
-                          data-testid="device-type-dropdown"
-                          id="test-device-def"
-                          name="testDevice"
-                        >
-                          <option
-                            aria-selected="false"
-                            value="5c711888-ba37-4b2e-b347-311ca364efdb"
-                          >
-                            Abbott BinaxNow
-                          </option>
-                          <option
-                            aria-selected="false"
-                            value="32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10"
-                          >
-                            BD Veritor
-                          </option>
-                          <option
-                            aria-selected="true"
-                            value="ee4f40b7-ac32-4709-be0a-56dd77bb9609"
-                          >
-                            LumiraDX
-                          </option>
-                          <option
-                            aria-selected="false"
-                            value="67109f6f-eaee-49d3-b8ff-c61b79a9da8e"
-                          >
-                            Multiplex
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                    <div
-                      class="grid-col-auto"
-                      data-testid="specimen-type-dropdown-container"
-                    >
-                      <div
-                        class="usa-form-group prime-dropdown  card-dropdown"
-                      >
-                        <label
-                          class="usa-label"
-                          for="15"
-                        >
-                          Specimen type
-                          <abbr
-                            class="usa-hint usa-hint--required"
-                            title="required"
-                          >
-                             
-                            *
-                          </abbr>
-                        </label>
-                        <select
-                          aria-label="Specimen type"
-                          aria-required="true"
-                          class="usa-select"
-                          data-testid="specimen-type-dropdown"
-                          id="specimen-type-def"
-                          name="specimenType"
-                        >
-                          <option
-                            aria-selected="false"
-                            value="f127ef55-4133-4556-9bca-33615d071e8d"
-                          >
-                            Nasopharyngeal swab
-                          </option>
-                          <option
-                            aria-selected="true"
-                            value="8596682d-6053-4720-8a39-1f5d19ff4ed9"
-                          >
-                            Swab of internal nose
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="grid-row grid-gap"
-                  >
-                    <div
-                      class="usa-form-group"
-                      data-testid="formGroup"
-                    >
-                      <div
-                        class="grid-row grid-gap"
-                      >
                         <div
-                          class="grid-col-auto test-result-input-radio-group-column"
+                          class="usa-checkbox"
+                          data-testid="checkbox"
                         >
-                          <div
-                            class="usa-form-group prime-radio__group"
+                          <input
+                            checked=""
+                            class="usa-checkbox__input"
+                            id="current-date-time-def"
+                            name="current-date-time"
+                            type="checkbox"
+                          />
+                          <label
+                            class="usa-checkbox__label"
+                            for="current-date-time-def"
                           >
-                            <fieldset
-                              class="usa-fieldset prime-radios"
-                              data-testid="COVID-19-test-result-def"
-                              id="COVID-19-test-result-def"
-                            >
-                              <legend
-                                class="usa-legend"
-                              >
-                                COVID-19 result
-                                <abbr
-                                  class="usa-hint usa-hint--required"
-                                  title="required"
-                                >
-                                   
-                                  *
-                                </abbr>
-                              </legend>
-                              <div
-                                class=""
-                              >
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="true"
-                                    id="16-val-POSITIVE"
-                                    name="COVID-19-test-result-def"
-                                    type="radio"
-                                    value="POSITIVE"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-COVID-19-test-result-def-POSITIVE"
-                                    for="16-val-POSITIVE"
-                                  >
-                                    Positive (+)
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="true"
-                                    id="16-val-NEGATIVE"
-                                    name="COVID-19-test-result-def"
-                                    type="radio"
-                                    value="NEGATIVE"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-COVID-19-test-result-def-NEGATIVE"
-                                    for="16-val-NEGATIVE"
-                                  >
-                                    Negative (-)
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="true"
-                                    id="16-val-UNDETERMINED"
-                                    name="COVID-19-test-result-def"
-                                    type="radio"
-                                    value="UNDETERMINED"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-COVID-19-test-result-def-UNDETERMINED"
-                                    for="16-val-UNDETERMINED"
-                                  >
-                                    Inconclusive
-                                  </label>
-                                </div>
-                              </div>
-                            </fieldset>
-                          </div>
+                            Current date and time
+                          </label>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="grid-row grid-gap"
-                  >
                     <div
-                      class="grid-col-auto"
-                      id="covid-aoe-form"
+                      class="grid-row grid-gap"
+                      data-testid="device-type-dropdown-container"
                     >
                       <div
-                        class="grid-row"
+                        class="grid-col-auto"
                       >
                         <div
-                          class="grid-col-auto"
-                        >
-                          <div
-                            class="usa-form-group"
-                          >
-                            <fieldset
-                              class="usa-fieldset prime-radios"
-                              data-testid="pregnancy-def"
-                              id="pregnancy-def"
-                            >
-                              <legend
-                                class="usa-legend"
-                              >
-                                Is the patient pregnant?
-                              </legend>
-                              <div
-                                class=""
-                              >
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="17-val-77386006"
-                                    name="pregnancy-def"
-                                    type="radio"
-                                    value="77386006"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-def-77386006"
-                                    for="17-val-77386006"
-                                  >
-                                    Yes
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="17-val-60001007"
-                                    name="pregnancy-def"
-                                    type="radio"
-                                    value="60001007"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-def-60001007"
-                                    for="17-val-60001007"
-                                  >
-                                    No
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="17-val-261665006"
-                                    name="pregnancy-def"
-                                    type="radio"
-                                    value="261665006"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-pregnancy-def-261665006"
-                                    for="17-val-261665006"
-                                  >
-                                    Prefer not to answer
-                                  </label>
-                                </div>
-                              </div>
-                            </fieldset>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="grid-row"
-                      >
-                        <div
-                          class="grid-col-auto"
-                        >
-                          <div
-                            class="usa-form-group"
-                          >
-                            <fieldset
-                              class="usa-fieldset prime-radios"
-                              data-testid="has-any-symptoms-def"
-                              id="has-any-symptoms-def"
-                            >
-                              <legend
-                                class="usa-legend"
-                              >
-                                Is the patient currently experiencing any symptoms?
-                              </legend>
-                              <div
-                                class=""
-                              >
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    checked=""
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="18-val-YES"
-                                    name="has-any-symptoms-def"
-                                    type="radio"
-                                    value="YES"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-has-any-symptoms-def-YES"
-                                    for="18-val-YES"
-                                  >
-                                    Yes
-                                  </label>
-                                </div>
-                                <div
-                                  class="usa-radio"
-                                >
-                                  <input
-                                    class="usa-radio__input"
-                                    data-required="false"
-                                    id="18-val-NO"
-                                    name="has-any-symptoms-def"
-                                    type="radio"
-                                    value="NO"
-                                  />
-                                  <label
-                                    class="usa-radio__label"
-                                    data-cy="radio-group-option-has-any-symptoms-def-NO"
-                                    for="18-val-NO"
-                                  >
-                                    No
-                                  </label>
-                                </div>
-                              </div>
-                            </fieldset>
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        class="grid-row grid-gap"
-                      >
-                        <div
-                          class="usa-form-group"
+                          class="usa-form-group prime-dropdown  card-dropdown"
                         >
                           <label
                             class="usa-label"
-                            for="19"
+                            for="14"
                           >
-                            When did the patient's symptoms start?
+                            <span
+                              class="usa-tooltip usa-text-with-tooltip"
+                              data-testid="tooltipWrapper"
+                            >
+                              <button
+                                aria-describedby="tooltip-211111"
+                                aria-label=""
+                                class="usa-button usa-button--unstyled usa-tooltip__trigger"
+                                data-testid="triggerElement"
+                                position="right"
+                                tabindex="0"
+                                title=""
+                                wrapperclasses="usa-text-with-tooltip"
+                              >
+                                Test device
+                                <svg
+                                  alt-text="info"
+                                  aria-hidden="true"
+                                  class="svg-inline--fa fa-circle-info info-circle-icon"
+                                  data-icon="circle-info"
+                                  data-prefix="fas"
+                                  focusable="false"
+                                  role="img"
+                                  viewBox="0 0 512 512"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                                    fill="currentColor"
+                                  />
+                                </svg>
+                              </button>
+                              <span
+                                aria-hidden="true"
+                                class="usa-tooltip__body"
+                                data-testid="tooltipBody"
+                                id="tooltip-211111"
+                                role="tooltip"
+                                title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                              >
+                                Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
+                              </span>
+                            </span>
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
                           </label>
-                          <input
-                            aria-label="Symptom onset date"
-                            aria-required="false"
-                            class="usa-input"
-                            data-testid="symptom-date"
-                            id="19"
-                            max="2023-10-17"
-                            min="2020-01-01"
-                            name="symptom-date-def"
-                            type="date"
-                            value=""
-                          />
+                          <select
+                            aria-label="Test device"
+                            aria-required="true"
+                            class="usa-select"
+                            data-testid="device-type-dropdown"
+                            id="test-device-def"
+                            name="testDevice"
+                          >
+                            <option
+                              aria-selected="false"
+                              value="5c711888-ba37-4b2e-b347-311ca364efdb"
+                            >
+                              Abbott BinaxNow
+                            </option>
+                            <option
+                              aria-selected="false"
+                              value="32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10"
+                            >
+                              BD Veritor
+                            </option>
+                            <option
+                              aria-selected="true"
+                              value="ee4f40b7-ac32-4709-be0a-56dd77bb9609"
+                            >
+                              LumiraDX
+                            </option>
+                            <option
+                              aria-selected="false"
+                              value="67109f6f-eaee-49d3-b8ff-c61b79a9da8e"
+                            >
+                              Multiplex
+                            </option>
+                          </select>
                         </div>
                       </div>
                       <div
-                        class="grid-row grid-gap"
+                        class="grid-col-auto"
+                        data-testid="specimen-type-dropdown-container"
                       >
                         <div
-                          class="usa-form-group"
+                          class="usa-form-group prime-dropdown  card-dropdown"
                         >
-                          <fieldset
-                            class="usa-fieldset prime-checkboxes"
+                          <label
+                            class="usa-label"
+                            for="15"
                           >
-                            <legend
-                              class="usa-legend"
+                            Specimen type
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
                             >
-                              Select any symptoms the patient is experiencing
-                            </legend>
-                            <div
-                              class="checkboxes"
+                               
+                              *
+                            </abbr>
+                          </label>
+                          <select
+                            aria-label="Specimen type"
+                            aria-required="true"
+                            class="usa-select"
+                            data-testid="specimen-type-dropdown"
+                            id="specimen-type-def"
+                            name="specimenType"
+                          >
+                            <option
+                              aria-selected="false"
+                              value="f127ef55-4133-4556-9bca-33615d071e8d"
                             >
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-0"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="426000000"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-0"
-                                >
-                                  Fever over 100.4F
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-1"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="103001002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-1"
-                                >
-                                  Feeling feverish
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-2"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="43724002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-2"
-                                >
-                                  Chills
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-3"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="49727002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-3"
-                                >
-                                  Cough
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-4"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="267036007"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-4"
-                                >
-                                  Shortness of breath
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-5"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="230145002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-5"
-                                >
-                                  Difficulty breathing
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-6"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="84229001"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-6"
-                                >
-                                  Fatigue
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-7"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="68962001"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-7"
-                                >
-                                  Muscle or body aches
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-8"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="25064002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-8"
-                                >
-                                  Headache
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-9"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="36955009"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-9"
-                                >
-                                  New loss of taste
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-10"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="44169009"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-10"
-                                >
-                                  New loss of smell
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-11"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="162397003"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-11"
-                                >
-                                  Sore throat
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-12"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="68235000"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-12"
-                                >
-                                  Nasal congestion
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-13"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="64531003"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-13"
-                                >
-                                  Runny nose
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-14"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="422587007"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-14"
-                                >
-                                  Nausea
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-15"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="422400008"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-15"
-                                >
-                                  Vomiting
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="20-val-16"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="62315008"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="20-val-16"
-                                >
-                                  Diarrhea
-                                </label>
-                              </div>
-                            </div>
-                          </fieldset>
+                              Nasopharyngeal swab
+                            </option>
+                            <option
+                              aria-selected="true"
+                              value="8596682d-6053-4720-8a39-1f5d19ff4ed9"
+                            >
+                              Swab of internal nose
+                            </option>
+                          </select>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div
-                    class="grid-row margin-top-4"
-                  >
                     <div
-                      class="grid-col-auto"
+                      class="grid-row grid-gap"
                     >
-                      <button
-                        class="usa-button"
-                        data-testid="button"
-                        type="button"
+                      <div
+                        class="usa-form-group"
+                        data-testid="formGroup"
                       >
-                        Submit results
-                      </button>
+                        <div
+                          class="grid-row grid-gap"
+                        >
+                          <div
+                            class="grid-col-auto test-result-input-radio-group-column"
+                          >
+                            <div
+                              class="usa-form-group prime-radio__group"
+                            >
+                              <fieldset
+                                class="usa-fieldset prime-radios"
+                                data-testid="COVID-19-test-result-def"
+                                id="COVID-19-test-result-def"
+                              >
+                                <legend
+                                  class="usa-legend"
+                                >
+                                  COVID-19 result
+                                  <abbr
+                                    class="usa-hint usa-hint--required"
+                                    title="required"
+                                  >
+                                     
+                                    *
+                                  </abbr>
+                                </legend>
+                                <div
+                                  class=""
+                                >
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="true"
+                                      id="16-val-POSITIVE"
+                                      name="COVID-19-test-result-def"
+                                      type="radio"
+                                      value="POSITIVE"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-COVID-19-test-result-def-POSITIVE"
+                                      for="16-val-POSITIVE"
+                                    >
+                                      Positive (+)
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="true"
+                                      id="16-val-NEGATIVE"
+                                      name="COVID-19-test-result-def"
+                                      type="radio"
+                                      value="NEGATIVE"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-COVID-19-test-result-def-NEGATIVE"
+                                      for="16-val-NEGATIVE"
+                                    >
+                                      Negative (-)
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="true"
+                                      id="16-val-UNDETERMINED"
+                                      name="COVID-19-test-result-def"
+                                      type="radio"
+                                      value="UNDETERMINED"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-COVID-19-test-result-def-UNDETERMINED"
+                                      for="16-val-UNDETERMINED"
+                                    >
+                                      Inconclusive
+                                    </label>
+                                  </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="grid-row grid-gap"
+                    >
+                      <div
+                        class="grid-col-auto"
+                        id="covid-aoe-form"
+                      >
+                        <div
+                          class="grid-row"
+                        >
+                          <div
+                            class="grid-col-auto"
+                          >
+                            <div
+                              class="usa-form-group"
+                            >
+                              <fieldset
+                                class="usa-fieldset prime-radios"
+                                data-testid="pregnancy-def"
+                                id="pregnancy-def"
+                              >
+                                <legend
+                                  class="usa-legend"
+                                >
+                                  Is the patient pregnant?
+                                </legend>
+                                <div
+                                  class=""
+                                >
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="17-val-77386006"
+                                      name="pregnancy-def"
+                                      type="radio"
+                                      value="77386006"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-pregnancy-def-77386006"
+                                      for="17-val-77386006"
+                                    >
+                                      Yes
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="17-val-60001007"
+                                      name="pregnancy-def"
+                                      type="radio"
+                                      value="60001007"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-pregnancy-def-60001007"
+                                      for="17-val-60001007"
+                                    >
+                                      No
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="17-val-261665006"
+                                      name="pregnancy-def"
+                                      type="radio"
+                                      value="261665006"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-pregnancy-def-261665006"
+                                      for="17-val-261665006"
+                                    >
+                                      Prefer not to answer
+                                    </label>
+                                  </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="grid-row"
+                        >
+                          <div
+                            class="grid-col-auto"
+                          >
+                            <div
+                              class="usa-form-group"
+                            >
+                              <fieldset
+                                class="usa-fieldset prime-radios"
+                                data-testid="has-any-symptoms-def"
+                                id="has-any-symptoms-def"
+                              >
+                                <legend
+                                  class="usa-legend"
+                                >
+                                  Is the patient currently experiencing any symptoms?
+                                </legend>
+                                <div
+                                  class=""
+                                >
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      checked=""
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="18-val-YES"
+                                      name="has-any-symptoms-def"
+                                      type="radio"
+                                      value="YES"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-has-any-symptoms-def-YES"
+                                      for="18-val-YES"
+                                    >
+                                      Yes
+                                    </label>
+                                  </div>
+                                  <div
+                                    class="usa-radio"
+                                  >
+                                    <input
+                                      class="usa-radio__input"
+                                      data-required="false"
+                                      id="18-val-NO"
+                                      name="has-any-symptoms-def"
+                                      type="radio"
+                                      value="NO"
+                                    />
+                                    <label
+                                      class="usa-radio__label"
+                                      data-cy="radio-group-option-has-any-symptoms-def-NO"
+                                      for="18-val-NO"
+                                    >
+                                      No
+                                    </label>
+                                  </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          class="grid-row grid-gap"
+                        >
+                          <div
+                            class="usa-form-group"
+                          >
+                            <label
+                              class="usa-label"
+                              for="19"
+                            >
+                              When did the patient's symptoms start?
+                            </label>
+                            <input
+                              aria-label="Symptom onset date"
+                              aria-required="false"
+                              class="usa-input"
+                              data-testid="symptom-date"
+                              id="19"
+                              max="2023-10-17"
+                              min="2020-01-01"
+                              name="symptom-date-def"
+                              type="date"
+                              value=""
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="grid-row grid-gap"
+                        >
+                          <div
+                            class="usa-form-group"
+                          >
+                            <fieldset
+                              class="usa-fieldset prime-checkboxes"
+                            >
+                              <legend
+                                class="usa-legend"
+                              >
+                                Select any symptoms the patient is experiencing
+                              </legend>
+                              <div
+                                class="checkboxes"
+                              >
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-0"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="426000000"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-0"
+                                  >
+                                    Fever over 100.4F
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-1"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="103001002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-1"
+                                  >
+                                    Feeling feverish
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-2"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="43724002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-2"
+                                  >
+                                    Chills
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-3"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="49727002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-3"
+                                  >
+                                    Cough
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-4"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="267036007"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-4"
+                                  >
+                                    Shortness of breath
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-5"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="230145002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-5"
+                                  >
+                                    Difficulty breathing
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-6"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="84229001"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-6"
+                                  >
+                                    Fatigue
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-7"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="68962001"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-7"
+                                  >
+                                    Muscle or body aches
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-8"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="25064002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-8"
+                                  >
+                                    Headache
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-9"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="36955009"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-9"
+                                  >
+                                    New loss of taste
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-10"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="44169009"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-10"
+                                  >
+                                    New loss of smell
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-11"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="162397003"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-11"
+                                  >
+                                    Sore throat
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-12"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="68235000"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-12"
+                                  >
+                                    Nasal congestion
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-13"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="64531003"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-13"
+                                  >
+                                    Runny nose
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-14"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="422587007"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-14"
+                                  >
+                                    Nausea
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-15"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="422400008"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-15"
+                                  >
+                                    Vomiting
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="20-val-16"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="62315008"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="20-val-16"
+                                  >
+                                    Diarrhea
+                                  </label>
+                                </div>
+                              </div>
+                            </fieldset>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="grid-row margin-top-4"
+                    >
+                      <div
+                        class="grid-col-auto"
+                      >
+                        <button
+                          class="usa-button prime-test-result-submit button"
+                          data-testid="button"
+                          type="button"
+                        >
+                          Submit results
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

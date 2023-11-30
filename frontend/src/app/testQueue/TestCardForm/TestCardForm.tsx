@@ -362,10 +362,7 @@ const TestCardForm = ({
   };
 
   return (
-    <div
-      className={"prime-queue-item"}
-      data-testid={`test-card-${testOrder.patient.internalId}`}
-    >
+    <div className={"prime-queue-item"}>
       <QueueItemSubmitLoader show={submitLoading} name={patientFullName} />
       <IncompleteAOEWarningModal
         submitModalRef={submitModalRef}
