@@ -63,7 +63,7 @@ describe("Testing with multiplex devices", () => {
     cy.injectSRAxe();
     cy.checkAccessibility();
 
-    const queueCard = `div[data-testid="test-card-${patient.internalId}"]`;
+    const queueCard = `li[data-testid="test-card-${patient.internalId}"]`;
     cy.get(queueCard).within(() => {
       cy.get('select[name="testDevice"]').select(multiplexDeviceName);
       cy.get('select[name="testDevice"]')

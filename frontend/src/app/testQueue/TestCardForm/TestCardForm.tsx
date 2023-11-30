@@ -362,7 +362,7 @@ const TestCardForm = ({
   };
 
   return (
-    <div className={"prime-queue-item"}>
+    <>
       <QueueItemSubmitLoader show={submitLoading} name={patientFullName} />
       <IncompleteAOEWarningModal
         submitModalRef={submitModalRef}
@@ -586,7 +586,7 @@ const TestCardForm = ({
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
