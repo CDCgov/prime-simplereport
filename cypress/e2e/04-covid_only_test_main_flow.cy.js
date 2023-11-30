@@ -33,7 +33,6 @@ describe("Conducting a COVID test from the conduct test screen", () => {
     cy.wait("@GetPatientsByFacilityForQueue");
 
     cy.injectSRAxe();
-
     cy.get(".results-dropdown").within(() => {
       cy.get("button.usa-button--unstyled:first-of-type")
         .contains("Begin test")
@@ -90,7 +89,7 @@ describe("Conducting a COVID test from the conduct test screen", () => {
       });
 
     cy.contains("Select any symptoms the patient is experiencing").should(
-      "not.exist",
+      "not.exist"
     );
 
     cy.contains("legend", "Is the patient currently experiencing any symptoms?")
@@ -100,7 +99,7 @@ describe("Conducting a COVID test from the conduct test screen", () => {
       });
 
     cy.contains("Select any symptoms the patient is experiencing").should(
-      "exist",
+      "exist"
     );
 
     cy.contains("label", "When did the patient's symptoms start?")
