@@ -4,7 +4,7 @@ import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
 loginHooks();
 
-describe("Save and start covid test", () => {
+describe("Conducting a COVID test:", () => {
   let patientName, lastName, phoneNumber, covidOnlyDeviceName;
   before("retrieve the patient info", () => {
     cy.task("getPatientName").then((name) => {
@@ -45,6 +45,7 @@ describe("Save and start covid test", () => {
     cy.get('textarea[name="notes"]').type(testNumber().toString(10));
     cy.get(".prime-save-patient-changes-start-test").click();
     cy.contains("Newly added patients go to the bottom of the queue").click();
+    cy.contains("Patient record saved").click();
 
     // completes and verifies AoE form and verifies queue
     cy.contains("legend", "Is the patient pregnant?")
@@ -111,7 +112,7 @@ describe("Save and start covid test", () => {
     cy.get('input[name="gender"][value="male"]+label').click();
     cy.get(".prime-save-patient-changes-start-test").first().click();
     cy.get(
-      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
+      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label',
     ).click();
     cy.checkAccessibility();
 
@@ -123,6 +124,7 @@ describe("Save and start covid test", () => {
     cy.get(".prime-home").contains(patient.firstName);
     cy.url().should("include", "queue");
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
+    cy.contains("Patient record created").click();
     cy.contains("Newly added patients go to the bottom of the queue").click();
 
     cy.contains("legend", "COVID-19 result")

@@ -2,7 +2,7 @@ import { loginHooks, testNumber } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
-describe("Conducting a COVID test from the conduct test screen", () => {
+describe("Conducting a COVID test from:", () => {
   let patientName, lastName, covidOnlyDeviceName;
   const queueCard = "div.prime-queue-item:last-of-type";
   loginHooks();
@@ -89,7 +89,7 @@ describe("Conducting a COVID test from the conduct test screen", () => {
       });
 
     cy.contains("Select any symptoms the patient is experiencing").should(
-      "not.exist"
+      "not.exist",
     );
 
     cy.contains("legend", "Is the patient currently experiencing any symptoms?")
@@ -99,7 +99,7 @@ describe("Conducting a COVID test from the conduct test screen", () => {
       });
 
     cy.contains("Select any symptoms the patient is experiencing").should(
-      "exist"
+      "exist",
     );
 
     cy.contains("label", "When did the patient's symptoms start?")
