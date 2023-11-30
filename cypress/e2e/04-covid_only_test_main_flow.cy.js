@@ -1,4 +1,4 @@
-import { loginHooks } from "../support/e2e";
+import { loginHooks, testNumber } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
@@ -44,6 +44,7 @@ describe("Conducting a COVID test from the conduct test screen", () => {
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
 
     cy.get(".prime-home").contains(patientName);
+    cy.contains("Newly added patients go to the bottom of the queue").click();
 
     cy.get(queueCard).contains("COVID-19 result");
 
@@ -61,7 +62,7 @@ describe("Conducting a COVID test from the conduct test screen", () => {
 
     cy.contains("Submit results").click();
     cy.contains("Please enter a valid test result");
-    cy.contains("Invalid test results");
+    cy.contains("Invalid test results").click();
 
     cy.contains("legend", "COVID-19 result")
       .next("div")
@@ -136,5 +137,41 @@ describe("Conducting a COVID test from the conduct test screen", () => {
     cy.checkAccessibility();
   });
 
-  it("");
+  it("starts a test via the manage patients page action menu and then submits a test", () => {
+    cy.visit("/");
+    cy.get(".usa-nav-container");
+    cy.get('[data-cy="desktop-patient-nav-link"]').click();
+    cy.get('[data-cy="manage-patients-header"]').contains("Patients");
+    cy.get('[data-cy="manage-patients-header"]').contains("Showing");
+    cy.get('[data-cy="manage-patients-search-input"]').type(lastName);
+    cy.wait("@GetPatientsByFacility");
+    cy.get('[data-cy="manage-patients-page"]').contains(patientName);
+
+    cy.contains("tr", patientName).find(".sr-actions-menu").click();
+    cy.contains("Start test").click();
+
+    cy.wait("@GetFacilityQueue", { timeout: 20000 });
+    cy.contains("Newly added patients go to the bottom of the queue").click();
+
+    cy.contains("legend", "COVID-19 result")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "Negative (-)").click();
+      });
+
+    cy.contains("legend", "Is the patient pregnant?")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "No").click();
+      });
+
+    cy.contains("legend", "Is the patient currently experiencing any symptoms?")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "No").click();
+      });
+
+    cy.contains("Submit results").click();
+    cy.wait("@SubmitQueueItem");
+  });
 });

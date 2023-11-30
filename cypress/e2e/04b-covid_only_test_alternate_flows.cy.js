@@ -25,7 +25,7 @@ describe("Save and start covid test", () => {
     });
   });
 
-  it("starts and submits a test through the manage patients page", () => {
+  it("starts and submits a test for an existing patient through the patient form", () => {
     cy.visit("/");
     cy.get('[data-cy="desktop-patient-nav-link"]').click();
     cy.get('[data-cy="manage-patients-header"]').contains("Patients");
@@ -41,9 +41,10 @@ describe("Save and start covid test", () => {
     cy.injectSRAxe();
     cy.checkAccessibility();
 
-    cy.get('input[name="middleName"]').clear();
-    cy.get('input[name="middleName"]').type(testNumber().toString(10));
+    cy.get('textarea[name="notes"]').clear();
+    cy.get('textarea[name="notes"]').type(testNumber().toString(10));
     cy.get(".prime-save-patient-changes-start-test").click();
+    cy.contains("Newly added patients go to the bottom of the queue").click();
 
     // completes and verifies AoE form and verifies queue
     cy.contains("legend", "Is the patient pregnant?")
@@ -81,7 +82,7 @@ describe("Save and start covid test", () => {
     cy.wait("@SubmitQueueItem");
   });
 
-  it("starts and submits a test through the save and start option from the patient form", () => {
+  it("starts and submits a test for a new patient from the patient form", () => {
     const patient = generatePatient();
     patient.email = "myemail@test.com";
 
@@ -122,6 +123,7 @@ describe("Save and start covid test", () => {
     cy.get(".prime-home").contains(patient.firstName);
     cy.url().should("include", "queue");
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
+    cy.contains("Newly added patients go to the bottom of the queue").click();
 
     cy.contains("legend", "COVID-19 result")
       .next("div")
@@ -129,35 +131,19 @@ describe("Save and start covid test", () => {
         cy.contains("label", "Negative (-)").click();
       });
 
+    cy.contains("legend", "Is the patient pregnant?")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "No").click();
+      });
+
+    cy.contains("legend", "Is the patient currently experiencing any symptoms?")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "No").click();
+      });
+
     cy.contains("Submit results").click();
     cy.wait("@SubmitQueueItem");
   });
-  //
-  // it("navigates to test queue and edits patient", () => {
-  //   cy.visit("/");
-  //   cy.get(".usa-nav-container");
-  //   cy.get("#desktop-conduct-test-nav-link").click();
-  //
-  //   cy.wait("@GetFacilityQueue", { timeout: 20000 });
-  //
-  //   cy.get(".card-name").contains(patientName).click();
-  //   cy.get('input[name="middleName"]').clear();
-  //   cy.get('input[name="middleName"]').type(testNumber().toString(10));
-  //
-  //   // clicks save changes and verifies test queue redirect
-  //   cy.get(".prime-save-patient-changes").first().click();
-  //   cy.wait("@UpdatePatient");
-  //   cy.wait("@GetFacilityQueue", { timeout: 20000 });
-  //
-  //   cy.get(".usa-nav-container");
-  //   cy.get("#desktop-patient-nav-link").click();
-  //
-  //   cy.wait("@GetPatientsByFacility");
-  //
-  //   cy.get(".sr-patient-list").contains("Loading...").should("not.exist");
-  //   cy.get("#search-field-small").type(lastName);
-  //   cy.contains("tr", patientName).find(".sr-actions-menu").click();
-  //   cy.contains("Start test").click();
-  //   cy.wait("@GetFacilityQueue", { timeout: 20000 });
-  // });
 });
