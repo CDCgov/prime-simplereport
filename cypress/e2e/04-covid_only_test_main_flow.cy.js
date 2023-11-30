@@ -1,4 +1,4 @@
-import { loginHooks, testNumber } from "../support/e2e";
+import { loginHooks } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
