@@ -4,7 +4,7 @@ import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
 describe("Conducting a COVID test from:", () => {
   let patientName, lastName, covidOnlyDeviceName;
-  const queueCard = "div.prime-queue-item:last-of-type";
+  const queueCard = "li.prime-queue-item:last-of-type";
   loginHooks();
 
   before("retrieve the patient name and covid device name", () => {
@@ -147,7 +147,7 @@ describe("Conducting a COVID test from:", () => {
     cy.get('[data-cy="manage-patients-page"]').contains(patientName);
 
     cy.contains("tr", patientName).find(".sr-actions-menu").click();
-    cy.contains("Start test").click();
+    cy.contains("Start test").click({ force: true });
 
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
     cy.contains("Newly added patients go to the bottom of the queue").click();
