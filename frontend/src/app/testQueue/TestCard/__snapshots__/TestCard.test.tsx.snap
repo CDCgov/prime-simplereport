@@ -616,7 +616,7 @@ Object {
                   class="grid-col-auto"
                 >
                   <button
-                    class="usa-button prime-test-result-submit button"
+                    class="usa-button"
                     data-testid="button"
                     type="button"
                   >

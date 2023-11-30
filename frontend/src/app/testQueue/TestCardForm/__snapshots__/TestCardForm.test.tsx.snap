@@ -476,7 +476,7 @@ Object {
             class="grid-col-auto"
           >
             <button
-              class="usa-button prime-test-result-submit button"
+              class="usa-button"
               data-testid="button"
               type="button"
             >
@@ -1058,7 +1058,7 @@ Object {
           class="grid-col-auto"
         >
           <button
-            class="usa-button prime-test-result-submit button"
+            class="usa-button"
             data-testid="button"
             type="button"
           >
@@ -1529,7 +1529,7 @@ exports[`TestCardForm initial state matches snapshot for flu device 1`] = `
         class="grid-col-auto"
       >
         <button
-          class="usa-button prime-test-result-submit button"
+          class="usa-button"
           data-testid="button"
           type="button"
         >
@@ -1947,7 +1947,7 @@ Object {
             class="grid-col-auto"
           >
             <button
-              class="usa-button prime-test-result-submit button"
+              class="usa-button"
               data-testid="button"
               type="button"
             >
@@ -2457,7 +2457,7 @@ Object {
           class="grid-col-auto"
         >
           <button
-            class="usa-button prime-test-result-submit button"
+            class="usa-button"
             data-testid="button"
             type="button"
           >
@@ -3173,7 +3173,7 @@ Object {
             class="grid-col-auto"
           >
             <button
-              class="usa-button prime-test-result-submit button"
+              class="usa-button"
               data-testid="button"
               type="button"
             >
@@ -3910,7 +3910,7 @@ Object {
           class="grid-col-auto"
         >
           <button
-            class="usa-button prime-test-result-submit button"
+            class="usa-button"
             data-testid="button"
             type="button"
           >

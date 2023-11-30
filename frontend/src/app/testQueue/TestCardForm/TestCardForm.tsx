@@ -576,11 +576,7 @@ const TestCardForm = ({
         )}
         <div className="grid-row margin-top-4">
           <div className="grid-col-auto">
-            <Button
-              className={"prime-test-result-submit button"}
-              onClick={() => submitForm()}
-              type={"button"}
-            >
+            <Button onClick={() => submitForm()} type={"button"}>
               Submit results
             </Button>
           </div>

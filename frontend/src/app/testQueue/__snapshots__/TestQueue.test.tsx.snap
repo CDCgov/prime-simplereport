@@ -997,7 +997,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                       class="grid-col-auto"
                     >
                       <button
-                        class="usa-button prime-test-result-submit button"
+                        class="usa-button"
                         data-testid="button"
                         type="button"
                       >
@@ -1947,7 +1947,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                       class="grid-col-auto"
                     >
                       <button
-                        class="usa-button prime-test-result-submit button"
+                        class="usa-button"
                         data-testid="button"
                         type="button"
                       >
