@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessE
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedSpecimenTypeException;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
 import graphql.validation.rules.OnValidationErrorStrategy;
@@ -114,6 +115,13 @@ public class GraphQlConfig {
       }
 
       if (exception instanceof PrivilegeUpdateFacilityAccessException) {
+        String errorMessage =
+            "header: Error updating user privileges and / or group access; body: "
+                + exception.getMessage();
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
+      }
+
+      if (exception instanceof UnidentifiedSpecimenTypeException) {
         String errorMessage =
             "header: Error updating user privileges and / or group access; body: "
                 + exception.getMessage();

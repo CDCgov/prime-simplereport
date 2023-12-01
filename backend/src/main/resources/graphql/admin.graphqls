@@ -14,7 +14,7 @@ extend type Mutation {
   createDeviceType(input: CreateDeviceType!): DeviceType
   updateDeviceType(input: UpdateDeviceType!): DeviceType
   createSpecimenType(input: CreateSpecimenType!): SpecimenType
-  updateSpecimenType(input: CreateSpecimenType!): SpecimenType
+  updateSpecimenType(input: UpdateSpecimenType!): SpecimenType
   addUser( # used in AddOrganizationAdminFormContainer
     user: UserInput!
   ): User
