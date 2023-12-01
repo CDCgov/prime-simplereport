@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 @Builder
 public class UpdateSpecimenType {
-  public String name;
-  public String typeCode;
-  public String collectionLocationName;
-  public String collectionLocationCode;
+  private final String name;
+  private final String typeCode;
+  private final String collectionLocationName;
+  private final String collectionLocationCode;
 
   // can potentially add isDeleted here if needed in the future
 }

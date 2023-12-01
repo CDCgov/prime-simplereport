@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SpecimenTypeService {
   private SpecimenTypeRepository _specimenTypeRepo;
 
-  private final String NUMERIC_REGEX = "^[0-9]*$";
+  private static final String NUMERIC_REGEX = "^[0-9]*$";
 
   public SpecimenTypeService(SpecimenTypeRepository specimenTypeRepo) {
     _specimenTypeRepo = specimenTypeRepo;

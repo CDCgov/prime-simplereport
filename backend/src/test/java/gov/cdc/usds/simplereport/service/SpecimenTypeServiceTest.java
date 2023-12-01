@@ -104,11 +104,11 @@ class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService> {
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void updateNewSpecimenType_throws_UnidentifiedSpecimenTypeError_withBadTypeCode() {
+    UpdateSpecimenType updateSpecimen = UpdateSpecimenType.builder().typeCode("012345678").build();
     assertThrows(
         UnidentifiedSpecimenTypeException.class,
         () -> {
-          _service.updateSpecimenType(
-              UpdateSpecimenType.builder().build().builder().typeCode("012345678").build());
+          _service.updateSpecimenType(updateSpecimen);
         });
   }
 
@@ -124,16 +124,15 @@ class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService> {
             .collectionLocationCode("123456789")
             .build());
 
+    UpdateSpecimenType updateSpecimen =
+        UpdateSpecimenType.builder()
+            .typeCode("012345678")
+            .collectionLocationCode("some non numeric string")
+            .build();
     assertThrows(
         IllegalGraphqlArgumentException.class,
         () -> {
-          _service.updateSpecimenType(
-              UpdateSpecimenType.builder()
-                  .build()
-                  .builder()
-                  .typeCode("012345678")
-                  .collectionLocationCode("some non numeric string")
-                  .build());
+          _service.updateSpecimenType(updateSpecimen);
         });
   }
 }
