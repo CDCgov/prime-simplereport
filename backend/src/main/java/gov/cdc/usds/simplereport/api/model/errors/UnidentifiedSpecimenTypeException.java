@@ -7,7 +7,7 @@ import graphql.language.SourceLocation;
 import java.util.Collections;
 import java.util.List;
 
-/** Exception to throw when a facility ID can't be found in an organization query */
+/** Exception to throw when a specimen type code can't be found */
 public class UnidentifiedSpecimenTypeException extends RuntimeException implements GraphQLError {
 
   private static final long serialVersionUID = 1L;

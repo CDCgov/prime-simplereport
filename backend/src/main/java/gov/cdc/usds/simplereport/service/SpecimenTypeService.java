@@ -45,12 +45,6 @@ public class SpecimenTypeService {
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public SpecimenType updateSpecimenType(UpdateSpecimenType input) {
-    String typeCodeToMatch = input.getTypeCode();
-    SpecimenType specimenToUpdate =
-        _specimenTypeRepo
-            .findByTypeCode(typeCodeToMatch)
-            .orElseThrow(() -> new UnidentifiedSpecimenTypeException(typeCodeToMatch));
-
     boolean collectionCodeValid =
         input.getCollectionLocationCode() == null
             || input.getCollectionLocationCode().matches(NUMERIC_REGEX);
@@ -58,6 +52,12 @@ public class SpecimenTypeService {
       throw new IllegalGraphqlArgumentException(
           "If specified, collection location code needs to be a numeric string");
     }
+
+    String typeCodeToMatch = input.getTypeCode();
+    SpecimenType specimenToUpdate =
+        _specimenTypeRepo
+            .findByTypeCode(typeCodeToMatch)
+            .orElseThrow(() -> new UnidentifiedSpecimenTypeException(typeCodeToMatch));
 
     specimenToUpdate.setName(input.getName());
     specimenToUpdate.setCollectionLocationCode(input.getCollectionLocationCode());
