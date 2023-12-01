@@ -117,6 +117,7 @@ export const DetachedTestResultDetailsModal = ({
         {results.map((r) => {
           return (
             <DetailsRow
+              key={r.disease.name}
               label={`${r.disease.name} result`}
               value={r.testResult as string}
               removed={removed}
