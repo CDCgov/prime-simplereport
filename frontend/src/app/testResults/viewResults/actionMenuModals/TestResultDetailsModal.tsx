@@ -11,11 +11,9 @@ import {
   PregnancyCode,
   pregnancyMap,
 } from "../../../../patientApp/timeOfTest/constants";
-import { getResultByDiseaseOrNull } from "../../../utils/testResults";
+import { getSortedResults } from "../../../utils/testResults";
 import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
-import { MULTIPLEX_DISEASES } from "../../constants";
-
 import "./TestResultPrintModal.scss";
 
 type Result = {
@@ -110,20 +108,26 @@ export const DetachedTestResultDetailsModal = ({
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
-  const displayResult: { [diseaseResult: string]: TestResult | null } = {
-    covidResult: results
-      ? getResultByDiseaseOrNull(results, MULTIPLEX_DISEASES.COVID_19)
-      : null,
-    fluAResult: results
-      ? getResultByDiseaseOrNull(results, MULTIPLEX_DISEASES.FLU_A)
-      : null,
-    fluBResult: results
-      ? getResultByDiseaseOrNull(results, MULTIPLEX_DISEASES.FLU_B)
-      : null,
-    rsvResult: results
-      ? getResultByDiseaseOrNull(results, MULTIPLEX_DISEASES.RSV)
-      : null,
+
+  const resultDetailsRows = (results: MultiplexResults) => {
+    getSortedResults(results);
+
+    return (
+      <>
+        {results.map((r) => {
+          return (
+            <DetailsRow
+              label={`${r.disease.name} result`}
+              value={r.testResult as string}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          );
+        })}
+      </>
+    );
   };
+
   return (
     <>
       <div className="display-flex flex-justify">
@@ -186,38 +190,7 @@ export const DetachedTestResultDetailsModal = ({
       <h2 className="font-sans-md margin-top-3">Test information</h2>
       <table className={containerClasses}>
         <tbody>
-          {displayResult["covidResult"] && (
-            <DetailsRow
-              label="COVID-19 result"
-              value={displayResult["covidResult"]}
-              removed={removed}
-              aria-describedby="result-detail-title"
-            />
-          )}
-          {displayResult["fluAResult"] && (
-            <DetailsRow
-              label="Flu A result"
-              value={displayResult["fluAResult"]}
-              removed={removed}
-              aria-describedby="result-detail-title"
-            />
-          )}
-          {displayResult["fluBResult"] && (
-            <DetailsRow
-              label="Flu B result"
-              value={displayResult["fluBResult"]}
-              removed={removed}
-              aria-describedby="result-detail-title"
-            />
-          )}
-          {displayResult["rsvResult"] && (
-            <DetailsRow
-              label="RSV result"
-              value={displayResult["rsvResult"]}
-              removed={removed}
-              aria-describedby="result-detail-title"
-            />
-          )}
+          {results && resultDetailsRows(results)}
           <DetailsRow
             label="Test date"
             value={dateTested && formatDateWithTimeOption(dateTested, true)}

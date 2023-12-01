@@ -26,14 +26,6 @@ export function getResultByDiseaseName(
   return getTestResult(result) || "UNKNOWN";
 }
 
-export function getResultByDiseaseOrNull(
-  results: MultiplexResults,
-  diseaseName: MultiplexDisease
-): TestResult | null {
-  const result = getResultObjByDiseaseName(results, diseaseName);
-  return result?.testResult || null;
-}
-
 export function getSortedResults(results: MultiplexResults): MultiplexResults {
   return Object.values(results).sort(
     (a: MultiplexResult, b: MultiplexResult) => {
@@ -42,7 +34,6 @@ export function getSortedResults(results: MultiplexResults): MultiplexResults {
   );
 }
 
-// todo look at usages here
 export function hasMultiplexResults(results: MultiplexResults): boolean {
   return results?.length > 1
     ? results.some(

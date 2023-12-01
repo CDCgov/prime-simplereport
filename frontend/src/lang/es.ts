@@ -39,6 +39,7 @@ export const es: LanguageConfig = {
         COVID19: "COVID-19",
         FLUA: "Flu A",
         FLUB: "Flu B",
+        RSV: "RSV",
       },
       role: {
         STAFF: "Personal",
