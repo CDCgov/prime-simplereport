@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.UpdateSpecimenType;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedSpecimenTypeException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class SpecimenTypeService {
   private SpecimenTypeRepository _specimenTypeRepo;
+
+  private final String NUMERIC_REGEX = "^[0-9]*$";
 
   public SpecimenTypeService(SpecimenTypeRepository specimenTypeRepo) {
     _specimenTypeRepo = specimenTypeRepo;
@@ -48,10 +51,17 @@ public class SpecimenTypeService {
             .findByTypeCode(typeCodeToMatch)
             .orElseThrow(() -> new UnidentifiedSpecimenTypeException(typeCodeToMatch));
 
+    boolean collectionCodeValid =
+        input.getCollectionLocationCode() == null
+            || input.getCollectionLocationCode().matches(NUMERIC_REGEX);
+    if (!collectionCodeValid) {
+      throw new IllegalGraphqlArgumentException(
+          "If specified, collection location code needs to be a numeric string");
+    }
+
     specimenToUpdate.setName(input.getName());
     specimenToUpdate.setCollectionLocationCode(input.getCollectionLocationCode());
     specimenToUpdate.setCollectionLocationName(input.getCollectionLocationName());
-    specimenToUpdate.setIsDeleted(input.isDeleted());
 
     return _specimenTypeRepo.save(specimenToUpdate);
   }

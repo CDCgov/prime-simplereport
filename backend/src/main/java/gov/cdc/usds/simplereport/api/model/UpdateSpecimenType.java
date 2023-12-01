@@ -10,5 +10,6 @@ public class UpdateSpecimenType {
   public String typeCode;
   public String collectionLocationName;
   public String collectionLocationCode;
-  public boolean isDeleted;
+
+  // can potentially add isDeleted here if needed in the future
 }

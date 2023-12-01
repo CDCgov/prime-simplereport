@@ -122,7 +122,6 @@ input UpdateSpecimenType {
   typeCode: String!
   collectionLocationName: String
   collectionLocationCode: String
-  isDeleted: Boolean
 }
 
 type SpecimenType {
