@@ -123,8 +123,7 @@ public class GraphQlConfig {
 
       if (exception instanceof UnidentifiedSpecimenTypeException) {
         String errorMessage =
-            "header: Error updating user privileges and / or group access; body: "
-                + exception.getMessage();
+            "header: Error updating specimen type details; body: " + exception.getMessage();
         return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
