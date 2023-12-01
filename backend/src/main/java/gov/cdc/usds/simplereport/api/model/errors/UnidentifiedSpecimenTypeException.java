@@ -13,10 +13,7 @@ public class UnidentifiedSpecimenTypeException extends RuntimeException implemen
   private static final long serialVersionUID = 1L;
 
   public UnidentifiedSpecimenTypeException(String typeCode) {
-    super(
-        "Specimen with type code "
-            + typeCode
-            + " wasn't found. to make sure that type code exists");
+    super("Specimen with type code " + typeCode + " wasn't found. Make sure that type code exists");
   }
 
   @Override // should-be-defaulted unused interface method
