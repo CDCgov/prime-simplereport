@@ -16,7 +16,7 @@ public class UnidentifiedSpecimenTypeException extends RuntimeException implemen
     super(
         "Specimen with type code "
             + typeCode
-            + " weren't found. to make sure that type code exists");
+            + " wasn't found. to make sure that type code exists");
   }
 
   @Override // should-be-defaulted unused interface method
