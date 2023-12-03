@@ -4101,12 +4101,12 @@
     prop-types "^15.7.2"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-mdx-gfm@^7.5.2":
-  version "7.5.2"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-mdx-gfm/-/addon-mdx-gfm-7.5.2.tgz#147c79a927131cee2f03d621ace5dac8fd18cc65"
-  integrity sha512-Sq8+7rdpRsYKlDwvO68t3H+tW3u/vWEGPvzQ9ZBd6rVuKoNj0+hqgsrDfux/DZMEJSclKM21a49hJ+zS9MLT+Q==
+"@storybook/addon-mdx-gfm@^7.6.3":
+  version "7.6.3"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-mdx-gfm/-/addon-mdx-gfm-7.6.3.tgz#218e171677036cd0a1e1abc1352c1ef29026d7fd"
+  integrity sha512-8BhcyTZWh5CoUSaZ6JBifuhxsumrc2QV4I1+7nMbGMGWYVLCB9S0+lcEPmu7VlhudQrmisc+ygZo9Ay74aOzAw==
   dependencies:
-    "@storybook/node-logger" "7.5.2"
+    "@storybook/node-logger" "7.6.3"
     remark-gfm "^3.0.1"
     ts-dedent "^2.0.0"
 
@@ -4604,10 +4604,15 @@
   resolved "https://registry.yarnpkg.com/@storybook/mdx2-csf/-/mdx2-csf-1.1.0.tgz#97f6df04d0bf616991cc1005a073ac004a7281e5"
   integrity sha512-TXJJd5RAKakWx4BtpwvSNdgTDkKM6RkXU8GK34S/LhidQ5Pjz3wcnqb0TxEkfhK/ztbP8nKHqXFwLfa2CYkvQw==
 
-"@storybook/node-logger@7.5.2", "@storybook/node-logger@^7.5.2":
+"@storybook/node-logger@7.5.2":
   version "7.5.2"
   resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.5.2.tgz#4ed36afac7b784eebaf11f4ebf657744b42a7458"
   integrity sha512-VIBuwPJOylu8vJofk1VfmqxlhXgbBgV0pCTo/UzdQAbc3w5y+qNRemf8goWxYEY+L9p6oUXqm/i9+bNGyX7/Mw==
+
+"@storybook/node-logger@7.6.3", "@storybook/node-logger@^7.5.2":
+  version "7.6.3"
+  resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.6.3.tgz#f3fd7cd029fa21621129210d5f282f4d4c745174"
+  integrity sha512-7yL0CMHuh1DhpUAoKCU0a53DvxBpkUom9SX5RaC1G2A9BK/B3XcHtDPAC0uyUwNCKLJMZo9QtmJspvxWjR0LtA==
 
 "@storybook/postinstall@7.5.2":
   version "7.5.2"
