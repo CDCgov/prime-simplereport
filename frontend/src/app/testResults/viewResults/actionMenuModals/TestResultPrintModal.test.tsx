@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { cloneDeep } from "lodash";
 import MockDate from "mockdate";
 import ReactDOM from "react-dom";
-import * as flaggedMock from "flagged";
 
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../constants";
 
@@ -106,9 +105,6 @@ describe("TestResultPrintModal with multiplex results in SimpleReport App", () =
   let component: any;
 
   beforeEach(() => {
-    // mock multiplex as true
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
-
     const multiplexTestResult = cloneDeep(testResult);
     multiplexTestResult.results = [
       {
@@ -155,9 +151,6 @@ describe("TestResultPrintModal with multiplex results in Pxp App", () => {
   let component: any;
 
   beforeEach(() => {
-    //mock multiplex as true
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
-
     const multiplexPxpTestResult = cloneDeep(testResult);
     multiplexPxpTestResult.results = [
       {
@@ -196,6 +189,54 @@ describe("TestResultPrintModal with multiplex results in Pxp App", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("fake npi for pxp")).toBeInTheDocument();
     expect(screen.getAllByText("Negative").length).toBe(3);
+  });
+
+  it("matches screenshot", () => {
+    expect(component).toMatchSnapshot();
+  });
+});
+
+//todo
+describe("TestResultPrintModal with RSV and flu results", () => {
+  let component: any;
+
+  beforeEach(() => {
+    const multiplexTestResult = cloneDeep(testResult);
+    multiplexTestResult.results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.RSV },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+    ];
+
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+
+    MockDate.set("2021/01/01");
+    component = render(
+      <DetachedTestResultPrintModal
+        data={{ testResult: multiplexTestResult }}
+        testResultId="id"
+        closeModal={() => {}}
+      />
+    );
+  });
+
+  // this should be changed when we correct our copy to the right header text (#7000)
+  it("should render flu information", () => {
+    expect(
+      screen.getByText("Test results: COVID-19 and flu")
+    ).toBeInTheDocument();
+    expect(screen.getByText("For flu A and B:")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {
