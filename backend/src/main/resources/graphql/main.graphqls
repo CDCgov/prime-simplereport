@@ -117,6 +117,13 @@ input CreateSpecimenType {
   collectionLocationCode: String
 }
 
+input UpdateSpecimenType {
+  name: String!
+  typeCode: String!
+  collectionLocationName: String
+  collectionLocationCode: String
+}
+
 type SpecimenType {
   internalId: ID!
   name: String!

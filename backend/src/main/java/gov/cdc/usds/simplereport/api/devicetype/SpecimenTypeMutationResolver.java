@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.devicetype;
 
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
+import gov.cdc.usds.simplereport.api.model.UpdateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.service.SpecimenTypeService;
@@ -19,5 +20,11 @@ public class SpecimenTypeMutationResolver {
   public SpecimenType createSpecimenType(@Argument CreateSpecimenType input)
       throws IllegalGraphqlArgumentException {
     return specimenTypeService.createSpecimenType(input);
+  }
+
+  @MutationMapping
+  public SpecimenType updateSpecimenType(@Argument UpdateSpecimenType input)
+      throws IllegalGraphqlArgumentException {
+    return specimenTypeService.updateSpecimenType(input);
   }
 }

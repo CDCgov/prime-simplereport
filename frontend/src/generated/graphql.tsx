@@ -231,6 +231,7 @@ export type Mutation = {
   updateOrganization?: Maybe<Scalars["String"]["output"]>;
   updatePatient?: Maybe<Patient>;
   updateRegistrationLink?: Maybe<Scalars["String"]["output"]>;
+  updateSpecimenType?: Maybe<SpecimenType>;
   updateTimeOfTestQuestions?: Maybe<Scalars["String"]["output"]>;
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
@@ -504,6 +505,10 @@ export type MutationUpdatePatientArgs = {
 export type MutationUpdateRegistrationLinkArgs = {
   link: Scalars["String"]["input"];
   newLink: Scalars["String"]["input"];
+};
+
+export type MutationUpdateSpecimenTypeArgs = {
+  input: UpdateSpecimenType;
 };
 
 export type MutationUpdateTimeOfTestQuestionsArgs = {
@@ -1032,6 +1037,13 @@ export type UpdateFacilityInput = {
   facilityName: Scalars["String"]["input"];
   orderingProvider?: InputMaybe<ProviderInput>;
   phone?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UpdateSpecimenType = {
+  collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
+  collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
+  name: Scalars["String"]["input"];
+  typeCode: Scalars["String"]["input"];
 };
 
 export type UploadResponse = {
