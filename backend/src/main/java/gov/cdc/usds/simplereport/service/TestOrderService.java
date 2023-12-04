@@ -48,8 +48,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -75,15 +73,6 @@ public class TestOrderService {
   private final TestEventRepository _testEventRepo;
   private final PatientLinkService _patientLinkService;
   private final ResultService resultService;
-
-  @Qualifier("csvQueueReportingService")
-  private final TestEventReportingService _testEventReportingService;
-
-  @Qualifier("fhirQueueReportingService")
-  private final TestEventReportingService _fhirQueueReportingService;
-
-  @Value("${simple-report.fhir-reporting-enabled:false}")
-  private boolean fhirReportingEnabled;
 
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
