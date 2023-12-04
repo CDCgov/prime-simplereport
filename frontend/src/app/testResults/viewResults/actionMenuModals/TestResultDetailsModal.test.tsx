@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 import ReactDOM from "react-dom";
-import * as flaggedMock from "flagged";
 
 import { DetachedTestResultDetailsModal } from "./TestResultDetailsModal";
 
@@ -53,11 +52,16 @@ multiplexTestResult["results"] = [
     testResult: "POSITIVE" as TestResult,
     __typename: "MultiplexResult",
   },
+  {
+    disease: { name: "RSV" as MultiplexDisease },
+    testResult: "UNDETERMINED" as TestResult,
+    __typename: "MultiplexResult",
+  },
 ];
 
 window.print = jest.fn();
 
-describe("non-multiplex TestResultDetailsModal", () => {
+describe("single disease TestResultDetailsModal", () => {
   let component: any;
 
   beforeEach(() => {
@@ -87,11 +91,10 @@ describe("non-multiplex TestResultDetailsModal", () => {
   });
 });
 
-describe("Multiplex TestResultDetailsModal", () => {
+describe("multiple diseases TestResultDetailsModal", () => {
   let component: any;
 
   beforeEach(() => {
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
     ReactDOM.createPortal = jest.fn((element, _node) => {
       return element;
     }) as any;
@@ -108,9 +111,11 @@ describe("Multiplex TestResultDetailsModal", () => {
     expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
   });
 
-  it("should have flu A or B result rows", () => {
+  it("should have rows for all diseases in result", () => {
+    expect(screen.getByText("COVID-19 result")).toBeInTheDocument();
     expect(screen.getByText("Flu A result")).toBeInTheDocument();
     expect(screen.getByText("Flu B result")).toBeInTheDocument();
+    expect(screen.getByText("RSV result")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {
