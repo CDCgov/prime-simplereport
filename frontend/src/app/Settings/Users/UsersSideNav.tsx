@@ -44,7 +44,6 @@ const UsersSideNav: React.FC<Props> = ({
   };
 
   const filteredUsers = filter(queryString, users);
-  console.log(queryString);
 
   return (
     <div className="display-block users-sidenav">
