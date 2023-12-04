@@ -8,7 +8,7 @@ import Input from "../../commonComponents/Input";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import {
   toggleDeliveryPreferenceSms,
-  getSelectedDeliveryPreferencesSms
+  getSelectedDeliveryPreferencesSms,
 } from "../../utils/deliveryPreferences";
 import { useTranslatedConstants } from "../../constants";
 import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
@@ -27,14 +27,14 @@ interface Props {
 }
 
 const ManagePhoneNumbers: React.FC<Props> = ({
-                                               phoneNumbers,
-                                               testResultDelivery,
-                                               updatePhoneNumbers,
-                                               updateTestResultDelivery,
-                                               phoneNumberValidator,
-                                               unknownPhoneNumber,
-                                               setUnknownPhoneNumber
-                                             }) => {
+  phoneNumbers,
+  testResultDelivery,
+  updatePhoneNumbers,
+  updateTestResultDelivery,
+  phoneNumberValidator,
+  unknownPhoneNumber,
+  setUnknownPhoneNumber,
+}) => {
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
   const { t } = useTranslation();
@@ -48,11 +48,11 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       phoneNumbers.length > 0
         ? phoneNumbers
         : [
-          {
-            type: "",
-            number: ""
-          }
-        ],
+            {
+              type: "",
+              number: "",
+            },
+          ],
     [phoneNumbers]
   );
 
@@ -68,14 +68,14 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         }
         const newFieldValues = secondaryField
           ? {
-            ...error,
-            [field]: "",
-            [secondaryField]: ""
-          }
+              ...error,
+              [field]: "",
+              [secondaryField]: "",
+            }
           : {
-            ...error,
-            [field]: ""
-          };
+              ...error,
+              [field]: "",
+            };
         return newFieldValues;
       });
       setErrors(newErrors);
@@ -101,7 +101,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
           const newErrors = [...existingErrors];
           newErrors[idx] = {
             ...newErrors[idx],
-            [field]: getValidationError(e)
+            [field]: getValidationError(e),
           };
 
           return newErrors;
@@ -113,7 +113,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       phoneNumbersOrDefault,
       clearError,
       phoneNumberUpdateSchema,
-      getValidationError
+      getValidationError,
     ]
   );
 
@@ -153,7 +153,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
               const newErrors = [...existingErrors];
               newErrors[idx] = {
                 ...newErrors[idx],
-                [field]: getValidationError(e)
+                [field]: getValidationError(e),
               };
 
               return newErrors;
@@ -167,7 +167,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     errors,
     phoneNumberUpdateSchema,
     phoneNumbersOrDefault,
-    getValidationError
+    getValidationError,
   ]);
 
   const onPhoneTypeChange = (index: number, newPhoneType: string) => {
@@ -175,7 +175,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
     newPhoneNumbers[index] = {
       ...newPhoneNumbers[index],
-      type: newPhoneType
+      type: newPhoneType,
     };
 
     updatePhoneNumbers(newPhoneNumbers);
@@ -186,7 +186,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
     newPhoneNumbers[index] = {
       ...newPhoneNumbers[index],
-      number: newPhoneNumber
+      number: newPhoneNumber,
     };
 
     updatePhoneNumbers(newPhoneNumbers);
@@ -209,7 +209,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
     newPhoneNumbers.push({
       type: "",
-      number: ""
+      number: "",
     });
     updatePhoneNumbers(newPhoneNumbers);
     setTimeout(() => {
