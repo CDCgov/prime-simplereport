@@ -165,7 +165,6 @@ datahub:
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
   csv-upload-api-client: "simple_report.csvuploader"
   csv-upload-api-fhir-client: "simple_report.fullelr"
-  fhir-enabled: true
 features:
   hivEnabled: true
   singleEntryRsvEnabled: true
