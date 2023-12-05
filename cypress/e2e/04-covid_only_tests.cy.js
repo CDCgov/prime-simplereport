@@ -4,7 +4,7 @@ import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
 describe("Conducting a COVID test from:", () => {
   let patientName, lastName, covidOnlyDeviceName;
-  const queueCard = "li.prime-queue-item:last-of-type";
+  const queueCard = "[data-cy=prime-queue-item]:last-of-type";
   loginHooks();
 
   before("retrieve the patient name and covid device name", () => {
@@ -184,6 +184,7 @@ describe("Conducting a COVID test from:", () => {
     cy.get("#add-patient").click();
     cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");
+    cy.injectSRAxe();
     cy.checkAccessibility(); // New Patient page
 
     cy.get('input[name="firstName"]').type(patient.firstName);
