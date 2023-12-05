@@ -4,7 +4,6 @@ import {
   waitFor,
   screen,
   waitForElementToBeRemoved,
-  act,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
@@ -386,9 +385,8 @@ describe("ManageUsers", () => {
       const searchBox = screen.getByRole("searchbox", {
         name: /search by name/i,
       });
-      await act(async () => {
-        await user.type(searchBox, "john");
-      });
+
+      await user.type(searchBox, "john");
 
       //then
       await waitFor(() => {
@@ -415,9 +413,7 @@ describe("ManageUsers", () => {
       const searchBox = screen.getByRole("searchbox", {
         name: /search by name/i,
       });
-      await act(async () => {
-        await user.type(searchBox, "john wick");
-      });
+      await user.type(searchBox, "john wick");
 
       //then
       await waitFor(() => {
