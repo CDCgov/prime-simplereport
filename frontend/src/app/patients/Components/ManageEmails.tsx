@@ -153,6 +153,7 @@ const ManageEmails: React.FC<Props> = ({
             {idx > 0 ? (
               <div className="flex-align-self-end">
                 <button
+                  type={"button"}
                   className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   data-testid={`delete-email-${idx}`}
                   onClick={() => onEmailRemove(idx)}
