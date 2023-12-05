@@ -1,4 +1,4 @@
-import { generatePatient, loginHooks, testNumber } from "../support/e2e";
+import { generatePatient, loginHooks } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
@@ -184,7 +184,6 @@ describe("Conducting a COVID test from:", () => {
     cy.get("#add-patient").click();
     cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");
-    cy.injectSRAxe();
     cy.checkAccessibility(); // New Patient page
 
     cy.get('input[name="firstName"]').type(patient.firstName);

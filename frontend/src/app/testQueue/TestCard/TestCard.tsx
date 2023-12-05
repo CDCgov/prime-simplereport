@@ -85,10 +85,9 @@ export const TestCard = ({
         removeTestFromQueue={removeTestFromQueue}
       />
       <Card
-        className={
-          "list-style-none margin-bottom-1em test-card-container prime-queue-item"
-        }
+        className={"list-style-none margin-bottom-1em test-card-container"}
         data-testid={`test-card-${testOrder.patient.internalId}`}
+        data-cy={"prime-queue-item"}
       >
         <CardHeader
           className={`padding-2 ${
