@@ -426,10 +426,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void uploadService_FhirEnabled_UploadSentTwice() {
+  void uploadService_UploadSentTwice() {
     // given
-    ReflectionTestUtils.setField(sut, "fhirEnabled", true);
-
     UploadResponse response = buildUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
@@ -459,10 +457,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void uploadService_FhirEnabled_FhirFailure_ReportsCSVResult() {
+  void uploadService_FhirFailure_ReportsCSVResult() {
     // given
-    ReflectionTestUtils.setField(sut, "fhirEnabled", true);
-
     var org = factory.saveValidOrganization();
     var csvReportId = UUID.randomUUID();
     var csvResponse = new UploadResponse();
@@ -517,10 +513,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void uploadService_FhirEnabled_FhirException_ReportsCSVResult() {
+  void uploadService_FhirException_ReportsCSVResult() {
     // given
-    ReflectionTestUtils.setField(sut, "fhirEnabled", true);
-
     var org = factory.saveValidOrganization();
     var csvReportId = UUID.randomUUID();
     var successfulCsvResponse = new UploadResponse();
@@ -774,8 +768,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_processCsv_only_submit_fhir_when_flu_only_csv() {
-    ReflectionTestUtils.setField(sut, "fhirEnabled", true);
-
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
     UploadResponse response = buildUploadResponse();

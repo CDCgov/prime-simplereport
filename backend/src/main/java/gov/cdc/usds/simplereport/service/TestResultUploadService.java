@@ -101,9 +101,6 @@ public class TestResultUploadService {
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCodeValue;
 
-  @Value("${data-hub.fhir-enabled:false}")
-  private boolean fhirEnabled;
-
   private static final int FIVE_MINUTES_MS = 300 * 1000;
   public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
   private static final String ORDER_TEST_DATE_COLUMN_NAME = "order_test_date";
@@ -364,19 +361,16 @@ public class TestResultUploadService {
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
-              if (fhirEnabled) {
-                long start = System.currentTimeMillis();
-                // convert csv to fhir and serialize to json
-                FHIRBundleRecord fhirBundleWithMeta =
-                    fhirConverter.convertToFhirBundles(content, org.getInternalId());
-                UploadResponse response = uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
-                log.info(
-                    "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+              long start = System.currentTimeMillis();
+              // convert csv to fhir and serialize to json
+              FHIRBundleRecord fhirBundleWithMeta =
+                  fhirConverter.convertToFhirBundles(content, org.getInternalId());
+              UploadResponse response = uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
+              log.info(
+                  "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
 
-                return new UniversalSubmissionSummary(
-                    submissionId, org, response, fhirBundleWithMeta.metadata());
-              }
-              return null;
+              return new UniversalSubmissionSummary(
+                  submissionId, org, response, fhirBundleWithMeta.metadata());
             }));
   }
 
@@ -582,7 +576,7 @@ public class TestResultUploadService {
     if (content.length > 0) {
       fhirResponse = submitConditionAgnosticAsFhir(new ByteArrayInputStream(content));
       try {
-        if (fhirResponse != null && fhirResponse.get() != null) {
+        if (fhirResponse.get() != null) {
           fhirResult = mapFhirResponseToUploadResponse(fhirResponse.get(), org, submissionId);
         }
       } catch (CsvProcessingException | ExecutionException | InterruptedException e) {

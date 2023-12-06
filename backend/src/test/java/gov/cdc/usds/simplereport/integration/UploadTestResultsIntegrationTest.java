@@ -42,14 +42,12 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SliceTestConfiguration.WithSimpleReportStandardUser
 @AutoConfigureWireMock(port = 9561)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestPropertySource(properties = {"data-hub.fhir-enabled=true"})
 class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   @Autowired private MockMvc mockMvc;
 
