@@ -73,7 +73,9 @@ public class QueueMutationResolver {
             symptomOnset,
             noSymptoms);
 
-    personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
+    if (testResultDelivery != null) {
+      personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
+    }
 
     return to.getInternalId()
         .toString(); // this return is unused in the UI. it used to be PatientLinkInternalId
@@ -99,6 +101,8 @@ public class QueueMutationResolver {
     testOrderService.updateTimeOfTestQuestions(
         patientId, pregnancy, symptomsMap, symptomOnset, noSymptoms, genderOfSexualPartners);
 
-    personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
+    if (testResultDelivery != null) {
+      personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
+    }
   }
 }
