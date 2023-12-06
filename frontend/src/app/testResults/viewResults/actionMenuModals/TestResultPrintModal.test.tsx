@@ -166,6 +166,7 @@ describe("TestResultPrintModal with multiplex results in Pxp App", () => {
         testResult: TEST_RESULTS.NEGATIVE,
       } as MultiplexResult,
     ];
+    // if no NPI, component should use npi
     multiplexPxpTestResult.facility.orderingProvider.NPI = undefined;
     multiplexPxpTestResult.facility.orderingProvider.npi = "fake npi for pxp";
 
@@ -196,7 +197,6 @@ describe("TestResultPrintModal with multiplex results in Pxp App", () => {
   });
 });
 
-//todo
 describe("TestResultPrintModal with RSV and flu results", () => {
   let component: any;
 
