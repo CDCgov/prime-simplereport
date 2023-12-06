@@ -6,10 +6,12 @@ import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg"
 import { displayFullName } from "../../utils";
 import { formatUserStatus } from "../../utils/text";
 import { OktaUserStatus } from "../../utils/user";
+import "./ManageUsers.scss";
+import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
+import { SEARCH_DEBOUNCE_TIME } from "../../testQueue/constants";
+import SearchInput from "../../testQueue/addToQueue/SearchInput";
 
 import { LimitedUser } from "./ManageUsersContainer";
-
-import "./ManageUsers.scss";
 
 interface Props {
   activeUserId: string;
@@ -26,9 +28,33 @@ const UsersSideNav: React.FC<Props> = ({
     return users.map((user) => "user-tab-" + user.id.toString()).join(" ");
   };
 
+  const [queryString, debounced, setDebounced] = useDebounce("", {
+    debounceTime: SEARCH_DEBOUNCE_TIME,
+  });
+
+  const filter = (filterText: string, users: LimitedUser[]) => {
+    if (!filterText) {
+      return users;
+    }
+    return users.filter((u) => {
+      return displayFullName(u.firstName, u.middleName, u.lastName)
+        .toLowerCase()
+        .includes(filterText.toLowerCase());
+    });
+  };
+
+  const filteredUsers = filter(queryString, users);
+
   return (
     <div className="display-block users-sidenav">
       <h2 className="users-sidenav-header">Users</h2>
+      <SearchInput
+        onInputChange={(e) => setDebounced(e.target.value)}
+        disabled={true}
+        queryString={debounced}
+        placeholder={`Search by name`}
+        showSubmitButton={false}
+      />
       <nav
         className="prime-secondary-nav maxh-tablet-lg overflow-y-scroll"
         aria-label="Tertiary navigation"
@@ -38,7 +64,14 @@ const UsersSideNav: React.FC<Props> = ({
           aria-owns={getIdsAsString(users)}
           className="usa-sidenav"
         >
-          {users.map((user: LimitedUser) => {
+          {filteredUsers.length === 0 && (
+            <div className={"usa-sidenav__item users-sidenav-item"}>
+              <div className={"padding-105 padding-right-2 padding-left-3"}>
+                No results found.
+              </div>
+            </div>
+          )}
+          {filteredUsers.map((user: LimitedUser) => {
             let statusText;
             switch (user.status) {
               case OktaUserStatus.ACTIVE:

@@ -369,6 +369,64 @@ describe("ManageUsers", () => {
       return { user: userEvent.setup(), ...renderControls };
     };
 
+    it("is searchable", async () => {
+      //given
+      const { user } = await renderAndWaitForLoad();
+
+      //when
+      const searchBox = screen.getByRole("searchbox", {
+        name: /search by name/i,
+      });
+
+      await user.type(searchBox, "john");
+
+      //then
+      await waitFor(() => {
+        expect(
+          screen.getByRole("tab", {
+            name: displayFullName("John", "", "Arthur"),
+          })
+        ).toBeInTheDocument();
+      });
+      await waitFor(() => {
+        expect(
+          screen.queryByText(displayFullName("Bob", "", "Bobberoo"), {
+            exact: false,
+          })
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it("displays no results message for empty filtered list", async () => {
+      //given
+      const { user } = await renderAndWaitForLoad();
+
+      //when
+      const searchBox = screen.getByRole("searchbox", {
+        name: /search by name/i,
+      });
+      await user.type(searchBox, "john wick");
+
+      //then
+      await waitFor(() => {
+        expect(
+          screen.queryByText(displayFullName("Jane", "", "Doe"), {
+            exact: false,
+          })
+        ).not.toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(displayFullName("Bob", "", "Bobberoo"), {
+            exact: false,
+          })
+        ).not.toBeInTheDocument();
+      });
+
+      expect(screen.getByText("No results found.")).toBeInTheDocument();
+    });
+
     it("enables logged-in user's settings except deletion and roles", async () => {
       const { user } = await renderAndWaitForLoad();
       const nameButton = screen.getByRole("tab", {
