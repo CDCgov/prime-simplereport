@@ -495,8 +495,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_fail_to_communi
 
   query = <<-QUERY
 dependencies
-|where type == "Fetch" and name has "api/feature-flags" and success == false and client_Type == "Browser"
-| summarize count()
+| where type == "Fetch" and name has "api/feature-flags" and success == false and client_Type == "Browser"
+| summarize count() by bin(ago(1hr), 5min)
   QUERY
 
   trigger {
