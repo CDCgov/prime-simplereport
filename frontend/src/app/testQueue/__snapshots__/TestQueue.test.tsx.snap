@@ -62,6 +62,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
       >
         <li
           class="usa-card list-style-none margin-bottom-1em test-card-container"
+          data-cy="prime-queue-item"
           data-testid="test-card-abc"
         >
           <div
@@ -1012,6 +1013,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
         </li>
         <li
           class="usa-card list-style-none margin-bottom-1em test-card-container"
+          data-cy="prime-queue-item"
           data-testid="test-card-def"
         >
           <div

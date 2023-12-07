@@ -56,7 +56,6 @@ describe("Testing with multiplex devices", () => {
     );
     cy.wait("@GetPatientsByFacilityForQueue");
     cy.contains("Begin test").click();
-    cy.get('button[id="aoe-form-save-button"]').click();
     cy.get(".Toastify").contains(`${patient.lastName}, ${patient.firstName}`);
     cy.get(".Toastify").contains(`was added to the queue`);
 
@@ -64,7 +63,7 @@ describe("Testing with multiplex devices", () => {
     cy.injectSRAxe();
     cy.checkAccessibility();
 
-    const queueCard = `div[data-testid="test-card-${patient.internalId}"]`;
+    const queueCard = `li[data-testid="test-card-${patient.internalId}"]`;
     cy.get(queueCard).within(() => {
       cy.get('select[name="testDevice"]').select(multiplexDeviceName);
       cy.get('select[name="testDevice"]')
@@ -77,25 +76,25 @@ describe("Testing with multiplex devices", () => {
     // then it won't trigger a network call
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
 
-    cy.get(queueCard).within(() => {
-      cy.get('button[type="submit"]').as("submitBtn");
-      cy.get("@submitBtn").should("be.disabled");
-      cy.get(".multiplex-result-form").contains("COVID-19");
-      cy.get(".multiplex-result-form").contains("Flu A");
-      cy.get(".multiplex-result-form").contains("Flu B");
-      cy.get(".multiplex-result-form").contains("Mark test as inconclusive");
-      cy.get('input[name="inconclusive-tests"]')
-        .should("not.be.checked")
-        .should("be.enabled")
-        .siblings("label")
-        .click();
-    });
-    cy.wait("@EditQueueItem");
+    cy.contains("Submit results").click();
+    cy.contains("Please enter a valid test result");
+    cy.contains("Invalid test results");
+
+    cy.contains("legend", "Flu A result")
+      .next("div")
+      .within(() => {
+        cy.contains("label", "Inconclusive").click();
+      });
 
     cy.get(queueCard).within(() => {
-      cy.get("@submitBtn").should("be.enabled").click();
+      cy.contains("Please enter a valid test result").should("not.exist");
     });
+
+    cy.wait("@EditQueueItem");
+
+    cy.contains("Submit results").click();
     cy.contains("Submit anyway").click();
+
     cy.wait("@SubmitQueueItem");
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
   });

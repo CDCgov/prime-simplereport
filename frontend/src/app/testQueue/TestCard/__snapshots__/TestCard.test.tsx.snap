@@ -5,6 +5,7 @@ Object {
   "container": <div>
     <li
       class="usa-card list-style-none margin-bottom-1em test-card-container"
+      data-cy="prime-queue-item"
       data-testid="test-card-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
     >
       <div
