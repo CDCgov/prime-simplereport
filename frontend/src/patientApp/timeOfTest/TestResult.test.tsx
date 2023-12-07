@@ -2,10 +2,10 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { render, screen, within } from "@testing-library/react";
 
-import TestResult from "./TestResult";
-
-import "../../i18n";
 import { VerifyV2Response } from "../PxpApiService";
+
+import TestResult from "./TestResult";
+import "../../i18n";
 
 const mockStore = configureStore([]);
 
@@ -45,7 +45,7 @@ let getPatientLinkData = (results: MultiplexResult[]): VerifyV2Response => ({
   },
 });
 
-describe("TestResult - COVID-19 only", () => {
+describe("TestResult - single disease", () => {
   it("should show the patient/device name", () => {
     const results = [
       { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
@@ -125,7 +125,7 @@ describe("TestResult - COVID-19 only", () => {
   });
 });
 
-describe("TestResult - Multiplex", () => {
+describe("TestResult - multiple diseases", () => {
   it("should show the results for positive COVID-19 and negative Flu", () => {
     const results = [
       { disease: { name: "Flu B" }, testResult: "NEGATIVE" },
