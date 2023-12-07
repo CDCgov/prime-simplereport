@@ -110,11 +110,11 @@ export const DetachedTestResultDetailsModal = ({
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
 
   const resultDetailsRows = (results: MultiplexResults) => {
-    getSortedResults(results);
+    const sortedResults = getSortedResults(results);
 
     return (
       <>
-        {results.map((r) => {
+        {sortedResults.map((r) => {
           return (
             <DetailsRow
               key={r.disease.name}
