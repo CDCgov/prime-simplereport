@@ -12,6 +12,7 @@ export const FORM_ERROR_TITLE = "Form Errors";
 export const liveJurisdictions = [
   "AK",
   "AL",
+  "AR",
   "AZ",
   "CA",
   "CO",
