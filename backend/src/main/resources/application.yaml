@@ -78,6 +78,7 @@ management:
   endpoint.health.probes.enabled: true
   endpoint.info.enabled: true
   endpoints.web.exposure.include: health, info
+  endpoint.health.show-components: always
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
