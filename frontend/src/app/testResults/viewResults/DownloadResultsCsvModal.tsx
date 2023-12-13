@@ -4,6 +4,7 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
 import { ApolloError } from "@apollo/client";
+import { useFeature } from "flagged";
 
 import { showError } from "../../utils/srToast";
 import { parseDataForCSV } from "../../utils/testResultCSV";
@@ -37,6 +38,7 @@ export const DownloadResultsCsvModal = ({
   >(null);
   // Disable downloads because backend will hang on over 20k results (#3953)
   const disableDownload = totalEntries > rowsMaxLimit;
+  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
 
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
     // active facility in the facility filter is the default
@@ -67,7 +69,10 @@ export const DownloadResultsCsvModal = ({
 
   const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
     if (data?.testResultsPage?.content) {
-      const csvResults = parseDataForCSV(data.testResultsPage.content);
+      const csvResults = parseDataForCSV(
+        singleEntryRsvEnabled,
+        data.testResultsPage.content
+      );
       setResults(csvResults);
     } else {
       showError("Unknown error downloading results");

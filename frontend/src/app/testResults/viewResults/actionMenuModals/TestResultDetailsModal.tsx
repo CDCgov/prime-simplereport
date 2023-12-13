@@ -11,14 +11,9 @@ import {
   PregnancyCode,
   pregnancyMap,
 } from "../../../../patientApp/timeOfTest/constants";
-import {
-  getResultByDiseaseName,
-  hasMultiplexResults,
-} from "../../../utils/testResults";
+import { getSortedResults } from "../../../utils/testResults";
 import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
-import { MULTIPLEX_DISEASES } from "../../constants";
-
 import "./TestResultPrintModal.scss";
 
 type Result = {
@@ -113,22 +108,27 @@ export const DetachedTestResultDetailsModal = ({
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
-  const displayResult: { [diseaseResult: string]: TestResult | null } = {
-    covidResult: results
-      ? getResultByDiseaseName(results, MULTIPLEX_DISEASES.COVID_19)
-      : "UNKNOWN",
+
+  const resultDetailsRows = (results: MultiplexResults) => {
+    const sortedResults = getSortedResults(results);
+
+    return (
+      <>
+        {sortedResults.map((r) => {
+          return (
+            <DetailsRow
+              key={r.disease.name}
+              label={`${r.disease.name} result`}
+              value={r.testResult as string}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          );
+        })}
+      </>
+    );
   };
-  const multiplexEnabled = results && hasMultiplexResults(results);
-  if (multiplexEnabled) {
-    displayResult["fluAResult"] = getResultByDiseaseName(
-      results,
-      MULTIPLEX_DISEASES.FLU_A
-    );
-    displayResult["fluBResult"] = getResultByDiseaseName(
-      results,
-      MULTIPLEX_DISEASES.FLU_B
-    );
-  }
+
   return (
     <>
       <div className="display-flex flex-justify">
@@ -191,31 +191,7 @@ export const DetachedTestResultDetailsModal = ({
       <h2 className="font-sans-md margin-top-3">Test information</h2>
       <table className={containerClasses}>
         <tbody>
-          <DetailsRow
-            label="COVID-19 result"
-            value={displayResult["covidResult"]}
-            removed={removed}
-            aria-describedby="result-detail-title"
-          />
-
-          {multiplexEnabled ? (
-            <>
-              <DetailsRow
-                label="Flu A result"
-                value={displayResult["fluAResult"]}
-                removed={removed}
-                aria-describedby="result-detail-title"
-              />
-              <DetailsRow
-                label="Flu B result"
-                value={displayResult["fluBResult"]}
-                removed={removed}
-                aria-describedby="result-detail-title"
-              />
-            </>
-          ) : (
-            <></>
-          )}
+          {results && resultDetailsRows(results)}
           <DetailsRow
             label="Test date"
             value={dateTested && formatDateWithTimeOption(dateTested, true)}

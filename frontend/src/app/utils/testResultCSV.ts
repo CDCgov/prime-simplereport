@@ -11,11 +11,11 @@ import { getResultByDiseaseName } from "./testResults";
 
 import { displayFullName, facilityDisplayName } from "./index";
 
-export function parseDataForCSV(data: any[]) {
+export function parseDataForCSV(includeRSV: any, data: any[]) {
   return data.sort(byDateTested).map((r: any) => {
     const symptomList = r.symptoms ? symptomsStringToArray(r.symptoms) : [];
 
-    return {
+    const csvData1 = {
       "Patient first name": r.patient.firstName,
       "Patient middle name": r.patient.middleName,
       "Patient last name": r.patient.lastName,
@@ -38,6 +38,8 @@ export function parseDataForCSV(data: any[]) {
         TEST_RESULT_DESCRIPTIONS[
           getResultByDiseaseName(r.results, "Flu B") as Results
         ],
+    };
+    const csvData2 = {
       "Result reported date": moment(r.dateUpdated).format("MM/DD/YYYY h:mma"),
       "Test correction status": r.correctionStatus,
       "Test correction reason": r.reasonForCorrection,
@@ -79,5 +81,19 @@ export function parseDataForCSV(data: any[]) {
         r.patient.residentCongregateSetting,
       "Patient is employed in healthcare": r.patient.employedInHealthcare,
     };
+
+    return includeRSV
+      ? {
+          ...csvData1,
+          "RSV result":
+            TEST_RESULT_DESCRIPTIONS[
+              getResultByDiseaseName(r.results, "RSV") as Results
+            ],
+          ...csvData2,
+        }
+      : {
+          ...csvData1,
+          ...csvData2,
+        };
   });
 }

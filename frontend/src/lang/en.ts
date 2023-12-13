@@ -33,6 +33,7 @@ export const en = {
         COVID19: "COVID-19",
         FLUA: "Flu A",
         FLUB: "Flu B",
+        RSV: "RSV",
       },
       role: {
         STAFF: "Staff",
