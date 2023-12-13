@@ -1,0 +1,34 @@
+name: Smoke test post deploy
+description: Ping a backend health endpoint that reaches into the db and return a status message to a frontend status page. Visit that page and ensure things are healthy
+inputs:
+  deploy-env:
+    description: The environment being deployed (e.g. "prod" or "test")
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: create env file
+      shell: bash
+      working-directory: frontend
+      run: |
+        touch .env
+        echo REACT_APP_BASE_URL=https://${{ inputs.deploy-env }}.simplereport.gov/ >> .env.production.local
+    - name: Run smoke test script
+      shell: bash
+      working-directory: frontend
+      run: yarn smoke:env:deploy:ci
+
+  #  slack_alert:
+  #    runs-on: ubuntu-latest
+  #    if: failure()
+  #    needs: [ smoke-test-front-and-back-end ]
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - name: Send alert to Slack
+  #        uses: ./.github/actions/slack-message
+  #        with:
+  #          username: ${{ github.actor }}
+  #          description: |
+  #            :siren-gif: Post-deploy smoke test couldn't verify that the frontend is talking to the backend. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :siren-gif:
+  #          webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
+  #          user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}
