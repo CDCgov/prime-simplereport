@@ -2,25 +2,22 @@ name: Smoke test deploy
 run-name: Smoke test the deploy for a dev env by @${{ github.actor }}
 
 on:
-  #  DELETE ME WHEN MERGING
-  push:
-  #  UNCOMMENT ME WHEN MERGING
-#  workflow_dispatch:
-#    inputs:
-#      deploy_env:
-#        description: 'The environment to smoke test'
-#        required: true
-#        type: choice
-#        options:
-#          - ""
-#          - dev
-#          - dev2
-#          - dev3
-#          - dev4
-#          - dev5
-#          - dev6
-#          - dev7
-#          - pentest
+  workflow_dispatch:
+    inputs:
+      deploy_env:
+        description: 'The environment to smoke test'
+        required: true
+        type: choice
+        options:
+          - ""
+          - dev
+          - dev2
+          - dev3
+          - dev4
+          - dev5
+          - dev6
+          - dev7
+          - pentest
 
 env:
   NODE_VERSION: 18
@@ -45,6 +42,6 @@ jobs:
       - name: Smoke test the env
         uses: ./.github/actions/post-deploy-smoke-test
         with:
-          #        REPLACE ME WITH deploy-env: ${{inputs.deploy_env}}
-          deploy-env: dev7
+          deploy-env: ${{inputs.deploy_env}}
+
 
