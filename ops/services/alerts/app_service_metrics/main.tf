@@ -487,8 +487,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_fail_to_communi
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
   severity            = var.severity
-  frequency           = 60
-  time_window         = 60
+  frequency           = 20
+  time_window         = 20
   enabled             = contains(var.disabled_alerts, "frontend_fail_to_communicate_with_backend_alert") ? false : true
 
   data_source_id = var.app_insights_id
@@ -496,7 +496,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_fail_to_communi
   query = <<-QUERY
 dependencies
 | where type == "Fetch" and name has "api/feature-flags" and success == false and client_Type == "Browser"
-| summarize count() by bin(ago(1hr), 5min)
+| summarize count() by bin(ago(20m), 5m)
   QUERY
 
   trigger {
