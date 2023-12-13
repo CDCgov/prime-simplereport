@@ -3,7 +3,7 @@ run-name: Smoke test the deploy for prod by @${{ github.actor }}
 
 on:
   workflow_run:
-    workflows: [ " Deploy Prod" ]
+    workflows: [ "Deploy Prod" ]
     types:
       - completed
 
