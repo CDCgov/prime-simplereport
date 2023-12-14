@@ -16,7 +16,7 @@ const driver = new Builder()
   .build();
 driver
   .navigate()
-  .to(`${process.env.REACT_APP_BASE_URL}app/health/prod-smoke-test`)
+  .to(`${process.env.REACT_APP_BASE_URL}app/health/deploy-smoke-test`)
   .then(() => {
     let value = driver.findElement({ id: "root" }).getText();
     return value;

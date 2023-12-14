@@ -9,7 +9,8 @@ on:
 
 env:
   NODE_VERSION: 18
-  DEPLOY_ENV: prod
+  #  prod env variable
+  DEPLOY_ENV: www
 
 jobs:
   smoke-test-front-and-back-end:

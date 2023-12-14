@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { FetchMock } from "jest-fetch-mock";
 
-import ProdSmokeTest from "./ProdSmokeTest";
+import DeploySmokeTest from "./DeploySmokeTest";
 
-describe("ProdSmokeTest", () => {
+describe("DeploySmokeTest", () => {
   beforeEach(() => {
     (fetch as FetchMock).resetMocks();
   });
@@ -11,7 +11,7 @@ describe("ProdSmokeTest", () => {
   it("renders success when returned from the API endpoint", async () => {
     (fetch as FetchMock).mockResponseOnce(JSON.stringify({ status: "UP" }));
 
-    render(<ProdSmokeTest />);
+    render(<DeploySmokeTest />);
     await waitFor(() =>
       expect(screen.queryByText("Status loading...")).not.toBeInTheDocument()
     );
@@ -21,7 +21,7 @@ describe("ProdSmokeTest", () => {
   it("renders failure when returned from the API endpoint", async () => {
     (fetch as FetchMock).mockResponseOnce(JSON.stringify({ status: "DOWN" }));
 
-    render(<ProdSmokeTest />);
+    render(<DeploySmokeTest />);
     await waitFor(() =>
       expect(screen.queryByText("Status loading...")).not.toBeInTheDocument()
     );
