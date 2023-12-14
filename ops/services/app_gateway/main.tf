@@ -256,7 +256,7 @@ resource "azurerm_application_gateway" "load_balancer" {
 
   ssl_certificate {
     name                = "new-sr-wildcard"
-    key_vault_secret_id = "https://simple-report-global.vault.azure.net/secrets/new-sr-wildcard/387cec9bcc254ac7970aa21311b075fc"
+    key_vault_secret_id = "https://simple-report-global.vault.azure.net/secrets/new-sr-wildcard/770f7e5d251f4350b09d74c89d735800"
   }
 
   ssl_policy {
