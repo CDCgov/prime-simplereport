@@ -87,8 +87,8 @@ export const StaticTestResultModal = ({
       <header className="display-flex flex-align-end flex-justify margin-bottom-1">
         <h1>
           {hasMultiplexResults(results)
-            ? t("testResult.multiplexResultHeader")
-            : t("testResult.covidResultHeader")}
+            ? t("testResult.multipleResultHeader")
+            : t("testResult.singleResultHeader")}
         </h1>
         <img
           alt="SimpleReport logo"

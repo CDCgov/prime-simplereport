@@ -283,9 +283,8 @@ export const es: LanguageConfig = {
       title: "Resultado de la prueba",
       resultLiteral: "resultado",
       result: "Resultado de SARS-CoV-2",
-      covidResultHeader: "Resultado de la prueba: COVID-19",
-      multiplexResultHeader:
-        "Resultados de las pruebas: COVID-19 y la influenza",
+      singleResultHeader: "Resultado de la prueba",
+      multipleResultHeader: "Resultados de las pruebas",
       downloadResult: "Descargar resultado",
       patient: "Paciente",
       patientDetails: "Detalles del paciente",
