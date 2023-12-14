@@ -1,5 +1,5 @@
 name: Smoke test post deploy
-description: Ping a backend health endpoint that reaches into the db and return a status message to a frontend status page. Visit that page and ensure things are healthy
+description: Invoke a script that visits a deploy smoke check page that displays whether the backend / db are healthy.
 inputs:
   deploy-env:
     description: The environment being deployed (e.g. "prod" or "test")

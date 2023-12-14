@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import FetchClient from "./utils/api";
 
 const api = new FetchClient(undefined, { mode: "cors" });
-const ProdSmokeTest = (): JSX.Element => {
+const DeploySmokeTest = (): JSX.Element => {
   const [success, setSuccess] = useState<boolean>();
   useEffect(() => {
     api
@@ -26,4 +26,4 @@ const ProdSmokeTest = (): JSX.Element => {
   return <> Status returned failure :( </>;
 };
 
-export default ProdSmokeTest;
+export default DeploySmokeTest;
