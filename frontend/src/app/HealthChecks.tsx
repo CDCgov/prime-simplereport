@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
-import ProdSmokeTest from "./ProdSmokeTest";
+import DeploySmokeTest from "./DeploySmokeTest";
 
 const HealthChecks = () => (
   <Routes>
@@ -9,7 +9,7 @@ const HealthChecks = () => (
       path="commit"
       element={<div>{process.env.REACT_APP_CURRENT_COMMIT}</div>}
     />
-    <Route path="prod-smoke-test" element={<ProdSmokeTest />} />
+    <Route path="deploy-smoke-test" element={<DeploySmokeTest />} />
   </Routes>
 );
 
