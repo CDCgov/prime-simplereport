@@ -6,6 +6,7 @@ import {
   hasPositiveFluResults,
   getResultByDiseaseName,
   hasCovidResults,
+  hasPositiveRsvResults,
 } from "../utils/testResults";
 
 type PositiveFluResultInfoProps = {
@@ -56,6 +57,41 @@ const PositiveFluResultInfo = ({
   );
 };
 
+type PositiveRsvResultInfoProps = {
+  needsHeading: boolean;
+  t: translateFn;
+};
+const PositiveRsvResultInfo = ({
+  needsHeading,
+  t,
+}: PositiveRsvResultInfoProps) => {
+  return (
+    <>
+      {needsHeading && (
+        <p className="text-bold sr-guidance-heading">
+          {t("testResult.rsvNotes.h1")}
+        </p>
+      )}
+      <p>{t("testResult.rsvNotes.positive.p0")}</p>
+      <p>{t("testResult.rsvNotes.positive.p1")}</p>
+      <Trans
+        parent="p"
+        i18nKey="testResult.rsvNotes.positive.p2"
+        components={[
+          <a
+            href={t("testResult.rsvNotes.positive.rsvSymptomsLink")}
+            target="_blank"
+            rel="noopener noreferrer"
+            key="rsv-symptoms-link"
+          >
+            rsv symptoms link
+          </a>,
+        ]}
+      />
+    </>
+  );
+};
+
 interface MultiplexResultsGuidanceProps {
   results: MultiplexResult[];
   isPatientApp: boolean;
@@ -67,6 +103,7 @@ const MultiplexResultsGuidance: React.FC<MultiplexResultsGuidanceProps> = ({
   const { t } = useTranslation();
   const needsCovidHeading = hasCovidResults(results);
   const needsFluGuidance = hasPositiveFluResults(results);
+  const needsRsvGuidance = hasPositiveRsvResults(results);
   const covidResult = getResultByDiseaseName(results, "COVID-19") as TestResult;
 
   return (
@@ -84,6 +121,9 @@ const MultiplexResultsGuidance: React.FC<MultiplexResultsGuidanceProps> = ({
       </div>
       {needsFluGuidance && (
         <PositiveFluResultInfo needsHeading={needsFluGuidance} t={t} />
+      )}
+      {needsRsvGuidance && (
+        <PositiveRsvResultInfo needsHeading={needsRsvGuidance} t={t} />
       )}
     </>
   );

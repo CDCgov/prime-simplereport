@@ -59,3 +59,13 @@ export function hasCovidResults(results: MultiplexResults): boolean {
     ).length > 0
   );
 }
+
+export function hasPositiveRsvResults(results: MultiplexResults): boolean {
+  return (
+    results.filter(
+      (multiplexResult: MultiplexResult) =>
+        multiplexResult.disease.name.includes("RSV") &&
+        getTestResult(multiplexResult) === "POSITIVE"
+    ).length > 0
+  );
+}
