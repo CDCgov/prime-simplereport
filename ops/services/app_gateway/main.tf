@@ -251,12 +251,12 @@ resource "azurerm_application_gateway" "load_balancer" {
     frontend_ip_configuration_name = local.frontend_config
     frontend_port_name             = local.https_listener
     protocol                       = "Https"
-    ssl_certificate_name           = "new-sr-wildcard"
+    ssl_certificate_name           = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.name
   }
 
   ssl_certificate {
-    name                = "new-sr-wildcard"
-    key_vault_secret_id = "https://simple-report-global.vault.azure.net/secrets/new-sr-wildcard/770f7e5d251f4350b09d74c89d735800"
+    name                = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.name
+    key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.secret_id
   }
 
   ssl_policy {
