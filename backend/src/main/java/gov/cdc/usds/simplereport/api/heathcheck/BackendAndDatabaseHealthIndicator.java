@@ -1,14 +1,11 @@
 package gov.cdc.usds.simplereport.api.heathcheck;
 
-import com.okta.sdk.resource.api.GroupApi;
 import com.okta.sdk.resource.client.ApiException;
 import gov.cdc.usds.simplereport.db.repository.FeatureFlagRepository;
-import gov.cdc.usds.simplereport.idp.repository.LiveOktaRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.JDBCConnectionException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
@@ -24,7 +21,12 @@ public class BackendAndDatabaseHealthIndicator implements HealthIndicator {
     public Health health() {
         try {
             _ffRepo.findAll();
-            _oktaRepo.getConnectTimeoutForHealthCheck();
+            String oktaStatus = _oktaRepo.getApplicationStatusForHealthCheck();
+
+            if (oktaStatus.equals("ACTIVE")) {
+                log.info("Okta status didn't return active, instead returned", oktaStatus);
+                return Health.down().build();
+            }
 
             return Health.up().build();
         } catch (JDBCConnectionException e) {
