@@ -23,8 +23,8 @@ public class BackendAndDatabaseHealthIndicator implements HealthIndicator {
       _ffRepo.findAll();
       String oktaStatus = _oktaRepo.getApplicationStatusForHealthCheck();
 
-      if (oktaStatus != "ACTIVE") {
-        log.info("Okta status didn't return active, instead returned", oktaStatus);
+      if (oktaStatus.equals("ACTIVE")) {
+        log.info("Okta status didn't return active, instead returned %s", oktaStatus);
         return Health.down().build();
       }
 
