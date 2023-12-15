@@ -99,4 +99,4 @@ jobs:
           webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
           user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}
 
-# a post-prod health check workflow is defined in smokeTestDeployProd. See the wiki for more details
+# a post-prod health check workflow is defined in smokeTestDeployProd. See the Alert response wiki page for more details
