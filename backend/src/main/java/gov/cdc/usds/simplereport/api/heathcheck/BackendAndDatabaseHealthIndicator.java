@@ -14,27 +14,27 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class BackendAndDatabaseHealthIndicator implements HealthIndicator {
-    private final FeatureFlagRepository _ffRepo;
-    private final OktaRepository _oktaRepo;
+  private final FeatureFlagRepository _ffRepo;
+  private final OktaRepository _oktaRepo;
 
-    @Override
-    public Health health() {
-        try {
-            _ffRepo.findAll();
-            String oktaStatus = _oktaRepo.getApplicationStatusForHealthCheck();
+  @Override
+  public Health health() {
+    try {
+      _ffRepo.findAll();
+      String oktaStatus = _oktaRepo.getApplicationStatusForHealthCheck();
 
-            if (oktaStatus.equals("ACTIVE")) {
-                log.info("Okta status didn't return active, instead returned", oktaStatus);
-                return Health.down().build();
-            }
+      if (oktaStatus.equals("ACTIVE")) {
+        log.info("Okta status didn't return active, instead returned", oktaStatus);
+        return Health.down().build();
+      }
 
-            return Health.up().build();
-        } catch (JDBCConnectionException e) {
-            return Health.down().build();
-            // Okta API call errored
-        } catch (ApiException e) {
-            log.info(e.getMessage());
-            return Health.down().build();
-        }
+      return Health.up().build();
+    } catch (JDBCConnectionException e) {
+      return Health.down().build();
+      // Okta API call errored
+    } catch (ApiException e) {
+      log.info(e.getMessage());
+      return Health.down().build();
     }
+  }
 }
