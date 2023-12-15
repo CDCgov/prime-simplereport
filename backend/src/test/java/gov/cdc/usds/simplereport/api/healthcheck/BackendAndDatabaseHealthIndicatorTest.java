@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.healthcheck;
 
+import static gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator.ACTIVE_LITERAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +30,7 @@ class BackendAndDatabaseHealthIndicatorTest extends BaseRepositoryTest {
   @Test
   void health_succeedsWhenReposDoesntThrow() {
     when(mockFeatureFlagRepo.findAll()).thenReturn(List.of());
-    when(mockOktaRepo.getApplicationStatusForHealthCheck()).thenReturn("ACTIVE");
+    when(mockOktaRepo.getApplicationStatusForHealthCheck()).thenReturn(ACTIVE_LITERAL);
 
     assertThat(indicator.health()).isEqualTo(Health.up().build());
   }
