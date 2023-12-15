@@ -11,7 +11,6 @@ const DeploySmokeTest = (): JSX.Element => {
       .then((response) => {
         const status = JSON.parse(response);
         if (status.status === "UP") return setSuccess(true);
-        // log something using app insights
         setSuccess(false);
       })
       .catch((e) => {
