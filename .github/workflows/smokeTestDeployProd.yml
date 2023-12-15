@@ -2,15 +2,15 @@ name: Smoke test deploy Prod
 run-name: Smoke test the deploy for prod by @${{ github.actor }}
 
 on:
-  workflow_run:
-    workflows: ["Deploy Prod"]
-    types:
-      - completed
+  push:
+  # workflow_run:
+  #   workflows: ["Deploy Prod"]
+  #   types:
+  #     - completed
 
 env:
   NODE_VERSION: 18
-  #  prod env prefix for {env}.simplereport.gov
-  DEPLOY_ENV: www
+  DEPLOY_ENV: dev7
 
 jobs:
   smoke-test-front-and-back-end:
