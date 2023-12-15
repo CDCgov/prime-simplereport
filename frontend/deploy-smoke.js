@@ -8,7 +8,11 @@ require("dotenv").config();
 let { Builder } = require("selenium-webdriver");
 const Chrome = require("selenium-webdriver/chrome");
 
-console.log(`Running smoke test for ${process.env.REACT_APP_BASE_URL}`);
+const appUrl = process.env.REACT_APP_BASE_URL.includes("localhost")
+  ? process.env.REACT_APP_BASE_URL
+  : `${process.env.REACT_APP_BASE_URL}/app`;
+
+console.log(`Running smoke test for ${appUrl}`);
 const options = new Chrome.Options();
 const driver = new Builder()
   .forBrowser("chrome")
@@ -16,7 +20,7 @@ const driver = new Builder()
   .build();
 driver
   .navigate()
-  .to(`${process.env.REACT_APP_BASE_URL}app/health/deploy-smoke-test`)
+  .to(`${appUrl}/health/deploy-smoke-test`)
   .then(() => {
     let value = driver.findElement({ id: "root" }).getText();
     return value;
