@@ -98,3 +98,5 @@ jobs:
             :siren-gif: Deploy to ${{ env.DEPLOY_ENV }} failed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :siren-gif:
           webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
           user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}
+
+# a post-prod health check workflow is defined in smokeTestDeployProd. See the wiki for more details
