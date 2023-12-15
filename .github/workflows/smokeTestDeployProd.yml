@@ -9,12 +9,11 @@ on:
 
 env:
   NODE_VERSION: 18
-  #  prod env variable
-  DEPLOY_ENV: www
 
 jobs:
   smoke-test-front-and-back-end:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -32,7 +31,7 @@ jobs:
       - name: Smoke test the env
         uses: ./.github/actions/post-deploy-smoke-test
         with:
-          deploy-env: ${{ env.DEPLOY_ENV }}
+          base_domain_name: ${{ env.BASE_DOMAIN_NAME }}
   slack_alert:
     runs-on: ubuntu-latest
     if: failure()
