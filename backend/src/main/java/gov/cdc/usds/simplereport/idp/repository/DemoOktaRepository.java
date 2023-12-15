@@ -432,8 +432,9 @@ public class DemoOktaRepository implements OktaRepository {
     return accessCount;
   }
 
-  public int getConnectTimeoutForHealthCheck() {
-    int FAKE_CONNECTION_TIMEOUT = 0;
-    return FAKE_CONNECTION_TIMEOUT;
+  @Override
+  public String getApplicationStatusForHealthCheck() {
+    String FAKE_STATUS = "ACTIVE";
+    return FAKE_STATUS;
   }
 }

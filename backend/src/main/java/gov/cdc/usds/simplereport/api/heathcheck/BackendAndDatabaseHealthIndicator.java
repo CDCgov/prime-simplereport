@@ -21,7 +21,12 @@ public class BackendAndDatabaseHealthIndicator implements HealthIndicator {
   public Health health() {
     try {
       _ffRepo.findAll();
-      _oktaRepo.getConnectTimeoutForHealthCheck();
+      String oktaStatus = _oktaRepo.getApplicationStatusForHealthCheck();
+
+      if (oktaStatus != "ACTIVE") {
+        log.info("Okta status didn't return active, instead returned", oktaStatus);
+        return Health.down().build();
+      }
 
       return Health.up().build();
     } catch (JDBCConnectionException e) {

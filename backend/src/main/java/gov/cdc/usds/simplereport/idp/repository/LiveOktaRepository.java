@@ -67,8 +67,6 @@ public class LiveOktaRepository implements OktaRepository {
   private final Application app;
   private final OrganizationExtractor extractor;
   private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
-
-  private final ApplicationApi applicationApi;
   private final GroupApi groupApi;
   private final UserApi userApi;
   private final ApplicationGroupsApi applicationGroupsApi;
@@ -89,7 +87,6 @@ public class LiveOktaRepository implements OktaRepository {
     this.rolePrefix = authorizationProperties.getRolePrefix();
     this.adminGroupName = authorizationProperties.getAdminGroupName();
 
-    this.applicationApi = applicationApi;
     this.groupApi = groupApi;
     this.userApi = userApi;
     this.applicationGroupsApi = applicationGroupsApi;
@@ -695,8 +692,9 @@ public class LiveOktaRepository implements OktaRepository {
         .build();
   }
 
-  public int getConnectTimeoutForHealthCheck() {
-    return applicationApi.getApiClient().getConnectTimeout();
+  @Override
+  public String getApplicationStatusForHealthCheck() {
+    return app.getStatus().toString();
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(

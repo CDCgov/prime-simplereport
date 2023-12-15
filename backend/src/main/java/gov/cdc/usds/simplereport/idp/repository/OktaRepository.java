@@ -77,5 +77,5 @@ public interface OktaRepository {
 
   PartialOktaUser findUser(String username);
 
-  int getConnectTimeoutForHealthCheck();
+  String getApplicationStatusForHealthCheck();
 }
