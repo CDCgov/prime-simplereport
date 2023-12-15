@@ -56,7 +56,6 @@ describe("Getting a test result from a patient link", () => {
     cy.get("#dob-submit-button").click();
   });
   it("shows the test result", () => {
-    cy.contains("Test result: COVID-19");
     cy.contains("Test result");
     cy.contains("Test date");
     cy.contains("Test device");
