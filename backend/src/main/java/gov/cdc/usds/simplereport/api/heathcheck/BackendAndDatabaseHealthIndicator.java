@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class BackendAndDatabaseHealthIndicator implements HealthIndicator {
   private final FeatureFlagRepository _ffRepo;
   private final OktaRepository _oktaRepo;
+  private static final String ACTIVE_LITERAL = "ACTIVE";
 
   @Override
   public Health health() {
@@ -23,8 +24,8 @@ public class BackendAndDatabaseHealthIndicator implements HealthIndicator {
       _ffRepo.findAll();
       String oktaStatus = _oktaRepo.getApplicationStatusForHealthCheck();
 
-      if (oktaStatus.equals("ACTIVE")) {
-        log.info("Okta status didn't return active, instead returned %s", oktaStatus);
+      if (ACTIVE_LITERAL.equals(oktaStatus)) {
+        log.info("Okta status didn't return active, instead returned " + oktaStatus);
         return Health.down().build();
       }
 
