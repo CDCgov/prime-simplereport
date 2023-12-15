@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.db.repository.FeatureFlagRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import java.sql.SQLException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,22 +21,31 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 @EnableConfigurationProperties
 class BackendAndDatabaseHealthIndicatorTest extends BaseRepositoryTest {
 
-  @SpyBean private FeatureFlagRepository mockRepo;
+  @SpyBean private FeatureFlagRepository mockFeatureFlagRepo;
+  @SpyBean private OktaRepository mockOktaRepo;
 
   @Autowired private BackendAndDatabaseHealthIndicator indicator;
 
   @Test
-  void health_succeedsWhenRepoDoesntThrow() {
-    when(mockRepo.findAll()).thenReturn(List.of());
+  void health_succeedsWhenReposDoesntThrow() {
+    when(mockFeatureFlagRepo.findAll()).thenReturn(List.of());
+    when(mockOktaRepo.getApplicationStatusForHealthCheck()).thenReturn("ACTIVE");
+
     assertThat(indicator.health()).isEqualTo(Health.up().build());
   }
 
   @Test
-  void health_failsWhenRepoDoesntThrow() {
+  void health_failsWhenFeatureFlagRepoDoesntThrow() {
     JDBCConnectionException dbConnectionException =
         new JDBCConnectionException(
             "connection issue", new SQLException("some reason", "some state"));
-    when(mockRepo.findAll()).thenThrow(dbConnectionException);
+    when(mockFeatureFlagRepo.findAll()).thenThrow(dbConnectionException);
+    assertThat(indicator.health()).isEqualTo(Health.down().build());
+  }
+
+  @Test
+  void health_failsWhenOktaRepoDoesntReturnActive() {
+    when(mockOktaRepo.getApplicationStatusForHealthCheck()).thenReturn("INACTIVE");
     assertThat(indicator.health()).isEqualTo(Health.down().build());
   }
 }
