@@ -88,7 +88,6 @@ okta:
   client:
     org-url: https://hhs-prime.okta.com
     token: ${OKTA_API_KEY:MISSING}
-    group:
 smarty-streets:
   id: ${SMARTY_AUTH_ID}
   token: ${SMARTY_AUTH_TOKEN}
