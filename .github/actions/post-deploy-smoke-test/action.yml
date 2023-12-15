@@ -12,7 +12,7 @@ runs:
       working-directory: frontend
       run: |
         touch .env
-        echo REACT_APP_BASE_URL=https://${{ inputs.deploy-env }}.simplereport.gov/ >> .env.production.local
+        echo REACT_APP_BASE_URL=https://${{ inputs.deploy-env }}.simplereport.gov >> .env.production.local
     - name: Run smoke test script
       shell: bash
       working-directory: frontend
