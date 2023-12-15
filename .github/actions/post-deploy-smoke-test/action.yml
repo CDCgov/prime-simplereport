@@ -16,4 +16,4 @@ runs:
     - name: Run smoke test script
       shell: bash
       working-directory: frontend
-      run: yarn smoke:env:deploy:ci
+      run: yarn smoke:deploy:ci

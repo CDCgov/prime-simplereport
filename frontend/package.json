@@ -76,8 +76,8 @@
     "build-storybook": "yarn create-storybook-public && REACT_APP_BACKEND_URL=http://localhost:8080 SASS_PATH=$(cd ./node_modules && pwd):$(cd ./node_modules/@uswds && pwd):$(cd ./node_modules/@uswds/uswds/packages && pwd):$(cd ./src/scss && pwd) storybook build -s storybook_public",
     "maintenance:start": "[ -z \"$MAINTENANCE_MESSAGE\" ] && echo \"MAINTENANCE_MESSAGE must be set!\" || (echo $MAINTENANCE_MESSAGE > maintenance.json && yarn maintenance:deploy && rm maintenance.json)",
     "maintenance:deploy": "[ -z \"$MAINTENANCE_ENV\" ] && echo \"MAINTENANCE_ENV must be set!\" || az storage blob upload -f maintenance.json -n maintenance.json -c '$web' --account-name simplereport${MAINTENANCE_ENV}app --overwrite",
-    "smoke:env:deploy": "node deploy-smoke.js",
-    "smoke:env:deploy:ci": "node -r dotenv/config deploy-smoke.js dotenv_config_path=.env.production.local dotenv_config_debug=true"
+    "smoke:deploy:local": "node -r dotenv/config deploy-smoke.js dotenv_config_path=.env.local",
+    "smoke:deploy:ci": "node -r dotenv/config deploy-smoke.js dotenv_config_path=.env.production.local"
   },
   "prettier": {
     "singleQuote": false
