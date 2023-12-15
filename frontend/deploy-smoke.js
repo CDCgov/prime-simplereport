@@ -9,8 +9,8 @@ let { Builder } = require("selenium-webdriver");
 const Chrome = require("selenium-webdriver/chrome");
 
 const appUrl = process.env.REACT_APP_BASE_URL.includes("localhost")
-  ? process.env.REACT_APP_BASE_URL
-  : `${process.env.REACT_APP_BASE_URL}/app`;
+  ? `${process.env.REACT_APP_BASE_URL}/health/deploy-smoke-test`
+  : `${process.env.REACT_APP_BASE_URL}/app/health/deploy-smoke-test`;
 
 console.log(`Running smoke test for ${appUrl}`);
 const options = new Chrome.Options();
@@ -20,7 +20,7 @@ const driver = new Builder()
   .build();
 driver
   .navigate()
-  .to(`${appUrl}/health/deploy-smoke-test`)
+  .to(`${appUrl}`)
   .then(() => {
     let value = driver.findElement({ id: "root" }).getText();
     return value;
