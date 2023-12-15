@@ -480,3 +480,38 @@ and duration >= 180000
     ]
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_fail_to_communicate_with_backend_alert" {
+  name                = "${var.env}_frontend_fail_to_communicate_with_backend_alert"
+  description         = "Action will be triggered when API request to feature flag endpoint failures > 0"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 20
+  time_window         = 20
+  enabled             = contains(var.disabled_alerts, "frontend_fail_to_communicate_with_backend_alert") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+dependencies
+| where type == "Fetch" and name has "api/feature-flags" and success == false and client_Type == "Browser"
+| summarize count() by bin(ago(20m), 5m)
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+
+  action {
+    action_group           = var.action_group_ids
+    custom_webhook_payload = var.wiki_docs_text
+  }
+
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
+}
