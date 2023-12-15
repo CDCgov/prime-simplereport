@@ -59,9 +59,7 @@ describe("TestResult - single disease", () => {
 
     const patientApp = screen.getByTestId("patient-app");
 
-    expect(
-      within(patientApp).getByText("Test result: COVID-19")
-    ).toBeInTheDocument();
+    expect(within(patientApp).getByText("Test result")).toBeInTheDocument();
     expect(
       within(patientApp).getByText("Abbott BinaxNOW (Antigen)")
     ).toBeInTheDocument();
@@ -82,9 +80,7 @@ describe("TestResult - single disease", () => {
 
     const patientApp = screen.getByTestId("patient-app");
 
-    expect(
-      within(patientApp).getByText("Test result: COVID-19")
-    ).toBeInTheDocument();
+    expect(within(patientApp).getByText("Test result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Positive")).toBeInTheDocument();
   });
   it("should show a negative result", () => {
@@ -100,9 +96,7 @@ describe("TestResult - single disease", () => {
 
     const patientApp = screen.getByTestId("patient-app");
 
-    expect(
-      within(patientApp).getByText("Test result: COVID-19")
-    ).toBeInTheDocument();
+    expect(within(patientApp).getByText("Test result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Negative")).toBeInTheDocument();
   });
   it("should show an inconclusive result", () => {
@@ -118,9 +112,7 @@ describe("TestResult - single disease", () => {
 
     const patientApp = screen.getByTestId("patient-app");
 
-    expect(
-      within(patientApp).getByText("Test result: COVID-19")
-    ).toBeInTheDocument();
+    expect(within(patientApp).getByText("Test result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Inconclusive")).toBeInTheDocument();
   });
 });
@@ -140,9 +132,7 @@ describe("TestResult - multiple diseases", () => {
     );
 
     const patientApp = screen.getByTestId("patient-app");
-    expect(
-      within(patientApp).getByText("Test results: COVID-19 and flu")
-    ).toBeInTheDocument();
+    expect(within(patientApp).getByText("Test results")).toBeInTheDocument();
     expect(within(patientApp).getByText("COVID-19 result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Flu A result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Flu B result")).toBeInTheDocument();
@@ -164,9 +154,7 @@ describe("TestResult - multiple diseases", () => {
     );
 
     const patientApp = screen.getByTestId("patient-app");
-    expect(
-      within(patientApp).getByText("Test results: COVID-19 and flu")
-    ).toBeInTheDocument();
+    expect(within(patientApp).getByText("Test results")).toBeInTheDocument();
     expect(within(patientApp).getByText("COVID-19 result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Flu A result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Flu B result")).toBeInTheDocument();
@@ -192,9 +180,7 @@ describe("TestResult - multiple diseases", () => {
     );
 
     const patientApp = screen.getByTestId("patient-app");
-    expect(
-      within(patientApp).getByText("Test results: COVID-19 and flu")
-    ).toBeInTheDocument();
+    expect(within(patientApp).getByText("Test results")).toBeInTheDocument();
     expect(within(patientApp).getByText("COVID-19 result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Flu A result")).toBeInTheDocument();
     expect(within(patientApp).getByText("Flu B result")).toBeInTheDocument();
@@ -214,9 +200,7 @@ describe("TestResult - multiple diseases", () => {
     );
 
     const patientApp = screen.getByTestId("patient-app");
-    expect(
-      within(patientApp).getByText("Test results: COVID-19 and flu")
-    ).toBeInTheDocument();
+    expect(within(patientApp).getByText("Test results")).toBeInTheDocument();
     expect(within(patientApp).getByText("COVID-19 result")).toBeInTheDocument();
     expect(within(patientApp).getByText("RSV result")).toBeInTheDocument();
     expect(within(patientApp).getAllByText("Positive")).toHaveLength(1);
