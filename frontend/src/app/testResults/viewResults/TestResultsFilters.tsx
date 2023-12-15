@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import moment from "moment/moment";
 import { useLazyQuery } from "@apollo/client";
+import { useFeature } from "flagged";
 
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import SearchResults from "../../testQueue/addToQueue/SearchResults";
@@ -93,6 +94,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
     useAppSelector((state) => state.user.permissions),
     appPermissions.settings.canView
   );
+  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
 
   /**
    * Patient search
@@ -266,6 +268,30 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
     }))
   );
 
+  /**
+   * Disease select
+   */
+  const diseaseOptions = [
+    {
+      value: MULTIPLEX_DISEASES.COVID_19,
+      label: MULTIPLEX_DISEASES.COVID_19,
+    },
+    {
+      value: MULTIPLEX_DISEASES.FLU_A,
+      label: MULTIPLEX_DISEASES.FLU_A,
+    },
+    {
+      value: MULTIPLEX_DISEASES.FLU_B,
+      label: MULTIPLEX_DISEASES.FLU_B,
+    },
+  ];
+  if (singleEntryRsvEnabled) {
+    diseaseOptions.push({
+      value: MULTIPLEX_DISEASES.RSV,
+      label: MULTIPLEX_DISEASES.RSV,
+    });
+  }
+
   useEffect(() => {
     if (data) {
       const patientName = getFilteredPatientName(filterParams, data);
@@ -355,20 +381,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
           label="Condition"
           name="disease"
           value={filterParams.disease ?? ""}
-          options={[
-            {
-              value: MULTIPLEX_DISEASES.COVID_19,
-              label: MULTIPLEX_DISEASES.COVID_19,
-            },
-            {
-              value: MULTIPLEX_DISEASES.FLU_A,
-              label: MULTIPLEX_DISEASES.FLU_A,
-            },
-            {
-              value: MULTIPLEX_DISEASES.FLU_B,
-              label: MULTIPLEX_DISEASES.FLU_B,
-            },
-          ]}
+          options={diseaseOptions}
           defaultSelect
           onChange={setFilterParams("disease")}
         />

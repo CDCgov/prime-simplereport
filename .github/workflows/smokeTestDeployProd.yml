@@ -3,13 +3,14 @@ run-name: Smoke test the deploy for prod by @${{ github.actor }}
 
 on:
   workflow_run:
-    workflows: [ "Deploy Prod" ]
+    workflows: ["Deploy Prod"]
     types:
       - completed
 
 env:
   NODE_VERSION: 18
-  DEPLOY_ENV: prod
+  #  prod env prefix for {env}.simplereport.gov
+  DEPLOY_ENV: www
 
 jobs:
   smoke-test-front-and-back-end:
@@ -19,7 +20,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
       - name: Cache yarn
         uses: actions/cache@v3.3.2
         with:
@@ -32,3 +33,17 @@ jobs:
         uses: ./.github/actions/post-deploy-smoke-test
         with:
           deploy-env: ${{ env.DEPLOY_ENV }}
+  slack_alert:
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [smoke-test-front-and-back-end]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send alert to Slack
+        uses: ./.github/actions/slack-message
+        with:
+          username: ${{ github.actor }}
+          description: |
+            :siren-gif: Post-deploy smoke test couldn't verify that the frontend is talking to the backend. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :siren-gif:
+          webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
+          user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}

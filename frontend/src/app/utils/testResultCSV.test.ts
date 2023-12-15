@@ -27,6 +27,12 @@ const data = [
         },
         testResult: "NEGATIVE",
       },
+      {
+        disease: {
+          name: "RSV",
+        },
+        testResult: "UNDETERMINED",
+      },
     ],
     correctionStatus: "REMOVED",
     reasonForCorrection: "DUPLICATE_TEST",
@@ -74,7 +80,7 @@ const data = [
   },
 ];
 
-const result = [
+const resultNoRSV = [
   {
     "COVID-19 result": "Negative",
     "Device manufacturer": "Access Bio, Inc.",
@@ -118,18 +124,28 @@ const result = [
   },
 ];
 
+const result = [
+  {
+    ...resultNoRSV[0],
+    "RSV result": "Inconclusive",
+  },
+];
+
 describe("parseDataForCSV", () => {
   it("parses multiplex data", () => {
-    expect(parseDataForCSV(data)).toEqual(result);
+    expect(parseDataForCSV(true, data)).toEqual(result);
   });
   it("parse data does not fail if tribalAffiliation is null", () => {
     expect(
-      parseDataForCSV([
+      parseDataForCSV(true, [
         {
           ...data[0],
           patient: { ...data[0].patient, tribalAffiliation: null },
         },
       ])
     ).toEqual(result);
+  });
+  it("doesn't include RSV if parameter is false", () => {
+    expect(parseDataForCSV(false, data)).toEqual(resultNoRSV);
   });
 });

@@ -1,12 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  getResultByDiseaseName,
-  getResultObjByDiseaseName,
-  getSortedResults,
-  hasMultiplexResults,
-} from "../utils/testResults";
+import { getResultByDiseaseName, getSortedResults } from "../utils/testResults";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
 
 interface TestResultsListProps {
@@ -22,6 +17,8 @@ const setDiseaseName = (diseaseName: MultiplexDisease, t: translateFn) => {
       return t("constants.disease.FLUA");
     case MULTIPLEX_DISEASES.FLU_B:
       return t("constants.disease.FLUB");
+    case MULTIPLEX_DISEASES.RSV:
+      return t("constants.disease.RSV");
     default:
       return "";
   }
@@ -97,9 +94,7 @@ const TestResultsList: React.FC<TestResultsListProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const sortedTestResults = hasMultiplexResults(results)
-    ? getSortedResults(results)
-    : [getResultObjByDiseaseName(results, "COVID-19")];
+  const sortedTestResults = getSortedResults(results);
 
   return (
     <>

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Multiplex TestResultDetailsModal matches screenshot 1`] = `
+exports[`multiple diseases TestResultDetailsModal matches screenshot 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -114,6 +114,18 @@ Object {
               class="padding-y-3 border-bottom-1px border-base-lighter"
             >
               POSITIVE
+            </td>
+          </tr>
+          <tr>
+            <th
+              class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
+            >
+              RSV result
+            </th>
+            <td
+              class="padding-y-3 border-bottom-1px border-base-lighter"
+            >
+              UNDETERMINED
             </td>
           </tr>
           <tr>
@@ -308,6 +320,18 @@ Object {
           <th
             class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
           >
+            RSV result
+          </th>
+          <td
+            class="padding-y-3 border-bottom-1px border-base-lighter"
+          >
+            UNDETERMINED
+          </td>
+        </tr>
+        <tr>
+          <th
+            class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
+          >
             Test date
           </th>
           <td
@@ -433,7 +457,7 @@ Object {
 }
 `;
 
-exports[`non-multiplex TestResultDetailsModal matches screenshot 1`] = `
+exports[`single disease TestResultDetailsModal matches screenshot 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
