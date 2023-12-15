@@ -34,6 +34,10 @@ export function getSortedResults(results: MultiplexResults): MultiplexResults {
   );
 }
 
+export function hasMultipleResults(results: MultiplexResults): boolean {
+  return results?.length > 1;
+}
+
 export function hasMultiplexResults(results: MultiplexResults): boolean {
   return results?.length > 1
     ? results.some(

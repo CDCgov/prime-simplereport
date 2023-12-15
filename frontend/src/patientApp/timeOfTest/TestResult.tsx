@@ -10,7 +10,7 @@ import Button from "../../app/commonComponents/Button/Button";
 import MultiplexResultsGuidance from "../../app/commonComponents/MultiplexResultsGuidance";
 import TestResultsList from "../../app/commonComponents/TestResultsList";
 import { formatDateWithTimeOption } from "../../app/utils/date";
-import { hasMultiplexResults } from "../../app/utils/testResults";
+import { hasMultipleResults } from "../../app/utils/testResults";
 import "./TestResult.scss";
 import { useDocumentTitle } from "../../app/utils/hooks";
 
@@ -22,7 +22,6 @@ const TestResult = () => {
   const testResult = useSelector<RootState, VerifyV2Response>(
     (state) => state.testResult
   );
-  const isMultiplex = hasMultiplexResults(testResult.results);
   const fullName = formatFullName(testResult?.patient as any);
   const dateTested = formatDateWithTimeOption(testResult?.dateTested, true);
   const deviceType = testResult?.deviceType.name;
@@ -45,9 +44,9 @@ const TestResult = () => {
         <div className="grid-container maxw-tablet">
           <div className="card usa-prose">
             <h1 className="font-heading-lg">
-              {isMultiplex
-                ? t("testResult.multiplexResultHeader")
-                : t("testResult.covidResultHeader")}
+              {hasMultipleResults(testResult.results)
+                ? t("testResult.multipleResultHeader")
+                : t("testResult.singleResultHeader")}
             </h1>
             <Button
               className="usa-button--unstyled"

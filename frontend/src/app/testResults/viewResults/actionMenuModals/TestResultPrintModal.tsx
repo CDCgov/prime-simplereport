@@ -15,7 +15,7 @@ import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
 import {
   hasCovidResults,
-  hasMultiplexResults,
+  hasMultipleResults,
   hasPositiveFluResults,
   hasPositiveRsvResults,
 } from "../../../utils/testResults";
@@ -87,7 +87,7 @@ export const StaticTestResultModal = ({
     >
       <header className="display-flex flex-align-end flex-justify margin-bottom-1">
         <h1>
-          {hasMultiplexResults(results)
+          {hasMultipleResults(results)
             ? t("testResult.multipleResultHeader")
             : t("testResult.singleResultHeader")}
         </h1>
