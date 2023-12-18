@@ -39,7 +39,7 @@ export const es: LanguageConfig = {
         COVID19: "COVID-19",
         FLUA: "Flu A",
         FLUB: "Flu B",
-        RSV: "RSV",
+        RSV: "VRS",
       },
       role: {
         STAFF: "Personal",
@@ -283,9 +283,8 @@ export const es: LanguageConfig = {
       title: "Resultado de la prueba",
       resultLiteral: "resultado",
       result: "Resultado de SARS-CoV-2",
-      covidResultHeader: "Resultado de la prueba: COVID-19",
-      multiplexResultHeader:
-        "Resultados de las pruebas: COVID-19 y la influenza",
+      singleResultHeader: "Resultado de la prueba",
+      multipleResultHeader: "Resultados de las pruebas",
       downloadResult: "Descargar resultado",
       patient: "Paciente",
       patientDetails: "Detalles del paciente",
@@ -405,6 +404,15 @@ export const es: LanguageConfig = {
           p2: "Para obtener más información, visita <0>Influenza: qué hacer en caso de enfermarse</0> (https://espanol.cdc.gov/flu/treatment/takingcare.htm).",
           highRiskLink: "https://espanol.cdc.gov/flu/highrisk/index.htm",
           treatmentLink: "https://espanol.cdc.gov/flu/treatment/takingcare.htm",
+        },
+      },
+      rsvNotes: {
+        h1: "Para VRS:",
+        positive: {
+          p0: "Por lo general, el virus respiratorio sincitial (VRS o RSV, por sus siglas en inglés) causa síntomas leves similares a los de un resfriado. La mayoría de las personas pueden recuperarse en casa, pero el VRS puede causar enfermedad grave y hospitalización en bebés y personas mayores. Usted puede ayudar a prevenir la propagación del VRS si se queda en casa cuando esté enfermo, evita el contacto cercano con otras personas y se lava las manos con frecuencia.",
+          p1: "Puede tomar medidas para aliviar los síntomas, como beber suficientes líquidos y tomar medicamentos de venta sin receta para controlar el dolor y la fiebre. Si su hijo/a tiene el VRS, hable con su proveedor de atención médica antes de darle medicamentos para el resfriado sin receta.",
+          p2: "Comuníquese con un profesional de atención médica si sus síntomas empeoran, tiene problemas para respirar o está deshidratado. <0>Obtenga más información sobre los síntomas y cuidados de la infección por el VRS en el sitio web de los CDC</0>",
+          rsvSymptomsLink: "https://espanol.cdc.gov/rsv/about/symptoms.html",
         },
       },
       tos: {

@@ -272,8 +272,8 @@ export const en = {
       title: "Test result",
       resultLiteral: "result",
       result: "SARS-CoV-2 result",
-      covidResultHeader: "Test result: COVID-19",
-      multiplexResultHeader: "Test results: COVID-19 and flu",
+      singleResultHeader: "Test result",
+      multipleResultHeader: "Test results",
       downloadResult: "Download result",
       patient: "Patient",
       patientDetails: "Patient details",
@@ -378,6 +378,15 @@ export const en = {
           p2: "For more information, visit <0> Flu: What To Do If You Get Sick</0> (cdc.gov/flu/treatment/takingcare.htm).",
           highRiskLink: "https://www.cdc.gov/flu/highrisk",
           treatmentLink: "https://www.cdc.gov/flu/treatment/takingcare.htm",
+        },
+      },
+      rsvNotes: {
+        h1: "For RSV:",
+        positive: {
+          p0: "RSV usually causes mild, cold-like symptoms. Most people can recover at home, but RSV can cause serious illness and hospitalization for infants and older adults. You can help prevent the spread of RSV by staying at home when sick, avoiding close contact with others, and washing your hands frequently.",
+          p1: "You can take steps to relieve symptoms, including managing fever and pain with over-the-counter fever reducers, and drinking enough fluids. If your child has RSV, talk to their healthcare provider before giving them non-prescription cold medicine.",
+          p2: "Contact your healthcare professional if your symptoms worsen, you are having trouble breathing, or are dehydrated. <0>Learn more about RSV symptoms and care on the CDC website.</0>",
+          rsvSymptomsLink: "https://www.cdc.gov/rsv/about/symptoms.html",
         },
       },
       tos: {

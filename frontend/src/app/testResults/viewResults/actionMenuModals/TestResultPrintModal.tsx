@@ -15,8 +15,9 @@ import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
 import {
   hasCovidResults,
-  hasMultiplexResults,
+  hasMultipleResults,
   hasPositiveFluResults,
+  hasPositiveRsvResults,
 } from "../../../utils/testResults";
 import { setLanguage } from "../../../utils/languages";
 
@@ -86,9 +87,9 @@ export const StaticTestResultModal = ({
     >
       <header className="display-flex flex-align-end flex-justify margin-bottom-1">
         <h1>
-          {hasMultiplexResults(results)
-            ? t("testResult.multiplexResultHeader")
-            : t("testResult.covidResultHeader")}
+          {hasMultipleResults(results)
+            ? t("testResult.multipleResultHeader")
+            : t("testResult.singleResultHeader")}
         </h1>
         <img
           alt="SimpleReport logo"
@@ -184,7 +185,9 @@ export const StaticTestResultModal = ({
             <TestResultsList results={results} isPatientApp={isPatientApp} />
           </ul>
         </section>
-        {(hasCovidResults(results) || hasPositiveFluResults(results)) && (
+        {(hasCovidResults(results) ||
+          hasPositiveFluResults(results) ||
+          hasPositiveRsvResults(results)) && (
           <section className="sr-result-section sr-result-next-steps">
             <h2>{t("testResult.moreInformation")}</h2>
             <MultiplexResultsGuidance

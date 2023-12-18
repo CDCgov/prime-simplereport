@@ -34,6 +34,10 @@ export function getSortedResults(results: MultiplexResults): MultiplexResults {
   );
 }
 
+export function hasMultipleResults(results: MultiplexResults): boolean {
+  return results?.length > 1;
+}
+
 export function hasMultiplexResults(results: MultiplexResults): boolean {
   return results?.length > 1
     ? results.some(
@@ -56,6 +60,16 @@ export function hasCovidResults(results: MultiplexResults): boolean {
   return (
     results.filter((multiplexResult: MultiplexResult) =>
       multiplexResult.disease.name.includes("COVID-19")
+    ).length > 0
+  );
+}
+
+export function hasPositiveRsvResults(results: MultiplexResults): boolean {
+  return (
+    results.filter(
+      (multiplexResult: MultiplexResult) =>
+        multiplexResult.disease.name.includes("RSV") &&
+        getTestResult(multiplexResult) === "POSITIVE"
     ).length > 0
   );
 }

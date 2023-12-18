@@ -92,7 +92,7 @@ describe("TestResultPrintModal with only COVID results", () => {
 
   it("should render only COVID information", () => {
     renderWithUser();
-    expect(screen.getByText("Test result: COVID-19")).toBeInTheDocument();
+    expect(screen.getByText("For COVID-19:")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {
@@ -136,9 +136,7 @@ describe("TestResultPrintModal with multiplex results in SimpleReport App", () =
   });
 
   it("should render flu information", () => {
-    expect(
-      screen.getByText("Test results: COVID-19 and flu")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Test results")).toBeInTheDocument();
     expect(screen.getByText("For flu A and B:")).toBeInTheDocument();
   });
 
@@ -185,9 +183,7 @@ describe("TestResultPrintModal with multiplex results in Pxp App", () => {
   });
 
   it("should render information", () => {
-    expect(
-      screen.getByText("Test results: COVID-19 and flu")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Test results")).toBeInTheDocument();
     expect(screen.getByText("fake npi for pxp")).toBeInTheDocument();
     expect(screen.getAllByText("Negative").length).toBe(3);
   });
@@ -231,11 +227,8 @@ describe("TestResultPrintModal with RSV and flu results", () => {
     );
   });
 
-  // this should be changed when we correct our copy to the right header text (#7000)
   it("should render flu information", () => {
-    expect(
-      screen.getByText("Test results: COVID-19 and flu")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Test results")).toBeInTheDocument();
     expect(screen.getByText("For flu A and B:")).toBeInTheDocument();
   });
 
