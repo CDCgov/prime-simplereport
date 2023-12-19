@@ -22,7 +22,7 @@ twilio:
   from-number: "+14045312484"
 features:
   hivEnabled: false
-  singleEntryRsvEnabled: false
+  singleEntryRsvEnabled: true
   agnosticEnabled: false
-  testCardRefactorEnabled: false
+  testCardRefactorEnabled: true
   agnosticBulkUploadEnabled: false
