@@ -1,13 +1,37 @@
-import { generatePatient, loginHooks } from "../support/e2e";
+import { generatePatient, loginHooks, testNumber } from "../support/e2e";
+import {
+  cleanUpPreviousRunSetupData,
+  setupRunData,
+} from "../utils/setup-utils";
 
 const patients = [generatePatient(), generatePatient()];
+const specRunName = "spec02b";
+
+const patientToCsv = (patient) => {
+  return `${patient.lastName},${patient.firstName},,,unknown,5/11/1933,unknown,unknown,123 Main Street,,Washington,,DC,20008,USA,565-666-7777,MOBILE,No,No,VISITOR,foo@example.com`;
+};
 
 describe("Bulk upload patients", () => {
   loginHooks();
 
-  const patientToCsv = (patient) => {
-    return `${patient.lastName},${patient.firstName},,,unknown,5/11/1933,unknown,unknown,123 Main Street,,Washington,,DC,20008,USA,565-666-7777,MOBILE,No,No,VISITOR,foo@example.com`;
-  };
+  before("setup data", () => {
+    cy.task("getSpecRunVersionName", specRunName).then(
+      (prevSpecRunVersionName) => {
+        let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
+
+        if (prevSpecRunVersionName) {
+          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
+        }
+        let data = {
+          specRunName: specRunName,
+          versionName: currentSpecRunVersionName,
+        };
+        cy.task("setSpecRunVersionName", data);
+        setupRunData(currentSpecRunVersionName);
+      },
+    );
+  });
+
   it("navigates to the bulk upload page", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
