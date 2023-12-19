@@ -11,4 +11,4 @@ simple-report:
 twilio:
   enabled: false
 features:
-  testCardRefactorEnabled: false
+  testCardRefactorEnabled: true

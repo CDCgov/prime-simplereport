@@ -14,4 +14,4 @@ simple-report:
   experian:
     enabled: true
 features:
-  testCardRefactorEnabled: false
+  testCardRefactorEnabled: true
