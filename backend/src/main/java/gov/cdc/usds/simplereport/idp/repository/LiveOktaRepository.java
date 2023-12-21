@@ -692,6 +692,11 @@ public class LiveOktaRepository implements OktaRepository {
         .build();
   }
 
+  @Override
+  public String getApplicationStatusForHealthCheck() {
+    return app.getStatus().toString();
+  }
+
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
       Collection<String> authorities) {
     List<OrganizationRoleClaims> claims = extractor.convertClaims(authorities);

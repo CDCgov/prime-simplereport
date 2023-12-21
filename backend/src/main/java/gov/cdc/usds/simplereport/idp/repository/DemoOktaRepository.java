@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import static gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator.ACTIVE_LITERAL;
+
 import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -430,5 +432,10 @@ public class DemoOktaRepository implements OktaRepository {
     }
 
     return accessCount;
+  }
+
+  @Override
+  public String getApplicationStatusForHealthCheck() {
+    return ACTIVE_LITERAL;
   }
 }
