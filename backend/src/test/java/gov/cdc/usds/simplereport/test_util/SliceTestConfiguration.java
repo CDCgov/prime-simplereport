@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
-import gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
@@ -101,8 +100,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   CurrentTenantDataAccessContextHolder.class,
   WebhookContextHolder.class,
   TenantDataAccessService.class,
-  PatientSelfRegistrationLinkService.class,
-  BackendAndDatabaseHealthIndicator.class
+  PatientSelfRegistrationLinkService.class
 })
 @EnableConfigurationProperties({InitialSetupProperties.class, AuthorizationProperties.class})
 public class SliceTestConfiguration {
