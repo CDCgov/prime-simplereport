@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.config;
 
 import com.okta.spring.boot.oauth.Okta;
-import gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +56,6 @@ public class SecurityConfiguration {
                     .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
                     .permitAll()
                     .requestMatchers(EndpointRequest.to(InfoEndpoint.class))
-                    .permitAll()
-                    .requestMatchers(EndpointRequest.to(BackendAndDatabaseHealthIndicator.class))
                     .permitAll()
                     // Patient experience authorization is handled in PatientExperienceController
                     // If this configuration changes, please update the documentation on both sides

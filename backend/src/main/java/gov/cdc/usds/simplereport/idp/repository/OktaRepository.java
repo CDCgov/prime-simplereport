@@ -76,6 +76,4 @@ public interface OktaRepository {
   Integer getUsersInSingleFacility(Facility facility);
 
   PartialOktaUser findUser(String username);
-
-  String getApplicationStatusForHealthCheck();
 }
