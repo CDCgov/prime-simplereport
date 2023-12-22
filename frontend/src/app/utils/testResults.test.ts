@@ -4,7 +4,7 @@ import {
   getResultByDiseaseName,
   getResultObjByDiseaseName,
   getSortedResults,
-  hasMultiplexResults,
+  hasMultipleResults,
   hasPositiveFluResults,
 } from "./testResults";
 
@@ -154,43 +154,37 @@ describe("getSortedResults", () => {
   });
 });
 
-describe("hasMultiplexResults", () => {
-  describe("MultiplexResults", () => {
-    let results: MultiplexResult[] = [];
-    it("returns true if it contains a multiplex result", () => {
-      results = [
-        {
-          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-          testResult: TEST_RESULTS.NEGATIVE,
-        },
-        {
-          disease: { name: MULTIPLEX_DISEASES.FLU_A },
-          testResult: TEST_RESULTS.POSITIVE,
-        },
-        {
-          disease: { name: MULTIPLEX_DISEASES.FLU_B },
-          testResult: TEST_RESULTS.POSITIVE,
-        },
-      ];
-      expect(hasMultiplexResults(results)).toEqual(true);
-    });
-    it("returns false if it only contains one result", () => {
-      results = [
-        {
-          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-          testResult: TEST_RESULTS.NEGATIVE,
-        },
-      ];
-      expect(hasMultiplexResults(results)).toEqual(false);
-    });
-    it("returns false if has no results", () => {
-      results = [];
-      expect(hasMultiplexResults(results)).toEqual(false);
-    });
-    it("returns false if it contains no results", () => {
-      results = [];
-      expect(hasMultiplexResults(results)).toEqual(false);
-    });
+describe("hasMultipleResults", () => {
+  let results: MultiplexResult[] = [];
+  it("returns true if it contains multiple results", () => {
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+    ];
+    expect(hasMultipleResults(results)).toEqual(true);
+  });
+  it("returns false if it only contains one result", () => {
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+    ];
+    expect(hasMultipleResults(results)).toEqual(false);
+  });
+  it("returns false if has no results", () => {
+    results = [];
+    expect(hasMultipleResults(results)).toEqual(false);
   });
 });
 

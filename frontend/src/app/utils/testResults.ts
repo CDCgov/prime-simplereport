@@ -38,14 +38,6 @@ export function hasMultipleResults(results: MultiplexResults): boolean {
   return results?.length > 1;
 }
 
-export function hasMultiplexResults(results: MultiplexResults): boolean {
-  return results?.length > 1
-    ? results.some(
-        (result: MultiplexResult) => result.disease?.name !== "COVID-19"
-      )
-    : false;
-}
-
 export function hasPositiveFluResults(results: MultiplexResults): boolean {
   return (
     results.filter(
