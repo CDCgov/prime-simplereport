@@ -236,14 +236,6 @@ public class TestResultUploadService {
     var updatedSpecimenType =
         modifyRowSpecimenNameToSNOMED(row.get(SPECIMEN_TYPE_COLUMN_NAME).toLowerCase());
 
-    var testingLabAddress =
-        new StreetAddress(
-            row.get("testing_lab_street"),
-            row.get("testing_lab_street2"),
-            row.get("testing_lab_city"),
-            row.get("testing_lab_state"),
-            row.get("testing_lab_zip_code"),
-            null);
     var providerAddress =
         new StreetAddress(
             row.get("ordering_provider_street"),
@@ -255,9 +247,7 @@ public class TestResultUploadService {
 
     var testResultDate =
         convertToZonedDateTime(
-            row.get(TEST_RESULT_DATE_COLUMN_NAME),
-            resultsUploaderCachingService,
-            testingLabAddress);
+            row.get(TEST_RESULT_DATE_COLUMN_NAME), resultsUploaderCachingService, providerAddress);
 
     var orderTestDate =
         convertToZonedDateTime(
@@ -276,7 +266,7 @@ public class TestResultUploadService {
             ? convertToZonedDateTime(
                 row.get(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME),
                 resultsUploaderCachingService,
-                testingLabAddress)
+                providerAddress)
             : orderTestDate;
 
     var dateResultReleased =
@@ -284,7 +274,7 @@ public class TestResultUploadService {
             ? convertToZonedDateTime(
                 row.get(DATE_RESULT_RELEASED_COLUMN_NAME),
                 resultsUploaderCachingService,
-                testingLabAddress)
+                providerAddress)
             : testResultDate;
 
     row.put(SPECIMEN_TYPE_COLUMN_NAME, updatedSpecimenType);

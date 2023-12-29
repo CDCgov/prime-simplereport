@@ -138,7 +138,7 @@ public class AddressValidationService {
     try {
       timezoneInfo = getTimezoneInfoByLookup(lookup);
     } catch (InvalidAddressException | IllegalGraphqlArgumentException exception) {
-      log.error("Unable to find timezone by testing lab address", exception);
+      log.error("Unable to find timezone with provided address", exception);
     }
     if (timezoneInfo == null) {
       return null;

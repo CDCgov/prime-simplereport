@@ -29,6 +29,7 @@ import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -47,6 +48,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -706,6 +708,63 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertThat(row.getTestingLabState().getValue()).isEqualTo("AL");
     assertThat(row.getTestingLabZipCode().getValue()).isEqualTo("35228");
     assertThat(row.getTestingLabPhoneNumber().getValue()).isEqualTo("205-888-2000");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_handlesDefaultDateTimeZone_withValidOrderingProviderAddress() {
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
+    UploadResponse response = buildUploadResponse();
+    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    var providerAddress = new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
+    when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress))
+        .thenReturn(ZoneId.of("US/Pacific"));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    TestResultRow row = getRowFromUpload(dataHubMock);
+    assertThat(row.getTestResultDate().getValue()).isEqualTo("2021-12-23T12:00-08:00");
+    assertThat(row.getOrderTestDate().getValue()).isEqualTo("2021-12-20T12:00-08:00");
+    assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo("2021-12-20T12:00-08:00");
+    assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
+        .isEqualTo("2021-12-20T12:00-08:00");
+    assertThat(row.getDateResultReleased().getValue()).isEqualTo("2021-12-23T12:00-08:00");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_defaultsToEasternTimeZone_withInvalidOrderingProviderAddress() {
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
+    UploadResponse response = buildUploadResponse();
+    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    var providerAddress = new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
+    when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress)).thenReturn(null);
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    TestResultRow row = getRowFromUpload(dataHubMock);
+    assertThat(row.getTestResultDate().getValue()).isEqualTo("2021-12-23T12:00-05:00");
+    assertThat(row.getOrderTestDate().getValue()).isEqualTo("2021-12-20T12:00-05:00");
+    assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo("2021-12-20T12:00-05:00");
+    assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
+        .isEqualTo("2021-12-20T12:00-05:00");
+    assertThat(row.getDateResultReleased().getValue()).isEqualTo("2021-12-23T12:00-05:00");
   }
 
   @Test
