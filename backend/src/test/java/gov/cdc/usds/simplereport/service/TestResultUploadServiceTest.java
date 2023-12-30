@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -714,6 +715,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_processCsv_handlesDefaultDateTimeZone_withValidOrderingProviderAddress() {
     // GIVEN
+    ZoneId zoneId = ZoneId.of("US/Pacific");
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
     UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
@@ -721,9 +723,9 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
-    var providerAddress = new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
-    when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress))
-        .thenReturn(ZoneId.of("US/Pacific"));
+    StreetAddress providerAddress =
+        new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
+    when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress)).thenReturn(zoneId);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
     // WHEN
@@ -731,12 +733,16 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     // THEN
     TestResultRow row = getRowFromUpload(dataHubMock);
-    assertThat(row.getTestResultDate().getValue()).isEqualTo("2021-12-23T12:00-08:00");
-    assertThat(row.getOrderTestDate().getValue()).isEqualTo("2021-12-20T12:00-08:00");
-    assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo("2021-12-20T12:00-08:00");
+    String expectedTestResultDateTime =
+        ZonedDateTime.of(2021, 12, 23, 12, 0, 0, 0, zoneId).toOffsetDateTime().toString();
+    String expectedOrderTestDateTime =
+        ZonedDateTime.of(2021, 12, 20, 12, 0, 0, 0, zoneId).toOffsetDateTime().toString();
+    assertThat(row.getTestResultDate().getValue()).isEqualTo(expectedTestResultDateTime);
+    assertThat(row.getOrderTestDate().getValue()).isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo(expectedOrderTestDateTime);
     assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
-        .isEqualTo("2021-12-20T12:00-08:00");
-    assertThat(row.getDateResultReleased().getValue()).isEqualTo("2021-12-23T12:00-08:00");
+        .isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getDateResultReleased().getValue()).isEqualTo(expectedTestResultDateTime);
   }
 
   @Test
@@ -750,7 +756,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
-    var providerAddress = new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
+    StreetAddress providerAddress =
+        new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
     when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress)).thenReturn(null);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
@@ -759,12 +766,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     // THEN
     TestResultRow row = getRowFromUpload(dataHubMock);
-    assertThat(row.getTestResultDate().getValue()).isEqualTo("2021-12-23T12:00-05:00");
-    assertThat(row.getOrderTestDate().getValue()).isEqualTo("2021-12-20T12:00-05:00");
-    assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo("2021-12-20T12:00-05:00");
+    String expectedTestResultDateTime =
+        ZonedDateTime.of(2021, 12, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"))
+            .toOffsetDateTime()
+            .toString();
+    String expectedOrderTestDateTime =
+        ZonedDateTime.of(2021, 12, 20, 12, 0, 0, 0, ZoneId.of("US/Eastern"))
+            .toOffsetDateTime()
+            .toString();
+    assertThat(row.getTestResultDate().getValue()).isEqualTo(expectedTestResultDateTime);
+    assertThat(row.getOrderTestDate().getValue()).isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo(expectedOrderTestDateTime);
     assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
-        .isEqualTo("2021-12-20T12:00-05:00");
-    assertThat(row.getDateResultReleased().getValue()).isEqualTo("2021-12-23T12:00-05:00");
+        .isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getDateResultReleased().getValue()).isEqualTo(expectedTestResultDateTime);
   }
 
   @Test
