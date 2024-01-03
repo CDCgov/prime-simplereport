@@ -35,14 +35,9 @@ resource "azurerm_container_group" "db_client" {
       share_name           = var.storage_share_name
     }
 
-    readiness_probe {
-      exec                  = ["cat", "/tmp/psql_version"]
-      initial_delay_seconds = 30
-    }
-
     liveness_probe {
       exec                  = ["cat", "/tmp/psql_version"]
-      initial_delay_seconds = 30
+      initial_delay_seconds = 60
       period_seconds        = 10
     }
   }
