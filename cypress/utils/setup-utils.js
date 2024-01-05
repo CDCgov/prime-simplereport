@@ -244,3 +244,9 @@ export const setupTestOrder = (
       return submitQueueItem(submitQueueItemVariables);
     });
 };
+
+export const accessOrganizationByName = (orgName) => {
+  return getOrganizationsByName(orgName)
+    .then((res) =>
+      accessOrganization(res.body.data.organizationsByName[0].externalId));
+};
