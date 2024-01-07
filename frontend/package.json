@@ -13,7 +13,7 @@
     "@microsoft/applicationinsights-react-js": "^3.4.3",
     "@microsoft/applicationinsights-web": "^2.5.10",
     "@szhsin/react-menu": "^1.5.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
     "@trussworks/react-uswds": "5.1.1",
     "@types/google-libphonenumber": "^7.4.23",
