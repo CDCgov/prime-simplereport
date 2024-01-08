@@ -11,38 +11,44 @@ jobs:
     steps:
       # backend, cypress, database, frontend, frontend-lighthouse, nginx
       - uses: actions/delete-package-versions@v4
-        with: 
-          package-name: 'backend'
+        with:
+          package-name: 'prime-simplereport/backend'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
       - uses: actions/delete-package-versions@v4
-        with: 
-          package-name: 'cypress'
+        with:
+          package-name: 'prime-simplereport/cypress'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
       - uses: actions/delete-package-versions@v4
-        with: 
-          package-name: 'database'
+        with:
+          package-name: 'prime-simplereport/database'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
       - uses: actions/delete-package-versions@v4
-        with: 
-          package-name: 'frontend'
+        with:
+          package-name: 'prime-simplereport/db'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
       - uses: actions/delete-package-versions@v4
-        with: 
-          package-name: 'frontend-lighthouse'
+        with:
+          package-name: 'prime-simplereport/frontend'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
       - uses: actions/delete-package-versions@v4
-        with: 
-          package-name: 'nginx'
+        with:
+          package-name: 'prime-simplereport/frontend-lighthouse'
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: 'true'
+      - uses: actions/delete-package-versions@v4
+        with:
+          package-name: 'prime-simplereport/nginx'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'

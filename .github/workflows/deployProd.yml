@@ -2,7 +2,7 @@ name: Deploy Prod
 
 on:
   workflow_run:
-    workflows: ["Deploy Stg"]
+    workflows: [ "Deploy Stg" ]
     types:
       - completed
 
@@ -28,6 +28,7 @@ jobs:
 
   build_frontend:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/build-frontend
@@ -40,11 +41,11 @@ jobs:
           okta_enabled: true
           okta_url: https://hhs-prime.okta.com
           okta_client_id: 0oa5ahrdfSpxmNZO74h6
-          base_domain_name: www.simplereport.gov
+          base_domain_name: ${{ vars.BASE_DOMAIN_NAME }}
 
   prerelease_backend:
     runs-on: ubuntu-latest
-    needs: [build_frontend, build_docker]
+    needs: [ build_frontend, build_docker ]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/tf-deploy
@@ -73,7 +74,7 @@ jobs:
     environment:
       name: Production
       url: https://simplereport.gov
-    needs: [prerelease_backend]
+    needs: [ prerelease_backend ]
     steps:
       - uses: actions/checkout@v4
       - name: Promote and deploy
@@ -86,7 +87,7 @@ jobs:
   slack_alert:
     runs-on: ubuntu-latest
     if: failure()
-    needs: [deploy]
+    needs: [ deploy ]
     steps:
       - uses: actions/checkout@v4
       - name: Send alert to Slack
@@ -97,3 +98,5 @@ jobs:
             :siren-gif: Deploy to ${{ env.DEPLOY_ENV }} failed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :siren-gif:
           webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
           user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}
+
+# a post-prod health check workflow is defined in smokeTestDeployProd. See the Alert response wiki page for more details

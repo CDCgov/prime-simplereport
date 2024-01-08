@@ -200,7 +200,7 @@ resource "azurerm_app_service_certificate" "app" {
   name                = "new-sr-wildcard"
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
-  key_vault_secret_id = "https://simple-report-global.vault.azure.net/certificates/new-sr-wildcard/387cec9bcc254ac7970aa21311b075fc"
+  key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.secret_id
 }
 
 resource "azurerm_app_service_certificate_binding" "app" {

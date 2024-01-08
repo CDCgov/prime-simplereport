@@ -29,6 +29,7 @@ import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -47,6 +48,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -706,6 +709,77 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertThat(row.getTestingLabState().getValue()).isEqualTo("AL");
     assertThat(row.getTestingLabZipCode().getValue()).isEqualTo("35228");
     assertThat(row.getTestingLabPhoneNumber().getValue()).isEqualTo("205-888-2000");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_handlesDefaultDateTimeZone_withValidOrderingProviderAddress() {
+    // GIVEN
+    ZoneId zoneId = ZoneId.of("US/Pacific");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
+    UploadResponse response = buildUploadResponse();
+    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    StreetAddress providerAddress =
+        new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
+    when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress)).thenReturn(zoneId);
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    TestResultRow row = getRowFromUpload(dataHubMock);
+    String expectedTestResultDateTime =
+        ZonedDateTime.of(2021, 12, 23, 12, 0, 0, 0, zoneId).toOffsetDateTime().toString();
+    String expectedOrderTestDateTime =
+        ZonedDateTime.of(2021, 12, 20, 12, 0, 0, 0, zoneId).toOffsetDateTime().toString();
+    assertThat(row.getTestResultDate().getValue()).isEqualTo(expectedTestResultDateTime);
+    assertThat(row.getOrderTestDate().getValue()).isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
+        .isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getDateResultReleased().getValue()).isEqualTo(expectedTestResultDateTime);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_defaultsToEasternTimeZone_withInvalidOrderingProviderAddress() {
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
+    UploadResponse response = buildUploadResponse();
+    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+    StreetAddress providerAddress =
+        new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
+    when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress)).thenReturn(null);
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    TestResultRow row = getRowFromUpload(dataHubMock);
+    String expectedTestResultDateTime =
+        ZonedDateTime.of(2021, 12, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"))
+            .toOffsetDateTime()
+            .toString();
+    String expectedOrderTestDateTime =
+        ZonedDateTime.of(2021, 12, 20, 12, 0, 0, 0, ZoneId.of("US/Eastern"))
+            .toOffsetDateTime()
+            .toString();
+    assertThat(row.getTestResultDate().getValue()).isEqualTo(expectedTestResultDateTime);
+    assertThat(row.getOrderTestDate().getValue()).isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
+        .isEqualTo(expectedOrderTestDateTime);
+    assertThat(row.getDateResultReleased().getValue()).isEqualTo(expectedTestResultDateTime);
   }
 
   @Test

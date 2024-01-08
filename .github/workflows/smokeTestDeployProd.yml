@@ -36,7 +36,7 @@ jobs:
   slack_alert:
     runs-on: ubuntu-latest
     if: failure()
-    needs: [ smoke-test-front-and-back-end ]
+    needs: [smoke-test-front-and-back-end]
     steps:
       - uses: actions/checkout@v4
       - name: Send alert to Slack

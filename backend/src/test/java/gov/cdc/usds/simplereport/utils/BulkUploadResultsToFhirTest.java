@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -538,13 +539,14 @@ public class BulkUploadResultsToFhirTest {
 
   @Test
   void convertExistingCsv_setsOrderingProviderTimezone_forNoTimezoneInDates() {
-    when(resultsUploaderCachingService.getZoneIdByAddress(any()))
-        .thenReturn(ZoneId.of("US/Mountain"));
+    ZoneId zoneId = ZoneId.of("US/Mountain");
+    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenReturn(zoneId);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-dates-no-timezone.csv");
 
-    Instant orderTestDate = Instant.parse("2021-12-19T12:00:00-07:00");
-    Instant specimenCollectionDate = Instant.parse("2021-12-20T12:00:00-07:00");
-    Instant testResultDate = Instant.parse("2021-12-23T12:00:00-07:00");
+    Instant orderTestDate = ZonedDateTime.of(2021, 12, 19, 12, 0, 0, 0, zoneId).toInstant();
+    Instant specimenCollectionDate =
+        ZonedDateTime.of(2021, 12, 20, 12, 0, 0, 0, zoneId).toInstant();
+    Instant testResultDate = ZonedDateTime.of(2021, 12, 23, 12, 0, 0, 0, zoneId).toInstant();
 
     FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
     var serializedBundles = bundleRecord.serializedBundle();
@@ -574,13 +576,15 @@ public class BulkUploadResultsToFhirTest {
 
   @Test
   void convertExistingCsv_setsEasternTimeDefaultTimeZone_forIncorrectOrderingProviderAddress() {
+    ZoneId zoneId = ZoneId.of("US/Eastern");
     // mock invalid address response
     when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenReturn(null);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-dates-no-timezone.csv");
 
-    Instant orderTestDate = Instant.parse("2021-12-19T12:00:00-05:00");
-    Instant specimenCollectionDate = Instant.parse("2021-12-20T12:00:00-05:00");
-    Instant testResultDate = Instant.parse("2021-12-23T12:00:00-05:00");
+    Instant orderTestDate = ZonedDateTime.of(2021, 12, 19, 12, 0, 0, 0, zoneId).toInstant();
+    Instant specimenCollectionDate =
+        ZonedDateTime.of(2021, 12, 20, 12, 0, 0, 0, zoneId).toInstant();
+    Instant testResultDate = ZonedDateTime.of(2021, 12, 23, 12, 0, 0, 0, zoneId).toInstant();
 
     FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
     var serializedBundles = bundleRecord.serializedBundle();
