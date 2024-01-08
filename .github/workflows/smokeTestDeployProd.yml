@@ -9,8 +9,7 @@ on:
   #     - completed
 
 env:
-  NODE_VERSION: 18
-  DEPLOY_ENV: dev6
+  BASE_DOMAIN_NAME: www.dev6.simplereport.gov
 
 jobs:
   smoke-test-front-and-back-end:
@@ -32,11 +31,11 @@ jobs:
       - name: Smoke test the env
         uses: ./.github/actions/post-deploy-smoke-test
         with:
-          deploy-env: ${{ env.DEPLOY_ENV }}
+          base_domain_name: ${{ env.BASE_DOMAIN_NAME }}
   slack_alert:
     runs-on: ubuntu-latest
     if: failure()
-    needs: [smoke-test-front-and-back-end]
+    needs: [ smoke-test-front-and-back-end ]
     steps:
       - uses: actions/checkout@v4
       - name: Send alert to Slack
