@@ -4,7 +4,7 @@ type Errors<T> = Record<keyof T, string>;
 
 interface FormValidProps<T> {
   data: T;
-  schema: yup.SchemaOf<T>;
+  schema: yup.AnySchema<T>;
 }
 
 interface Success {
@@ -48,7 +48,7 @@ export const isFormValid = async <T>({
 interface FieldValidProps<T> {
   data: T;
   field: keyof T;
-  schema: yup.SchemaOf<T>;
+  schema: yup.AnyObjectSchema;
   errors: Errors<T>;
 }
 

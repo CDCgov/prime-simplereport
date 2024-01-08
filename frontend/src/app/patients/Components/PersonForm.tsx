@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
-import { SchemaOf } from "yup";
+import { AnyObjectSchema } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox, Label, Textarea } from "@trussworks/react-uswds";
 
@@ -13,11 +13,7 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils/srToast";
 import FormGroup from "../../commonComponents/FormGroup";
-import {
-  PersonErrors,
-  PersonUpdateFields,
-  usePersonSchemata,
-} from "../personSchema";
+import { PersonErrors, usePersonSchemata } from "../personSchema";
 import { TestResultDeliveryPreference } from "../TestResultDeliveryPreference";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
@@ -103,7 +99,7 @@ const PersonForm = (props: Props) => {
     getValidationError,
   } = usePersonSchemata();
 
-  const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
+  const schemata: Record<PersonFormView, AnyObjectSchema> = {
     [PersonFormView.APP]: personSchema,
     [PersonFormView.PXP]: personUpdateSchema,
     [PersonFormView.SELF_REGISTRATION]: selfRegistrationSchema,
