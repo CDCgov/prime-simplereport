@@ -28,12 +28,15 @@ public class BackendAndDatabaseHealthIndicator implements HealthIndicator {
         log.info("Okta status didn't return ACTIVE, instead returned " + oktaStatus);
         return Health.down().build();
       }
-
       return Health.up().build();
-    } catch (JDBCConnectionException e) {
+    } catch (IllegalArgumentException e) {
+      // reach into the ff repository returned a bad value
       return Health.down().build();
-      // Okta API call errored
+    } catch (JDBCConnectionException e) {
+      // db connection issue
+      return Health.down().build();
     } catch (ApiException e) {
+      // Okta API call errored
       log.info(e.getMessage());
       return Health.down().build();
     }

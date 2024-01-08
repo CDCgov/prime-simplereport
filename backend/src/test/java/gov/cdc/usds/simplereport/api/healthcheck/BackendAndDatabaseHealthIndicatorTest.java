@@ -36,10 +36,18 @@ class BackendAndDatabaseHealthIndicatorTest extends BaseRepositoryTest {
   }
 
   @Test
-  void health_failsWhenFeatureFlagRepoDoesntThrow() {
+  void health_failsWhenDBConnectionThrows() {
     JDBCConnectionException dbConnectionException =
         new JDBCConnectionException(
             "connection issue", new SQLException("some reason", "some state"));
+    when(mockFeatureFlagRepo.findAll()).thenThrow(dbConnectionException);
+    assertThat(indicator.health()).isEqualTo(Health.down().build());
+  }
+
+  @Test
+  void health_failsWhenFeatureFlagRepoThrows() {
+    IllegalArgumentException dbConnectionException =
+        new IllegalArgumentException("some argument message");
     when(mockFeatureFlagRepo.findAll()).thenThrow(dbConnectionException);
     assertThat(indicator.health()).isEqualTo(Health.down().build());
   }
