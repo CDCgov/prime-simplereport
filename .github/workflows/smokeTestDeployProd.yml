@@ -9,7 +9,7 @@ on:
   #     - completed
 
 env:
-  BASE_DOMAIN_NAME: www.dev6.simplereport.gov
+  BASE_DOMAIN_NAME: https://dev6.simplereport.gov
 
 jobs:
   smoke-test-front-and-back-end:
