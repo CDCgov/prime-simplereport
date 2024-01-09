@@ -503,9 +503,9 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void deleteOktaOrganization_succeeds() {
+  void deleteE2EOktaOrganization_succeeds() {
     Organization createdOrg = _dataFactory.saveValidOrganization();
-    Organization deletedOrg = _service.deleteOktaOrganization(createdOrg.getExternalId());
+    Organization deletedOrg = _service.deleteE2EOktaOrganization(createdOrg.getExternalId());
 
     assertThat(deletedOrg).isEqualTo(createdOrg);
     verify(oktaRepository, times(1)).deleteOrganization(createdOrg);
