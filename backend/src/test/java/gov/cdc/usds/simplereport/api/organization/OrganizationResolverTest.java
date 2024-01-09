@@ -84,7 +84,7 @@ class OrganizationResolverTest {
     Organization org = new Organization(orgName, "type", "123", true);
     when(organizationService.getOrganizationsByName(orgName)).thenReturn(List.of(org));
 
-    organizationMutationResolver.organizationsByName(orgName);
+    organizationMutationResolver.organizationsByName(orgName, false);
 
     verify(organizationService).getOrganizationsByName(orgName);
     verify(organizationService).getFacilities(org);
@@ -96,7 +96,7 @@ class OrganizationResolverTest {
     Organization org = new Organization(orgName, "type", "123", true);
     when(organizationService.getOrganizationsByName(orgName)).thenReturn(List.of());
 
-    List<ApiOrganization> actual = organizationMutationResolver.organizationsByName(orgName);
+    List<ApiOrganization> actual = organizationMutationResolver.organizationsByName(orgName, false);
 
     assertThat(actual).isEmpty();
     verify(organizationService).getOrganizationsByName(orgName);

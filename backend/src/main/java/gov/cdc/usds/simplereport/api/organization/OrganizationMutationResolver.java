@@ -206,4 +206,16 @@ public class OrganizationMutationResolver {
     }
     return organizationService.markFacilityAsDeleted(facilityId, deleted);
   }
+
+  /**
+   * Method HARD DELETES an Okta group without touching any of the application organization data.
+   * THIS SHOULD ONLY BE USED TO CLEAN UP ORGS CREATED IN OKTA FOR E2E TESTS. DON'T USE THIS METHOD
+   * FOR ANY LIVE OKTA API CALLS
+   */
+  @Transactional
+  @MutationMapping
+  public Organization deleteOktaOrganization(@Argument String orgExternalId) {
+    // throw stuff here?
+    return organizationService.deleteOktaOrganization(orgExternalId);
+  }
 }

@@ -12,6 +12,9 @@ public interface OrganizationRepository extends EternalAuditedEntityRepository<O
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.externalId = :externalId")
   Optional<Organization> findByExternalId(String externalId);
 
+  @Query(EternalAuditedEntityRepository.BASE_ALLOW_DELETED_QUERY + " e.externalId = :externalId")
+  Optional<Organization> findByExternalIdIncludingDeleted(String externalId);
+
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.externalId in (:externalIds)")
   List<Organization> findAllByExternalId(Collection<String> externalIds);
 
@@ -23,4 +26,9 @@ public interface OrganizationRepository extends EternalAuditedEntityRepository<O
   @Query(
       EternalAuditedEntityRepository.BASE_QUERY + " and UPPER(e.organizationName) = UPPER(:name)")
   List<Organization> findAllByName(String name);
+
+  @Query(
+      EternalAuditedEntityRepository.BASE_ALLOW_DELETED_QUERY
+          + " UPPER(e.organizationName) = UPPER(:name) and e.isDeleted = :isDeleted")
+  List<Organization> findAllByNameAndDeleted(String name, Boolean isDeleted);
 }

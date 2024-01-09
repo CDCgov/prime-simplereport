@@ -153,6 +153,10 @@ public class OrganizationService {
     return organizationRepository.findAllByName(name);
   }
 
+  public List<Organization> getOrganizationsByName(String name, Boolean isDeleted) {
+    return organizationRepository.findAllByNameAndDeleted(name, isDeleted);
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Organization> getOrganizations(Boolean identityVerified) {
     return identityVerified == null
@@ -492,5 +496,20 @@ public class OrganizationService {
             })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Method HARD DELETES an Okta group without touching any of the application organization data.
+   * SHOULD ONLY BE USED TO CLEAN UP ORGS CREATED IN OKTA FOR E2E TESTS. DON'T USE THIS METHOD FOR
+   * ANY LIVE OKTA API CALLS
+   */
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Organization deleteOktaOrganization(String orgExternalId) {
+    Organization orgToDelete =
+        organizationRepository
+            .findByExternalIdIncludingDeleted(orgExternalId)
+            .orElseThrow(NonexistentOrgException::new);
+    oktaRepository.deleteOrganization(orgToDelete);
+    return orgToDelete;
   }
 }

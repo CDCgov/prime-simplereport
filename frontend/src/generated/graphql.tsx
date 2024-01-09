@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -201,6 +200,7 @@ export type Mutation = {
   createFacilityRegistrationLink?: Maybe<Scalars["String"]["output"]>;
   createOrganizationRegistrationLink?: Maybe<Scalars["String"]["output"]>;
   createSpecimenType?: Maybe<SpecimenType>;
+  deleteOktaOrganization?: Maybe<Organization>;
   editPendingOrganization?: Maybe<Scalars["String"]["output"]>;
   editQueueItem?: Maybe<TestOrder>;
   markDeviceTypeAsDeleted?: Maybe<DeviceType>;
@@ -334,6 +334,10 @@ export type MutationCreateOrganizationRegistrationLinkArgs = {
 
 export type MutationCreateSpecimenTypeArgs = {
   input: CreateSpecimenType;
+};
+
+export type MutationDeleteOktaOrganizationArgs = {
+  orgExternalId: Scalars["String"]["input"];
 };
 
 export type MutationEditPendingOrganizationArgs = {
@@ -765,6 +769,7 @@ export type QueryOrganizationsArgs = {
 };
 
 export type QueryOrganizationsByNameArgs = {
+  isDeleted?: InputMaybe<Scalars["Boolean"]["input"]>;
   name: Scalars["String"]["input"];
 };
 
