@@ -504,7 +504,7 @@ public class OrganizationService {
    * ANY LIVE OKTA API CALLS
    */
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Organization deleteOktaOrganization(String orgExternalId) {
+  public Organization deleteE2EOktaOrganization(String orgExternalId) {
     Organization orgToDelete =
         organizationRepository
             .findByExternalIdIncludingDeleted(orgExternalId)

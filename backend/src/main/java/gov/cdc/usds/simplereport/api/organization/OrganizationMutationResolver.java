@@ -214,7 +214,7 @@ public class OrganizationMutationResolver {
    */
   @Transactional
   @MutationMapping
-  public Organization deleteOktaOrganization(@Argument String orgExternalId) {
-    return organizationService.deleteOktaOrganization(orgExternalId);
+  public Organization deleteE2EOktaOrganizations(@Argument String orgExternalId) {
+    return organizationService.deleteE2EOktaOrganization(orgExternalId);
   }
 }
