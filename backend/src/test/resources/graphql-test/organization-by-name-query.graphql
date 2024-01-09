@@ -1,0 +1,15 @@
+query OrganizationByName ($name: String!, $isDeleted: Boolean){
+    organizationsByName(name: $name, isDeleted: $isDeleted) {
+        internalId
+        name
+        type
+        externalId
+        identityVerified
+        patientSelfRegistrationLink
+        facilities{
+            id
+            name
+        }
+        id
+    }
+}

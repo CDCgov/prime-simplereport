@@ -102,4 +102,16 @@ class OrganizationResolverTest {
     verify(organizationService).getOrganizationsByName(orgName);
     verify(organizationService, never()).getFacilities(org);
   }
+
+  @Test
+  void organizationsByNameIsDeleted_success() {
+    String orgName = "org name";
+    Organization org = new Organization(orgName, "type", "123", true);
+    when(organizationService.getOrganizationsByName(orgName, true)).thenReturn(List.of(org));
+
+    organizationMutationResolver.organizationsByName(orgName, true);
+
+    verify(organizationService).getOrganizationsByName(orgName, true);
+    verify(organizationService).getFacilities(org);
+  }
 }
