@@ -1,33 +1,33 @@
-#name: Check for Changes
-## Reusable workflow, compatible with push and pull_request events
-#on:
-#  workflow_call:
-#    inputs:
-#      # can be a file or a folder
-#      what_to_check:
-#        required: true
-#        type: string
-#    outputs:
-#      has_changes:
-#        description: true or false string
-#        value: ${{ jobs.check_for_changes.outputs.has_changes }}
-#jobs:
-#  check_for_changes:
-#    runs-on: ubuntu-latest
-#    outputs:
-#      has_changes: ${{ steps.check_for_changes.outputs.has_changes }}
-#    steps:
-#    - uses: actions/checkout@v4
-#      with:
-#        fetch-depth: 0
-#    - shell: bash
-#      id: check_for_changes
-#      run: |
-#        echo "::group::Set has_changes output"
-#        diff=$(git diff-tree --no-commit-id --name-only -r "origin/main" HEAD -- "${{ inputs.what_to_check }}")
-#        echo "Diff: $diff"
-#        diff_length=$(echo ${#diff})
-#        has_diff=$([ $diff_length -gt 0 ] && echo "true" || echo "false")
-#        echo "The Changes: ${has_diff}"
-#        echo "has_changes=${has_diff}" >> "$GITHUB_OUTPUT"
-#        echo "::endgroup::"
+name: Check for Changes
+# Reusable workflow, compatible with push and pull_request events
+on:
+  workflow_call:
+    inputs:
+      # can be a file or a folder
+      what_to_check:
+        required: true
+        type: string
+    outputs:
+      has_changes:
+        description: true or false string
+        value: ${{ jobs.check_for_changes.outputs.has_changes }}
+jobs:
+  check_for_changes:
+    runs-on: ubuntu-latest
+    outputs:
+      has_changes: ${{ steps.check_for_changes.outputs.has_changes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - shell: bash
+        id: check_for_changes
+        run: |
+          echo "::group::Set has_changes output"
+          diff=$(git diff-tree --no-commit-id --name-only -r "origin/main" HEAD -- "${{ inputs.what_to_check }}")
+          echo "Diff: $diff"
+          diff_length=$(echo ${#diff})
+          has_diff=$([ $diff_length -gt 0 ] && echo "true" || echo "false")
+          echo "The Changes: ${has_diff}"
+          echo "has_changes=${has_diff}" >> "$GITHUB_OUTPUT"
+          echo "::endgroup::"
