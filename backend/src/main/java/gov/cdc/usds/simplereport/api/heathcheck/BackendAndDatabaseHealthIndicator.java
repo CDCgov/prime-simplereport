@@ -29,11 +29,9 @@ public class BackendAndDatabaseHealthIndicator implements HealthIndicator {
         return Health.down().build();
       }
       return Health.up().build();
-    } catch (IllegalArgumentException e) {
-      // reach into the ff repository returned a bad value
-      return Health.down().build();
-    } catch (JDBCConnectionException e) {
-      // db connection issue
+
+      // reach into the ff repository returned a bad value or db connection issue respectively
+    } catch (IllegalArgumentException | JDBCConnectionException e) {
       return Health.down().build();
     } catch (ApiException e) {
       // Okta API call errored
