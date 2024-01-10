@@ -3,9 +3,7 @@ import {
   cleanUpPreviousRunSetupData,
   setupRunData,
   cleanUpRunOktaOrgs,
-  createOrgName,
 } from "../utils/setup-utils";
-import { getOrganizationsByName } from "../utils/testing-data-utils";
 
 const patient = generatePatient();
 const specRunName = "spec06";
