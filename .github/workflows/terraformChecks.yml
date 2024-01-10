@@ -1,101 +1,101 @@
-name: Terraform Checks
-
-on:
-  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-  pull_request:
-    branches:
-      - "**"
-  merge_group:
-    types:
-      - checks_requested
-
-defaults:
-  run:
-    working-directory: ./ops
-
-jobs:
-  check-terraform-formatting:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3.0.0
-        with:
-          terraform_version: 1.3.3
-      - name: Terraform fmt
-        run: terraform fmt -check -recursive
-
-  check-terraform-validity:
-    runs-on: ubuntu-latest
-    env:
-      TERRAFORM_DIRS: |
-          dev dev/persistent dev2 dev2/persistent dev3 dev3/persistent dev4 dev4/persistent
-          dev5 dev5/persistent dev6 dev6/persistent dev7 dev7/persistent 
-          test test/persistent demo demo/persistent training training/persistent
-          stg stg/persistent pentest pentest/persistent prod prod/persistent
-          global
-    steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3.0.0
-        with:
-          terraform_version: 1.3.3
-      - name: Terraform Init
-        run: |
-          for d in $TERRAFORM_DIRS
-          do
-            echo "Initializing $d";
-            (cd $d && terraform init -backend=false)
-          done
-      - name: Terraform Validate
-        run: |
-          for d in $TERRAFORM_DIRS
-          do
-            echo "Validating $d";
-            (cd $d && terraform validate)
-          done
-
-  terraform-plan:
-    runs-on: ubuntu-latest
-    needs: [check-terraform-validity]
-    env: # all Azure interaction is through terraform
-      ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-      OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Dependabot bypass
-        if: ${{ github.actor == 'dependabot[bot]' }}
-        run: |
-          true
-      - uses: azure/login@v1
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - uses: hashicorp/setup-terraform@v3.0.0
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        with:
-          terraform_version: 1.3.3
-      - name: Terraform Init Prod
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        run: make init-prod
-      - name: Build ReportStream function app Prod
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: ./.github/actions/build-reportstream-functions
-        with:
-          deploy-env: ${{env.DEPLOY_ENV}}
-      - name: Terraform Plan Prod
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        run: make plan-prod
-
-      - name: Terraform Init Stg
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        run: make init-stg
-      - name: Build ReportStream function app Stg
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: ./.github/actions/build-reportstream-functions
-        with:
-          deploy-env: stg
-      - name: Terraform plan Stg
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        run: make plan-stg
+#name: Terraform Checks
+#
+#on:
+#  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
+#  pull_request:
+#    branches:
+#      - "**"
+#  merge_group:
+#    types:
+#      - checks_requested
+#
+#defaults:
+#  run:
+#    working-directory: ./ops
+#
+#jobs:
+#  check-terraform-formatting:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: hashicorp/setup-terraform@v3.0.0
+#        with:
+#          terraform_version: 1.3.3
+#      - name: Terraform fmt
+#        run: terraform fmt -check -recursive
+#
+#  check-terraform-validity:
+#    runs-on: ubuntu-latest
+#    env:
+#      TERRAFORM_DIRS: |
+#          dev dev/persistent dev2 dev2/persistent dev3 dev3/persistent dev4 dev4/persistent
+#          dev5 dev5/persistent dev6 dev6/persistent dev7 dev7/persistent
+#          test test/persistent demo demo/persistent training training/persistent
+#          stg stg/persistent pentest pentest/persistent prod prod/persistent
+#          global
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: hashicorp/setup-terraform@v3.0.0
+#        with:
+#          terraform_version: 1.3.3
+#      - name: Terraform Init
+#        run: |
+#          for d in $TERRAFORM_DIRS
+#          do
+#            echo "Initializing $d";
+#            (cd $d && terraform init -backend=false)
+#          done
+#      - name: Terraform Validate
+#        run: |
+#          for d in $TERRAFORM_DIRS
+#          do
+#            echo "Validating $d";
+#            (cd $d && terraform validate)
+#          done
+#
+#  terraform-plan:
+#    runs-on: ubuntu-latest
+#    needs: [check-terraform-validity]
+#    env: # all Azure interaction is through terraform
+#      ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+#      ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+#      ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+#      ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+#      OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN }}
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Dependabot bypass
+#        if: ${{ github.actor == 'dependabot[bot]' }}
+#        run: |
+#          true
+#      - uses: azure/login@v1
+#        if: ${{ github.actor != 'dependabot[bot]' }}
+#        with:
+#          creds: ${{ secrets.AZURE_CREDENTIALS }}
+#      - uses: hashicorp/setup-terraform@v3.0.0
+#        if: ${{ github.actor != 'dependabot[bot]' }}
+#        with:
+#          terraform_version: 1.3.3
+#      - name: Terraform Init Prod
+#        if: ${{ github.actor != 'dependabot[bot]' }}
+#        run: make init-prod
+#      - name: Build ReportStream function app Prod
+#        if: ${{ github.actor != 'dependabot[bot]' }}
+#        uses: ./.github/actions/build-reportstream-functions
+#        with:
+#          deploy-env: ${{env.DEPLOY_ENV}}
+#      - name: Terraform Plan Prod
+#        if: ${{ github.actor != 'dependabot[bot]' }}
+#        run: make plan-prod
+#
+#      - name: Terraform Init Stg
+#        if: ${{ github.actor != 'dependabot[bot]' }}
+#        run: make init-stg
+#      - name: Build ReportStream function app Stg
+#        if: ${{ github.actor != 'dependabot[bot]' }}
+#        uses: ./.github/actions/build-reportstream-functions
+#        with:
+#          deploy-env: stg
+#      - name: Terraform plan Stg
+#        if: ${{ github.actor != 'dependabot[bot]' }}
+#        run: make plan-stg

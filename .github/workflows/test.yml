@@ -1,37 +1,37 @@
-#name: Test
-#
-#on:
-#  workflow_call:
-#    secrets:
-#      SONAR_TOKEN:
-#        description: secrets.SONAR_TOKEN
-#        required: true
-#      TWILIO_ACCOUNT_SID:
-#        description: secrets.TWILIO_TEST_ACCOUNT_SID
-#        required: true
-#      TWILIO_AUTH_TOKEN:
-#        description: secrets.TWILIO_TEST_AUTH_TOKEN
-#        required: true
-#    inputs:
-#      DOCKER_DATABASE_IMAGE_VERSION:
-#        required: false
-#        type: string
-#
-#concurrency:
-#  group: ${{ github.workflow }}-${{ github.ref }}-test
-#  cancel-in-progress: true
-#
-#env:
-#  NODE_VERSION: 18
-#  JAVA_VERSION: 17
-#  JAVA_DISTRIBUTION: 'zulu'
-#  PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
-#
-#defaults:
-#  run:
-#    working-directory: backend
-#
-#jobs:
+name: Test
+
+on:
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        description: secrets.SONAR_TOKEN
+        required: true
+      TWILIO_ACCOUNT_SID:
+        description: secrets.TWILIO_TEST_ACCOUNT_SID
+        required: true
+      TWILIO_AUTH_TOKEN:
+        description: secrets.TWILIO_TEST_AUTH_TOKEN
+        required: true
+    inputs:
+      DOCKER_DATABASE_IMAGE_VERSION:
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-test
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 18
+  JAVA_VERSION: 17
+  JAVA_DISTRIBUTION: 'zulu'
+  PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
+
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
 #  backend-tests:
 #    runs-on: ubuntu-latest
 #    steps:
@@ -117,7 +117,7 @@
 #          name: function-coverage
 #          path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
 #  sonar:
-#    needs: [backend-tests, frontend-tests, function-tests]
+#    needs: [ backend-tests, frontend-tests, function-tests ]
 #    runs-on: ubuntu-latest
 #    steps:
 #      - uses: actions/checkout@v4

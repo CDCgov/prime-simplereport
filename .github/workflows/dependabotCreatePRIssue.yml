@@ -1,28 +1,28 @@
-name: Dependabot Create Issue
-on:
-  pull_request:
-    types: [opened, reopened]
-
-jobs:
-  issue:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    # Github action permissions: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs#overview
-    permissions:
-      issues: write
-    steps:
-      - uses: actions/checkout@v4
-        if: github.event.pull_request.user.login  == 'dependabot[bot]'
-      - name: Open issue if Dependabot PR
-        if: github.event.pull_request.user.login  == 'dependabot[bot]'
-        env:
-          title: ${{github.event.pull_request.title}}
-          number: ${{github.event.pull_request.number}}
-          url: ${{github.event.pull_request.url}}
-        run: |
-          title="Dependabot PR $title opened"
-          labels="dependencies,Dependabot"
-          body="Dependabot has opened PR #$number
-          Link: $url"
-          gh issue create --title "$title" --body "$body" --label "$labels"
+#name: Dependabot Create Issue
+#on:
+#  pull_request:
+#    types: [opened, reopened]
+#
+#jobs:
+#  issue:
+#    runs-on: ubuntu-latest
+#    env:
+#      GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+#    # Github action permissions: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs#overview
+#    permissions:
+#      issues: write
+#    steps:
+#      - uses: actions/checkout@v4
+#        if: github.event.pull_request.user.login  == 'dependabot[bot]'
+#      - name: Open issue if Dependabot PR
+#        if: github.event.pull_request.user.login  == 'dependabot[bot]'
+#        env:
+#          title: ${{github.event.pull_request.title}}
+#          number: ${{github.event.pull_request.number}}
+#          url: ${{github.event.pull_request.url}}
+#        run: |
+#          title="Dependabot PR $title opened"
+#          labels="dependencies,Dependabot"
+#          body="Dependabot has opened PR #$number
+#          Link: $url"
+#          gh issue create --title "$title" --body "$body" --label "$labels"
