@@ -2,9 +2,12 @@ import {
   accessOrganization,
   addMockFacility,
   createOrganization,
-  getOrganizationsByName, getPatientsByFacilityId,
-  markOrganizationAsDeleted, markPatientAsDeleted,
-  verifyPendingOrganization
+  getOrganizationsByName,
+  getPatientsByFacilityId,
+  markOrganizationAsDeleted,
+  markPatientAsDeleted,
+  verifyPendingOrganization,
+  deleteOktaOrgs,
 } from "./testing-data-utils";
 import { generateUser } from "../support/e2e";
 
@@ -47,6 +50,13 @@ export const cleanUpPreviousRunSetupData = (specRunVersionName) => {
       }
     })
 }
+
+export const cleanUpRunOktaOrgs = (specRunVersionName, isDeleted) => {
+  let orgName = createOrgName(specRunVersionName);
+  getOrganizationsByName(orgName, isDeleted).then((res) => {
+    deleteOktaOrgs(res.body.data.organizationsByName[0].externalId);
+  });
+};
 
 export const setupRunData = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
