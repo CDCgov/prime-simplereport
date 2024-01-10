@@ -3,7 +3,7 @@
 # which is enforced in the API not in the schema validator.
 extend type Query {
   organizations(identityVerified: Boolean): [Organization!]!
-  organizationsByName(name: String!): [Organization]
+  organizationsByName(name: String!, isDeleted: Boolean = false): [Organization]
   pendingOrganizations: [PendingOrganization!]!
   organization(id: ID!): Organization
   facilityStats(facilityId: ID!): FacilityStats
@@ -65,4 +65,5 @@ extend type Mutation {
     facilities: [ID] = [],
     role: Role!): User!
   updateFeatureFlag(name: String!, value: Boolean!):FeatureFlag
+  deleteE2EOktaOrganizations(orgExternalId: String!): Organization
 }
