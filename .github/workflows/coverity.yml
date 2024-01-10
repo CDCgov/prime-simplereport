@@ -1,74 +1,74 @@
-#name: coverity-scan
-#on:
-#  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-#  push:
-#    branches:
-#      - main
-#    paths:
-#      - .github/workflows/coverity_scan.yml
-#  pull_request:
-#    branches:
-#      - "**"
-#    paths:
-#      - .github/workflows/coverity_scan.yml
-#  schedule:
-#    - cron: '0 18 * * *' # Daily at 18:00 UTC
-#
-#env:
-#  JAVA_VERSION: 17
-#  JAVA_DISTRIBUTION: 'zulu'
-#  NODE_VERSION: 18
-#
-#defaults:
-#  run:
-#    working-directory: ./backend
-#
-#jobs:
-#  scan:
-#    runs-on: ubuntu-latest
-#    if: ${{ github.actor != 'dependabot[bot]' }}
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: actions/setup-node@v4.0.1
-#        with:
-#          node-version: ${{env.NODE_VERSION}}
-#      - name: Cache npm local files
-#        uses: actions/cache@v3.3.2
-#        with:
-#          path: |
-#            ./frontend/node_modules
-#          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
-#      - name: Install dependencies
-#        run: yarn install
-#        working-directory: ./frontend
-#      - name: Set up JDK
-#        uses: actions/setup-java@v4
-#        with:
-#          java-version: ${{env.JAVA_VERSION}}
-#          distribution: ${{env.JAVA_DISTRIBUTION}}
-#      - name: Cache Java Dependencies
-#        uses: actions/cache@v3.3.2
-#        with:
-#          path: |
-#            ~/.gradle/caches
-#            ~/.gradle/wrapper
-#          key: gradle-build-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-#      - name: Download Coverity Build Tool
-#        run: |
-#          wget -q https://scan.coverity.com/download/java/linux64 --post-data "token=${{ secrets.COVERITY_TOKEN }}&project=CDCgov/prime-simplereport" -O cov-analysis-linux64.tar.gz
-#          mkdir cov-analysis-linux64
-#          tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
-#      - name: Build with cov-build
-#        run: |
-#          export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
-#          cov-build --dir cov-int --fs-capture-search ../frontend ./gradlew clean assemble
-#      - name: Submit the result to Coverity Scan
-#        run: |
-#          tar czvf sr.tgz cov-int
-#          curl \
-#            --form token=${{ secrets.COVERITY_TOKEN }} \
-#            --form email=nicholas.a.robison@omb.eop.gov \
-#            --form file=@sr.tgz \
-#            --form version=${{ env.GITHUB_REF }} \
-#            --form description="`git rev-parse --short HEAD`" \
-#            https://scan.coverity.com/builds?project=CDCgov%2Fprime-simplereport
+name: coverity-scan
+on:
+  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/coverity_scan.yml
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - .github/workflows/coverity_scan.yml
+  schedule:
+    - cron: '0 18 * * *' # Daily at 18:00 UTC
+
+env:
+  JAVA_VERSION: 17
+  JAVA_DISTRIBUTION: 'zulu'
+  NODE_VERSION: 18
+
+defaults:
+  run:
+    working-directory: ./backend
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4.0.1
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Cache npm local files
+        uses: actions/cache@v3.3.2
+        with:
+          path: |
+            ./frontend/node_modules
+          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+      - name: Install dependencies
+        run: yarn install
+        working-directory: ./frontend
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
+      - name: Cache Java Dependencies
+        uses: actions/cache@v3.3.2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-build-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
+      - name: Download Coverity Build Tool
+        run: |
+          wget -q https://scan.coverity.com/download/java/linux64 --post-data "token=${{ secrets.COVERITY_TOKEN }}&project=CDCgov/prime-simplereport" -O cov-analysis-linux64.tar.gz
+          mkdir cov-analysis-linux64
+          tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
+      - name: Build with cov-build
+        run: |
+          export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
+          cov-build --dir cov-int --fs-capture-search ../frontend ./gradlew clean assemble
+      - name: Submit the result to Coverity Scan
+        run: |
+          tar czvf sr.tgz cov-int
+          curl \
+            --form token=${{ secrets.COVERITY_TOKEN }} \
+            --form email=nicholas.a.robison@omb.eop.gov \
+            --form file=@sr.tgz \
+            --form version=${{ env.GITHUB_REF }} \
+            --form description="`git rev-parse --short HEAD`" \
+            https://scan.coverity.com/builds?project=CDCgov%2Fprime-simplereport
