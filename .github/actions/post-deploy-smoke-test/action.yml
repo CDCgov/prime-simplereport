@@ -1,0 +1,19 @@
+name: Smoke test post deploy
+description: Invoke a script that visits a deploy smoke check page that displays whether the backend / db are healthy.
+inputs:
+  base_domain_name:
+    description: The domain where the application is deployed (e.g. "simplereport.gov" or "test.simplereport.gov")
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: create env file
+      shell: bash
+      working-directory: frontend
+      run: |
+        touch .env
+        echo REACT_APP_BASE_URL=${{ inputs.base_domain_name }}>> .env.production.local
+    - name: Run smoke test script
+      shell: bash
+      working-directory: frontend
+      run: yarn smoke:deploy:ci
