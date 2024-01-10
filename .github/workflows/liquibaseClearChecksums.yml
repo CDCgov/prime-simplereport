@@ -1,40 +1,40 @@
-name: Liquibase Clear Checksums
-
-concurrency:
-  group: db-actions
-  cancel-in-progress: false
-
-on:
-  workflow_dispatch:
-    inputs:
-      deploy_env:
-        description: The environment of the database.
-        required: true
-        type: choice
-        options: [demo, dev, dev2, dev3, dev4, dev5, dev6, dev7, pentest, test, training, stg, prod]
-        default: dev
-      action:
-        description: The liquibase action to run.
-        required: true
-        options: [clear-checksums]
-        default: clear-checksums
-
-jobs:
-
-  db_clear_checksums_action:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: DB Liquibase Rollback
-        uses: ./.github/actions/db-actions
-        with:
-          deploy_env: ${{ github.event.inputs.deploy_env }}
-          action: ${{ github.event.inputs.action }}
-          azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
-          acr_repo_url: ${{ secrets.ACR_REPO_URL }}
-          acr_admin_username: ${{ secrets.ACR_ADMIN_USERNAME }}
-          acr_admin_pasword: ${{ secrets.ACR_ADMIN_PASWORD }}
-          terraform_arm_client_id: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-          terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-          terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-          terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+#name: Liquibase Clear Checksums
+#
+#concurrency:
+#  group: db-actions
+#  cancel-in-progress: false
+#
+#on:
+#  workflow_dispatch:
+#    inputs:
+#      deploy_env:
+#        description: The environment of the database.
+#        required: true
+#        type: choice
+#        options: [demo, dev, dev2, dev3, dev4, dev5, dev6, dev7, pentest, test, training, stg, prod]
+#        default: dev
+#      action:
+#        description: The liquibase action to run.
+#        required: true
+#        options: [clear-checksums]
+#        default: clear-checksums
+#
+#jobs:
+#
+#  db_clear_checksums_action:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: DB Liquibase Rollback
+#        uses: ./.github/actions/db-actions
+#        with:
+#          deploy_env: ${{ github.event.inputs.deploy_env }}
+#          action: ${{ github.event.inputs.action }}
+#          azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+#          acr_repo_url: ${{ secrets.ACR_REPO_URL }}
+#          acr_admin_username: ${{ secrets.ACR_ADMIN_USERNAME }}
+#          acr_admin_pasword: ${{ secrets.ACR_ADMIN_PASWORD }}
+#          terraform_arm_client_id: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+#          terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+#          terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+#          terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}

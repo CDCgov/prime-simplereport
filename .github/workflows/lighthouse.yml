@@ -1,85 +1,85 @@
-name: Run Lighthouse Audit
-on:
-  workflow_call:
-    inputs:
-      DOCKER_BACKEND_IMAGE_VERSION:
-        required: false
-        type: string
-      DOCKER_DATABASE_IMAGE_VERSION:
-        required: false
-        type: string
-      DOCKER_NGINX_IMAGE_VERSION:
-        required: false
-        type: string
-      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION:
-        required: false
-        type: string
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  lhci:
-    name: Lighthouse
-    runs-on: ubuntu-latest
-    steps:
-
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Set Swap Space
-      uses: ./.github/actions/set-swap-space
-      with:
-        swap-size-gb: 10
-
-    - name: Add hosts to /etc/hosts
-      run: |
-        sudo echo "127.0.0.1	localhost.simplereport.gov" | sudo tee -a /etc/hosts
-
-    - name: Update files permissions
-      # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
-      run: |
-        echo "::group::Update permissions"
-        echo FAKE_ENV="true" >> .env
-        sudo chmod -R 777 backend
-        sudo chmod -R 777 frontend
-        echo "::endgroup::"
-
-    - name: Log in to the Container registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Setup and Run Lighthouse
-      env:
-        # CI settings
-        CI: 1
-        # docker settings
-        DOCKER_CLIENT_TIMEOUT: 180
-        COMPOSE_HTTP_TIMEOUT: 180
-        DOCKER_BACKEND_IMAGE_VERSION: ${{ inputs.DOCKER_BACKEND_IMAGE_VERSION }}
-        DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
-        DOCKER_NGINX_IMAGE_VERSION: ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}
-        DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ inputs.DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION }}
-      shell: bash
-      run: |
-        echo "::group::Running containers"
-        echo "Backend branch tag (or latest): ${{ inputs.DOCKER_BACKEND_IMAGE_VERSION }}"
-        echo "Database branch tag (or latest): ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}"
-        echo "Nginx branch tag (or latest): ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}"
-        echo "Frontend branch tag (or latest): ${{ inputs.DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION }}"
-        echo "::endgroup::"
-        
-        echo "::group::Run Lighthouse locally"
-        bash lighthouse.sh
-        echo "::endgroup::"
-
-    - name: Archive Lighthouse results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: lighthouse-results
-        path: lighthouse/*
+#name: Run Lighthouse Audit
+#on:
+#  workflow_call:
+#    inputs:
+#      DOCKER_BACKEND_IMAGE_VERSION:
+#        required: false
+#        type: string
+#      DOCKER_DATABASE_IMAGE_VERSION:
+#        required: false
+#        type: string
+#      DOCKER_NGINX_IMAGE_VERSION:
+#        required: false
+#        type: string
+#      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION:
+#        required: false
+#        type: string
+#
+#concurrency:
+#  group: ${{ github.workflow }}-${{ github.ref }}
+#  cancel-in-progress: true
+#
+#jobs:
+#  lhci:
+#    name: Lighthouse
+#    runs-on: ubuntu-latest
+#    steps:
+#
+#    - name: Checkout
+#      uses: actions/checkout@v4
+#
+#    - name: Set Swap Space
+#      uses: ./.github/actions/set-swap-space
+#      with:
+#        swap-size-gb: 10
+#
+#    - name: Add hosts to /etc/hosts
+#      run: |
+#        sudo echo "127.0.0.1	localhost.simplereport.gov" | sudo tee -a /etc/hosts
+#
+#    - name: Update files permissions
+#      # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265
+#      run: |
+#        echo "::group::Update permissions"
+#        echo FAKE_ENV="true" >> .env
+#        sudo chmod -R 777 backend
+#        sudo chmod -R 777 frontend
+#        echo "::endgroup::"
+#
+#    - name: Log in to the Container registry
+#      uses: docker/login-action@v3
+#      with:
+#        registry: ghcr.io
+#        username: ${{ github.actor }}
+#        password: ${{ secrets.GITHUB_TOKEN }}
+#
+#    - name: Setup and Run Lighthouse
+#      env:
+#        # CI settings
+#        CI: 1
+#        # docker settings
+#        DOCKER_CLIENT_TIMEOUT: 180
+#        COMPOSE_HTTP_TIMEOUT: 180
+#        DOCKER_BACKEND_IMAGE_VERSION: ${{ inputs.DOCKER_BACKEND_IMAGE_VERSION }}
+#        DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
+#        DOCKER_NGINX_IMAGE_VERSION: ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}
+#        DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ inputs.DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION }}
+#      shell: bash
+#      run: |
+#        echo "::group::Running containers"
+#        echo "Backend branch tag (or latest): ${{ inputs.DOCKER_BACKEND_IMAGE_VERSION }}"
+#        echo "Database branch tag (or latest): ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}"
+#        echo "Nginx branch tag (or latest): ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}"
+#        echo "Frontend branch tag (or latest): ${{ inputs.DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION }}"
+#        echo "::endgroup::"
+#
+#        echo "::group::Run Lighthouse locally"
+#        bash lighthouse.sh
+#        echo "::endgroup::"
+#
+#    - name: Archive Lighthouse results
+#      uses: actions/upload-artifact@v4
+#      if: always()
+#      with:
+#        name: lighthouse-results
+#        path: lighthouse/*
