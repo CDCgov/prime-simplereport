@@ -10,7 +10,7 @@ const Chrome = require("selenium-webdriver/chrome");
 
 const appUrl = process.env.REACT_APP_BASE_URL.includes("localhost")
   ? `${process.env.REACT_APP_BASE_URL}/health/deploy-smoke-test`
-  : `${process.env.REACT_APP_BASE_URL}/app/health/deploy-smoke-test`;
+  : `https://${process.env.REACT_APP_BASE_URL}/app/health/deploy-smoke-test`;
 
 console.log(`Running smoke test for ${appUrl}`);
 const options = new Chrome.Options();
