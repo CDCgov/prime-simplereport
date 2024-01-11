@@ -1,5 +1,5 @@
 import { generatePatient, loginHooks, testNumber } from "../support/e2e";
-import { setupOrgFacility } from "../utils/setup-utils";
+import { setupOrgFacility, setupRunData } from "../utils/setup-utils";
 
 const patients = [generatePatient(), generatePatient()];
 const specRunName = "spec02a";
@@ -13,7 +13,7 @@ describe("Bulk upload patients", () => {
 
   before("setup data", () => {
     let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
-    setupOrgFacility(currentSpecRunVersionName);
+    setupRunData(currentSpecRunVersionName);
   });
 
   it("navigates to the bulk upload page", () => {
