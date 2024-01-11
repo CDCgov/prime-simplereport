@@ -1,5 +1,8 @@
 import { generatePatient, loginHooks, testNumber } from "../support/e2e";
-import { cleanUpPreviousRunSetupData, setupRunData } from "../utils/setup-utils";
+import {
+  cleanUpPreviousRunSetupData,
+  setupOrgFacility,
+} from "../utils/setup-utils";
 
 const patient = generatePatient();
 const specRunName = "spec02";
@@ -11,8 +14,8 @@ describe("Adding a single patient", () => {
     cy.task("setPatientDOB", patient.dobForPatientLink);
     cy.task("setPatientPhone", patient.phone);
 
-    cy.task("getSpecRunVersionName", specRunName)
-      .then((prevSpecRunVersionName) => {
+    cy.task("getSpecRunVersionName", specRunName).then(
+      (prevSpecRunVersionName) => {
         let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
         if (prevSpecRunVersionName) {
@@ -20,14 +23,15 @@ describe("Adding a single patient", () => {
         }
         let data = {
           specRunName: specRunName,
-          versionName: currentSpecRunVersionName
+          versionName: currentSpecRunVersionName,
         };
-        cy.task("setSpecRunVersionName", data)
-        setupRunData(currentSpecRunVersionName);
-      })
+        cy.task("setSpecRunVersionName", data);
+        setupOrgFacility(currentSpecRunVersionName);
+      },
+    );
   });
   it("navigates to and fills out add patient form", () => {
-    cy.visit('/');
+    cy.visit("/");
     cy.get('[data-cy="desktop-patient-nav-link"]').click();
     cy.get('[data-cy="add-patients-button"]').click();
     cy.get('[data-cy="individual"]').click();
@@ -49,12 +53,16 @@ describe("Adding a single patient", () => {
     cy.get('[data-cy="personForm-lookupId-input"]').type(patient.studentId);
     cy.get('[data-cy="radio-group-option-race-other"]').click();
     cy.get('[data-cy="radio-group-option-ethnicity-refused"]').click();
-    cy.get('[data-cy="radio-group-option-residentCongregateSetting-NO"]').click();
+    cy.get(
+      '[data-cy="radio-group-option-residentCongregateSetting-NO"]',
+    ).click();
     cy.get('[data-cy="radio-group-option-employedInHealthcare-NO"]').click();
     cy.get('[data-cy="add-patient-save-button"]').eq(0).click();
     // check for errors
     cy.get('[data-cy="add-patient-page"]').contains("Last name is missing");
-    cy.get('[data-cy="add-patient-page"]').contains("Testing facility is missing");
+    cy.get('[data-cy="add-patient-page"]').contains(
+      "Testing facility is missing",
+    );
     cy.get('[data-cy="add-patient-page"]').contains("City is missing");
     cy.checkAccessibility(); // patient form with errors
     // fill out remaining form
@@ -62,7 +70,9 @@ describe("Adding a single patient", () => {
     cy.get('[data-cy="city-input"]').type(patient.city);
     cy.get('[data-cy="personForm-facility-input"]').select("All facilities");
     cy.get('[data-cy="add-patient-save-button"]').eq(0).click();
-    cy.get('[data-cy="radio-group-option-addressSelect-person-userAddress"]').click();
+    cy.get(
+      '[data-cy="radio-group-option-addressSelect-person-userAddress"]',
+    ).click();
     cy.checkAccessibility(); // address validation modal
     cy.get('[data-cy="save-address-confirmation-button"]').click();
     // check for newly created patient on Manage Patients page
