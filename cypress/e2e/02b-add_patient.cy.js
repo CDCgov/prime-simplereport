@@ -1,11 +1,11 @@
 import { generatePatient, loginHooks, testNumber } from "../support/e2e";
 import {
   cleanUpPreviousRunSetupData,
-  setupOrgFacility,
+  setupRunData,
 } from "../utils/setup-utils";
 
 const patient = generatePatient();
-const specRunName = "spec02";
+const specRunName = "spec02b";
 describe("Adding a single patient", () => {
   loginHooks();
   before("store patient info", () => {
@@ -26,7 +26,7 @@ describe("Adding a single patient", () => {
           versionName: currentSpecRunVersionName,
         };
         cy.task("setSpecRunVersionName", data);
-        setupOrgFacility(currentSpecRunVersionName);
+        setupRunData(currentSpecRunVersionName);
       },
     );
   });

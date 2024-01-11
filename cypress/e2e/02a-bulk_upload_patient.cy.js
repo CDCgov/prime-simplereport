@@ -2,7 +2,7 @@ import { generatePatient, loginHooks, testNumber } from "../support/e2e";
 import { setupOrgFacility } from "../utils/setup-utils";
 
 const patients = [generatePatient(), generatePatient()];
-const specRunName = "spec02b";
+const specRunName = "spec02a";
 
 const patientToCsv = (patient) => {
   return `${patient.lastName},${patient.firstName},,,unknown,5/11/1933,unknown,unknown,123 Main Street,,Washington,,DC,20008,USA,565-666-7777,MOBILE,No,No,VISITOR,foo@example.com`;
