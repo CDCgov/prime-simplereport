@@ -1,8 +1,5 @@
 import { generatePatient, loginHooks, testNumber } from "../support/e2e";
-import {
-  cleanUpPreviousRunSetupData,
-  setupRunData,
-} from "../utils/setup-utils";
+import { setupOrgFacility } from "../utils/setup-utils";
 
 const patients = [generatePatient(), generatePatient()];
 const specRunName = "spec02b";
@@ -15,26 +12,8 @@ describe("Bulk upload patients", () => {
   loginHooks();
 
   before("setup data", () => {
-    cy.task("getSpecRunVersionName", specRunName).then(
-      (prevSpecRunVersionName) => {
-        let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
-
-        if (prevSpecRunVersionName) {
-          // temporary since specs 4 and 5 currently rely on data from spec 2 not being cleaned up
-          // remove this check after the rest of the e2e tests are isolated and rerunnable
-          const shouldSkipCleanup = prevSpecRunVersionName.endsWith("spec02");
-          if (!shouldSkipCleanup) {
-            cleanUpPreviousRunSetupData(prevSpecRunVersionName);
-          }
-        }
-        let data = {
-          specRunName: specRunName,
-          versionName: currentSpecRunVersionName,
-        };
-        cy.task("setSpecRunVersionName", data);
-        setupRunData(currentSpecRunVersionName);
-      },
-    );
+    let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
+    setupOrgFacility(currentSpecRunVersionName);
   });
 
   it("navigates to the bulk upload page", () => {
