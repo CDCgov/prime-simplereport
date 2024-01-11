@@ -1,5 +1,5 @@
 import { generatePatient, loginHooks, testNumber } from "../support/e2e";
-import { setupOrgFacility, setupRunData } from "../utils/setup-utils";
+import { setupRunData } from "../utils/setup-utils";
 
 const patients = [generatePatient(), generatePatient()];
 const specRunName = "spec02a";
