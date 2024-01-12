@@ -84,6 +84,7 @@ const PersonalDetailsForm = ({
       setSubmitted(true);
       return;
     }
+    // @ts-ignore
     setErrors(validation.errors);
     focusOnce.current = true;
     showError(FORM_ERROR_MSG, FORM_ERROR_TITLE);

@@ -15,7 +15,7 @@ resource "azurerm_container_group" "db_client" {
 
   container {
     name   = "${var.name}-${var.env}-db-client"
-    image  = "${var.acr_server}/api/simple-report-db-client:1.0.0"
+    image  = "${var.acr_server}/api/simple-report-db-client:2.0.0"
     cpu    = "1"
     memory = "1.5"
 
@@ -35,14 +35,9 @@ resource "azurerm_container_group" "db_client" {
       share_name           = var.storage_share_name
     }
 
-    readiness_probe {
-      exec                  = ["cat", "/tmp/healthy"]
-      initial_delay_seconds = 30
-    }
-
     liveness_probe {
-      exec                  = ["cat", "/tmp/healthy"]
-      initial_delay_seconds = 30
+      exec                  = ["cat", "/tmp/psql_version"]
+      initial_delay_seconds = 60
       period_seconds        = 10
     }
   }

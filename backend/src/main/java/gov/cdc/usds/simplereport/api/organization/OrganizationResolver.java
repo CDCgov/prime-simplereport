@@ -74,8 +74,9 @@ public class OrganizationResolver {
    */
   @QueryMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<ApiOrganization> organizationsByName(@Argument String name) {
-    List<Organization> orgs = _organizationService.getOrganizationsByName(name);
+  public List<ApiOrganization> organizationsByName(
+      @Argument String name, @Argument Boolean isDeleted) {
+    List<Organization> orgs = _organizationService.getOrganizationsByName(name, isDeleted);
     if (orgs.isEmpty()) {
       return List.of();
     } else {

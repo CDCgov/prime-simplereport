@@ -25,7 +25,8 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 const MAX_LENGTH = 256;
 const NOTES_MAX_LENGTH = 10000;
 
-type TranslatedSchema<T> = (t: TFunction) => yup.SchemaOf<T>;
+// eslint-disable-next-line
+type TranslatedSchema<T> = (t: TFunction) => yup.ObjectSchema<yup.AnyObject>;
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -219,18 +220,20 @@ const getPhoneNumberSchema = (t: TFunction) => {
       hasPhoneType
     )
     .when("unknownPhoneNumber", {
-      is: false,
-      then: yup.array().min(1, t("patient.form.errors.phoneNumbers") || ""),
+      is: undefined,
+      then: () =>
+        yup.array().min(1, t("patient.form.errors.phoneNumbers") || ""),
     });
 };
 
 const getRequiredAddressSchema = (t: TFunction, key: string) => {
   return yup.string().when("unknownAddress", {
     is: false,
-    then: yup
-      .string()
-      .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
-      .required(t(key) || ""),
+    then: () =>
+      yup
+        .string()
+        .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
+        .required(t(key) || ""),
   });
 };
 
@@ -242,11 +245,12 @@ const updateFieldSchemata: (
   lookupId: yup.string().nullable(),
   role: yup
     .mixed()
+    .nullable()
     .oneOf(
       [...getValues(ROLE_VALUES), "UNKNOWN", "", null],
       t("patient.form.errors.role") || ""
     ),
-  telephone: yup.mixed().optional(),
+  telephone: yup.string().nullable().optional(),
   phoneNumbers: getPhoneNumberSchema(t),
   emails: yup
     .array()
@@ -267,39 +271,46 @@ const updateFieldSchemata: (
   country: yup.string().required(t("patient.form.errors.country") || ""),
   race: yup
     .mixed()
-    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race") || ""),
+    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race") || "")
+    .required(),
   ethnicity: yup
     .mixed()
     .oneOf(
       getValues(ETHNICITY_VALUES),
       t("patient.form.errors.ethnicity") || ""
-    ),
+    )
+    .required(),
   gender: yup
     .mixed()
-    .oneOf(getValues(GENDER_VALUES), t("patient.form.errors.gender") || ""),
+    .oneOf(getValues(GENDER_VALUES), t("patient.form.errors.gender") || "")
+    .required(),
   genderIdentity: yup
     .mixed()
+    .nullable()
     .oneOf(
-      [...getValues(GENDER_IDENTITY_VALUES), null],
+      [...getValues(GENDER_IDENTITY_VALUES), "", null],
       t("patient.form.errors.genderIdentity") || ""
     )
-    .nullable(),
+    .notRequired(),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
     .mixed()
+    .nullable()
     .oneOf(
       [...getValues(TRIBAL_AFFILIATION_VALUES), "", null],
       t("patient.form.errors.tribalAffiliation") || ""
     ),
   preferredLanguage: yup
     .mixed()
+    .nullable()
     .oneOf(
       [...languages, "", null],
       t("patient.form.errors.preferredLanguage") || ""
     ),
   testResultDelivery: yup
     .mixed()
+    .nullable()
     .oneOf(
       [...Object.values(TestResultDeliveryPreferences), "", null],
       t("patient.form.errors.testResultDelivery") || ""
@@ -327,7 +338,8 @@ const updatePhoneNumberSchemata: (
     .oneOf(
       getValues(PHONE_TYPE_VALUES),
       t("patient.form.errors.phoneNumbersType") || ""
-    ),
+    )
+    .required(t("patient.form.errors.phoneNumbersType") || ""),
 });
 
 const translateUpdateEmailSchemata = (t: TFunction) => {

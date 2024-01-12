@@ -82,11 +82,11 @@ class OrganizationResolverTest {
   void organizationsByName_success() {
     String orgName = "org name";
     Organization org = new Organization(orgName, "type", "123", true);
-    when(organizationService.getOrganizationsByName(orgName)).thenReturn(List.of(org));
+    when(organizationService.getOrganizationsByName(orgName, false)).thenReturn(List.of(org));
 
-    organizationMutationResolver.organizationsByName(orgName);
+    organizationMutationResolver.organizationsByName(orgName, false);
 
-    verify(organizationService).getOrganizationsByName(orgName);
+    verify(organizationService).getOrganizationsByName(orgName, false);
     verify(organizationService).getFacilities(org);
   }
 
@@ -94,12 +94,24 @@ class OrganizationResolverTest {
   void organizationsByName_null() {
     String orgName = "org name";
     Organization org = new Organization(orgName, "type", "123", true);
-    when(organizationService.getOrganizationsByName(orgName)).thenReturn(List.of());
+    when(organizationService.getOrganizationsByName(orgName, false)).thenReturn(List.of());
 
-    List<ApiOrganization> actual = organizationMutationResolver.organizationsByName(orgName);
+    List<ApiOrganization> actual = organizationMutationResolver.organizationsByName(orgName, false);
 
     assertThat(actual).isEmpty();
-    verify(organizationService).getOrganizationsByName(orgName);
+    verify(organizationService).getOrganizationsByName(orgName, false);
     verify(organizationService, never()).getFacilities(org);
+  }
+
+  @Test
+  void organizationsByNameIsDeleted_success() {
+    String orgName = "org name";
+    Organization org = new Organization(orgName, "type", "123", true);
+    when(organizationService.getOrganizationsByName(orgName, true)).thenReturn(List.of(org));
+
+    organizationMutationResolver.organizationsByName(orgName, true);
+
+    verify(organizationService).getOrganizationsByName(orgName, true);
+    verify(organizationService).getFacilities(org);
   }
 }

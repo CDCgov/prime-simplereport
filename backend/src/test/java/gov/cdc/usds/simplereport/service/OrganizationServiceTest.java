@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.FacilityStats;
@@ -497,5 +499,15 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     List<UUID> adminIds = _service.getOrgAdminUserIds(createdOrg.getInternalId());
     assertThat(adminIds).isEqualTo(expectedIds);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void deleteE2EOktaOrganization_succeeds() {
+    Organization createdOrg = _dataFactory.saveValidOrganization();
+    Organization deletedOrg = _service.deleteE2EOktaOrganization(createdOrg.getExternalId());
+
+    assertThat(deletedOrg).isEqualTo(createdOrg);
+    verify(oktaRepository, times(1)).deleteOrganization(createdOrg);
   }
 }

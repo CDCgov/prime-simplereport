@@ -92,13 +92,15 @@ export const initOrgErrors = (): Record<
   workPhoneNumber: "",
 });
 
-export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
-  .object()
-  .shape({
+export const organizationSchema: yup.ObjectSchema<OrganizationCreateRequest> =
+  yup.object({
     name: yup.string().required("Organization name is required"),
     type: yup
-      .mixed()
-      .oneOf(Object.keys(OrganizationTypeEnum), "Organization type is required")
+      .string()
+      .oneOf(
+        Object.keys(OrganizationTypeEnum) as OrganizationType[],
+        "Organization type is required"
+      )
       .required(),
     state: yup.string().required("State is required"),
     firstName: yup.string().required("First name is required"),
@@ -109,9 +111,9 @@ export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
       .email("A valid email address is required")
       .required("A valid email address is required"),
     workPhoneNumber: yup
-      .mixed()
+      .string()
       .test("", "A valid phone number is required", phoneNumberIsValid)
-      .required(),
+      .required("A valid phone number is required"),
   });
 
 export const organizationBackendErrors = (error: string): ReactElement => {
