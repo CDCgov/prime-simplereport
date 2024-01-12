@@ -27,12 +27,12 @@ export const getOrganizationById = (organizationId) => {
     }`,
   });
 };
-export const getOrganizationsByName = (organizationName) => {
+export const getOrganizationsByName = (organizationName, isDeleted = false) => {
   return cy.makePOSTRequest({
     operationName: "OrganizationsByName",
-    variables: { name: organizationName },
-    query: `query OrganizationsByName($name: String!) {
-      organizationsByName(name: $name) {
+    variables: { name: organizationName, isDeleted: isDeleted },
+    query: `query OrganizationsByName($name: String! $isDeleted: Boolean) {
+      organizationsByName(name: $name, isDeleted: $isDeleted) {
         id
         name
         externalId
@@ -111,6 +111,39 @@ export const accessOrganization = (orgExternalId) => {
     }`,
   });
 };
+export const addDeviceToFacility = (facility, deviceIds) => {
+  return cy.makePOSTRequest({
+    operationName: "UpdateFacility",
+    variables: {
+      facilityId: facility.internalId,
+      testingFacilityName: facility.testingFacilityName,
+      street: facility.street,
+      state: facility.state,
+      zipCode: facility.zipCode,
+      devices: deviceIds,
+    },
+    query: `mutation UpdateFacility(
+  $facilityId: String!
+  $testingFacilityName: String!
+  $street: String!
+  $state: String!
+  $zipCode: String!
+  $devices: [ID]!
+) {
+  updateFacility(
+    facilityId: $facilityId
+    testingFacilityName: $testingFacilityName
+    street: $street
+    state: $state
+    zipCode: $zipCode
+    deviceIds: $devices
+  ) {
+    id
+  }
+}`,
+  });
+};
+
 export const addMockFacility = (facilityName) => {
   return cy.makePOSTRequest({
     operationName: "AddFacility",
@@ -183,6 +216,7 @@ export const addMockFacility = (facilityName) => {
 }`,
   });
 };
+
 export const markOrganizationAsDeleted = (orgId, deleted) => {
   return cy.makePOSTRequest({
     operationName: "MarkOrganizationAsDeleted",
@@ -242,13 +276,209 @@ export const deleteOktaOrgs = (orgExternalId) => {
 
 export const createOrganization = (name, userEmail) => {
   return cy.makeAccountRequest({
-    "name": name,
-    "type": "camp",
-    "state": "CA",
-    "firstName": "Greg",
-    "middleName": "",
-    "lastName": "McTester",
-    "email": userEmail,
-    "workPhoneNumber": "2123892839"
+    name: name,
+    type: "camp",
+    state: "CA",
+    firstName: "Greg",
+    middleName: "",
+    lastName: "McTester",
+    email: userEmail,
+    workPhoneNumber: "2123892839",
+  });
+};
+
+export const addPatient = ({
+  facilityId: facilityId,
+  firstName: firstName,
+  middleName: middleName,
+  lastName: lastName,
+  birthDate: birthDate,
+  street: street,
+  streetTwo: streetTwo,
+  city: city,
+  state: state,
+  zipCode: zipCode,
+  country: country,
+  telephone: telephone,
+  phoneNumbers: phoneNumbers,
+  role: role,
+  lookupId: lookupId,
+  emails: emails,
+  county: county,
+  race: race,
+  ethnicity: ethnicity,
+  tribalAffiliation: tribalAffiliation,
+  gender: gender,
+  residentCongregateSetting: residentCongregateSetting,
+  employedInHealthcare: employedInHealthcare,
+  preferredLanguage: preferredLanguage,
+  testResultDelivery: testResultDelivery,
+  notes: notes,
+}) => {
+  return cy.makePOSTRequest({
+    operationName: "AddPatient",
+    variables: {
+      facilityId: facilityId,
+      firstName: firstName,
+      middleName: middleName,
+      lastName: lastName,
+      birthDate: birthDate,
+      street: street,
+      streetTwo: streetTwo,
+      city: city,
+      state: state,
+      zipCode: zipCode,
+      country: country,
+      telephone: telephone,
+      phoneNumbers: phoneNumbers,
+      role: role,
+      lookupId: lookupId,
+      emails: emails,
+      county: county,
+      race: race,
+      ethnicity: ethnicity,
+      tribalAffiliation: tribalAffiliation,
+      gender: gender,
+      residentCongregateSetting: residentCongregateSetting,
+      employedInHealthcare: employedInHealthcare,
+      preferredLanguage: preferredLanguage,
+      testResultDelivery: testResultDelivery,
+      notes: notes,
+    },
+    query: `mutation AddPatient(
+    $facilityId: ID
+    $firstName: String!
+    $middleName: String
+    $lastName: String!
+    $birthDate: LocalDate!
+    $street: String!
+    $streetTwo: String
+    $city: String
+    $state: String!
+    $zipCode: String!
+    $country: String!
+    $telephone: String
+    $phoneNumbers: [PhoneNumberInput!]
+    $role: String
+    $lookupId: String
+    $emails: [String]
+    $county: String
+    $race: String
+    $ethnicity: String
+    $tribalAffiliation: String
+    $gender: String
+    $residentCongregateSetting: Boolean
+    $employedInHealthcare: Boolean
+    $preferredLanguage: String
+    $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
+  ) {
+    addPatient(
+      facilityId: $facilityId
+      firstName: $firstName
+      middleName: $middleName
+      lastName: $lastName
+      birthDate: $birthDate
+      street: $street
+      streetTwo: $streetTwo
+      city: $city
+      state: $state
+      zipCode: $zipCode
+      country: $country
+      telephone: $telephone
+      phoneNumbers: $phoneNumbers
+      role: $role
+      lookupId: $lookupId
+      emails: $emails
+      county: $county
+      race: $race
+      ethnicity: $ethnicity
+      tribalAffiliation: $tribalAffiliation
+      gender: $gender
+      residentCongregateSetting: $residentCongregateSetting
+      employedInHealthcare: $employedInHealthcare
+      preferredLanguage: $preferredLanguage
+      testResultDelivery: $testResultDelivery
+      notes: $notes
+    ) {
+      internalId
+      facility {
+        id
+      }
+    }
+  }`,
+  });
+};
+
+export const createDeviceType = ({
+  name: name,
+  manufacturer: manufacturer,
+  model: model,
+  swabTypes: swabTypes,
+  supportedDiseaseTestPerformed: supportedDiseaseTestPerformed,
+  testLength: testLength,
+}) => {
+  return cy.makePOSTRequest({
+    operationName: "CreateDeviceType",
+    variables: {
+      name: name,
+      manufacturer: manufacturer,
+      model: model,
+      swabTypes: swabTypes,
+      supportedDiseaseTestPerformed: supportedDiseaseTestPerformed,
+      testLength: testLength,
+    },
+    query: `
+  mutation createDeviceType(
+    $name: String!
+    $manufacturer: String!
+    $model: String!
+    $swabTypes: [ID!]!
+    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
+    $testLength: Int!
+  ) {
+    createDeviceType(
+      input: {
+        name: $name
+        manufacturer: $manufacturer
+        model: $model
+        swabTypes: $swabTypes
+        supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
+        testLength: $testLength
+      }
+    ) {
+      internalId
+    }
+  }
+`,
+  });
+};
+
+export const getSupportedDiseases = () => {
+  return cy.makePOSTRequest({
+    operationName: "GetSupportedDiseases",
+    query: `
+  query getSupportedDiseases {
+    supportedDiseases {
+      internalId
+      name
+    }
+  }
+`,
+  });
+};
+
+export const getSpecimenTypes = () => {
+  return cy.makePOSTRequest({
+    operationName: "GetSpecimenTypes",
+    query: `
+  query getSpecimenTypes {
+    specimenTypes {
+      internalId
+      name
+      typeCode
+    }
+  }
+`,
   });
 };

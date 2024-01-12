@@ -1,10 +1,18 @@
 import {
   accessOrganization,
   addMockFacility,
+  addPatient,
+  createDeviceType,
   createOrganization,
+  getOrganizationsByName,
+  getPatientsByFacilityId,
+  markOrganizationAsDeleted,
+  markPatientAsDeleted,
+  verifyPendingOrganization,
   deleteOktaOrgs,
+  getSpecimenTypes,
 } from "./testing-data-utils";
-import { generateUser } from "../support/e2e";
+import { generateCovidOnlyDevice, generateUser } from "../support/e2e";
 
 const createOrgName = (specRunVersionName) => {
   return `${specRunVersionName}-org`;
@@ -32,6 +40,19 @@ const archivePatientsForFacility = (facilityId) => {
 
 export const cleanUpPreviousRunSetupData = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
+  getOrganizationsByName(orgName).then((res) => {
+    let orgs = res.body.data.organizationsByName;
+    let org = orgs.length > 0 ? orgs[0] : null;
+    if (org) {
+      let facilities = org.facilities;
+      if (facilities.length > 0) {
+        facilities.map((facility) => archivePatientsForFacility(facility.id));
+      }
+      markOrganizationAsDeleted(org.id, true);
+    }
+  });
+};
+
 export const cleanUpRunOktaOrgs = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
 
@@ -53,11 +74,65 @@ export const cleanUpRunOktaOrgs = (specRunVersionName) => {
   });
 };
 
-export const setupRunData = (specRunVersionName) => {
+export const setupOrgFacility = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
   let facilityName = createFacilityName(specRunVersionName);
   createAndVerifyOrganization(orgName)
     .then(() => getOrganizationsByName(orgName))
-    .then((res) => accessOrganization(res.body.data.organizationsByName[0].externalId))
-    .then(() => addMockFacility(facilityName))
+    .then((res) =>
+      accessOrganization(res.body.data.organizationsByName[0].externalId),
+    )
+    .then(() => addMockFacility(facilityName));
 };
+
+export const getCurrentRunFacility = (specRunVersionName) => {
+  let orgName = createOrgName(specRunVersionName);
+  return getOrganizationsByName(orgName).then((res) => {
+    let orgs = res.body.data.organizationsByName;
+    let org = orgs.length > 0 ? orgs[0] : null;
+    if (org) {
+      let facilities = org.facilities;
+      return facilities.length > 0 ? facilities[0] : null;
+    }
+  });
+};
+
+export const setupPatient = (specRunVersionName, patient) => {
+  const addPatientVariables = {
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    birthDate: patient.dobForInput,
+    street: patient.address,
+    city: patient.city,
+    state: patient.state,
+    zipCode: patient.zip,
+    telephone: patient.phone,
+  };
+  addPatient(addPatientVariables);
+};
+
+export const setupDevices = (specRunVersionName) => {
+  getSpecimenTypes().then((result) => {
+    const specimenTypes = result.body.data.specimenTypes;
+    const specimenTypeId =
+      specimenTypes.length > 0 ? specimenTypes[0].internalId : null;
+    const covidOnlyDevice = generateCovidOnlyDevice();
+    const createDeviceTypeVariables = {
+      name: covidOnlyDevice.name,
+      manufacturer: covidOnlyDevice.manufacturer,
+      model: covidOnlyDevice.model,
+      swabTypes: [specimenTypeId],
+      // TODO: get supported diseases
+      // supportedDiseaseTestPerformed: supportedDiseaseTestPerformed,
+      // testLength: testLength,
+    };
+    createDeviceType(createDeviceTypeVariables).then((deviceId) => {
+      // TODO: add facility device type relation
+    });
+  });
+};
+
+export const accessOrganizationByName = (orgName) => {
+  getOrganizationsByName(orgName)
+    .then((res) => accessOrganization(res.body.data.organizationsByName[0].externalId))
+}
