@@ -1,11 +1,14 @@
 import { generatePatient, loginHooks, testNumber } from "../support/e2e";
 import {
   cleanUpPreviousRunSetupData,
+  cleanUpRunOktaOrgs,
   setupRunData,
 } from "../utils/setup-utils";
 
 const patient = generatePatient();
 const specRunName = "spec02b";
+const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
+
 describe("Adding a single patient", () => {
   loginHooks();
   before("store patient info", () => {
@@ -16,10 +19,11 @@ describe("Adding a single patient", () => {
 
     cy.task("getSpecRunVersionName", specRunName).then(
       (prevSpecRunVersionName) => {
-        let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
-
         if (prevSpecRunVersionName) {
           cleanUpPreviousRunSetupData(prevSpecRunVersionName);
+          // putting this here as well as in the after hook to guarantee
+          // the cleanup function runs even if the test gets interrupted
+          cleanUpRunOktaOrgs(prevSpecRunVersionName);
         }
         let data = {
           specRunName: specRunName,
@@ -30,6 +34,11 @@ describe("Adding a single patient", () => {
       },
     );
   });
+
+  after(() => {
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
+  });
+
   it("navigates to and fills out add patient form", () => {
     cy.visit("/");
     cy.get('[data-cy="desktop-patient-nav-link"]').click();

@@ -222,6 +222,24 @@ export const markPatientAsDeleted = (patientId, deleted) => {
   });
 };
 
+export const deleteOktaOrgs = (orgExternalId) => {
+  return cy.makePOSTRequest({
+    operationName: "DeleteE2EOktaOrganizations",
+    variables: {
+      orgExternalId: orgExternalId,
+    },
+    query: `mutation DeleteE2EOktaOrganizations(
+      $orgExternalId: String!
+    ) {
+      deleteE2EOktaOrganizations(
+        orgExternalId: $orgExternalId,
+      ) {
+        externalId
+      }
+    }`,
+  });
+};
+
 export const createOrganization = (name, userEmail) => {
   return cy.makeAccountRequest({
     "name": name,

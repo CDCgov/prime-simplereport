@@ -1,8 +1,13 @@
 import { generatePatient, loginHooks, testNumber } from "../support/e2e";
-import { setupRunData } from "../utils/setup-utils";
+import {
+  cleanUpPreviousRunSetupData,
+  cleanUpRunOktaOrgs,
+  setupRunData,
+} from "../utils/setup-utils";
 
 const patients = [generatePatient(), generatePatient()];
 const specRunName = "spec02a";
+const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 const patientToCsv = (patient) => {
   return `${patient.lastName},${patient.firstName},,,unknown,5/11/1933,unknown,unknown,123 Main Street,,Washington,,DC,20008,USA,565-666-7777,MOBILE,No,No,VISITOR,foo@example.com`;
@@ -12,8 +17,27 @@ describe("Bulk upload patients", () => {
   loginHooks();
 
   before("setup data", () => {
-    let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
-    setupRunData(currentSpecRunVersionName);
+    cy.task("getSpecRunVersionName", specRunName)
+      .then((prevSpecRunVersionName) => {
+        if (prevSpecRunVersionName) {
+          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
+          // putting this here as well as in the after hook to guarantee
+          // the cleanup function runs even if the test gets interrupted
+          cleanUpRunOktaOrgs(prevSpecRunVersionName);
+        }
+      })
+      .then(() => {
+        let data = {
+          specRunName: specRunName,
+          versionName: currentSpecRunVersionName,
+        };
+        cy.task("setSpecRunVersionName", data);
+        setupRunData(currentSpecRunVersionName);
+      });
+  });
+
+  after(() => {
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
   });
 
   it("navigates to the bulk upload page", () => {
