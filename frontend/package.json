@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
-    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@microsoft/applicationinsights-react-js": "^3.4.3",
