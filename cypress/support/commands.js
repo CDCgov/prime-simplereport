@@ -164,15 +164,19 @@ Cypress.Commands.add("makePOSTRequest", (requestBody) => {
   );
 });
 
+Cypress.Commands.add("addDevicesToCreatedFacility", (specName) => {
+  return cy.getLocalStorage("access_token").then((token) => {});
+});
+
 Cypress.Commands.add("makeAccountRequest", (requestBody) => {
-   cy.request({
-     method: "POST",
-     url: addOrgToQueueURL,
-     headers: {
-       "Content-Type": "application/json",
-     },
-     body: requestBody,
-   });
+  cy.request({
+    method: "POST",
+    url: addOrgToQueueURL,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: requestBody,
+  });
 });
 
 Cypress.Commands.add("injectSRAxe", () => {

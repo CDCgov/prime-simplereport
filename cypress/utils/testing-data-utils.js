@@ -40,7 +40,22 @@ export const getOrganizationsByName = (organizationName, isDeleted = false) => {
           id
           name
           isDeleted
+          street,
+          state,
+          zipCode
         }
+      }
+    }`,
+  });
+};
+
+export const getDeviceTypes = () => {
+  return cy.makePOSTRequest({
+    operationName: "deviceTypes",
+    query: `query deviceTypes {
+      deviceTypes {
+        internalId
+        name
       }
     }`,
   });
@@ -117,8 +132,8 @@ export const addDeviceToFacility = (facility, deviceIds) => {
   return cy.makePOSTRequest({
     operationName: "UpdateFacility",
     variables: {
-      facilityId: facility.internalId,
-      testingFacilityName: facility.testingFacilityName,
+      facilityId: facility.id,
+      testingFacilityName: facility.name,
       street: facility.street,
       state: facility.state,
       zipCode: facility.zipCode,
@@ -277,13 +292,13 @@ export const deleteOktaOrgs = (orgExternalId) => {
 
 export const createOrganization = (name, userEmail) => {
   return cy.makeAccountRequest({
-    "name": name,
-    "type": "camp",
-    "state": "CA",
-    "firstName": "Greg",
-    "middleName": "",
-    "lastName": "McTester",
-    "email": userEmail,
-    "workPhoneNumber": "2123892839"
+    name: name,
+    type: "camp",
+    state: "CA",
+    firstName: "Greg",
+    middleName: "",
+    lastName: "McTester",
+    email: userEmail,
+    workPhoneNumber: "2123892839",
   });
 };

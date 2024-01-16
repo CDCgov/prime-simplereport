@@ -1,22 +1,33 @@
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
-import { generatePatient, loginHooks, testNumber } from "../support/e2e";
+import {
+  generateMultiplexDevice,
+  generatePatient,
+  loginHooks,
+  testNumber,
+} from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import {
   setupRunData,
-  createOrgName,
   cleanUpPreviousRunSetupData,
   cleanUpRunOktaOrgs,
+  createFacilityName,
+  getCreatedFacility,
 } from "../utils/setup-utils";
 import { getOrganizationsByName } from "../utils/testing-data-utils";
 
 loginHooks();
 const specRunName = "spec09";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
-
+const patient = generatePatient();
+const multiplexDeviceName = generateMultiplexDevice();
 describe("Testing with multiplex devices", () => {
-  let patient, facility, multiplexDeviceName;
+  let facility;
 
-  before(() => {
+  before("store patient info", () => {
+    cy.task("setPatientName", patient.fullName);
+    cy.task("setPatientDOB", patient.dobForPatientLink);
+    cy.task("setPatientPhone", patient.phone);
+
     cy.task("getSpecRunVersionName", specRunName).then(() => {
       let data = {
         specRunName: specRunName,
@@ -24,18 +35,9 @@ describe("Testing with multiplex devices", () => {
       };
       cy.task("setSpecRunVersionName", data);
       setupRunData(currentSpecRunVersionName);
-    });
-    patient = generatePatient();
-
-    let orgName = createOrgName(currentSpecRunVersionName);
-    getOrganizationsByName(orgName).then((res) => {
-      let orgs = res.body.data.organizationsByName;
-      let org = orgs.length > 0 ? orgs[0] : null;
-      facility = org.facilities[0];
-    });
-
-    cy.task("getMultiplexDeviceName").then((name) => {
-      multiplexDeviceName = name;
+      getCreatedFacility(currentSpecRunVersionName).then((res) => {
+        facility = res;
+      });
     });
   });
 

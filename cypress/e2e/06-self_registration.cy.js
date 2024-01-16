@@ -3,6 +3,7 @@ import {
   cleanUpPreviousRunSetupData,
   setupRunData,
   cleanUpRunOktaOrgs,
+  addDevicesToCreatedFacility,
 } from "../utils/setup-utils";
 
 const patient = generatePatient();
@@ -79,17 +80,17 @@ describe("Patient self registration", () => {
     cy.get('input[name="city"]').type(patient.city);
     cy.get(".self-registration-button").first().click();
     cy.get(
-      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
+      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label',
     ).scrollIntoView();
     cy.get(
-      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
+      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label',
     ).click();
 
     cy.checkAccessibility();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get("#self-reg-confirmation").contains(
-      "thanks for completing your patient profile"
+      "thanks for completing your patient profile",
     );
 
     cy.checkAccessibility(); // Confirmation page
