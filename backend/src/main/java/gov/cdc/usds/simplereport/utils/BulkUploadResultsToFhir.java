@@ -582,21 +582,21 @@ public class BulkUploadResultsToFhir {
   }
 
   private String getPregnancyStatusSnomed(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
       return PersonUtils.pregnancyStatusSnomedMap.get(input.toLowerCase());
     }
     return null;
   }
 
   private String getResidenceTypeSnomed(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
       return getResidenceTypeMap().get(input.toLowerCase());
     }
     return input;
   }
 
   private String getEthnicityLiteral(String input) {
-    if (!input.matches(ALPHABET_REGEX)) {
+    if (input != null && !input.matches(ALPHABET_REGEX)) {
       List<String> ethnicityList = PersonUtils.ETHNICITY_MAP.get(input);
       return ethnicityList != null ? ethnicityList.get(1) : input;
     }
@@ -604,25 +604,25 @@ public class BulkUploadResultsToFhir {
   }
 
   private String getRaceLiteral(String input) {
-    if (!input.matches(ALPHABET_REGEX)) {
+    if (input != null && !input.matches(ALPHABET_REGEX)) {
       return PersonUtils.raceMap.get(input);
     }
     return input;
   }
 
   private String getTestResultSnomed(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
       return testResultToSnomedMap.get(input.toLowerCase());
     }
     return input;
   }
 
   private String getSpecimenTypeSnomed(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
       return resultsUploaderCachingService
           .getSpecimenTypeNameToSNOMEDMap()
           .get(input.toLowerCase());
-    } else if (input.matches(SNOMED_REGEX)) {
+    } else if (input != null && input.matches(SNOMED_REGEX)) {
       return input;
     }
     return null;
@@ -636,6 +636,9 @@ public class BulkUploadResultsToFhir {
   }
 
   private DiagnosticReport.DiagnosticReportStatus mapTestResultStatusToFhirValue(String input) {
+    if (input == null) {
+      return DiagnosticReport.DiagnosticReportStatus.FINAL;
+    }
     switch (input) {
       case "C":
         return DiagnosticReport.DiagnosticReportStatus.CORRECTED;

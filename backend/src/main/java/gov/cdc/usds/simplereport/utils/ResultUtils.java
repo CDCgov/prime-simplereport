@@ -8,6 +8,9 @@ public class ResultUtils {
   }
 
   public static TestCorrectionStatus mapTestResultStatusToSRValue(String input) {
+    if (input == null) {
+      return TestCorrectionStatus.ORIGINAL;
+    }
     switch (input) {
       case "C":
         return TestCorrectionStatus.CORRECTED;
