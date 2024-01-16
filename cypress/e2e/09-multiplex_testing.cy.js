@@ -1,32 +1,37 @@
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
-import { loginHooks } from "../support/e2e";
+import { generatePatient, loginHooks, testNumber } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
+import {
+  setupRunData,
+  createOrgName,
+  cleanUpPreviousRunSetupData,
+  cleanUpRunOktaOrgs,
+} from "../utils/setup-utils";
+import { getOrganizationsByName } from "../utils/testing-data-utils";
 
 loginHooks();
+const specRunName = "spec09";
+const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
+
 describe("Testing with multiplex devices", () => {
   let patient, facility, multiplexDeviceName;
 
   before(() => {
-    cy.makePOSTRequest({
-      operationName: "WhoAmI",
-      variables: {},
-      query:
-        "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
-    }).then((res) => {
-      facility = res.body.data.whoami.organization.facilities[0];
-      cy.makePOSTRequest({
-        operationName: "GetPatientsByFacility",
-        variables: {
-          facilityId: facility.id,
-          pageNumber: 0,
-          pageSize: 1,
-          archivedStatus: "UNARCHIVED",
-        },
-        query:
-          "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $archivedStatus: ArchivedStatus, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    archivedStatus: $archivedStatus\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}",
-      }).then((res) => {
-        patient = res.body.data.patients[0];
-      });
+    cy.task("getSpecRunVersionName", specRunName).then(() => {
+      let data = {
+        specRunName: specRunName,
+        versionName: currentSpecRunVersionName,
+      };
+      cy.task("setSpecRunVersionName", data);
+      setupRunData(currentSpecRunVersionName);
+    });
+    patient = generatePatient();
+
+    let orgName = createOrgName(currentSpecRunVersionName);
+    getOrganizationsByName(orgName).then((res) => {
+      let orgs = res.body.data.organizationsByName;
+      let org = orgs.length > 0 ? orgs[0] : null;
+      facility = org.facilities[0];
     });
 
     cy.task("getMultiplexDeviceName").then((name) => {
@@ -46,6 +51,11 @@ describe("Testing with multiplex devices", () => {
       query:
         "mutation RemovePatientFromQueue($patientId: ID!) {\n  removePatientFromQueue(patientId: $patientId)\n}",
     });
+  });
+
+  after(() => {
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
+    cleanUpRunOktaOrgs(currentSpecRunVersionName, true);
   });
 
   it("test patient", () => {
