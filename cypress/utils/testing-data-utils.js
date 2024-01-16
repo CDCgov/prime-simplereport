@@ -27,12 +27,12 @@ export const getOrganizationById = (organizationId) => {
     }`,
   });
 };
-export const getOrganizationsByName = (organizationName) => {
+export const getOrganizationsByName = (organizationName, isDeleted = false) => {
   return cy.makePOSTRequest({
     operationName: "OrganizationsByName",
-    variables: { name: organizationName },
-    query: `query OrganizationsByName($name: String!) {
-      organizationsByName(name: $name) {
+    variables: { name: organizationName, isDeleted: isDeleted },
+    query: `query OrganizationsByName($name: String! $isDeleted: Boolean) {
+      organizationsByName(name: $name, isDeleted: $isDeleted) {
         id
         name
         externalId
@@ -42,7 +42,7 @@ export const getOrganizationsByName = (organizationName) => {
           isDeleted
         }
       }
-    }`
+    }`,
   });
 };
 export const getPatientsByFacilityId = (facilityId) => {
@@ -53,7 +53,7 @@ export const getPatientsByFacilityId = (facilityId) => {
            patients(facilityId: $facilityId){
             internalId
            }
-        }`
+        }`,
   });
 };
 export const getPatientLinkByTestEventId = (testEventId) => {
