@@ -2,8 +2,14 @@ const YES = "Yes";
 const NO = "No";
 const OTHER = "Other";
 const REFUSED = "Prefer not to answer";
-const UNKNOWN = "Unknown";
+export const UNKNOWN = "Unknown";
 const NOT_SURE = "Not sure";
+
+const FEMALE = "Female";
+const MALE = "Male";
+const TRANSWOMAN = "Trans femme or transwoman";
+const TRANSMAN = "Trans masculine or transman";
+const NONBINARY = "Nonbinary or gender non-conforming";
 
 export const en = {
   translation: {
@@ -34,6 +40,7 @@ export const en = {
         FLUA: "Flu A",
         FLUB: "Flu B",
         RSV: "RSV",
+        HIV: "HIV",
       },
       role: {
         STAFF: "Staff",
@@ -51,18 +58,18 @@ export const en = {
         refused: REFUSED,
       },
       genderIdentity: {
-        female: "Female",
-        male: "Male",
-        transwoman: "Trans femme or transwoman",
-        transman: "Trans masculine or transman",
-        nonbinary: "Nonbinary or gender non-conforming",
+        female: FEMALE,
+        male: MALE,
+        transwoman: TRANSWOMAN,
+        transman: TRANSMAN,
+        nonbinary: NONBINARY,
         other: "Gender identity not listed here",
         refused: REFUSED,
       },
       gender: {
-        female: "Female",
-        male: "Male",
-        other: "Other",
+        female: FEMALE,
+        male: MALE,
+        other: OTHER,
         refused: REFUSED,
       },
       ethnicity: {

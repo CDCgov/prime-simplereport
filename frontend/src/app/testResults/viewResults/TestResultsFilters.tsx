@@ -95,6 +95,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
     appPermissions.settings.canView
   );
   const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
+  const hivEnabled = useFeature("hivEnabled");
 
   /**
    * Patient search
@@ -285,6 +286,13 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
       label: MULTIPLEX_DISEASES.FLU_B,
     },
   ];
+  if (hivEnabled) {
+    diseaseOptions.push({
+      value: MULTIPLEX_DISEASES.HIV,
+      label: MULTIPLEX_DISEASES.HIV,
+    });
+  }
+
   if (singleEntryRsvEnabled) {
     diseaseOptions.push({
       value: MULTIPLEX_DISEASES.RSV,

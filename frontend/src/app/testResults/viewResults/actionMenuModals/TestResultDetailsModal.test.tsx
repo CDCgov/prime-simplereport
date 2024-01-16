@@ -59,7 +59,16 @@ multiplexTestResult["results"] = [
   },
 ];
 
-window.print = jest.fn();
+const hivTestResult = JSON.parse(JSON.stringify(nonMultiplexTestResult));
+hivTestResult.results = [
+  {
+    disease: { name: "HIV" as MultiplexDisease },
+    testResult: "POSITIVE" as TestResult,
+    __typename: "MultiplexResult",
+  },
+];
+hivTestResult.genderOfSexualPartners = ["female", "male", "other"];
+hivTestResult.pregnancy = "77386006";
 
 describe("single disease TestResultDetailsModal", () => {
   let component: any;
@@ -116,6 +125,39 @@ describe("multiple diseases TestResultDetailsModal", () => {
     expect(screen.getByText("Flu A result")).toBeInTheDocument();
     expect(screen.getByText("Flu B result")).toBeInTheDocument();
     expect(screen.getByText("RSV result")).toBeInTheDocument();
+    expect(
+      screen.queryByText("Gender of sexual partners")
+    ).not.toBeInTheDocument();
+  });
+
+  it("matches screenshot", () => {
+    expect(component).toMatchSnapshot();
+  });
+});
+
+describe("HIV TestResultDetailsModal", () => {
+  let component: any;
+
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+
+    component = render(
+      <DetachedTestResultDetailsModal
+        data={{ testResult: hivTestResult }}
+        closeModal={() => {}}
+      />
+    );
+  });
+
+  it("should have HIV specific AOE text", () => {
+    expect(screen.getByText("HIV result")).toBeInTheDocument();
+    expect(screen.queryByText("Symptoms")).not.toBeInTheDocument();
+    expect(screen.queryByText("Symptom onset")).not.toBeInTheDocument();
+    expect(screen.getByText("Gender of sexual partners")).toBeInTheDocument();
+    expect(screen.getByText("Female, Male, Other")).toBeInTheDocument();
+    expect(screen.getByText("Pregnant?")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {

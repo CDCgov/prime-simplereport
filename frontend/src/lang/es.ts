@@ -40,6 +40,7 @@ export const es: LanguageConfig = {
         FLUA: "Flu A",
         FLUB: "Flu B",
         RSV: "VRS",
+        HIV: "VIH",
       },
       role: {
         STAFF: "Personal",

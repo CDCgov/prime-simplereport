@@ -56,6 +56,20 @@ export function hasCovidResults(results: MultiplexResults): boolean {
   );
 }
 
+export function hasDiseaseSpecificResults(
+  results: MultiplexResults | null,
+  diseaseName: MultiplexDisease
+): boolean {
+  if (results) {
+    return (
+      results.filter((multiplexResult: MultiplexResult) =>
+        multiplexResult.disease.name.includes(diseaseName)
+      ).length > 0
+    );
+  }
+  return false;
+}
+
 export function hasPositiveRsvResults(results: MultiplexResults): boolean {
   return (
     results.filter(

@@ -9,7 +9,6 @@ import {
   GetResultsMultiplexWithCountDocument,
   ArchivedStatus,
 } from "../../../generated/graphql";
-import { testResultDetailsQuery } from "../viewResults/actionMenuModals/TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
 
 import testResults from "./resultsCovid.mock";
@@ -96,7 +95,7 @@ export const mocks = [
   },
   {
     request: {
-      query: testResultDetailsQuery,
+      query: GetTestResultDetailsDocument,
       variables: {
         id: testResults.content[0].id,
       },

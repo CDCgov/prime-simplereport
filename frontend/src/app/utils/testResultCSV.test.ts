@@ -33,6 +33,12 @@ const data = [
         },
         testResult: "UNDETERMINED",
       },
+      {
+        disease: {
+          name: "HIV",
+        },
+        testResult: "POSITIVE",
+      },
     ],
     correctionStatus: "REMOVED",
     reasonForCorrection: "DUPLICATE_TEST",
@@ -78,9 +84,9 @@ const data = [
     noSymptoms: false,
     symptomOnset: null,
   },
-];
+] as TestResult[];
 
-const resultNoRSV = [
+const resultNoRSVOrHIV = [
   {
     "COVID-19 result": "Negative",
     "Device manufacturer": "Access Bio, Inc.",
@@ -126,18 +132,19 @@ const resultNoRSV = [
 
 const result = [
   {
-    ...resultNoRSV[0],
+    ...resultNoRSVOrHIV[0],
     "RSV result": "Inconclusive",
+    "HIV result": "Positive",
   },
 ];
 
 describe("parseDataForCSV", () => {
   it("parses multiplex data", () => {
-    expect(parseDataForCSV(true, data)).toEqual(result);
+    expect(parseDataForCSV(true, true, data)).toEqual(result);
   });
   it("parse data does not fail if tribalAffiliation is null", () => {
     expect(
-      parseDataForCSV(true, [
+      parseDataForCSV(true, true, [
         {
           ...data[0],
           patient: { ...data[0].patient, tribalAffiliation: null },
@@ -145,7 +152,7 @@ describe("parseDataForCSV", () => {
       ])
     ).toEqual(result);
   });
-  it("doesn't include RSV if parameter is false", () => {
-    expect(parseDataForCSV(false, data)).toEqual(resultNoRSV);
+  it("doesn't include RSV or HIV if includeRSV and includeHIV are false", () => {
+    expect(parseDataForCSV(false, false, data)).toEqual(resultNoRSVOrHIV);
   });
 });
