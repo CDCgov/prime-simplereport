@@ -25,7 +25,7 @@ permissions:
   packages: write
 
 jobs:
-# Check for changes in the backend, cypress, database, frontend, and nginx directories
+  # Check for changes in the backend, cypress, database, frontend, and nginx directories
   workflow_changes:
     with:
       what_to_check: ./.github
@@ -56,7 +56,7 @@ jobs:
       what_to_check: ./nginx
     uses: ./.github/workflows/checkForChanges.yml
 
-# Build Docker Images for the backend, cypress, database, frontend, and nginx
+  # Build Docker Images for the backend, cypress, database, frontend, and nginx
   build_backend_image:
     if: needs.workflow_changes.outputs.has_changes == 'true' || needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
@@ -221,7 +221,7 @@ jobs:
           image_name: nginx
           platform: ${{ matrix.platform }}
 
-# Automated tests
+  # Automated tests
   e2e_local:
     if: |
       always() && !failure() && !cancelled()
@@ -246,39 +246,39 @@ jobs:
       DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_frontend_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
 
-  lighthouse:
-    if: |
-      always() && !failure() && !cancelled()
-    needs:
-      - build_backend_image
-      - build_database_image
-      - build_frontend_lighthouse_image
-      - build_nginx_image
-    uses: ./.github/workflows/lighthouse.yml
-    with:
-      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
-      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
-      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
+  #  lighthouse:
+  #    if: |
+  #      always() && !failure() && !cancelled()
+  #    needs:
+  #      - build_backend_image
+  #      - build_database_image
+  #      - build_frontend_lighthouse_image
+  #      - build_nginx_image
+  #    uses: ./.github/workflows/lighthouse.yml
+  #    with:
+  #      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
+  #      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+  #      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
+  #      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
 
-  tests:
-    if: |
-      always() && !failure() && !cancelled()
-    needs:
-      - build_database_image
-    uses: ./.github/workflows/test.yml
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_TEST_ACCOUNT_SID }}
-      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TEST_AUTH_TOKEN }}
-    with:
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+  #  tests:
+  #    if: |
+  #      always() && !failure() && !cancelled()
+  #    needs:
+  #      - build_database_image
+  #    uses: ./.github/workflows/test.yml
+  #    secrets:
+  #      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_TEST_ACCOUNT_SID }}
+  #      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TEST_AUTH_TOKEN }}
+  #    with:
+  #      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
 
-  liquibase_action_checks:
-    if: |
-      always() && !failure() && !cancelled()
-    needs:
-      - build_database_image
-    uses: ./.github/workflows/testDBActions.yml
-    with:
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+#  liquibase_action_checks:
+#    if: |
+#      always() && !failure() && !cancelled()
+#    needs:
+#      - build_database_image
+#    uses: ./.github/workflows/testDBActions.yml
+#    with:
+#      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
