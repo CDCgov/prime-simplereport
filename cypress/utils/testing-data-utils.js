@@ -27,12 +27,12 @@ export const getOrganizationById = (organizationId) => {
     }`,
   });
 };
-export const getOrganizationsByName = (organizationName) => {
+export const getOrganizationsByName = (organizationName, isDeleted = false) => {
   return cy.makePOSTRequest({
     operationName: "OrganizationsByName",
-    variables: { name: organizationName },
-    query: `query OrganizationsByName($name: String!) {
-      organizationsByName(name: $name) {
+    variables: { name: organizationName, isDeleted: isDeleted },
+    query: `query OrganizationsByName($name: String! $isDeleted: Boolean) {
+      organizationsByName(name: $name, isDeleted: $isDeleted) {
         id
         name
         externalId
@@ -42,9 +42,10 @@ export const getOrganizationsByName = (organizationName) => {
           isDeleted
         }
       }
-    }`
+    }`,
   });
 };
+
 export const getPatientsByFacilityId = (facilityId) => {
   return cy.makePOSTRequest({
     operationName: "Patients",
@@ -53,7 +54,7 @@ export const getPatientsByFacilityId = (facilityId) => {
            patients(facilityId: $facilityId){
             internalId
            }
-        }`
+        }`,
   });
 };
 export const getPatientLinkByTestEventId = (testEventId) => {
@@ -111,6 +112,40 @@ export const accessOrganization = (orgExternalId) => {
     }`,
   });
 };
+
+export const addDeviceToFacility = (facility, deviceIds) => {
+  return cy.makePOSTRequest({
+    operationName: "UpdateFacility",
+    variables: {
+      facilityId: facility.internalId,
+      testingFacilityName: facility.testingFacilityName,
+      street: facility.street,
+      state: facility.state,
+      zipCode: facility.zipCode,
+      devices: deviceIds,
+    },
+    query: `mutation UpdateFacility(
+  $facilityId: String!
+  $testingFacilityName: String!
+  $street: String!
+  $state: String!
+  $zipCode: String!
+  $devices: [ID]!
+) {
+  updateFacility(
+    facilityId: $facilityId
+    testingFacilityName: $testingFacilityName
+    street: $street
+    state: $state
+    zipCode: $zipCode
+    deviceIds: $devices
+  ) {
+    id
+  }
+}`,
+  });
+};
+
 export const addMockFacility = (facilityName) => {
   return cy.makePOSTRequest({
     operationName: "AddFacility",
@@ -217,6 +252,24 @@ export const markPatientAsDeleted = (patientId, deleted) => {
         deleted: $deleted
       ) {
         id
+      }
+    }`,
+  });
+};
+
+export const deleteOktaOrgs = (orgExternalId) => {
+  return cy.makePOSTRequest({
+    operationName: "DeleteE2EOktaOrganizations",
+    variables: {
+      orgExternalId: orgExternalId,
+    },
+    query: `mutation DeleteE2EOktaOrganizations(
+      $orgExternalId: String!
+    ) {
+      deleteE2EOktaOrganizations(
+        orgExternalId: $orgExternalId,
+      ) {
+        externalId
       }
     }`,
   });

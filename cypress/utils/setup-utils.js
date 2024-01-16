@@ -2,15 +2,18 @@ import {
   accessOrganization,
   addMockFacility,
   createOrganization,
-  getOrganizationsByName, getPatientsByFacilityId,
-  markOrganizationAsDeleted, markPatientAsDeleted,
-  verifyPendingOrganization
+  getOrganizationsByName,
+  getPatientsByFacilityId,
+  markOrganizationAsDeleted,
+  markPatientAsDeleted,
+  verifyPendingOrganization,
+  deleteOktaOrgs,
 } from "./testing-data-utils";
 import { generateUser } from "../support/e2e";
 
-const createOrgName = (specRunVersionName) => {
+export const createOrgName = (specRunVersionName) => {
   return `${specRunVersionName}-org`;
-}
+};
 
 const createFacilityName = (specRunVersionName) => {
   return `${specRunVersionName}-facility`;
@@ -34,19 +37,36 @@ const archivePatientsForFacility = (facilityId) => {
 
 export const cleanUpPreviousRunSetupData = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
-  getOrganizationsByName(orgName)
-    .then((res) => {
-      let orgs = res.body.data.organizationsByName;
-      let org = orgs.length > 0 ? orgs[0] : null;
-      if (org) {
-        let facilities = org.facilities
-        if (facilities.length > 0) {
-          facilities.map((facility) => archivePatientsForFacility(facility.id))
-        }
-        markOrganizationAsDeleted(org.id, true);
+  getOrganizationsByName(orgName).then((res) => {
+    let orgs = res.body.data.organizationsByName;
+    let org = orgs.length > 0 ? orgs[0] : null;
+    if (org) {
+      let facilities = org.facilities;
+      if (facilities.length > 0) {
+        facilities.map((facility) => archivePatientsForFacility(facility.id));
       }
-    })
-}
+      markOrganizationAsDeleted(org.id, true);
+    }
+  });
+};
+
+export const cleanUpRunOktaOrgs = (specRunVersionName, isDeleted) => {
+  let orgName = createOrgName(specRunVersionName);
+  getOrganizationsByName(orgName, isDeleted).then((res) => {
+    let orgs = res.body.data.organizationsByName;
+    let org = orgs.length > 0 ? orgs[0] : null;
+    if (org) {
+      deleteOktaOrgs(org.externalId);
+    }
+  });
+  getOrganizationsByName(orgName).then((res) => {
+    let orgs = res.body.data.organizationsByName;
+    let org = orgs.length > 0 ? orgs[0] : null;
+    if (org) {
+      deleteOktaOrgs(org.externalId);
+    }
+  });
+};
 
 export const setupRunData = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
