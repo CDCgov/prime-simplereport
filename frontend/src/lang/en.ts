@@ -1,16 +1,13 @@
+import { GenderIdentityDisplay, UNKNOWN } from "../app/utils/gender";
+
 const YES = "Yes";
 const NO = "No";
 const OTHER = "Other";
 const REFUSED = "Prefer not to answer";
-export const UNKNOWN = "Unknown";
 const NOT_SURE = "Not sure";
 
-const FEMALE = "Female";
-const MALE = "Male";
-const TRANSWOMAN = "Trans femme or transwoman";
-const TRANSMAN = "Trans masculine or transman";
-const NONBINARY = "Nonbinary or gender non-conforming";
-
+const FEMALE = GenderIdentityDisplay.female;
+const MALE = GenderIdentityDisplay.male;
 export const en = {
   translation: {
     header: "COVID-19 testing portal",
@@ -60,9 +57,9 @@ export const en = {
       genderIdentity: {
         female: FEMALE,
         male: MALE,
-        transwoman: TRANSWOMAN,
-        transman: TRANSMAN,
-        nonbinary: NONBINARY,
+        transwoman: GenderIdentityDisplay.transwoman,
+        transman: GenderIdentityDisplay.transman,
+        nonbinary: GenderIdentityDisplay.nonbinary,
         other: "Gender identity not listed here",
         refused: REFUSED,
       },

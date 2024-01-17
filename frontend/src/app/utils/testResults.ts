@@ -61,11 +61,7 @@ export function hasDiseaseSpecificResults(
   diseaseName: MultiplexDisease
 ): boolean {
   if (results) {
-    return (
-      results.filter((multiplexResult: MultiplexResult) =>
-        multiplexResult.disease.name.includes(diseaseName)
-      ).length > 0
-    );
+    return results.map((result) => result.disease.name).includes(diseaseName);
   }
   return false;
 }
