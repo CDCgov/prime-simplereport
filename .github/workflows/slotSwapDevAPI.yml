@@ -1,15 +1,32 @@
-name: Rollback Stg API
+name: Slot swap Dev API
 
 on:
   workflow_dispatch:
+    inputs:
+      deploy_env:
+        description: 'environment'
+        required: true
+        type: choice
+        options:
+          - ""
+          - dev
+          - dev2
+          - dev3
+          - dev4
+          - dev5
+          - dev6
+          - dev7
+          - pentest
 
 env:
-  DEPLOY_ENV: stg
+  DEPLOY_ENV: dev
+
 concurrency:
-  group: stg-deploy
+  group: ${{ github.event.inputs.deploy_env }}-deploy
+  cancel-in-progress: false
 
 jobs:
-  rollback:
+  slot_swap:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,7 +41,7 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Roll back to previous release
-        uses: ./.github/actions/rollback-application
+      - name: Slot swap to previous release
+        uses: ./.github/actions/slot-swap-api
         with:
-          deploy-env: ${{env.DEPLOY_ENV}}
+          deploy_env: ${{ inputs.deploy_env }}
