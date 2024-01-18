@@ -1,15 +1,17 @@
-name: Rollback Prod API
+name: Slot swap Training API
 
 on:
   workflow_dispatch:
 
 env:
-  DEPLOY_ENV: prod
+  DEPLOY_ENV: training
+
 concurrency:
-  group: prod-deploy
+  group: ${{ github.event.inputs.deploy_env }}-deploy
+  cancel-in-progress: false
 
 jobs:
-  rollback:
+  slot_swap:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -24,7 +26,7 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Roll back to previous release
-        uses: ./.github/actions/rollback-application
+      - name: Slot swap to previous release
+        uses: ./.github/actions/slot-swap-api
         with:
-          deploy-env: ${{env.DEPLOY_ENV}}
+          deploy_env: ${{ env.DEPLOY_ENV }}
