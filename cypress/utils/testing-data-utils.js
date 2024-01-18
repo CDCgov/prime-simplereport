@@ -242,13 +242,13 @@ export const deleteOktaOrgs = (orgExternalId) => {
 
 export const createOrganization = (name, userEmail) => {
   return cy.makeAccountRequest({
-    "name": name,
-    "type": "camp",
-    "state": "CA",
-    "firstName": "Greg",
-    "middleName": "",
-    "lastName": "McTester",
-    "email": userEmail,
-    "workPhoneNumber": "2123892839"
+    name: name,
+    type: "camp",
+    state: "CA",
+    firstName: "Greg",
+    middleName: "",
+    lastName: "McTester",
+    email: userEmail,
+    workPhoneNumber: "2123892839",
   });
 };

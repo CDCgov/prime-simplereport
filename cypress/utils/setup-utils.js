@@ -21,19 +21,18 @@ const createFacilityName = (specRunVersionName) => {
 
 const createAndVerifyOrganization = (orgName) => {
   const adminUser = generateUser();
-  return createOrganization(orgName, adminUser.email)
-    .then((res) => verifyPendingOrganization(res.body.orgExternalId))
-}
+  return createOrganization(orgName, adminUser.email).then((res) =>
+    verifyPendingOrganization(res.body.orgExternalId),
+  );
+};
 const archivePatientsForFacility = (facilityId) => {
-  return getPatientsByFacilityId(facilityId)
-    .then((res) => {
-      let patients = res.body.data.patients;
-      if (patients.length > 0) {
-        patients.map(
-          (patient) => markPatientAsDeleted(patient.internalId, true))
-      }
-    })
-}
+  return getPatientsByFacilityId(facilityId).then((res) => {
+    let patients = res.body.data.patients;
+    if (patients.length > 0) {
+      patients.map((patient) => markPatientAsDeleted(patient.internalId, true));
+    }
+  });
+};
 
 export const cleanUpPreviousRunSetupData = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
@@ -76,6 +75,8 @@ export const setupRunData = (specRunVersionName) => {
   let facilityName = createFacilityName(specRunVersionName);
   createAndVerifyOrganization(orgName)
     .then(() => getOrganizationsByName(orgName))
-    .then((res) => accessOrganization(res.body.data.organizationsByName[0].externalId))
-    .then(() => addMockFacility(facilityName))
+    .then((res) =>
+      accessOrganization(res.body.data.organizationsByName[0].externalId),
+    )
+    .then(() => addMockFacility(facilityName));
 };
