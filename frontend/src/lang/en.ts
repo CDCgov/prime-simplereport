@@ -1,10 +1,13 @@
+import { GenderIdentityDisplay, UNKNOWN } from "../app/utils/gender";
+
 const YES = "Yes";
 const NO = "No";
 const OTHER = "Other";
 const REFUSED = "Prefer not to answer";
-const UNKNOWN = "Unknown";
 const NOT_SURE = "Not sure";
 
+const FEMALE = GenderIdentityDisplay.female;
+const MALE = GenderIdentityDisplay.male;
 export const en = {
   translation: {
     header: "COVID-19 testing portal",
@@ -34,6 +37,7 @@ export const en = {
         FLUA: "Flu A",
         FLUB: "Flu B",
         RSV: "RSV",
+        HIV: "HIV",
       },
       role: {
         STAFF: "Staff",
@@ -51,18 +55,18 @@ export const en = {
         refused: REFUSED,
       },
       genderIdentity: {
-        female: "Female",
-        male: "Male",
-        transwoman: "Trans femme or transwoman",
-        transman: "Trans masculine or transman",
-        nonbinary: "Nonbinary or gender non-conforming",
+        female: FEMALE,
+        male: MALE,
+        transwoman: GenderIdentityDisplay.transwoman,
+        transman: GenderIdentityDisplay.transman,
+        nonbinary: GenderIdentityDisplay.nonbinary,
         other: "Gender identity not listed here",
         refused: REFUSED,
       },
       gender: {
-        female: "Female",
-        male: "Male",
-        other: "Other",
+        female: FEMALE,
+        male: MALE,
+        other: OTHER,
         refused: REFUSED,
       },
       ethnicity: {

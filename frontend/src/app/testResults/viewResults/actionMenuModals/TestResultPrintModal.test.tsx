@@ -236,3 +236,33 @@ describe("TestResultPrintModal with RSV and flu results", () => {
     expect(component).toMatchSnapshot();
   });
 });
+
+describe("TestResultPrintModal with HIV results", () => {
+  beforeEach(() => {
+    const hivTestResult = cloneDeep(testResult);
+    hivTestResult.results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.HIV },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+    ];
+
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+
+    MockDate.set("2021/01/01");
+    render(
+      <DetachedTestResultPrintModal
+        data={{ testResult: hivTestResult }}
+        testResultId="id"
+        closeModal={() => {}}
+      />
+    );
+  });
+
+  it("should render HIV information", () => {
+    expect(screen.getByText("HIV")).toBeInTheDocument();
+    expect(screen.getByText("Positive")).toBeInTheDocument();
+  });
+});

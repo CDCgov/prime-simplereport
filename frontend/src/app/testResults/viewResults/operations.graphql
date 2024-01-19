@@ -1,0 +1,32 @@
+query GetTestResultDetails($id: ID!) {
+  testResult(id: $id) {
+    dateTested
+    results {
+      disease {
+        name
+      }
+      testResult
+    }
+    correctionStatus
+    symptoms
+    symptomOnset
+    pregnancy
+    genderOfSexualPartners
+    deviceType {
+      name
+    }
+    patient {
+      firstName
+      middleName
+      lastName
+      birthDate
+    }
+    createdBy {
+      name {
+        firstName
+        middleName
+        lastName
+      }
+    }
+  }
+}

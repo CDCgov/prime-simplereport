@@ -1,4 +1,3 @@
-import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
 
@@ -6,15 +5,23 @@ import iconClose from "../../../../img/close.svg";
 import { QueryWrapper } from "../../../commonComponents/QueryWrapper";
 import { formatFullName } from "../../../utils/user";
 import { symptomsStringToArray } from "../../../utils/symptoms";
-import { Result as ResponseResult } from "../../../../generated/graphql";
+import {
+  GetTestResultDetailsDocument,
+  Result as ResponseResult,
+} from "../../../../generated/graphql";
 import {
   PregnancyCode,
   pregnancyMap,
 } from "../../../../patientApp/timeOfTest/constants";
-import { getSortedResults } from "../../../utils/testResults";
+import {
+  getSortedResults,
+  hasDiseaseSpecificResults,
+} from "../../../utils/testResults";
 import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
 import "./TestResultPrintModal.scss";
+import { MULTIPLEX_DISEASES } from "../../constants";
+import { formatGenderOfSexualPartnersForDisplay } from "../../../utils/gender";
 
 type Result = {
   dateTested: string;
@@ -24,6 +31,7 @@ type Result = {
   symptoms: string;
   symptomOnset: string;
   pregnancy: PregnancyCode;
+  genderOfSexualPartners?: string[];
   deviceType: {
     name: string;
   };
@@ -41,40 +49,6 @@ type Result = {
     };
   };
 };
-
-export const testResultDetailsQuery = gql`
-  query getTestResultDetails($id: ID!) {
-    testResult(id: $id) {
-      dateTested
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
-      correctionStatus
-      symptoms
-      symptomOnset
-      pregnancy
-      deviceType {
-        name
-      }
-      patient {
-        firstName
-        middleName
-        lastName
-        birthDate
-      }
-      createdBy {
-        name {
-          firstName
-          middleName
-          lastName
-        }
-      }
-    }
-  }
-`;
 
 const labelClasses = "text-bold text-no-strike text-ink";
 const containerClasses =
@@ -95,6 +69,11 @@ export const DetachedTestResultDetailsModal = ({
   data,
   closeModal,
 }: DetachedTestResultDetailsModalProps) => {
+  const isHIVResult = hasDiseaseSpecificResults(
+    data?.testResult.results,
+    MULTIPLEX_DISEASES.HIV
+  );
+
   const dateTested = data?.testResult.dateTested;
 
   const results = data?.testResult.results;
@@ -102,6 +81,7 @@ export const DetachedTestResultDetailsModal = ({
   const symptoms = data?.testResult.symptoms;
   const symptomOnset = data?.testResult.symptomOnset;
   const pregnancy = data?.testResult.pregnancy;
+  const genderOfSexualPartners = data?.testResult.genderOfSexualPartners ?? [];
   const deviceType = data?.testResult.deviceType;
   const patient = data?.testResult.patient;
   const createdBy = data?.testResult.createdBy;
@@ -111,7 +91,6 @@ export const DetachedTestResultDetailsModal = ({
 
   const resultDetailsRows = (results: MultiplexResults) => {
     const sortedResults = getSortedResults(results);
-
     return (
       <>
         {sortedResults.map((r) => {
@@ -204,26 +183,40 @@ export const DetachedTestResultDetailsModal = ({
             removed={removed}
             aria-describedby="result-detail-title"
           />
-          <DetailsRow
-            label="Symptoms"
-            value={
-              symptomList.length > 0 ? symptomList.join(", ") : "No symptoms"
-            }
-            removed={removed}
-            aria-describedby="result-detail-title"
-          />
-          <DetailsRow
-            label="Symptom onset"
-            value={symptomOnset && formatDateWithTimeOption(symptomOnset)}
-            removed={removed}
-            aria-describedby="result-detail-title"
-          />
+          {!isHIVResult && (
+            <DetailsRow
+              label="Symptoms"
+              value={
+                symptomList.length > 0 ? symptomList.join(", ") : "No symptoms"
+              }
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          )}
+          {!isHIVResult && (
+            <DetailsRow
+              label="Symptom onset"
+              value={symptomOnset && formatDateWithTimeOption(symptomOnset)}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          )}
           <DetailsRow
             label="Pregnant?"
             value={pregnancy && pregnancyMap[pregnancy]}
             removed={removed}
             aria-describedby="result-detail-title"
           />
+          {isHIVResult && (
+            <DetailsRow
+              label="Gender of sexual partners"
+              value={formatGenderOfSexualPartnersForDisplay(
+                genderOfSexualPartners
+              )}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          )}
           <DetailsRow
             label="Submitted by"
             value={createdBy?.name && formatFullName(createdBy.name)}
@@ -262,7 +255,7 @@ const TestResultDetailsModal = (props: TestResultDetailsModalProps) => (
   >
     {props.testResult?.id && (
       <QueryWrapper<DetachedTestResultDetailsModalProps>
-        query={testResultDetailsQuery}
+        query={GetTestResultDetailsDocument}
         queryOptions={{
           variables: { id: props.testResult.id },
           fetchPolicy: "no-cache",

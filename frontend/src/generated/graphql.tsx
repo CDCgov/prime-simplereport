@@ -2684,44 +2684,6 @@ export type MarkTestAsCorrectionMutation = {
   } | null;
 };
 
-export type GetTestResultDetailsQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
-}>;
-
-export type GetTestResultDetailsQuery = {
-  __typename?: "Query";
-  testResult?: {
-    __typename?: "TestResult";
-    dateTested?: any | null;
-    correctionStatus?: string | null;
-    symptoms?: string | null;
-    symptomOnset?: any | null;
-    pregnancy?: string | null;
-    results?: Array<{
-      __typename?: "MultiplexResult";
-      testResult: string;
-      disease: { __typename?: "SupportedDisease"; name: string };
-    } | null> | null;
-    deviceType?: { __typename?: "DeviceType"; name: string } | null;
-    patient?: {
-      __typename?: "Patient";
-      firstName?: string | null;
-      middleName?: string | null;
-      lastName?: string | null;
-      birthDate?: any | null;
-    } | null;
-    createdBy?: {
-      __typename?: "ApiUser";
-      name: {
-        __typename?: "NameInfo";
-        firstName?: string | null;
-        middleName?: string | null;
-        lastName: string;
-      };
-    } | null;
-  } | null;
-};
-
 export type GetTestResultForTextQueryVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
@@ -2753,6 +2715,45 @@ export type SendSmsMutationVariables = Exact<{
 export type SendSmsMutation = {
   __typename?: "Mutation";
   sendPatientLinkSmsByTestEventId?: boolean | null;
+};
+
+export type GetTestResultDetailsQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type GetTestResultDetailsQuery = {
+  __typename?: "Query";
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    correctionStatus?: string | null;
+    symptoms?: string | null;
+    symptomOnset?: any | null;
+    pregnancy?: string | null;
+    genderOfSexualPartners?: Array<string | null> | null;
+    results?: Array<{
+      __typename?: "MultiplexResult";
+      testResult: string;
+      disease: { __typename?: "SupportedDisease"; name: string };
+    } | null> | null;
+    deviceType?: { __typename?: "DeviceType"; name: string } | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      birthDate?: any | null;
+    } | null;
+    createdBy?: {
+      __typename?: "ApiUser";
+      name: {
+        __typename?: "NameInfo";
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName: string;
+      };
+    } | null;
+  } | null;
 };
 
 export type GetDeviceTypesForLookupQueryVariables = Exact<{
@@ -7975,90 +7976,6 @@ export type MarkTestAsCorrectionMutationOptions = Apollo.BaseMutationOptions<
   MarkTestAsCorrectionMutation,
   MarkTestAsCorrectionMutationVariables
 >;
-export const GetTestResultDetailsDocument = gql`
-  query getTestResultDetails($id: ID!) {
-    testResult(id: $id) {
-      dateTested
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
-      correctionStatus
-      symptoms
-      symptomOnset
-      pregnancy
-      deviceType {
-        name
-      }
-      patient {
-        firstName
-        middleName
-        lastName
-        birthDate
-      }
-      createdBy {
-        name {
-          firstName
-          middleName
-          lastName
-        }
-      }
-    }
-  }
-`;
-
-/**
- * __useGetTestResultDetailsQuery__
- *
- * To run a query within a React component, call `useGetTestResultDetailsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTestResultDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTestResultDetailsQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetTestResultDetailsQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >(GetTestResultDetailsDocument, options);
-}
-export function useGetTestResultDetailsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >(GetTestResultDetailsDocument, options);
-}
-export type GetTestResultDetailsQueryHookResult = ReturnType<
-  typeof useGetTestResultDetailsQuery
->;
-export type GetTestResultDetailsLazyQueryHookResult = ReturnType<
-  typeof useGetTestResultDetailsLazyQuery
->;
-export type GetTestResultDetailsQueryResult = Apollo.QueryResult<
-  GetTestResultDetailsQuery,
-  GetTestResultDetailsQueryVariables
->;
 export const GetTestResultForTextDocument = gql`
   query getTestResultForText($id: ID!) {
     testResult(id: $id) {
@@ -8171,6 +8088,91 @@ export type SendSmsMutationResult = Apollo.MutationResult<SendSmsMutation>;
 export type SendSmsMutationOptions = Apollo.BaseMutationOptions<
   SendSmsMutation,
   SendSmsMutationVariables
+>;
+export const GetTestResultDetailsDocument = gql`
+  query GetTestResultDetails($id: ID!) {
+    testResult(id: $id) {
+      dateTested
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      correctionStatus
+      symptoms
+      symptomOnset
+      pregnancy
+      genderOfSexualPartners
+      deviceType {
+        name
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+      }
+      createdBy {
+        name {
+          firstName
+          middleName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetTestResultDetailsQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultDetailsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultDetailsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTestResultDetailsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultDetailsQuery,
+    GetTestResultDetailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultDetailsQuery,
+    GetTestResultDetailsQueryVariables
+  >(GetTestResultDetailsDocument, options);
+}
+export function useGetTestResultDetailsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultDetailsQuery,
+    GetTestResultDetailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultDetailsQuery,
+    GetTestResultDetailsQueryVariables
+  >(GetTestResultDetailsDocument, options);
+}
+export type GetTestResultDetailsQueryHookResult = ReturnType<
+  typeof useGetTestResultDetailsQuery
+>;
+export type GetTestResultDetailsLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultDetailsLazyQuery
+>;
+export type GetTestResultDetailsQueryResult = Apollo.QueryResult<
+  GetTestResultDetailsQuery,
+  GetTestResultDetailsQueryVariables
 >;
 export const GetDeviceTypesForLookupDocument = gql`
   query getDeviceTypesForLookup {

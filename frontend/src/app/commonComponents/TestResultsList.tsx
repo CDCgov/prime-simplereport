@@ -17,6 +17,8 @@ const setDiseaseName = (diseaseName: MultiplexDisease, t: translateFn) => {
       return t("constants.disease.FLUA");
     case MULTIPLEX_DISEASES.FLU_B:
       return t("constants.disease.FLUB");
+    case MULTIPLEX_DISEASES.HIV:
+      return t("constants.disease.HIV");
     case MULTIPLEX_DISEASES.RSV:
       return t("constants.disease.RSV");
     default:
