@@ -228,7 +228,7 @@
     "redux-mock-store": "^1.5.4",
     "sass": "^1.63.6",
     "selenium-webdriver": "^4.16.0",
-    "storybook": "^7.5.2",
+    "storybook": "^7.6.10",
     "storybook-addon-apollo-client": "^5.0.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
