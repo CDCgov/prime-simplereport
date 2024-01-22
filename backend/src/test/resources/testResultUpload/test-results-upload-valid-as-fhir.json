@@ -350,7 +350,7 @@
             "coding": [
               {
                 "system": "http://snomed.info/sct",
-                "code": "53342003"
+                "code": "87100004"
               }
             ],
             "text": "Internal nose structure (body structure)"
