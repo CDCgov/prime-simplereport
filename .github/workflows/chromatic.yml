@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 0  # Chromatic wants the history
 
-      - uses: actions/setup-node@v4.0.1
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
