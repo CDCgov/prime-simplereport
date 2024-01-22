@@ -590,8 +590,8 @@ class FhirConverterTest {
             ConvertToSpecimenProps.builder()
                 .specimenCode("258500001")
                 .specimenName("Nasopharyngeal swab")
-                .collectionCode("53342003 but not the default one")
-                .collectionName("Internal nose structure (body structure) but not the default one")
+                .collectionCode(DEFAULT_LOCATION_CODE + " but not the default one")
+                .collectionName(DEFAULT_LOCATION_NAME + " but not the default one")
                 .id("id-123")
                 .identifier("uuid-123")
                 .collectionDate(collectionDate)
@@ -609,9 +609,9 @@ class FhirConverterTest {
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
         .isEqualTo(snomedCode);
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo("53342003 but not the default one");
+        .isEqualTo(DEFAULT_LOCATION_CODE + " but not the default one");
     assertThat(actual.getCollection().getBodySite().getText())
-        .isEqualTo("Internal nose structure (body structure) but not the default one");
+        .isEqualTo(DEFAULT_LOCATION_NAME + " but not the default one");
     assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
         .isEqualTo("2023-06-22T16:38:00Z");
   }
@@ -634,10 +634,7 @@ class FhirConverterTest {
   void convertToSpecimen_SpecimenType_valid() {
     var specimenType =
         new SpecimenType(
-            "Nasopharyngeal swab",
-            "258500001",
-            "Internal nose structure (body structure)",
-            "53342003");
+            "Nasopharyngeal swab", "258500001", DEFAULT_LOCATION_NAME, DEFAULT_LOCATION_CODE);
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
@@ -659,9 +656,8 @@ class FhirConverterTest {
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
         .isEqualTo(snomedCode);
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo("53342003");
-    assertThat(actual.getCollection().getBodySite().getText())
-        .isEqualTo("Internal nose structure (body structure)");
+        .isEqualTo(DEFAULT_LOCATION_CODE);
+    assertThat(actual.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
     assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
         .isEqualTo("2023-06-22T13:16:00.00Z");
     assertThat(actual.getReceivedTimeElement().getValueAsString())
