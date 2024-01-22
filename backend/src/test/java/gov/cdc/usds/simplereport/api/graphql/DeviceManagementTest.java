@@ -127,6 +127,10 @@ class DeviceManagementTest extends BaseGraphqlTest {
                         .equipmentUidType("equipmentUid1Type")
                         .testkitNameId("testkitNameId1")
                         .testOrderedLoincCode("loinc3")
+                        .testPerformedLoincLongName(
+                            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection")
+                        .testOrderedLoincLongName(
+                            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")
                         .build()))
             .build();
 
@@ -157,6 +161,10 @@ class DeviceManagementTest extends BaseGraphqlTest {
                         .equipmentUidType("equipmentUidType1")
                         .testkitNameId("testkitNameId1")
                         .testOrderedLoincCode("loinc3")
+                        .testPerformedLoincLongName(
+                            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection")
+                        .testOrderedLoincLongName(
+                            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")
                         .build()))
             .build();
 

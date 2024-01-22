@@ -943,7 +943,9 @@ export type SupportedDiseaseTestPerformed = {
   equipmentUidType?: Maybe<Scalars["String"]["output"]>;
   supportedDisease: SupportedDisease;
   testOrderedLoincCode?: Maybe<Scalars["String"]["output"]>;
+  testOrderedLoincLongName?: Maybe<Scalars["String"]["output"]>;
   testPerformedLoincCode: Scalars["String"]["output"];
+  testPerformedLoincLongName?: Maybe<Scalars["String"]["output"]>;
   testkitNameId?: Maybe<Scalars["String"]["output"]>;
 };
 
@@ -952,7 +954,9 @@ export type SupportedDiseaseTestPerformedInput = {
   equipmentUidType?: InputMaybe<Scalars["String"]["input"]>;
   supportedDisease: Scalars["ID"]["input"];
   testOrderedLoincCode?: InputMaybe<Scalars["String"]["input"]>;
+  testOrderedLoincLongName?: InputMaybe<Scalars["String"]["input"]>;
   testPerformedLoincCode: Scalars["String"]["input"];
+  testPerformedLoincLongName?: InputMaybe<Scalars["String"]["input"]>;
   testkitNameId?: InputMaybe<Scalars["String"]["input"]>;
 };
 

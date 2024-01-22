@@ -190,11 +190,12 @@ public class DeviceTypeService {
                           .deviceTypeId(device.getInternalId())
                           .supportedDisease(disease)
                           .testPerformedLoincCode(input.getTestPerformedLoincCode())
+                          .testPerformedLoincLongName(input.getTestPerformedLoincLongName())
                           .testOrderedLoincCode(input.getTestOrderedLoincCode())
+                          .testOrderedLoincLongName(input.getTestOrderedLoincLongName())
                           .equipmentUid(input.getEquipmentUid())
                           .equipmentUidType(input.getEquipmentUidType())
                           .testkitNameId(input.getTestkitNameId())
-                          .testOrderedLoincCode(input.getTestOrderedLoincCode())
                           .build()));
         });
     return deviceTypeDiseaseList;
