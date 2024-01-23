@@ -11,8 +11,10 @@ import lombok.ToString;
 public class SupportedDiseaseTestPerformedInput {
   UUID supportedDisease;
   String testPerformedLoincCode;
+  String testPerformedLoincLongName;
   String equipmentUid;
   String equipmentUidType;
   String testkitNameId;
   String testOrderedLoincCode;
+  String testOrderedLoincLongName;
 }

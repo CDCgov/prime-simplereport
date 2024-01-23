@@ -853,19 +853,23 @@ class FhirConverterTest {
             null,
             covidDisease,
             "94500-6",
+            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
             "covidEquipmentUID",
             "covidEquipmentUIDType",
             "covidTestkitNameId",
-            "94500-0");
+            "94500-0",
+            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
     var fluDiseaseTestPerformedCode =
         new DeviceTypeDisease(
             null,
             fluDisease,
             "85477-8",
+            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
             "fluEquipmentUID",
             "fluEquipmentUidType",
             "fluTestkitNameId",
-            "85477-0");
+            "85477-0",
+            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
     ReflectionTestUtils.setField(
         device,
         "supportedDiseaseTestPerformed",
@@ -923,10 +927,12 @@ class FhirConverterTest {
             null,
             covidDisease,
             "94500-6",
+            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
             "covidEquipmentUID",
             "covidEquipmentUIDType",
             "covidTestkitNameId",
-            "94500-0");
+            "94500-0",
+            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
 
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
     ReflectionTestUtils.setField(
@@ -1674,26 +1680,32 @@ class FhirConverterTest {
                 deviceTypeId,
                 covidDisease,
                 "333-123",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID1",
                 "equipmentUIDType1",
                 "testkitNameId1",
-                null),
+                null,
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluADisease,
                 "444-123",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID2",
                 "equipmentUIDType2",
                 "testkitNameId2",
-                "95422-2"),
+                "95422-2",
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluBDisease,
                 "444-456",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID3",
                 "equipmentUIDType3",
                 "testkitNameId3",
-                "95422-2"));
+                "95422-2",
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"));
 
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);

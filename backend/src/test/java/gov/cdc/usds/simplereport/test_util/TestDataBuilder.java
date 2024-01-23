@@ -121,10 +121,12 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
+        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
         "MNI",
         "BOOMX2",
-        "95422-2");
+        "95422-2",
+        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
   }
 
   public static DeviceTypeDisease createDeviceTypeDiseaseForBulkUpload(
@@ -133,10 +135,12 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
+        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
         "MNI",
         "BOOMX2",
-        "94534-5");
+        "94534-5",
+        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
   }
 
   public static DeviceTypeDisease createDeviceTypeDisease() {
@@ -145,10 +149,12 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
+        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
         "MNI",
         "BOOMX2",
-        "98670-3");
+        "98670-3",
+        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
   }
 
   public static DeviceType createDeviceType() {

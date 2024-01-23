@@ -47,6 +47,10 @@ class DeviceTypeDataLoaderHelperTest {
     String equipmentUidType = "testEquipmentUidType";
     String testkitNameId = "testkitNameId";
     String testOrderedLoinc = "test123OrderedLoinc";
+    String testPerformedLoincLongName =
+        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection";
+    String testOrderedLoincLongName =
+        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection";
 
     SupportedDisease supportedDisease1 = mock(SupportedDisease.class);
     SupportedDisease supportedDisease2 = mock(SupportedDisease.class);
@@ -67,26 +71,32 @@ class DeviceTypeDataLoaderHelperTest {
                     device1Id,
                     supportedDisease1,
                     testPerformedLoinc,
+                    testPerformedLoincLongName,
                     equipmentUid,
                     equipmentUidType,
                     testkitNameId,
-                    testOrderedLoinc),
+                    testOrderedLoinc,
+                    testOrderedLoincLongName),
                 new DeviceTypeDisease(
                     device2Id,
                     supportedDisease1,
                     testPerformedLoinc,
+                    testPerformedLoincLongName,
                     equipmentUid,
                     equipmentUidType,
                     testkitNameId,
-                    testOrderedLoinc),
+                    testOrderedLoinc,
+                    testOrderedLoincLongName),
                 new DeviceTypeDisease(
                     device2Id,
                     supportedDisease2,
                     testPerformedLoinc,
+                    testPerformedLoincLongName,
                     equipmentUid,
                     equipmentUidType,
                     testkitNameId,
-                    testOrderedLoinc)));
+                    testOrderedLoinc,
+                    testOrderedLoincLongName)));
 
     // WHEN
     Map<UUID, List<SupportedDisease>> supportedDiseases =
@@ -150,28 +160,40 @@ class DeviceTypeDataLoaderHelperTest {
         DeviceTypeDisease.builder()
             .deviceTypeId(device1Id)
             .testPerformedLoincCode("123")
+            .testPerformedLoincLongName(
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection")
             .supportedDisease(new SupportedDisease())
             .equipmentUid("111")
             .testkitNameId("222")
             .testOrderedLoincCode("234")
+            .testOrderedLoincLongName(
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")
             .build();
     var deviceTypeDisease2 =
         DeviceTypeDisease.builder()
             .deviceTypeId(device1Id)
             .testPerformedLoincCode("456")
+            .testPerformedLoincLongName(
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection")
             .supportedDisease(new SupportedDisease())
             .equipmentUid("333")
             .testkitNameId("444")
             .testOrderedLoincCode("345")
+            .testOrderedLoincLongName(
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")
             .build();
     var deviceTypeDisease3 =
         DeviceTypeDisease.builder()
             .deviceTypeId(device2Id)
             .testPerformedLoincCode("123")
+            .testPerformedLoincLongName(
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection")
             .supportedDisease(new SupportedDisease())
             .equipmentUid("555")
             .testkitNameId("666")
             .testOrderedLoincCode("244")
+            .testOrderedLoincLongName(
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")
             .build();
 
     when(deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(deviceIdSet))

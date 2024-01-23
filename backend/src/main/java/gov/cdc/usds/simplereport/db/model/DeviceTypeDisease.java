@@ -26,10 +26,12 @@ public class DeviceTypeDisease extends IdentifiedEntity {
   private SupportedDisease supportedDisease;
 
   @Column private String testPerformedLoincCode;
+  @Column private String testPerformedLoincLongName;
   @Column private String equipmentUid;
   @Column private String equipmentUidType;
   @Column private String testkitNameId;
   @Column private String testOrderedLoincCode;
+  @Column private String testOrderedLoincLongName;
 
   @Override
   public boolean equals(Object o) {
@@ -47,7 +49,9 @@ public class DeviceTypeDisease extends IdentifiedEntity {
         && Objects.equals(testOrderedLoincCode, that.testOrderedLoincCode)
         && Objects.equals(equipmentUid, that.equipmentUid)
         && Objects.equals(equipmentUidType, that.equipmentUidType)
-        && Objects.equals(testkitNameId, that.testkitNameId);
+        && Objects.equals(testkitNameId, that.testkitNameId)
+        && Objects.equals(testPerformedLoincLongName, that.testPerformedLoincLongName)
+        && Objects.equals(testOrderedLoincLongName, that.testOrderedLoincLongName);
   }
 
   @Override
@@ -59,6 +63,8 @@ public class DeviceTypeDisease extends IdentifiedEntity {
         testOrderedLoincCode,
         equipmentUid,
         equipmentUidType,
-        testkitNameId);
+        testkitNameId,
+        testPerformedLoincLongName,
+        testOrderedLoincLongName);
   }
 }

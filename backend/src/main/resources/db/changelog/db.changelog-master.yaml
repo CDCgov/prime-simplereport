@@ -5219,3 +5219,19 @@ databaseChangeLog:
                     referencedColumnNames: internal_id
         - dropTable:
             tableName: upload_disease_details
+  - changeSet:
+      id: add-loinc-long-names-to-device-type-disease
+      author: ttu8@cdc.gov
+      comment: Add the LOINC long names for the test performed and test ordered LOINC codes to Device Type Disease
+      changes:
+        - addColumn:
+            tableName: device_type_disease
+            columns:
+              - column:
+                  name: test_performed_loinc_long_name
+                  type: text
+                  remarks: testPerformedLoincLongName from LIVD API
+              - column:
+                  name: test_ordered_loinc_long_name
+                  type: text
+                  remarks: testOrderedLoincLongName from LIVD API
