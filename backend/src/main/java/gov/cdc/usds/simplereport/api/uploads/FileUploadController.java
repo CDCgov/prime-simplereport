@@ -49,19 +49,6 @@ public class FileUploadController {
       throw new CsvProcessingException("Unable to complete patient CSV upload");
     }
   }
-
-  @PostMapping(HIV_RESULT_UPLOAD)
-  @PreAuthorize("@featureFlagsConfig.isHivEnabled()")
-  public TestResultUpload handleHIVResultsUpload(@RequestParam("file") MultipartFile file) {
-    assertCsvFileType(file);
-    try (InputStream resultsUpload = file.getInputStream()) {
-      return testResultUploadService.processHIVResultCSV(resultsUpload);
-    } catch (IOException e) {
-      log.error("Test result CSV encountered an unexpected error", e);
-      throw new CsvProcessingException("Unable to process test result CSV upload");
-    }
-  }
-
   @PostMapping(CONDITION_AGNOSTIC_RESULT_UPLOAD)
   @PreAuthorize("@featureFlagsConfig.isAgnosticBulkUploadEnabled()")
   public TestResultUpload handleConditionAgnosticResultsUpload(
