@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.when;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.parser.IParser;
+import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -305,6 +307,18 @@ class FhirConverterTest {
     assertThat(code.get(0).getSystem()).isEqualTo(codeSystem);
     assertThat(code.get(0).getCode()).isEqualTo(expectedCode);
     assertThat(codeableConcept.getText()).isEqualTo(expectedText);
+  }
+
+  @Test
+  void convertToRaceNull_convertsGracefully() {
+    var actual = fhirConverter.convertToRaceExtension(null);
+    var codeableConcept = actual.castToCodeableConcept(actual.getValue());
+    var code = codeableConcept.getCoding();
+
+    assertThat(code).hasSize(1);
+    assertThat(code.get(0).getSystem()).isEqualTo(NULL_CODE_SYSTEM);
+    assertThat(code.get(0).getCode()).isEqualTo(MappingConstants.UNK_CODE);
+    assertThat(codeableConcept.getText()).isEqualTo(MappingConstants.UNKNOWN_STRING);
   }
 
   private static Stream<Arguments> raceArgs() {
