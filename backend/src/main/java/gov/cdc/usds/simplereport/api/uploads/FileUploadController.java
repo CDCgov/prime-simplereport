@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.api.uploads;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.CONDITION_AGNOSTIC_RESULT_UPLOAD;
-import static gov.cdc.usds.simplereport.config.WebConfiguration.HIV_RESULT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 
