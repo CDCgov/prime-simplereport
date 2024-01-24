@@ -64,29 +64,4 @@ describe("FileUploadService", () => {
       });
     });
   });
-
-  describe("uploading hiv results", () => {
-    const csvFile = new File(["bar"], "results.csv");
-
-    it("calls fetch with the correct data", async () => {
-      // GIVEN
-      const expectedBody = new FormData();
-      expectedBody.append("file", csvFile);
-
-      // WHEN
-      await FileUploadService.uploadHIVResults(csvFile);
-
-      // THEN
-      expect(fetch).toHaveBeenCalledWith(`${backendUrl}/upload/hiv-results`, {
-        body: expectedBody,
-        headers: {
-          "Access-Control-Request-Headers": "Authorization",
-          Authorization: "Bearer access-token-123",
-          ...appInsightsHeaders,
-        },
-        method: "POST",
-        mode: "cors",
-      });
-    });
-  });
 });

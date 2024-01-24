@@ -23,9 +23,6 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String FEATURE_FLAGS = "/feature-flags";
   public static final String PATIENT_UPLOAD = "/upload/patients";
   public static final String RESULT_UPLOAD = "/upload/results";
-
-  public static final String HIV_RESULT_UPLOAD = "/upload/hiv-results";
-
   public static final String CONDITION_AGNOSTIC_RESULT_UPLOAD = "/upload/condition-agnostic";
   public static final String GRAPH_QL = "/graphql";
 
