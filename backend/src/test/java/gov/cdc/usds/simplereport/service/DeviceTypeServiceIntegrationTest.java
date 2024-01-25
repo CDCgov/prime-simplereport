@@ -79,7 +79,9 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease.getInternalId())
                             .testPerformedLoincCode("000000000")
+                            .testPerformedLoincLongName("000000000 plus some extra stuff")
                             .testOrderedLoincCode("000000000")
+                            .testOrderedLoincLongName("000000000 plus some extra stuff")
                             .equipmentUid("Equipment Uid")
                             .equipmentUidType("Equipment Uid Type")
                             .testkitNameId("TestKit Uid")
@@ -100,6 +102,9 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease.getInternalId())
                             .testPerformedLoincCode("258500001")
+                            .testPerformedLoincLongName("258500001 plus some extra stuff")
+                            .testOrderedLoincCode("253520011")
+                            .testOrderedLoincLongName("253520011 plus some extra stuff")
                             .equipmentUid("Equipment Uid")
                             .equipmentUidType("Equipment Uid Type")
                             .testkitNameId("TestKit Uid")
@@ -112,16 +117,19 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_updatesDevices() {
     LIVDResponse newDevice =
-        new LIVDResponse(
-            "Manufacturer A",
-            "Model A",
-            List.of(SPECIMEN_DESCRIPTION_ONE),
-            "influenza A RNA Result",
-            "7777777",
-            "8888888",
-            "Updated TestKit",
-            "Updated Equip",
-            "Updated Equip Type");
+        LIVDResponse.builder()
+            .manufacturer("Manufacturer A")
+            .model("Model A")
+            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorAnalyteName("influenza A RNA Result")
+            .testPerformedLoincCode("7777777")
+            .testPerformedLoincLongName("7777777 plus some extra stuff")
+            .testOrderedLoincCode("8888888")
+            .testOrderedLoincLongName("8888888 plus some extra stuff")
+            .testKitNameId("Updated TestKit")
+            .equipmentUid("Updated Equip")
+            .equipmentUidType("Updated Equip Type")
+            .build();
 
     List<LIVDResponse> devices = List.of(newDevice);
 
@@ -141,6 +149,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     assertThat(code.getTestkitNameId()).isEqualTo("Updated TestKit");
     assertThat(code.getEquipmentUid()).isEqualTo("Updated Equip");
     assertThat(code.getEquipmentUidType()).isEqualTo("Updated Equip Type");
+    assertThat(code.getTestOrderedLoincLongName()).isEqualTo("8888888 plus some extra stuff");
+    assertThat(code.getTestPerformedLoincLongName()).isEqualTo("7777777 plus some extra stuff");
   }
 
   @ParameterizedTest
@@ -148,16 +158,19 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_createsDevices(String vendorAnalyteName, String expectedDiseaseName) {
     LIVDResponse newDevice =
-        new LIVDResponse(
-            "New Device Manufacturer",
-            "New Device Model",
-            List.of(SPECIMEN_DESCRIPTION_ONE),
-            vendorAnalyteName,
-            "8888888",
-            "0123456",
-            "New TestKit",
-            "New Equip",
-            "New Equip Uid Type");
+        LIVDResponse.builder()
+            .manufacturer("New Device Manufacturer")
+            .model("New Device Model")
+            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorAnalyteName(vendorAnalyteName)
+            .testPerformedLoincCode("8888888")
+            .testPerformedLoincLongName("8888888 plus some extra stuff")
+            .testOrderedLoincCode("0123456")
+            .testOrderedLoincLongName("0123456 plus some extra stuff")
+            .testKitNameId("New TestKit")
+            .equipmentUid("New Equip")
+            .equipmentUidType("New Equip Uid Type")
+            .build();
     List<LIVDResponse> devices = List.of(newDevice);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
@@ -189,27 +202,36 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
     assertThat(deviceSpecimenTypes).hasSize(1);
     LIVDResponse deviceOne =
-        new LIVDResponse(
-            devA.getManufacturer(),
-            devA.getModel(),
-            List.of(SPECIMEN_DESCRIPTION_ONE, SPECIMEN_DESCRIPTION_TWO),
-            "influenza A RNA Result",
-            "0123456",
-            "8888888",
-            "TestKit A",
-            "Equip A",
-            "Equip A Type");
+        LIVDResponse.builder()
+            .manufacturer(devA.getManufacturer())
+            .model(devA.getModel())
+            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE, SPECIMEN_DESCRIPTION_TWO))
+            .vendorAnalyteName("influenza A RNA Result")
+            .testPerformedLoincCode("0123456")
+            .testPerformedLoincLongName("0123456 plus some extra stuff")
+            .testOrderedLoincCode("8888888")
+            .testOrderedLoincLongName("8888888 plus some extra stuff")
+            .testKitNameId("TestKit A")
+            .equipmentUid("Equip A")
+            .equipmentUidType("Equip A Type")
+            .build();
+
     LIVDResponse deviceTwo =
-        new LIVDResponse(
-            devB.getManufacturer(),
-            devB.getModel(),
-            List.of(SPECIMEN_DESCRIPTION_ONE, SPECIMEN_DESCRIPTION_THREE),
-            "influenza A RNA Result",
-            "0123456",
-            "8888888",
-            "TestKit A",
-            "Equip A",
-            "Equip A Type");
+        LIVDResponse.builder()
+            .manufacturer(devB.getManufacturer())
+            .model(devB.getModel())
+            .vendorSpecimenDescription(
+                List.of(SPECIMEN_DESCRIPTION_ONE, SPECIMEN_DESCRIPTION_THREE))
+            .vendorAnalyteName("influenza A RNA Result")
+            .testPerformedLoincCode("0123456")
+            .testPerformedLoincLongName("0123456 plus some extra stuff")
+            .testOrderedLoincCode("8888888")
+            .testOrderedLoincLongName("8888888 plus some extra stuff")
+            .testKitNameId("TestKit B")
+            .equipmentUid("Equip B")
+            .equipmentUidType("Equip B Type")
+            .build();
+
     List<LIVDResponse> devices = List.of(deviceOne, deviceTwo);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
@@ -249,16 +271,19 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_updatesAssociatedDeviceTypeDiseaseFields() {
     LIVDResponse newDevice =
-        new LIVDResponse(
-            "Manufacturer A",
-            "Model A",
-            List.of(SPECIMEN_DESCRIPTION_ONE),
-            "influenza A RNA Result",
-            "7777777",
-            "8888888",
-            "Updated TestKit",
-            "Updated Equip",
-            "Updated Equip Type");
+        LIVDResponse.builder()
+            .manufacturer("Manufacturer A")
+            .model("Model A")
+            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorAnalyteName("influenza A RNA Result")
+            .testPerformedLoincCode("7777777")
+            .testPerformedLoincLongName("7777777 plus some extra stuff")
+            .testOrderedLoincCode("8888888")
+            .testOrderedLoincLongName("8888888 plus some extra stuff")
+            .testKitNameId("Updated TestKit")
+            .equipmentUid("Updated Equip")
+            .equipmentUidType("Updated Equip Type")
+            .build();
 
     List<LIVDResponse> devices = List.of(newDevice);
 
@@ -284,16 +309,19 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     var updatedAt = existingDevice.getUpdatedAt();
 
     LIVDResponse device =
-        new LIVDResponse(
-            existingDevice.getManufacturer(),
-            existingDevice.getModel(),
-            List.of(SPECIMEN_DESCRIPTION_ONE),
-            "covid",
-            "000000000",
-            "000000000",
-            "TestKit Uid",
-            "Equipment Uid",
-            "Equipment Uid Type");
+        LIVDResponse.builder()
+            .manufacturer(existingDevice.getManufacturer())
+            .model(existingDevice.getModel())
+            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorAnalyteName("covid")
+            .testPerformedLoincCode("000000000")
+            .testPerformedLoincLongName("000000000 plus some extra stuff")
+            .testOrderedLoincCode("000000000")
+            .testOrderedLoincLongName("000000000 plus some extra stuff")
+            .testKitNameId("TestKit Uid")
+            .equipmentUid("Equipment Uid")
+            .equipmentUidType("Equipment UID Type")
+            .build();
 
     List<LIVDResponse> devices = List.of(device);
 
@@ -309,16 +337,19 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_skipsInvalidDiseases() {
     LIVDResponse device =
-        new LIVDResponse(
-            "Some manufacturer",
-            "Some model",
-            List.of(SPECIMEN_DESCRIPTION_ONE),
-            "invalid disease!",
-            "000000000",
-            "000000000",
-            "TestKit Uid",
-            "Equipment Uid",
-            "Equipment Uid Type");
+        LIVDResponse.builder()
+            .manufacturer("Some manufacturer")
+            .model("Some model")
+            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorAnalyteName("invalid disease!")
+            .testPerformedLoincCode("000000000")
+            .testPerformedLoincLongName("000000000 plus some extra stuff")
+            .testOrderedLoincCode("000000000")
+            .testOrderedLoincLongName("000000000 plus some extra stuff")
+            .testKitNameId("TestKit Uid")
+            .equipmentUid("Equipment Uid")
+            .equipmentUidType("Equipment UID Type")
+            .build();
 
     List<LIVDResponse> devices = List.of(device);
 
@@ -334,16 +365,19 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   void syncDevices_avoidsDuplicateDeviceNames() {
     // Define a device with a `model` matching a different value and a new `manufacturer`
     LIVDResponse device =
-        new LIVDResponse(
-            "Shiny New Manufacturer",
-            "Device A",
-            List.of(SPECIMEN_DESCRIPTION_ONE),
-            "fluA",
-            "000000000",
-            "000000000",
-            "TestKit Uid",
-            "Equipment Uid",
-            "Equip Uid Type");
+        LIVDResponse.builder()
+            .manufacturer("Shiny New Manufacturer")
+            .model("Device A")
+            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorAnalyteName("fluA")
+            .testPerformedLoincCode("000000000")
+            .testPerformedLoincLongName("000000000 plus some extra stuff")
+            .testOrderedLoincCode("000000000")
+            .testOrderedLoincLongName("000000000 plus some extra stuff")
+            .testKitNameId("TestKit Uid")
+            .equipmentUid("Equipment Uid")
+            .equipmentUidType("Equipment UID Type")
+            .build();
 
     List<LIVDResponse> devices = List.of(device);
 
@@ -358,16 +392,19 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_skipsConfiguredDevices() {
     LIVDResponse device =
-        new LIVDResponse(
-            "Applied BioCode, Inc.",
-            "BioCode CoV-2 Flu Plus Assay",
-            List.of(SPECIMEN_DESCRIPTION_ONE),
-            "fluA",
-            "000000000",
-            "000000000",
-            "TestKit Uid",
-            "Equipment Uid",
-            "Equipment Uid Type");
+        LIVDResponse.builder()
+            .manufacturer("Applied BioCode, Inc.")
+            .model("BioCode CoV-2 Flu Plus Assay")
+            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorAnalyteName("fluA")
+            .testPerformedLoincCode("000000000")
+            .testPerformedLoincLongName("000000000 plus some extra stuff")
+            .testOrderedLoincCode("000000000")
+            .testOrderedLoincLongName("000000000 plus some extra stuff")
+            .testKitNameId("TestKit Uid")
+            .equipmentUid("Equipment Uid")
+            .equipmentUidType("Equipment UID Type")
+            .build();
 
     List<LIVDResponse> devices = List.of(device);
 
@@ -382,16 +419,19 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_skipsForDryRuns() {
     LIVDResponse newDevice =
-        new LIVDResponse(
-            "Dry Run Device Manufacturer",
-            "Dry Run Device Model",
-            List.of("not to be added (123456789^To Be Added^SCT)\r"),
-            "COVID-19",
-            "8888888",
-            "0123456",
-            "Dry Run TestKit",
-            "Dry Run Equip",
-            "Dry Run Equip Type");
+        LIVDResponse.builder()
+            .manufacturer("Dry Run Device Manufacturer")
+            .model("Dry Run Device Model")
+            .vendorSpecimenDescription(List.of("not to be added (123456789^To Be Added^SCT)\n"))
+            .vendorAnalyteName("OVID-19")
+            .testPerformedLoincCode("8888888")
+            .testPerformedLoincLongName("8888888 plus some extra stuff")
+            .testOrderedLoincCode("0123456")
+            .testOrderedLoincLongName("0123456 plus some extra stuff")
+            .testKitNameId("Dry Run TestKit")
+            .equipmentUid("Dry Run Equip")
+            .equipmentUidType("Dry Run Equip Type")
+            .build();
 
     List<LIVDResponse> devices = List.of(newDevice);
 
