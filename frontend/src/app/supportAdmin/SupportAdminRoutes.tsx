@@ -17,7 +17,6 @@ interface Props {
 }
 
 const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
-
   if (!isAdmin) {
     return <Navigate to="/queue" />;
   }
