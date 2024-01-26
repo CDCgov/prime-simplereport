@@ -330,20 +330,21 @@ public class FhirConverter {
     return address;
   }
 
-  public Extension convertToRaceExtension(@NotNull String race) {
+  public Extension convertToRaceExtension(String race) {
     var ext = new Extension();
     ext.setUrl(RACE_EXTENSION_URL);
     var codeable = new CodeableConcept();
     var coding = codeable.addCoding();
-    String raceKey = race.toLowerCase();
-    if (StringUtils.isNotBlank(race) && PersonUtils.raceMap.containsKey(raceKey)) {
+    boolean isParseableRace =
+        StringUtils.isNotBlank(race) && PersonUtils.raceMap.containsKey(race.toLowerCase());
+    if (isParseableRace) {
       if (MappingConstants.UNKNOWN_STRING.equalsIgnoreCase(race)
           || "refused".equalsIgnoreCase(race)) {
         coding.setSystem(NULL_CODE_SYSTEM);
       } else {
         coding.setSystem(RACE_CODING_SYSTEM);
       }
-      coding.setCode(PersonUtils.raceMap.get(raceKey));
+      coding.setCode(PersonUtils.raceMap.get(race.toLowerCase()));
       codeable.setText(race);
     } else {
       coding.setSystem(NULL_CODE_SYSTEM);
