@@ -15,7 +15,6 @@ on:
           - dev4
           - dev5
           - dev6
-          - dev7
           - pentest
 
 env:
