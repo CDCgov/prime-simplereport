@@ -48,6 +48,7 @@ mutation SubmitQueueItem(
             internalId
         }
         deliverySuccess
+        testEventId
     }
 }
 
