@@ -26,6 +26,8 @@ describe("SupportAdmin", () => {
     expect(
       await screen.findByText("Beta - HIV CSV Upload", { exact: false })
     ).toBeInTheDocument();
+
+    expect(flagSpy).toHaveBeenCalledWith("hivBulkUploadEnabled");
   });
 
   it("loads menu categories without beta when hivBulkUploadEnabled flag is off", async () => {
@@ -37,5 +39,7 @@ describe("SupportAdmin", () => {
     expect(
       screen.queryByText("Beta - HIV CSV Upload", { exact: false })
     ).not.toBeInTheDocument();
+
+    expect(flagSpy).toHaveBeenCalledWith("hivBulkUploadEnabled");
   });
 });
