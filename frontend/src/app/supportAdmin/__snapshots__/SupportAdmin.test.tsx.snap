@@ -318,3 +318,173 @@ exports[`SupportAdmin loads menu categories including Beta 1`] = `
   </div>
 </div>
 `;
+
+exports[`SupportAdmin loads menu categories including Beta 2`] = `
+<div>
+  <div
+    class="prime-home flex-1"
+  >
+    <div
+      class="grid-container"
+    >
+      <div
+        class="grid-row"
+      >
+        <div
+          class="prime-container card-container"
+        >
+          <div
+            class="usa-card__header"
+          >
+            <h1
+              class="font-heading-lg margin-top-0 margin-bottom-0"
+            >
+              Support admin
+            </h1>
+          </div>
+          <div
+            class="usa-card__body"
+          >
+            <div
+              class="grid-row grid-gap"
+            >
+              <div
+                class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+              >
+                <h2
+                  class="font-heading-md margin-bottom-0 margin-top-2"
+                >
+                  Organizations & facilities
+                </h2>
+                <ul
+                  class="usa-list padding-left-2"
+                >
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/pending-organizations"
+                    >
+                      Verify/edit organization identity
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/add-organization-admin"
+                    >
+                      Add organization admin
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/tenant-data-access"
+                    >
+                      Access organization account
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/escalate-to-engineering"
+                    >
+                      Escalate to engineering
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-facility"
+                    >
+                      Manage facility
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div
+                class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+              >
+                <h2
+                  class="font-heading-md margin-bottom-0 margin-top-2"
+                >
+                  Devices
+                </h2>
+                <ul
+                  class="usa-list padding-left-2"
+                >
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/create-device-type"
+                    >
+                      Add new device
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-devices"
+                    >
+                      Edit existing device
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div
+                class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+              >
+                <h2
+                  class="font-heading-md margin-bottom-0 margin-top-2"
+                >
+                  Users & patients
+                </h2>
+                <ul
+                  class="usa-list padding-left-2"
+                >
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-users"
+                    >
+                      Manage users
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/unarchive-patient"
+                    >
+                      Unarchive patient
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div
+                class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+              >
+                <h2
+                  class="font-heading-md margin-bottom-0 margin-top-2"
+                >
+                  Beta
+                </h2>
+                <ul
+                  class="usa-list padding-left-2"
+                >
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/hiv-csv-upload"
+                    >
+                      Beta - HIV CSV Upload
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
