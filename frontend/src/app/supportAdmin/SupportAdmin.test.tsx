@@ -27,6 +27,7 @@ describe("SupportAdmin", () => {
       await screen.findByText("Beta - HIV CSV Upload", { exact: false })
     ).toBeInTheDocument();
 
+    // force us to clean up this test when we clean up the feature flag
     expect(flagSpy).toHaveBeenCalledWith("hivBulkUploadEnabled");
   });
 
@@ -40,6 +41,7 @@ describe("SupportAdmin", () => {
       screen.queryByText("Beta - HIV CSV Upload", { exact: false })
     ).not.toBeInTheDocument();
 
+    // force us to clean up this test when we clean up the feature flag
     expect(flagSpy).toHaveBeenCalledWith("hivBulkUploadEnabled");
   });
 });

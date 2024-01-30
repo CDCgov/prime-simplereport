@@ -865,6 +865,7 @@ describe("TestResultsList", () => {
       );
     });
   });
+
   describe("RSV single-entry flag is on", () => {
     it("should show RSV option in disease drop-down", async () => {
       const flagSpy = jest.spyOn(flaggedMock, "useFeature");
