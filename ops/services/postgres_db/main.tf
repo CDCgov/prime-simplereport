@@ -7,11 +7,11 @@ resource "azurerm_postgresql_flexible_server" "db" {
   delegated_subnet_id = var.subnet_id
   private_dns_zone_id = var.private_dns_zone_id
 
-
   administrator_login    = var.administrator_login
   administrator_password = data.azurerm_key_vault_secret.db_password.value
 
   storage_mb                   = 524288 // 512 GB
+  auto_grow_enabled            = true
   backup_retention_days        = 7
   geo_redundant_backup_enabled = false
 
