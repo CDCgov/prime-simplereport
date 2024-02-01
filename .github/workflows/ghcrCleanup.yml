@@ -2,7 +2,7 @@ name: Delete old container images
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 * * * *" # every hour
 
 jobs:
   clean_ghcr:
@@ -16,36 +16,54 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/cypress'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/database'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/db'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/frontend'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/frontend-lighthouse'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/nginx'
