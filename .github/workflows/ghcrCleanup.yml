@@ -1,11 +1,14 @@
 name: Delete old container images
 
 on:
+  push:
+    branches:
+      - alis/ghcr-cleanup-sleep
   schedule:
     - cron: "0 0 * * *"
 
 jobs:
-  clean_ghcr:
+  clean_ghcr_backend:
     name: Delete untagged container images
     runs-on: ubuntu-latest
     steps:
@@ -16,36 +19,78 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+  clean_ghcr_cypress:
+    name: Delete untagged container images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 65 seconds
+        run: sleep 65
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/cypress'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+  clean_ghcr_database:
+    name: Delete untagged container images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 65 seconds
+        run: sleep 65
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/database'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+  clean_ghcr_db:
+    name: Delete untagged container images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 65 seconds
+        run: sleep 65
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/db'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+  clean_ghcr_frontend:
+    name: Delete untagged container images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 65 seconds
+        run: sleep 65
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/frontend'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+  clean_ghcr_frontend_lighthouse:
+    name: Delete untagged container images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 65 seconds
+        run: sleep 65
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/frontend-lighthouse'
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
+  clean_ghcr_nginx:
+    name: Delete untagged container images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 65 seconds
+        run: sleep 65
+        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/nginx'
