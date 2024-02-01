@@ -1,11 +1,8 @@
 name: Delete old container images
 
 on:
-  push:
-    branches:
-      - alis/ghcr-cleanup-sleep
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 * * * *" # every hour
 
 jobs:
   clean_ghcr:
