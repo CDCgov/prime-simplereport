@@ -19,9 +19,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-      - name: Sleep for 65 seconds
-        run: sleep 65
-        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/cypress'
@@ -37,9 +34,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-      - name: Sleep for 65 seconds
-        run: sleep 65
-        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/db'
@@ -55,9 +49,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-      - name: Sleep for 65 seconds
-        run: sleep 65
-        shell: bash
       - uses: actions/delete-package-versions@v4
         with:
           package-name: 'prime-simplereport/frontend-lighthouse'
