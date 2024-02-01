@@ -2,7 +2,7 @@ import { generatePatient, loginHooks, testNumber } from "../support/e2e";
 import {
   cleanUpPreviousRunSetupData,
   cleanUpRunOktaOrgs,
-  setupRunData,
+  setupOrgFacility,
 } from "../utils/setup-utils";
 
 const patient = generatePatient();
@@ -30,7 +30,7 @@ describe("Adding a single patient", () => {
           versionName: currentSpecRunVersionName,
         };
         cy.task("setSpecRunVersionName", data);
-        setupRunData(currentSpecRunVersionName);
+        setupOrgFacility(currentSpecRunVersionName);
       },
     );
   });
