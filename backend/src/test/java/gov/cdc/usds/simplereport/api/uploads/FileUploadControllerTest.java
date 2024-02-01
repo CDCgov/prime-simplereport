@@ -47,7 +47,7 @@ class FileUploadControllerTest {
             .warnings(empty)
             .destination(Pipeline.UNIVERSAL)
             .build();
-    when(featureFlagsConfig.isHivEnabled()).thenReturn(true);
+    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(true);
     when(file.getContentType()).thenReturn("text/csv");
     when(file.getInputStream()).thenReturn(stream);
     when(testResultUploadService.processHIVResultCSV(stream)).thenReturn(expected);
