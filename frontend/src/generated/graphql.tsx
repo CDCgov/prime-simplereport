@@ -46,6 +46,7 @@ export type AddFacilityInput = {
 export type AddTestResultResponse = {
   __typename?: "AddTestResultResponse";
   deliverySuccess?: Maybe<Scalars["Boolean"]["output"]>;
+  testEventId: Scalars["ID"]["output"];
   testResult: TestOrder;
 };
 
@@ -2234,6 +2235,7 @@ export type SubmitQueueItemMutation = {
   submitQueueItem?: {
     __typename?: "AddTestResultResponse";
     deliverySuccess?: boolean | null;
+    testEventId: string;
     testResult: { __typename?: "TestOrder"; internalId: string };
   } | null;
 };
@@ -6870,6 +6872,7 @@ export const SubmitQueueItemDocument = gql`
         internalId
       }
       deliverySuccess
+      testEventId
     }
   }
 `;
