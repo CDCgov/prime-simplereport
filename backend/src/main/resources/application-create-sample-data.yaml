@@ -181,6 +181,15 @@ simple-report-initialization:
       facility-name: Uptown Clinic
     - link: downTwn
       facility-name: Downtown Clinic
+  patients:
+    - first-name: "SRPatient1"
+      last-name: "DemoUser"
+      birth-date: "01/01/1980"
+      organization-external-id: DIS_ORG
+    - first-name: "SRPatient2"
+      last-name: "DemoUser"
+      birth-date: "01/01/1980"
+      organization-external-id: DIS_ORG
 simple-report:
   demo-users:
     site-admin-emails:
