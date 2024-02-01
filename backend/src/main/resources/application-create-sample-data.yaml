@@ -182,12 +182,12 @@ simple-report-initialization:
     - link: downTwn
       facility-name: Downtown Clinic
   patients:
-    - first-name: "SRPatient1"
-      last-name: "DemoUser"
+    - first-name: "Mary"
+      last-name: "Meade"
       birth-date: "01/01/1980"
       organization-external-id: DIS_ORG
-    - first-name: "SRPatient2"
-      last-name: "DemoUser"
+    - first-name: "Edward"
+      last-name: "Eaves"
       birth-date: "01/01/1980"
       organization-external-id: DIS_ORG
 simple-report:

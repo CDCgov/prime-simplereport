@@ -408,8 +408,7 @@ public class OrganizationInitializingService {
                 .filter(
                     fp ->
                         fp.getLastName().equals(p.getLastName())
-                            && fp.getFirstName().equals(p.getFirstName())
-                            && !fp.isDeleted())
+                            && fp.getFirstName().equals(p.getFirstName()))
                 .findFirst();
         if (foundPatient.isEmpty()) {
           Person createdPatient =
