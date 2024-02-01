@@ -1,28 +1,85 @@
 const dayjs = require("dayjs");
 const { getPatientLinkByTestEventId } = require("../utils/testing-data-utils");
-const { loginHooks } = require("../support/e2e");
+const {
+  loginHooks,
+  testNumber,
+  generatePatient,
+  generateCovidOnlyDevice,
+} = require("../support/e2e");
 const { frontendURL } = require("../utils/request-utils");
+const {
+  cleanUpPreviousRunSetupData,
+  setupOrgFacility,
+  setupPatient,
+  setupCovidOnlyDevice,
+  cleanUpRunOktaOrgs,
+  setupTestOrder,
+} = require("../utils/setup-utils");
+
+const specRunName = "spec05";
+const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 loginHooks();
 describe("Getting a test result from a patient link", () => {
-  let patientLink, patientDOB, patientObfuscatedName;
-  before("retrieve the patient link and dob", () => {
-    cy.task("getTestEventId").then((testEventId) => {
-      getPatientLinkByTestEventId(testEventId).then((res) => {
-        const patientLinkId = res.body.data.testResult.patientLink.internalId;
+  const patient = generatePatient();
+  const covidOnlyDevice = generateCovidOnlyDevice();
+  const patientDOB = patient.dobForPatientLink;
+  const patientObfuscatedName =
+    patient.firstName + " " + patient.lastName[0] + ".";
+  let patientLink;
 
-        patientLink = `${frontendURL}pxp?plid=${patientLinkId}`;
-      });
-    });
+  before("setup spec data", () => {
+    cy.task("getSpecRunVersionName", specRunName).then(
+      (prevSpecRunVersionName) => {
+        if (prevSpecRunVersionName) {
+          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
+          cleanUpRunOktaOrgs(prevSpecRunVersionName, true);
+        }
+        let data = {
+          specRunName: specRunName,
+          versionName: currentSpecRunVersionName,
+        };
+        cy.task("setSpecRunVersionName", data);
+        let patientId, createdDeviceId, specimenTypeId, testEventId;
+        setupOrgFacility(currentSpecRunVersionName)
+          .then(() => setupPatient(currentSpecRunVersionName, patient))
+          .then((result) => {
+            patientId = result.internalId;
+          })
+          .then(() =>
+            setupCovidOnlyDevice(currentSpecRunVersionName, covidOnlyDevice),
+          )
+          .then((result) => {
+            createdDeviceId = result.createdDeviceId;
+            specimenTypeId = result.specimenTypeId;
+          })
+          .then(() =>
+            setupTestOrder(
+              currentSpecRunVersionName,
+              patientId,
+              createdDeviceId,
+              specimenTypeId,
+            ),
+          )
+          .then((result) => {
+            testEventId = result.body.data.submitQueueItem.testEventId;
+          })
+          .then(() => getPatientLinkByTestEventId(testEventId))
+          .then((result) => {
+            const patientLinkId =
+              result.body.data.testResult.patientLink.internalId;
 
-    cy.task("getPatientDOB").then((dob) => {
-      patientDOB = dob;
-    });
-    cy.task("getPatientName").then((name) => {
-      const [lastName, firstName] = name.split(",");
-      patientObfuscatedName = firstName + " " + lastName[0] + ".";
-    });
+            patientLink = `${frontendURL}pxp?plid=${patientLinkId}`;
+          });
+      },
+    );
   });
+
+  after("clean up spec data", () => {
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
+    cleanUpRunOktaOrgs(currentSpecRunVersionName, true);
+  });
+
   it("successfully navigates to the patient link", () => {
     cy.visit(patientLink);
   });
