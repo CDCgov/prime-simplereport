@@ -8,7 +8,7 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  clean_ghcr_backend:
+  clean_ghcr:
     name: Delete untagged container images
     runs-on: ubuntu-latest
     steps:
@@ -19,10 +19,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-  clean_ghcr_cypress:
-    name: Delete untagged container images
-    runs-on: ubuntu-latest
-    steps:
       - name: Sleep for 65 seconds
         run: sleep 65
         shell: bash
@@ -32,10 +28,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-  clean_ghcr_database:
-    name: Delete untagged container images
-    runs-on: ubuntu-latest
-    steps:
       - name: Sleep for 65 seconds
         run: sleep 65
         shell: bash
@@ -45,10 +37,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-  clean_ghcr_db:
-    name: Delete untagged container images
-    runs-on: ubuntu-latest
-    steps:
       - name: Sleep for 65 seconds
         run: sleep 65
         shell: bash
@@ -58,10 +46,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-  clean_ghcr_frontend:
-    name: Delete untagged container images
-    runs-on: ubuntu-latest
-    steps:
       - name: Sleep for 65 seconds
         run: sleep 65
         shell: bash
@@ -71,10 +55,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-  clean_ghcr_frontend_lighthouse:
-    name: Delete untagged container images
-    runs-on: ubuntu-latest
-    steps:
       - name: Sleep for 65 seconds
         run: sleep 65
         shell: bash
@@ -84,10 +64,6 @@ jobs:
           package-type: 'container'
           min-versions-to-keep: 10
           delete-only-untagged-versions: 'true'
-  clean_ghcr_nginx:
-    name: Delete untagged container images
-    runs-on: ubuntu-latest
-    steps:
       - name: Sleep for 65 seconds
         run: sleep 65
         shell: bash
