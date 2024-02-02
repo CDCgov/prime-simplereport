@@ -19,7 +19,7 @@ interface Props {
 }
 
 const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
-  const hivEnabled = useFeature("hivEnabled") as boolean;
+  const hivBulkUploadEnabled = useFeature("hivBulkUploadEnabled") as boolean;
 
   if (!isAdmin) {
     return <Navigate to="/queue" />;
@@ -49,7 +49,7 @@ const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
       <Route path="unarchive-patient" element={<UnarchivePatient />}>
         <Route path=":pageNumber" element={<UnarchivePatient />} />
       </Route>
-      {hivEnabled && (
+      {hivBulkUploadEnabled && (
         <Route path="hiv-csv-upload" element={<HivUploadForm />} />
       )}
       <Route path="/" element={<SupportAdmin />} />

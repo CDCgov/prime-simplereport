@@ -24,6 +24,7 @@ public class FeatureFlagsConfig {
   @Setter(AccessLevel.NONE)
   private final FeatureFlagRepository _repo;
 
+  private boolean hivBulkUploadEnabled;
   private boolean hivEnabled;
   private boolean singleEntryRsvEnabled;
   private boolean agnosticEnabled;
@@ -38,6 +39,7 @@ public class FeatureFlagsConfig {
 
   private void flagMapping(String flagName, Boolean flagValue) {
     switch (flagName) {
+      case "hivBulkUploadEnabled" -> setHivBulkUploadEnabled(flagValue);
       case "hivEnabled" -> setHivEnabled(flagValue);
       case "singleEntryRsvEnabled" -> setSingleEntryRsvEnabled(flagValue);
       case "agnosticEnabled" -> setAgnosticEnabled(flagValue);

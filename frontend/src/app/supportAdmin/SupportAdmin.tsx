@@ -35,7 +35,7 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
 
 const SupportAdmin = () => {
   useDocumentTitle("Support admin");
-  const hivEnabled = useFeature("hivEnabled") as boolean;
+  const hivBulkUploadEnabled = useFeature("hivBulkUploadEnabled") as boolean;
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -99,7 +99,7 @@ const SupportAdmin = () => {
                     </LinkWithQuery>
                   </li>
                 </CategoryMenu>
-                {hivEnabled && (
+                {hivBulkUploadEnabled && (
                   <CategoryMenu heading="Beta">
                     <li>
                       <LinkWithQuery to="/admin/hiv-csv-upload">
