@@ -30,7 +30,7 @@ describe("Conducting a COVID test from:", () => {
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
           cleanUpPreviousRunSetupData(prevSpecRunVersionName);
-          cleanUpRunOktaOrgs(prevSpecRunVersionName, true);
+          cleanUpRunOktaOrgs(prevSpecRunVersionName);
         }
         let data = {
           specRunName: specRunName,
@@ -53,7 +53,7 @@ describe("Conducting a COVID test from:", () => {
 
   after("clean up spec data", () => {
     cleanUpPreviousRunSetupData(currentSpecRunVersionName);
-    cleanUpRunOktaOrgs(currentSpecRunVersionName, true);
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
   });
 
   it("conducts a test from the result page", () => {

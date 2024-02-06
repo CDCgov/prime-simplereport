@@ -33,7 +33,7 @@ describe("Getting a test result from a patient link", () => {
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
           cleanUpPreviousRunSetupData(prevSpecRunVersionName);
-          cleanUpRunOktaOrgs(prevSpecRunVersionName, true);
+          cleanUpRunOktaOrgs(prevSpecRunVersionName);
         }
         let data = {
           specRunName: specRunName,
@@ -77,7 +77,7 @@ describe("Getting a test result from a patient link", () => {
 
   after("clean up spec data", () => {
     cleanUpPreviousRunSetupData(currentSpecRunVersionName);
-    cleanUpRunOktaOrgs(currentSpecRunVersionName, true);
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
   });
 
   it("successfully navigates to the patient link", () => {

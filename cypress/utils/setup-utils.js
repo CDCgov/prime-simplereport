@@ -171,6 +171,65 @@ export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
     });
 };
 
+export const setupMultiplexDevice = (specRunVersionName, multiplexDevice) => {
+  let specimenTypeId,
+    supportedDiseaseId,
+    createdDeviceId,
+    createDeviceTypeVariables;
+
+  return getSpecimenTypes()
+    .then((result) => {
+      const specimenTypes = result.body.data.specimenTypes;
+      specimenTypeId =
+        specimenTypes.length > 0 ? specimenTypes[0].internalId : null;
+    })
+    .then(() => getSupportedDiseases())
+    .then((result) => {
+      const supportedDiseases = result.body.data.supportedDiseases;
+      supportedDiseaseId =
+        supportedDiseases.length > 0 ? supportedDiseases[0].internalId : null;
+      const multiplexDiseaseNames = ["COVID-19", "Flu A", "Flu B", "RSV"];
+      const multiplexDiseases = supportedDiseases.filter((x) =>
+        multiplexDiseaseNames.includes(x.name),
+      );
+      createDeviceTypeVariables = {
+        name: multiplexDevice.name,
+        manufacturer: multiplexDevice.manufacturer,
+        model: multiplexDevice.model,
+        swabTypes: [specimenTypeId],
+        supportedDiseaseTestPerformed: multiplexDiseases.map(
+          (disease, index) => {
+            return {
+              supportedDisease: disease.internalId,
+              testPerformedLoincCode: `96741-${index}`,
+              equipmentUid: `equipment-uid-${specRunVersionName}`,
+              testkitNameId: `testkit-name-id-${specRunVersionName}`,
+              testOrderedLoincCode: `96741-${index}`,
+            };
+          },
+        ),
+        testLength: 15,
+      };
+    })
+    .then(() => createDeviceType(createDeviceTypeVariables))
+    .then((deviceResult) => {
+      createdDeviceId = deviceResult.body.data.createDeviceType.internalId;
+    })
+    .then(() => getCreatedFacility(specRunVersionName))
+    .then((facility) =>
+      addDeviceToFacility(
+        { ...facility, street: "123 Main St", state: "NY", zipCode: "14221" },
+        [createdDeviceId],
+      ),
+    )
+    .then(() => {
+      return {
+        createdDeviceId: createdDeviceId,
+        specimenTypeId: specimenTypeId,
+      };
+    });
+};
+
 export const setupTestOrder = (
   specRunVersionName,
   patientId,
