@@ -9,7 +9,6 @@ import { graphqlURL } from "../utils/request-utils";
 import {
   cleanUpPreviousRunSetupData,
   cleanUpRunOktaOrgs,
-  setupCovidOnlyDevice,
   setupMultiplexDevice,
   setupOrgFacility,
   setupPatient,
