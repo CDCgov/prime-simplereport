@@ -10,7 +10,7 @@ import {
   cleanUpPreviousRunSetupData,
   cleanUpRunOktaOrgs,
   setupMultiplexDevice,
-  setupOrgFacility,
+  setupRunData,
   setupPatient,
 } from "../utils/setup-utils";
 
@@ -36,7 +36,7 @@ describe("Testing with multiplex devices", () => {
         };
         cy.task("setSpecRunVersionName", data);
 
-        setupOrgFacility(currentSpecRunVersionName).then((result) => {
+        setupRunData(currentSpecRunVersionName).then((result) => {
           facilityId = result.body.data.addFacility.id;
         });
         setupPatient(currentSpecRunVersionName, patient).then((result) => {
