@@ -120,11 +120,12 @@ export const setupPatient = (specRunVersionName, patient) => {
   });
 };
 
-export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
-  let specimenTypeId,
-    supportedDiseaseId,
-    createdDeviceId,
-    createDeviceTypeVariables;
+export const setupDevice = (
+  device,
+  supportedDiseaseTestPerformedList,
+  specRunVersionName,
+) => {
+  let createdDeviceId, specimenTypeId;
 
   return getSpecimenTypes()
     .then((result) => {
@@ -132,31 +133,26 @@ export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
       specimenTypeId =
         specimenTypes.length > 0 ? specimenTypes[0].internalId : null;
     })
-    .then(() => getSupportedDiseases())
-    .then((result) => {
-      const supportedDiseases = result.body.data.supportedDiseases;
-      supportedDiseaseId =
-        supportedDiseases.length > 0 ? supportedDiseases[0].internalId : null;
-      createDeviceTypeVariables = {
-        name: covidOnlyDevice.name,
-        manufacturer: covidOnlyDevice.manufacturer,
-        model: covidOnlyDevice.model,
+    .then(() =>
+      createDeviceType({
+        name: device.name,
+        manufacturer: device.manufacturer,
+        model: device.model,
         swabTypes: [specimenTypeId],
-        supportedDiseaseTestPerformed: {
-          supportedDisease: supportedDiseaseId,
-          testPerformedLoincCode: "96741-4",
-          equipmentUid: `equipment-uid-${specRunVersionName}`,
-          testkitNameId: `testkit-name-id-${specRunVersionName}`,
-          testOrderedLoincCode: "96741-4",
-        },
+        supportedDiseaseTestPerformed: supportedDiseaseTestPerformedList,
         testLength: 15,
-      };
-    })
-    .then(() => createDeviceType(createDeviceTypeVariables))
+      }),
+    )
     .then((deviceResult) => {
       createdDeviceId = deviceResult.body.data.createDeviceType.internalId;
     })
-    .then(() => mapDeviceToFacility(createdDeviceId, specRunVersionName))
+    .then(() => getCreatedFacility(specRunVersionName))
+    .then((facility) =>
+      addDeviceToFacility(
+        { ...facility, street: "123 Main St", state: "NY", zipCode: "14221" },
+        [createdDeviceId],
+      ),
+    )
     .then(() => {
       return {
         createdDeviceId: createdDeviceId,
@@ -165,61 +161,49 @@ export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
     });
 };
 
-export const mapDeviceToFacility = (deviceId, specRunVersionName) => {
-  return getCreatedFacility(specRunVersionName).then((facility) =>
-    addDeviceToFacility(
-      { ...facility, street: "123 Main St", state: "NY", zipCode: "14221" },
-      [deviceId],
-    ),
-  );
-};
-
 export const setupMultiplexDevice = (specRunVersionName, multiplexDevice) => {
-  let specimenTypeId, createdDeviceId, createDeviceTypeVariables;
+  let supportedDiseaseTestPerformedList;
 
-  return getSpecimenTypes()
-    .then((result) => {
-      const specimenTypes = result.body.data.specimenTypes;
-      specimenTypeId =
-        specimenTypes.length > 0 ? specimenTypes[0].internalId : null;
-    })
-    .then(() => getSupportedDiseases())
+  return getSupportedDiseases()
     .then((result) => {
       const supportedDiseases = result.body.data.supportedDiseases;
       const multiplexDiseaseNames = ["COVID-19", "Flu A", "Flu B", "RSV"];
       const multiplexDiseases = supportedDiseases.filter((x) =>
         multiplexDiseaseNames.includes(x.name),
       );
-      createDeviceTypeVariables = {
-        name: multiplexDevice.name,
-        manufacturer: multiplexDevice.manufacturer,
-        model: multiplexDevice.model,
-        swabTypes: [specimenTypeId],
-        supportedDiseaseTestPerformed: multiplexDiseases.map(
-          (disease, index) => {
-            return {
-              supportedDisease: disease.internalId,
-              testPerformedLoincCode: `96741-${index}`,
-              equipmentUid: `equipment-uid-${specRunVersionName}`,
-              testkitNameId: `testkit-name-id-${specRunVersionName}`,
-              testOrderedLoincCode: `96741-${index}`,
-            };
-          },
-        ),
-        testLength: 15,
-      };
+      supportedDiseaseTestPerformedList = multiplexDiseases.map(
+        (disease, index) => {
+          return {
+            supportedDisease: disease.internalId,
+            testPerformedLoincCode: `96741-${index}`,
+            equipmentUid: `equipment-uid-${specRunVersionName}`,
+            testkitNameId: `testkit-name-id-${specRunVersionName}`,
+            testOrderedLoincCode: `96741-${index}`,
+          };
+        },
+      );
     })
-    .then(() => createDeviceType(createDeviceTypeVariables))
-    .then((deviceResult) => {
-      createdDeviceId = deviceResult.body.data.createDeviceType.internalId;
+    .then(() =>
+      setupDevice(
+        multiplexDevice,
+        supportedDiseaseTestPerformedList,
+        specRunVersionName,
+      ),
+    );
+};
+
+export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
+  let supportedDiseaseId;
+
+  return getSupportedDiseases()
+    .then((result) => {
+      const supportedDiseases = result.body.data.supportedDiseases;
+      supportedDiseaseId =
+        supportedDiseases.length > 0 ? supportedDiseases[0].internalId : null;
     })
-    .then(() => mapDeviceToFacility(createdDeviceId, specRunVersionName))
-    .then(() => {
-      return {
-        createdDeviceId: createdDeviceId,
-        specimenTypeId: specimenTypeId,
-      };
-    });
+    .then(() =>
+      setupDevice(covidOnlyDevice, [supportedDiseaseId], specRunVersionName),
+    );
 };
 
 export const setupTestOrder = (
