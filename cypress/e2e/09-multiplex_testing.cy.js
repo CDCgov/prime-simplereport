@@ -51,6 +51,14 @@ describe("Testing with multiplex devices", () => {
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
+
+    // remove a test for the patient if it exists
+    cy.makePOSTRequest({
+      operationName: "RemovePatientFromQueue",
+      variables: { patientId: patientId },
+      query:
+        "mutation RemovePatientFromQueue($patientId: ID!) {\n  removePatientFromQueue(patientId: $patientId)\n}",
+    });
   });
 
   after("clean up spec data", () => {
