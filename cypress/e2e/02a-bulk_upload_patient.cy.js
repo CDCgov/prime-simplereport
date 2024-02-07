@@ -2,7 +2,7 @@ import { generatePatient, loginHooks, testNumber } from "../support/e2e";
 import {
   cleanUpPreviousRunSetupData,
   cleanUpRunOktaOrgs,
-  setupOrgFacility,
+  setupRunData,
 } from "../utils/setup-utils";
 
 const patients = [generatePatient(), generatePatient()];
@@ -32,7 +32,7 @@ describe("Bulk upload patients", () => {
           versionName: currentSpecRunVersionName,
         };
         cy.task("setSpecRunVersionName", data);
-        setupOrgFacility(currentSpecRunVersionName);
+        setupRunData(currentSpecRunVersionName);
       });
   });
 

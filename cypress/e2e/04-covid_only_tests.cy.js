@@ -1,59 +1,26 @@
-import {
-  generateCovidOnlyDevice,
-  generatePatient,
-  loginHooks,
-  testNumber,
-} from "../support/e2e";
+import { generatePatient, loginHooks } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
-import {
-  cleanUpPreviousRunSetupData,
-  cleanUpRunOktaOrgs,
-  setupCovidOnlyDevice,
-  setupOrgFacility,
-  setupPatient,
-} from "../utils/setup-utils";
-
-const specRunName = "spec04";
-const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 describe("Conducting a COVID test from:", () => {
-  const patient = generatePatient();
-  const patientName = patient.fullName;
-  const lastName = patient.lastName;
-  const covidOnlyDevice = generateCovidOnlyDevice();
+  let patientName, lastName, covidOnlyDeviceName;
   const queueCard = "[data-cy=prime-queue-item]:last-of-type";
   loginHooks();
 
-  before("setup spec data", () => {
-    cy.task("getSpecRunVersionName", specRunName).then(
-      (prevSpecRunVersionName) => {
-        if (prevSpecRunVersionName) {
-          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
-          cleanUpRunOktaOrgs(prevSpecRunVersionName);
-        }
-        let data = {
-          specRunName: specRunName,
-          versionName: currentSpecRunVersionName,
-        };
-        cy.task("setSpecRunVersionName", data);
-
-        setupOrgFacility(currentSpecRunVersionName);
-        setupPatient(currentSpecRunVersionName, patient);
-        setupCovidOnlyDevice(currentSpecRunVersionName, covidOnlyDevice);
-      },
-    );
+  before("retrieve the patient name and covid device name", () => {
+    cy.task("getPatientName").then((name) => {
+      patientName = name;
+      lastName = patientName.split(",")[0];
+    });
+    cy.task("getCovidOnlyDeviceName").then((name) => {
+      covidOnlyDeviceName = name;
+    });
   });
 
   beforeEach(() => {
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
-  });
-
-  after("clean up spec data", () => {
-    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
-    cleanUpRunOktaOrgs(currentSpecRunVersionName);
   });
 
   it("conducts a test from the result page", () => {
@@ -81,10 +48,10 @@ describe("Conducting a COVID test from:", () => {
     cy.get(queueCard).contains("COVID-19 result");
 
     cy.get(queueCard).within(() => {
-      cy.get('select[name="testDevice"]').select(covidOnlyDevice.name);
+      cy.get('select[name="testDevice"]').select(covidOnlyDeviceName);
       cy.get('select[name="testDevice"]')
         .find("option:selected")
-        .should("have.text", covidOnlyDevice.name);
+        .should("have.text", covidOnlyDeviceName);
     });
 
     // We cant wait on EditQueueItem after selecting as device

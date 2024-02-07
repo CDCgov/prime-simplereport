@@ -77,7 +77,7 @@ export const cleanUpRunOktaOrgs = (specRunVersionName) => {
   });
 };
 
-export const setupOrgFacility = (specRunVersionName) => {
+export const setupRunData = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
   let facilityName = createFacilityName(specRunVersionName);
   return createAndVerifyOrganization(orgName)
@@ -156,13 +156,7 @@ export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
     .then((deviceResult) => {
       createdDeviceId = deviceResult.body.data.createDeviceType.internalId;
     })
-    .then(() => getCreatedFacility(specRunVersionName))
-    .then((facility) =>
-      addDeviceToFacility(
-        { ...facility, street: "123 Main St", state: "NY", zipCode: "14221" },
-        [createdDeviceId],
-      ),
-    )
+    .then(() => mapDeviceToFacility(createdDeviceId, specRunVersionName))
     .then(() => {
       return {
         createdDeviceId: createdDeviceId,
@@ -171,11 +165,17 @@ export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
     });
 };
 
+export const mapDeviceToFacility = (deviceId, specRunVersionName) => {
+  return getCreatedFacility(specRunVersionName).then((facility) =>
+    addDeviceToFacility(
+      { ...facility, street: "123 Main St", state: "NY", zipCode: "14221" },
+      [deviceId],
+    ),
+  );
+};
+
 export const setupMultiplexDevice = (specRunVersionName, multiplexDevice) => {
-  let specimenTypeId,
-    supportedDiseaseId,
-    createdDeviceId,
-    createDeviceTypeVariables;
+  let specimenTypeId, createdDeviceId, createDeviceTypeVariables;
 
   return getSpecimenTypes()
     .then((result) => {
@@ -186,8 +186,6 @@ export const setupMultiplexDevice = (specRunVersionName, multiplexDevice) => {
     .then(() => getSupportedDiseases())
     .then((result) => {
       const supportedDiseases = result.body.data.supportedDiseases;
-      supportedDiseaseId =
-        supportedDiseases.length > 0 ? supportedDiseases[0].internalId : null;
       const multiplexDiseaseNames = ["COVID-19", "Flu A", "Flu B", "RSV"];
       const multiplexDiseases = supportedDiseases.filter((x) =>
         multiplexDiseaseNames.includes(x.name),
@@ -215,13 +213,7 @@ export const setupMultiplexDevice = (specRunVersionName, multiplexDevice) => {
     .then((deviceResult) => {
       createdDeviceId = deviceResult.body.data.createDeviceType.internalId;
     })
-    .then(() => getCreatedFacility(specRunVersionName))
-    .then((facility) =>
-      addDeviceToFacility(
-        { ...facility, street: "123 Main St", state: "NY", zipCode: "14221" },
-        [createdDeviceId],
-      ),
-    )
+    .then(() => mapDeviceToFacility(createdDeviceId, specRunVersionName))
     .then(() => {
       return {
         createdDeviceId: createdDeviceId,
