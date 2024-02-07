@@ -1,13 +1,20 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseState;
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.test_util.TestDataFactory.DEFAULT_ORG_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,12 +55,26 @@ class OrganizationInitializingServiceTest extends BaseServiceTest<DiseaseService
     List<Person> patientsLookup = _personRepository.findAll();
     assertEquals(2, patientsLookup.size());
 
+    StreetAddress expectedPatientAddress =
+        new StreetAddress(
+            parseString("123 Main Street"),
+            parseString(""),
+            parseString("Minneapolis"),
+            parseState("MN"),
+            parseString("55407"),
+            parseString("Hennepin"));
     Person expectedFirstPatient =
-        firstPatient.makePatient(
-            _org, firstPatientFirstName, firstPatientLastName, firstPatientBirthDate);
+        Person.builder()
+            .firstName(firstPatientFirstName)
+            .lastName(firstPatientLastName)
+            .birthDate(getBirthDate(firstPatientBirthDate))
+            .build();
     Person expectedSecondPatient =
-        secondPatient.makePatient(
-            _org, secondPatientFirstName, secondPatientLastName, secondPatientBirthDate);
+        Person.builder()
+            .firstName(secondPatientFirstName)
+            .lastName(secondPatientLastName)
+            .birthDate(getBirthDate(secondPatientBirthDate))
+            .build();
     List<Person> expectedPatients = List.of(expectedFirstPatient, expectedSecondPatient);
 
     for (int i = 0; i < patientsLookup.size(); i++) {
@@ -61,18 +82,15 @@ class OrganizationInitializingServiceTest extends BaseServiceTest<DiseaseService
       Person expectedPatient = expectedPatients.get(i);
       assertEquals(actualPatient.getNameInfo(), expectedPatient.getNameInfo());
       assertEquals(actualPatient.getBirthDate(), expectedPatient.getBirthDate());
-      assertEquals(actualPatient.getRace(), expectedPatient.getRace());
-      assertEquals(actualPatient.getRole(), expectedPatient.getRole());
-      assertEquals(actualPatient.getAddress(), expectedPatient.getAddress());
-      assertEquals(
-          actualPatient.getEmployedInHealthcare(), expectedPatient.getEmployedInHealthcare());
-      assertEquals(
-          actualPatient.getResidentCongregateSetting(),
-          expectedPatient.getResidentCongregateSetting());
-      assertEquals(actualPatient.getEmail(), expectedPatient.getEmail());
-      assertEquals(actualPatient.getTestResultDelivery(), expectedPatient.getTestResultDelivery());
-      assertEquals(actualPatient.getGender(), expectedPatient.getGender());
-      assertEquals(actualPatient.getGenderIdentity(), expectedPatient.getGenderIdentity());
+      assertEquals(actualPatient.getRace(), "other");
+      assertEquals(actualPatient.getRole(), PersonRole.STAFF);
+      assertEquals(actualPatient.getAddress(), expectedPatientAddress);
+      assertEquals(actualPatient.getEmployedInHealthcare(), true);
+      assertEquals(actualPatient.getResidentCongregateSetting(), true);
+      assertEquals(actualPatient.getEmail(), null);
+      assertEquals(actualPatient.getTestResultDelivery(), TestResultDeliveryPreference.NONE);
+      assertEquals(actualPatient.getGender(), "male");
+      assertEquals(actualPatient.getGenderIdentity(), "male");
     }
   }
 
@@ -102,5 +120,10 @@ class OrganizationInitializingServiceTest extends BaseServiceTest<DiseaseService
     _organizationInitializingService.createPatients(List.of(patient));
     List<Person> patientLookup = _personRepository.findAll();
     assertEquals(0, patientLookup.size());
+  }
+
+  private LocalDate getBirthDate(String birthDate) {
+    DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
+    return LocalDate.parse(birthDate, dateTimeFormat);
   }
 }
