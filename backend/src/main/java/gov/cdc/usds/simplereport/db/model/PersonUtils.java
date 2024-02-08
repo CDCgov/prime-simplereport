@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PersonUtils {
+
   private PersonUtils() {
     throw new IllegalStateException("Utility class");
   }
@@ -801,4 +802,19 @@ public class PersonUtils {
           PREGNANT_SNOMED, "Pregnant",
           NOT_PREGNANT_SNOMED, "Not pregnant",
           PREGNANT_UNKNOWN_SNOMED, "Unknown");
+
+  public static final String MALE_GENDER_IDENTITY_SNOMED = "446151000124109";
+  public static final String FEMALE_GENDER_IDENTITY_SNOMED = "446141000124107";
+  public static final String NON_BINARY_GENDER_IDENTITY_SNOWMED = "446131000124102";
+
+  public static final Map<String, String> getGenderCodeMap() {
+    Map<String, String> genderCodeMap = new HashMap<>();
+    genderCodeMap.put("Female", FEMALE_GENDER_IDENTITY_SNOMED);
+    genderCodeMap.put("Transwoman", FEMALE_GENDER_IDENTITY_SNOMED);
+    genderCodeMap.put("Male", MALE_GENDER_IDENTITY_SNOMED);
+    genderCodeMap.put("Transman", MALE_GENDER_IDENTITY_SNOMED);
+    genderCodeMap.put("Nonbinary or gender non-conforming", NON_BINARY_GENDER_IDENTITY_SNOWMED);
+
+    return genderCodeMap;
+  }
 }
