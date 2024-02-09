@@ -8,63 +8,12 @@ import static gov.cdc.usds.simplereport.api.Translators.OTHER;
 import static gov.cdc.usds.simplereport.api.Translators.REFUSED;
 import static gov.cdc.usds.simplereport.api.Translators.TRANS_MAN;
 import static gov.cdc.usds.simplereport.api.Translators.TRANS_WOMAN;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAGS_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_ABNORMAL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DIAGNOSTIC_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.GENDER_IDENTITY_EXTENSION_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.GENDER_IDENTITY_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LABORATORY_STRING_LITERAL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LAB_STRING_LITERAL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_IDENTIFIER;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_PREGNANCY_STATUS;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_RESIDENCE_TYPE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_RESIDENT_CONGREGATE_SETTING;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_VALUE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_VERSION;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NPI_PREFIX;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.OBSERVATION_CATEGORY_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_EFFECTIVE_DATE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTICIONER_IDENTIFIER_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TESTKIT_NAME_ID_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.*;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusDisplayMap;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusSnomedMap;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.*;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -849,6 +798,34 @@ public class FhirConverter {
     return observations;
   }
 
+  public Set<Observation> convertToAOEGenderOfSexualPartnersObservation(
+      List<String> sexualPartners) {
+    HashSet<Observation> observations = new LinkedHashSet<>();
+
+    for (String sexualPartner : sexualPartners) {
+      var genderMap = getGenderCodeMap();
+      String genderSNOMED = genderMap.get(sexualPartner);
+
+      var genderDisplayMap = getGenderDisplayMap();
+      String genderStatusDisplay = genderDisplayMap.get(genderSNOMED);
+      CodeableConcept genderOfSexualPartnerStatusCode =
+          createSimpleReportConcept(
+              SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS,
+              "What is the gender of their sexual partners",
+              "What is the gender of their sexual partners");
+      CodeableConcept genderOfSexualPartnerValueCode =
+          createSNOMEDConcept(genderSNOMED, genderStatusDisplay);
+
+      observations.add(
+          createAOEObservation(
+              uuidGenerator.randomUUID() + SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS,
+              genderOfSexualPartnerStatusCode,
+              genderOfSexualPartnerValueCode));
+    }
+
+    return observations;
+  }
+
   public Observation convertToAOEPregnancyObservation(String pregnancyStatusSnomed) {
     String pregnancyStatusDisplay = pregnancyStatusDisplayMap.get(pregnancyStatusSnomed);
     CodeableConcept pregnancyStatusCode =
@@ -952,6 +929,19 @@ public class FhirConverter {
     var concept = new CodeableConcept().setText(text);
 
     concept.addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(codingCode).setDisplay(codingDisplay);
+
+    return concept;
+  }
+
+  private CodeableConcept createSimpleReportConcept(
+      String codingCode, String codingDisplay, String text) {
+    CodeableConcept concept = new CodeableConcept().setText(text);
+
+    concept
+        .addCoding()
+        .setSystem(SIMPLE_REPORT_CODE_SYSTEM)
+        .setCode(codingCode)
+        .setDisplay(codingDisplay);
 
     return concept;
   }

@@ -817,4 +817,13 @@ public class PersonUtils {
 
     return genderCodeMap;
   }
+
+  public static final Map<String, String> getGenderDisplayMap() {
+    Map<String, String> genderDisplayMap = new HashMap<>();
+    genderDisplayMap.put(FEMALE_GENDER_IDENTITY_SNOMED, "Identifies as Female gender");
+    genderDisplayMap.put(MALE_GENDER_IDENTITY_SNOMED, "Identifies as Male gender");
+    genderDisplayMap.put(NON_BINARY_GENDER_IDENTITY_SNOWMED, "Identifies as Non-binary");
+
+    return genderDisplayMap;
+  }
 }

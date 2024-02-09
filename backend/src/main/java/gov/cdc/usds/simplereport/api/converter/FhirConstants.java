@@ -12,6 +12,8 @@ public class FhirConstants {
       "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   public static final String SNOMED_CODE_SYSTEM = "http://snomed.info/sct";
   public static final String LOINC_CODE_SYSTEM = "http://loinc.org";
+
+  public static final String SIMPLE_REPORT_CODE_SYSTEM = "http://simplereport.gov/";
   public static final String YESNO_CODE_SYSTEM = "http://terminology.hl7.org/ValueSet/v2-0136";
 
   public static final String RACE_EXTENSION_URL =
@@ -57,6 +59,8 @@ public class FhirConstants {
   public static final String LOINC_AOE_ICU = "95420-6";
   public static final String LOINC_AOE_RESIDENT_CONGREGATE_SETTING = "95421-4";
   public static final String LOINC_AOE_RESIDENCE_TYPE = "75617-1";
+
+  public static final String SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS = "SR0001";
 
   public static final String PROCESSING_ID_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0103";
   public static final Map<String, String> PROCESSING_ID_DISPLAY =
