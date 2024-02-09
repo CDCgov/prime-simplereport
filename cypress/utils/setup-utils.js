@@ -202,7 +202,19 @@ export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
         supportedDiseases.length > 0 ? supportedDiseases[0].internalId : null;
     })
     .then(() =>
-      setupDevice(covidOnlyDevice, [supportedDiseaseId], specRunVersionName),
+      setupDevice(
+        covidOnlyDevice,
+        [
+          {
+            supportedDisease: supportedDiseaseId,
+            testPerformedLoincCode: `96741-1`,
+            equipmentUid: `equipment-uid-${specRunVersionName}`,
+            testkitNameId: `testkit-name-id-${specRunVersionName}`,
+            testOrderedLoincCode: `96741-1`,
+          },
+        ],
+        specRunVersionName,
+      ),
     );
 };
 
