@@ -907,6 +907,11 @@ public class FhirConverter {
       observations.addAll(convertToAOEResidenceObservation(residesInCongregateSetting, null));
     }
 
+    List<String> sexualPartners = surveyData.getGenderOfSexualPartners();
+    if (!sexualPartners.isEmpty()) {
+      observations.addAll(convertToAOEGenderOfSexualPartnersObservation(sexualPartners));
+    }
+
     return observations;
   }
 
