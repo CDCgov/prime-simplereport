@@ -11,7 +11,7 @@ jobs:
     steps:
       # backend, cypress, database, frontend, frontend-lighthouse, nginx
       - name: Delete backend container images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/backend'
           package-type: 'container'
@@ -21,7 +21,7 @@ jobs:
         run: sleep 45
         shell: bash
       - name: Delete cypress container images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/cypress'
           package-type: 'container'
@@ -31,7 +31,7 @@ jobs:
         run: sleep 45
         shell: bash
       - name: Delete database container images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/database'
           package-type: 'container'
@@ -41,7 +41,7 @@ jobs:
         run: sleep 45
         shell: bash
       - name: Delete db container images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/db'
           package-type: 'container'
@@ -51,7 +51,7 @@ jobs:
         run: sleep 45
         shell: bash
       - name: Delete frontend container images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/frontend'
           package-type: 'container'
@@ -61,7 +61,7 @@ jobs:
         run: sleep 45
         shell: bash
       - name: Delete frontend-lighthouse container images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/frontend-lighthouse'
           package-type: 'container'
@@ -71,7 +71,7 @@ jobs:
         run: sleep 45
         shell: bash
       - name: Delete nginx container images
-        uses: actions/delete-package-versions@v4
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/nginx'
           package-type: 'container'
