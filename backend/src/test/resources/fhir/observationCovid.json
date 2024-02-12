@@ -6,7 +6,8 @@
     "coding": [
       {
         "system": "http://loinc.org",
-        "code": "94500-6"
+        "code": "94500-6",
+        "display": "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection"
       }
     ],
     "text": "COVID-19"

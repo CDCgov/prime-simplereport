@@ -698,22 +698,21 @@ public class FhirConverter {
                   deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
                       .toList();
-              String testPerformedLoincCode =
-                  deviceTypeDiseaseEntries.stream()
-                      .findFirst()
-                      .map(DeviceTypeDisease::getTestPerformedLoincCode)
-                      .orElse(null);
+              var deviceTypeDisease =
+                  deviceTypeDiseaseEntries.stream().findFirst().orElse(new DeviceTypeDisease());
+
               String testkitNameId =
                   getCommonDiseaseValue(
                       deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
               return convertToObservation(
                   result,
-                  testPerformedLoincCode,
+                  deviceTypeDisease.getTestPerformedLoincCode(),
                   correctionStatus,
                   correctionReason,
                   testkitNameId,
                   deviceType.getModel(),
-                  resultDate);
+                  resultDate,
+                  deviceTypeDisease.getTestPerformedLoincLongName());
             })
         .toList();
   }
@@ -732,12 +731,13 @@ public class FhirConverter {
       String correctionReason,
       String testkitNameId,
       String deviceModel,
-      Date resultDate) {
+      Date resultDate,
+      String testPerformedLOINCLongName) {
     if (result != null && result.getDisease() != null) {
 
       return convertToObservation(
           ConvertToObservationProps.builder()
-              .diseaseCode(testPerformedCode)
+              .testPerformedLoinc(testPerformedCode)
               .diseaseName(result.getDisease().getName())
               .resultCode(result.getResultSNOMED())
               .correctionStatus(correctionStatus)
@@ -748,6 +748,7 @@ public class FhirConverter {
               .testkitNameId(testkitNameId)
               .deviceModel(deviceModel)
               .issued(resultDate)
+              .testPerformedLOINCLongName(testPerformedLOINCLongName)
               .build());
     }
     return null;
@@ -757,7 +758,11 @@ public class FhirConverter {
     var observation = new Observation();
     observation.setId(props.getId());
     setStatus(observation, props.getCorrectionStatus());
-    observation.setCode(createLoincConcept(props.getDiseaseCode(), "", props.getDiseaseName()));
+    observation.setCode(
+        createLoincConcept(
+            props.getTestPerformedLoinc(),
+            props.getTestPerformedLOINCLongName(),
+            props.getDiseaseName()));
     addSNOMEDValue(props.getResultCode(), observation, props.getResultDescription());
     observation.getMethod().getCodingFirstRep().setDisplay(props.getDeviceModel());
     observation
@@ -950,8 +955,13 @@ public class FhirConverter {
 
   private CodeableConcept createLoincConcept(String codingCode, String codingDisplay, String text) {
     var concept = new CodeableConcept().setText(text);
+    var coding = concept.addCoding();
 
-    concept.addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(codingCode).setDisplay(codingDisplay);
+    coding.setSystem(LOINC_CODE_SYSTEM).setCode(codingCode);
+
+    if (StringUtils.isNotBlank(codingDisplay)) {
+      coding.setDisplay(codingDisplay);
+    }
 
     return concept;
   }
@@ -1098,11 +1108,23 @@ public class FhirConverter {
         break;
     }
 
-    String code = null;
+    String testOrderLoinc = null;
+    String testOrderLoincLongName = null;
     if (testEvent.getDeviceType() != null) {
-      code =
+      testOrderLoinc =
           MultiplexUtils.inferMultiplexTestOrderLoinc(
               testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
+
+      final String finalTestOrderLoinc =
+          StringUtils.isNotBlank(testOrderLoinc) ? testOrderLoinc : "";
+      var deviceTypeDiseaseFromLoinc =
+          testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
+              .filter(f -> finalTestOrderLoinc.equalsIgnoreCase(f.getTestOrderedLoincCode()))
+              .findFirst()
+              .orElse(null);
+      if (deviceTypeDiseaseFromLoinc != null) {
+        testOrderLoincLongName = deviceTypeDiseaseFromLoinc.getTestOrderedLoincLongName();
+      }
     }
 
     ZonedDateTime dateTested = null;
@@ -1120,12 +1142,18 @@ public class FhirConverter {
       dateIssued = ZonedDateTime.ofInstant(currentDate.toInstant(), ZoneOffset.UTC);
 
     return convertToDiagnosticReport(
-        status, code, Objects.toString(testEvent.getInternalId(), ""), dateTested, dateIssued);
+        status,
+        testOrderLoinc,
+        testOrderLoincLongName,
+        Objects.toString(testEvent.getInternalId(), ""),
+        dateTested,
+        dateIssued);
   }
 
   /**
    * @param status Diagnostic report status
-   * @param code LOINC code
+   * @param testOrderedLoinc LOINC code
+   * @param loincLongName LOINC long name
    * @param id Diagnostic report id
    * @param dateTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
    *     time/time-period for report.
@@ -1136,7 +1164,8 @@ public class FhirConverter {
    */
   public DiagnosticReport convertToDiagnosticReport(
       DiagnosticReportStatus status,
-      String code,
+      String testOrderedLoinc,
+      String loincLongName,
       String id,
       ZonedDateTime dateTested,
       ZonedDateTime dateIssued) {
@@ -1147,8 +1176,12 @@ public class FhirConverter {
             .setIssuedElement(convertToInstantType(dateIssued, TemporalPrecisionEnum.SECOND));
 
     diagnosticReport.setId(id);
-    if (StringUtils.isNotBlank(code)) {
-      diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);
+    if (StringUtils.isNotBlank(testOrderedLoinc)) {
+      var coding = diagnosticReport.getCode().addCoding();
+      coding.setSystem(LOINC_CODE_SYSTEM).setCode(testOrderedLoinc);
+      if (StringUtils.isNotBlank(loincLongName)) {
+        coding.setDisplay(loincLongName);
+      }
     }
     diagnosticReport.addIdentifier().setValue(id);
     return diagnosticReport;

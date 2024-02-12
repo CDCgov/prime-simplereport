@@ -344,6 +344,8 @@ public class BulkUploadResultsToFhir {
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
+    String testPerformedLoincLongName = null;
+    String testOrderedLoincLongName = null;
     String testOrderedCode = row.getTestOrderedCode().getValue();
 
     UUID deviceId = uuidGenerator.randomUUID();
@@ -375,6 +377,11 @@ public class BulkUploadResultsToFhir {
               .findFirst()
               .map(DeviceTypeDisease::getInternalId)
               .orElse(deviceId);
+      testPerformedLoincLongName =
+          deviceTypeDiseaseEntries.stream()
+              .findFirst()
+              .map(DeviceTypeDisease::getTestPerformedLoincLongName)
+              .orElse(null);
       diseaseName =
           deviceTypeDiseaseEntries.stream()
               .findFirst()
@@ -386,6 +393,17 @@ public class BulkUploadResultsToFhir {
           StringUtils.isEmpty(testOrderedCode)
               ? MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries)
               : testOrderedCode;
+
+      String finalTestOrderedCode = testOrderedCode;
+      testOrderedLoincLongName =
+          deviceTypeDiseaseEntries.stream()
+              .filter(
+                  disease ->
+                      Objects.equals(disease.getTestOrderedLoincCode(), finalTestOrderedCode))
+              .findFirst()
+              .map(DeviceTypeDisease::getTestOrderedLoincLongName)
+              .orElse(null);
+      testOrderedLoincLongName.isEmpty(); // todo remove
     } else {
       log.info(
           "No device found for model ("
@@ -425,7 +443,7 @@ public class BulkUploadResultsToFhir {
         List.of(
             fhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
-                    .diseaseCode(row.getTestPerformedCode().getValue())
+                    .testPerformedLoinc(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
                     .resultCode(getTestResultSnomed(row.getTestResult().getValue()))
                     .correctionStatus(
@@ -438,6 +456,7 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .deviceModel(row.getEquipmentModelName().getValue())
                     .issued(Date.from(testResultDate.toInstant()))
+                    .testPerformedLOINCLongName(testPerformedLoincLongName)
                     .build()));
 
     var aoeObservations = new LinkedHashSet<Observation>();
@@ -519,6 +538,7 @@ public class BulkUploadResultsToFhir {
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
+            testOrderedLoincLongName,
             testEventId,
             testResultDate,
             dateResultReleased);
