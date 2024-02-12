@@ -52,8 +52,8 @@ describe("Conducting a COVID test from:", () => {
   });
 
   after("clean up spec data", () => {
-    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
     cleanUpRunOktaOrgs(currentSpecRunVersionName);
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
   });
 
   it("conducts a test from the result page", () => {

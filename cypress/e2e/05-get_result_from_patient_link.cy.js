@@ -76,8 +76,8 @@ describe("Getting a test result from a patient link", () => {
   });
 
   after("clean up spec data", () => {
-    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
     cleanUpRunOktaOrgs(currentSpecRunVersionName);
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
   });
 
   it("successfully navigates to the patient link", () => {
