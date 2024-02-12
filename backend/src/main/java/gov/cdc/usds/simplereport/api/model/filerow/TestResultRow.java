@@ -130,11 +130,20 @@ public class TestResultRow implements FileRow {
   static final String ORDERING_PROVIDER_ZIP_CODE = "ordering_provider_zip_code";
   static final String ORDERING_PROVIDER_PHONE_NUMBER = "ordering_provider_phone_number";
   static final String TESTING_LAB_CLIA = "testing_lab_clia";
-  static final String TESTING_LAB_NAME = "testing_lab_name";
-  static final String TESTING_LAB_STREET = "testing_lab_street";
-  static final String TESTING_LAB_CITY = "testing_lab_city";
-  static final String TESTING_LAB_STATE = "testing_lab_state";
-  static final String TESTING_LAB_ZIP_CODE_FIELD = "testing_lab_zip_code";
+  public static final String TESTING_LAB_NAME = "testing_lab_name";
+  public static final String TESTING_LAB_STREET = "testing_lab_street";
+  public static final String TESTING_LAB_STREET2 = "testing_lab_street2";
+  public static final String TESTING_LAB_CITY = "testing_lab_city";
+  public static final String TESTING_LAB_STATE = "testing_lab_state";
+  public static final String TESTING_LAB_ZIP_CODE = "testing_lab_zip_code";
+  public static final String TESTING_LAB_PHONE_NUMBER = "testing_lab_phone_number";
+  public static final String ORDERING_FACILITY_NAME = "ordering_facility_name";
+  public static final String ORDERING_FACILITY_STREET = "ordering_facility_street";
+  public static final String ORDERING_FACILITY_STREET2 = "ordering_facility_street2";
+  public static final String ORDERING_FACILITY_CITY = "ordering_facility_city";
+  public static final String ORDERING_FACILITY_STATE = "ordering_facility_state";
+  public static final String ORDERING_FACILITY_ZIP_CODE = "ordering_facility_zip_code";
+  public static final String ORDERING_FACILITY_PHONE_NUMBER = "ordering_facility_phone_number";
 
   public static final ImmutableMap<String, String> diseaseSpecificLoincMap =
       new ImmutableMap.Builder<String, String>()
@@ -328,7 +337,7 @@ public class TestResultRow implements FileRow {
           TESTING_LAB_STREET,
           TESTING_LAB_CITY,
           TESTING_LAB_STATE,
-          TESTING_LAB_ZIP_CODE_FIELD);
+          TESTING_LAB_ZIP_CODE);
 
   public TestResultRow(
       Map<String, String> rawRow,
@@ -398,13 +407,12 @@ public class TestResultRow implements FileRow {
     testingLabClia = getValue(rawRow, TESTING_LAB_CLIA, isRequired(TESTING_LAB_CLIA));
     testingLabName = getValue(rawRow, TESTING_LAB_NAME, isRequired(TESTING_LAB_NAME));
     testingLabStreet = getValue(rawRow, TESTING_LAB_STREET, isRequired(TESTING_LAB_STREET));
-    testingLabStreet2 = getValue(rawRow, "testing_lab_street2", isRequired("testing_lab_street2"));
+    testingLabStreet2 = getValue(rawRow, TESTING_LAB_STREET2, isRequired(TESTING_LAB_STREET2));
     testingLabCity = getValue(rawRow, TESTING_LAB_CITY, isRequired(TESTING_LAB_CITY));
     testingLabState = getValue(rawRow, TESTING_LAB_STATE, isRequired(TESTING_LAB_STATE));
-    testingLabZipCode =
-        getValue(rawRow, TESTING_LAB_ZIP_CODE_FIELD, isRequired(TESTING_LAB_ZIP_CODE_FIELD));
+    testingLabZipCode = getValue(rawRow, TESTING_LAB_ZIP_CODE, isRequired(TESTING_LAB_ZIP_CODE));
     testingLabPhoneNumber =
-        getValue(rawRow, "testing_lab_phone_number", isRequired("testing_lab_phone_number"));
+        getValue(rawRow, TESTING_LAB_PHONE_NUMBER, isRequired(TESTING_LAB_PHONE_NUMBER));
     pregnant = getValue(rawRow, "pregnant", isRequired("pregnant"));
     employedInHealthcare =
         getValue(rawRow, "employed_in_healthcare", isRequired("employed_in_healthcare"));
@@ -417,20 +425,20 @@ public class TestResultRow implements FileRow {
     hospitalized = getValue(rawRow, "hospitalized", isRequired("hospitalized"));
     icu = getValue(rawRow, "icu", isRequired("icu"));
     orderingFacilityName =
-        getValue(rawRow, "ordering_facility_name", isRequired("ordering_facility_name"));
+        getValue(rawRow, ORDERING_FACILITY_NAME, isRequired(ORDERING_FACILITY_NAME));
     orderingFacilityStreet =
-        getValue(rawRow, "ordering_facility_street", isRequired("ordering_facility_street"));
+        getValue(rawRow, ORDERING_FACILITY_STREET, isRequired(ORDERING_FACILITY_STREET));
     orderingFacilityStreet2 =
-        getValue(rawRow, "ordering_facility_street2", isRequired("ordering_facility_street2"));
+        getValue(rawRow, ORDERING_FACILITY_STREET2, isRequired(ORDERING_FACILITY_STREET2));
     orderingFacilityCity =
-        getValue(rawRow, "ordering_facility_city", isRequired("ordering_facility_city"));
+        getValue(rawRow, ORDERING_FACILITY_CITY, isRequired(ORDERING_FACILITY_CITY));
     orderingFacilityState =
-        getValue(rawRow, "ordering_facility_state", isRequired("ordering_facility_state"));
+        getValue(rawRow, ORDERING_FACILITY_STATE, isRequired(ORDERING_FACILITY_STATE));
     orderingFacilityZipCode =
-        getValue(rawRow, "ordering_facility_zip_code", isRequired("ordering_facility_zip_code"));
+        getValue(rawRow, ORDERING_FACILITY_ZIP_CODE, isRequired(ORDERING_FACILITY_ZIP_CODE));
     orderingFacilityPhoneNumber =
         getValue(
-            rawRow, "ordering_facility_phone_number", isRequired("ordering_facility_phone_number"));
+            rawRow, ORDERING_FACILITY_PHONE_NUMBER, isRequired(ORDERING_FACILITY_PHONE_NUMBER));
     comment = getValue(rawRow, "comment", isRequired("comment"));
     testResultStatus = getValue(rawRow, "test_result_status", isRequired("test_result_status"));
     testOrderedCode = getValue(rawRow, "test_ordered_code", isRequired("test_ordered_code"));
