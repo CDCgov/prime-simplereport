@@ -802,6 +802,7 @@ public class FhirConverter {
       List<String> sexualPartners) {
     HashSet<Observation> observations = new LinkedHashSet<>();
 
+    // type vars
     for (String sexualPartner : sexualPartners) {
       var genderMap = getGenderCodeMap();
       String genderSNOMED = genderMap.get(sexualPartner);

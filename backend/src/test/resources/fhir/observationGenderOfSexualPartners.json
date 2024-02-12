@@ -1,0 +1,62 @@
+[
+  {
+    "fullUrl" : "Observation/b04daf89-5dad-4a4e-97a3-fe8533f952d0",
+    "resource" : {
+      "resourceType" : "Observation",
+      "id" : "b04daf89-5dad-4a4e-97a3-fe8533f952d0",
+      "status" : "final",
+      "code" : {
+        "coding" : [
+          {
+            "system" : "http://simplereport.gov/",
+            "code" : "SR0001",
+            "display" : "What is the gender of their sexual partners"
+          }
+        ],
+        "text" : "What is the gender of their sexual partners"
+      },
+      "subject" : {
+        "reference" : "Patient/123"
+      },
+      "valueCodeableConcept" : {
+        "coding" : [
+          {
+            "system" : "http://snomed.info/sct",
+            "code" : "446151000124109",
+            "display" : "Identifies as male gender"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "fullUrl" : "Observation/5f0e3f92-71a2-4ee9-aeda-2670bace9d63",
+    "resource" : {
+      "resourceType" : "Observation",
+      "id" : "5f0e3f92-71a2-4ee9-aeda-2670bace9d63",
+      "status" : "final",
+      "code" : {
+        "coding" : [
+          {
+            "system" : "http://simplereport.gov/",
+            "code" : "SR0001",
+            "display" : "What is the gender of their sexual partners"
+          }
+        ],
+        "text" : "What is the gender of their sexual partners"
+      },
+      "subject" : {
+        "reference" : "Patient/123"
+      },
+      "valueCodeableConcept" : {
+        "coding" : [
+          {
+            "system" : "http://snomed.info/sct",
+            "code" : "446141000124107",
+            "display" : "Identifies as female gender"
+          }
+        ]
+      }
+    }
+  }
+]
