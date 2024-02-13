@@ -403,7 +403,6 @@ public class BulkUploadResultsToFhir {
               .findFirst()
               .map(DeviceTypeDisease::getTestOrderedLoincLongName)
               .orElse(null);
-      testOrderedLoincLongName.isEmpty(); // todo remove
     } else {
       log.info(
           "No device found for model ("
