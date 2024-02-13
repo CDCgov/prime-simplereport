@@ -1,5 +1,4 @@
 import { loginHooks, testNumber } from "../support/e2e";
-import { whoAmI, getOrganizationById } from "../utils/testing-data-utils";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 import {
