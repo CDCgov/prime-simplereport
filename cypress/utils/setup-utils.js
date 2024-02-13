@@ -22,7 +22,7 @@ const createOrgName = (specRunVersionName) => {
   return `${specRunVersionName}-org`;
 };
 
-const createFacilityName = (specRunVersionName) => {
+export const createFacilityName = (specRunVersionName) => {
   return `${specRunVersionName}-facility`;
 };
 
