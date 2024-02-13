@@ -19,7 +19,7 @@ describe("Support admin: manage facility", () => {
   let facilityId = "";
   let facilityName = createFacilityName(currentSpecRunVersionName);
 
-  before(() => {
+  before("setup run data", () => {
     cy.task("getSpecRunVersionName", specRunName).then(
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
@@ -49,6 +49,11 @@ describe("Support admin: manage facility", () => {
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
+  });
+
+  after("clean up run data", () => {
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
   });
 
   it("loads a facility", () => {
