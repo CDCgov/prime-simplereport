@@ -18,7 +18,7 @@ import {
 } from "./testing-data-utils";
 import { generateUser } from "../support/e2e";
 
-const createOrgName = (specRunVersionName) => {
+export const createOrgName = (specRunVersionName) => {
   return `${specRunVersionName}-org`;
 };
 

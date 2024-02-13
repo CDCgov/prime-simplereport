@@ -6,6 +6,7 @@ import {
   cleanUpPreviousRunSetupData,
   cleanUpRunOktaOrgs,
   createFacilityName,
+  createOrgName,
   setupRunData,
 } from "../utils/setup-utils";
 
@@ -14,10 +15,9 @@ const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 loginHooks();
 describe("Support admin: manage facility", () => {
-  let organizationId = "";
-  let organizationName = "";
+  const organizationName = createOrgName(currentSpecRunVersionName);
+  const facilityName = createFacilityName(currentSpecRunVersionName);
   let facilityId = "";
-  let facilityName = createFacilityName(currentSpecRunVersionName);
 
   before("setup run data", () => {
     cy.task("getSpecRunVersionName", specRunName).then(
@@ -32,14 +32,8 @@ describe("Support admin: manage facility", () => {
         };
         cy.task("setSpecRunVersionName", data);
 
-        setupRunData(currentSpecRunVersionName);
-        whoAmI().then((res) => {
-          organizationId = res.body.data.whoami.organization.id;
-          facilityId = res.body.data.whoami.organization.facilities[0].id;
-
-          getOrganizationById(organizationId).then((res) => {
-            organizationName = res.body.data.organization.name;
-          });
+        setupRunData(currentSpecRunVersionName).then((result) => {
+          facilityId = result.body.data.addFacility.id;
         });
       },
     );
