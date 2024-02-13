@@ -31,11 +31,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v3.8.1
+    - uses: actions/setup-node@v4
       with:
         node-version: ${{ env.NODE_VERSION }}
     - name: Use cache for node_modules
-      uses: actions/cache@v3.3.2
+      uses: actions/cache@v4
       with:
         path: |
           ./frontend/node_modules
@@ -94,7 +94,7 @@ runs:
         tar -C ./frontend/build -czf ${{ inputs.client_tarball }} .
         echo "::endgroup::"
     - name: Save compiled frontend application
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: success()
       with:
         name: frontend-tarball
