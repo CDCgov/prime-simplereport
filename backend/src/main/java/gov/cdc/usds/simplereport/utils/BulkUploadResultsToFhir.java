@@ -398,8 +398,9 @@ public class BulkUploadResultsToFhir {
       testOrderedLoincLongName =
           deviceTypeDiseaseEntries.stream()
               .filter(
-                  disease ->
-                      Objects.equals(disease.getTestOrderedLoincCode(), finalTestOrderedCode))
+                  deviceTypeDisease ->
+                      Objects.equals(
+                          deviceTypeDisease.getTestOrderedLoincCode(), finalTestOrderedCode))
               .findFirst()
               .map(DeviceTypeDisease::getTestOrderedLoincLongName)
               .orElse(null);

@@ -1206,7 +1206,7 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_Strings_null() {
-    var actual = fhirConverter.convertToDiagnosticReport(null, null, "", null, null, null);
+    var actual = fhirConverter.convertToDiagnosticReport(null, null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();

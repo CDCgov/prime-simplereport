@@ -698,7 +698,7 @@ public class FhirConverter {
                   deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
                       .toList();
-              var deviceTypeDisease =
+              DeviceTypeDisease deviceTypeDisease =
                   deviceTypeDiseaseEntries.stream().findFirst().orElse(new DeviceTypeDisease());
 
               String testkitNameId =
