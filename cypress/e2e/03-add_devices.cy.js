@@ -42,6 +42,11 @@ describe("Adding testing devices", () => {
     });
   })
 
+  after("clean up spec data", () => {
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
+  });
+
   it("Adds devices to SimpleReport via admin dashboard", () => {
     visitAdminCreateDevicePage();
     cy.contains("Add new device");
