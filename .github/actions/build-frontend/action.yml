@@ -98,5 +98,5 @@ runs:
       if: success()
       with:
         name: frontend-tarball
-        path: client.tgz
+        path: ${{ inputs.client_tarball }}
         retention-days: 1
