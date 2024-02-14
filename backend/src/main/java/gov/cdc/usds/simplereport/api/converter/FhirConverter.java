@@ -706,13 +706,12 @@ public class FhirConverter {
                       deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
               return convertToObservation(
                   result,
-                  deviceTypeDisease.getTestPerformedLoincCode(),
+                  deviceTypeDisease,
                   correctionStatus,
                   correctionReason,
                   testkitNameId,
                   deviceType.getModel(),
-                  resultDate,
-                  deviceTypeDisease.getTestPerformedLoincLongName());
+                  resultDate);
             })
         .toList();
   }
@@ -726,18 +725,17 @@ public class FhirConverter {
 
   public Observation convertToObservation(
       Result result,
-      String testPerformedCode,
+      DeviceTypeDisease deviceTypeDisease,
       TestCorrectionStatus correctionStatus,
       String correctionReason,
       String testkitNameId,
       String deviceModel,
-      Date resultDate,
-      String testPerformedLOINCLongName) {
+      Date resultDate) {
     if (result != null && result.getDisease() != null) {
 
       return convertToObservation(
           ConvertToObservationProps.builder()
-              .testPerformedLoinc(testPerformedCode)
+              .testPerformedLoinc(deviceTypeDisease.getTestPerformedLoincCode())
               .diseaseName(result.getDisease().getName())
               .resultCode(result.getResultSNOMED())
               .correctionStatus(correctionStatus)
@@ -748,7 +746,7 @@ public class FhirConverter {
               .testkitNameId(testkitNameId)
               .deviceModel(deviceModel)
               .issued(resultDate)
-              .testPerformedLOINCLongName(testPerformedLOINCLongName)
+              .testPerformedLOINCLongName(deviceTypeDisease.getTestPerformedLoincLongName())
               .build());
     }
     return null;
