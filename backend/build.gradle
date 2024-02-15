@@ -70,7 +70,7 @@ dependencies {
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.14.1'
 
     // UI layer dependencies
-    implementation 'org.json:json:20230618'
+    implementation 'org.json:json:20231013'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -98,7 +98,6 @@ dependencies {
     // JPA Hibernate static metamodel generation
     implementation 'org.hibernate.orm:hibernate-jpamodelgen'
     annotationProcessor 'org.hibernate.orm:hibernate-jpamodelgen'
-
 
     implementation 'com.azure:azure-storage-queue:12.19.0'
 
