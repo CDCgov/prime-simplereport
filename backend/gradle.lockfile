@@ -1,11 +1,11 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
-ca.uhn.hapi.fhir:hapi-fhir-base:6.8.4=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-caching-api:6.8.4=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.8.4=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:org.hl7.fhir.r4:6.0.22.2=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.0.22.2=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-base:6.10.4=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-caching-api:6.10.4=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.10.4=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:org.hl7.fhir.r4:6.1.2.2=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.1.2.2=compileClasspath,runtimeClasspath
 ch.qos.logback:logback-classic:1.4.11=compileClasspath,runtimeClasspath
 ch.qos.logback:logback-core:1.4.11=compileClasspath,runtimeClasspath
 com.azure:azure-core-http-netty:1.13.7=compileClasspath,runtimeClasspath
