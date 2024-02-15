@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4
         with:
           path: |
             ./frontend/node_modules
@@ -47,7 +47,7 @@ jobs:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
