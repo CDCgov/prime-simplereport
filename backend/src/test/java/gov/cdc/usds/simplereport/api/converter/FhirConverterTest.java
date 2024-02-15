@@ -47,15 +47,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
@@ -1055,6 +1047,29 @@ class FhirConverterTest {
                 getClass()
                     .getClassLoader()
                     .getResourceAsStream("fhir/observationPregnancyStatus.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_genderofsexualpartners_matchesJson() throws IOException {
+    List<String> sexualPartners = new ArrayList<>();
+    sexualPartners.add("Transman");
+    sexualPartners.add("Female");
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, sexualPartners);
+    String testId = "fakeId";
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    System.out.println(actualSerialized);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationGenderOfSexualPartners.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
