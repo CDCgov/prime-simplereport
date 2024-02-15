@@ -807,6 +807,8 @@ public class PersonUtils {
   public static final String FEMALE_GENDER_IDENTITY_SNOMED = "446141000124107";
   public static final String NON_BINARY_GENDER_IDENTITY_SNOWMED = "446131000124102";
 
+  public static final String ASKED_BUT_DECLINED_CODE = "asked-declined";
+
   public static final Map<String, String> getGenderCodeMap() {
     Map<String, String> genderCodeMap = new HashMap<>();
     genderCodeMap.put("Female", FEMALE_GENDER_IDENTITY_SNOMED);
@@ -814,15 +816,19 @@ public class PersonUtils {
     genderCodeMap.put("Male", MALE_GENDER_IDENTITY_SNOMED);
     genderCodeMap.put("Transman", MALE_GENDER_IDENTITY_SNOMED);
     genderCodeMap.put("Nonbinary or gender non-conforming", NON_BINARY_GENDER_IDENTITY_SNOWMED);
+    genderCodeMap.put("Prefer not to answer", ASKED_BUT_DECLINED_CODE);
+    genderCodeMap.put("Gender identity not listed here", MappingConstants.UNK_CODE);
 
     return genderCodeMap;
   }
 
   public static final Map<String, String> getGenderDisplayMap() {
     Map<String, String> genderDisplayMap = new HashMap<>();
-    genderDisplayMap.put(FEMALE_GENDER_IDENTITY_SNOMED, "Identifies as female gender");
-    genderDisplayMap.put(MALE_GENDER_IDENTITY_SNOMED, "Identifies as male gender");
-    genderDisplayMap.put(NON_BINARY_GENDER_IDENTITY_SNOWMED, "Identifies as Non-binary");
+    genderDisplayMap.put(FEMALE_GENDER_IDENTITY_SNOMED, "Female gender identity");
+    genderDisplayMap.put(MALE_GENDER_IDENTITY_SNOMED, "Male gender identity");
+    genderDisplayMap.put(NON_BINARY_GENDER_IDENTITY_SNOWMED, "Non-binary gender identity");
+    genderDisplayMap.put(ASKED_BUT_DECLINED_CODE, "Asked But Declined");
+    genderDisplayMap.put(MappingConstants.UNK_CODE, "Unknown");
 
     return genderDisplayMap;
   }
