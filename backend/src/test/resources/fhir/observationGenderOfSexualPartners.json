@@ -70,7 +70,7 @@
           {
             "system" : "http://snomed.info/sct",
             "code" : "446151000124109",
-            "display" : "Identifies as male gender"
+            "display" : "Male gender identity"
           }
         ]
       }
@@ -108,7 +108,7 @@
         {
           "system": "http://snomed.info/sct",
           "code": "446141000124107",
-          "display": "Identifies as female gender"
+          "display": "Female gender identity"
         }
       ]
     }
