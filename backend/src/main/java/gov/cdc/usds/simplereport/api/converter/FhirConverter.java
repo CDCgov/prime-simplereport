@@ -964,7 +964,7 @@ public class FhirConverter {
     }
 
     List<String> sexualPartners = surveyData.getGenderOfSexualPartners();
-    if (!sexualPartners.isEmpty()) {
+    if (sexualPartners != null && !sexualPartners.isEmpty()) {
       observations.addAll(convertToAOEGenderOfSexualPartnersObservation(sexualPartners));
     }
 
