@@ -5235,3 +5235,12 @@ databaseChangeLog:
                   name: test_ordered_loinc_long_name
                   type: text
                   remarks: testOrderedLoincLongName from LIVD API
+  - changeSet:
+      id: add-includes-non-available-disease-to-test_result_upload_error
+      author: bob@skylight.digital
+      comment: add INCLUDES_NON_AVAILABLE_DISEASE to test_result_upload_error
+      changes:
+        - sql:
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'INCLUDES_NON_AVAILABLE_DISEASE';
+      rollback: ""
