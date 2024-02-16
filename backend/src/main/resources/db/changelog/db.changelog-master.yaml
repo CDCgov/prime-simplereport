@@ -5240,6 +5240,8 @@ databaseChangeLog:
       author: bob@skylight.digital
       comment: add INCLUDES_NON_AVAILABLE_DISEASE to test_result_upload_error
       changes:
+        - tagDatabase:
+            tag: add-includes-non-available-disease-to-test_result_upload_error
         - sql:
             sql: |
               ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'INCLUDES_NON_AVAILABLE_DISEASE';
