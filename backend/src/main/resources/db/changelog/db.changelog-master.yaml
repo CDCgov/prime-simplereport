@@ -5236,13 +5236,13 @@ databaseChangeLog:
                   type: text
                   remarks: testOrderedLoincLongName from LIVD API
   - changeSet:
-      id: add-includes-non-available-disease-to-test_result_upload_error
+      id: add-unavailable-disease-to-test_result_upload_error
       author: bob@skylight.digital
-      comment: add INCLUDES_NON_AVAILABLE_DISEASE to test_result_upload_error
+      comment: add UNAVAILABLE_DISEASE to test_result_upload_error
       changes:
         - tagDatabase:
-            tag: add-includes-non-available-disease-to-test_result_upload_error
+            tag: add-unavailable-disease-to-test_result_upload_error
         - sql:
             sql: |
-              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'INCLUDES_NON_AVAILABLE_DISEASE';
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'UNAVAILABLE_DISEASE';
       rollback: ""
