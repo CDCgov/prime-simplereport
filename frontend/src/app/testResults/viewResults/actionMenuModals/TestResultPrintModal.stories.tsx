@@ -253,3 +253,53 @@ WithUndeterminedAllMultiplex.parameters = {
     ],
   },
 };
+
+/**
+ * Positive RSV + Flu
+ */
+export const WithAllPositiveRsvFlu = Template.bind({});
+WithAllPositiveRsvFlu.args = {
+  ...defaultProps,
+};
+WithAllPositiveRsvFlu.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "1" },
+        {
+          ...testResult,
+          results: [
+            { disease: { name: "RSV" }, testResult: "POSITIVE" },
+            { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+            { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+          ],
+        }
+      ),
+    ],
+  },
+};
+
+/**
+ * Non-positive RSV + Flu
+ */
+export const WithNonPositiveRsvFlu = Template.bind({});
+WithNonPositiveRsvFlu.args = {
+  ...defaultProps,
+};
+WithNonPositiveRsvFlu.parameters = {
+  apolloClient: {
+    mocks: [
+      GetTestResultForPrintDocumentMock(
+        { id: "1" },
+        {
+          ...testResult,
+          results: [
+            { disease: { name: "RSV" }, testResult: "NEGATIVE" },
+            { disease: { name: "Flu A" }, testResult: "UNDETERMINED" },
+            { disease: { name: "Flu B" }, testResult: "UNKNOWN" },
+          ],
+        }
+      ),
+    ],
+  },
+};
