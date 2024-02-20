@@ -79,7 +79,7 @@ describe("OrganizationForm", () => {
 
   it("displays form errors when submitting invalid input", async () => {
     const { user } = renderWithUser();
-    await fillInDropDown(user, getOrgStateDropdown(), "VI");
+    await fillInDropDown(user, getOrgStateDropdown(), "AS");
     await user.tab();
     await user.click(getSubmitButton());
 
@@ -90,27 +90,21 @@ describe("OrganizationForm", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText(
-        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
-        {
-          exact: false,
-        }
-      )
+      screen.getByText("American Samoa isn't connected to SimpleReport yet.", {
+        exact: false,
+      })
     ).toBeInTheDocument();
   });
 
   it("clears input when escaping out of modal", async () => {
     const { user } = renderWithUser();
-    await fillInDropDown(user, getOrgStateDropdown(), "VI");
-    expect(getOrgStateDropdown().value).toEqual("VI");
+    await fillInDropDown(user, getOrgStateDropdown(), "AS");
+    expect(getOrgStateDropdown().value).toEqual("AS");
     await user.tab();
     expect(
-      screen.getByText(
-        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
-        {
-          exact: false,
-        }
-      )
+      screen.getByText("American Samoa isn't connected to SimpleReport yet.", {
+        exact: false,
+      })
     ).toBeInTheDocument();
 
     await user.keyboard("{Escape}");
@@ -119,22 +113,19 @@ describe("OrganizationForm", () => {
 
   it("does not clear input when continuing through modal", async () => {
     const { user } = renderWithUser();
-    await fillInDropDown(user, getOrgStateDropdown(), "VI");
-    expect(getOrgStateDropdown().value).toEqual("VI");
+    await fillInDropDown(user, getOrgStateDropdown(), "AS");
+    expect(getOrgStateDropdown().value).toEqual("AS");
     await user.tab();
     expect(
-      screen.getByText(
-        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
-        {
-          exact: false,
-        }
-      )
+      screen.getByText("American Samoa isn't connected to SimpleReport yet.", {
+        exact: false,
+      })
     ).toBeInTheDocument();
 
     await user.click(screen.getByLabelText("acknowledged"));
     await user.click(screen.getByText("Continue sign up"));
 
-    expect(getOrgStateDropdown().value).toEqual("VI");
+    expect(getOrgStateDropdown().value).toEqual("AS");
   });
 
   it("redirects to identity verification when submitting valid input", async () => {
