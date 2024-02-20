@@ -105,10 +105,10 @@
     "@azure/abort-controller" "^1.0.0"
     tslib "^2.2.0"
 
-"@azure/functions@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.1.0.tgz#f8a1996fce2b464fb69b0f6506a85ee064e19075"
-  integrity sha512-45WDaJZiTmvaIOPSdWWKL5NgzgUWsNzXDNlF7oCMLS43lE602qG7XE6Hdg9ewPWBj55URHRU7UWTHk4uDVqBGg==
+"@azure/functions@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.2.0.tgz#221e605d137e846e53fce4e5e24c95691c4747f3"
+  integrity sha512-RSECLoje4jGVpsVRjEzkna9KvmQOVeB96cg8J5J2g41QQpMWCzD1QTPI5+yI0uvOidGRLYElV1zHZjdvsGf9Nw==
   dependencies:
     long "^4.0.0"
     undici "^5.13.0"
