@@ -102,7 +102,7 @@ public class ResultsUploaderCachingService {
                           String model = deviceType.getModel();
                           String testPerformedCode = deviceTypeDisease.getTestPerformedLoincCode();
                           if (model != null && testPerformedCode != null) {
-                            resultMap.put(getKey(model, testPerformedCode), deviceType);
+                            resultMap.put(getKey((model), testPerformedCode), deviceType);
                           }
                         }));
 

@@ -26,15 +26,20 @@ import static java.util.Collections.emptyList;
 
 import com.google.common.collect.ImmutableMap;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 @Getter
 public class TestResultRow implements FileRow {
@@ -301,6 +306,7 @@ public class TestResultRow implements FileRow {
           .build();
 
   private ResultsUploaderCachingService resultsUploaderCachingService;
+  private ResultsUploaderDeviceService resultsUploaderDeviceService;
   private FeatureFlagsConfig featureFlagsConfig;
 
   private static final List<String> requiredFields =
@@ -345,6 +351,8 @@ public class TestResultRow implements FileRow {
       FeatureFlagsConfig featureFlagsConfig) {
     this(rawRow);
     this.resultsUploaderCachingService = resultsUploaderCachingService;
+    this.resultsUploaderDeviceService =
+        new ResultsUploaderDeviceService(resultsUploaderCachingService);
     this.featureFlagsConfig = featureFlagsConfig;
   }
 
@@ -447,11 +455,29 @@ public class TestResultRow implements FileRow {
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
       String equipmentModelName, String testPerformedCode) {
 
-    if (validModelTestPerformedCombination(equipmentModelName, testPerformedCode)
-        || validDiseaseTestPerformedLoinc(testPerformedCode)) {
-      return emptyList();
+    if (equipmentModelName == null || testPerformedCode == null) {
+      return generateInvalidDataErrorMessages();
     }
+    boolean genericDeviceInDb = validDeviceInDb(equipmentModelName, testPerformedCode).getLeft();
+    boolean hivDeviceInDbAndActive =
+        validDeviceInDb(equipmentModelName, testPerformedCode).getRight();
 
+    boolean genericDeviceInAllowList = validDeviceInAllowList(testPerformedCode).getLeft();
+    boolean hivDeviceInAllowListAndActive = validDeviceInAllowList(testPerformedCode).getRight();
+
+    boolean shouldReturnInvalidComboError = !(genericDeviceInDb || genericDeviceInAllowList);
+    boolean shouldReturnInactiveDiseaseError =
+        !(hivDeviceInDbAndActive || hivDeviceInAllowListAndActive);
+
+    if (shouldReturnInvalidComboError) {
+      return generateInvalidDataErrorMessages();
+    } else if (shouldReturnInactiveDiseaseError) {
+      return generateInactiveDiseaseErrorMessages();
+    }
+    return emptyList();
+  }
+
+  private List<FeedbackMessage> generateInvalidDataErrorMessages() {
     String errorMessage =
         "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
     return List.of(
@@ -465,30 +491,64 @@ public class TestResultRow implements FileRow {
             .build());
   }
 
-  private boolean validDiseaseTestPerformedLoinc(String testPerformedCode) {
-    if (testPerformedCode == null) {
+  private List<FeedbackMessage> generateInactiveDiseaseErrorMessages() {
+    String errorMessage =
+        EQUIPMENT_MODEL_NAME
+            + " and "
+            + TEST_PERFORMED_CODE
+            + " combination map to a non-active disease in this jurisdiction";
+    return List.of(
+        FeedbackMessage.builder()
+            .scope(ITEM_SCOPE)
+            .message(errorMessage)
+            .fieldRequired(true)
+            .fieldHeader(EQUIPMENT_MODEL_NAME)
+            .errorType(ResultUploadErrorType.UNAVAILABLE_DISEASE)
+            .source(ResultUploadErrorSource.SIMPLE_REPORT)
+            .build());
+  }
+
+  private ImmutablePair<Boolean, Boolean> validDeviceInDb(
+      String equipmentModelName, String testPerformedCode) {
+
+    boolean genericDeviceInDb =
+        resultsUploaderDeviceService.validateModelAndTestPerformedCombination(
+            equipmentModelName, testPerformedCode);
+    boolean hivDeviceInDbAndActive =
+        genericDeviceInDb
+            && validateResultsOnlyIncludeActiveDiseases(equipmentModelName, testPerformedCode);
+    return new ImmutablePair<>(genericDeviceInDb, hivDeviceInDbAndActive);
+  }
+
+  private ImmutablePair<Boolean, Boolean> validDeviceInAllowList(String testPerformedCode) {
+    String disease = diseaseSpecificLoincMap.get(testPerformedCode);
+    boolean genericDeviceInAllowList = disease != null;
+
+    boolean hivDeviceInAllowListAndActive = false;
+    if ("HIV".equals(disease)) {
+      hivDeviceInAllowListAndActive = featureFlagsConfig.isHivBulkUploadEnabled();
+    }
+    return new ImmutablePair<>(genericDeviceInAllowList, hivDeviceInAllowListAndActive);
+  }
+
+  private boolean validateResultsOnlyIncludeActiveDiseases(
+      String equipmentModelName, String testPerformedCode) {
+    if (equipmentModelName == null || testPerformedCode == null) {
       return false;
     }
-    String disease = diseaseSpecificLoincMap.get(testPerformedCode);
-    return disease != null;
-  }
 
-  private boolean validModelTestPerformedCombination(
-      String equipmentModelName, String testPerformedCode) {
-    return equipmentModelName != null
-        && testPerformedCode != null
-        && resultsUploaderCachingService
-            .getModelAndTestPerformedCodeToDeviceMap()
-            .containsKey(
-                ResultsUploaderCachingService.getKey(
-                    removeTrailingAsterisk(equipmentModelName), testPerformedCode));
-  }
+    DeviceType deviceTypeToCheck =
+        resultsUploaderDeviceService.getDeviceFromCache(equipmentModelName, testPerformedCode);
+    List<String> supportedDiseaseNamesToCheck =
+        deviceTypeToCheck.getSupportedDiseaseTestPerformed().stream()
+            .map(DeviceTypeDisease::getSupportedDisease)
+            .map(SupportedDisease::getName)
+            .toList();
 
-  private String removeTrailingAsterisk(String value) {
-    if (value != null && value.length() > 0 && value.charAt(value.length() - 1) == '*') {
-      return value.substring(0, value.length() - 1);
+    if (supportedDiseaseNamesToCheck.contains("HIV")) {
+      return featureFlagsConfig.isHivBulkUploadEnabled();
     }
-    return value;
+    return true;
   }
 
   @Override

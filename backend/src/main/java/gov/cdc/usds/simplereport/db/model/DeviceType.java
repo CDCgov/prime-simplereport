@@ -10,13 +10,16 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /** The durable (and non-deletable) representation of a POC test device model. */
 @Entity
 @Getter
+@Setter
 public class DeviceType extends EternalAuditedEntity {
 
   @Column(nullable = false)
@@ -81,35 +84,23 @@ public class DeviceType extends EternalAuditedEntity {
     this.supportedDiseaseTestPerformed = supportedDiseaseTestPerformed;
   }
 
-  public String getName() {
-    return name;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    DeviceType that = (DeviceType) o;
+    return Objects.equals(model, that.model)
+        && Objects.equals(name, that.name)
+        && Objects.equals(testLength, that.testLength)
+        && Objects.equals(manufacturer, that.manufacturer);
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getManufacturer() {
-    return manufacturer;
-  }
-
-  public void setManufacturer(String manufacturer) {
-    this.manufacturer = manufacturer;
-  }
-
-  public String getModel() {
-    return model;
-  }
-
-  public void setModel(String model) {
-    this.model = model;
-  }
-
-  public int getTestLength() {
-    return this.testLength;
-  }
-
-  public void setTestLength(int testLength) {
-    this.testLength = testLength;
+  @Override
+  public int hashCode() {
+    return Objects.hash(model, name, testLength, manufacturer);
   }
 }
