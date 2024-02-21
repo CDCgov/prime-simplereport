@@ -1,12 +1,10 @@
 import React from "react";
-import { useFeature } from "flagged";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import "./ManageDevices.scss";
 import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
-import { filterRsvFromAllDevices } from "../../../utils/rsvHelper";
 import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
 
 interface Props {
@@ -26,11 +24,6 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
-  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
-  if (!singleEntryRsvEnabled) {
-    deviceTypes = filterRsvFromAllDevices(deviceTypes);
-  }
-
   const deviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
       label: device.model,

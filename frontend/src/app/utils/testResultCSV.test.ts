@@ -86,7 +86,7 @@ const data = [
   },
 ] as TestResult[];
 
-const resultNoRSVOrHIV = [
+const resultNoHIV = [
   {
     "COVID-19 result": "Negative",
     "Device manufacturer": "Access Bio, Inc.",
@@ -127,24 +127,24 @@ const resultNoRSVOrHIV = [
     "Test date": "06/13/2022 7:24pm",
     "Flu A result": "Negative",
     "Flu B result": "Negative",
+    "RSV result": "Inconclusive",
   },
 ];
 
 const result = [
   {
-    ...resultNoRSVOrHIV[0],
-    "RSV result": "Inconclusive",
+    ...resultNoHIV[0],
     "HIV result": "Positive",
   },
 ];
 
 describe("parseDataForCSV", () => {
   it("parses multiplex data", () => {
-    expect(parseDataForCSV(true, true, data)).toEqual(result);
+    expect(parseDataForCSV(true, data)).toEqual(result);
   });
   it("parse data does not fail if tribalAffiliation is null", () => {
     expect(
-      parseDataForCSV(true, true, [
+      parseDataForCSV(true, [
         {
           ...data[0],
           patient: { ...data[0].patient, tribalAffiliation: null },
@@ -152,7 +152,7 @@ describe("parseDataForCSV", () => {
       ])
     ).toEqual(result);
   });
-  it("doesn't include RSV or HIV if includeRSV and includeHIV are false", () => {
-    expect(parseDataForCSV(false, false, data)).toEqual(resultNoRSVOrHIV);
+  it("doesn't include HIV if includeHIV are false", () => {
+    expect(parseDataForCSV(false, data)).toEqual(resultNoHIV);
   });
 });

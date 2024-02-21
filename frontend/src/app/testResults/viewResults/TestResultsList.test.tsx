@@ -4,7 +4,6 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent, { UserEvent } from "@testing-library/user-event";
-import * as flaggedMock from "flagged";
 
 import { GetAllFacilitiesDocument } from "../../../generated/graphql";
 import { appPermissions } from "../../permissions";
@@ -863,38 +862,6 @@ describe("TestResultsList", () => {
           screen.getByRole("button", { name: /clear filters/i })
         ).toBeEnabled()
       );
-    });
-  });
-
-  describe("RSV single-entry flag is on", () => {
-    it("should show RSV option in disease drop-down", async () => {
-      const flagSpy = jest.spyOn(flaggedMock, "useFeature");
-      flagSpy.mockImplementation((flagName) => {
-        return flagName === "singleEntryRsvEnabled";
-      });
-
-      render(
-        <WithRouter>
-          <Provider store={store}>
-            <MockedProvider mocks={mocks}>
-              <TestResultsList />
-            </MockedProvider>
-          </Provider>
-        </WithRouter>
-      );
-
-      expect(
-        await screen.findByText("Test Results", { exact: false })
-      ).toBeInTheDocument();
-
-      // force us to clean up this test when we clean up the feature flag
-      expect(flagSpy).toHaveBeenCalledWith("singleEntryRsvEnabled");
-
-      const conditionSelect = (await screen.findByLabelText(
-        "Condition"
-      )) as HTMLSelectElement;
-      expect(conditionSelect).toBeInTheDocument();
-      expect(conditionSelect.options.length).toEqual(5);
     });
   });
 });

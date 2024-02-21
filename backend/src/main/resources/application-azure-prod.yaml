@@ -23,7 +23,6 @@ twilio:
 features:
   hivBulkUploadEnabled: false
   hivEnabled: false
-  singleEntryRsvEnabled: true
   agnosticEnabled: false
   testCardRefactorEnabled: true
   agnosticBulkUploadEnabled: false
