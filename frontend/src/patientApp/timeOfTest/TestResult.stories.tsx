@@ -230,3 +230,19 @@ export const NonPositiveFluRSV = () => {
     </Provider>
   );
 };
+
+export const AllHIV = () => {
+  let editedData = cloneDeep(data);
+  editedData.testResult.results = [
+    { disease: { name: "HIV" }, testResult: "UNDETERMINED" },
+  ];
+  let store = mockStore(editedData);
+  return (
+    <Provider store={store}>
+      <Page>
+        <PatientHeader />
+        <TestResult />
+      </Page>
+    </Provider>
+  );
+};

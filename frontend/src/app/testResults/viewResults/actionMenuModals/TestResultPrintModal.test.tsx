@@ -238,6 +238,8 @@ describe("TestResultPrintModal with RSV and flu results", () => {
 });
 
 describe("TestResultPrintModal with HIV results", () => {
+  let component: any;
+
   beforeEach(() => {
     const hivTestResult = cloneDeep(testResult);
     hivTestResult.results = [
@@ -252,7 +254,7 @@ describe("TestResultPrintModal with HIV results", () => {
     }) as any;
 
     MockDate.set("2021/01/01");
-    render(
+    component = render(
       <DetachedTestResultPrintModal
         data={{ testResult: hivTestResult }}
         testResultId="id"
@@ -264,5 +266,9 @@ describe("TestResultPrintModal with HIV results", () => {
   it("should render HIV information", () => {
     expect(screen.getByText("HIV")).toBeInTheDocument();
     expect(screen.getByText("Positive")).toBeInTheDocument();
+  });
+
+  it("matches screenshot", () => {
+    expect(component).toMatchSnapshot();
   });
 });
