@@ -248,7 +248,8 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
+      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
+      "^axios$": "axios/dist/node/axios.cjs"
     },
     "coveragePathIgnorePatterns": [
       "<rootDir>/src/index.tsx",
