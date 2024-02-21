@@ -207,7 +207,7 @@
     "chromatic": "^10.2.0",
     "dayjs": "^1.10.7",
     "depcheck": "^1.4.3",
-    "dotenv": "^16.3.1",
+    "dotenv": "^16.4.4",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-graphql": "^4.0.0",
     "eslint-plugin-import": "^2.29.0",
