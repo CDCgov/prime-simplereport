@@ -162,8 +162,6 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     );
   };
 
-  console.log(error);
-
   if (error.fieldHeader && error.errorType === "MISSING_HEADER") {
     return getMissingHeaderErrorGuidance(error.fieldHeader);
   } else if (error.fieldHeader && error.errorType === "MISSING_DATA") {
