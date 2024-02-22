@@ -109,7 +109,8 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "95422-2"
+              "code": "95422-2",
+              "display": "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
             }
           ]
         },
@@ -461,7 +462,8 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "444-123"
+              "code": "92142-9",
+              "display": "Influenza virus A RNA [Presence] in Respiratory specimen by NAA with probe detection"
             }
           ],
           "text": "FLU A"
@@ -528,7 +530,8 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "333-123"
+              "code": "94533-7",
+              "display": "SARS-CoV-2 (COVID-19) N gene [Presence] in Respiratory specimen by NAA with probe detection"
             }
           ],
           "text": "COVID-19"
@@ -595,7 +598,8 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "444-456"
+              "code": "92141-1",
+              "display": "Influenza virus B RNA [Presence] in Respiratory specimen by NAA with probe detection"
             }
           ],
           "text": "FLU B"

@@ -710,7 +710,7 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             ConvertToObservationProps.builder()
-                .diseaseCode("diseaseCode")
+                .testPerformedLoinc("diseaseCode")
                 .diseaseName("diseaseName")
                 .resultCode("resultCode")
                 .correctionStatus(TestCorrectionStatus.ORIGINAL)
@@ -749,7 +749,16 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            "loinc",
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
@@ -761,7 +770,7 @@ class FhirConverterTest {
     assertThat(actual.getCode().getText()).isEqualTo("covid-19");
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
-    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("loinc");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("94500-6");
     assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
@@ -782,7 +791,16 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            "loinc",
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
             TestCorrectionStatus.CORRECTED,
             "Oopsy Daisy",
             "testkitName",
@@ -805,7 +823,16 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            "loinc",
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
             TestCorrectionStatus.REMOVED,
             null,
             "testkitName",
@@ -823,7 +850,22 @@ class FhirConverterTest {
   void convertToObservation_Result_null() {
     var actual =
         fhirConverter.convertToObservation(
-            null, "", TestCorrectionStatus.ORIGINAL, null, "testkitName", "modelName", new Date());
+            null,
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
+            TestCorrectionStatus.ORIGINAL,
+            null,
+            "testkitName",
+            "modelName",
+            new Date());
 
     assertThat(actual).isNull();
   }
@@ -835,7 +877,16 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            "",
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
@@ -868,18 +919,18 @@ class FhirConverterTest {
             "covidEquipmentUIDType",
             "covidTestkitNameId",
             "94500-0",
-            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
+            "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection");
     var fluDiseaseTestPerformedCode =
         new DeviceTypeDisease(
             null,
             fluDisease,
             "85477-8",
-            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+            "Influenza virus A RNA [Presence] in Upper respiratory specimen by NAA with probe detection",
             "fluEquipmentUID",
             "fluEquipmentUidType",
             "fluTestkitNameId",
             "85477-0",
-            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
+            "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection");
     ReflectionTestUtils.setField(
         device,
         "supportedDiseaseTestPerformed",
@@ -1181,7 +1232,7 @@ class FhirConverterTest {
                 TimeZone.getTimeZone(DEFAULT_TIME_ZONE_ID));
     var actual =
         fhirConverter.convertToDiagnosticReport(
-            DiagnosticReportStatus.FINAL, "95422-2", "id-123", zonedDateTime, zonedDateTime);
+            DiagnosticReportStatus.FINAL, "95422-2", "", "id-123", zonedDateTime, zonedDateTime);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -1195,7 +1246,7 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_Strings_null() {
-    var actual = fhirConverter.convertToDiagnosticReport(null, null, null, null, null);
+    var actual = fhirConverter.convertToDiagnosticReport(null, null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
@@ -1689,33 +1740,33 @@ class FhirConverterTest {
             new DeviceTypeDisease(
                 deviceTypeId,
                 covidDisease,
-                "333-123",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "94533-7",
+                "SARS-CoV-2 (COVID-19) N gene [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID1",
                 "equipmentUIDType1",
                 "testkitNameId1",
                 null,
-                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluADisease,
-                "444-123",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "92142-9",
+                "Influenza virus A RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID2",
                 "equipmentUIDType2",
                 "testkitNameId2",
                 "95422-2",
-                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluBDisease,
-                "444-456",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "92141-1",
+                "Influenza virus B RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID3",
                 "equipmentUIDType3",
                 "testkitNameId3",
                 "95422-2",
-                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"));
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"));
 
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
