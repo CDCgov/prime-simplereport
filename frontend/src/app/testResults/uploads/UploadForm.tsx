@@ -57,6 +57,7 @@ export function groupErrors(
   });
   return errors;
 }
+
 export function getErrorMessage(error: EnhancedFeedbackMessage) {
   if (error.message) {
     const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+){1,7})/g;
@@ -149,6 +150,20 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     }
   };
 
+  const getUnavailableDiseaseGuidance = (header: string) => {
+    return (
+      <span data-testid="guidance">
+        <span>
+          The disease result on this row is not supported for your jursidiction.{" "}
+          Double check {highlightHeader(header)} or email
+          support@simplereport.gov if you have questions{" "}
+        </span>
+      </span>
+    );
+  };
+
+  console.log(error);
+
   if (error.fieldHeader && error.errorType === "MISSING_HEADER") {
     return getMissingHeaderErrorGuidance(error.fieldHeader);
   } else if (error.fieldHeader && error.errorType === "MISSING_DATA") {
@@ -159,6 +174,8 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
       error.fieldRequired,
       fieldsAcceptSpecificValues.has(error.fieldHeader)
     );
+  } else if (error.fieldHeader && error.errorType === "UNAVAILABLE_DISEASE") {
+    return getUnavailableDiseaseGuidance(error.fieldHeader);
   }
 }
 

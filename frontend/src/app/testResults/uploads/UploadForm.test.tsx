@@ -401,6 +401,19 @@ describe("Uploads", () => {
       );
     });
 
+    it("should give you guidance for unavailable disease", () => {
+      const Guidance = getGuidance({
+        errorType: "UNAVAILABLE_DISEASE",
+        fieldHeader: "test_performed_code",
+      } as EnhancedFeedbackMessage) as JSX.Element;
+
+      render(<Router>{Guidance}</Router>);
+
+      expect(screen.getByTestId("guidance")).toHaveTextContent(
+        "The disease result on this row is not supported for your jursidiction. Double check test_performed_code or email support@simplereport.gov if you have questions"
+      );
+    });
+
     it("should give you guidance for optional invalid data", () => {
       const Guidance = getGuidance({
         errorType: "INVALID_DATA",

@@ -26,9 +26,6 @@ import static java.util.Collections.emptyList;
 
 import com.google.common.collect.ImmutableMap;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
@@ -352,7 +349,7 @@ public class TestResultRow implements FileRow {
     this(rawRow);
     this.resultsUploaderCachingService = resultsUploaderCachingService;
     this.resultsUploaderDeviceService =
-        new ResultsUploaderDeviceService(resultsUploaderCachingService);
+        new ResultsUploaderDeviceService(resultsUploaderCachingService, featureFlagsConfig);
     this.featureFlagsConfig = featureFlagsConfig;
   }
 
@@ -458,12 +455,16 @@ public class TestResultRow implements FileRow {
     if (equipmentModelName == null || testPerformedCode == null) {
       return generateInvalidDataErrorMessages();
     }
-    boolean genericDeviceInDb = validDeviceInDb(equipmentModelName, testPerformedCode).getLeft();
-    boolean hivDeviceInDbAndActive =
-        validDeviceInDb(equipmentModelName, testPerformedCode).getRight();
 
-    boolean genericDeviceInAllowList = validDeviceInAllowList(testPerformedCode).getLeft();
-    boolean hivDeviceInAllowListAndActive = validDeviceInAllowList(testPerformedCode).getRight();
+    ImmutablePair<Boolean, Boolean> deviceInDbPair =
+        validDeviceInDb(equipmentModelName, testPerformedCode);
+    boolean genericDeviceInDb = deviceInDbPair.getLeft();
+    boolean hivDeviceInDbAndActive = deviceInDbPair.getRight();
+
+    ImmutablePair<Boolean, Boolean> deviceInAllowListPair =
+        validDeviceInAllowList(testPerformedCode);
+    boolean genericDeviceInAllowList = deviceInAllowListPair.getLeft();
+    boolean hivDeviceInAllowListAndActive = deviceInAllowListPair.getRight();
 
     boolean shouldReturnInvalidComboError = !(genericDeviceInDb || genericDeviceInAllowList);
     boolean shouldReturnInactiveDiseaseError =
@@ -502,7 +503,7 @@ public class TestResultRow implements FileRow {
             .scope(ITEM_SCOPE)
             .message(errorMessage)
             .fieldRequired(true)
-            .fieldHeader(EQUIPMENT_MODEL_NAME)
+            .fieldHeader(TEST_PERFORMED_CODE)
             .errorType(ResultUploadErrorType.UNAVAILABLE_DISEASE)
             .source(ResultUploadErrorSource.SIMPLE_REPORT)
             .build());
@@ -514,9 +515,11 @@ public class TestResultRow implements FileRow {
     boolean genericDeviceInDb =
         resultsUploaderDeviceService.validateModelAndTestPerformedCombination(
             equipmentModelName, testPerformedCode);
+
     boolean hivDeviceInDbAndActive =
         genericDeviceInDb
-            && validateResultsOnlyIncludeActiveDiseases(equipmentModelName, testPerformedCode);
+            && resultsUploaderDeviceService.validateResultsOnlyIncludeActiveDiseases(
+                equipmentModelName, testPerformedCode);
     return new ImmutablePair<>(genericDeviceInDb, hivDeviceInDbAndActive);
   }
 
@@ -529,26 +532,6 @@ public class TestResultRow implements FileRow {
       hivDeviceInAllowListAndActive = featureFlagsConfig.isHivBulkUploadEnabled();
     }
     return new ImmutablePair<>(genericDeviceInAllowList, hivDeviceInAllowListAndActive);
-  }
-
-  private boolean validateResultsOnlyIncludeActiveDiseases(
-      String equipmentModelName, String testPerformedCode) {
-    if (equipmentModelName == null || testPerformedCode == null) {
-      return false;
-    }
-
-    DeviceType deviceTypeToCheck =
-        resultsUploaderDeviceService.getDeviceFromCache(equipmentModelName, testPerformedCode);
-    List<String> supportedDiseaseNamesToCheck =
-        deviceTypeToCheck.getSupportedDiseaseTestPerformed().stream()
-            .map(DeviceTypeDisease::getSupportedDisease)
-            .map(SupportedDisease::getName)
-            .toList();
-
-    if (supportedDiseaseNamesToCheck.contains("HIV")) {
-      return featureFlagsConfig.isHivBulkUploadEnabled();
-    }
-    return true;
   }
 
   @Override
