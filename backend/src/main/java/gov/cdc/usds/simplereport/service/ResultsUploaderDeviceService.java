@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.springframework.stereotype.Component;
 
 // Util class to extend ResultsUploaderCachingService that
@@ -25,34 +24,10 @@ public class ResultsUploaderDeviceService {
     this.featureFlagsConfig = featureFlagsConfig;
   }
 
-  private static String removeTrailingAsterisk(String value) {
-    if (value != null && !value.isEmpty() && value.charAt(value.length() - 1) == '*') {
-      return value.substring(0, value.length() - 1);
-    }
-    return value;
-  }
-
-  private static String addTrailingAsterisk(String value) {
-    if (value != null && !value.isEmpty() && value.charAt(value.length() - 1) != '*') {
-      return value + "*";
-    }
-    return value;
-  }
-
   public DeviceType getDeviceFromCache(String model, String testPerformedCode) {
-    // often our devices have a trailing asterisk in the model name, which users often leave out and
-    // generate support burden. In those cases, try both and return the non-null value.
-
-    Map<String, DeviceType> referenceList =
-        resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap();
-    String keyToCheckWithAsterisk =
-        ResultsUploaderCachingService.getKey(addTrailingAsterisk(model), testPerformedCode);
-
-    String keyToCheckWithoutAsterisk =
-        ResultsUploaderCachingService.getKey(removeTrailingAsterisk(model), testPerformedCode);
-
-    return Objects.requireNonNullElse(
-        referenceList.get(keyToCheckWithAsterisk), referenceList.get(keyToCheckWithoutAsterisk));
+    return resultsUploaderCachingService
+        .getModelAndTestPerformedCodeToDeviceMap()
+        .get(ResultsUploaderCachingService.getKey(model, testPerformedCode));
   }
 
   public boolean validateModelAndTestPerformedCombination(
@@ -60,21 +35,10 @@ public class ResultsUploaderDeviceService {
     Map<String, DeviceType> cachedResultsMap =
         resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap();
 
-    boolean combinationKeyExistsWithoutAsterisk =
-        cachedResultsMap.containsKey(
-            ResultsUploaderCachingService.getKey(
-                removeTrailingAsterisk(equipmentModelName), testPerformedCode));
-
-    boolean combinationKeyExistsWithAsterisk =
-        cachedResultsMap.containsKey(
-            ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
-
     return equipmentModelName != null
         && testPerformedCode != null
-        // the || here is for a similar reason to getResultDevice: often our devices have a trailing
-        // asterisk in the model name, which users often leave out and
-        // generate support burden. In those cases, try both and return the non-null value.
-        && (combinationKeyExistsWithoutAsterisk || combinationKeyExistsWithAsterisk);
+        && cachedResultsMap.containsKey(
+            ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
   }
 
   public boolean validateResultsOnlyIncludeActiveDiseases(

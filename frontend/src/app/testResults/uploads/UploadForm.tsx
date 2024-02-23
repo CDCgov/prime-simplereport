@@ -154,7 +154,7 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     return (
       <span data-testid="guidance">
         <span>
-          The disease result on this row is not supported for your jurisdiction.{" "}
+          The disease result(s) indicated are not supported for your jurisdiction.{" "}
           Double check {highlightHeader(header)} or email
           support@simplereport.gov if you have questions{" "}
         </span>
