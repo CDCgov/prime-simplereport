@@ -62,4 +62,8 @@ public class DiseaseService {
   public SupportedDisease rsv() {
     return getDiseaseByName(RSV_NAME);
   }
+
+  public SupportedDisease hiv() {
+    return getDiseaseByName(HIV_NAME);
+  }
 }

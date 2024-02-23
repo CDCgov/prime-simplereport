@@ -49,6 +49,10 @@ public class ResultsUploaderDeviceService {
 
     DeviceType deviceTypeToCheck = getDeviceFromCache(equipmentModelName, testPerformedCode);
 
+    if (deviceTypeToCheck == null) {
+      return false;
+    }
+
     List<String> supportedDiseaseNamesToCheck =
         deviceTypeToCheck.getSupportedDiseaseTestPerformed().stream()
             .filter(sdtp -> sdtp.getTestPerformedLoincCode().equals(testPerformedCode))

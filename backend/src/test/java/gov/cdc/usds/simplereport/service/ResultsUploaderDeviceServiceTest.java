@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -14,35 +16,102 @@ import java.util.Random;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SliceTestConfiguration.WithSimpleReportSiteAdminUser
 class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCachingService> {
   @Autowired private SpecimenTypeService specimenTypeService;
   @Autowired private DeviceTypeService deviceTypeService;
   @Autowired private DiseaseService diseaseService;
-  @Autowired private ResultsUploaderCachingService sut;
   @Autowired private ResultsUploaderDeviceService deviceService;
+  @Autowired private ResultsUploaderCachingService cachingService;
+
+  @Autowired @MockBean private FeatureFlagsConfig featureFlagsConfig;
 
   private final Random random = new Random();
 
   @Test
-  void gettingDeviceWorksWithOrWithoutTrailingAsterisk() {
+  void gettingDevice_success() {
     // GIVEN
-    DeviceType expectedDevice = createDeviceType("Alinity M*", List.of("97088-0"));
+    DeviceType expectedDevice =
+        createDeviceType("Alinity M*", List.of("97088-0"), diseaseService.covid().getInternalId());
 
     // WHEN
-    DeviceType receivedDeviceTypeWithAsterisk =
-        deviceService.getDeviceFromCache("Alinity M*", "97088-0");
-
-    DeviceType receivedDeviceTypeWithoutAsterisk =
-        deviceService.getDeviceFromCache("Alinity M", "97088-0");
+    DeviceType deviceToVerify = deviceService.getDeviceFromCache("Alinity M*", "97088-0");
 
     // THEN
-    assertThat(receivedDeviceTypeWithAsterisk).isEqualTo(expectedDevice);
-    assertThat(receivedDeviceTypeWithoutAsterisk).isEqualTo(receivedDeviceTypeWithAsterisk);
+    assertThat(deviceToVerify).isEqualTo(expectedDevice);
   }
 
-  private DeviceType createDeviceType(String model, List<String> testPerformedCodes) {
+  @Test
+  void validateModelAndTestPerformedCombination_success() {
+    // GIVEN
+    createDeviceType(
+        "device to validate", List.of("97088-0"), diseaseService.covid().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateModelAndTestPerformedCombination("device to validate", "97088-0");
+
+    // THEN
+    assertThat(validationResult).isEqualTo(true);
+  }
+
+  @Test
+  void validateModelAndTestPerformedCombination_correctlyReturnsFalseForBadDevices() {
+    // WHEN
+    boolean validationResult =
+        deviceService.validateModelAndTestPerformedCombination(
+            "device that shouldn't exist", "97088-0");
+
+    // THEN
+    assertThat(validationResult).isEqualTo(false);
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsTrueForNonFeatureFlaggedDisease() {
+    // GIVEN
+    createDeviceType(
+        "covid test device", List.of("97088-0"), diseaseService.covid().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("covid test device", "97088-0");
+
+    // THEN
+    assertThat(validationResult).isEqualTo(true);
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsFalseWhenHIVIsOff() {
+    // GIVEN
+    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(false);
+    createDeviceType("hiv device", List.of("97088-0"), diseaseService.hiv().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("hiv device", "97088-0");
+
+    // THEN
+    assertThat(validationResult).isEqualTo(false);
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsTrueWhenHIVIsOn() {
+    // GIVEN
+    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(true);
+    createDeviceType("hiv device", List.of("97088-0"), diseaseService.hiv().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("hiv device", "97088-0");
+
+    // THEN
+    assertThat(validationResult).isEqualTo(true);
+  }
+
+  private DeviceType createDeviceType(
+      String model, List<String> testPerformedCodes, UUID diseaseUUID) {
     SpecimenType specimenType =
         specimenTypeService.createSpecimenType(
             CreateSpecimenType.builder()
@@ -52,30 +121,34 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
                 .collectionLocationCode("123456789")
                 .build());
 
-    List<SupportedDiseaseTestPerformedInput> deviceTypeDiseases = new ArrayList<>();
+    List<SupportedDiseaseTestPerformedInput> deviceTypeDiseases =
+        new ArrayList<>(
+            testPerformedCodes.stream()
+                .map(
+                    testPerformedCode ->
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(diseaseUUID)
+                            .testPerformedLoincCode(testPerformedCode)
+                            .equipmentUid(UUID.randomUUID().toString())
+                            .testkitNameId(UUID.randomUUID().toString())
+                            .testOrderedLoincCode(
+                                new StringBuilder(testPerformedCode).reverse().toString())
+                            .build())
+                .toList());
 
-    deviceTypeDiseases.addAll(
-        testPerformedCodes.stream()
-            .map(
-                testPerformedCode ->
-                    SupportedDiseaseTestPerformedInput.builder()
-                        .supportedDisease(diseaseService.covid().getInternalId())
-                        .testPerformedLoincCode(testPerformedCode)
-                        .equipmentUid(UUID.randomUUID().toString())
-                        .testkitNameId(UUID.randomUUID().toString())
-                        .testOrderedLoincCode(
-                            new StringBuilder(testPerformedCode).reverse().toString())
-                        .build())
-            .toList());
+    DeviceType createdDeviceType =
+        deviceTypeService.createDeviceType(
+            CreateDeviceType.builder()
+                .name(UUID.randomUUID().toString())
+                .model(model)
+                .manufacturer(UUID.randomUUID().toString())
+                .swabTypes(List.of(specimenType.getInternalId()))
+                .supportedDiseaseTestPerformed(deviceTypeDiseases)
+                .testLength(1)
+                .build());
 
-    return deviceTypeService.createDeviceType(
-        CreateDeviceType.builder()
-            .name(UUID.randomUUID().toString())
-            .model(model)
-            .manufacturer(UUID.randomUUID().toString())
-            .swabTypes(List.of(specimenType.getInternalId()))
-            .supportedDiseaseTestPerformed(deviceTypeDiseases)
-            .testLength(1)
-            .build());
+    // flush the cache after we make a new device
+    cachingService.cacheModelAndTestPerformedCodeToDeviceMap();
+    return createdDeviceType;
   }
 }
