@@ -410,7 +410,7 @@ describe("Uploads", () => {
       render(<Router>{Guidance}</Router>);
 
       expect(screen.getByTestId("guidance")).toHaveTextContent(
-        "The disease result on this row is not supported for your jurisdiction. Double check test_performed_code or email support@simplereport.gov if you have questions"
+        "The result(s) indicated are for a disease not supported for your jurisdiction. Double check test_performed_code or email support@simplereport.gov if you have questions"
       );
     });
 
