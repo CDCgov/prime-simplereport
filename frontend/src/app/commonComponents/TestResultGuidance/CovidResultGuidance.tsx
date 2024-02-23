@@ -1,15 +1,16 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 
-import { TEST_RESULTS } from "../testResults/constants";
+import { TEST_RESULTS } from "../../testResults/constants";
 
 type CovidResultInfoProps = {
   result: TestResult;
   isPatientApp: boolean;
-  t: translateFn;
 };
 
-const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
+const CovidResultInfo = ({ result, isPatientApp }: CovidResultInfoProps) => {
+  const { t } = useTranslation();
+
   switch (result) {
     case TEST_RESULTS.POSITIVE:
       return (
@@ -129,28 +130,23 @@ const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
       return null;
   }
 };
-
 interface CovidResultGuidanceProps {
-  result: TestResult;
+  result: MultiplexResult;
   isPatientApp: boolean;
-  needsHeading: boolean;
 }
 const CovidResultGuidance = ({
   result,
   isPatientApp,
-  needsHeading,
 }: CovidResultGuidanceProps) => {
   const { t } = useTranslation();
 
   return (
-    <>
-      {needsHeading && (
-        <p className="text-bold sr-guidance-heading">
-          {t("testResult.notes.h1")}
-        </p>
-      )}
-      <CovidResultInfo result={result} isPatientApp={isPatientApp} t={t} />
-    </>
+    <div className={!isPatientApp ? "sr-margin-bottom-28px" : ""}>
+      <p className="text-bold sr-guidance-heading">
+        {t("testResult.notes.h1")}
+      </p>
+      <CovidResultInfo result={result.testResult} isPatientApp={isPatientApp} />
+    </div>
   );
 };
 export default CovidResultGuidance;

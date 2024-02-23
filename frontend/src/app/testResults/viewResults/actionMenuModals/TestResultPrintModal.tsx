@@ -4,8 +4,8 @@ import classnames from "classnames";
 import { useTranslation } from "react-i18next";
 
 import Button from "../../../commonComponents/Button/Button";
-import MultiplexResultsGuidance from "../../../commonComponents/MultiplexResultsGuidance";
 import TestResultsList from "../../../commonComponents/TestResultsList";
+import ResultsGuidance from "../../../commonComponents/TestResultGuidance/ResultsGuidance";
 import "./TestResultPrintModal.scss";
 import logo from "../../../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../../../commonComponents/QueryWrapper";
@@ -14,10 +14,8 @@ import { GetTestResultForPrintDocument } from "../../../../generated/graphql";
 import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
 import {
-  hasCovidResults,
+  displayGuidance,
   hasMultipleResults,
-  hasPositiveFluResults,
-  hasPositiveRsvResults,
 } from "../../../utils/testResults";
 import { setLanguage } from "../../../utils/languages";
 
@@ -185,15 +183,10 @@ export const StaticTestResultModal = ({
             <TestResultsList results={results} isPatientApp={isPatientApp} />
           </ul>
         </section>
-        {(hasCovidResults(results) ||
-          hasPositiveFluResults(results) ||
-          hasPositiveRsvResults(results)) && (
+        {displayGuidance(results) && (
           <section className="sr-result-section sr-result-next-steps">
             <h2>{t("testResult.moreInformation")}</h2>
-            <MultiplexResultsGuidance
-              results={results}
-              isPatientApp={isPatientApp}
-            />
+            <ResultsGuidance results={results} isPatientApp={isPatientApp} />
           </section>
         )}
       </main>

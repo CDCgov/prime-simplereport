@@ -7,10 +7,13 @@ import { RootState } from "../../app/store";
 import { VerifyV2Response } from "../PxpApiService";
 import { StaticTestResultModal } from "../../app/testResults/viewResults/actionMenuModals/TestResultPrintModal";
 import Button from "../../app/commonComponents/Button/Button";
-import MultiplexResultsGuidance from "../../app/commonComponents/MultiplexResultsGuidance";
+import ResultsGuidance from "../../app/commonComponents/TestResultGuidance/ResultsGuidance";
 import TestResultsList from "../../app/commonComponents/TestResultsList";
 import { formatDateWithTimeOption } from "../../app/utils/date";
-import { hasMultipleResults } from "../../app/utils/testResults";
+import {
+  displayGuidance,
+  hasMultipleResults,
+} from "../../app/utils/testResults";
 import "./TestResult.scss";
 import { useDocumentTitle } from "../../app/utils/hooks";
 
@@ -77,13 +80,17 @@ const TestResult = () => {
             </div>
             <h2 className="font-heading-sm">{t("testResult.testDevice")}</h2>
             <p className="margin-top-05">{deviceType}</p>
-            <h2 className="font-heading-sm">
-              {t("testResult.moreInformation")}
-            </h2>
-            <MultiplexResultsGuidance
-              results={testResult.results}
-              isPatientApp={true}
-            />
+            {displayGuidance(testResult.results) && (
+              <>
+                <h2 className="font-heading-sm">
+                  {t("testResult.moreInformation")}
+                </h2>
+                <ResultsGuidance
+                  results={testResult.results}
+                  isPatientApp={true}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>
