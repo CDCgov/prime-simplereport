@@ -1021,7 +1021,9 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1039,7 +1041,9 @@ class FhirConverterTest {
         new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4), null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1058,7 +1062,32 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, true, null);
+    var birthDate = LocalDate.of(2022, 12, 13);
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            "Austin",
+            "Wingate",
+            "Curtis",
+            "Jr",
+            birthDate,
+            new StreetAddress(
+                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
+            "USA",
+            null,
+            List.of("email1", "email2"),
+            "black",
+            "hispanic",
+            List.of("123"),
+            "Male",
+            null,
+            true,
+            "English",
+            null);
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, person);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1077,7 +1106,32 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, true);
+    var birthDate = LocalDate.of(2022, 12, 13);
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            "Austin",
+            "Wingate",
+            "Curtis",
+            "Jr",
+            birthDate,
+            new StreetAddress(
+                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
+            "USA",
+            null,
+            List.of("email1", "email2"),
+            "black",
+            "hispanic",
+            List.of("123"),
+            "Male",
+            true,
+            null,
+            "English",
+            null);
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, person);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1096,7 +1150,9 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey("77386006", Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1117,7 +1173,32 @@ class FhirConverterTest {
             "102874004", Map.of("fake", true), false, LocalDate.of(2023, 3, 4), null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, false, false);
+    var birthDate = LocalDate.of(2022, 12, 13);
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            "Austin",
+            "Wingate",
+            "Curtis",
+            "Jr",
+            birthDate,
+            new StreetAddress(
+                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
+            "USA",
+            null,
+            List.of("email1", "email2"),
+            "black",
+            "hispanic",
+            List.of("123"),
+            "Male",
+            false,
+            false,
+            "English",
+            null);
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, person);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1134,7 +1215,9 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
