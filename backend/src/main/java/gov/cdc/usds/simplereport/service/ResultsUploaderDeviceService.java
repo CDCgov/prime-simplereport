@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
+
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
@@ -48,18 +50,28 @@ public class ResultsUploaderDeviceService {
     }
 
     DeviceType deviceTypeToCheck = getDeviceFromCache(equipmentModelName, testPerformedCode);
+    List<String> supportedDiseaseNamesToCheck;
+
+    // to check the active / inactive status for a disease attached to the result, we need to check
+    // 1a) the allowlist (where we might store "extra" devices beyond what's in the db) or
+    // 1b) a valid entry in the db.
+    // If either is true, the disease is active if the corresponding feature flag is on
 
     if (deviceTypeToCheck == null) {
-      return false;
+      String diseaseFromAllowList = diseaseSpecificLoincMap.get(testPerformedCode);
+      if (diseaseFromAllowList == null) return false;
+      supportedDiseaseNamesToCheck = List.of(diseaseFromAllowList);
+
+    } else {
+      supportedDiseaseNamesToCheck =
+          deviceTypeToCheck.getSupportedDiseaseTestPerformed().stream()
+              .filter(sdtp -> sdtp.getTestPerformedLoincCode().equals(testPerformedCode))
+              .map(DeviceTypeDisease::getSupportedDisease)
+              .map(SupportedDisease::getName)
+              .toList();
     }
 
-    List<String> supportedDiseaseNamesToCheck =
-        deviceTypeToCheck.getSupportedDiseaseTestPerformed().stream()
-            .filter(sdtp -> sdtp.getTestPerformedLoincCode().equals(testPerformedCode))
-            .map(DeviceTypeDisease::getSupportedDisease)
-            .map(SupportedDisease::getName)
-            .toList();
-
+    // can extend this to check for other diseases / feature flags in the future
     if (supportedDiseaseNamesToCheck.contains("HIV")) {
       return featureFlagsConfig.isHivBulkUploadEnabled();
     }

@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 @Getter
 public class TestResultRow implements FileRow {
@@ -456,23 +455,16 @@ public class TestResultRow implements FileRow {
       return generateInvalidDataErrorMessages();
     }
 
-    ImmutablePair<Boolean, Boolean> deviceInDbPair =
-        validDeviceInDb(equipmentModelName, testPerformedCode);
-    boolean genericDeviceInDb = deviceInDbPair.getLeft();
-    boolean hivDeviceInDbAndActive = deviceInDbPair.getRight();
-
-    ImmutablePair<Boolean, Boolean> deviceInAllowListPair =
-        validDeviceInAllowList(testPerformedCode);
-    boolean genericDeviceInAllowList = deviceInAllowListPair.getLeft();
-    boolean hivDeviceInAllowListAndActive = deviceInAllowListPair.getRight();
-
-    boolean shouldReturnInvalidComboError = !(genericDeviceInDb || genericDeviceInAllowList);
-    boolean shouldReturnInactiveDiseaseError =
-        !(hivDeviceInDbAndActive || hivDeviceInAllowListAndActive);
-
-    if (shouldReturnInvalidComboError) {
+    if (!validDeviceInDb(equipmentModelName, testPerformedCode)
+        && !validDeviceInAllowList(testPerformedCode)) {
       return generateInvalidDataErrorMessages();
-    } else if (shouldReturnInactiveDiseaseError) {
+    }
+
+    boolean hasOnlyActiveDiseases =
+        resultsUploaderDeviceService.validateResultsOnlyIncludeActiveDiseases(
+            equipmentModelName, testPerformedCode);
+
+    if (!hasOnlyActiveDiseases) {
       return generateInactiveDiseaseErrorMessages();
     }
     return emptyList();
@@ -509,29 +501,14 @@ public class TestResultRow implements FileRow {
             .build());
   }
 
-  private ImmutablePair<Boolean, Boolean> validDeviceInDb(
-      String equipmentModelName, String testPerformedCode) {
-
-    boolean genericDeviceInDb =
-        resultsUploaderDeviceService.validateModelAndTestPerformedCombination(
-            equipmentModelName, testPerformedCode);
-
-    boolean hivDeviceInDbAndActive =
-        genericDeviceInDb
-            && resultsUploaderDeviceService.validateResultsOnlyIncludeActiveDiseases(
-                equipmentModelName, testPerformedCode);
-    return new ImmutablePair<>(genericDeviceInDb, hivDeviceInDbAndActive);
+  private boolean validDeviceInDb(String equipmentModelName, String testPerformedCode) {
+    return resultsUploaderDeviceService.validateModelAndTestPerformedCombination(
+        equipmentModelName, testPerformedCode);
   }
 
-  private ImmutablePair<Boolean, Boolean> validDeviceInAllowList(String testPerformedCode) {
+  private boolean validDeviceInAllowList(String testPerformedCode) {
     String disease = diseaseSpecificLoincMap.get(testPerformedCode);
-    boolean genericDeviceInAllowList = disease != null;
-
-    boolean hivDeviceInAllowListAndActive = false;
-    if ("HIV".equals(disease)) {
-      hivDeviceInAllowListAndActive = featureFlagsConfig.isHivBulkUploadEnabled();
-    }
-    return new ImmutablePair<>(genericDeviceInAllowList, hivDeviceInAllowListAndActive);
+    return disease != null;
   }
 
   @Override
