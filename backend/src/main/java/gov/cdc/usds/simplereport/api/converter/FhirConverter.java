@@ -859,10 +859,10 @@ public class FhirConverter {
 
     // type vars
     for (String sexualPartner : sexualPartners) {
-      var genderMap = getGenderCodeMap();
+      Map<String, String> genderMap = getGenderCodeMap();
       String genderSNOMED = genderMap.get(sexualPartner);
 
-      var genderDisplayMap = getGenderDisplayMap();
+      Map<String, String> genderDisplayMap = getGenderDisplayMap();
       String genderStatusDisplay = genderDisplayMap.get(genderSNOMED);
       CodeableConcept genderOfSexualPartnerStatusCode =
           createSimpleReportConcept(
@@ -878,7 +878,6 @@ public class FhirConverter {
               genderOfSexualPartnerStatusCode,
               genderOfSexualPartnerValueCode));
     }
-
     return observations;
   }
 
