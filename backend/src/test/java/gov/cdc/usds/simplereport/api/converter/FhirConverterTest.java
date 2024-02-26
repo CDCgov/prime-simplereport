@@ -48,7 +48,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -1063,8 +1062,7 @@ class FhirConverterTest {
   @Test
   void convertToAoeObservation_genderofsexualpartners_matchesJson() throws IOException {
     List<String> sexualPartners =
-        new ArrayList<>(
-            Arrays.asList("Transwoman", "Transman", "Nonbinary or gender non-conforming"));
+        List.of("Transwoman", "Transman", "Nonbinary or gender non-conforming");
     AskOnEntrySurvey answers =
         new AskOnEntrySurvey(null, Map.of("fake", false), null, null, sexualPartners);
     String testId = "fakeId";
