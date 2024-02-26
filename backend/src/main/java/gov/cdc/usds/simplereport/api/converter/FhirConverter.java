@@ -65,7 +65,7 @@ import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATI
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderCodeMap;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderDisplayMap;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderDisplayMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusDisplayMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusSnomedMap;
@@ -860,7 +860,6 @@ public class FhirConverter {
     for (String sexualPartner : sexualPartners) {
       String genderSNOMED = genderCodeMap.get(sexualPartner);
 
-      Map<String, String> genderDisplayMap = getGenderDisplayMap();
       String genderStatusDisplay = genderDisplayMap.get(genderSNOMED);
 
       CodeableConcept genderOfSexualPartnerStatusCode =

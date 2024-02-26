@@ -1060,7 +1060,7 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToAoeObservation_genderofsexualpartners_matchesJson() throws IOException {
+  void convertToAoeObservation_genderOfSexualPartners_matchesJson() throws IOException {
     List<String> sexualPartners =
         List.of("Transwoman", "Transman", "Nonbinary or gender non-conforming");
     AskOnEntrySurvey answers =
