@@ -54,7 +54,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
         deviceService.validateModelAndTestPerformedCombination("device to validate", "97088-0");
 
     // THEN
-    assertThat(validationResult).isEqualTo(true);
+    assertThat(validationResult).isTrue();
   }
 
   @Test
@@ -65,7 +65,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
             "device that shouldn't exist", "97088-0");
 
     // THEN
-    assertThat(validationResult).isEqualTo(false);
+    assertThat(validationResult).isFalse();
   }
 
   @Test
@@ -79,7 +79,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
         deviceService.validateResultsOnlyIncludeActiveDiseases("covid test device", "97088-0");
 
     // THEN
-    assertThat(validationResult).isEqualTo(true);
+    assertThat(validationResult).isTrue();
   }
 
   @Test
@@ -93,7 +93,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
         deviceService.validateResultsOnlyIncludeActiveDiseases("hiv device", "97088-0");
 
     // THEN
-    assertThat(validationResult).isEqualTo(false);
+    assertThat(validationResult).isFalse();
   }
 
   @Test
@@ -107,7 +107,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
         deviceService.validateResultsOnlyIncludeActiveDiseases("hiv device", "97088-0");
 
     // THEN
-    assertThat(validationResult).isEqualTo(true);
+    assertThat(validationResult).isTrue();
   }
 
   private DeviceType createDeviceType(
