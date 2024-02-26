@@ -397,9 +397,14 @@ class FileValidatorTest {
 
   @Test
   void testResultsFile_unavailableDisease_returnsUnavailableDiseaseError() {
+    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(false);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        // key/val of device in HIV CSV
+        .thenReturn(Map.of("modelhiv|16249-0", TestDataBuilder.createDeviceTypeForHIV()));
+
     testResults_invalidFile(
         "testResultUpload/test-results-upload-valid-hiv-only.csv",
-        "Invalid equipment_model_name and test_performed_code combination");
+        "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
   }
 
   @Test

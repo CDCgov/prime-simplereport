@@ -278,7 +278,7 @@ public class TestDataBuilder {
   }
 
   public static SupportedDisease createHIVSupportedDisease() {
-    return new SupportedDisease("HIV", "LP16249-0");
+    return new SupportedDisease("HIV", "16249-0");
   }
 
   public static SupportedDisease createRSVSupportedDisease() {
