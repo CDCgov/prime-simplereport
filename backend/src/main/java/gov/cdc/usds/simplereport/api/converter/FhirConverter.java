@@ -512,7 +512,6 @@ public class FhirConverter {
             .build());
   }
 
-  // no bulk upload changes, it doesnt pass gender id atm
   public Patient convertToPatient(ConvertToPatientProps props) {
     var patient =
         new Patient()
@@ -922,22 +921,24 @@ public class FhirConverter {
       observations.add(convertToAOEPregnancyObservation(surveyData.getPregnancy()));
     }
 
-    if (patientData.getEmployedInHealthcare() != null) {
-      observations.add(
-          convertToAOEYesNoUnkObservation(
-              patientData.getEmployedInHealthcare(),
-              LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
-              AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
-    }
+    if (patientData != null) {
+      if (patientData.getEmployedInHealthcare() != null) {
+        observations.add(
+            convertToAOEYesNoUnkObservation(
+                patientData.getEmployedInHealthcare(),
+                LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
+                AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
+      }
 
-    if (patientData.getResidentCongregateSetting() != null) {
-      observations.addAll(
-          convertToAOEResidenceObservation(patientData.getResidentCongregateSetting(), null));
-    }
+      if (patientData.getResidentCongregateSetting() != null) {
+        observations.addAll(
+            convertToAOEResidenceObservation(patientData.getResidentCongregateSetting(), null));
+      }
 
-    if (StringUtils.isNotBlank(patientData.getGenderIdentity())) {
-      observations.addAll(
-          convertToAOEGenderIdentityObservation(eventId, patientData.getGenderIdentity()));
+      if (StringUtils.isNotBlank(patientData.getGenderIdentity())) {
+        observations.addAll(
+            convertToAOEGenderIdentityObservation(eventId, patientData.getGenderIdentity()));
+      }
     }
 
     return observations;
