@@ -150,43 +150,5 @@
         }
       ]
     }
-  },
-  {
-    "resourceType": "Observation",
-    "id": "5e7ad436-c57a-3653-8361-a4d6e9ec874f",
-    "identifier": [
-      {
-        "use": "official",
-        "type": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "81959-9",
-              "display": "Public health laboratory ask at order entry panel"
-            }
-          ]
-        }
-      }
-    ],
-    "status": "final",
-    "code": {
-      "coding": [
-        {
-          "system": "http://simplereport.gov/",
-          "code": "SR0001",
-          "display": "What is the gender of their sexual partners"
-        }
-      ],
-      "text": "What is the gender of their sexual partners"
-    },
-    "valueCodeableConcept": {
-      "coding": [
-        {
-          "system": "http://terminology.hl7.org/5.0.0/CodeSystem-data-absent-reason.html",
-          "code": "asked-declined",
-          "display": "Asked But Declined"
-        }
-      ]
-    }
   }
 ]

@@ -857,18 +857,19 @@ public class FhirConverter {
       List<String> sexualPartners) {
     HashSet<Observation> observations = new LinkedHashSet<>();
 
-    // type vars
     for (String sexualPartner : sexualPartners) {
       Map<String, String> genderMap = getGenderCodeMap();
       String genderSNOMED = genderMap.get(sexualPartner);
 
       Map<String, String> genderDisplayMap = getGenderDisplayMap();
       String genderStatusDisplay = genderDisplayMap.get(genderSNOMED);
+
       CodeableConcept genderOfSexualPartnerStatusCode =
           createSimpleReportConcept(
               SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS,
               "What is the gender of their sexual partners",
               "What is the gender of their sexual partners");
+
       CodeableConcept genderOfSexualPartnerValueCode =
           createSNOMEDConcept(genderSNOMED, genderStatusDisplay);
 

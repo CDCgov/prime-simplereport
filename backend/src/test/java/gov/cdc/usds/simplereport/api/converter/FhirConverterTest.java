@@ -1064,11 +1064,7 @@ class FhirConverterTest {
   void convertToAoeObservation_genderofsexualpartners_matchesJson() throws IOException {
     List<String> sexualPartners =
         new ArrayList<>(
-            Arrays.asList(
-                "Transwoman",
-                "Transman",
-                "Nonbinary or gender non-conforming",
-                "Prefer not to answer"));
+            Arrays.asList("Transwoman", "Transman", "Nonbinary or gender non-conforming"));
     AskOnEntrySurvey answers =
         new AskOnEntrySurvey(null, Map.of("fake", false), null, null, sexualPartners);
     String testId = "fakeId";
