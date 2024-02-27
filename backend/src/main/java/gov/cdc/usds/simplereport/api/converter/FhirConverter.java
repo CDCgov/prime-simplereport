@@ -867,12 +867,10 @@ public class FhirConverter {
     Set<Observation> observations = new LinkedHashSet<>();
     if (StringUtils.isNotBlank(genderIdentity)
         && GENDER_IDENTITIES.contains(genderIdentity.toLowerCase())) {
-      CodeableConcept genderIdentityLoincConcept =
-          createLoincConcept(LOINC_GENDER_IDENTITY, "Gender identity", "Gender identity");
 
       String valueCode;
       String valueDisplay;
-      String codeSystem = null;
+      String codeSystem;
 
       switch (genderIdentity.toLowerCase()) {
         case OTHER -> {
@@ -884,20 +882,29 @@ public class FhirConverter {
         case FEMALE, MALE, NON_BINARY, TRANS_MAN, TRANS_WOMAN -> {
           codeSystem = SNOMED_CODE_SYSTEM;
         }
+        default -> {
+          codeSystem = null;
+        }
       }
-      valueDisplay = genderIdentityDisplaySet.get(genderIdentity.toLowerCase());
-      valueCode = genderIdentitySnomedSet.get(genderIdentity.toLowerCase());
 
-      CodeableConcept valueCodeableConcept = new CodeableConcept();
-      valueCodeableConcept
-          .addCoding()
-          .setSystem(codeSystem)
-          .setCode(valueCode)
-          .setDisplay(valueDisplay);
+      if (codeSystem != null) {
+        CodeableConcept genderIdentityLoincConcept =
+            createLoincConcept(LOINC_GENDER_IDENTITY, "Gender identity", "Gender identity");
 
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_GENDER_IDENTITY, genderIdentityLoincConcept, valueCodeableConcept));
+        valueDisplay = genderIdentityDisplaySet.get(genderIdentity.toLowerCase());
+        valueCode = genderIdentitySnomedSet.get(genderIdentity.toLowerCase());
+
+        CodeableConcept valueCodeableConcept = new CodeableConcept();
+        valueCodeableConcept
+            .addCoding()
+            .setSystem(codeSystem)
+            .setCode(valueCode)
+            .setDisplay(valueDisplay);
+
+        observations.add(
+            createAOEObservation(
+                eventId + LOINC_GENDER_IDENTITY, genderIdentityLoincConcept, valueCodeableConcept));
+      }
     }
     return observations;
   }
