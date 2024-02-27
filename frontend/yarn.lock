@@ -5725,12 +5725,13 @@
   resolved "https://registry.yarnpkg.com/@swc/types/-/types-0.1.5.tgz#043b731d4f56a79b4897a3de1af35e75d56bc63a"
   integrity sha512-myfUej5naTBWnqOCc/MdVOLVjXUXtIA+NpDrDBKJtLLg2shUjBu3cZmB/85RyitKc55+lUUyl7oRfLOvkr2hsw==
 
-"@szhsin/react-menu@^1.5.0":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@szhsin/react-menu/-/react-menu-1.11.0.tgz#3b4929d5cf5bb676eac3dc962da3029080b82bc2"
-  integrity sha512-kaW/IpcokmyVwX7WGe6ijQI/xQDw5nQXUKyiioy40dm5gt45+Lo7cqGVUoy7Qj8275Q9tgN6hcazWX/DCcYUfQ==
+"@szhsin/react-menu@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@szhsin/react-menu/-/react-menu-4.1.0.tgz#9a5fd3029356ae7a15122e2b378924b1989f8afd"
+  integrity sha512-lYYGUxqJxM2b/jD2Cn5a9RVOvHl9VBMX8qOnHZuX1w08cO2jslykpz5P75D7WnqudLnXsJ4k4+tI+q2U8XIFYw==
   dependencies:
     prop-types "^15.7.2"
+    react-transition-state "^2.1.0"
 
 "@testing-library/dom@>=7", "@testing-library/dom@^9.0.0":
   version "9.3.3"
@@ -16045,6 +16046,11 @@ react-transition-group@^4.4.5:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
+
+react-transition-state@^2.1.0:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-transition-state/-/react-transition-state-2.1.1.tgz#1601a6177926b647041b7d598bf124321ab8d25b"
+  integrity sha512-kQx5g1FVu9knoz1T1WkapjUgFz08qQ/g1OmuWGi3/AoEFfS0kStxrPlZx81urjCXdz2d+1DqLpU6TyLW/Ro04Q==
 
 react-uid@^2.3.3:
   version "2.3.3"
