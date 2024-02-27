@@ -1,6 +1,20 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.EQUIPMENT_MODEL_NAME;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_CITY;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_NAME;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_PHONE_NUMBER;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_STATE;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_STREET;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_STREET2;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_ZIP_CODE;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_CITY;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_NAME;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_PHONE_NUMBER;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_STATE;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_STREET;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_STREET2;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_ZIP_CODE;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TEST_PERFORMED_CODE;
 import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
@@ -277,6 +291,8 @@ public class TestResultUploadService {
                 providerAddress)
             : testResultDate;
 
+    addOrderingFacilityValues(row);
+
     row.put(SPECIMEN_TYPE_COLUMN_NAME, updatedSpecimenType);
     row.put(TEST_RESULT_DATE_COLUMN_NAME, testResultDate.toOffsetDateTime().toString());
     row.put(ORDER_TEST_DATE_COLUMN_NAME, orderTestDate.toOffsetDateTime().toString());
@@ -296,6 +312,24 @@ public class TestResultUploadService {
       return snomedMap.get(specimenTypeName);
     }
     return specimenTypeName;
+  }
+
+  private void addOrderingFacilityValues(Map<String, String> row) {
+    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_NAME, TESTING_LAB_NAME);
+    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_STREET, TESTING_LAB_STREET);
+    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_STREET2, TESTING_LAB_STREET2);
+    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_CITY, TESTING_LAB_CITY);
+    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_STATE, TESTING_LAB_STATE);
+    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_ZIP_CODE, TESTING_LAB_ZIP_CODE);
+    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_PHONE_NUMBER, TESTING_LAB_PHONE_NUMBER);
+  }
+
+  private void setColumnValueForRowOrSetDefault(
+      Map<String, String> row, String desiredColumnName, String defaultColumnName) {
+    String desiredColValue = row.get(desiredColumnName);
+    row.put(
+        desiredColumnName,
+        StringUtils.isNotBlank(desiredColValue) ? desiredColValue : row.get(defaultColumnName));
   }
 
   public Page<TestResultUpload> getUploadSubmissions(

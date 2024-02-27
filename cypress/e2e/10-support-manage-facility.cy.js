@@ -1,41 +1,52 @@
 import { loginHooks, testNumber } from "../support/e2e";
-import {
-  addMockFacility,
-  whoAmI,
-  getOrganizationById,
-} from "../utils/testing-data-utils";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
+import {
+  cleanUpPreviousRunSetupData,
+  cleanUpRunOktaOrgs,
+  createFacilityName,
+  createOrgName,
+  setupRunData,
+} from "../utils/setup-utils";
+
+const specRunName = "spec10";
+const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 loginHooks();
 describe("Support admin: manage facility", () => {
-  let organizationId = "";
-  let organizationName = "";
+  const organizationName = createOrgName(currentSpecRunVersionName);
+  const facilityName = createFacilityName(currentSpecRunVersionName);
   let facilityId = "";
-  let facilityCreated = {
-    id: "",
-    name: `RainbowCenter-${testNumber()}`,
-  };
 
-  before(() => {
-    addMockFacility(facilityCreated.name).then((response) => {
-      facilityCreated.id = response.body.data.addFacility.id;
-    });
+  before("setup run data", () => {
+    cy.task("getSpecRunVersionName", specRunName).then(
+      (prevSpecRunVersionName) => {
+        if (prevSpecRunVersionName) {
+          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
+          cleanUpRunOktaOrgs(prevSpecRunVersionName);
+        }
+        let data = {
+          specRunName: specRunName,
+          versionName: currentSpecRunVersionName,
+        };
+        cy.task("setSpecRunVersionName", data);
 
-    whoAmI().then((res) => {
-      organizationId = res.body.data.whoami.organization.id;
-      facilityId = res.body.data.whoami.organization.facilities[0].id;
-
-      getOrganizationById(organizationId).then((res) => {
-        organizationName = res.body.data.organization.name;
-      });
-    });
+        setupRunData(currentSpecRunVersionName).then((result) => {
+          facilityId = result.body.data.addFacility.id;
+        });
+      },
+    );
   });
 
   beforeEach(() => {
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
+  });
+
+  after("clean up run data", () => {
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
   });
 
   it("loads a facility", () => {
@@ -55,33 +66,31 @@ describe("Support admin: manage facility", () => {
 
     // selects facility combo box
     cy.wait("@GetFacilitiesByOrgId");
-    cy.get('input[role="combobox"]')
-      .last()
-      .type(`${facilityCreated.name}{enter}`);
+    cy.get('input[role="combobox"]').last().type(`${facilityName}{enter}`);
 
     // clicks search button
     cy.get("button").contains("Search").click();
 
     // displays facility information
     cy.wait("@GetFacilityStats");
-    cy.contains(facilityCreated.name);
+    cy.contains(facilityName);
     cy.contains("Facility information");
     cy.contains("Facility controls");
     cy.checkAccessibility();
 
     // checks the confirmation modal
     cy.get("button").contains("Delete facility").click();
-    cy.contains(`Delete ${facilityCreated.name}`);
+    cy.contains(`Delete ${facilityName}`);
     cy.checkAccessibility();
     cy.get("button").contains("No, go back").click();
-    cy.contains(`Delete ${facilityCreated.name}`).should("not.exist");
+    cy.contains(`Delete ${facilityName}`).should("not.exist");
   });
 
   it("Deletes a facility", () => {
     cy.get("button").contains("Delete facility").click();
     cy.get("button").contains("Yes, delete facility").click();
     cy.get(".Toastify").contains(
-      `Facility ${facilityCreated.name} successfully deleted`,
+      `Facility ${facilityName} successfully deleted`,
     );
   });
 });

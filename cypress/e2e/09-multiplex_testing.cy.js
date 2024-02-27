@@ -1,37 +1,50 @@
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
-import { loginHooks } from "../support/e2e";
+import {
+  generateMultiplexDevice,
+  generatePatient,
+  loginHooks,
+  testNumber,
+} from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
+import {
+  cleanUpPreviousRunSetupData,
+  cleanUpRunOktaOrgs,
+  setupMultiplexDevice,
+  setupRunData,
+  setupPatient,
+} from "../utils/setup-utils";
+
+const specRunName = "spec09";
+const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 loginHooks();
 describe("Testing with multiplex devices", () => {
-  let patient, facility, multiplexDeviceName;
+  let facilityId, patientId;
+  const patient = generatePatient();
+  const multiplexDevice = generateMultiplexDevice();
 
   before(() => {
-    cy.makePOSTRequest({
-      operationName: "WhoAmI",
-      variables: {},
-      query:
-        "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
-    }).then((res) => {
-      facility = res.body.data.whoami.organization.facilities[0];
-      cy.makePOSTRequest({
-        operationName: "GetPatientsByFacility",
-        variables: {
-          facilityId: facility.id,
-          pageNumber: 0,
-          pageSize: 1,
-          archivedStatus: "UNARCHIVED",
-        },
-        query:
-          "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $archivedStatus: ArchivedStatus, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    archivedStatus: $archivedStatus\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}",
-      }).then((res) => {
-        patient = res.body.data.patients[0];
-      });
-    });
+    cy.task("getSpecRunVersionName", specRunName).then(
+      (prevSpecRunVersionName) => {
+        if (prevSpecRunVersionName) {
+          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
+          cleanUpRunOktaOrgs(prevSpecRunVersionName);
+        }
+        let data = {
+          specRunName: specRunName,
+          versionName: currentSpecRunVersionName,
+        };
+        cy.task("setSpecRunVersionName", data);
 
-    cy.task("getMultiplexDeviceName").then((name) => {
-      multiplexDeviceName = name;
-    });
+        setupRunData(currentSpecRunVersionName).then((result) => {
+          facilityId = result.body.data.addFacility.id;
+        });
+        setupPatient(currentSpecRunVersionName, patient).then((result) => {
+          patientId = result.internalId;
+        });
+        setupMultiplexDevice(currentSpecRunVersionName, multiplexDevice);
+      },
+    );
   });
 
   beforeEach(() => {
@@ -42,14 +55,19 @@ describe("Testing with multiplex devices", () => {
     // remove a test for the patient if it exists
     cy.makePOSTRequest({
       operationName: "RemovePatientFromQueue",
-      variables: { patientId: patient.internalId },
+      variables: { patientId: patientId },
       query:
         "mutation RemovePatientFromQueue($patientId: ID!) {\n  removePatientFromQueue(patientId: $patientId)\n}",
     });
   });
 
+  after("clean up spec data", () => {
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
+  });
+
   it("test patient", () => {
-    cy.visit(`/queue?facility=${facility.id}`);
+    cy.visit(`/queue?facility=${facilityId}`);
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
     cy.get('input[id="search-field-small"]').type(
       `${patient.lastName}, ${patient.firstName}`,
@@ -63,12 +81,12 @@ describe("Testing with multiplex devices", () => {
     cy.injectSRAxe();
     cy.checkAccessibility();
 
-    const queueCard = `li[data-testid="test-card-${patient.internalId}"]`;
+    const queueCard = `li[data-testid="test-card-${patientId}"]`;
     cy.get(queueCard).within(() => {
-      cy.get('select[name="testDevice"]').select(multiplexDeviceName);
+      cy.get('select[name="testDevice"]').select(multiplexDevice.name);
       cy.get('select[name="testDevice"]')
         .find("option:selected")
-        .should("have.text", multiplexDeviceName);
+        .should("have.text", multiplexDevice.name);
     });
 
     // We cant wait on EditQueueItem after selecting as device

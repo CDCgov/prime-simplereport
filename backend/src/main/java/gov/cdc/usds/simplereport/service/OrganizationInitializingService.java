@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.okta.sdk.resource.client.ApiException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.InitialSetupProperties.ConfigPatient;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties.ConfigPatientRegistrationLink;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
@@ -15,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
@@ -23,6 +25,7 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -57,6 +60,7 @@ public class OrganizationInitializingService {
   private final OktaRepository _oktaRepo;
   private final ApiUserService _userService;
   private final DemoUserConfiguration _demoUserConfiguration;
+  private final PersonRepository _personRepository;
   private final PatientRegistrationLinkRepository _prlRepository;
   private final DiseaseService diseaseService;
 
@@ -124,7 +128,7 @@ public class OrganizationInitializingService {
             });
 
     configurePatientRegistrationLinks(_props.getPatientRegistrationLinks(), facilitiesByName);
-
+    createPatients(_props.getPatients());
     // Abusing the class name "OrganizationInitializingService" a little, but the
     // users are in the org.
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
@@ -385,6 +389,34 @@ public class OrganizationInitializingService {
     if (!link.isPresent()) {
       PatientSelfRegistrationLink prl = p.makePatientRegistrationLink(org, p.getLink());
       savePatientSelfRegistrationLink(p, prl);
+    }
+  }
+
+  public void createPatients(List<ConfigPatient> patients) {
+    if (patients != null && !patients.isEmpty()) {
+      for (ConfigPatient p : patients) {
+        Optional<Organization> orgLookup = _orgRepo.findByExternalId(p.getOrganizationExternalId());
+
+        if (!orgLookup.isPresent()) {
+          return;
+        }
+
+        Organization org = orgLookup.get();
+        String fullName = String.format("%s %s", p.getFirstName(), p.getLastName());
+        Optional<Person> foundPatient =
+            _personRepository.findAll().stream()
+                .filter(
+                    fp ->
+                        fp.getLastName().equals(p.getLastName())
+                            && fp.getFirstName().equals(p.getFirstName()))
+                .findFirst();
+        if (foundPatient.isEmpty()) {
+          Person createdPatient =
+              p.makePatient(org, p.getFirstName(), p.getLastName(), p.getBirthDate());
+          log.info(String.format("Creating patient: %s with DOB %s", fullName, p.getBirthDate()));
+          _personRepository.save(createdPatient);
+        }
+      }
     }
   }
 }

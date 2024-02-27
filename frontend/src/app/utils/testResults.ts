@@ -1,3 +1,5 @@
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
+
 function getTestResult(result: MultiplexResult): TestResult {
   if (result) {
     if ("testResult" in result) {
@@ -43,15 +45,7 @@ export function hasPositiveFluResults(results: MultiplexResults): boolean {
     results.filter(
       (multiplexResult: MultiplexResult) =>
         multiplexResult.disease.name.includes("Flu") &&
-        getTestResult(multiplexResult) === "POSITIVE"
-    ).length > 0
-  );
-}
-
-export function hasCovidResults(results: MultiplexResults): boolean {
-  return (
-    results.filter((multiplexResult: MultiplexResult) =>
-      multiplexResult.disease.name.includes("COVID-19")
+        getTestResult(multiplexResult) === TEST_RESULTS.POSITIVE
     ).length > 0
   );
 }
@@ -71,7 +65,28 @@ export function hasPositiveRsvResults(results: MultiplexResults): boolean {
     results.filter(
       (multiplexResult: MultiplexResult) =>
         multiplexResult.disease.name.includes("RSV") &&
-        getTestResult(multiplexResult) === "POSITIVE"
+        getTestResult(multiplexResult) === TEST_RESULTS.POSITIVE
     ).length > 0
   );
 }
+
+export const getModifiedResultsForGuidance = (results: MultiplexResults) => {
+  const positiveFluResults = results.filter(
+    (r) =>
+      r.disease.name.includes("Flu") && r.testResult === TEST_RESULTS.POSITIVE
+  );
+  if (positiveFluResults.length > 1) {
+    // remove one positive flu result if both are positive to avoid flu guidance duplication
+    const fluResultsSet = new Set([positiveFluResults[0]]);
+    results = results.filter((r) => !fluResultsSet.has(r));
+  }
+  return getSortedResults(results);
+};
+
+export const displayGuidance = (results: MultiplexResults) => {
+  return (
+    hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.COVID_19) ||
+    hasPositiveFluResults(results) ||
+    hasPositiveRsvResults(results)
+  );
+};

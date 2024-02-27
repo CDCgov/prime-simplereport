@@ -8,7 +8,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class ConvertToObservationProps {
-  private String diseaseCode;
+  private String testPerformedLoinc;
   private String diseaseName;
   private String resultCode;
   private TestCorrectionStatus correctionStatus;
@@ -19,4 +19,5 @@ public class ConvertToObservationProps {
   private String deviceModel;
   private Date issued;
   private String equipmentUidType;
+  private String testPerformedLOINCLongName;
 }

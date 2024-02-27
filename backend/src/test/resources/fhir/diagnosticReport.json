@@ -7,7 +7,8 @@
     "coding": [
       {
         "system": "http://loinc.org",
-        "code": "95422-2"
+        "code": "95422-2",
+        "display": "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
       }
     ]
   },

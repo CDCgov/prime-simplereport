@@ -270,9 +270,6 @@ Object {
             <h2>
               More information
             </h2>
-            <div
-              class=""
-            />
             <p
               class="text-bold sr-guidance-heading"
             >
@@ -617,9 +614,6 @@ Object {
           <h2>
             More information
           </h2>
-          <div
-            class=""
-          />
           <p
             class="text-bold sr-guidance-heading"
           >

@@ -48,6 +48,7 @@ export const liveJurisdictions = [
   "TN",
   "TX",
   "UT",
+  "VI",
   "VT",
   "WA",
   "WI",
