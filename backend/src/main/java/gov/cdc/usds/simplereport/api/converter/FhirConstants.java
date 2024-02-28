@@ -13,6 +13,8 @@ public class FhirConstants {
   public static final String SNOMED_CODE_SYSTEM = "http://snomed.info/sct";
   public static final String LOINC_CODE_SYSTEM = "http://loinc.org";
   public static final String YESNO_CODE_SYSTEM = "http://terminology.hl7.org/ValueSet/v2-0136";
+  public static final String DATA_ABSENT_REASON_CODE_SYSTEM =
+      "http://terminology.hl7.org/5.0.0/CodeSystem-data-absent-reason.html";
 
   public static final String RACE_EXTENSION_URL =
       "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd";
@@ -57,6 +59,7 @@ public class FhirConstants {
   public static final String LOINC_AOE_ICU = "95420-6";
   public static final String LOINC_AOE_RESIDENT_CONGREGATE_SETTING = "95421-4";
   public static final String LOINC_AOE_RESIDENCE_TYPE = "75617-1";
+  public static final String LOINC_GENDER_IDENTITY = "76691-5";
 
   public static final String PROCESSING_ID_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0103";
   public static final Map<String, String> PROCESSING_ID_DISPLAY =

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.Translators.DETECTED_SNOMED_CONCEPT;
 import static gov.cdc.usds.simplereport.api.Translators.FEMALE;
+import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
 import static gov.cdc.usds.simplereport.api.Translators.MALE;
 import static gov.cdc.usds.simplereport.api.Translators.NON_BINARY;
 import static gov.cdc.usds.simplereport.api.Translators.OTHER;
@@ -12,6 +13,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLA
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_ABNORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DIAGNOSTIC_CODE_SYSTEM;
@@ -20,8 +22,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.GENDER_IDENTITY_EXTENSION_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.GENDER_IDENTITY_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LABORATORY_STRING_LITERAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LAB_STRING_LITERAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
@@ -32,6 +32,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_RE
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_GENDER_IDENTITY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_EXTENSION_URL;
@@ -62,6 +63,8 @@ import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATI
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentityDisplaySet;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentitySnomedSet;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusDisplayMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusSnomedMap;
@@ -105,7 +108,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -523,8 +525,6 @@ public class FhirConverter {
     patient.addExtension(
         convertToTribalAffiliationExtension(props.getTribalAffiliations()).orElse(null));
 
-    patient.addExtension(convertToGenderIdentityExtension(props.getGenderIdentity()));
-
     patient.setId(props.getId());
     patient.addIdentifier().setValue(props.getId());
 
@@ -537,43 +537,6 @@ public class FhirConverter {
           .forEach(patient::addTelecom);
     }
     return patient;
-  }
-
-  private Extension convertToGenderIdentityExtension(String genderIdentity) {
-    if (StringUtils.isNotBlank(genderIdentity)) {
-
-      Map<String, String> extensionValueSet =
-          Map.of(
-              FEMALE, "female",
-              MALE, "male",
-              NON_BINARY, "non-binary",
-              TRANS_MAN, "transgender male",
-              TRANS_WOMAN, "transgender female",
-              OTHER, "other",
-              REFUSED, "non-disclose");
-
-      Map<String, String> extensionDisplaySet =
-          Map.of(
-              FEMALE, "female",
-              MALE, "male",
-              NON_BINARY, "non-binary",
-              TRANS_MAN, "transgender male",
-              TRANS_WOMAN, "transgender female",
-              OTHER, "other",
-              REFUSED, "does not wish to disclose");
-
-      String genderIdentityKey = genderIdentity.toLowerCase();
-
-      var codeableConcept =
-          new CodeableConcept()
-              .addCoding()
-              .setSystem(GENDER_IDENTITY_EXTENSION_CODE_SYSTEM)
-              .setCode(extensionValueSet.get(genderIdentityKey))
-              .setDisplay(extensionDisplaySet.get(genderIdentityKey));
-
-      return new Extension().setUrl(GENDER_IDENTITY_EXTENSION_URL).setValue(codeableConcept);
-    }
-    return null;
   }
 
   public Device convertToDevice(
@@ -899,11 +862,55 @@ public class FhirConverter {
     return observations;
   }
 
+  public Set<Observation> convertToAOEGenderIdentityObservation(
+      String eventId, String genderIdentity) {
+    Set<Observation> observations = new LinkedHashSet<>();
+    if (StringUtils.isNotBlank(genderIdentity)
+        && GENDER_IDENTITIES.contains(genderIdentity.toLowerCase())) {
+
+      String valueCode;
+      String valueDisplay;
+      String codeSystem;
+
+      switch (genderIdentity.toLowerCase()) {
+        case OTHER -> {
+          codeSystem = NULL_CODE_SYSTEM;
+        }
+        case REFUSED -> {
+          codeSystem = DATA_ABSENT_REASON_CODE_SYSTEM;
+        }
+        case FEMALE, MALE, NON_BINARY, TRANS_MAN, TRANS_WOMAN -> {
+          codeSystem = SNOMED_CODE_SYSTEM;
+        }
+        default -> {
+          codeSystem = null;
+        }
+      }
+
+      if (codeSystem != null) {
+        CodeableConcept genderIdentityLoincConcept =
+            createLoincConcept(LOINC_GENDER_IDENTITY, "Gender identity", "Gender identity");
+
+        valueDisplay = genderIdentityDisplaySet.get(genderIdentity.toLowerCase());
+        valueCode = genderIdentitySnomedSet.get(genderIdentity.toLowerCase());
+
+        CodeableConcept valueCodeableConcept = new CodeableConcept();
+        valueCodeableConcept
+            .addCoding()
+            .setSystem(codeSystem)
+            .setCode(valueCode)
+            .setDisplay(valueDisplay);
+
+        observations.add(
+            createAOEObservation(
+                eventId + LOINC_GENDER_IDENTITY, genderIdentityLoincConcept, valueCodeableConcept));
+      }
+    }
+    return observations;
+  }
+
   public Set<Observation> convertToAOEObservations(
-      String eventId,
-      AskOnEntrySurvey surveyData,
-      Boolean employedInHealthcare,
-      Boolean residesInCongregateSetting) {
+      String eventId, AskOnEntrySurvey surveyData, Person patientData) {
     HashSet<Observation> observations = new LinkedHashSet<>();
     Boolean symptomatic = null;
     if (Boolean.TRUE.equals(surveyData.getNoSymptoms())) {
@@ -921,16 +928,24 @@ public class FhirConverter {
       observations.add(convertToAOEPregnancyObservation(surveyData.getPregnancy()));
     }
 
-    if (employedInHealthcare != null) {
-      observations.add(
-          convertToAOEYesNoUnkObservation(
-              employedInHealthcare,
-              LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
-              AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
-    }
+    if (patientData != null) {
+      if (patientData.getEmployedInHealthcare() != null) {
+        observations.add(
+            convertToAOEYesNoUnkObservation(
+                patientData.getEmployedInHealthcare(),
+                LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
+                AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
+      }
 
-    if (residesInCongregateSetting != null) {
-      observations.addAll(convertToAOEResidenceObservation(residesInCongregateSetting, null));
+      if (patientData.getResidentCongregateSetting() != null) {
+        observations.addAll(
+            convertToAOEResidenceObservation(patientData.getResidentCongregateSetting(), null));
+      }
+
+      if (StringUtils.isNotBlank(patientData.getGenderIdentity())) {
+        observations.addAll(
+            convertToAOEGenderIdentityObservation(eventId, patientData.getGenderIdentity()));
+      }
     }
 
     return observations;
@@ -1240,8 +1255,7 @@ public class FhirConverter {
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(),
                     testEvent.getSurveyData(),
-                    testEvent.getPatientData().getEmployedInHealthcare(),
-                    testEvent.getPatientData().getResidentCongregateSetting()))
+                    testEvent.getPatientData()))
             .serviceRequest(convertToServiceRequest(testEvent.getOrder(), dateTested))
             .diagnosticReport(convertToDiagnosticReport(testEvent, currentDate))
             .currentDate(currentDate)
