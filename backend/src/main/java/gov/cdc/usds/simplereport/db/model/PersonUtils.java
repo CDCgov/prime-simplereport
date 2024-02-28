@@ -806,7 +806,7 @@ public class PersonUtils {
 
   public static final String MALE_GENDER_IDENTITY_SNOMED = "446151000124109";
   public static final String FEMALE_GENDER_IDENTITY_SNOMED = "446141000124107";
-  public static final String NON_BINARY_GENDER_IDENTITY_SNOWMED = "446131000124102";
+  public static final String NON_BINARY_GENDER_IDENTITY_SNOMED = "446131000124102";
 
   public static final String ASKED_BUT_DECLINED_CODE = "asked-declined";
 
@@ -816,7 +816,7 @@ public class PersonUtils {
           .put("Transwoman", FEMALE_GENDER_IDENTITY_SNOMED)
           .put("Male", MALE_GENDER_IDENTITY_SNOMED)
           .put("Transman", MALE_GENDER_IDENTITY_SNOMED)
-          .put("Nonbinary or gender non-conforming", NON_BINARY_GENDER_IDENTITY_SNOWMED)
+          .put("Nonbinary or gender non-conforming", NON_BINARY_GENDER_IDENTITY_SNOMED)
           .put("Prefer not to answer", ASKED_BUT_DECLINED_CODE)
           .put("Gender identity not listed here", MappingConstants.UNK_CODE)
           .build();
@@ -825,7 +825,7 @@ public class PersonUtils {
       new ImmutableMap.Builder<String, String>()
           .put(FEMALE_GENDER_IDENTITY_SNOMED, "Female gender identity")
           .put(MALE_GENDER_IDENTITY_SNOMED, "Male gender identity")
-          .put(NON_BINARY_GENDER_IDENTITY_SNOWMED, "Non-binary gender identity")
+          .put(NON_BINARY_GENDER_IDENTITY_SNOMED, "Non-binary gender identity")
           .put(ASKED_BUT_DECLINED_CODE, "Asked But Declined")
           .put(MappingConstants.UNK_CODE, "Unknown")
           .build();
