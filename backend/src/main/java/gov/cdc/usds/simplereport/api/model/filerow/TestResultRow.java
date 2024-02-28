@@ -29,6 +29,7 @@ import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.ArrayList;
@@ -301,6 +302,7 @@ public class TestResultRow implements FileRow {
           .build();
 
   private ResultsUploaderCachingService resultsUploaderCachingService;
+  private ResultsUploaderDeviceService resultsUploaderDeviceService;
   private FeatureFlagsConfig featureFlagsConfig;
 
   private static final List<String> requiredFields =
@@ -345,6 +347,8 @@ public class TestResultRow implements FileRow {
       FeatureFlagsConfig featureFlagsConfig) {
     this(rawRow);
     this.resultsUploaderCachingService = resultsUploaderCachingService;
+    this.resultsUploaderDeviceService =
+        new ResultsUploaderDeviceService(resultsUploaderCachingService, featureFlagsConfig);
     this.featureFlagsConfig = featureFlagsConfig;
   }
 
@@ -447,11 +451,26 @@ public class TestResultRow implements FileRow {
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
       String equipmentModelName, String testPerformedCode) {
 
-    if (validModelTestPerformedCombination(equipmentModelName, testPerformedCode)
-        || validDiseaseTestPerformedLoinc(testPerformedCode)) {
-      return emptyList();
+    if (equipmentModelName == null || testPerformedCode == null) {
+      return generateInvalidDataErrorMessages();
     }
 
+    if (!validDeviceInDb(equipmentModelName, testPerformedCode)
+        && !validDeviceInAllowList(testPerformedCode)) {
+      return generateInvalidDataErrorMessages();
+    }
+
+    boolean hasOnlyActiveDiseases =
+        resultsUploaderDeviceService.validateResultsOnlyIncludeActiveDiseases(
+            equipmentModelName, testPerformedCode);
+
+    if (!hasOnlyActiveDiseases) {
+      return generateInactiveDiseaseErrorMessages();
+    }
+    return emptyList();
+  }
+
+  private List<FeedbackMessage> generateInvalidDataErrorMessages() {
     String errorMessage =
         "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
     return List.of(
@@ -465,30 +484,31 @@ public class TestResultRow implements FileRow {
             .build());
   }
 
-  private boolean validDiseaseTestPerformedLoinc(String testPerformedCode) {
-    if (testPerformedCode == null) {
-      return false;
-    }
+  private List<FeedbackMessage> generateInactiveDiseaseErrorMessages() {
+    String errorMessage =
+        EQUIPMENT_MODEL_NAME
+            + " and "
+            + TEST_PERFORMED_CODE
+            + " combination map to a non-active disease in this jurisdiction";
+    return List.of(
+        FeedbackMessage.builder()
+            .scope(ITEM_SCOPE)
+            .message(errorMessage)
+            .fieldRequired(true)
+            .fieldHeader(TEST_PERFORMED_CODE)
+            .errorType(ResultUploadErrorType.UNAVAILABLE_DISEASE)
+            .source(ResultUploadErrorSource.SIMPLE_REPORT)
+            .build());
+  }
+
+  private boolean validDeviceInDb(String equipmentModelName, String testPerformedCode) {
+    return resultsUploaderDeviceService.validateModelAndTestPerformedCombination(
+        equipmentModelName, testPerformedCode);
+  }
+
+  private boolean validDeviceInAllowList(String testPerformedCode) {
     String disease = diseaseSpecificLoincMap.get(testPerformedCode);
     return disease != null;
-  }
-
-  private boolean validModelTestPerformedCombination(
-      String equipmentModelName, String testPerformedCode) {
-    return equipmentModelName != null
-        && testPerformedCode != null
-        && resultsUploaderCachingService
-            .getModelAndTestPerformedCodeToDeviceMap()
-            .containsKey(
-                ResultsUploaderCachingService.getKey(
-                    removeTrailingAsterisk(equipmentModelName), testPerformedCode));
-  }
-
-  private String removeTrailingAsterisk(String value) {
-    if (value != null && value.length() > 0 && value.charAt(value.length() - 1) == '*') {
-      return value.substring(0, value.length() - 1);
-    }
-    return value;
   }
 
   @Override

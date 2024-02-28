@@ -188,6 +188,24 @@ public class TestDataBuilder {
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
+  public static DeviceType createDeviceTypeForHIV() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createHIVSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceTypeForRSV() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createRSVSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
   public static SpecimenType createSpecimenType() {
     return new SpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321");
   }
@@ -257,6 +275,14 @@ public class TestDataBuilder {
 
   public static SupportedDisease createFluBSupportedDisease() {
     return new SupportedDisease("Flu B", "LP14240-3");
+  }
+
+  public static SupportedDisease createHIVSupportedDisease() {
+    return new SupportedDisease("HIV", "16249-0");
+  }
+
+  public static SupportedDisease createRSVSupportedDisease() {
+    return new SupportedDisease("RSV", "LP14129-1");
   }
 
   public static Result createTestResult(
