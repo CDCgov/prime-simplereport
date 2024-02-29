@@ -13,5 +13,3 @@ simple-report:
       - https://stg.simplereport.gov
   experian:
     enabled: true
-features:
-  testCardRefactorEnabled: true

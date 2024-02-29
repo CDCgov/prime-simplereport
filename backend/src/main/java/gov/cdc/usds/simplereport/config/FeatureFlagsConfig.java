@@ -28,7 +28,6 @@ public class FeatureFlagsConfig {
   private boolean hivEnabled;
   private boolean agnosticEnabled;
   private boolean agnosticBulkUploadEnabled;
-  private boolean testCardRefactorEnabled;
 
   @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
@@ -42,7 +41,6 @@ public class FeatureFlagsConfig {
       case "hivEnabled" -> setHivEnabled(flagValue);
       case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
       case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);
-      case "testCardRefactorEnabled" -> setTestCardRefactorEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Navigate, useLocation } from "react-router-dom";
-import { useFeature } from "flagged";
 
 import Button from "../../commonComponents/Button/Button";
-import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
@@ -45,9 +43,6 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     selectedPatient,
     addPatientToQueue,
   } = props;
-  const testCardRefactorEnabled = useFeature(
-    "testCardRefactorEnabled"
-  ) as boolean;
 
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
@@ -79,7 +74,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   }
 
   const handleBeginTestClick = (patient: Patient) => {
-    if (testCardRefactorEnabled && addPatientToQueue) {
+    if (addPatientToQueue) {
       return addPatientToQueue(patient);
     }
 
@@ -195,21 +190,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     </div>
   );
 
-  return (
-    <>
-      {!testCardRefactorEnabled && (
-        <AoEModalForm
-          isOpen={props.page === "queue" && dialogPatient !== null}
-          patient={dialogPatient}
-          onClose={() => {
-            setDialogPatient(null);
-          }}
-          saveCallback={handleSaveCallback}
-        />
-      )}
-      {shouldShowSuggestions && results}
-    </>
-  );
+  return <>{shouldShowSuggestions && results}</>;
 };
 
 export default SearchResults;

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
-import { useFeature } from "flagged";
 
 import {
   QUEUE_NOTIFICATION_TYPES,
@@ -92,16 +91,12 @@ const AddToQueueSearchBox = ({
     [allowQuery, showSuggestion]
   );
 
-  const testCardRefactorEnabled = useFeature(
-    "testCardRefactorEnabled"
-  ) as boolean;
-
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
     variables: { internalId: startTestPatientId },
     onCompleted: async (response) => {
       setSelectedPatient(response.patient);
-      if (testCardRefactorEnabled && addPatientToQueue) {
+      if (addPatientToQueue) {
         await addPatientToQueue(response.patient);
         setSelectedPatient(undefined);
       }
