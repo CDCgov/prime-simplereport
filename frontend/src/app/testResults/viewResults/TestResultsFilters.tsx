@@ -94,7 +94,6 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
     useAppSelector((state) => state.user.permissions),
     appPermissions.settings.canView
   );
-  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
   const hivEnabled = useFeature("hivEnabled");
 
   /**
@@ -285,6 +284,10 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
       value: MULTIPLEX_DISEASES.FLU_B,
       label: MULTIPLEX_DISEASES.FLU_B,
     },
+    {
+      value: MULTIPLEX_DISEASES.RSV,
+      label: MULTIPLEX_DISEASES.RSV,
+    },
   ];
   if (hivEnabled) {
     diseaseOptions.push({
@@ -292,13 +295,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
       label: MULTIPLEX_DISEASES.HIV,
     });
   }
-
-  if (singleEntryRsvEnabled) {
-    diseaseOptions.push({
-      value: MULTIPLEX_DISEASES.RSV,
-      label: MULTIPLEX_DISEASES.RSV,
-    });
-  }
+  diseaseOptions.sort((a, b) => (a.label > b.label ? 1 : -1));
 
   useEffect(() => {
     if (data) {

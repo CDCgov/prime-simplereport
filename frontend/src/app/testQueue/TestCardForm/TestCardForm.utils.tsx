@@ -17,7 +17,6 @@ import {
   SomeoneWithName,
 } from "../constants";
 import { showError, showSuccess } from "../../utils/srToast";
-import { filterRsvFromAllDevices } from "../../utils/rsvHelper";
 
 import { TestFormState } from "./TestCardFormReducer";
 import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
@@ -61,13 +60,9 @@ const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
 };
 
 export function useFilteredDeviceTypes(facility: QueriedFacility) {
-  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
   const hivEnabled = useFeature("hivEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
-  if (!singleEntryRsvEnabled) {
-    deviceTypes = filterRsvFromAllDevices(deviceTypes);
-  }
 
   if (!hivEnabled) {
     deviceTypes = filterHIVFromAllDevices(deviceTypes);
