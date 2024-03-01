@@ -854,7 +854,7 @@ public class FhirConverter {
   }
 
   public Set<Observation> convertToAOEGenderOfSexualPartnersObservation(
-      List<String> sexualPartners) {
+      Set<String> sexualPartners) {
     HashSet<Observation> observations = new LinkedHashSet<>();
 
     for (String sexualPartner : sexualPartners) {
@@ -961,7 +961,8 @@ public class FhirConverter {
       observations.addAll(convertToAOEResidenceObservation(residesInCongregateSetting, null));
     }
 
-    List<String> sexualPartners = surveyData.getGenderOfSexualPartners();
+    // Convert from list to set to avoid duplicates for the value of sexual partners
+    Set<String> sexualPartners = new HashSet<>(surveyData.getGenderOfSexualPartners());
     if (sexualPartners != null && !sexualPartners.isEmpty()) {
       observations.addAll(convertToAOEGenderOfSexualPartnersObservation(sexualPartners));
     }
