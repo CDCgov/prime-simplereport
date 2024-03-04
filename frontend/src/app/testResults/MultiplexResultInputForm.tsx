@@ -4,10 +4,10 @@ import classNames from "classnames";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
-import { findResultByDiseaseName } from "../testQueue/QueueItem";
 import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 import Checkboxes from "../commonComponents/Checkboxes";
 import { MultiplexResultInput } from "../../generated/graphql";
+import { findResultByDiseaseNameForMultiplexResultInput } from "../utils/testResults";
 
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
@@ -33,21 +33,18 @@ const convertFromMultiplexResultInputs = (
   diseaseResults: MultiplexResultInput[]
 ): MultiplexResultState => {
   const multiplexResult: MultiplexResultState = {
-    covid:
-      (findResultByDiseaseName(
-        diseaseResults ?? [],
-        MULTIPLEX_DISEASES.COVID_19
-      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
-    fluA:
-      (findResultByDiseaseName(
-        diseaseResults ?? [],
-        MULTIPLEX_DISEASES.FLU_A
-      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
-    fluB:
-      (findResultByDiseaseName(
-        diseaseResults ?? [],
-        MULTIPLEX_DISEASES.FLU_B
-      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
+    covid: findResultByDiseaseNameForMultiplexResultInput(
+      diseaseResults ?? [],
+      MULTIPLEX_DISEASES.COVID_19
+    ) as TestResult,
+    fluA: findResultByDiseaseNameForMultiplexResultInput(
+      diseaseResults ?? [],
+      MULTIPLEX_DISEASES.FLU_A
+    ) as TestResult,
+    fluB: findResultByDiseaseNameForMultiplexResultInput(
+      diseaseResults ?? [],
+      MULTIPLEX_DISEASES.FLU_B
+    ) as TestResult,
   };
 
   return multiplexResult;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import { Navigate, useLocation } from "react-router-dom";
 
@@ -40,34 +40,12 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     shouldShowSuggestions,
     loading,
     dropDownRef,
-    selectedPatient,
     addPatientToQueue,
   } = props;
 
-  const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
-  const [canAddToQueue, setCanAddToQueue] = useState(false);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   const activeFacilityId = getFacilityIdFromUrl(useLocation());
-
-  useEffect(() => {
-    if (selectedPatient) {
-      setDialogPatient(selectedPatient);
-      setCanAddToQueue(true);
-    }
-  }, [selectedPatient]);
-
-  function handleSaveCallback(a: any) {
-    if (props.page === "queue" && dialogPatient !== null) {
-      return props.onAddToQueue(
-        dialogPatient,
-        a,
-        canAddToQueue ? "create" : "update"
-      );
-    }
-
-    return Promise.resolve();
-  }
 
   if (redirect) {
     return <Navigate to={redirect} />;
@@ -77,12 +55,6 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     if (addPatientToQueue) {
       return addPatientToQueue(patient);
     }
-
-    // existing logic
-    setDialogPatient(patient);
-    // this will always be true because the "Begin test" button
-    // is only available when canAddToTestQueue is true
-    setCanAddToQueue(true);
   };
 
   const actionByPage = (patient: Patient, idx: Number) => {

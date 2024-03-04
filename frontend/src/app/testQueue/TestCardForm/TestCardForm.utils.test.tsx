@@ -1,4 +1,3 @@
-import { QueriedFacility } from "../QueueItem";
 import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
 import mockSupportedDiseaseMultiplex, {
   mockSupportedDiseaseFlu,
@@ -7,6 +6,7 @@ import { TEST_RESULTS } from "../../testResults/constants";
 
 import { TestFormState } from "./TestCardFormReducer";
 import { AOEFormOption, areAOEAnswersComplete } from "./TestCardForm.utils";
+import { QueriedFacility } from "./types";
 
 const covidDeviceName = "LumiraDX";
 const multiplexDeviceName = "Multiplex";

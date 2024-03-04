@@ -10,7 +10,6 @@ import {
 import React, { useEffect, useReducer, useRef, useState } from "react";
 
 import TextInput from "../../commonComponents/TextInput";
-import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
@@ -54,6 +53,7 @@ import {
 import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
 import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
+import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
 
 const DEBOUNCE_TIME = 300;
 

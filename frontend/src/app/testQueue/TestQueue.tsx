@@ -19,10 +19,10 @@ import { Patient } from "../patients/ManagePatients";
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
-import { DevicesMap } from "./QueueItem";
 import "./TestQueue.scss";
 import { TestCard } from "./TestCard/TestCard";
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
+import { DevicesMap } from "./TestCardForm/types";
 
 const pollInterval = 10_000;
 

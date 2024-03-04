@@ -28,12 +28,12 @@ import {
 } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 import { TestCorrectionReason } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
-import { QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
 import mockSupportedDiseaseMultiplex, {
   mockSupportedDiseaseFlu,
 } from "../mocks/mockSupportedDiseaseMultiplex";
 import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
+import { QueriedFacility, QueriedTestOrder } from "../TestCardForm/types";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
