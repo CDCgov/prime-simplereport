@@ -53,6 +53,9 @@ describe("Submission", () => {
         },
       },
     ];
+  });
+
+  const renderContainer = () =>
     render(
       <MockedProvider mocks={mocks}>
         <Provider store={store}>
@@ -71,17 +74,18 @@ describe("Submission", () => {
         </Provider>
       </MockedProvider>
     );
-  });
 
   afterEach(() => {
     mockIsDone = false;
   });
 
   it("fetches upload submission details from GraphQL server", async () => {
+    renderContainer();
     await waitFor(() => expect(mockIsDone).toBe(true));
   });
 
   it("renders the bulk test result upload submission view", async () => {
+    renderContainer();
     expect(await screen.findByText("Report ID"));
     expect(await screen.findByText("12b86a9d-a9d6-4391-a555-6618e8ac66d9"));
 

@@ -139,12 +139,6 @@
           "plugin:jest-dom/recommended"
         ],
         "rules": {
-          "testing-library/no-render-in-setup": [
-            "error",
-            {
-              "allowTestingFrameworkSetupHook": "beforeEach"
-            }
-          ],
           "testing-library/no-node-access": "off"
         }
       },

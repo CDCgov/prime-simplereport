@@ -12,16 +12,16 @@ describe("RadioGroup", () => {
   ];
   beforeEach(() => {
     onChange = jest.fn();
-    render(<RadioGroup onChange={onChange} buttons={buttons} />);
   });
 
   it("selects the correct value from the props", async () => {
+    render(<RadioGroup onChange={onChange} buttons={buttons} />);
     await userEvent.click(screen.getByLabelText("Option 1"));
     expect(onChange).toBeCalledWith("1");
   });
 
   describe("is required", () => {
-    beforeEach(() => {
+    it("renders an asterisk", async () => {
       render(
         <RadioGroup
           onChange={onChange}
@@ -30,8 +30,6 @@ describe("RadioGroup", () => {
           required={true}
         />
       );
-    });
-    it("renders an asterisk", async () => {
       expect(await screen.findByText("*")).toBeInTheDocument();
     });
   });

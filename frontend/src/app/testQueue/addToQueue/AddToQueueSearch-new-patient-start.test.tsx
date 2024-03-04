@@ -62,35 +62,34 @@ jest.mock("./SearchInput", () => {
 
 const getRefetchQueue = jest.fn();
 const setStartTestPatientIdMock = jest.fn();
+const renderContainer = () =>
+  render(
+    <MemoryRouter
+      initialEntries={[
+        {
+          pathname: "/queue",
+          state: {
+            patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+          } as StartTestProps,
+        },
+      ]}
+    >
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <AddToQueueSearch
+          refetchQueue={getRefetchQueue}
+          facilityId={facilityId}
+          patientsInQueue={[]}
+          startTestPatientId="48c523e8-7c65-4047-955c-e3f65bb8b58a"
+          setStartTestPatientId={setStartTestPatientIdMock}
+          canAddPatient={true}
+        />
+      </MockedProvider>
+    </MemoryRouter>
+  );
 
 describe("AddToSearchQueue - new patient begin test", () => {
-  beforeEach(() => {
-    render(
-      <MemoryRouter
-        initialEntries={[
-          {
-            pathname: "/queue",
-            state: {
-              patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
-            } as StartTestProps,
-          },
-        ]}
-      >
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <AddToQueueSearch
-            refetchQueue={getRefetchQueue}
-            facilityId={facilityId}
-            patientsInQueue={[]}
-            startTestPatientId="48c523e8-7c65-4047-955c-e3f65bb8b58a"
-            setStartTestPatientId={setStartTestPatientIdMock}
-            canAddPatient={true}
-          />
-        </MockedProvider>
-      </MemoryRouter>
-    );
-  });
-
   it("should start test for patient when passed through search params", async () => {
+    renderContainer();
     expect(
       await screen.findByText(
         "selectedPatient: 48c523e8-7c65-4047-955c-e3f65bb8b58a"
