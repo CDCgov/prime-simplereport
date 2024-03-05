@@ -4,7 +4,6 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 
-import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { Patient } from "../../patients/ManagePatients";
 import { getAppInsights } from "../../TelemetryService";
 import * as srToast from "../../utils/srToast";
@@ -15,6 +14,7 @@ import AddToQueueSearch, {
   QUERY_SINGLE_PATIENT,
 } from "./AddToQueueSearch";
 import { QueueProps } from "./SearchResults";
+import { AoEAnswersDelivery } from "./types";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),

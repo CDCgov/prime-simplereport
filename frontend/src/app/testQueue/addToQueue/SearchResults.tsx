@@ -5,9 +5,10 @@ import { Navigate, useLocation } from "react-router-dom";
 import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
-import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getFacilityIdFromUrl } from "../../utils/url";
 import { PATIENT_TERM } from "../../../config/constants";
+
+import { AoEAnswersDelivery } from "./types";
 
 interface SearchResultsProps {
   patients: Patient[];

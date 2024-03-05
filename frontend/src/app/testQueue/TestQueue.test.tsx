@@ -9,7 +9,6 @@ import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import * as flaggedMock from "flagged";
 
 import {
   GetFacilityQueueDocument,
@@ -94,33 +93,6 @@ describe("TestQueue", () => {
 
     expect(await screen.findByText("Doe, John A"));
     expect(await screen.findByText("Smith, Jane"));
-    expect(container).toMatchSnapshot();
-  });
-
-  it("should render the new test card when feature enabled", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
-
-    const { container } = render(
-      <MemoryRouter>
-        <MockedProvider mocks={mocks}>
-          <Provider store={store}>
-            <TestQueue activeFacilityId="a1" />
-          </Provider>
-        </MockedProvider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() =>
-      expect(
-        screen.getByLabelText(
-          `Search for a ${PATIENT_TERM} to start their test`
-        )
-      )
-    );
-
-    expect(await screen.findByText("Doe, John A"));
-    expect(await screen.findByText("Smith, Jane"));
-    expect(screen.getAllByText("Submit results").length > 0).toBeTruthy();
     expect(container).toMatchSnapshot();
   });
 

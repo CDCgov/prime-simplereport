@@ -9,7 +9,6 @@ import {
 } from "../constants";
 import { showAlertNotification } from "../../utils/srToast";
 import { Patient } from "../../patients/ManagePatients";
-import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getAppInsights } from "../../TelemetryService";
 import { PATIENT_TERM } from "../../../config/constants";
 import {
@@ -23,6 +22,7 @@ import useComponentVisible from "../../commonComponents/ComponentVisible";
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
 import { useDebounce } from "./useDebounce";
+import { AoEAnswersDelivery } from "./types";
 
 interface AoEAnswersForPatient extends AoEAnswersDelivery {
   patientId: string;
