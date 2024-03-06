@@ -7,7 +7,7 @@ import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 import Checkboxes from "../commonComponents/Checkboxes";
 import { MultiplexResultInput } from "../../generated/graphql";
-import { findResultByDiseaseNameForMultiplexResultInput } from "../utils/testResults";
+import { getResultByDiseaseName } from "../utils/testResults";
 
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
@@ -33,15 +33,15 @@ const convertFromMultiplexResultInputs = (
   diseaseResults: MultiplexResultInput[]
 ): MultiplexResultState => {
   const multiplexResult: MultiplexResultState = {
-    covid: findResultByDiseaseNameForMultiplexResultInput(
+    covid: getResultByDiseaseName(
       diseaseResults ?? [],
       MULTIPLEX_DISEASES.COVID_19
     ) as TestResult,
-    fluA: findResultByDiseaseNameForMultiplexResultInput(
+    fluA: getResultByDiseaseName(
       diseaseResults ?? [],
       MULTIPLEX_DISEASES.FLU_A
     ) as TestResult,
-    fluB: findResultByDiseaseNameForMultiplexResultInput(
+    fluB: getResultByDiseaseName(
       diseaseResults ?? [],
       MULTIPLEX_DISEASES.FLU_B
     ) as TestResult,
