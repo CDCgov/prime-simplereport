@@ -37,9 +37,7 @@ describe("SignUpGoals", () => {
   });
 
   it("redirects to request test result page when third option is selected", async () => {
-    fireEvent.click(
-      screen.getByText("I’m trying to get my COVID-19 test results")
-    );
+    fireEvent.click(screen.getByText("I’m trying to get my test results"));
     fireEvent.click(screen.getByText("Continue"));
     expect(
       await screen.findByText(
