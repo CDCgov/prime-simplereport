@@ -53,7 +53,8 @@ const emptyQueueMessage = (canUseCsvUploader: boolean) => {
           </p>
           {canUseCsvUploader && (
             <p>
-              To add results in bulk using a CSV file, go to{" "}
+              To add results in bulk for COVID-19, Flu A and B, and RSV using a
+              CSV file, go to{" "}
               <LinkWithQuery to="/results/upload/submit">
                 <strong>Upload spreadsheet</strong>
               </LinkWithQuery>

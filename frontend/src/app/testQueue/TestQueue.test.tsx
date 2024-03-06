@@ -178,7 +178,7 @@ describe("TestQueue", () => {
     expect(
       screen.getByText("To add results in bulk", { exact: false })
     ).toHaveTextContent(
-      "To add results in bulk using a CSV file, go to Upload spreadsheet."
+      "To add results in bulk for COVID-19, Flu A and B, and RSV using a CSV file, go to Upload spreadsheet."
     );
 
     expect(
