@@ -1,32 +1,34 @@
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
 import { MultiplexResultInput } from "../../generated/graphql";
 
-function getTestResult(result: MultiplexResult): TestResult {
-  if (result) {
-    if ("testResult" in result) {
-      return result.testResult;
-    }
-  }
-  return "UNKNOWN";
-}
-
-export function getResultObjByDiseaseName(
-  results: MultiplexResults,
-  diseaseName: MultiplexDisease
-): MultiplexResult {
-  return (
-    (results.find((result: MultiplexResult) => {
-      return result.disease.name.includes(diseaseName);
-    }) as MultiplexResult) || null
-  );
-}
-
 export function getResultByDiseaseName(
   results: MultiplexResults,
   diseaseName: MultiplexDisease
+): string;
+export function getResultByDiseaseName(
+  results: MultiplexResultInput[],
+  diseaseName: MULTIPLEX_DISEASES
+): string;
+export function getResultByDiseaseName(
+  results: MultiplexResults | MultiplexResultInput[],
+  diseaseName: MultiplexDisease | MULTIPLEX_DISEASES
 ): string {
-  const result = getResultObjByDiseaseName(results, diseaseName);
-  return getTestResult(result) || "UNKNOWN";
+  const matchedResult = results.find((r) => {
+    if (isMultiplexInput(r)) {
+      return r.diseaseName === diseaseName;
+    } else {
+      return r.disease.name.includes(diseaseName);
+    }
+  });
+
+  if (matchedResult === undefined) return "UNKNOWN";
+  return matchedResult.testResult;
+}
+
+function isMultiplexInput(
+  result: MultiplexResult | MultiplexResultInput
+): result is MultiplexResultInput {
+  return (result as MultiplexResultInput).diseaseName !== undefined;
 }
 
 export function getSortedResults(results: MultiplexResults): MultiplexResults {
@@ -46,7 +48,7 @@ export function hasPositiveFluResults(results: MultiplexResults): boolean {
     results.filter(
       (multiplexResult: MultiplexResult) =>
         multiplexResult.disease.name.includes("Flu") &&
-        getTestResult(multiplexResult) === TEST_RESULTS.POSITIVE
+        multiplexResult.testResult === TEST_RESULTS.POSITIVE
     ).length > 0
   );
 }
@@ -66,7 +68,7 @@ export function hasPositiveRsvResults(results: MultiplexResults): boolean {
     results.filter(
       (multiplexResult: MultiplexResult) =>
         multiplexResult.disease.name.includes("RSV") &&
-        getTestResult(multiplexResult) === TEST_RESULTS.POSITIVE
+        multiplexResult.testResult === TEST_RESULTS.POSITIVE
     ).length > 0
   );
 }
@@ -91,10 +93,3 @@ export const displayGuidance = (results: MultiplexResults) => {
     hasPositiveRsvResults(results)
   );
 };
-
-export const findResultByDiseaseNameForMultiplexResultInput = (
-  results: MultiplexResultInput[],
-  name: MULTIPLEX_DISEASES
-) =>
-  results.find((r: MultiplexResultInput) => r.diseaseName === name)
-    ?.testResult ?? TEST_RESULTS.UNKNOWN;
