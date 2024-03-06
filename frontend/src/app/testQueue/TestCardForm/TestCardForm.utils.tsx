@@ -1,12 +1,6 @@
 import moment from "moment/moment";
 import { useFeature } from "flagged";
 
-import {
-  DevicesMap,
-  QueriedDeviceType,
-  QueriedFacility,
-  QueriedTestOrder,
-} from "../QueueItem";
 import { displayFullName } from "../../utils";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
@@ -20,6 +14,12 @@ import { showError, showSuccess } from "../../utils/srToast";
 
 import { TestFormState } from "./TestCardFormReducer";
 import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
+import {
+  DevicesMap,
+  QueriedDeviceType,
+  QueriedFacility,
+  QueriedTestOrder,
+} from "./types";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {

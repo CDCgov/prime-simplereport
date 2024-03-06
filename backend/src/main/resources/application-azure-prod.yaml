@@ -24,5 +24,4 @@ features:
   hivBulkUploadEnabled: false
   hivEnabled: false
   agnosticEnabled: false
-  testCardRefactorEnabled: true
   agnosticBulkUploadEnabled: false

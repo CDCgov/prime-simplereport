@@ -1,4 +1,5 @@
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
+import { MultiplexResultInput } from "../../generated/graphql";
 
 function getTestResult(result: MultiplexResult): TestResult {
   if (result) {
@@ -90,3 +91,10 @@ export const displayGuidance = (results: MultiplexResults) => {
     hasPositiveRsvResults(results)
   );
 };
+
+export const findResultByDiseaseNameForMultiplexResultInput = (
+  results: MultiplexResultInput[],
+  name: MULTIPLEX_DISEASES
+) =>
+  results.find((r: MultiplexResultInput) => r.diseaseName === name)
+    ?.testResult ?? TEST_RESULTS.UNKNOWN;

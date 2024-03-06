@@ -3,10 +3,10 @@ import { isEqual, sortBy } from "lodash";
 
 import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
-import { DevicesMap, QueriedTestOrder } from "../QueueItem";
 
 import { convertFromMultiplexResponse } from "./TestCardForm.utils";
 import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
+import { DevicesMap, QueriedTestOrder } from "./types";
 
 export interface TestFormState {
   dateTested: string;

@@ -196,31 +196,4 @@ describe("SearchResults", () => {
     expect(screen.getAllByText("Test in progress")).toHaveLength(2);
     expect(screen.getByText("Begin test")).toBeInTheDocument();
   });
-
-  it("opens a modal for selected patient", async () => {
-    const addToQueue = jest.fn();
-    render(
-      <RouterWithFacility>
-        <Route
-          path="/queue"
-          element={
-            <SearchResults
-              page="queue"
-              patients={[]}
-              patientsInQueue={[]}
-              onAddToQueue={addToQueue}
-              shouldShowSuggestions={true}
-              loading={false}
-              selectedPatient={patients[0]}
-              canAddPatient={true}
-            />
-          }
-        />
-      </RouterWithFacility>
-    );
-
-    expect(screen.getByText("Test questionnaire")).toBeInTheDocument();
-    expect(screen.getByText("Washington, George")).toBeInTheDocument();
-    expect(screen.getByText("Continue")).toBeInTheDocument();
-  });
 });

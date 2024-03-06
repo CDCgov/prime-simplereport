@@ -7,7 +7,7 @@ import { StoryGraphQLProvider } from "../../../stories/storyMocks";
 import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
 import { PhoneType } from "../../../generated/graphql";
 import mockSupportedDiseaseMultiplex from "../mocks/mockSupportedDiseaseMultiplex";
-import { DevicesMap } from "../QueueItem";
+import { DevicesMap } from "../TestCardForm/types";
 
 import { TestCard, TestCardProps } from "./TestCard";
 

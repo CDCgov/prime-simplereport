@@ -3,14 +3,12 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
-  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import * as flaggedMock from "flagged";
 
 import {
   GetFacilityQueueDocument,
@@ -98,33 +96,6 @@ describe("TestQueue", () => {
     expect(container).toMatchSnapshot();
   });
 
-  it("should render the new test card when feature enabled", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
-
-    const { container } = render(
-      <MemoryRouter>
-        <MockedProvider mocks={mocks}>
-          <Provider store={store}>
-            <TestQueue activeFacilityId="a1" />
-          </Provider>
-        </MockedProvider>
-      </MemoryRouter>
-    );
-
-    await waitFor(() =>
-      expect(
-        screen.getByLabelText(
-          `Search for a ${PATIENT_TERM} to start their test`
-        )
-      )
-    );
-
-    expect(await screen.findByText("Doe, John A"));
-    expect(await screen.findByText("Smith, Jane"));
-    expect(screen.getAllByText("Submit results").length > 0).toBeTruthy();
-    expect(container).toMatchSnapshot();
-  });
-
   it("should remove items queue using the transition group", async () => {
     const { user } = renderWithUser(mocks);
     expect(await screen.findByText("Doe, John A"));
@@ -132,7 +103,9 @@ describe("TestQueue", () => {
       "Close test for Doe, John A"
     );
     await user.click(removeButton);
-    const confirmButton = await screen.findByText("Yes", { exact: false });
+    const confirmButton = screen.getAllByText("Yes, I'm sure", {
+      exact: false,
+    })[0];
     await user.click(confirmButton);
     expect(
       screen.getByText("Submitting test data for Doe, John A...")
@@ -220,38 +193,6 @@ describe("TestQueue", () => {
     expect(
       screen.queryByText("To add results in bulk", { exact: false })
     ).not.toBeInTheDocument();
-  });
-
-  describe("clicking on test questionnaire", () => {
-    it("should open test questionnaire and display emails and phone numbers correctly", async () => {
-      const { user } = renderWithUser(mocks);
-
-      await screen.findByLabelText(
-        `Search for a ${PATIENT_TERM} to start their test`
-      );
-      expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
-      expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
-
-      await user.click(screen.getAllByText("Test questionnaire")[0]);
-
-      const modal = screen.getByRole("dialog");
-
-      expect(within(modal).getByText("Test questionnaire")).toBeInTheDocument();
-      expect(
-        within(modal).getByText(
-          "Would you like to receive a copy of your results via text message?"
-        )
-      ).toBeInTheDocument();
-      expect(
-        within(modal).getByText(
-          "Would you like to receive a copy of your results via email?"
-        )
-      ).toBeInTheDocument();
-      expect(within(modal).getByText("Doe@legacy.com")).toBeInTheDocument();
-      expect(within(modal).getByText("John@legacy.com")).toBeInTheDocument();
-      expect(within(modal).getByText("8178675309")).toBeInTheDocument();
-      expect(within(modal).getByText("8178675911")).toBeInTheDocument();
-    });
   });
 });
 

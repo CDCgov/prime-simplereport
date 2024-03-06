@@ -2,11 +2,6 @@ import { uniq } from "lodash";
 
 import { DeviceType } from "../../generated/graphql";
 
-export type DeviceWithoutModelOrManufacturer = Omit<
-  FacilityFormDeviceType,
-  "model" | "manufacturer"
->;
-
 export const searchFields = ["manufacturer", "name", "model"] as const;
 export type DeviceSearchFields = (typeof searchFields)[number];
 export type SearchableDevice = Pick<

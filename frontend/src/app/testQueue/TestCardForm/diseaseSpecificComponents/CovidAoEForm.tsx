@@ -11,8 +11,8 @@ import {
   globalSymptomDefinitions,
   PregnancyCode,
 } from "../../../../patientApp/timeOfTest/constants";
-import { QueriedTestOrder } from "../../QueueItem";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
+import { QueriedTestOrder } from "../types";
 
 export interface CovidAoEFormProps {
   testOrder: QueriedTestOrder;
