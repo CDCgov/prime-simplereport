@@ -10,7 +10,7 @@ const FEMALE = GenderIdentityDisplay.female;
 const MALE = GenderIdentityDisplay.male;
 export const en = {
   translation: {
-    header: "COVID-19 testing portal",
+    header: "SimpleReport test result portal",
     banner: {
       dotGov: "The .gov means it’s official.",
       dotGovHelper:
@@ -396,7 +396,7 @@ export const en = {
       tos: {
         header: "Terms of service",
         title: "Terms of service",
-        introText: `This testing site uses <0>SimpleReport</0> to manage COVID-19 testing and reporting. The terms below explain SimpleReport’s policies and terms of service.`,
+        introText: `This testing site uses <0>SimpleReport</0> to manage rapid point-of-care testing and reporting. The terms below explain SimpleReport’s policies and terms of service.`,
         consent: "By agreeing, you consent to our terms of service.",
         submit: "I agree",
         document: {
