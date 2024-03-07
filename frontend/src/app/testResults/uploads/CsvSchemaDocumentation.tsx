@@ -7,6 +7,7 @@ import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { getFacilityIdFromUrl } from "../../utils/url";
+import { BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT } from "../../../config/constants";
 
 import { CsvSchema } from "./specificSchemaBuilder";
 
@@ -200,7 +201,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
         <section id="anchor-top">
           <p className="text-base sub-header">
             How to format and upload a CSV file to report test results in bulk
-            for COVID-19, Flu A and B, and RSV through SimpleReport.
+            for {BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT} through SimpleReport.
           </p>
           <p>
             SimpleReport’s bulk results uploader lets you report multiple test
