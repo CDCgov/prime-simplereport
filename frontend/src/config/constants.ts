@@ -540,3 +540,6 @@ export const organizationCreationSteps = [
 
 export const MAX_CSV_UPLOAD_BYTES = 50 * 1000 * 1000;
 export const MAX_CSV_UPLOAD_ROW_COUNT = 10000;
+
+export const BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT =
+  "COVID-19, Flu A and B, and RSV";
