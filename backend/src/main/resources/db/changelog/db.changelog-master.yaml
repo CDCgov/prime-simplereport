@@ -5246,3 +5246,15 @@ databaseChangeLog:
             sql: |
               ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'UNAVAILABLE_DISEASE';
       rollback: ""
+  - changeSet:
+      id: remove-unused-feature-flags
+      author: ttu8@cdc.gov
+      comment: remove rsvEnabled, testCardRefactorEnabled, and singleEntryRsvEnabled
+      changes:
+        - tagDatabase:
+            tag: remove-unused-feature-flags
+        - delete:
+            schemaName: ${database.defaultSchemaName}
+            tableName: feature_flag
+            where: name in ('rsvEnabled', 'testCardRefactorEnabled', 'singleEntryRsvEnabled')
+      rollback: ""
