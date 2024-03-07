@@ -164,7 +164,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = createTestEventsForMetricsTests(org);
 
     List<TestResultWithCount> results =
-        _repo.countByResultForFacility(place.getInternalId(), d1, DATE_1MIN_FUTURE);
+        _repo.countByResultForFacility(place.getInternalId(), d1, DATE_1MIN_FUTURE, "96741-4");
 
     assertEquals(2, results.size());
 
@@ -186,7 +186,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = createTestEventsForMetricsTests(org);
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
+        _repo.countByResultByFacility(
+            Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE, "96741-4");
 
     assertEquals(2, results.size());
 
@@ -211,7 +212,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         p, place, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.UNDETERMINED, false);
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
+        _repo.countByResultByFacility(
+            Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE, "96741-4");
 
     assertEquals(2, results.size());
 
@@ -239,7 +241,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
             .collect(Collectors.toSet());
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(facilityIds, d1, DATE_1MIN_FUTURE);
+        _repo.countByResultByFacility(facilityIds, d1, DATE_1MIN_FUTURE, "96741-4");
 
     assertEquals(3, results.size());
 

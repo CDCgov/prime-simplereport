@@ -524,6 +524,7 @@ type Query {
     facilityId: ID
     startDate: DateTime
     endDate: DateTime
+    disease: String
   ): TopLevelDashboardMetrics @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!]

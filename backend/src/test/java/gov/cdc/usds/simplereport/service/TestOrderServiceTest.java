@@ -2103,7 +2103,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
 
     TopLevelDashboardMetrics metrics =
-        _service.getTopLevelDashboardMetrics(null, startDate, endDate);
+        _service.getTopLevelDashboardMetrics(null, startDate, endDate, "COVID-19");
     assertEquals(3, metrics.getPositiveTestCount());
     assertEquals(12, metrics.getTotalTestCount());
   }
@@ -2117,7 +2117,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getTopLevelDashboardMetrics(null, startDate, endDate));
+        () -> _service.getTopLevelDashboardMetrics(null, startDate, endDate, "COVID-19"));
   }
 
   @Test
