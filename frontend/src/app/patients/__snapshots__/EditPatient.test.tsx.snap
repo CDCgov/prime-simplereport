@@ -4663,7 +4663,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         data-cy="radio-group-option-genderIdentity-transwoman"
                         for="121-val-transwoman"
                       >
-                        Trans femme or transwoman
+                        Transwoman
                       </label>
                     </div>
                     <div
@@ -4682,7 +4682,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         data-cy="radio-group-option-genderIdentity-transman"
                         for="121-val-transman"
                       >
-                        Trans masculine or transman
+                        Transman
                       </label>
                     </div>
                     <div
