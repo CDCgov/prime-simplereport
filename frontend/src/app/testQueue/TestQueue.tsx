@@ -6,7 +6,10 @@ import { showAlertNotification, showError } from "../utils/srToast";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { appPermissions, hasPermission } from "../permissions";
 import { useAppSelector } from "../store";
-import { PATIENT_TERM } from "../../config/constants";
+import {
+  BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT,
+  PATIENT_TERM,
+} from "../../config/constants";
 import {
   useGetFacilityQueueQuery,
   GetFacilityQueueQuery,
@@ -52,7 +55,8 @@ const emptyQueueMessage = (canUseCsvUploader: boolean) => {
           </p>
           {canUseCsvUploader && (
             <p>
-              To add results in bulk using a CSV file, go to{" "}
+              To add results in bulk for{" "}
+              {BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT} using a CSV file, go to{" "}
               <LinkWithQuery to="/results/upload/submit">
                 <strong>Upload spreadsheet</strong>
               </LinkWithQuery>
