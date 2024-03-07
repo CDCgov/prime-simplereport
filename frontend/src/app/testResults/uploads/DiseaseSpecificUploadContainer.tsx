@@ -20,8 +20,8 @@ const DiseaseSpecificUploadContainer = () => {
             Organizations sending results to the California Department of Public
             Health (CDPH) can now use the bulk results upload feature to report
             positive flu and RSV tests. Report{" "}
-            {BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT}
-            results all from a single spreadsheet.{" "}
+            {BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT} results all from a single
+            spreadsheet.{" "}
             <a
               href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
               onClick={() => {
