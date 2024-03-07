@@ -59,7 +59,7 @@ const SignUpGoals = () => {
               },
               {
                 value: "testResult",
-                label: "I’m trying to get my COVID-19 test results",
+                label: "I’m trying to get my test results",
                 labelDescription: "No sign-up needed.",
               },
             ]}
