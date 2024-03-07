@@ -4,7 +4,6 @@ import {
   displayGuidance,
   getModifiedResultsForGuidance,
   getResultByDiseaseName,
-  getResultObjByDiseaseName,
   getSortedResults,
   hasDiseaseSpecificResults,
   hasMultipleResults,
@@ -48,64 +47,6 @@ describe("getResultByDiseaseName", () => {
   it("returns UNKNOWN if selecting a DiseaseName that is not present", () => {
     result = "UNKNOWN";
     expect(getResultByDiseaseName(covidResults, "Flu B")).toEqual(result);
-  });
-});
-
-describe("getResultObjByDiseaseName", () => {
-  describe("MultiplexResults", () => {
-    let results: MultiplexResult[] = [
-      {
-        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-        testResult: TEST_RESULTS.NEGATIVE,
-      },
-      {
-        disease: { name: MULTIPLEX_DISEASES.FLU_A },
-        testResult: TEST_RESULTS.POSITIVE,
-      },
-      {
-        disease: { name: MULTIPLEX_DISEASES.FLU_B },
-        testResult: TEST_RESULTS.UNKNOWN,
-      },
-    ];
-    let expectedResult: MultiplexResult;
-    it("returns the COVID-19 result when searching by COVID-19", () => {
-      expectedResult = {
-        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-        testResult: TEST_RESULTS.NEGATIVE,
-      };
-      expect(
-        getResultObjByDiseaseName(results, "COVID-19" as MultiplexDisease)
-      ).toEqual(expectedResult);
-    });
-    it("returns the Flu A result when searching by Flu A", () => {
-      expectedResult = {
-        disease: { name: MULTIPLEX_DISEASES.FLU_A },
-        testResult: TEST_RESULTS.POSITIVE,
-      };
-      expect(
-        getResultObjByDiseaseName(results, "Flu A" as MultiplexDisease)
-      ).toEqual(expectedResult);
-    });
-    it("returns the Flu B result when searching by Flu B", () => {
-      expectedResult = {
-        disease: { name: MULTIPLEX_DISEASES.FLU_B },
-        testResult: TEST_RESULTS.UNKNOWN,
-      };
-      expect(
-        getResultObjByDiseaseName(results, "Flu B" as MultiplexDisease)
-      ).toEqual(expectedResult);
-    });
-    it("returns null when searching for a MultiplexDisease not in the results", () => {
-      results = [
-        {
-          disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-          testResult: TEST_RESULTS.NEGATIVE,
-        },
-      ];
-      expect(
-        getResultObjByDiseaseName(results, "Flu B" as MultiplexDisease)
-      ).toEqual(null);
-    });
   });
 });
 
