@@ -978,9 +978,8 @@ public class FhirConverter {
       }
     }
 
-    // Convert from list to set to avoid duplicates for the value of sexual partners
-    Set<String> sexualPartners = new HashSet<>(surveyData.getGenderOfSexualPartners());
-    if (sexualPartners != null && !sexualPartners.isEmpty()) {
+    if (surveyData.getGenderOfSexualPartners() != null) {
+      Set<String> sexualPartners = new HashSet<>(surveyData.getGenderOfSexualPartners());
       observations.addAll(convertToAOEGenderOfSexualPartnersObservation(sexualPartners));
     }
 
