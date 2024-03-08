@@ -873,7 +873,7 @@ public class FhirConverter {
 
       observations.add(
           createAOEObservation(
-              uuidGenerator.randomUUID() + SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS,
+              uuidGenerator.randomUUID().toString(),
               genderOfSexualPartnerStatusCode,
               genderOfSexualPartnerValueCode));
     }
