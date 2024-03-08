@@ -5,10 +5,10 @@ import {
   getPregnancyResponses,
   PregnancyCode,
 } from "../../../../patientApp/timeOfTest/constants";
-import { QueriedTestOrder } from "../../QueueItem";
 import { useTranslatedConstants } from "../../../constants";
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
+import { QueriedTestOrder } from "../types";
 
 interface HIVAoeFormProps {
   testOrder: QueriedTestOrder;

@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "@faker-js/faker": "^8.4.0",
+    "@faker-js/faker": "^8.4.1",
     "cypress": "^11.0.0",
     "cypress-localstorage-commands": "^2.2.5",
     "dayjs": "^1.11.10",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-plugin-cypress": "^2.15.1",
     "otplib": "^12.0.1",
     "prettier": "3.2.5"
@@ -22,7 +22,7 @@
     "lint:write": "eslint --fix . && prettier . --write"
   },
   "dependencies": {
-    "axe-core": "^4.8.3",
+    "axe-core": "^4.8.4",
     "cypress-axe": "^1.5.0"
   }
 }

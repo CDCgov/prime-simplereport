@@ -12,11 +12,7 @@ import { getResultByDiseaseName } from "./testResults";
 
 import { displayFullName, facilityDisplayName } from "./index";
 
-export function parseDataForCSV(
-  includeRSV: boolean,
-  includeHIV: boolean,
-  data: TestResult[]
-) {
+export function parseDataForCSV(includeHIV: boolean, data: TestResult[]) {
   return data.sort(byDateTested).map((r: any) => {
     const symptomList = r.symptoms ? symptomsStringToArray(r.symptoms) : [];
 
@@ -95,12 +91,12 @@ export function parseDataForCSV(
             getResultByDiseaseName(r.results, MULTIPLEX_DISEASES.HIV) as Results
           ],
       }),
-      ...(includeRSV && {
+      ...{
         "RSV result":
           TEST_RESULT_DESCRIPTIONS[
             getResultByDiseaseName(r.results, MULTIPLEX_DISEASES.RSV) as Results
           ],
-      }),
+      },
       ...csvData2,
     };
   });

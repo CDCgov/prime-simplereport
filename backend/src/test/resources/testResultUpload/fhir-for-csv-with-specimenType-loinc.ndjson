@@ -109,7 +109,8 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "94534-5"
+              "code": "94534-5",
+              "display": "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
             }
           ]
         },
@@ -508,7 +509,8 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "94534-5"
+              "code": "94534-5",
+              "display": "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection"
             }
           ],
           "text": "COVID-19"
@@ -942,7 +944,8 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "94534-5"
+              "code": "94534-5",
+              "display": "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
             }
           ]
         },
@@ -1341,7 +1344,8 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "94534-5"
+              "code": "94534-5",
+              "display": "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection"
             }
           ],
           "text": "COVID-19"

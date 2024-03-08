@@ -38,7 +38,6 @@ export const DownloadResultsCsvModal = ({
   >(null);
   // Disable downloads because backend will hang on over 20k results (#3953)
   const disableDownload = totalEntries > rowsMaxLimit;
-  const singleEntryRsvEnabled = Boolean(useFeature("singleEntryRsvEnabled"));
   const hivEnabled = Boolean(useFeature("hivEnabled"));
 
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
@@ -71,7 +70,6 @@ export const DownloadResultsCsvModal = ({
   const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
     if (data?.testResultsPage?.content) {
       const csvResults = parseDataForCSV(
-        singleEntryRsvEnabled,
         hivEnabled,
         data.testResultsPage.content
       );

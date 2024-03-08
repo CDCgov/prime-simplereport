@@ -14,7 +14,7 @@ describe("formatGenderOfSexualPartnersForDisplay", () => {
   it("displays genders as a comma-separated list", () => {
     const genders: string[] = ["female", "male", "transman", "transwoman"];
     expect(formatGenderOfSexualPartnersForDisplay(genders)).toBe(
-      "Female, Male, Trans masculine or transman, Trans femme or transwoman"
+      "Female, Male, Transman, Transwoman"
     );
   });
   it("displays unknown if gender values are not supported", () => {

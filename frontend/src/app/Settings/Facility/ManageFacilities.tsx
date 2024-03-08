@@ -31,7 +31,10 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
               {facilities.map((facility) => (
                 <tr key={facility.id}>
                   <td>
-                    <LinkWithQuery to={`/settings/facility/${facility.id}`}>
+                    <LinkWithQuery
+                      to={`/settings/facility/${facility.id}`}
+                      data-cy={`${facility.name}-link`}
+                    >
                       {facility.name}
                     </LinkWithQuery>
                   </td>

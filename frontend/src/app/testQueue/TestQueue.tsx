@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
-import { useFeature } from "flagged";
 
 import { showAlertNotification, showError } from "../utils/srToast";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { appPermissions, hasPermission } from "../permissions";
 import { useAppSelector } from "../store";
-import { PATIENT_TERM } from "../../config/constants";
+import {
+  BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT,
+  PATIENT_TERM,
+} from "../../config/constants";
 import {
   useGetFacilityQueueQuery,
   GetFacilityQueueQuery,
@@ -20,10 +22,10 @@ import { Patient } from "../patients/ManagePatients";
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
-import QueueItem, { DevicesMap } from "./QueueItem";
 import "./TestQueue.scss";
 import { TestCard } from "./TestCard/TestCard";
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
+import { DevicesMap } from "./TestCardForm/types";
 
 const pollInterval = 10_000;
 
@@ -53,7 +55,8 @@ const emptyQueueMessage = (canUseCsvUploader: boolean) => {
           </p>
           {canUseCsvUploader && (
             <p>
-              To add results in bulk using a CSV file, go to{" "}
+              To add results in bulk for{" "}
+              {BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT} using a CSV file, go to{" "}
               <LinkWithQuery to="/results/upload/submit">
                 <strong>Upload spreadsheet</strong>
               </LinkWithQuery>
@@ -78,9 +81,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         facilityId: activeFacilityId,
       },
     });
-  const testCardRefactorEnabled = useFeature(
-    "testCardRefactorEnabled"
-  ) as boolean;
   const appInsights = getAppInsights();
   const [addPatientToQueueMutation] = useAddPatientToQueueMutation();
   const [removePatientFromQueueMutation] = useRemovePatientFromQueueMutation();
@@ -218,26 +218,15 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             onExiting={onExiting}
             timeout={transitionDuration}
           >
-            {testCardRefactorEnabled ? (
-              <TestCard
-                testOrder={testOrder}
-                devicesMap={devicesMap}
-                facility={facility}
-                refetchQueue={refetch}
-                removePatientFromQueue={removePatientFromQueue}
-                startTestPatientId={startTestPatientId}
-                setStartTestPatientId={setStartTestPatientId}
-              />
-            ) : (
-              <QueueItem
-                refetchQueue={refetch}
-                queueItem={testOrder}
-                startTestPatientId={startTestPatientId}
-                setStartTestPatientId={setStartTestPatientId}
-                facility={facility}
-                devicesMap={devicesMap}
-              />
-            )}
+            <TestCard
+              testOrder={testOrder}
+              devicesMap={devicesMap}
+              facility={facility}
+              refetchQueue={refetch}
+              removePatientFromQueue={removePatientFromQueue}
+              startTestPatientId={startTestPatientId}
+              setStartTestPatientId={setStartTestPatientId}
+            />
           </CSSTransition>
         );
       });
@@ -256,13 +245,9 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             onExiting={onEmptyQueueExiting}
             timeout={transitionDuration}
           >
-            {testCardRefactorEnabled ? (
-              <li className={"list-style-none"}>
-                {emptyQueueMessage(canUseCsvUploader)}
-              </li>
-            ) : (
-              emptyQueueMessage(canUseCsvUploader)
-            )}
+            <li className={"list-style-none"}>
+              {emptyQueueMessage(canUseCsvUploader)}
+            </li>
           </CSSTransition>
         )}
       </TransitionGroup>
@@ -290,11 +275,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             addPatientToQueue={addPatientToQueue}
           />
         </div>
-        {testCardRefactorEnabled ? (
-          <ul className={"test-card-list"}>{createQueueItems(data.queue)}</ul>
-        ) : (
-          createQueueItems(data.queue)
-        )}
+        <ul className={"test-card-list"}>{createQueueItems(data.queue)}</ul>
       </div>
     </div>
   );

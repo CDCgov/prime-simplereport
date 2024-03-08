@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
@@ -80,11 +79,20 @@ class FileValidatorTest {
   FileValidator<TestResultRow> testResultFileValidator;
   @Mock FeatureFlagsConfig featureFlagsConfig;
 
+  @Mock ResultsUploaderCachingService resultsUploaderCachingService;
+
   @BeforeEach
   public void setup() {
-    var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceType()));
+        .thenReturn(
+            Map.of(
+                // key/val of device in COVID CSV
+                "id now|94534-5", TestDataBuilder.createDeviceType(),
+                // key/val of device Flu CSV
+                "model3|5229-0", TestDataBuilder.createDeviceTypeForMultiplex(),
+                // key/val of device in RSV CSV
+                "model3|14129-1", TestDataBuilder.createDeviceTypeForRSV()));
+
     when(resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     testResultFileValidator =
@@ -260,42 +268,23 @@ class FileValidatorTest {
   }
 
   @Test
-  void testResults_invalid_deviceModel_testPerformedCode() {
-    // GIVEN
-    InputStream input =
-        loadCsv("testResultUpload/test-results-upload-invalid-deviceModel_testPerformedCode.csv");
-    // WHEN
-    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
-    // THEN
-    assertThat(errors).hasSize(1);
-
-    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
-
-    assertThat(errorMessages)
-        .contains("Invalid equipment_model_name and test_performed_code combination");
-  }
-
-  @Test
-  void testResults_invalidSpecimenTypeName() {
-    // GIVEN
-    InputStream input = loadCsv("testResultUpload/test-results-upload-invalid-specimen-name.csv");
-
-    // WHEN
-    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
-
-    /// THEN
-    assertThat(errors).hasSize(1);
-
-    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
-
-    assertThat(errorMessages)
-        .contains("fake specimen name is not an acceptable value for the specimen_type column.");
-  }
-
-  @Test
   void testResults_validFile_fluOnly() {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).isEmpty();
+  }
+
+  @Test
+  void testResults_validFile_hivOnlyWhenHivFeatureFlagIsTrue() {
+    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(true);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        // key/val of device in HIV CS
+        .thenReturn(Map.of("modelhiv|16249-0", TestDataBuilder.createDeviceTypeForHIV()));
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-hiv-only.csv");
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
@@ -389,6 +378,47 @@ class FileValidatorTest {
             "1 is not an acceptable value for the specimen_type column.",
             "Invalid equipment_model_name and test_performed_code combination");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
+  }
+
+  void testResults_invalidFile(String fileName, String errorMessage) {
+    // GIVEN
+    InputStream input = loadCsv(fileName);
+
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    /// THEN
+    assertThat(errors).hasSize(1);
+
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
+
+    assertThat(errorMessages).contains(errorMessage);
+  }
+
+  @Test
+  void testResultsFile_unavailableDisease_returnsUnavailableDiseaseError() {
+    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(false);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        // key/val of device in HIV CSV
+        .thenReturn(Map.of("modelhiv|16249-0", TestDataBuilder.createDeviceTypeForHIV()));
+
+    testResults_invalidFile(
+        "testResultUpload/test-results-upload-valid-hiv-only.csv",
+        "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
+  }
+
+  @Test
+  void testResults_invalidSpecimenTypeName() {
+    testResults_invalidFile(
+        "testResultUpload/test-results-upload-invalid-specimen-name.csv",
+        "fake specimen name is not an acceptable value for the specimen_type column.");
+  }
+
+  @Test
+  void testResults_invalid_deviceModel_testPerformedCode() {
+    testResults_invalidFile(
+        "testResultUpload/test-results-upload-invalid-deviceModel_testPerformedCode.csv",
+        "Invalid equipment_model_name and test_performed_code combination");
   }
 
   private InputStream loadCsv(String csvFile) {

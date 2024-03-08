@@ -4,13 +4,13 @@ import {
   MultiplexResultInput,
   SupportedDiseaseTestPerformed,
 } from "../../../../generated/graphql";
-import { QueriedDeviceType } from "../../QueueItem";
 import RadioGroup, {
   RadioGroupOptions,
 } from "../../../commonComponents/RadioGroup";
 import { TEST_RESULTS } from "../../../testResults/constants";
 import { TEST_RESULT_DESCRIPTIONS } from "../../../constants";
 import "./TestResultInputGroup.scss";
+import { QueriedDeviceType } from "../types";
 
 interface Props {
   testOrderId: string;

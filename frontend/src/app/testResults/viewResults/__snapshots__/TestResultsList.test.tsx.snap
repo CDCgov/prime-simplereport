@@ -201,6 +201,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 >
                   Flu B
                 </option>
+                <option
+                  aria-selected="false"
+                  value="RSV"
+                >
+                  RSV
+                </option>
               </select>
             </div>
             <div
@@ -495,9 +501,10 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 <button
                   aria-expanded="false"
                   aria-haspopup="true"
-                  class="rc-menu-button sr-actions-menu"
+                  class="szh-menu-button sr-actions-menu"
                   data-testid="action_7c768a5d-ef90-44cd-8050-b96dd7aaa1d5"
                   id="action_7c768a5d-ef90-44cd-8050-b96dd7aaa1d5"
+                  type="button"
                 >
                   <svg
                     aria-hidden="true"
@@ -520,9 +527,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     More actions
                   </span>
                 </button>
-                <div
-                  class="rc-menu-container"
-                />
               </td>
             </tr>
             <tr
@@ -579,9 +583,10 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 <button
                   aria-expanded="false"
                   aria-haspopup="true"
-                  class="rc-menu-button sr-actions-menu"
+                  class="szh-menu-button sr-actions-menu"
                   data-testid="action_7c768a5d-ef90-44cd-8050-b96dd77f51d5"
                   id="action_7c768a5d-ef90-44cd-8050-b96dd77f51d5"
+                  type="button"
                 >
                   <svg
                     aria-hidden="true"
@@ -604,9 +609,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     More actions
                   </span>
                 </button>
-                <div
-                  class="rc-menu-container"
-                />
               </td>
             </tr>
             <tr
@@ -663,9 +665,10 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 <button
                   aria-expanded="false"
                   aria-haspopup="true"
-                  class="rc-menu-button sr-actions-menu"
+                  class="szh-menu-button sr-actions-menu"
                   data-testid="action_0969da96-b211-41cd-ba61-002181f0918d"
                   id="action_0969da96-b211-41cd-ba61-002181f0918d"
+                  type="button"
                 >
                   <svg
                     aria-hidden="true"
@@ -688,9 +691,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     More actions
                   </span>
                 </button>
-                <div
-                  class="rc-menu-container"
-                />
               </td>
             </tr>
           </tbody>

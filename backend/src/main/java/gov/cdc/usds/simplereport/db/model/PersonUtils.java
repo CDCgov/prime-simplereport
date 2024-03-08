@@ -1,6 +1,13 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import com.google.common.collect.ImmutableMap;
+import static gov.cdc.usds.simplereport.api.Translators.FEMALE;
+import static gov.cdc.usds.simplereport.api.Translators.MALE;
+import static gov.cdc.usds.simplereport.api.Translators.NON_BINARY;
+import static gov.cdc.usds.simplereport.api.Translators.OTHER;
+import static gov.cdc.usds.simplereport.api.Translators.REFUSED;
+import static gov.cdc.usds.simplereport.api.Translators.TRANS_MAN;
+import static gov.cdc.usds.simplereport.api.Translators.TRANS_WOMAN;
+
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import java.util.HashMap;
 import java.util.List;
@@ -804,29 +811,23 @@ public class PersonUtils {
           NOT_PREGNANT_SNOMED, "Not pregnant",
           PREGNANT_UNKNOWN_SNOMED, "Unknown");
 
-  public static final String MALE_GENDER_IDENTITY_SNOMED = "446151000124109";
-  public static final String FEMALE_GENDER_IDENTITY_SNOMED = "446141000124107";
-  public static final String NON_BINARY_GENDER_IDENTITY_SNOMED = "446131000124102";
+  public static final Map<String, String> genderIdentitySnomedSet =
+      Map.of(
+          FEMALE, "446141000124107",
+          MALE, "446151000124109",
+          NON_BINARY, "446131000124102",
+          TRANS_MAN, "446151000124109",
+          TRANS_WOMAN, "446141000124107",
+          OTHER, MappingConstants.UNK_CODE,
+          REFUSED, "asked-declined");
 
-  public static final String ASKED_BUT_DECLINED_CODE = "asked-declined";
-
-  public static final ImmutableMap<String, String> genderCodeMap =
-      new ImmutableMap.Builder<String, String>()
-          .put("Female", FEMALE_GENDER_IDENTITY_SNOMED)
-          .put("Transwoman", FEMALE_GENDER_IDENTITY_SNOMED)
-          .put("Male", MALE_GENDER_IDENTITY_SNOMED)
-          .put("Transman", MALE_GENDER_IDENTITY_SNOMED)
-          .put("Nonbinary or gender non-conforming", NON_BINARY_GENDER_IDENTITY_SNOMED)
-          .put("Prefer not to answer", ASKED_BUT_DECLINED_CODE)
-          .put("Gender identity not listed here", MappingConstants.UNK_CODE)
-          .build();
-
-  public static final ImmutableMap<String, String> genderDisplayMap =
-      new ImmutableMap.Builder<String, String>()
-          .put(FEMALE_GENDER_IDENTITY_SNOMED, "Female gender identity")
-          .put(MALE_GENDER_IDENTITY_SNOMED, "Male gender identity")
-          .put(NON_BINARY_GENDER_IDENTITY_SNOMED, "Non-binary gender identity")
-          .put(ASKED_BUT_DECLINED_CODE, "Asked But Declined")
-          .put(MappingConstants.UNK_CODE, "Unknown")
-          .build();
+  public static final Map<String, String> genderIdentityDisplaySet =
+      Map.of(
+          FEMALE, "Female gender identity",
+          MALE, "Male gender identity",
+          NON_BINARY, "non-binary",
+          TRANS_MAN, "Male gender identity",
+          TRANS_WOMAN, "Female gender identity",
+          OTHER, "Non-binary gender identity",
+          REFUSED, "Asked But Declined");
 }

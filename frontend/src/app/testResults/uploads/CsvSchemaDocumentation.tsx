@@ -200,7 +200,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
         <section id="anchor-top">
           <p className="text-base sub-header">
             How to format and upload a CSV file to report test results in bulk
-            through SimpleReport.
+            for COVID-19, Flu A and B, and RSV through SimpleReport.
           </p>
           <p>
             SimpleReport’s bulk results uploader lets you report multiple test

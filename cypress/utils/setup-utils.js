@@ -18,11 +18,11 @@ import {
 } from "./testing-data-utils";
 import { generateUser } from "../support/e2e";
 
-const createOrgName = (specRunVersionName) => {
+export const createOrgName = (specRunVersionName) => {
   return `${specRunVersionName}-org`;
 };
 
-const createFacilityName = (specRunVersionName) => {
+export const createFacilityName = (specRunVersionName) => {
   return `${specRunVersionName}-facility`;
 };
 
@@ -202,7 +202,19 @@ export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
         supportedDiseases.length > 0 ? supportedDiseases[0].internalId : null;
     })
     .then(() =>
-      setupDevice(covidOnlyDevice, [supportedDiseaseId], specRunVersionName),
+      setupDevice(
+        covidOnlyDevice,
+        [
+          {
+            supportedDisease: supportedDiseaseId,
+            testPerformedLoincCode: `96741-1`,
+            equipmentUid: `equipment-uid-${specRunVersionName}`,
+            testkitNameId: `testkit-name-id-${specRunVersionName}`,
+            testOrderedLoincCode: `96741-1`,
+          },
+        ],
+        specRunVersionName,
+      ),
     );
 };
 
@@ -231,4 +243,10 @@ export const setupTestOrder = (
       };
       return submitQueueItem(submitQueueItemVariables);
     });
+};
+
+export const accessOrganizationByName = (orgName) => {
+  return getOrganizationsByName(orgName)
+    .then((res) =>
+      accessOrganization(res.body.data.organizationsByName[0].externalId));
 };

@@ -32,7 +32,7 @@
         {
           "system": "http://snomed.info/sct",
           "code": "446131000124102",
-          "display": "Non-binary gender identity"
+          "display": "non-binary"
         }
       ]
     }
@@ -76,42 +76,42 @@
     }
   },
   {
-      "resourceType" : "Observation",
-      "id" : "8526bd3b-42e4-3a6f-88ff-3fc43b69dc20",
-      "identifier": [
+    "resourceType": "Observation",
+    "id": "8526bd3b-42e4-3a6f-88ff-3fc43b69dc20",
+    "identifier": [
+      {
+        "use": "official",
+        "type": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "81959-9",
+              "display": "Public health laboratory ask at order entry panel"
+            }
+          ]
+        }
+      }
+    ],
+    "status": "final",
+    "code": {
+      "coding": [
         {
-          "use": "official",
-          "type": {
-            "coding": [
-              {
-                "system": "http://loinc.org",
-                "code": "81959-9",
-                "display": "Public health laboratory ask at order entry panel"
-              }
-            ]
-          }
+          "system": "http://simplereport.gov/",
+          "code": "SR0001",
+          "display": "What is the gender of their sexual partners"
         }
       ],
-      "status" : "final",
-      "code" : {
-        "coding" : [
-          {
-            "system" : "http://simplereport.gov/",
-            "code" : "SR0001",
-            "display" : "What is the gender of their sexual partners"
-          }
-        ],
-        "text" : "What is the gender of their sexual partners"
-      },
-      "valueCodeableConcept" : {
-        "coding" : [
-          {
-            "system" : "http://snomed.info/sct",
-            "code" : "446151000124109",
-            "display" : "Male gender identity"
-          }
-        ]
-      }
+      "text": "What is the gender of their sexual partners"
+    },
+    "valueCodeableConcept": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "446151000124109",
+          "display": "Male gender identity"
+        }
+      ]
+    }
   },
   {
     "resourceType": "Observation",

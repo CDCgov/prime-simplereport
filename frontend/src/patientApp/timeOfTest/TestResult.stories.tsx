@@ -194,3 +194,39 @@ export const UndeterminedAllMultiplex = () => {
     </Provider>
   );
 };
+
+export const AllPositiveFluRSV = () => {
+  let editedData = cloneDeep(data);
+  editedData.testResult.results = [
+    { disease: { name: "Flu B" }, testResult: "POSITIVE" },
+    { disease: { name: "Flu A" }, testResult: "POSITIVE" },
+    { disease: { name: "RSV" }, testResult: "POSITIVE" },
+  ];
+  let store = mockStore(editedData);
+  return (
+    <Provider store={store}>
+      <Page>
+        <PatientHeader />
+        <TestResult />
+      </Page>
+    </Provider>
+  );
+};
+
+export const NonPositiveFluRSV = () => {
+  let editedData = cloneDeep(data);
+  editedData.testResult.results = [
+    { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
+    { disease: { name: "Flu A" }, testResult: "UNKNOWN" },
+    { disease: { name: "RSV" }, testResult: "NEGATIVE" },
+  ];
+  let store = mockStore(editedData);
+  return (
+    <Provider store={store}>
+      <Page>
+        <PatientHeader />
+        <TestResult />
+      </Page>
+    </Provider>
+  );
+};

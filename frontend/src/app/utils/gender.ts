@@ -2,8 +2,8 @@ export const UNKNOWN = "Unknown";
 export const GenderIdentityDisplay: { [K in GenderIdentity]: string } = {
   female: "Female",
   male: "Male",
-  transwoman: "Trans femme or transwoman",
-  transman: "Trans masculine or transman",
+  transwoman: "Transwoman",
+  transman: "Transman",
   nonbinary: "Nonbinary or gender non-conforming",
   other: "Other",
   refused: "Prefer not to answer",

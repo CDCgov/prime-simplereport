@@ -784,7 +784,7 @@ export const specificSchemaBuilder = (facilityId: string | null) => {
                 requested: false,
                 format: "Do not include commas (,) in any comments",
                 description: [
-                  "If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field isn’t meant for characteristics of COVID-19 tests or statements about false positive or negative results.",
+                  "If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field isn't meant for characteristics of the condition tested or statements about false positive or negative results.",
                 ],
               },
               {

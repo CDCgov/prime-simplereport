@@ -1,10 +1,39 @@
-import { loginHooks, generatePatient } from "../support/e2e";
+import { loginHooks, generatePatient, testNumber } from "../support/e2e";
+import {
+  cleanUpPreviousRunSetupData,
+  setupRunData,
+  cleanUpRunOktaOrgs,
+} from "../utils/setup-utils";
 
 const patient = generatePatient();
+const specRunName = "spec06";
+const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 describe("Patient self registration", () => {
   loginHooks();
-  it("gets the self registration link and navigates to it", () => {
+  before("store patient info", () => {
+    cy.task("setPatientName", patient.fullName);
+    cy.task("setPatientDOB", patient.dobForPatientLink);
+    cy.task("setPatientPhone", patient.phone);
+
+    cy.task("getSpecRunVersionName", specRunName).then(() => {
+      let data = {
+        specRunName: specRunName,
+        versionName: currentSpecRunVersionName,
+      };
+      cy.task("setSpecRunVersionName", data);
+      setupRunData(currentSpecRunVersionName);
+    });
+  });
+
+  after("clean up patient info", () => {
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
+    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
+  });
+
+  it("tests the whole patient self registration experience", () => {
+    // gets the self registration link and navigates to it
+
     cy.visit("/settings");
     cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
@@ -14,20 +43,15 @@ describe("Patient self registration", () => {
     cy.checkAccessibility();
 
     cy.get("#org-link").then(($link) => cy.visit($link.val()));
-  });
-  it("loads terms of service", () => {
     cy.contains("Terms of service");
 
     cy.injectSRAxe();
     cy.checkAccessibility(); // Terms of Service
-  });
-  it("accepts the terms of service", () => {
     cy.contains("I agree").click();
     cy.get("#registration-container").contains("General information");
 
     cy.checkAccessibility(); // Info form
-  });
-  it("fills out some of the form fields", () => {
+    // fills out some of the form fields
     cy.get('input[name="firstName"]').type(patient.firstName);
     cy.get('input[name="birthDate"]').type(patient.dobForInput);
     cy.get('input[name="number"]').type(patient.phone);
@@ -44,13 +68,13 @@ describe("Patient self registration", () => {
     cy.get('input[name="ethnicity"][value="refused"]+label').click();
     cy.get('input[name="residentCongregateSetting"][value="NO"]+label').click();
     cy.get('input[name="employedInHealthcare"][value="NO"]+label').click();
-  });
-  it("shows what fields are missing on submit", () => {
+
+    // shows what fields are missing on submit
     cy.get(".self-registration-button").first().click();
     cy.get(".prime-formgroup").contains("Last name is missing");
     cy.get(".prime-formgroup").contains("City is missing");
-  });
-  it("fills out the remaining fields and submits", () => {
+
+    // fills out the remaining fields and submits
     cy.get('input[name="lastName"]').type(patient.lastName);
     cy.get('input[name="city"]').type(patient.city);
     cy.get(".self-registration-button").first().click();

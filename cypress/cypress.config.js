@@ -59,20 +59,6 @@ module.exports = {
         getPatientPhone() {
           return global.patientPhone;
         },
-        setCovidOnlyDeviceName(name) {
-          global.covidOnlyDeviceName = name;
-          return null;
-        },
-        getCovidOnlyDeviceName() {
-          return global.covidOnlyDeviceName;
-        },
-        setMultiplexDeviceName(name) {
-          global.multiplexDeviceName = name;
-          return null;
-        },
-        getMultiplexDeviceName() {
-          return global.multiplexDeviceName;
-        },
         setSpecRunVersionName(data) {
           global.specRunVersions.set(data.specRunName, data.versionName);
           return null;
