@@ -39,6 +39,13 @@ export const en = {
         RSV: "RSV",
         HIV: "HIV",
       },
+      diseaseResultTitle: {
+        COVID19: "COVID-19 result",
+        FLUA: "Flu A result",
+        FLUB: "Flu B result",
+        RSV: "RSV result",
+        HIV: "HIV result",
+      },
       role: {
         STAFF: "Staff",
         RESIDENT: "Resident",
@@ -274,8 +281,6 @@ export const en = {
     },
     testResult: {
       title: "Test result",
-      resultLiteral: "result",
-      result: "SARS-CoV-2 result",
       singleResultHeader: "Test result",
       multipleResultHeader: "Test results",
       downloadResult: "Download result",

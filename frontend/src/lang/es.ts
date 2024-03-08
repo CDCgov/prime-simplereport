@@ -42,6 +42,13 @@ export const es: LanguageConfig = {
         RSV: "VRS",
         HIV: "VIH",
       },
+      diseaseResultTitle: {
+        COVID19: "COVID-19 resultado",
+        FLUA: "Flu A resultado",
+        FLUB: "Flu B resultado",
+        RSV: "RSV resultado",
+        HIV: "Resultado de la prueba del VIH",
+      },
       role: {
         STAFF: "Personal",
         RESIDENT: "Residente",
@@ -282,8 +289,6 @@ export const es: LanguageConfig = {
     },
     testResult: {
       title: "Resultado de la prueba",
-      resultLiteral: "resultado",
-      result: "Resultado de SARS-CoV-2",
       singleResultHeader: "Resultado de la prueba",
       multipleResultHeader: "Resultados de las pruebas",
       downloadResult: "Descargar resultado",
