@@ -130,7 +130,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     // WireMock (only used for testing)
-    testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.35.0"
+    testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:3.0.1"
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.10.4'
 
