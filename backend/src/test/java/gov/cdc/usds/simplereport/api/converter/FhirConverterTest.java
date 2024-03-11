@@ -1167,6 +1167,28 @@ class FhirConverterTest {
   }
 
   @Test
+  void convertToAoeObservation_genderOfSexualPartners_matchesJson() throws IOException {
+    List<String> sexualPartners = List.of("transwoman", "transman", "nonbinary");
+    AskOnEntrySurvey answers =
+        new AskOnEntrySurvey(null, Map.of("fake", false), null, null, sexualPartners);
+    String testId = "fakeId";
+
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationGenderOfSexualPartners.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
   void convertToAoeObservation_allAOE_matchesJson() throws IOException {
     var answers =
         new AskOnEntrySurvey(
