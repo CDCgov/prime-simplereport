@@ -45,15 +45,13 @@ const renderWithInitialOptions = () => {
 
 describe("Multi Select", () => {
   describe("With no initial options", () => {
-    beforeEach(() => {
-      renderWithoutInitialOptions();
-    });
-
     it("should display the label", () => {
+      renderWithoutInitialOptions();
       expect(screen.getByText("Favorite Fruit")).toBeInTheDocument();
     });
 
     it("should display the option list when clicking on the input", () => {
+      renderWithoutInitialOptions();
       const optionList = screen.getByTestId("multi-select-option-list");
       expect(optionList).toBeInTheDocument();
       expect(optionList.children.length).toEqual(6);
@@ -67,11 +65,8 @@ describe("Multi Select", () => {
   });
 
   describe("With initial options", () => {
-    beforeEach(() => {
-      renderWithInitialOptions();
-    });
-
     it("should display only the options that have not been selected", () => {
+      renderWithInitialOptions();
       const optionList = screen.getByTestId("multi-select-option-list");
       expect(optionList).toBeInTheDocument();
       expect(optionList.children.length).toEqual(4);

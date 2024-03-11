@@ -101,11 +101,19 @@ describe("TestResultPrintModal with only COVID results", () => {
   });
 });
 
+const renderComponent = (testResult: TestResult) =>
+  render(
+    <DetachedTestResultPrintModal
+      data={{ testResult: testResult }}
+      testResultId="id"
+      closeModal={() => {}}
+    />
+  );
+
 describe("TestResultPrintModal with multiplex results in SimpleReport App", () => {
-  let component: any;
+  let multiplexTestResult = cloneDeep(testResult);
 
   beforeEach(() => {
-    const multiplexTestResult = cloneDeep(testResult);
     multiplexTestResult.results = [
       {
         disease: { name: MULTIPLEX_DISEASES.FLU_B },
@@ -126,30 +134,24 @@ describe("TestResultPrintModal with multiplex results in SimpleReport App", () =
     }) as any;
 
     MockDate.set("2021/01/01");
-    component = render(
-      <DetachedTestResultPrintModal
-        data={{ testResult: multiplexTestResult }}
-        testResultId="id"
-        closeModal={() => {}}
-      />
-    );
   });
 
   it("should render flu information", () => {
+    renderComponent(multiplexTestResult);
     expect(screen.getByText("Test results")).toBeInTheDocument();
     expect(screen.getByText("For flu A and B:")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {
-    expect(component).toMatchSnapshot();
+    let view = renderComponent(multiplexTestResult);
+    expect(view).toMatchSnapshot();
   });
 });
 
 describe("TestResultPrintModal with multiplex results in Pxp App", () => {
-  let component: any;
+  let multiplexPxpTestResult = cloneDeep(testResult);
 
   beforeEach(() => {
-    const multiplexPxpTestResult = cloneDeep(testResult);
     multiplexPxpTestResult.results = [
       {
         disease: { name: MULTIPLEX_DISEASES.COVID_19 },
@@ -173,31 +175,25 @@ describe("TestResultPrintModal with multiplex results in Pxp App", () => {
     }) as any;
 
     MockDate.set("2021/01/01");
-    component = render(
-      <DetachedTestResultPrintModal
-        data={{ testResult: multiplexPxpTestResult }}
-        testResultId="id"
-        closeModal={() => {}}
-      />
-    );
   });
 
   it("should render information", () => {
+    renderComponent(multiplexPxpTestResult);
     expect(screen.getByText("Test results")).toBeInTheDocument();
     expect(screen.getByText("fake npi for pxp")).toBeInTheDocument();
     expect(screen.getAllByText("Negative").length).toBe(3);
   });
 
   it("matches screenshot", () => {
-    expect(component).toMatchSnapshot();
+    let view = renderComponent(multiplexPxpTestResult);
+    expect(view).toMatchSnapshot();
   });
 });
 
 describe("TestResultPrintModal with RSV and flu results", () => {
-  let component: any;
+  let multiplexTestResult = cloneDeep(testResult);
 
   beforeEach(() => {
-    const multiplexTestResult = cloneDeep(testResult);
     multiplexTestResult.results = [
       {
         disease: { name: MULTIPLEX_DISEASES.RSV },
@@ -218,30 +214,24 @@ describe("TestResultPrintModal with RSV and flu results", () => {
     }) as any;
 
     MockDate.set("2021/01/01");
-    component = render(
-      <DetachedTestResultPrintModal
-        data={{ testResult: multiplexTestResult }}
-        testResultId="id"
-        closeModal={() => {}}
-      />
-    );
   });
 
   it("should render flu information", () => {
+    renderComponent(multiplexTestResult);
     expect(screen.getByText("Test results")).toBeInTheDocument();
     expect(screen.getByText("For flu A and B:")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {
-    expect(component).toMatchSnapshot();
+    let view = renderComponent(multiplexTestResult);
+    expect(view).toMatchSnapshot();
   });
 });
 
 describe("TestResultPrintModal with HIV results", () => {
-  let component: any;
+  let hivTestResult = cloneDeep(testResult);
 
   beforeEach(() => {
-    const hivTestResult = cloneDeep(testResult);
     hivTestResult.results = [
       {
         disease: { name: MULTIPLEX_DISEASES.HIV },
@@ -254,21 +244,16 @@ describe("TestResultPrintModal with HIV results", () => {
     }) as any;
 
     MockDate.set("2021/01/01");
-    component = render(
-      <DetachedTestResultPrintModal
-        data={{ testResult: hivTestResult }}
-        testResultId="id"
-        closeModal={() => {}}
-      />
-    );
   });
 
   it("should render HIV information", () => {
+    renderComponent(hivTestResult);
     expect(screen.getByText("HIV")).toBeInTheDocument();
     expect(screen.getByText("Positive")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {
-    expect(component).toMatchSnapshot();
+    let view = renderComponent(hivTestResult);
+    expect(view).toMatchSnapshot();
   });
 });

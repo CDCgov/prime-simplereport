@@ -54,6 +54,9 @@ describe("WithFacility", () => {
         facilities: [],
       });
       store.dispatch = jest.fn();
+    });
+
+    it("should notify user to contact an admin", () => {
       render(
         <Router>
           <Provider store={store}>
@@ -61,9 +64,6 @@ describe("WithFacility", () => {
           </Provider>
         </Router>
       );
-    });
-
-    it("should notify user to contact an admin", () => {
       expect(
         screen.getByText(
           "You do not have access to any facilities at this time. Ask an admin to give you access, then try logging in again.",
@@ -87,6 +87,9 @@ describe("WithFacility", () => {
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
+    });
+
+    it("should bypass the facility selection screen", async () => {
       render(
         <Router>
           <Provider store={store}>
@@ -94,9 +97,6 @@ describe("WithFacility", () => {
           </Provider>
         </Router>
       );
-    });
-
-    it("should bypass the facility selection screen", async () => {
       const renderedApp = await screen.findByText("App");
       expect(renderedApp).toBeInTheDocument();
     });
@@ -169,6 +169,9 @@ describe("WithFacility", () => {
           { id: "2", name: "Facility 2" },
         ],
       });
+    });
+
+    it("loads facility directly from URL", async () => {
       render(
         <Router
           initialEntries={[{ pathname: "/", search: "?facility=2" }]}
@@ -179,9 +182,6 @@ describe("WithFacility", () => {
           </Provider>
         </Router>
       );
-    });
-
-    it("loads facility directly from URL", async () => {
       const renderedApp = await screen.findByText("App");
       expect(renderedApp).toBeInTheDocument();
     });
@@ -201,6 +201,9 @@ describe("WithFacility", () => {
         },
         facilities: [],
       });
+    });
+
+    it("should render the facility form", async () => {
       const WithFacilityElement = <WithFacility>App</WithFacility>;
       render(
         <I18nextProvider i18n={i18n}>
@@ -218,9 +221,6 @@ describe("WithFacility", () => {
           })
         )[0]
       ).toBeInTheDocument();
-    });
-
-    it("should render the facility form", async () => {
       expect(
         await screen.findByText("To get started, add a testing facility", {
           exact: false,

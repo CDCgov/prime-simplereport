@@ -511,7 +511,7 @@ describe("EditPatient", () => {
   ];
 
   describe("non-answer and not sure options", () => {
-    beforeEach(async () => {
+    const renderContainer = () => {
       render(
         createGQLWrappedMemoryRouterWithDataApis(
           <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />,
@@ -520,12 +520,13 @@ describe("EditPatient", () => {
           false
         )
       );
+    };
+
+    it("shows prefer not to answer options", async () => {
+      renderContainer();
       expect(
         (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
       ).toBeInTheDocument();
-    });
-
-    it("shows prefer not to answer options", () => {
       [
         "Race",
         "Are you Hispanic or Latino?",
@@ -540,7 +541,11 @@ describe("EditPatient", () => {
         expect(option).toBeChecked();
       });
     });
-    it("shows not sure answers", () => {
+    it("shows not sure answers", async () => {
+      renderContainer();
+      expect(
+        (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
+      ).toBeInTheDocument();
       ["group or shared housing facility", "health care"].forEach((legend) => {
         const fieldset = screen
           .getByText(legend, { exact: false })
@@ -594,18 +599,19 @@ describe("EditPatient", () => {
     });
   });
   describe("tribal tribal Affiliation null", () => {
+    let elementToRender: React.ReactElement;
     beforeEach(async () => {
       const mocksWithNull = [...mocks];
       (mocksWithNull[0].result.data.patient as any).tribalAffiliation = null;
-      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+      elementToRender = createGQLWrappedMemoryRouterWithDataApis(
         <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />,
         store,
         mocksWithNull,
         false
       );
-      render(elementToRender);
     });
     it("renders", async () => {
+      render(elementToRender);
       expect(
         await screen.findByText("Franecki, Eugenia", { exact: false })
       ).toBeInTheDocument();
@@ -658,8 +664,9 @@ describe("EditPatient", () => {
   });
 
   describe("edit patient from conduct tests page", () => {
+    let elementToRender: React.ReactElement;
     beforeEach(async () => {
-      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+      elementToRender = createGQLWrappedMemoryRouterWithDataApis(
         <EditPatient
           facilityId={mockFacilityID}
           patientId={mockPatientID}
@@ -669,9 +676,9 @@ describe("EditPatient", () => {
         mocks,
         false
       );
-      render(elementToRender);
     });
     it("shows Conduct tests link and hides Save and start test button", async () => {
+      render(elementToRender);
       expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
       expect(screen.queryByText(PATIENT_TERM_CAP)).not.toBeInTheDocument();
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
