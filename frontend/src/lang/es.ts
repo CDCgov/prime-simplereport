@@ -42,6 +42,13 @@ export const es: LanguageConfig = {
         RSV: "VRS",
         HIV: "VIH",
       },
+      diseaseResultTitle: {
+        COVID19: "COVID-19 resultado",
+        FLUA: "Flu A resultado",
+        FLUB: "Flu B resultado",
+        RSV: "RSV resultado",
+        HIV: "Resultado de la prueba del VIH",
+      },
       role: {
         STAFF: "Personal",
         RESIDENT: "Residente",
@@ -282,8 +289,6 @@ export const es: LanguageConfig = {
     },
     testResult: {
       title: "Resultado de la prueba",
-      resultLiteral: "resultado",
-      result: "Resultado de SARS-CoV-2",
       singleResultHeader: "Resultado de la prueba",
       multipleResultHeader: "Resultados de las pruebas",
       downloadResult: "Descargar resultado",
@@ -412,8 +417,17 @@ export const es: LanguageConfig = {
         positive: {
           p0: "Por lo general, el virus respiratorio sincitial (VRS o RSV, por sus siglas en inglés) causa síntomas leves similares a los de un resfriado. La mayoría de las personas pueden recuperarse en casa, pero el VRS puede causar enfermedad grave y hospitalización en bebés y personas mayores. Usted puede ayudar a prevenir la propagación del VRS si se queda en casa cuando esté enfermo, evita el contacto cercano con otras personas y se lava las manos con frecuencia.",
           p1: "Puede tomar medidas para aliviar los síntomas, como beber suficientes líquidos y tomar medicamentos de venta sin receta para controlar el dolor y la fiebre. Si su hijo/a tiene el VRS, hable con su proveedor de atención médica antes de darle medicamentos para el resfriado sin receta.",
-          p2: "Comuníquese con un profesional de atención médica si sus síntomas empeoran, tiene problemas para respirar o está deshidratado. <0>Obtenga más información sobre los síntomas y cuidados de la infección por el VRS en el sitio web de los CDC</0>",
+          p2: "Comuníquese con un profesional de atención médica si sus síntomas empeoran, tiene problemas para respirar o está deshidratado. <0>Obtenga más información sobre los síntomas y cuidados de la infección por el VRS en el sitio web de los CDC</0> (espanol.cdc.gov/rsv/about/symptoms.html)",
           rsvSymptomsLink: "https://espanol.cdc.gov/rsv/about/symptoms.html",
+        },
+      },
+      hivNotes: {
+        h1: "Para el VIH:",
+        all: {
+          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
+          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del VIH.</0> (cdc.gov/hiv/spanish/basics/hiv-testing/positive-hiv-results.html)",
+          positiveHivLink:
+            "https://www.cdc.gov/hiv/spanish/basics/hiv-testing/positive-hiv-results.html",
         },
       },
       tos: {

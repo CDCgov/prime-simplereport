@@ -6,6 +6,7 @@ import { getModifiedResultsForGuidance } from "../../utils/testResults";
 import CovidResultGuidance from "./CovidResultGuidance";
 import FluResultGuidance from "./FluResultGuidance";
 import RsvResultGuidance from "./RsvResultGuidance";
+import HivResultGuidance from "./HivResultGuidance";
 
 interface ResultsGuidanceProps {
   results: MultiplexResult[];
@@ -30,6 +31,8 @@ const generateGuidance = (
       case MULTIPLEX_DISEASES.FLU_A:
       case MULTIPLEX_DISEASES.FLU_B:
         return <FluResultGuidance result={result} />;
+      case MULTIPLEX_DISEASES.HIV:
+        return <HivResultGuidance />;
       case MULTIPLEX_DISEASES.RSV:
         return <RsvResultGuidance result={result} />;
       default:

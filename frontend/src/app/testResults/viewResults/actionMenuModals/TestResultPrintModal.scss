@@ -7,6 +7,14 @@
       }
     }
 
+    a[href^='http:']:not([href*='simplereport.gov']),
+    a[href^='https:']:not([href*='simplereport.gov']) {
+      &::after {
+        bottom: 0;
+        height: 1rem;
+      }
+    }
+
     .sr-show-on-print {
       display: block !important;
       margin: 0 0 0 auto;
@@ -101,6 +109,14 @@
   footer {
     p {
       margin-bottom: 0;
+    }
+  }
+
+  a[href^='http:']:not([href*='simplereport.gov']),
+  a[href^='https:']:not([href*='simplereport.gov']) {
+    &::after {
+      bottom: 0;
+      height: 1rem;
     }
   }
 }

@@ -22,6 +22,7 @@ exports[`RsvResultGuidance displays guidance for a positive RSV result 1`] = `
     >
       Learn more about RSV symptoms and care on the CDC website.
     </a>
+     (cdc.gov/rsv/about/symptoms.html)
   </p>
 </div>
 `;

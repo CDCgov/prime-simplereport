@@ -39,6 +39,13 @@ export const en = {
         RSV: "RSV",
         HIV: "HIV",
       },
+      diseaseResultTitle: {
+        COVID19: "COVID-19 result",
+        FLUA: "Flu A result",
+        FLUB: "Flu B result",
+        RSV: "RSV result",
+        HIV: "HIV result",
+      },
       role: {
         STAFF: "Staff",
         RESIDENT: "Resident",
@@ -274,8 +281,6 @@ export const en = {
     },
     testResult: {
       title: "Test result",
-      resultLiteral: "result",
-      result: "SARS-CoV-2 result",
       singleResultHeader: "Test result",
       multipleResultHeader: "Test results",
       downloadResult: "Download result",
@@ -389,8 +394,17 @@ export const en = {
         positive: {
           p0: "RSV usually causes mild, cold-like symptoms. Most people can recover at home, but RSV can cause serious illness and hospitalization for infants and older adults. You can help prevent the spread of RSV by staying at home when sick, avoiding close contact with others, and washing your hands frequently.",
           p1: "You can take steps to relieve symptoms, including managing fever and pain with over-the-counter fever reducers, and drinking enough fluids. If your child has RSV, talk to their healthcare provider before giving them non-prescription cold medicine.",
-          p2: "Contact your healthcare professional if your symptoms worsen, you are having trouble breathing, or are dehydrated. <0>Learn more about RSV symptoms and care on the CDC website.</0>",
+          p2: "Contact your healthcare professional if your symptoms worsen, you are having trouble breathing, or are dehydrated. <0>Learn more about RSV symptoms and care on the CDC website.</0> (cdc.gov/rsv/about/symptoms.html)",
           rsvSymptomsLink: "https://www.cdc.gov/rsv/about/symptoms.html",
+        },
+      },
+      hivNotes: {
+        h1: "For HIV:",
+        all: {
+          p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
+          p1: "<0>Visit the CDC website to learn more about a positive HIV result</0> (cdc.gov/hiv/basics/hiv-testing/positive-hiv-results.html)",
+          positiveHivLink:
+            "https://www.cdc.gov/hiv/basics/hiv-testing/positive-hiv-results.html",
         },
       },
       tos: {
