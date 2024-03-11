@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PersonUtils {
-
   private PersonUtils() {
     throw new IllegalStateException("Utility class");
   }
