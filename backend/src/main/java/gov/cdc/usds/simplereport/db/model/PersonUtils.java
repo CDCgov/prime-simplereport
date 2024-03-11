@@ -825,7 +825,7 @@ public class PersonUtils {
       Map.of(
           FEMALE, "Female gender identity",
           MALE, "Male gender identity",
-          NON_BINARY, "non-binary",
+          NON_BINARY, "Non-binary gender identity",
           TRANS_MAN, "Male gender identity",
           TRANS_WOMAN, "Female gender identity",
           OTHER, "Non-binary gender identity",
