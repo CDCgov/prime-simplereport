@@ -480,10 +480,16 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
+    SupportedDisease defaultDisease = diseaseService.covid();
+    return createTestEvent(p, f, s, r, d, defaultDisease);
+  }
+
+  public TestEvent createTestEvent(
+      Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d, SupportedDisease disease) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
 
-    Result orderResult = new Result(diseaseService.covid(), r);
+    Result orderResult = new Result(disease, r);
     resultService.addResultsToTestOrder(o, List.of(orderResult));
 
     TestEvent e = new TestEvent(o, false);

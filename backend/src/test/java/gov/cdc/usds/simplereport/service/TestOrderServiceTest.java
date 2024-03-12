@@ -31,6 +31,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -2121,6 +2122,20 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
+  @WithSimpleReportOrgAdminUser
+  void getTopLevelDashboardMetrics_showsNonCovidResults() {
+    makedata();
+    makeSpecificDiseaseData(_diseaseService.fluA());
+    Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+    Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
+
+    TopLevelDashboardMetrics metrics =
+        _service.getTopLevelDashboardMetrics(null, startDate, endDate, "Flu A");
+    assertEquals(1, metrics.getPositiveTestCount());
+    assertEquals(2, metrics.getTotalTestCount());
+  }
+
+  @Test
   void markAsErrorTest_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _dataFactory.createValidFacility(org);
@@ -2341,6 +2356,41 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(
         _dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite, TestResult.NEGATIVE);
     return testEvents;
+  }
+
+  private List<TestEvent> makeSpecificDiseaseData(SupportedDisease disease) {
+    Organization org = _organizationService.getCurrentOrganization();
+    _site = _dataFactory.createValidFacility(org, "The Facility for " + disease.getName());
+    Map<PersonName, TestResult> patientsToResults = new HashMap<>();
+    patientsToResults.put(AMOS, TestResult.POSITIVE);
+    patientsToResults.put(CHARLES, TestResult.NEGATIVE);
+
+    Map<PersonName, Date> patientsToDates = new HashMap<>();
+    patientsToDates.put(AMOS, convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)));
+    patientsToDates.put(CHARLES, convertDate(LocalDateTime.of(2021, 6, 1, 12, 0, 0)));
+
+    Map<PersonName, PersonRole> patientsToRoles = new HashMap<>();
+    patientsToRoles.put(AMOS, PersonRole.RESIDENT);
+    patientsToRoles.put(CHARLES, PersonRole.RESIDENT);
+
+    Map<PersonName, AskOnEntrySurvey> patientsToSurveys = new HashMap<>();
+    patientsToSurveys.put(
+        AMOS, new AskOnEntrySurvey(null, Map.of("fake", true), false, null, null));
+    patientsToSurveys.put(
+        CHARLES, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null, null));
+
+    return patientsToResults.keySet().stream()
+        .map(
+            n -> {
+              TestResult t = patientsToResults.get(n);
+              PersonRole r = patientsToRoles.get(n);
+              AskOnEntrySurvey s = patientsToSurveys.get(n);
+              Date d = patientsToDates.get(n);
+
+              Person person = _dataFactory.createMinimalPerson(org, _site, n, r);
+              return _dataFactory.createTestEvent(person, _site, s, t, d, disease);
+            })
+        .collect(Collectors.toList());
   }
 
   private List<MultiplexResultInput> makeCovidOnlyResult(TestResult covidTestResult) {
