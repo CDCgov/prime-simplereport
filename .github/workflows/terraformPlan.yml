@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'What to plan against'
+        description: 'What env to plan against'
         required: true
         type: choice
         options:
