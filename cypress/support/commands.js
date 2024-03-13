@@ -49,45 +49,46 @@ Cypress.Commands.add("login", () => {
       cy.saveLocalStorage();
       return;
     } else {
-      cy.request("POST", "https://hhs-prime.oktapreview.com/api/v1/authn", {
-        username,
-        password,
-        options: {
-          multiOptionalFactorEnroll: true,
-          warnBeforePasswordExpired: true,
-        },
-      }).then((response) => {
-        const stateToken = response.body.stateToken;
-        const factorId = response.body._embedded.factors[0].id;
-        const passCode = authenticator.generate(secret);
-        cy.request(
-          "POST",
-          `https://hhs-prime.oktapreview.com/api/v1/authn/factors/${factorId}/verify`,
-          {
-            passCode,
-            stateToken,
+      cy.session([username, password], () => {
+        cy.request("POST", "https://hhs-prime.oktapreview.com/api/v1/authn", {
+          username,
+          password,
+          options: {
+            multiOptionalFactorEnroll: true,
+            warnBeforePasswordExpired: true,
           },
-        ).then((response) => {
-          const sessionToken = response.body.sessionToken;
+        }).then((response) => {
+          const stateToken = response.body.stateToken;
+          const factorId = response.body._embedded.factors[0].id;
+          const passCode = authenticator.generate(secret);
           cy.request(
-            "GET",
-            `https://hhs-prime.oktapreview.com/oauth2/default/v1/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token%20id_token&scope=openid%20simple_report%20${scope}&nonce=thisisnotsafe&state=thisisbogus&sessionToken=${sessionToken}`,
+            "POST",
+            `https://hhs-prime.oktapreview.com/api/v1/authn/factors/${factorId}/verify`,
+            {
+              passCode,
+              stateToken,
+            },
           ).then((response) => {
-            const redirect = response.redirects[0];
-            const idTokenRegex = new RegExp(
-              "(?:id_token=)((.[\\s\\S]*))(?:&access_token=)",
-              "ig",
-            );
-            const accessTokenRegex = new RegExp(
-              "(?:access_token=)((.[\\s\\S]*))(?:&token_type=Bearer)",
-              "ig",
-            );
-            const id_token = idTokenRegex.exec(redirect)[1];
-            const access_token = accessTokenRegex.exec(redirect)[1];
-            cy.task("setAuth", { id_token, access_token });
-            cy.setLocalStorage("id_token", id_token);
-            cy.setLocalStorage("access_token", access_token);
-            cy.saveLocalStorage();
+            const sessionToken = response.body.sessionToken;
+            cy.request(
+              "GET",
+              `https://hhs-prime.oktapreview.com/oauth2/default/v1/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token%20id_token&scope=openid%20simple_report%20${scope}&nonce=thisisnotsafe&state=thisisbogus&sessionToken=${sessionToken}`,
+            ).then((response) => {
+              const redirect = response.redirects[0];
+              const idTokenRegex = new RegExp(
+                "(?:id_token=)((.[\\s\\S]*))(?:&access_token=)",
+                "ig",
+              );
+              const accessTokenRegex = new RegExp(
+                "(?:access_token=)((.[\\s\\S]*))(?:&token_type=Bearer)",
+                "ig",
+              );
+              const id_token = idTokenRegex.exec(redirect)[1];
+              const access_token = accessTokenRegex.exec(redirect)[1];
+              cy.task("setAuth", { id_token, access_token });
+              window.localStorage.setItem("id_token", id_token);
+              window.localStorage.setItem("access_token", access_token);
+            });
           });
         });
       });

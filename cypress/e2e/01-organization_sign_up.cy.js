@@ -10,7 +10,6 @@ const organization = generateOrganization();
 const user = generateUser();
 
 describe("Organization sign up", () => {
-  loginHooks();
   it("navigates to the sign up form", () => {
     cy.visit("/sign-up");
     cy.injectSRAxe();
@@ -38,6 +37,7 @@ describe("Organization sign up", () => {
     cy.checkAccessibility(); // Identity verification page
   });
   it("navigates to the support pending org table and verifies the org", () => {
+    loginHooks();
     cy.removeOrganizationAccess();
     cy.visit("/admin");
 
@@ -63,6 +63,7 @@ describe("Organization sign up", () => {
     });
   });
   it("spoofs into the org", () => {
+    loginHooks();
     cy.visit("/admin");
 
     cy.contains("Access organization account").click();
@@ -80,6 +81,8 @@ describe("Organization sign up", () => {
     cy.contains("Support admin");
   });
   it("navigates to the manage facilities page", () => {
+    loginHooks();
+
     cy.visit("/admin");
     cy.contains("Support admin");
     cy.get("#desktop-settings-button").click();
@@ -118,6 +121,7 @@ describe("Organization sign up", () => {
     cy.contains("+ New facility");
   });
   it("enables adding patients", () => {
+    loginHooks();
     cy.visit("/");
     cy.get("#desktop-patient-nav-link").click();
     cy.contains("No results");

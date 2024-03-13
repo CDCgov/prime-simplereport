@@ -10,8 +10,9 @@ const specRunName = "spec06";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 describe("Patient self registration", () => {
-  loginHooks();
   before("store patient info", () => {
+    loginHooks();
+
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);
     cy.task("setPatientPhone", patient.phone);
