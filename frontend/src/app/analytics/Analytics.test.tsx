@@ -414,7 +414,7 @@ describe("Analytics", () => {
     flagSpy.mockImplementation((flagName) => {
       return flagName !== "hivEnabled";
     });
-    const { user } = renderWithUser();
+    renderWithUser();
     const hivElement = screen.queryByText("HIV");
     expect(hivElement).not.toBeInTheDocument();
   });
