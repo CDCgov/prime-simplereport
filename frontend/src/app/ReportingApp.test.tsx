@@ -145,6 +145,7 @@ const getAnalyticsQueryMock = () => ({
       facilityId: "",
       startDate: getStartDateFromDaysAgo(7),
       endDate: getEndDateFromDaysAgo(0),
+      disease: "COVID-19",
     },
   },
   result: {
@@ -211,7 +212,7 @@ describe("App", () => {
 
     await user.click(screen.getAllByText("Testing Site", { exact: false })[0]);
     expect(
-      await screen.findByText("COVID-19 testing data")
+      await screen.findByText("COVID-19 testing data", { exact: false })
     ).toBeInTheDocument();
   });
 
