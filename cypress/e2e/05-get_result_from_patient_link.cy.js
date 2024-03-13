@@ -82,18 +82,17 @@ describe("Getting a test result from a patient link", () => {
 
   it("successfully navigates to the patient link", () => {
     cy.visit(patientLink);
-  });
-  it("contains no accessibility issues", () => {
+    // contains no accessibility issues
     cy.injectSRAxe();
     cy.checkAccessibility(); // PXP page
-  });
-  it("accepts the terms of service", () => {
+
+    // accepts the terms of service
     cy.contains("Terms of service");
     cy.contains("I agree").click();
-  });
-  it("enters the date of birth and submits", () => {
+
     cy.contains("Access your COVID-19 test result");
 
+    // enters the date of birth and submits
     // This sentence is broken into multiple lines due to how the i18n
     // library interpolates the patient name variable
     cy.contains("Enter ");
@@ -111,8 +110,8 @@ describe("Getting a test result from a patient link", () => {
     cy.get('input[name="day"]').type(birthDay);
     cy.get('input[name="year"]').type(birthYear);
     cy.get("#dob-submit-button").click();
-  });
-  it("shows the test result", () => {
+
+    // shows the test result
     cy.contains("Test result");
     cy.contains("Test date");
     cy.contains("Test device");
