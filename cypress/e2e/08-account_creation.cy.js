@@ -1,4 +1,6 @@
 // Selector constants
+import { loginHooks } from "../support/e2e";
+
 const mfaRadios = {
   sms: 'input[value="SMS"]+label',
   okta: 'input[value="Okta"]+label',
@@ -64,9 +66,7 @@ Cypress.Commands.add("verifySecurityCode", (code) => {
 
 describe("Okta account creation", () => {
   beforeEach(() => {
-    // Cypress clears cookies by default, but for these tests
-    // we want to preserve the Spring session cookie
-    Cypress.Cookies.preserveOnce("SESSION");
+    loginHooks();
   });
   describe("Account creation w/ SMS MFA", () => {
     before(() => {

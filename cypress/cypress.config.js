@@ -5,7 +5,6 @@ module.exports = {
   viewportHeight: 800,
   defaultCommandTimeout: 10000,
   video: true,
-  videoUploadOnPasses: false,
   videoCompression: false,
   retries: {
     runMode: 1,

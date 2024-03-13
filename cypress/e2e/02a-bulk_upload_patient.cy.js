@@ -14,9 +14,9 @@ const patientToCsv = (patient) => {
 };
 
 describe("Bulk upload patients", () => {
-  loginHooks();
-
   before("setup data", () => {
+    loginHooks();
+
     cy.task("getSpecRunVersionName", specRunName)
       .then((prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
@@ -38,6 +38,10 @@ describe("Bulk upload patients", () => {
 
   after(() => {
     cleanUpRunOktaOrgs(currentSpecRunVersionName);
+  });
+
+  beforeEach(() => {
+    loginHooks();
   });
 
   it("navigates to the bulk upload page", () => {

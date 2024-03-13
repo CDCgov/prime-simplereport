@@ -19,7 +19,6 @@ const {
 const specRunName = "spec05";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
-loginHooks();
 describe("Getting a test result from a patient link", () => {
   const patient = generatePatient();
   const covidOnlyDevice = generateCovidOnlyDevice();
@@ -29,6 +28,8 @@ describe("Getting a test result from a patient link", () => {
   let patientLink;
 
   before("setup spec data", () => {
+    loginHooks();
+
     cy.task("getSpecRunVersionName", specRunName).then(
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {

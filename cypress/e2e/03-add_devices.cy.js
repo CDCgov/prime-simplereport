@@ -1,7 +1,8 @@
 import {
   generateCovidOnlyDevice,
   generateMultiplexDevice,
-  loginHooks, testNumber,
+  loginHooks,
+  testNumber,
 } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
@@ -9,7 +10,7 @@ import {
   accessOrganizationByName,
   cleanUpPreviousRunSetupData,
   cleanUpRunOktaOrgs,
-  setupRunData
+  setupRunData,
 } from "../utils/setup-utils";
 
 const specRunName = "spec03";
@@ -18,25 +19,29 @@ const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 describe("Adding testing devices", () => {
   const covidOnlyDevice = generateCovidOnlyDevice();
   const multiplexDevice = generateMultiplexDevice();
-  loginHooks();
 
   before("setup spec data", () => {
-    cy.task("getSpecRunVersionName", specRunName)
-      .then((prevSpecRunVersionName) => {
+    loginHooks();
+
+    cy.task("getSpecRunVersionName", specRunName).then(
+      (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
           cleanUpPreviousRunSetupData(prevSpecRunVersionName);
           cleanUpRunOktaOrgs(prevSpecRunVersionName);
         }
         let data = {
           specRunName: specRunName,
-          versionName: currentSpecRunVersionName
+          versionName: currentSpecRunVersionName,
         };
-        cy.task("setSpecRunVersionName", data)
+        cy.task("setSpecRunVersionName", data);
         setupRunData(currentSpecRunVersionName);
-      })
+      },
+    );
   });
 
   beforeEach("alias graphql operations", () => {
+    loginHooks();
+
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
