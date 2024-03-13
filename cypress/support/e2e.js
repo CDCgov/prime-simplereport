@@ -91,6 +91,8 @@ Cypress.on("uncaught:exception", (err, _runnable) => {
   }
 });
 
+// go back and add some programmatic id's possibly?
+// https://docs.cypress.io/api/commands/session#Choosing-the-correct-id-to-cache-a-session
 export const loginHooks = () => {
   cy.session("SESSION", cy.login, { cacheAcrossSpecs: true });
 };
