@@ -70,9 +70,26 @@ jobs:
           okta_url: https://hhs-prime.oktapreview.com
           okta_client_id: ${{ vars.OKTA_CLIENT_ID }}
 
-  prerelease:
+  key_rotation:
     runs-on: ubuntu-latest
     needs: [build_frontend, build_docker]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/key-replace
+        name: Replace keys
+        if: inputs.replace_keys == 'true'
+        with:
+          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
+          deploy_env: ${{ inputs.deploy_env }}
+          terraform_arm_client_id: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+          terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+          terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+          terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+          okta_api_token: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
+
+  prerelease:
+    runs-on: ubuntu-latest
+    needs: [build_frontend, build_docker, replace_keys]
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/key-replace
