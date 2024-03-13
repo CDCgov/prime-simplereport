@@ -22,6 +22,10 @@ inputs:
   okta_api_token:
     description: Okta API token
     required: true
+  terraform_action:
+    description: Terraform Action ( plan | apply )
+    default: plan
+    required: false
 
 runs:
   using: composite
@@ -42,7 +46,7 @@ runs:
         OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
       shell: bash
       run: make init-${{ inputs.deploy_env }}
-    - name: Terraform Key Rotation
+    - name: Terraform Key Rotation Plan
       working-directory: ./ops
       env: # all Azure interaction is through Terraform
         ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
@@ -51,4 +55,4 @@ runs:
         ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
         OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
       shell: bash
-      run: terraform -chdir=${{ inputs.deploy_env }}/persistent apply -auto-approve -lock-timeout=30m -replace="module.keys.random_password.db_administrator_password" -target="module.keys.random_password.db_administrator_password"
+      run: terraform -chdir=${{ inputs.deploy_env }}/persistent ${{ inputs.terraform_action }} -auto-approve -lock-timeout=30m -replace="module.keys.random_password.db_administrator_password" -target="module.keys.random_password.db_administrator_password"
