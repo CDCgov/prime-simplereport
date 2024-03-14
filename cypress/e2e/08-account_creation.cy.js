@@ -98,7 +98,7 @@ describe("Checks each of the account creation MFA options", () => {
     cy.contains("Account set up complete");
     cy.checkAccessibility();
   });
-  it("Account creation w/ Google Aut`henticator MFA", () => {
+  it("Account creation w/ Google Authenticator MFA", () => {
     cy.mfaSelect("google");
     cy.scanQrCode();
     cy.verifySecurityCode("985721");
