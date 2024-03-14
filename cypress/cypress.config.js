@@ -6,10 +6,10 @@ module.exports = {
   defaultCommandTimeout: 10000,
   video: true,
   videoCompression: false,
-  retries: {
-    runMode: 1,
-    openMode: 1,
-  },
+  // retries: {
+  //   runMode: 1,
+  //   openMode: 1,
+  // },
   e2e: {
     supportFile: "cypress/support/e2e.js",
     setupNodeEvents(on, config) {
