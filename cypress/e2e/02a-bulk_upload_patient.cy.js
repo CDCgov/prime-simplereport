@@ -50,8 +50,8 @@ describe("Bulk upload patients", () => {
     cy.get(".prime-edit-patient").contains("Set up your spreadsheet");
     cy.injectSRAxe();
     cy.checkAccessibility(); // Bulk upload patient form
-  });
-  it("uploads csv file of patients", () => {
+
+    // uploads csv file of patients
     const csvFileContent =
       "last_name,first_name,middle_name,suffix,race,date_of_birth,biological_sex,ethnicity,street,street2,city,county,state,zip_code,country,phone_number,phone_number_type,employed_in_healthcare,resident_congregate_setting,role,email\n" +
       `${patientToCsv(patients[0])}\n` +
@@ -70,6 +70,7 @@ describe("Bulk upload patients", () => {
     cy.get(".usa-button").contains("Upload CSV file").click();
     cy.get(".prime-edit-patient").contains("Success: Data confirmed");
   });
+
   it("patients should appear in the patients list", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");

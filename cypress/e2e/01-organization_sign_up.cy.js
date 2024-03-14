@@ -19,11 +19,11 @@ describe("Organization sign up", () => {
     cy.contains("Sign up for SimpleReport");
     cy.contains("My organization is new to SimpleReport").click();
     cy.contains("Continue").click();
-  });
-  it("fills out the org info form", () => {
+
     cy.contains("Sign up for SimpleReport in three steps");
     cy.checkAccessibility(); // Sign up form
 
+    // fills out the org info form
     cy.get('input[name="name"]').type(organization.name);
     cy.get('select[name="state"]').select("CA");
     cy.get('select[name="type"]').select("Camp");
@@ -31,12 +31,13 @@ describe("Organization sign up", () => {
     cy.get('input[name="lastName"]').type("McTester");
     cy.get('input[name="email"]').type(user.email);
     cy.get('input[name="workPhoneNumber"]').type("5308675309");
-  });
-  it("submits successfully", () => {
+
+    // submits successfully
     cy.get("button.submit-button").click();
     cy.contains("Identity verification consent");
     cy.checkAccessibility(); // Identity verification page
   });
+
   it("navigates to the support pending org table and verifies the org", () => {
     cy.removeOrganizationAccess();
     cy.visit("/admin");
@@ -95,8 +96,8 @@ describe("Organization sign up", () => {
 
     // Test a11y on New Facility page
     cy.checkAccessibility();
-  });
-  it("fills out the form for a new facility", () => {
+
+    // fills out the form for a new facility
     cy.get('input[name="facility.name"]').type(facility.name);
     cy.get('input[name="facility.phone"]').first().type("5308675309");
     cy.get('input[name="facility.street"]').first().type("123 Beach Way");
@@ -117,6 +118,7 @@ describe("Organization sign up", () => {
     cy.get(".modal__container #save-confirmed-address").click();
     cy.contains("+ New facility");
   });
+
   it("enables adding patients", () => {
     cy.visit("/");
     cy.get("#desktop-patient-nav-link").click();
