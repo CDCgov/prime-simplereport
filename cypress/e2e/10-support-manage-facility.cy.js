@@ -12,13 +12,14 @@ import {
 const specRunName = "spec10";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
-loginHooks();
 describe("Support admin: manage facility", () => {
   const organizationName = createOrgName(currentSpecRunVersionName);
   const facilityName = createFacilityName(currentSpecRunVersionName);
   let facilityId = "";
 
   before("setup run data", () => {
+    loginHooks();
+
     cy.task("getSpecRunVersionName", specRunName).then(
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
@@ -39,6 +40,8 @@ describe("Support admin: manage facility", () => {
   });
 
   beforeEach(() => {
+    loginHooks();
+
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });

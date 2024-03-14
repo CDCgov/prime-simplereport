@@ -23,9 +23,10 @@ describe("Conducting a COVID test from:", () => {
   const lastName = patient.lastName;
   const covidOnlyDevice = generateCovidOnlyDevice();
   const queueCard = "[data-cy=prime-queue-item]:last-of-type";
-  loginHooks();
 
   before("setup spec data", () => {
+    loginHooks();
+
     cy.task("getSpecRunVersionName", specRunName).then(
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
@@ -46,6 +47,8 @@ describe("Conducting a COVID test from:", () => {
   });
 
   beforeEach(() => {
+    loginHooks();
+
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });

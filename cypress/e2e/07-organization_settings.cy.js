@@ -11,9 +11,9 @@ const specRunName = "spec07";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 describe("Updating organization settings", () => {
-  loginHooks();
-
   before("setup run data", () => {
+    loginHooks();
+
     cy.task("getSpecRunVersionName", specRunName).then(
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
@@ -32,6 +32,8 @@ describe("Updating organization settings", () => {
   });
 
   beforeEach(() => {
+    loginHooks();
+
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
