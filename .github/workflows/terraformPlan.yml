@@ -15,7 +15,6 @@ on:
           - dev4
           - dev5
           - dev6
-          - dev7
           - pentest
           - test
           - demo
@@ -41,7 +40,7 @@ jobs:
     - id: set_matrix
       run: |
         if [[ "${{ inputs.env }}" == "all_environments" ]]; then
-          matrix=[{\"env\":\"dev\"},{\"env\":\"dev2\"},{\"env\":\"dev3\"},{\"env\":\"dev4\"},{\"env\":\"dev5\"},{\"env\":\"dev6\"},{\"env\":\"dev7\"},{\"env\":\"pentest\"},{\"env\":\"test\"},{\"env\":\"demo\"},{\"env\":\"training\"},{\"env\":\"stg\"},{\"env\":\"prod\"}]
+          matrix=[{\"env\":\"dev\"},{\"env\":\"dev2\"},{\"env\":\"dev3\"},{\"env\":\"dev4\"},{\"env\":\"dev5\"},{\"env\":\"dev6\"},{\"env\":\"pentest\"},{\"env\":\"test\"},{\"env\":\"demo\"},{\"env\":\"training\"},{\"env\":\"stg\"},{\"env\":\"prod\"}]
         else
           matrix=[{\"env\":\"${{ inputs.env }}\"}]
         fi               
@@ -57,7 +56,7 @@ jobs:
         working-directory: ./ops
     steps:
       - uses: actions/checkout@v4
-      - uses: azure/login@v1
+      - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Use prod Okta token if required

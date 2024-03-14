@@ -7,11 +7,9 @@ Object {
     <div>
       <div
         aria-hidden="true"
-        class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+        class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
       >
-        <h4
-          class="margin-top-6 margin-bottom-5"
-        >
+        <h4>
           Submitting test data for 
           Dixon, Althea Hedda Mclaughlin
           ...
@@ -589,11 +587,9 @@ Object {
   "container": <div>
     <div
       aria-hidden="true"
-      class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+      class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
     >
-      <h4
-        class="margin-top-6 margin-bottom-5"
-      >
+      <h4>
         Submitting test data for 
         Dixon, Althea Hedda Mclaughlin
         ...
@@ -1145,11 +1141,9 @@ exports[`TestCardForm initial state matches snapshot for flu device 1`] = `
 <div>
   <div
     aria-hidden="true"
-    class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+    class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
   >
-    <h4
-      class="margin-top-6 margin-bottom-5"
-    >
+    <h4>
       Submitting test data for 
       Dixon, Althea Hedda Mclaughlin
       ...
@@ -1550,11 +1544,9 @@ Object {
     <div>
       <div
         aria-hidden="true"
-        class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+        class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
       >
-        <h4
-          class="margin-top-6 margin-bottom-5"
-        >
+        <h4>
           Submitting test data for 
           Dixon, Althea Hedda Mclaughlin
           ...
@@ -2060,11 +2052,9 @@ Object {
   "container": <div>
     <div
       aria-hidden="true"
-      class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+      class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
     >
-      <h4
-        class="margin-top-6 margin-bottom-5"
-      >
+      <h4>
         Submitting test data for 
         Dixon, Althea Hedda Mclaughlin
         ...
@@ -2549,11 +2539,9 @@ Object {
     <div>
       <div
         aria-hidden="true"
-        class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+        class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
       >
-        <h4
-          class="margin-top-6 margin-bottom-5"
-        >
+        <h4>
           Submitting test data for 
           Dixon, Althea Hedda Mclaughlin
           ...
@@ -3286,11 +3274,9 @@ Object {
   "container": <div>
     <div
       aria-hidden="true"
-      class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center radius-lg"
+      class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
     >
-      <h4
-        class="margin-top-6 margin-bottom-5"
-      >
+      <h4>
         Submitting test data for 
         Dixon, Althea Hedda Mclaughlin
         ...

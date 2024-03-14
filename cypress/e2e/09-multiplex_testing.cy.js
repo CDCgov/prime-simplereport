@@ -7,38 +7,44 @@ import {
 } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 import {
-  setupRunData,
   cleanUpPreviousRunSetupData,
   cleanUpRunOktaOrgs,
-  createFacilityName,
-  getCreatedFacility,
+  setupMultiplexDevice,
+  setupRunData,
+  setupPatient,
 } from "../utils/setup-utils";
-import { getOrganizationsByName } from "../utils/testing-data-utils";
 
-loginHooks();
 const specRunName = "spec09";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
-const patient = generatePatient();
-const multiplexDeviceName = generateMultiplexDevice();
+
+loginHooks();
 describe("Testing with multiplex devices", () => {
-  let facility;
+  let facilityId, patientId;
+  const patient = generatePatient();
+  const multiplexDevice = generateMultiplexDevice();
 
-  before("store patient info", () => {
-    cy.task("setPatientName", patient.fullName);
-    cy.task("setPatientDOB", patient.dobForPatientLink);
-    cy.task("setPatientPhone", patient.phone);
+  before(() => {
+    cy.task("getSpecRunVersionName", specRunName).then(
+      (prevSpecRunVersionName) => {
+        if (prevSpecRunVersionName) {
+          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
+          cleanUpRunOktaOrgs(prevSpecRunVersionName);
+        }
+        let data = {
+          specRunName: specRunName,
+          versionName: currentSpecRunVersionName,
+        };
+        cy.task("setSpecRunVersionName", data);
 
-    cy.task("getSpecRunVersionName", specRunName).then(() => {
-      let data = {
-        specRunName: specRunName,
-        versionName: currentSpecRunVersionName,
-      };
-      cy.task("setSpecRunVersionName", data);
-      setupRunData(currentSpecRunVersionName);
-      getCreatedFacility(currentSpecRunVersionName).then((res) => {
-        facility = res;
-      });
-    });
+        setupRunData(currentSpecRunVersionName).then((result) => {
+          facilityId = result.body.data.addFacility.id;
+        });
+        setupPatient(currentSpecRunVersionName, patient).then((result) => {
+          patientId = result.internalId;
+        });
+        setupMultiplexDevice(currentSpecRunVersionName, multiplexDevice);
+      },
+    );
   });
 
   beforeEach(() => {
@@ -49,19 +55,19 @@ describe("Testing with multiplex devices", () => {
     // remove a test for the patient if it exists
     cy.makePOSTRequest({
       operationName: "RemovePatientFromQueue",
-      variables: { patientId: patient.internalId },
+      variables: { patientId: patientId },
       query:
         "mutation RemovePatientFromQueue($patientId: ID!) {\n  removePatientFromQueue(patientId: $patientId)\n}",
     });
   });
 
-  after(() => {
+  after("clean up spec data", () => {
     cleanUpPreviousRunSetupData(currentSpecRunVersionName);
-    cleanUpRunOktaOrgs(currentSpecRunVersionName, true);
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
   });
 
   it("test patient", () => {
-    cy.visit(`/queue?facility=${facility.id}`);
+    cy.visit(`/queue?facility=${facilityId}`);
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
     cy.get('input[id="search-field-small"]').type(
       `${patient.lastName}, ${patient.firstName}`,
@@ -75,12 +81,12 @@ describe("Testing with multiplex devices", () => {
     cy.injectSRAxe();
     cy.checkAccessibility();
 
-    const queueCard = `li[data-testid="test-card-${patient.internalId}"]`;
+    const queueCard = `li[data-testid="test-card-${patientId}"]`;
     cy.get(queueCard).within(() => {
-      cy.get('select[name="testDevice"]').select(multiplexDeviceName);
+      cy.get('select[name="testDevice"]').select(multiplexDevice.name);
       cy.get('select[name="testDevice"]')
         .find("option:selected")
-        .should("have.text", multiplexDeviceName);
+        .should("have.text", multiplexDevice.name);
     });
 
     // We cant wait on EditQueueItem after selecting as device

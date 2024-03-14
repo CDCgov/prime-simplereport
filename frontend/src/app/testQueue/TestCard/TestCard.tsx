@@ -9,13 +9,17 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import Button from "../../commonComponents/Button/Button";
 import { removeTimer, TestTimerWidget, useTestTimer } from "../TestTimer";
 import { RootState } from "../../store";
 import "./TestCard.scss";
 import TestCardForm from "../TestCardForm/TestCardForm";
 import { useTestOrderPatient } from "../TestCardForm/TestCardForm.utils";
+import {
+  DevicesMap,
+  QueriedFacility,
+  QueriedTestOrder,
+} from "../TestCardForm/types";
 
 import CloseTestCardModal from "./CloseTestCardModal";
 

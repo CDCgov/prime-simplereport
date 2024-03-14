@@ -31,10 +31,10 @@ jobs:
         working-directory: ./frontend
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4.0.1
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{env.NODE_VERSION}}
-      - uses: azure/login@v1
+      - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Maintenance banner deploy

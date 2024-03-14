@@ -10,5 +10,3 @@ simple-report:
       - https://demo.simplereport.gov
 twilio:
   enabled: false
-features:
-  testCardRefactorEnabled: true

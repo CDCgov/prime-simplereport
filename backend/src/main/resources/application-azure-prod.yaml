@@ -21,8 +21,7 @@ twilio:
   enabled: true
   from-number: "+14045312484"
 features:
+  hivBulkUploadEnabled: false
   hivEnabled: false
-  singleEntryRsvEnabled: true
   agnosticEnabled: false
-  testCardRefactorEnabled: true
   agnosticBulkUploadEnabled: false

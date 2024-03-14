@@ -344,6 +344,8 @@ public class BulkUploadResultsToFhir {
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
+    String testPerformedLoincLongName = null;
+    String testOrderedLoincLongName = null;
     String testOrderedCode = row.getTestOrderedCode().getValue();
 
     UUID deviceId = uuidGenerator.randomUUID();
@@ -375,6 +377,11 @@ public class BulkUploadResultsToFhir {
               .findFirst()
               .map(DeviceTypeDisease::getInternalId)
               .orElse(deviceId);
+      testPerformedLoincLongName =
+          deviceTypeDiseaseEntries.stream()
+              .findFirst()
+              .map(DeviceTypeDisease::getTestPerformedLoincLongName)
+              .orElse(null);
       diseaseName =
           deviceTypeDiseaseEntries.stream()
               .findFirst()
@@ -386,6 +393,17 @@ public class BulkUploadResultsToFhir {
           StringUtils.isEmpty(testOrderedCode)
               ? MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries)
               : testOrderedCode;
+
+      String finalTestOrderedCode = testOrderedCode;
+      testOrderedLoincLongName =
+          deviceTypeDiseaseEntries.stream()
+              .filter(
+                  deviceTypeDisease ->
+                      Objects.equals(
+                          deviceTypeDisease.getTestOrderedLoincCode(), finalTestOrderedCode))
+              .findFirst()
+              .map(DeviceTypeDisease::getTestOrderedLoincLongName)
+              .orElse(null);
     } else {
       log.info(
           "No device found for model ("
@@ -425,7 +443,7 @@ public class BulkUploadResultsToFhir {
         List.of(
             fhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
-                    .diseaseCode(row.getTestPerformedCode().getValue())
+                    .testPerformedLoinc(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
                     .resultCode(getTestResultSnomed(row.getTestResult().getValue()))
                     .correctionStatus(
@@ -438,6 +456,7 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .deviceModel(row.getEquipmentModelName().getValue())
                     .issued(Date.from(testResultDate.toInstant()))
+                    .testPerformedLOINCLongName(testPerformedLoincLongName)
                     .build()));
 
     var aoeObservations = new LinkedHashSet<Observation>();
@@ -519,6 +538,7 @@ public class BulkUploadResultsToFhir {
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
+            testOrderedLoincLongName,
             testEventId,
             testResultDate,
             dateResultReleased);
@@ -582,21 +602,21 @@ public class BulkUploadResultsToFhir {
   }
 
   private String getPregnancyStatusSnomed(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
       return PersonUtils.pregnancyStatusSnomedMap.get(input.toLowerCase());
     }
     return null;
   }
 
   private String getResidenceTypeSnomed(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
       return getResidenceTypeMap().get(input.toLowerCase());
     }
     return input;
   }
 
   private String getEthnicityLiteral(String input) {
-    if (!input.matches(ALPHABET_REGEX)) {
+    if (input != null && !input.matches(ALPHABET_REGEX)) {
       List<String> ethnicityList = PersonUtils.ETHNICITY_MAP.get(input);
       return ethnicityList != null ? ethnicityList.get(1) : input;
     }
@@ -604,25 +624,25 @@ public class BulkUploadResultsToFhir {
   }
 
   private String getRaceLiteral(String input) {
-    if (!input.matches(ALPHABET_REGEX)) {
+    if (input != null && !input.matches(ALPHABET_REGEX)) {
       return PersonUtils.raceMap.get(input);
     }
     return input;
   }
 
   private String getTestResultSnomed(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
       return testResultToSnomedMap.get(input.toLowerCase());
     }
     return input;
   }
 
   private String getSpecimenTypeSnomed(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
       return resultsUploaderCachingService
           .getSpecimenTypeNameToSNOMEDMap()
           .get(input.toLowerCase());
-    } else if (input.matches(SNOMED_REGEX)) {
+    } else if (input != null && input.matches(SNOMED_REGEX)) {
       return input;
     }
     return null;
@@ -636,6 +656,9 @@ public class BulkUploadResultsToFhir {
   }
 
   private DiagnosticReport.DiagnosticReportStatus mapTestResultStatusToFhirValue(String input) {
+    if (input == null) {
+      return DiagnosticReport.DiagnosticReportStatus.FINAL;
+    }
     switch (input) {
       case "C":
         return DiagnosticReport.DiagnosticReportStatus.CORRECTED;

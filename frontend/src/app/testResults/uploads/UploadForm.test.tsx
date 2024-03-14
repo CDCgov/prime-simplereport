@@ -181,7 +181,9 @@ describe("Uploads", () => {
               )
             );
           });
+      });
 
+      const fileUploadSetup = async () => {
         const { user } = renderWithUser();
 
         const fileInput = screen.getByTestId("upload-csv-input");
@@ -200,18 +202,21 @@ describe("Uploads", () => {
             screen.getByText("Success: File Accepted")
           ).toBeInTheDocument();
         });
-      });
+      };
 
       it("performs HTTP request to rest endpoint to submit CSV file", async () => {
+        await fileUploadSetup();
         expect(uploadResultsSpy).toHaveBeenCalled();
       });
 
       it("displays a success message and the returned Report ID", async () => {
+        await fileUploadSetup();
         expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
         expect(screen.getByText("fake-report-id")).toBeInTheDocument();
       });
 
-      it("logs success event to App Insights", () => {
+      it("logs success event to App Insights", async () => {
+        await fileUploadSetup();
         expect(mockTrackEvent).toHaveBeenCalledWith({
           name: "Spreadsheet upload success",
           properties: {
@@ -223,7 +228,8 @@ describe("Uploads", () => {
         });
       });
 
-      it("input should be valid", () => {
+      it("input should be valid", async () => {
+        await fileUploadSetup();
         expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
           "aria-invalid",
           "false"
@@ -398,6 +404,19 @@ describe("Uploads", () => {
       expect(screen.getByRole("link")).toHaveAttribute(
         "href",
         `/results/upload/submit/guide#patient_first_name`
+      );
+    });
+
+    it("should give you guidance for unavailable disease", () => {
+      const Guidance = getGuidance({
+        errorType: "UNAVAILABLE_DISEASE",
+        fieldHeader: "test_performed_code",
+      } as EnhancedFeedbackMessage) as JSX.Element;
+
+      render(<Router>{Guidance}</Router>);
+
+      expect(screen.getByTestId("guidance")).toHaveTextContent(
+        "The result(s) indicated are for a disease not supported for your jurisdiction. Double check test_performed_code or email support@simplereport.gov if you have questions"
       );
     });
 

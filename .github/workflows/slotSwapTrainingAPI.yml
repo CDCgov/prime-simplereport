@@ -1,0 +1,32 @@
+name: Slot swap Training API
+
+on:
+  workflow_dispatch:
+
+env:
+  DEPLOY_ENV: training
+
+concurrency:
+  group: ${{ github.event.inputs.deploy_env }}-deploy
+  cancel-in-progress: false
+
+jobs:
+  slot_swap:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ops
+    env: # all Azure interaction is through terraform
+      ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Slot swap to previous release
+        uses: ./.github/actions/slot-swap-api
+        with:
+          deploy_env: ${{ env.DEPLOY_ENV }}

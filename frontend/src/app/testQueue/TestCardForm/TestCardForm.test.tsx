@@ -5,13 +5,13 @@ import { MockedProvider } from "@apollo/client/testing";
 import { getAppInsights } from "../../TelemetryService";
 import * as srToast from "../../utils/srToast";
 import { PhoneType } from "../../../generated/graphql";
-import { QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
 import mockSupportedDiseaseMultiplex, {
   mockSupportedDiseaseFlu,
 } from "../mocks/mockSupportedDiseaseMultiplex";
 
 import TestCardForm, { TestCardFormProps } from "./TestCardForm";
+import { QueriedFacility, QueriedTestOrder } from "./types";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),

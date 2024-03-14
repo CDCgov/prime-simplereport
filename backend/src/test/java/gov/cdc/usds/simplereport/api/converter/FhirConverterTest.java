@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.when;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.parser.IParser;
+import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -307,6 +309,18 @@ class FhirConverterTest {
     assertThat(codeableConcept.getText()).isEqualTo(expectedText);
   }
 
+  @Test
+  void convertToRaceNull_convertsGracefully() {
+    var actual = fhirConverter.convertToRaceExtension(null);
+    var codeableConcept = actual.castToCodeableConcept(actual.getValue());
+    var code = codeableConcept.getCoding();
+
+    assertThat(code).hasSize(1);
+    assertThat(code.get(0).getSystem()).isEqualTo(NULL_CODE_SYSTEM);
+    assertThat(code.get(0).getCode()).isEqualTo(MappingConstants.UNK_CODE);
+    assertThat(codeableConcept.getText()).isEqualTo(MappingConstants.UNKNOWN_STRING);
+  }
+
   private static Stream<Arguments> raceArgs() {
     return Stream.of(
         arguments("native", raceCodeSystem, "1002-5", "native"),
@@ -590,8 +604,8 @@ class FhirConverterTest {
             ConvertToSpecimenProps.builder()
                 .specimenCode("258500001")
                 .specimenName("Nasopharyngeal swab")
-                .collectionCode("53342003 but not the default one")
-                .collectionName("Internal nose structure (body structure) but not the default one")
+                .collectionCode(DEFAULT_LOCATION_CODE + " but not the default one")
+                .collectionName(DEFAULT_LOCATION_NAME + " but not the default one")
                 .id("id-123")
                 .identifier("uuid-123")
                 .collectionDate(collectionDate)
@@ -609,9 +623,9 @@ class FhirConverterTest {
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
         .isEqualTo(snomedCode);
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo("53342003 but not the default one");
+        .isEqualTo(DEFAULT_LOCATION_CODE + " but not the default one");
     assertThat(actual.getCollection().getBodySite().getText())
-        .isEqualTo("Internal nose structure (body structure) but not the default one");
+        .isEqualTo(DEFAULT_LOCATION_NAME + " but not the default one");
     assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
         .isEqualTo("2023-06-22T16:38:00Z");
   }
@@ -634,10 +648,7 @@ class FhirConverterTest {
   void convertToSpecimen_SpecimenType_valid() {
     var specimenType =
         new SpecimenType(
-            "Nasopharyngeal swab",
-            "258500001",
-            "Internal nose structure (body structure)",
-            "53342003");
+            "Nasopharyngeal swab", "258500001", DEFAULT_LOCATION_NAME, DEFAULT_LOCATION_CODE);
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
@@ -659,9 +670,8 @@ class FhirConverterTest {
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
         .isEqualTo(snomedCode);
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo("53342003");
-    assertThat(actual.getCollection().getBodySite().getText())
-        .isEqualTo("Internal nose structure (body structure)");
+        .isEqualTo(DEFAULT_LOCATION_CODE);
+    assertThat(actual.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
     assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
         .isEqualTo("2023-06-22T13:16:00.00Z");
     assertThat(actual.getReceivedTimeElement().getValueAsString())
@@ -700,7 +710,7 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             ConvertToObservationProps.builder()
-                .diseaseCode("diseaseCode")
+                .testPerformedLoinc("diseaseCode")
                 .diseaseName("diseaseName")
                 .resultCode("resultCode")
                 .correctionStatus(TestCorrectionStatus.ORIGINAL)
@@ -739,7 +749,16 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            "loinc",
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
@@ -751,7 +770,7 @@ class FhirConverterTest {
     assertThat(actual.getCode().getText()).isEqualTo("covid-19");
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
-    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("loinc");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("94500-6");
     assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
@@ -772,7 +791,16 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            "loinc",
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
             TestCorrectionStatus.CORRECTED,
             "Oopsy Daisy",
             "testkitName",
@@ -795,7 +823,16 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            "loinc",
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
             TestCorrectionStatus.REMOVED,
             null,
             "testkitName",
@@ -813,7 +850,22 @@ class FhirConverterTest {
   void convertToObservation_Result_null() {
     var actual =
         fhirConverter.convertToObservation(
-            null, "", TestCorrectionStatus.ORIGINAL, null, "testkitName", "modelName", new Date());
+            null,
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
+            TestCorrectionStatus.ORIGINAL,
+            null,
+            "testkitName",
+            "modelName",
+            new Date());
 
     assertThat(actual).isNull();
   }
@@ -825,7 +877,16 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            "",
+            new DeviceTypeDisease(
+                null,
+                new SupportedDisease("COVID-19", "96741-4"),
+                "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "covidEquipmentUID",
+                "covidEquipmentUIDType",
+                "covidTestkitNameId",
+                "94500-0",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
@@ -853,19 +914,23 @@ class FhirConverterTest {
             null,
             covidDisease,
             "94500-6",
+            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
             "covidEquipmentUID",
             "covidEquipmentUIDType",
             "covidTestkitNameId",
-            "94500-0");
+            "94500-0",
+            "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection");
     var fluDiseaseTestPerformedCode =
         new DeviceTypeDisease(
             null,
             fluDisease,
             "85477-8",
+            "Influenza virus A RNA [Presence] in Upper respiratory specimen by NAA with probe detection",
             "fluEquipmentUID",
             "fluEquipmentUidType",
             "fluTestkitNameId",
-            "85477-0");
+            "85477-0",
+            "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection");
     ReflectionTestUtils.setField(
         device,
         "supportedDiseaseTestPerformed",
@@ -923,10 +988,12 @@ class FhirConverterTest {
             null,
             covidDisease,
             "94500-6",
+            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
             "covidEquipmentUID",
             "covidEquipmentUIDType",
             "covidTestkitNameId",
-            "94500-0");
+            "94500-0",
+            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
 
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
     ReflectionTestUtils.setField(
@@ -954,7 +1021,9 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -972,7 +1041,9 @@ class FhirConverterTest {
         new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4), null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -991,7 +1062,32 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, true, null);
+    var birthDate = LocalDate.of(2022, 12, 13);
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            "Austin",
+            "Wingate",
+            "Curtis",
+            "Jr",
+            birthDate,
+            new StreetAddress(
+                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
+            "USA",
+            null,
+            List.of("email1", "email2"),
+            "black",
+            "hispanic",
+            List.of("123"),
+            "Male",
+            null,
+            true,
+            "English",
+            null);
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, person);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1010,7 +1106,32 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, true);
+    var birthDate = LocalDate.of(2022, 12, 13);
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            "Austin",
+            "Wingate",
+            "Curtis",
+            "Jr",
+            birthDate,
+            new StreetAddress(
+                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
+            "USA",
+            null,
+            List.of("email1", "email2"),
+            "black",
+            "hispanic",
+            List.of("123"),
+            "Male",
+            true,
+            null,
+            "English",
+            null);
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, person);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1029,7 +1150,9 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey("77386006", Map.of("fake", false), null, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1044,13 +1167,60 @@ class FhirConverterTest {
   }
 
   @Test
+  void convertToAoeObservation_genderOfSexualPartners_matchesJson() throws IOException {
+    List<String> sexualPartners = List.of("transwoman", "transman", "nonbinary");
+    AskOnEntrySurvey answers =
+        new AskOnEntrySurvey(null, Map.of("fake", false), null, null, sexualPartners);
+    String testId = "fakeId";
+
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationGenderOfSexualPartners.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
   void convertToAoeObservation_allAOE_matchesJson() throws IOException {
     var answers =
         new AskOnEntrySurvey(
             "102874004", Map.of("fake", true), false, LocalDate.of(2023, 3, 4), null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, false, false);
+    var birthDate = LocalDate.of(2022, 12, 13);
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            "Austin",
+            "Wingate",
+            "Curtis",
+            "Jr",
+            birthDate,
+            new StreetAddress(
+                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
+            "USA",
+            null,
+            List.of("email1", "email2"),
+            "black",
+            "hispanic",
+            List.of("123"),
+            "Male",
+            false,
+            false,
+            "English",
+            null);
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, person);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1067,7 +1237,9 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+    var actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1165,7 +1337,7 @@ class FhirConverterTest {
                 TimeZone.getTimeZone(DEFAULT_TIME_ZONE_ID));
     var actual =
         fhirConverter.convertToDiagnosticReport(
-            DiagnosticReportStatus.FINAL, "95422-2", "id-123", zonedDateTime, zonedDateTime);
+            DiagnosticReportStatus.FINAL, "95422-2", "", "id-123", zonedDateTime, zonedDateTime);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -1179,7 +1351,7 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_Strings_null() {
-    var actual = fhirConverter.convertToDiagnosticReport(null, null, null, null, null);
+    var actual = fhirConverter.convertToDiagnosticReport(null, null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
@@ -1673,27 +1845,33 @@ class FhirConverterTest {
             new DeviceTypeDisease(
                 deviceTypeId,
                 covidDisease,
-                "333-123",
+                "94533-7",
+                "SARS-CoV-2 (COVID-19) N gene [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID1",
                 "equipmentUIDType1",
                 "testkitNameId1",
-                null),
+                null,
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluADisease,
-                "444-123",
+                "92142-9",
+                "Influenza virus A RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID2",
                 "equipmentUIDType2",
                 "testkitNameId2",
-                "95422-2"),
+                "95422-2",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluBDisease,
-                "444-456",
+                "92141-1",
+                "Influenza virus B RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "equipmentUID3",
                 "equipmentUIDType3",
                 "testkitNameId3",
-                "95422-2"));
+                "95422-2",
+                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"));
 
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);

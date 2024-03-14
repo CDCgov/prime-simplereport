@@ -1,5 +1,5 @@
 variable "env" {
-  description = "values: [demo, dev, dev2, dev3, dev4, dev5, dev6, dev7, pentest, test, training, stg, prod]"
+  description = "values: [demo, dev, dev2, dev3, dev4, dev5, dev6, pentest, test, training, stg, prod]"
   type        = string
 }
 variable "name" {

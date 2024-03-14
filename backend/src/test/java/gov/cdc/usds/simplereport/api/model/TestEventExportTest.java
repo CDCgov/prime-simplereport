@@ -272,18 +272,22 @@ class TestEventExportTest extends BaseRepositoryTest {
                 deviceType1.getInternalId(),
                 dataFactory.getCovidDisease(),
                 "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "covidEquipmentUID",
                 "covidEquipmentUIDType",
                 "covidTestkitNameId1",
-                "94500-0"),
+                "94500-0",
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
             new DeviceTypeDisease(
                 deviceType1.getInternalId(),
                 dataFactory.getCovidDisease(),
                 "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "covidEquipmentUID",
                 "covidEquipmentUIDType",
                 "covidTestkitNameId2",
-                "94500-0")));
+                "94500-0",
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")));
     dataFactory.addDiseasesToDevice(
         deviceType2,
         List.of(
@@ -291,18 +295,22 @@ class TestEventExportTest extends BaseRepositoryTest {
                 deviceType2.getInternalId(),
                 dataFactory.getCovidDisease(),
                 "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "covidEquipmentUID1",
                 "covidEquipmentUIDType",
                 "covidTestkitNameId",
-                "94500-0"),
+                "94500-0",
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
             new DeviceTypeDisease(
                 deviceType2.getInternalId(),
                 dataFactory.getCovidDisease(),
                 "94500-6",
+                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "covidEquipmentUID2",
                 "covidEquipmentUIDType",
                 "covidTestkitNameId",
-                "94500-0")));
+                "94500-0",
+                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")));
 
     Person person = dataFactory.createFullPerson(org);
     TestOrder testOrder1 = dataFactory.createTestOrder(person, facility);

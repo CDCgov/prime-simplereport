@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.Translators.DETECTED_SNOMED_CONCEPT;
 import static gov.cdc.usds.simplereport.api.Translators.FEMALE;
+import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
 import static gov.cdc.usds.simplereport.api.Translators.MALE;
 import static gov.cdc.usds.simplereport.api.Translators.NON_BINARY;
 import static gov.cdc.usds.simplereport.api.Translators.OTHER;
@@ -12,6 +13,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLA
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_ABNORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DIAGNOSTIC_CODE_SYSTEM;
@@ -20,8 +22,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.GENDER_IDENTITY_EXTENSION_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.GENDER_IDENTITY_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LABORATORY_STRING_LITERAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LAB_STRING_LITERAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
@@ -32,6 +32,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_RE
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_GENDER_IDENTITY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_EXTENSION_URL;
@@ -51,6 +52,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_I
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SIMPLE_REPORT_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TESTKIT_NAME_ID_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
@@ -62,6 +65,8 @@ import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATI
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentityDisplaySet;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentitySnomedSet;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusDisplayMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusSnomedMap;
@@ -105,7 +110,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -330,20 +334,21 @@ public class FhirConverter {
     return address;
   }
 
-  public Extension convertToRaceExtension(@NotNull String race) {
+  public Extension convertToRaceExtension(String race) {
     var ext = new Extension();
     ext.setUrl(RACE_EXTENSION_URL);
     var codeable = new CodeableConcept();
     var coding = codeable.addCoding();
-    String raceKey = race.toLowerCase();
-    if (StringUtils.isNotBlank(race) && PersonUtils.raceMap.containsKey(raceKey)) {
+    boolean isParseableRace =
+        StringUtils.isNotBlank(race) && PersonUtils.raceMap.containsKey(race.toLowerCase());
+    if (isParseableRace) {
       if (MappingConstants.UNKNOWN_STRING.equalsIgnoreCase(race)
           || "refused".equalsIgnoreCase(race)) {
         coding.setSystem(NULL_CODE_SYSTEM);
       } else {
         coding.setSystem(RACE_CODING_SYSTEM);
       }
-      coding.setCode(PersonUtils.raceMap.get(raceKey));
+      coding.setCode(PersonUtils.raceMap.get(race.toLowerCase()));
       codeable.setText(race);
     } else {
       coding.setSystem(NULL_CODE_SYSTEM);
@@ -522,8 +527,6 @@ public class FhirConverter {
     patient.addExtension(
         convertToTribalAffiliationExtension(props.getTribalAffiliations()).orElse(null));
 
-    patient.addExtension(convertToGenderIdentityExtension(props.getGenderIdentity()));
-
     patient.setId(props.getId());
     patient.addIdentifier().setValue(props.getId());
 
@@ -536,43 +539,6 @@ public class FhirConverter {
           .forEach(patient::addTelecom);
     }
     return patient;
-  }
-
-  private Extension convertToGenderIdentityExtension(String genderIdentity) {
-    if (StringUtils.isNotBlank(genderIdentity)) {
-
-      Map<String, String> extensionValueSet =
-          Map.of(
-              FEMALE, "female",
-              MALE, "male",
-              NON_BINARY, "non-binary",
-              TRANS_MAN, "transgender male",
-              TRANS_WOMAN, "transgender female",
-              OTHER, "other",
-              REFUSED, "non-disclose");
-
-      Map<String, String> extensionDisplaySet =
-          Map.of(
-              FEMALE, "female",
-              MALE, "male",
-              NON_BINARY, "non-binary",
-              TRANS_MAN, "transgender male",
-              TRANS_WOMAN, "transgender female",
-              OTHER, "other",
-              REFUSED, "does not wish to disclose");
-
-      String genderIdentityKey = genderIdentity.toLowerCase();
-
-      var codeableConcept =
-          new CodeableConcept()
-              .addCoding()
-              .setSystem(GENDER_IDENTITY_EXTENSION_CODE_SYSTEM)
-              .setCode(extensionValueSet.get(genderIdentityKey))
-              .setDisplay(extensionDisplaySet.get(genderIdentityKey));
-
-      return new Extension().setUrl(GENDER_IDENTITY_EXTENSION_URL).setValue(codeableConcept);
-    }
-    return null;
   }
 
   public Device convertToDevice(
@@ -697,17 +663,15 @@ public class FhirConverter {
                   deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
                       .toList();
-              String testPerformedLoincCode =
-                  deviceTypeDiseaseEntries.stream()
-                      .findFirst()
-                      .map(DeviceTypeDisease::getTestPerformedLoincCode)
-                      .orElse(null);
+              DeviceTypeDisease deviceTypeDisease =
+                  deviceTypeDiseaseEntries.stream().findFirst().orElse(new DeviceTypeDisease());
+
               String testkitNameId =
                   getCommonDiseaseValue(
                       deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
               return convertToObservation(
                   result,
-                  testPerformedLoincCode,
+                  deviceTypeDisease,
                   correctionStatus,
                   correctionReason,
                   testkitNameId,
@@ -726,7 +690,7 @@ public class FhirConverter {
 
   public Observation convertToObservation(
       Result result,
-      String testPerformedCode,
+      DeviceTypeDisease deviceTypeDisease,
       TestCorrectionStatus correctionStatus,
       String correctionReason,
       String testkitNameId,
@@ -736,7 +700,7 @@ public class FhirConverter {
 
       return convertToObservation(
           ConvertToObservationProps.builder()
-              .diseaseCode(testPerformedCode)
+              .testPerformedLoinc(deviceTypeDisease.getTestPerformedLoincCode())
               .diseaseName(result.getDisease().getName())
               .resultCode(result.getResultSNOMED())
               .correctionStatus(correctionStatus)
@@ -747,6 +711,7 @@ public class FhirConverter {
               .testkitNameId(testkitNameId)
               .deviceModel(deviceModel)
               .issued(resultDate)
+              .testPerformedLOINCLongName(deviceTypeDisease.getTestPerformedLoincLongName())
               .build());
     }
     return null;
@@ -756,7 +721,11 @@ public class FhirConverter {
     var observation = new Observation();
     observation.setId(props.getId());
     setStatus(observation, props.getCorrectionStatus());
-    observation.setCode(createLoincConcept(props.getDiseaseCode(), "", props.getDiseaseName()));
+    observation.setCode(
+        createLoincConcept(
+            props.getTestPerformedLoinc(),
+            props.getTestPerformedLOINCLongName(),
+            props.getDiseaseName()));
     addSNOMEDValue(props.getResultCode(), observation, props.getResultDescription());
     observation.getMethod().getCodingFirstRep().setDisplay(props.getDeviceModel());
     observation
@@ -848,6 +817,34 @@ public class FhirConverter {
     return observations;
   }
 
+  public Set<Observation> convertToAOEGenderOfSexualPartnersObservation(
+      Set<String> sexualPartners) {
+    HashSet<Observation> observations = new LinkedHashSet<>();
+
+    for (String sexualPartner : sexualPartners) {
+
+      String genderSNOMED = genderIdentitySnomedSet.get(sexualPartner);
+
+      String genderStatusDisplay = genderIdentityDisplaySet.get(sexualPartner);
+
+      CodeableConcept genderOfSexualPartnerStatusCode =
+          createSimpleReportConcept(
+              SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS,
+              "What is the gender of their sexual partners",
+              "What is the gender of their sexual partners");
+
+      CodeableConcept genderOfSexualPartnerValueCode =
+          createSNOMEDConcept(genderSNOMED, genderStatusDisplay);
+
+      observations.add(
+          createAOEObservation(
+              uuidGenerator.randomUUID().toString(),
+              genderOfSexualPartnerStatusCode,
+              genderOfSexualPartnerValueCode));
+    }
+    return observations;
+  }
+
   public Observation convertToAOEPregnancyObservation(String pregnancyStatusSnomed) {
     String pregnancyStatusDisplay = pregnancyStatusDisplayMap.get(pregnancyStatusSnomed);
     CodeableConcept pregnancyStatusCode =
@@ -895,11 +892,55 @@ public class FhirConverter {
     return observations;
   }
 
+  public Set<Observation> convertToAOEGenderIdentityObservation(
+      String eventId, String genderIdentity) {
+    Set<Observation> observations = new LinkedHashSet<>();
+    if (StringUtils.isNotBlank(genderIdentity)
+        && GENDER_IDENTITIES.contains(genderIdentity.toLowerCase())) {
+
+      String valueCode;
+      String valueDisplay;
+      String codeSystem;
+
+      switch (genderIdentity.toLowerCase()) {
+        case OTHER -> {
+          codeSystem = NULL_CODE_SYSTEM;
+        }
+        case REFUSED -> {
+          codeSystem = DATA_ABSENT_REASON_CODE_SYSTEM;
+        }
+        case FEMALE, MALE, NON_BINARY, TRANS_MAN, TRANS_WOMAN -> {
+          codeSystem = SNOMED_CODE_SYSTEM;
+        }
+        default -> {
+          codeSystem = null;
+        }
+      }
+
+      if (codeSystem != null) {
+        CodeableConcept genderIdentityLoincConcept =
+            createLoincConcept(LOINC_GENDER_IDENTITY, "Gender identity", "Gender identity");
+
+        valueDisplay = genderIdentityDisplaySet.get(genderIdentity.toLowerCase());
+        valueCode = genderIdentitySnomedSet.get(genderIdentity.toLowerCase());
+
+        CodeableConcept valueCodeableConcept = new CodeableConcept();
+        valueCodeableConcept
+            .addCoding()
+            .setSystem(codeSystem)
+            .setCode(valueCode)
+            .setDisplay(valueDisplay);
+
+        observations.add(
+            createAOEObservation(
+                eventId + LOINC_GENDER_IDENTITY, genderIdentityLoincConcept, valueCodeableConcept));
+      }
+    }
+    return observations;
+  }
+
   public Set<Observation> convertToAOEObservations(
-      String eventId,
-      AskOnEntrySurvey surveyData,
-      Boolean employedInHealthcare,
-      Boolean residesInCongregateSetting) {
+      String eventId, AskOnEntrySurvey surveyData, Person patientData) {
     HashSet<Observation> observations = new LinkedHashSet<>();
     Boolean symptomatic = null;
     if (Boolean.TRUE.equals(surveyData.getNoSymptoms())) {
@@ -917,16 +958,29 @@ public class FhirConverter {
       observations.add(convertToAOEPregnancyObservation(surveyData.getPregnancy()));
     }
 
-    if (employedInHealthcare != null) {
-      observations.add(
-          convertToAOEYesNoUnkObservation(
-              employedInHealthcare,
-              LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
-              AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
+    if (patientData != null) {
+      if (patientData.getEmployedInHealthcare() != null) {
+        observations.add(
+            convertToAOEYesNoUnkObservation(
+                patientData.getEmployedInHealthcare(),
+                LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
+                AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
+      }
+
+      if (patientData.getResidentCongregateSetting() != null) {
+        observations.addAll(
+            convertToAOEResidenceObservation(patientData.getResidentCongregateSetting(), null));
+      }
+
+      if (StringUtils.isNotBlank(patientData.getGenderIdentity())) {
+        observations.addAll(
+            convertToAOEGenderIdentityObservation(eventId, patientData.getGenderIdentity()));
+      }
     }
 
-    if (residesInCongregateSetting != null) {
-      observations.addAll(convertToAOEResidenceObservation(residesInCongregateSetting, null));
+    if (surveyData.getGenderOfSexualPartners() != null) {
+      Set<String> sexualPartners = new HashSet<>(surveyData.getGenderOfSexualPartners());
+      observations.addAll(convertToAOEGenderOfSexualPartnersObservation(sexualPartners));
     }
 
     return observations;
@@ -949,8 +1003,26 @@ public class FhirConverter {
 
   private CodeableConcept createLoincConcept(String codingCode, String codingDisplay, String text) {
     var concept = new CodeableConcept().setText(text);
+    var coding = concept.addCoding();
 
-    concept.addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(codingCode).setDisplay(codingDisplay);
+    coding.setSystem(LOINC_CODE_SYSTEM).setCode(codingCode);
+
+    if (StringUtils.isNotBlank(codingDisplay)) {
+      coding.setDisplay(codingDisplay);
+    }
+
+    return concept;
+  }
+
+  private CodeableConcept createSimpleReportConcept(
+      String codingCode, String codingDisplay, String text) {
+    CodeableConcept concept = new CodeableConcept().setText(text);
+
+    concept
+        .addCoding()
+        .setSystem(SIMPLE_REPORT_CODE_SYSTEM)
+        .setCode(codingCode)
+        .setDisplay(codingDisplay);
 
     return concept;
   }
@@ -1097,11 +1169,23 @@ public class FhirConverter {
         break;
     }
 
-    String code = null;
+    String testOrderLoinc = null;
+    String testOrderLoincLongName = null;
     if (testEvent.getDeviceType() != null) {
-      code =
+      testOrderLoinc =
           MultiplexUtils.inferMultiplexTestOrderLoinc(
               testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
+
+      final String finalTestOrderLoinc =
+          StringUtils.isNotBlank(testOrderLoinc) ? testOrderLoinc : "";
+      var deviceTypeDiseaseFromLoinc =
+          testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
+              .filter(f -> finalTestOrderLoinc.equalsIgnoreCase(f.getTestOrderedLoincCode()))
+              .findFirst()
+              .orElse(null);
+      if (deviceTypeDiseaseFromLoinc != null) {
+        testOrderLoincLongName = deviceTypeDiseaseFromLoinc.getTestOrderedLoincLongName();
+      }
     }
 
     ZonedDateTime dateTested = null;
@@ -1119,12 +1203,18 @@ public class FhirConverter {
       dateIssued = ZonedDateTime.ofInstant(currentDate.toInstant(), ZoneOffset.UTC);
 
     return convertToDiagnosticReport(
-        status, code, Objects.toString(testEvent.getInternalId(), ""), dateTested, dateIssued);
+        status,
+        testOrderLoinc,
+        testOrderLoincLongName,
+        Objects.toString(testEvent.getInternalId(), ""),
+        dateTested,
+        dateIssued);
   }
 
   /**
    * @param status Diagnostic report status
-   * @param code LOINC code
+   * @param testOrderedLoinc LOINC code
+   * @param loincLongName LOINC long name
    * @param id Diagnostic report id
    * @param dateTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
    *     time/time-period for report.
@@ -1135,7 +1225,8 @@ public class FhirConverter {
    */
   public DiagnosticReport convertToDiagnosticReport(
       DiagnosticReportStatus status,
-      String code,
+      String testOrderedLoinc,
+      String loincLongName,
       String id,
       ZonedDateTime dateTested,
       ZonedDateTime dateIssued) {
@@ -1146,8 +1237,12 @@ public class FhirConverter {
             .setIssuedElement(convertToInstantType(dateIssued, TemporalPrecisionEnum.SECOND));
 
     diagnosticReport.setId(id);
-    if (StringUtils.isNotBlank(code)) {
-      diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);
+    if (StringUtils.isNotBlank(testOrderedLoinc)) {
+      var coding = diagnosticReport.getCode().addCoding();
+      coding.setSystem(LOINC_CODE_SYSTEM).setCode(testOrderedLoinc);
+      if (StringUtils.isNotBlank(loincLongName)) {
+        coding.setDisplay(loincLongName);
+      }
     }
     diagnosticReport.addIdentifier().setValue(id);
     return diagnosticReport;
@@ -1208,8 +1303,7 @@ public class FhirConverter {
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(),
                     testEvent.getSurveyData(),
-                    testEvent.getPatientData().getEmployedInHealthcare(),
-                    testEvent.getPatientData().getResidentCongregateSetting()))
+                    testEvent.getPatientData()))
             .serviceRequest(convertToServiceRequest(testEvent.getOrder(), dateTested))
             .diagnosticReport(convertToDiagnosticReport(testEvent, currentDate))
             .currentDate(currentDate)

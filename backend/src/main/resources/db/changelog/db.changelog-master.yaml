@@ -5219,3 +5219,42 @@ databaseChangeLog:
                     referencedColumnNames: internal_id
         - dropTable:
             tableName: upload_disease_details
+  - changeSet:
+      id: add-loinc-long-names-to-device-type-disease
+      author: ttu8@cdc.gov
+      comment: Add the LOINC long names for the test performed and test ordered LOINC codes to Device Type Disease
+      changes:
+        - addColumn:
+            tableName: device_type_disease
+            columns:
+              - column:
+                  name: test_performed_loinc_long_name
+                  type: text
+                  remarks: testPerformedLoincLongName from LIVD API
+              - column:
+                  name: test_ordered_loinc_long_name
+                  type: text
+                  remarks: testOrderedLoincLongName from LIVD API
+  - changeSet:
+      id: add-unavailable-disease-to-test_result_upload_error
+      author: bob@skylight.digital
+      comment: add UNAVAILABLE_DISEASE to test_result_upload_error
+      changes:
+        - tagDatabase:
+            tag: add-unavailable-disease-to-test_result_upload_error
+        - sql:
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'UNAVAILABLE_DISEASE';
+      rollback: ""
+  - changeSet:
+      id: remove-unused-feature-flags
+      author: ttu8@cdc.gov
+      comment: remove rsvEnabled, testCardRefactorEnabled, and singleEntryRsvEnabled
+      changes:
+        - tagDatabase:
+            tag: remove-unused-feature-flags
+        - delete:
+            schemaName: ${database.defaultSchemaName}
+            tableName: feature_flag
+            where: name in ('rsvEnabled', 'testCardRefactorEnabled', 'singleEntryRsvEnabled')
+      rollback: ""

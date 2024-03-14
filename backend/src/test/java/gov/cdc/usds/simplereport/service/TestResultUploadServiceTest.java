@@ -784,6 +784,30 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processResultCSV_defaultsToTestingLabAddress_whenNoOrderingFacilityAddress() {
+    // GIVEN
+    InputStream input =
+        loadCsv("testResultUpload/test-results-upload-valid-no-ordering-facility.csv");
+    setup_testResultsUpload_withEscapedCommas();
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    TestResultRow row = getRowFromUpload(dataHubMock);
+
+    assertThat(row.getOrderingFacilityName().getValue())
+        .isEqualTo("My Testing Lab, Downtown Office");
+    assertThat(row.getOrderingFacilityStreet().getValue()).isEqualTo("300 North Street");
+    assertThat(row.getOrderingFacilityStreet2().getValue()).isEqualTo("Suite 5001");
+    assertThat(row.getOrderingFacilityCity().getValue()).isEqualTo("Birmingham");
+    assertThat(row.getOrderingFacilityState().getValue()).isEqualTo("AL");
+    assertThat(row.getOrderingFacilityZipCode().getValue()).isEqualTo("35228");
+    assertThat(row.getOrderingFacilityPhoneNumber().getValue()).isEqualTo("205-888-2000");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_processCsv_transforms_match_expected_csv() throws IOException {
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);

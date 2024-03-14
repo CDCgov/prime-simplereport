@@ -48,7 +48,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
         <p
           class="text-base sub-header"
         >
-          How to format and upload a CSV file to report test results in bulk through SimpleReport.
+          How to format and upload a CSV file to report test results in bulk for 
+          COVID-19, Flu A and B, and RSV
+           through SimpleReport.
         </p>
         <p>
           SimpleReport’s bulk results uploader lets you report multiple test results at once using a CSV file. When you submit your results, the uploader tool verifies the data, then sends your results to the relevant state and/or local health department(s).
@@ -6535,7 +6537,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 <div
                   class="margin-bottom-1"
                 >
-                  If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field isn’t meant for characteristics of COVID-19 tests or statements about false positive or negative results.
+                  If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field isn't meant for characteristics of the condition tested or statements about false positive or negative results.
                 </div>
               </div>
             </div>

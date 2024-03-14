@@ -59,20 +59,6 @@ module.exports = {
         getPatientPhone() {
           return global.patientPhone;
         },
-        setCovidOnlyDeviceName(name) {
-          global.covidOnlyDeviceName = name;
-          return null;
-        },
-        getCovidOnlyDeviceName() {
-          return global.covidOnlyDeviceName;
-        },
-        setMultiplexDeviceName(name) {
-          global.multiplexDeviceName = name;
-          return null;
-        },
-        getMultiplexDeviceName() {
-          return global.multiplexDeviceName;
-        },
         setSpecRunVersionName(data) {
           global.specRunVersions.set(data.specRunName, data.versionName);
           return null;
@@ -83,7 +69,7 @@ module.exports = {
       });
       on("before:browser:launch", (browser = {}, launchOptions = {}) => {
         launchOptions.args = launchOptions.args.filter(
-          (item) => item !== "--disable-dev-shm-usage"
+          (item) => item !== "--disable-dev-shm-usage",
         );
         if (browser.name === "chrome" && browser.isHeadless) {
           launchOptions.args.push("--window-size=1200,800");

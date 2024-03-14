@@ -1,0 +1,17 @@
+name: Slot swap SimpleReport API
+description: Slot swap API to secondary slot version (i.e. the previous deploy)
+inputs:
+  deploy_env:
+    description: The environment being deployed (e.g. "prod" or "test")
+    required: true
+runs:
+  using: composite
+  steps:
+      - name: Slot swap
+        shell: bash
+        working-directory: ./ops
+        run: |
+          echo "::group::Slot swap API and verify readiness"
+          make promote-${{ inputs.deploy_env }}
+          make check-${{ inputs.deploy_env }}-readiness
+          echo "::endgroup::"

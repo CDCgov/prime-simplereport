@@ -79,10 +79,12 @@ input UpdateDeviceType {
 input SupportedDiseaseTestPerformedInput {
   supportedDisease: ID!
   testPerformedLoincCode: String!
+  testPerformedLoincLongName: String
   equipmentUid: String
   equipmentUidType: String
   testkitNameId: String
   testOrderedLoincCode: String
+  testOrderedLoincLongName: String
 }
 
 type DeviceType {
@@ -98,10 +100,12 @@ type DeviceType {
 type SupportedDiseaseTestPerformed {
   supportedDisease: SupportedDisease!
   testPerformedLoincCode: String!
+  testPerformedLoincLongName: String
   equipmentUid: String
   equipmentUidType: String
   testkitNameId: String
   testOrderedLoincCode: String
+  testOrderedLoincLongName: String
 }
 
 type SupportedDisease {
@@ -353,6 +357,7 @@ type AggregateFacilityMetrics {
 type AddTestResultResponse {
   testResult: TestOrder!
   deliverySuccess: Boolean
+  testEventId: ID!
 }
 
 type PatientLink {

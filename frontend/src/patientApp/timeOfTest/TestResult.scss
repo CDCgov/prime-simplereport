@@ -8,6 +8,14 @@
     display: none;
   }
 
+  a[href^='http:']:not([href*='simplereport.gov']),
+  a[href^='https:']:not([href*='simplereport.gov']) {
+    &::after {
+      bottom: 0.25rem;
+      height: 1rem;
+    }
+  }
+
   @media print {
     body * {
       visibility: hidden;

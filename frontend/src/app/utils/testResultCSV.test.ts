@@ -33,6 +33,12 @@ const data = [
         },
         testResult: "UNDETERMINED",
       },
+      {
+        disease: {
+          name: "HIV",
+        },
+        testResult: "POSITIVE",
+      },
     ],
     correctionStatus: "REMOVED",
     reasonForCorrection: "DUPLICATE_TEST",
@@ -78,9 +84,9 @@ const data = [
     noSymptoms: false,
     symptomOnset: null,
   },
-];
+] as TestResult[];
 
-const resultNoRSV = [
+const resultNoHIV = [
   {
     "COVID-19 result": "Negative",
     "Device manufacturer": "Access Bio, Inc.",
@@ -121,13 +127,14 @@ const resultNoRSV = [
     "Test date": "06/13/2022 7:24pm",
     "Flu A result": "Negative",
     "Flu B result": "Negative",
+    "RSV result": "Inconclusive",
   },
 ];
 
 const result = [
   {
-    ...resultNoRSV[0],
-    "RSV result": "Inconclusive",
+    ...resultNoHIV[0],
+    "HIV result": "Positive",
   },
 ];
 
@@ -145,7 +152,7 @@ describe("parseDataForCSV", () => {
       ])
     ).toEqual(result);
   });
-  it("doesn't include RSV if parameter is false", () => {
-    expect(parseDataForCSV(false, data)).toEqual(resultNoRSV);
+  it("doesn't include HIV if includeHIV are false", () => {
+    expect(parseDataForCSV(false, data)).toEqual(resultNoHIV);
   });
 });

@@ -3,7 +3,6 @@ import {
   cleanUpPreviousRunSetupData,
   setupRunData,
   cleanUpRunOktaOrgs,
-  addDevicesToCreatedFacility,
 } from "../utils/setup-utils";
 
 const patient = generatePatient();
@@ -28,8 +27,8 @@ describe("Patient self registration", () => {
   });
 
   after("clean up patient info", () => {
+    cleanUpRunOktaOrgs(currentSpecRunVersionName);
     cleanUpPreviousRunSetupData(currentSpecRunVersionName);
-    cleanUpRunOktaOrgs(currentSpecRunVersionName, true);
   });
 
   it("tests the whole patient self registration experience", () => {

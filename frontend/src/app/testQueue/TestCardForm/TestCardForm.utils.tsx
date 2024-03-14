@@ -1,12 +1,6 @@
 import moment from "moment/moment";
 import { useFeature } from "flagged";
 
-import {
-  DevicesMap,
-  QueriedDeviceType,
-  QueriedFacility,
-  QueriedTestOrder,
-} from "../QueueItem";
 import { displayFullName } from "../../utils";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
@@ -17,10 +11,15 @@ import {
   SomeoneWithName,
 } from "../constants";
 import { showError, showSuccess } from "../../utils/srToast";
-import { filterRsvFromAllDevices } from "../../utils/rsvHelper";
 
 import { TestFormState } from "./TestCardFormReducer";
 import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
+import {
+  DevicesMap,
+  QueriedDeviceType,
+  QueriedFacility,
+  QueriedTestOrder,
+} from "./types";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
@@ -61,13 +60,9 @@ const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
 };
 
 export function useFilteredDeviceTypes(facility: QueriedFacility) {
-  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
   const hivEnabled = useFeature("hivEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
-  if (!singleEntryRsvEnabled) {
-    deviceTypes = filterRsvFromAllDevices(deviceTypes);
-  }
 
   if (!hivEnabled) {
     deviceTypes = filterHIVFromAllDevices(deviceTypes);

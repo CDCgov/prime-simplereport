@@ -4,8 +4,8 @@ import classNames from "classnames";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
-import { findResultByDiseaseName } from "../testQueue/QueueItem";
 import { MultiplexResultInput } from "../../generated/graphql";
+import { getResultByDiseaseName } from "../utils/testResults";
 
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
@@ -17,11 +17,10 @@ interface CovidResult {
 const convertFromMultiplexResultInputs = (
   multiplexResultInputs: MultiplexResultInput[]
 ): TestResult => {
-  const covidResult: TestResult =
-    (findResultByDiseaseName(
-      multiplexResultInputs ?? [],
-      MULTIPLEX_DISEASES.COVID_19
-    ) as TestResult) ?? TEST_RESULTS.UNKNOWN;
+  const covidResult: TestResult = getResultByDiseaseName(
+    multiplexResultInputs ?? [],
+    MULTIPLEX_DISEASES.COVID_19
+  ) as TestResult;
   return covidResult;
 };
 

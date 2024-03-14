@@ -112,14 +112,8 @@ describe("DownloadResultsCsvModal with no filters and under 20k results", () => 
 });
 
 describe("DownloadResultsCsvModal with filters and under 20k results", () => {
-  let component: any;
-
-  beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-
-    component = render(
+  const renderComponent = () =>
+    render(
       <MockedProvider mocks={[]}>
         <DownloadResultsCsvModal
           filterParams={{ result: "POSITIVE" }}
@@ -130,13 +124,20 @@ describe("DownloadResultsCsvModal with filters and under 20k results", () => {
         />
       </MockedProvider>
     );
+
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
   });
 
   it("matches screenshot", () => {
-    expect(component).toMatchSnapshot();
+    let view = renderComponent();
+    expect(view).toMatchSnapshot();
   });
 
   it("allows for downloading and has filters applied", async () => {
+    renderComponent();
     const downloadButton = await screen.findByText("Download results");
     expect(downloadButton).toBeEnabled();
     expect(
@@ -155,11 +156,7 @@ describe("DownloadResultsCsvModal with filters and under 20k results", () => {
 });
 
 describe("DownloadResultsCsvModal with disease filter and under 20k results", () => {
-  beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-
+  const renderComponent = () =>
     render(
       <MockedProvider mocks={[]}>
         <DownloadResultsCsvModal
@@ -171,9 +168,15 @@ describe("DownloadResultsCsvModal with disease filter and under 20k results", ()
         />
       </MockedProvider>
     );
+
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
   });
 
   it("shows correct modal text", async () => {
+    renderComponent();
     const downloadButton = await screen.findByText("Download results");
     expect(downloadButton).toBeEnabled();
     expect(
@@ -188,11 +191,7 @@ describe("DownloadResultsCsvModal with disease filter and under 20k results", ()
 });
 
 describe("DownloadResultsCsvModal with current facility filter and under 20k results", () => {
-  beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-
+  const renderComponent = () =>
     render(
       <MockedProvider mocks={[]}>
         <DownloadResultsCsvModal
@@ -204,9 +203,15 @@ describe("DownloadResultsCsvModal with current facility filter and under 20k res
         />
       </MockedProvider>
     );
+
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
   });
 
   it("shows correct modal text", async () => {
+    renderComponent();
     const downloadButton = await screen.findByText("Download results");
     expect(downloadButton).toBeEnabled();
     expect(
@@ -221,14 +226,8 @@ describe("DownloadResultsCsvModal with current facility filter and under 20k res
 });
 
 describe("DownloadResultsCsvModal with over 20k results", () => {
-  let component: any;
-
-  beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-
-    component = render(
+  const renderComponent = () =>
+    render(
       <MockedProvider mocks={[]}>
         <DownloadResultsCsvModal
           filterParams={{}}
@@ -239,13 +238,20 @@ describe("DownloadResultsCsvModal with over 20k results", () => {
         />
       </MockedProvider>
     );
+
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
   });
 
   it("matches screenshot", () => {
-    expect(component).toMatchSnapshot();
+    let view = renderComponent();
+    expect(view).toMatchSnapshot();
   });
 
   it("disables downloading", async () => {
+    renderComponent();
     const downloadButton = await screen.findByText("Download results");
     expect(downloadButton).toBeDisabled();
     expect(

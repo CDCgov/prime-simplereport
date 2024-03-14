@@ -121,10 +121,12 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
+        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
         "MNI",
         "BOOMX2",
-        "95422-2");
+        "95422-2",
+        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
   }
 
   public static DeviceTypeDisease createDeviceTypeDiseaseForBulkUpload(
@@ -133,10 +135,12 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
+        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
         "MNI",
         "BOOMX2",
-        "94534-5");
+        "94534-5",
+        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
   }
 
   public static DeviceTypeDisease createDeviceTypeDisease() {
@@ -145,10 +149,12 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
+        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
         "MNI",
         "BOOMX2",
-        "98670-3");
+        "98670-3",
+        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
   }
 
   public static DeviceType createDeviceType() {
@@ -177,6 +183,24 @@ public class TestDataBuilder {
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createCovidSupportedDisease()));
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createFluASupportedDisease()));
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createFluBSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceTypeForHIV() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createHIVSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceTypeForRSV() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createRSVSupportedDisease()));
 
     return new DeviceType(
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
@@ -251,6 +275,14 @@ public class TestDataBuilder {
 
   public static SupportedDisease createFluBSupportedDisease() {
     return new SupportedDisease("Flu B", "LP14240-3");
+  }
+
+  public static SupportedDisease createHIVSupportedDisease() {
+    return new SupportedDisease("HIV", "16249-0");
+  }
+
+  public static SupportedDisease createRSVSupportedDisease() {
+    return new SupportedDisease("RSV", "LP14129-1");
   }
 
   public static Result createTestResult(

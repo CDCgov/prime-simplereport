@@ -2,53 +2,78 @@ name: Delete old container images
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0 * * *" # every day
 
 jobs:
   clean_ghcr:
-    name: Delete untagged container images
+    name: Delete container images
     runs-on: ubuntu-latest
     steps:
       # backend, cypress, database, frontend, frontend-lighthouse, nginx
-      - uses: actions/delete-package-versions@v4
+      - name: Delete backend container images
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/backend'
           package-type: 'container'
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: 'true'
-      - uses: actions/delete-package-versions@v4
+          min-versions-to-keep: 100
+          delete-only-untagged-versions: 'false'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
+      - name: Delete cypress container images
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/cypress'
           package-type: 'container'
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: 'true'
-      - uses: actions/delete-package-versions@v4
+          min-versions-to-keep: 100
+          delete-only-untagged-versions: 'false'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
+      - name: Delete database container images
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/database'
           package-type: 'container'
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: 'true'
-      - uses: actions/delete-package-versions@v4
+          min-versions-to-keep: 100
+          delete-only-untagged-versions: 'false'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
+      - name: Delete db container images
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/db'
           package-type: 'container'
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: 'true'
-      - uses: actions/delete-package-versions@v4
+          min-versions-to-keep: 100
+          delete-only-untagged-versions: 'false'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
+      - name: Delete frontend container images
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/frontend'
           package-type: 'container'
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: 'true'
-      - uses: actions/delete-package-versions@v4
+          min-versions-to-keep: 100
+          delete-only-untagged-versions: 'false'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
+      - name: Delete frontend-lighthouse container images
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/frontend-lighthouse'
           package-type: 'container'
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: 'true'
-      - uses: actions/delete-package-versions@v4
+          min-versions-to-keep: 100
+          delete-only-untagged-versions: 'false'
+      - name: Sleep for 45 seconds because of secondary rate limit
+        run: sleep 45
+        shell: bash
+      - name: Delete nginx container images
+        uses: actions/delete-package-versions@v5
         with:
           package-name: 'prime-simplereport/nginx'
           package-type: 'container'
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: 'true'
+          min-versions-to-keep: 100
+          delete-only-untagged-versions: 'false'

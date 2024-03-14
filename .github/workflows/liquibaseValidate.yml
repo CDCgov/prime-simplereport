@@ -11,7 +11,7 @@ on:
         description: The environment of the database.
         required: true
         type: choice
-        options: [demo, dev, dev2, dev3, dev4, dev5, dev6, dev7, pentest, test, training, stg, prod]
+        options: [demo, dev, dev2, dev3, dev4, dev5, dev6, pentest, test, training, stg, prod]
         default: dev
       action:
         description: The liquibase action to run.

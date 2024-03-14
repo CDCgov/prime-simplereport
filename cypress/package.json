@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "@faker-js/faker": "^8.3.1",
+    "@faker-js/faker": "^8.4.1",
     "cypress": "^11.0.0",
     "cypress-localstorage-commands": "^2.2.5",
     "dayjs": "^1.11.10",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "eslint-plugin-cypress": "^2.15.1",
     "otplib": "^12.0.1",
-    "prettier": "3.1.1"
+    "prettier": "3.2.5"
   },
   "scripts": {
     "e2e:local": "CYPRESS_IS_LOCAL_RUN=true CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=http://localhost:3000,video=false",
@@ -22,7 +22,7 @@
     "lint:write": "eslint --fix . && prettier . --write"
   },
   "dependencies": {
-    "axe-core": "^4.8.3",
+    "axe-core": "^4.8.4",
     "cypress-axe": "^1.5.0"
   }
 }

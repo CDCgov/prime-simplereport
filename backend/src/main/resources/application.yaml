@@ -11,7 +11,6 @@ spring:
       azure-dev4: okta-dev4, server-debug
       azure-dev5: okta-dev5, server-debug
       azure-dev6: okta-dev6, server-debug
-      azure-dev7: okta-dev7, server-debug
       azure-pentest: okta-pentest
       azure-training: no-security, no-okta-mgmt, create-sample-data, no-okta-auth
       azure-test: okta-test, server-debug
@@ -167,10 +166,9 @@ datahub:
   csv-upload-api-client: "simple_report.csvuploader"
   csv-upload-api-fhir-client: "simple_report.fullelr"
 features:
+  hivBulkUploadEnabled: true
   hivEnabled: true
-  singleEntryRsvEnabled: true
   agnosticEnabled: true
-  testCardRefactorEnabled: true
   agnosticBulkUploadEnabled: true
 slack:
   hook:

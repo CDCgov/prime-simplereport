@@ -24,11 +24,10 @@ public class FeatureFlagsConfig {
   @Setter(AccessLevel.NONE)
   private final FeatureFlagRepository _repo;
 
+  private boolean hivBulkUploadEnabled;
   private boolean hivEnabled;
-  private boolean singleEntryRsvEnabled;
   private boolean agnosticEnabled;
   private boolean agnosticBulkUploadEnabled;
-  private boolean testCardRefactorEnabled;
 
   @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
@@ -38,11 +37,10 @@ public class FeatureFlagsConfig {
 
   private void flagMapping(String flagName, Boolean flagValue) {
     switch (flagName) {
+      case "hivBulkUploadEnabled" -> setHivBulkUploadEnabled(flagValue);
       case "hivEnabled" -> setHivEnabled(flagValue);
-      case "singleEntryRsvEnabled" -> setSingleEntryRsvEnabled(flagValue);
       case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
       case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);
-      case "testCardRefactorEnabled" -> setTestCardRefactorEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }

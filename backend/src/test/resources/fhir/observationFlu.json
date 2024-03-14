@@ -6,7 +6,8 @@
     "coding": [
       {
         "system": "http://loinc.org",
-        "code": "85477-8"
+        "code": "85477-8",
+        "display": "Influenza virus A RNA [Presence] in Upper respiratory specimen by NAA with probe detection"
       }
     ],
     "text": "FLU A"
