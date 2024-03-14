@@ -105,11 +105,12 @@
     "@azure/abort-controller" "^1.0.0"
     tslib "^2.2.0"
 
-"@azure/functions@^4.2.0":
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.2.0.tgz#221e605d137e846e53fce4e5e24c95691c4747f3"
-  integrity sha512-RSECLoje4jGVpsVRjEzkna9KvmQOVeB96cg8J5J2g41QQpMWCzD1QTPI5+yI0uvOidGRLYElV1zHZjdvsGf9Nw==
+"@azure/functions@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.3.0.tgz#8528ebfd82f565d733e96abf9d31b1fb9586d389"
+  integrity sha512-l7iAuSyyBCOgwkDZmV6UUagwkFoqMOVfq01oJ+rJlFhN7Mb8/kkUAZLffCPUxBy2Wwah741BhJGizwaCP9G2/A==
   dependencies:
+    cookie "^0.6.0"
     long "^4.0.0"
     undici "^5.13.0"
 
@@ -1507,6 +1508,11 @@ convert-source-map@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-2.0.0.tgz#4b560f649fc4e918dd0ab75cf4961e8bc882d82a"
   integrity sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==
+
+cookie@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.6.0.tgz#2798b04b071b0ecbff0dbb62a505a8efa4e19051"
+  integrity sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==
 
 create-jest@^29.7.0:
   version "29.7.0"
