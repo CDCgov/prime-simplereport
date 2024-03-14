@@ -18,7 +18,6 @@ Cypress.Commands.add("setPassword", () => {
   cy.get('input[name="confirm-password"]').type(pass);
   cy.get(submitButton).click();
   cy.contains("Select your security question");
-  
 });
 
 Cypress.Commands.add("setSecurityQuestion", () => {
@@ -28,7 +27,6 @@ Cypress.Commands.add("setSecurityQuestion", () => {
   cy.get('input[name="answer"]').type("Omaha");
   cy.get(submitButton).click();
   cy.contains("Set up authentication");
-  
 });
 
 Cypress.Commands.add("mfaSelect", (choice) => {
@@ -41,7 +39,7 @@ Cypress.Commands.add("mfaSelect", (choice) => {
 
 Cypress.Commands.add("enterPhoneNumber", () => {
   cy.contains("Get your security code via");
-  
+
   cy.get('input[name="phone-number"]').type("530867530");
   cy.contains("Get your security code via").click();
   cy.contains("Enter a valid phone number");
@@ -52,14 +50,14 @@ Cypress.Commands.add("enterPhoneNumber", () => {
 
 Cypress.Commands.add("scanQrCode", () => {
   cy.contains("Get your security code via");
-  
+
   cy.get(submitButton).click();
 });
 
 Cypress.Commands.add("verifySecurityCode", (code) => {
   cy.contains("Verify your security code.");
   cy.contains("One-time security code");
-  
+
   cy.get('input[name="security-code"]').type(code);
   cy.get(submitButton).first().click();
 });
@@ -90,10 +88,8 @@ describe("Okta account creation", () => {
       cy.verifySecurityCode("033457");
 
       cy.contains("Account set up complete");
-
+    });
   });
-})
-})
 
   // describe("Account creation w/ Okta Verify MFA", () => {
   //   before(() => {
