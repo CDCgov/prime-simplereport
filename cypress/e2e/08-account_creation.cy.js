@@ -65,6 +65,7 @@ Cypress.Commands.add("verifySecurityCode", (code) => {
 describe("Okta account creation", () => {
   describe("Account creation w/ SMS MFA", () => {
     before(() => {
+      loginHooks();
       cy.clearCookies();
       cy.resetWiremock();
     });
