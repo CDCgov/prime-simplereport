@@ -51,6 +51,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   @Autowired private OrganizationService _orgService;
   @Autowired private DiseaseService _diseaseService;
 
+  private String COVID_DISEASE_LOINC = "96741-4";
+
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
@@ -164,7 +166,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = createTestEventsForMetricsTests(org);
 
     List<TestResultWithCount> results =
-        _repo.countByResultForFacility(place.getInternalId(), d1, DATE_1MIN_FUTURE);
+        _repo.countByResultForFacility(
+            place.getInternalId(), d1, DATE_1MIN_FUTURE, COVID_DISEASE_LOINC);
 
     assertEquals(2, results.size());
 
@@ -186,7 +189,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = createTestEventsForMetricsTests(org);
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
+        _repo.countByResultByFacility(
+            Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE, COVID_DISEASE_LOINC);
 
     assertEquals(2, results.size());
 
@@ -211,7 +215,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         p, place, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.UNDETERMINED, false);
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
+        _repo.countByResultByFacility(
+            Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE, COVID_DISEASE_LOINC);
 
     assertEquals(2, results.size());
 
@@ -239,7 +244,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
             .collect(Collectors.toSet());
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(facilityIds, d1, DATE_1MIN_FUTURE);
+        _repo.countByResultByFacility(facilityIds, d1, DATE_1MIN_FUTURE, COVID_DISEASE_LOINC);
 
     assertEquals(3, results.size());
 

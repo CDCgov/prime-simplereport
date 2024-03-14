@@ -67,10 +67,10 @@ public interface TestEventRepository
               + "         LEFT JOIN Result res ON res.testEvent = te "
               + "         LEFT JOIN SupportedDisease disease ON res.disease = disease "
               + "WHERE te.facility.internalId IN :facilityIds AND COALESCE(te.dateTestedBackdate, te.createdAt) BETWEEN :startDate AND :endDate AND "
-              + "    te.correctionStatus <> 'REMOVED' AND corrected_te.priorCorrectedTestEventId IS NULL AND disease.loinc = '96741-4' "
+              + "    te.correctionStatus <> 'REMOVED' AND corrected_te.priorCorrectedTestEventId IS NULL AND disease.loinc = :diseaseLoinc "
               + "GROUP BY res.testResult")
   List<TestResultWithCount> countByResultByFacility(
-      Collection<UUID> facilityIds, Date startDate, Date endDate);
+      Collection<UUID> facilityIds, Date startDate, Date endDate, String diseaseLoinc);
 
   @Query(
       value =
@@ -80,9 +80,10 @@ public interface TestEventRepository
               + "         LEFT JOIN Result res ON res.testEvent = te "
               + "         LEFT JOIN SupportedDisease disease ON res.disease = disease "
               + "WHERE te.facility.internalId = :facilityId AND COALESCE(te.dateTestedBackdate, te.createdAt) BETWEEN :startDate AND :endDate AND "
-              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL AND disease.loinc = '96741-4' "
+              + "    te.correctionStatus = 'ORIGINAL' AND corrected_te.priorCorrectedTestEventId IS NULL AND disease.loinc = :diseaseLoinc "
               + "GROUP BY res.testResult")
-  List<TestResultWithCount> countByResultForFacility(UUID facilityId, Date startDate, Date endDate);
+  List<TestResultWithCount> countByResultForFacility(
+      UUID facilityId, Date startDate, Date endDate, String diseaseLoinc);
 
   boolean existsByPatient(Person person);
 }
