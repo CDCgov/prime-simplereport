@@ -9,6 +9,8 @@ import "./Analytics.scss";
 import { formatDate } from "../utils/date";
 import { PATIENT_TERM_PLURAL } from "../../config/constants";
 import { useDocumentTitle } from "../utils/hooks";
+import { MULTIPLEX_DISEASES } from "../testResults/constants";
+import { useSupportedDiseaseList } from "../utils/disease";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -56,7 +58,7 @@ interface Props {
 }
 
 export const Analytics = (props: Props) => {
-  useDocumentTitle("COVID-19 testing data dashboard");
+  useDocumentTitle("Testing data dashboard");
 
   const organization = useSelector(
     (state) => (state as any).organization as Organization
@@ -66,6 +68,9 @@ export const Analytics = (props: Props) => {
   );
   const [facilityId, setFacilityId] = useState<string>("");
   const [facilityName, setFacilityName] = useState<string>(organization.name);
+  const [selectedCondition, setSelectedCondition] = useState<string>(
+    MULTIPLEX_DISEASES.COVID_19
+  );
   const [dateRange, setDateRange] = useState<string>("week");
   const [startDate, setStartDate] = useState<string>(
     props.startDate || getStartDateStringFromDaysAgo(7)
@@ -74,6 +79,8 @@ export const Analytics = (props: Props) => {
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
 
+  const supportedDiseaseList = useSupportedDiseaseList();
+
   const updateFacility = ({
     target: { value },
   }: ChangeEvent<HTMLSelectElement>) => {
@@ -81,6 +88,12 @@ export const Analytics = (props: Props) => {
       facilities.find((f) => f.id === value)?.name || "All facilities";
     setFacilityId(value);
     setFacilityName(facilityName);
+  };
+
+  const updateSelectedCondition = ({
+    target: { value },
+  }: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCondition(value);
   };
 
   const updateDateRange = ({
@@ -113,6 +126,7 @@ export const Analytics = (props: Props) => {
         getStartDateFromDaysAgo(7),
       endDate:
         setEndTimeForDateRange(new Date(endDate)) || getEndDateFromDaysAgo(0),
+      disease: selectedCondition,
     },
     fetchPolicy: "no-cache",
   });
@@ -136,7 +150,7 @@ export const Analytics = (props: Props) => {
       <div className="grid-container">
         <div className="prime-container card-container margin-top-2">
           <div className="usa-card__header">
-            <h1 className="font-sans-lg">COVID-19 testing data</h1>
+            <h1 className="font-sans-xl">Dashboard</h1>
           </div>
           <div id="analytics-page">
             <div className="prime-container padding-3">
@@ -159,6 +173,19 @@ export const Analytics = (props: Props) => {
                   />
                 </div>
                 {/* TODO: filter by patient role */}
+                <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
+                  <Dropdown
+                    label="Condition"
+                    options={supportedDiseaseList.map((disease: string) => {
+                      return {
+                        label: disease,
+                        value: disease,
+                      };
+                    })}
+                    onChange={updateSelectedCondition}
+                    selectedValue={selectedCondition}
+                  />
+                </div>
                 <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
                   <Dropdown
                     label="Date range"
@@ -236,7 +263,9 @@ export const Analytics = (props: Props) => {
                 <p>Loading...</p>
               ) : (
                 <>
-                  <h2>{facilityName}</h2>
+                  <h2>
+                    {facilityName} - {selectedCondition} testing data
+                  </h2>
                   <p className="margin-bottom-0">
                     All {PATIENT_TERM_PLURAL} tested
                   </p>
