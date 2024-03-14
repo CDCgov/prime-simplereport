@@ -65,17 +65,17 @@ Cypress.Commands.add("verifySecurityCode", (code) => {
 });
 
 describe("Okta account creation", () => {
-  beforeEach(() => {
-    loginHooks();
-  });
   describe("Account creation w/ SMS MFA", () => {
     before(() => {
       cy.clearCookies();
       cy.resetWiremock();
     });
-    it("navigates to the activation link", () => {
+    beforeEach(() => {
+      loginHooks();
       cy.visit("/uac/?activationToken=h971awbXda7y7jGaxN8f");
       cy.contains("Create your password");
+    });
+    it("checks activation page accessibility", () => {
       cy.injectSRAxe();
       cy.checkAccessibility();
     });
