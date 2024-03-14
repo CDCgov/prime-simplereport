@@ -91,36 +91,30 @@ describe("Okta account creation", () => {
     });
   });
 
-  // describe("Account creation w/ Okta Verify MFA", () => {
-  //   before(() => {
-  //     cy.clearCookies();
-  //     cy.resetWiremock();
-  //   });
-  //   it("navigates to the activation link", () => {
-  //     cy.visit("/uac/?activationToken=NOr20VqF5M6m8AnwcSUJ");
-  //     cy.contains("Create your password");
-  //     cy.injectSRAxe();
-  //   });
-  //   it("sets a password", () => {
-  //     cy.setPassword();
-  //   });
-  //   it("sets a security question", () => {
-  //     cy.setSecurityQuestion();
-  //   });
-  //   it("selects Okta Verify MFA", () => {
-  //     cy.mfaSelect("okta");
-  //   });
-  //   it("'scans' a QR code", () => {
-  //     cy.scanQrCode();
-  //   });
-  //   it("enters a verification code", () => {
-  //     cy.verifySecurityCode("543663");
-  //   });
-  //   it("displays a success message", () => {
-  //     cy.contains("Account set up complete");
-  //     cy.checkAccessibility();
-  //   });
-  // });
+  describe("Account creation w/ Okta Verify MFA", () => {
+    before(() => {
+      cy.clearCookies();
+      cy.resetWiremock();
+    });
+    it("navigates to the activation link", () => {
+      cy.visit("/uac/?activationToken=NOr20VqF5M6m8AnwcSUJ");
+      cy.contains("Create your password");
+      cy.injectSRAxe();
+
+      cy.setPassword();
+      cy.checkAccessibility();
+
+      cy.setSecurityQuestion();
+
+      // MFA page
+      cy.checkAccessibility();
+      cy.mfaSelect("okta");
+      cy.scanQrCode();
+      cy.verifySecurityCode("543663");
+      cy.contains("Account set up complete");
+      cy.checkAccessibility();
+    });
+  });
 
   // describe("Account creation w/ Google Authenticator MFA", () => {
   //   before(() => {
