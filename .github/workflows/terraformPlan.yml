@@ -38,13 +38,9 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - id: set_matrix
-      run: |
-        if [[ "${{ inputs.env }}" == "all_environments" ]]; then
-          matrix=[{\"env\":\"dev\"},{\"env\":\"dev2\"},{\"env\":\"dev3\"},{\"env\":\"dev4\"},{\"env\":\"dev5\"},{\"env\":\"dev6\"},{\"env\":\"pentest\"},{\"env\":\"test\"},{\"env\":\"demo\"},{\"env\":\"training\"},{\"env\":\"stg\"},{\"env\":\"prod\"}]
-        else
-          matrix=[{\"env\":\"${{ inputs.env }}\"}]
-        fi               
-        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+      uses: ./.github/actions/matrix-prep
+      with:
+        env: ${{ inputs.env }}
   terraform_plan:
     needs: matrix_prep
     runs-on: ubuntu-latest
@@ -74,25 +70,5 @@ jobs:
           deploy-env: ${{ matrix.env }}
       - name: Terraform plan
         run: make plan-${{ matrix.env }}
-      - name: Terraform key rotation prod plan
-        if: ${{ matrix.env == 'prod' || matrix.env == 'stg' || matrix.env == 'training' }}
-        uses: ./.github/actions/key-replace
-        with:
-          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
-          deploy_env: ${{ matrix.env }}
-          terraform_arm_client_id: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-          terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-          terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-          terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-          okta_api_token: ${{ secrets.OKTA_API_TOKEN }}
-      - name: Terraform key rotation plan
-        if: ${{ matrix.env != 'prod' && matrix.env != 'stg' && matrix.env != 'training' }}
-        uses: ./.github/actions/key-replace
-        with:
-          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
-          deploy_env: ${{ matrix.env }}
-          terraform_arm_client_id: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-          terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-          terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-          terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-          okta_api_token: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
+      - name: Terraform key replacement plan
+        run: make plan-key-replacement-${{ matrix.env }}

@@ -8,7 +8,6 @@ locals {
     environment    = local.env
     resource_group = data.azurerm_resource_group.rg.name
   }
-  # a list of tags that the cdc requires
 }
 
 # Frontend React App

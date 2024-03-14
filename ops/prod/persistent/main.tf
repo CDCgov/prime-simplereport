@@ -47,9 +47,10 @@ module "db" {
   rg_location = local.rg_location
   rg_name     = local.rg_name
 
-  global_vault_id     = data.azurerm_key_vault.global.id
-  db_vault_id         = data.azurerm_key_vault.db_keys.id
-  subnet_id           = module.vnet.subnet_db_id
+  global_vault_id = data.azurerm_key_vault.global.id
+  db_vault_id     = data.azurerm_key_vault.db_keys.id
+  subnet_id       = module.vnet.subnet_db_id
+
   log_workspace_id    = module.monitoring.log_analytics_workspace_id
   private_dns_zone_id = module.vnet.private_dns_zone_id
 
