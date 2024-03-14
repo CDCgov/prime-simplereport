@@ -1,8 +1,8 @@
 {
   "id": "b3b3e41c-7db4-4243-a886-bd31eed3c64f",
-  "name": "api_v1_users_00ugnomzln2q84acp4h6_factors_emfgnoi1js8jhq79k4h6_lifecycle_activate",
+  "name": "api_v1_users_00ugnh0inq8miBNYg4h6_factors_emfgnoi1js8jhq79k4h6_lifecycle_activate",
   "request": {
-    "url": "/api/v1/users/00ugnomzln2q84aCp4h6/factors/emfgnoi1js8jHQ79K4h6/lifecycle/activate",
+    "url": "/api/v1/users/00ugnh0inq8miBNYg4h6/factors/emfgnoi1js8jHQ79K4h6/lifecycle/activate",
     "method": "POST",
     "bodyPatterns": [
       {
@@ -14,7 +14,7 @@
   },
   "response": {
     "status": 200,
-    "body": "{\"id\":\"emfgnoi1js8jHQ79K4h6\",\"factorType\":\"email\",\"provider\":\"OKTA\",\"vendorName\":\"OKTA\",\"status\":\"ACTIVE\",\"profile\":{\"email\":\"tester@test.com\"},\"_links\":{\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnomzln2q84aCp4h6/factors/emfgnoi1js8jHQ79K4h6\",\"hints\":{\"allow\":[\"GET\",\"DELETE\"]}},\"verify\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnomzln2q84aCp4h6/factors/emfgnoi1js8jHQ79K4h6/verify\",\"hints\":{\"allow\":[\"POST\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnomzln2q84aCp4h6\",\"hints\":{\"allow\":[\"GET\"]}}}}",
+    "body": "{\"id\":\"emfgnoi1js8jHQ79K4h6\",\"factorType\":\"email\",\"provider\":\"OKTA\",\"vendorName\":\"OKTA\",\"status\":\"ACTIVE\",\"profile\":{\"email\":\"tester@test.com\"},\"_links\":{\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/emfgnoi1js8jHQ79K4h6\",\"hints\":{\"allow\":[\"GET\",\"DELETE\"]}},\"verify\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/emfgnoi1js8jHQ79K4h6/verify\",\"hints\":{\"allow\":[\"POST\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6\",\"hints\":{\"allow\":[\"GET\"]}}}}",
     "headers": {
       "Date": "Fri, 30 Jul 2021 19:51:52 GMT",
       "Content-Type": "application/json",
