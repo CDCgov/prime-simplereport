@@ -1,6 +1,3 @@
-// Selector constants
-import { loginHooks } from "../support/e2e";
-
 const mfaRadios = {
   sms: 'input[value="SMS"]+label',
   okta: 'input[value="Okta"]+label',
