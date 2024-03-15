@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.service.email;
 
+import static gov.cdc.usds.simplereport.api.model.filerow.FileRow.log;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.getCurrentDatestamp;
+
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Content;
@@ -7,9 +10,12 @@ import com.sendgrid.helpers.mail.objects.Email;
 import com.sendgrid.helpers.mail.objects.Personalization;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
+import gov.cdc.usds.simplereport.utils.CSVGeneratorUtils;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,5 +165,26 @@ public class EmailService {
     }
 
     return results;
+  }
+
+  public void sendWithCSVAttachment(List<String> emails, String state, String type) {
+    String dateTimestamp = getCurrentDatestamp(LocalDateTime.now());
+    List<String> emailRecipients = sendGridProperties.getOutreachMailingListRecipient();
+    String filename = String.format("%s-%s_%s-org_admin_emails.csv", dateTimestamp, type, state);
+    byte[] emailsCSVBytes = CSVGeneratorUtils.generateEmailCSVInBytes(emails);
+
+    Attachments attachments = new Attachments();
+    attachments.setFilename(filename);
+    attachments.setType("text/csv");
+    attachments.setDisposition("attachment");
+    String attachmentContent = Base64.getMimeEncoder().encodeToString(emailsCSVBytes);
+    attachments.setContent(attachmentContent);
+    String emailSubject =
+        String.format("Org admin email CSVs for outreach - %s in %s", type, state);
+    try {
+      sendWithProvider(emailRecipients, emailSubject, emailSubject, attachments);
+    } catch (IOException e) {
+      log.error(String.format("Error sending org admin email CSVs: %s", e));
+    }
   }
 }

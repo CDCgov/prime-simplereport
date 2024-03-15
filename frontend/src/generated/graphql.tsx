@@ -216,6 +216,7 @@ export type Mutation = {
   resendToReportStream?: Maybe<Scalars["Boolean"]["output"]>;
   resetUserMfa?: Maybe<User>;
   resetUserPassword?: Maybe<User>;
+  sendOrgAdminEmailCSV?: Maybe<Scalars["Int"]["output"]>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]["output"]>;
   sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]["output"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]["output"]>;
@@ -406,6 +407,11 @@ export type MutationResetUserMfaArgs = {
 
 export type MutationResetUserPasswordArgs = {
   id: Scalars["ID"]["input"];
+};
+
+export type MutationSendOrgAdminEmailCsvArgs = {
+  state: Scalars["String"]["input"];
+  type: Scalars["String"]["input"];
 };
 
 export type MutationSendPatientLinkEmailArgs = {

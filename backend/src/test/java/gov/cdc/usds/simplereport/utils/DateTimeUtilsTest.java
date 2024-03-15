@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.getCurrentDatestamp;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.parseLocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,5 +95,11 @@ public class DateTimeUtilsTest {
     String dateTimeString = "07/13/2023";
     LocalDateTime expectedDateTime = LocalDateTime.of(2023, 7, 13, 12, 0);
     test_parseLocalDateTime(dateTimeString, expectedDateTime);
+  }
+
+  @Test
+  void getCurrentDatestamp_returnDateString() {
+    LocalDateTime expectedDateTime = LocalDateTime.of(2023, 7, 13, 12, 0);
+    assertThat(getCurrentDatestamp(expectedDateTime)).isEqualTo("20230713");
   }
 }

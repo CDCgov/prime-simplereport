@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.api.organization;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -113,5 +115,26 @@ class OrganizationResolverTest {
 
     verify(organizationService).getOrganizationsByName(orgName, true);
     verify(organizationService).getFacilities(org);
+  }
+
+  @Test
+  void sendOrgAdminEmailCSV_success() {
+    String type = "patients";
+    String state = "NJ";
+    organizationMutationResolver.sendOrgAdminEmailCSV(type, state);
+    verify(organizationService).sendOrgAdminEmailCSV(type, state);
+  }
+
+  @Test
+  void sendOrgAdminEmailCSV_exception() {
+    String type = "unsupportedType";
+    String state = "NJ";
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              organizationMutationResolver.sendOrgAdminEmailCSV(type, state);
+            });
+    assertEquals("type can be \"facilities\" or \"patients\"", caught.getMessage());
   }
 }

@@ -295,6 +295,7 @@ public class DemoOktaRepository implements OktaRepository {
     Set<Entry<String, OrganizationRoleClaims>> admins =
         usernameOrgRolesMap.entrySet().stream()
             .filter(e -> e.getValue().getGrantedRoles().contains(OrganizationRole.ADMIN))
+            .filter(e -> e.getValue().getOrganizationExternalId().equals(org.getExternalId()))
             .collect(Collectors.toSet());
     return admins.stream().map(Entry::getKey).collect(Collectors.toList());
   }

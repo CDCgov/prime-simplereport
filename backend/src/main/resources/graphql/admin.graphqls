@@ -66,4 +66,5 @@ extend type Mutation {
     role: Role!): User!
   updateFeatureFlag(name: String!, value: Boolean!):FeatureFlag
   deleteE2EOktaOrganizations(orgExternalId: String!): Organization
+  sendOrgAdminEmailCSV(type: String!, state: String!): Int
 }
