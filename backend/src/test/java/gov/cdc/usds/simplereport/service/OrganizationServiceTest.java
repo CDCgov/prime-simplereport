@@ -10,11 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.FacilityStats;
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
@@ -23,15 +25,19 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
@@ -58,8 +64,10 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Autowired private DeviceTypeRepository deviceTypeRepository;
   @Autowired @SpyBean private OktaRepository oktaRepository;
   @Autowired @SpyBean private PersonRepository personRepository;
+  @Autowired @SpyBean private ProviderRepository providerRepository;
   @Autowired ApiUserRepository _apiUserRepo;
   @Autowired private DemoUserConfiguration userConfiguration;
+  @Autowired @SpyBean private EmailService emailService;
 
   @BeforeEach
   void setupData() {
@@ -502,6 +510,66 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
+  @WithSimpleReportStandardUser
+  void sendOrgAdminEmailCSV_accessDeniedException() {
+    assertThrows(
+        AccessDeniedException.class,
+        () -> {
+          _service.sendOrgAdminEmailCSV("facilities", "NM");
+        });
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void sendOrgAdminEmailCSV_byFacilities_success() {
+    setupDataByFacility();
+    String type = "facilities";
+
+    Integer mnCount = _service.sendOrgAdminEmailCSV(type, "MN");
+    verify(facilityRepository, times(1)).findByFacilityState("MN");
+    verify(emailService, times(1))
+        .sendWithCSVAttachment(
+            List.of("mn-orgBadmin1@example.com", "mn-orgBadmin2@example.com"), "MN", type);
+    assertThat(mnCount).isEqualTo(2);
+    reset(emailService);
+
+    Integer njCount = _service.sendOrgAdminEmailCSV(type, "nj");
+    verify(facilityRepository, times(1)).findByFacilityState("nj");
+    verify(emailService, times(1))
+        .sendWithCSVAttachment(List.of("nj-orgAadmin1@example.com"), "nj", type);
+    assertThat(njCount).isEqualTo(1);
+    reset(emailService);
+
+    Integer paCount = _service.sendOrgAdminEmailCSV(type, "PA");
+    verify(facilityRepository, times(1)).findByFacilityState("PA");
+    verify(emailService, times(1)).sendWithCSVAttachment(List.of(), "PA", type);
+    assertThat(paCount).isEqualTo(0);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void sendOrgAdminEmailCSV_byPatients_success() {
+    setupDataByPatient();
+    String type = "patients";
+
+    Integer caCount = _service.sendOrgAdminEmailCSV(type, "CA");
+    verify(emailService, times(1))
+        .sendWithCSVAttachment(List.of("mn-orgBadmin1@example.com"), "CA", type);
+    assertThat(caCount).isEqualTo(1);
+    reset(emailService);
+
+    Integer njCount = _service.sendOrgAdminEmailCSV(type, "nj");
+    verify(emailService, times(1))
+        .sendWithCSVAttachment(List.of("ca-orgAadmin1@example.com"), "nj", type);
+    assertThat(njCount).isEqualTo(1);
+    reset(emailService);
+
+    Integer mnCount = _service.sendOrgAdminEmailCSV(type, "MN");
+    verify(emailService, times(1)).sendWithCSVAttachment(List.of(), "MN", type);
+    assertThat(mnCount).isEqualTo(0);
+  }
+
+  @Test
   @WithSimpleReportSiteAdminUser
   void deleteE2EOktaOrganization_succeeds() {
     Organization createdOrg = _dataFactory.saveValidOrganization();
@@ -509,5 +577,63 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     assertThat(deletedOrg).isEqualTo(createdOrg);
     verify(oktaRepository, times(1)).deleteOrganization(createdOrg);
+  }
+
+  private void setupDataByFacility() {
+    StreetAddress orgAStreetAddress =
+        new StreetAddress("123 Main Street", null, "Hackensack", "NJ", "07601", "Bergen");
+    Organization orgA =
+        _dataFactory.saveOrganization(
+            new Organization("Org A", "k12", "d6b3951b-6698-4ee7-9d63-aaadee85bac0", true));
+    _dataFactory.createValidFacility(orgA, "Org A Facility 1", orgAStreetAddress);
+    _dataFactory.createValidFacility(orgA, "Org A Facility 2", orgAStreetAddress);
+    testDataFactory.createValidApiUser("nj-orgAadmin1@example.com", orgA, Role.ADMIN);
+
+    StreetAddress orgBStreetAddress =
+        new StreetAddress("234 Red Street", null, "Minneapolis", "MN", "55407", "Hennepin");
+    Organization orgB =
+        _dataFactory.saveOrganization(
+            new Organization("Org B", "airport", "747e341d-0467-45b8-b92f-a638da2bf1ee", true));
+    _dataFactory.createValidFacility(orgB, "Org B Facility 1", orgBStreetAddress);
+    testDataFactory.createValidApiUser("mn-orgBadmin1@example.com", orgB, Role.ADMIN);
+    testDataFactory.createValidApiUser("mn-orgBadmin2@example.com", orgB, Role.ADMIN);
+  }
+
+  private void setupDataByPatient() {
+    StreetAddress njStreetAddress =
+        new StreetAddress("123 Main Street", null, "Hackensack", "NJ", "07601", "Bergen");
+    StreetAddress caStreetAddress =
+        new StreetAddress("456 Red Street", null, "Sunnyvale", "CA", "94086", "Santa Clara");
+    StreetAddress mnStreetAddress =
+        new StreetAddress("234 Red Street", null, "Minneapolis", "MN", "55407", "Hennepin");
+    Organization orgA =
+        _dataFactory.saveOrganization(
+            new Organization(
+                "Org A", "k12", "CA-org-a-5359aa13-93b2-4680-802c-9c90acb5d251", true));
+    testDataFactory.createValidApiUser("ca-orgAadmin1@example.com", orgA, Role.ADMIN);
+    Facility orgAFacility =
+        _dataFactory.createValidFacility(orgA, "Org A Facility 1", caStreetAddress);
+
+    // create patient in NJ with a test event for Org A
+    Person orgAPatient1 =
+        _dataFactory.createFullPersonWithAddress(orgA, njStreetAddress, "Joe", "Moe");
+    _dataFactory.createTestEvent(orgAPatient1, orgAFacility, TestResult.POSITIVE);
+
+    Organization orgB =
+        _dataFactory.saveOrganization(
+            new Organization(
+                "Org B", "airport", "MN-org-b-3dddkv89-8981-421b-bd61-f293723284", true));
+    testDataFactory.createValidApiUser("mn-orgBadmin1@example.com", orgB, Role.ADMIN);
+    testDataFactory.createValidApiUser("mn-orgBuser@example.com", orgB, Role.USER);
+    Facility orgBFacility =
+        _dataFactory.createValidFacility(orgB, "Org B Facility 1", mnStreetAddress);
+    // create patient in CA with a test event for Org A
+    Person orgAPatient2 =
+        _dataFactory.createFullPersonWithAddress(orgA, caStreetAddress, "Ed", "Eaves");
+    _dataFactory.createTestEvent(orgAPatient2, orgBFacility, TestResult.UNDETERMINED);
+    // create patient in CA with a test event for Org B
+    Person orgBPatient1 =
+        _dataFactory.createFullPersonWithAddress(orgB, caStreetAddress, "Mary", "Meade");
+    _dataFactory.createTestEvent(orgBPatient1, orgBFacility, TestResult.NEGATIVE);
   }
 }

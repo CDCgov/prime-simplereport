@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -469,6 +470,24 @@ class DemoOktaRepositoryTest {
         true);
 
     assertThat(_repo.fetchAdminUserEmail(ABC)).contains("dianek@gmail.com");
+  }
+
+  @Test
+  void fetchAdminUserEmail_differentOrgs_successful() {
+    Set<OrganizationRole> adminRoles = Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN);
+    Organization orgA = new Organization("Org A", "k12", "Org A", true);
+    _repo.createOrganization(orgA);
+    Facility orgAFacility = getFacility(UUID.randomUUID(), orgA);
+    _repo.createFacility(orgAFacility);
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), adminRoles, true);
+    _repo.createUser(BRAD, orgA, Set.of(orgAFacility), adminRoles, true);
+
+    List<String> actualABCAdminEmails = _repo.fetchAdminUserEmail(ABC);
+    assertThat(actualABCAdminEmails).contains(AMOS.getUsername());
+    assertThat(actualABCAdminEmails.size()).isEqualTo(1);
+    List<String> actualOrgAAdminEmails = _repo.fetchAdminUserEmail(orgA);
+    assertThat(actualOrgAAdminEmails).contains(BRAD.getUsername());
+    assertThat(actualOrgAAdminEmails.size()).isEqualTo(1);
   }
 
   @Test

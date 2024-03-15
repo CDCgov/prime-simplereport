@@ -7,11 +7,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Personalization;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +37,14 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
 
   private static final SendGridProperties FAKE_PROPERTIES =
       new SendGridProperties(
-          true, null, "me@example.com", "My Display Name", List.of(), List.of(), Map.of());
+          true,
+          null,
+          "me@example.com",
+          "My Display Name",
+          List.of(),
+          List.of(),
+          List.of("support-test@simplereport.gov"),
+          Map.of());
 
   @Mock EmailProvider mockSendGrid;
   @Captor ArgumentCaptor<Mail> mail;
@@ -239,5 +249,34 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
     assertThat(sentMail.getFrom().getEmail()).isEqualTo("me@example.com");
     assertEquals(personalization.getTos().get(0).getEmail(), toEmail);
     assertThat(personalization.getDynamicTemplateData()).isEqualTo(dynamicTemplateData);
+  }
+
+  @Test
+  void sendWithCSVAttachment_success() throws IOException {
+    // GIVEN
+    List<String> emails = List.of("test-1@example.com", "test-2@example.com");
+
+    // WHEN
+    _service.sendWithCSVAttachment(emails, "NJ", "facilities");
+
+    // THEN
+    verify(mockSendGrid, times(1)).send(mail.capture());
+    Mail sentMail = mail.getValue();
+    String emailSubject = sentMail.getSubject();
+    String emailBody = sentMail.getContent().get(0).getValue();
+    Attachments attachment = sentMail.getAttachments().get(0);
+    String filename = attachment.getFilename();
+    String type = attachment.getType();
+    byte[] bytes = Base64.getDecoder().decode(attachment.getContent());
+    String attachmentString = new String(bytes, StandardCharsets.UTF_8);
+    Personalization personalization = sentMail.getPersonalization().get(0);
+
+    assertThat(sentMail.getFrom().getEmail()).isEqualTo("me@example.com");
+    assertEquals(personalization.getTos().get(0).getEmail(), "support-test@simplereport.gov");
+    assertThat(emailSubject).isEqualTo("Org admin email CSVs for outreach - facilities in NJ");
+    assertThat(emailBody).isEqualTo("Org admin email CSVs for outreach - facilities in NJ");
+    assertThat(filename).contains("-facilities_NJ-org_admin_emails.csv");
+    assertThat(type).isEqualTo("text/csv");
+    assertThat(attachmentString).isEqualTo("email\ntest-1@example.com\ntest-2@example.com\n");
   }
 }

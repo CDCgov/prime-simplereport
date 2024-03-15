@@ -15,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 /**
  * A base test for Spring Data repository tests. Comes pre-wired with a standard API user to attach
@@ -22,7 +23,12 @@ import org.springframework.test.context.ActiveProfiles;
  */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({SliceTestConfiguration.class, DbTruncator.class, DataSourceConfiguration.class})
+@Import({
+  SliceTestConfiguration.class,
+  DbTruncator.class,
+  DataSourceConfiguration.class,
+  SpringTemplateEngine.class
+})
 @WithSimpleReportStandardUser
 // this allows us to have a non-static @BeforeAll method, at the cost of having slightly less
 // isolation between test cases (data could be passed between tests using instance variables). Don't

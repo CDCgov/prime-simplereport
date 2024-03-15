@@ -14,6 +14,7 @@ public final class SendGridProperties {
   private final String fromDisplayName;
   private final List<String> accountRequestRecipient;
   private final List<String> waitlistRecipient;
+  private final List<String> outreachMailingListRecipient;
   private final Map<EmailProviderTemplate, String> dynamicTemplates;
 
   public SendGridProperties(
@@ -23,6 +24,7 @@ public final class SendGridProperties {
       String fromDisplayName,
       List<String> accountRequestRecipient,
       List<String> waitlistRecipient,
+      List<String> outreachMailingListRecipient,
       Map<EmailProviderTemplate, String> dynamicTemplates) {
     this.enabled = enabled;
     this.apiKey = apiKey;
@@ -30,6 +32,7 @@ public final class SendGridProperties {
     this.fromDisplayName = fromDisplayName;
     this.accountRequestRecipient = accountRequestRecipient;
     this.waitlistRecipient = waitlistRecipient;
+    this.outreachMailingListRecipient = outreachMailingListRecipient;
     this.dynamicTemplates = dynamicTemplates;
   }
 
@@ -55,6 +58,10 @@ public final class SendGridProperties {
 
   public List<String> getWaitlistRecipient() {
     return waitlistRecipient;
+  }
+
+  public List<String> getOutreachMailingListRecipient() {
+    return outreachMailingListRecipient;
   }
 
   public String getDynamicTemplateGuid(final EmailProviderTemplate templateName) {

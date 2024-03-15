@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
 
@@ -131,5 +132,25 @@ public class OrganizationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<UUID> getOrgAdminUserIds(@Argument UUID orgId) {
     return _organizationService.getOrgAdminUserIds(orgId);
+  }
+
+  /**
+   * Primarily used for outreach purposes, emails a CSV of org admin emails for the following type
+   * "facilities" - orgs that have facilities in the state "patients" - orgs outside the state that
+   * have test results for patients whose address is in the state The CSV is sent to the
+   * outreachMailingListRecipient email
+   *
+   * @param type "facilities" or "patients"
+   * @param state State abbreviation e.g. "NJ", "MN"
+   */
+  @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Integer sendOrgAdminEmailCSV(@Argument String type, @Argument String state) {
+    List<String> acceptableTypes = List.of("facilities", "patients");
+    if (acceptableTypes.contains(type.toLowerCase())) {
+      return _organizationService.sendOrgAdminEmailCSV(type, state);
+    } else {
+      throw new IllegalGraphqlArgumentException("type can be \"facilities\" or \"patients\"");
+    }
   }
 }

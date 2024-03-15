@@ -31,4 +31,13 @@ public interface OrganizationRepository extends EternalAuditedEntityRepository<O
       EternalAuditedEntityRepository.BASE_ALLOW_DELETED_QUERY
           + " UPPER(e.organizationName) = UPPER(:name) and e.isDeleted = :isDeleted")
   List<Organization> findAllByNameAndDeleted(String name, Boolean isDeleted);
+
+  @Query(
+      value =
+          "from #{#entityName} o"
+              + " LEFT JOIN TestEvent te ON te.organization.internalId = o.internalId"
+              + " LEFT JOIN Person p ON p.internalId = te.patient.internalId"
+              + " WHERE lower(p.address.state) = lower(:state) AND lower(o.externalId) NOT LIKE lower(concat('%', :state,'%'))"
+              + " GROUP BY o.internalId")
+  List<Organization> findAllByPatientStateWithTestEvents(String state);
 }

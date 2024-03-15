@@ -149,9 +149,13 @@ public class TestDataFactory {
   }
 
   public UserInfo createValidApiUser(String username, Organization org) {
+    return createValidApiUser(username, org, Role.USER);
+  }
+
+  public UserInfo createValidApiUser(String username, Organization org, Role role) {
     PersonName name = new PersonName("John", null, "June", null);
     return apiUserService.createUser(
-        username, name, org.getExternalId(), Role.USER, false, Collections.emptySet());
+        username, name, org.getExternalId(), role, false, Collections.emptySet());
   }
 
   public OrganizationQueueItem saveOrganizationQueueItem(
@@ -177,6 +181,11 @@ public class TestDataFactory {
   }
 
   public Facility createValidFacility(Organization org, String facilityName) {
+    return createValidFacility(org, facilityName, getAddress());
+  }
+
+  public Facility createValidFacility(
+      Organization org, String facilityName, StreetAddress facilityStreetAddress) {
     DeviceType defaultDevice = getGenericDevice();
     SpecimenType defaultSpecimen = genericSpecimenType;
 
@@ -191,7 +200,7 @@ public class TestDataFactory {
                 .org(org)
                 .facilityName(facilityName)
                 .cliaNumber("123456")
-                .facilityAddress(getAddress())
+                .facilityAddress(facilityStreetAddress)
                 .phone("555-867-5309")
                 .email("facility@test.com")
                 .orderingProvider(doc)
@@ -379,6 +388,35 @@ public class TestDataFactory {
             "English",
             TestResultDeliveryPreference.SMS,
             "Nashville-born spacefarer");
+    return personRepository.save(p);
+  }
+
+  @Transactional
+  public Person createFullPersonWithAddress(
+      Organization org, StreetAddress address, String firstName, String lastName) {
+    Person p =
+        new Person(
+            org,
+            "123",
+            firstName,
+            "",
+            lastName,
+            null,
+            DEFAULT_BDAY,
+            address,
+            "USA",
+            PersonRole.RESIDENT,
+            null,
+            "white",
+            "not_hispanic",
+            null,
+            "male",
+            "male",
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.SMS,
+            "");
     return personRepository.save(p);
   }
 
