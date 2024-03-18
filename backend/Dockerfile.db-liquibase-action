@@ -2,7 +2,7 @@ FROM gradle:8.3-jdk17 AS build
 
 WORKDIR /home/gradle/graphql-api
 
-COPY ./.git ./.git
+COPY .git .git
 
 WORKDIR /home/gradle/graphql-api/backend
 

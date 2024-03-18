@@ -4,7 +4,7 @@ LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplerepo
 WORKDIR /app/
 
 ADD ./backend /app/backend
-ADD ./.git /app/.git
+ADD .git /app/.git
 
 # compile backend into a jar
 RUN cd backend && ./gradlew clean build -x test -x checkstyleMain -x spotlessCheck
