@@ -40,7 +40,7 @@ RUN yarn install --non-interactive
 # copy over the backend graphql schema files
 ADD ./backend/ /app/backend
 ADD ./frontend /app/frontend
-ADD ./.git /app/.git
+ADD .git /app/.git
 
 #e2e specific, disable content security
 RUN echo "REACT_APP_CONTENT_SECURITY_POLICY_DEFAULT_SRC=''" >> .env.production.local
