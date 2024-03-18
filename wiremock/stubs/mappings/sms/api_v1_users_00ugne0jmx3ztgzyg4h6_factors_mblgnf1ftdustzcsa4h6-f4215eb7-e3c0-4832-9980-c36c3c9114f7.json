@@ -1,13 +1,13 @@
 {
   "id": "f4215eb7-e3c0-4832-9980-c36c3c9114f7",
-  "name": "api_v1_users_00ugnh0inq8miBNYg4h6_factors_mblgnf1ftdustzcsa4h6",
+  "name": "api_v1_users_00ugne0jmx3ztgzyg4h6_factors_mblgnf1ftdustzcsa4h6",
   "request": {
-    "url": "/api/v1/users/00ugnh0inq8miBNYg4h6/factors/mblgnf1ftdUsTzcsA4h6",
+    "url": "/api/v1/users/00ugne0jmx3ztgzyg4h6/factors/mblgnf1ftdUsTzcsA4h6",
     "method": "GET"
   },
   "response": {
     "status": 200,
-    "body": "{\"id\":\"mblgnf1ftdUsTzcsA4h6\",\"factorType\":\"sms\",\"provider\":\"OKTA\",\"vendorName\":\"OKTA\",\"status\":\"PENDING_ACTIVATION\",\"created\":\"2021-07-30T18:47:28.000Z\",\"lastUpdated\":\"2021-07-30T18:47:28.000Z\",\"profile\":{\"phoneNumber\":\"+15308675309\"},\"_links\":{\"resend\":[{\"name\":\"sms\",\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/mblgnf1ftdUsTzcsA4h6/resend\",\"hints\":{\"allow\":[\"POST\"]}}],\"activate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/mblgnf1ftdUsTzcsA4h6/lifecycle/activate\",\"hints\":{\"allow\":[\"POST\"]}},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/mblgnf1ftdUsTzcsA4h6\",\"hints\":{\"allow\":[\"GET\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6\",\"hints\":{\"allow\":[\"GET\"]}}}}",
+    "body": "{\"id\":\"mblgnf1ftdUsTzcsA4h6\",\"factorType\":\"sms\",\"provider\":\"OKTA\",\"vendorName\":\"OKTA\",\"status\":\"PENDING_ACTIVATION\",\"created\":\"2021-07-30T18:47:28.000Z\",\"lastUpdated\":\"2021-07-30T18:47:28.000Z\",\"profile\":{\"phoneNumber\":\"+15308675309\"},\"_links\":{\"resend\":[{\"name\":\"sms\",\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugne0jmx3ztgzyg4h6/factors/mblgnf1ftdUsTzcsA4h6/resend\",\"hints\":{\"allow\":[\"POST\"]}}],\"activate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugne0jmx3ztgzyg4h6/factors/mblgnf1ftdUsTzcsA4h6/lifecycle/activate\",\"hints\":{\"allow\":[\"POST\"]}},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugne0jmx3ztgzyg4h6/factors/mblgnf1ftdUsTzcsA4h6\",\"hints\":{\"allow\":[\"GET\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugne0jmx3ztgzyg4h6\",\"hints\":{\"allow\":[\"GET\"]}}}}",
     "headers": {
       "Date": "Fri, 30 Jul 2021 18:47:42 GMT",
       "Content-Type": "application/json",

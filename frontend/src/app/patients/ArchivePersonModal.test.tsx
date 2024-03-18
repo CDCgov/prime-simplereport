@@ -68,7 +68,7 @@ describe("ArchivePersonModal", () => {
   it("shows a success message when archiving", async () => {
     let alertSpy: jest.SpyInstance = jest.spyOn(srToast, "showSuccess");
     setup();
-    await userEvent.click(screen.getByText("Yes, I'm sure"));
+    userEvent.click(screen.getByText("Yes, I'm sure"));
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith("", "Record archived");
     });

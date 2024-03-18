@@ -106,11 +106,8 @@ public class TestResultResolver {
 
   @QueryMapping
   public TopLevelDashboardMetrics topLevelDashboardMetrics(
-      @Argument UUID facilityId,
-      @Argument Date startDate,
-      @Argument Date endDate,
-      @Argument String disease) {
-    return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate, disease);
+      @Argument UUID facilityId, @Argument Date startDate, @Argument Date endDate) {
+    return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
   }
 
   @QueryMapping

@@ -4,7 +4,6 @@ import { MockedProvider } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import MockDate from "mockdate";
-import * as flaggedMock from "flagged";
 
 import { GetTopLevelDashboardMetricsNewDocument } from "../../generated/graphql";
 import { PATIENT_TERM_PLURAL } from "../../config/constants";
@@ -42,7 +41,6 @@ const getMocks = () => [
         facilityId: "",
         startDate: getStartDateFromDaysAgo(7),
         endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -61,7 +59,6 @@ const getMocks = () => [
         facilityId: "",
         startDate: getStartDateFromDaysAgo(1),
         endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -80,7 +77,6 @@ const getMocks = () => [
         facilityId: "",
         startDate: getStartDateFromDaysAgo(30),
         endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -99,7 +95,6 @@ const getMocks = () => [
         facilityId: "1",
         startDate: getStartDateFromDaysAgo(7),
         endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -118,7 +113,6 @@ const getMocks = () => [
         facilityId: "2",
         startDate: getStartDateFromDaysAgo(7),
         endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -137,7 +131,6 @@ const getMocks = () => [
         facilityId: "",
         startDate: setStartTimeForDateRange(new Date("07/01/2021")),
         endDate: setEndTimeForDateRange(new Date("07/31/2021")),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -156,7 +149,6 @@ const getMocks = () => [
         facilityId: "",
         startDate: setStartTimeForDateRange(new Date("07/01/2021")),
         endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -175,7 +167,6 @@ const getMocks = () => [
         facilityId: "3",
         startDate: getStartDateFromDaysAgo(7),
         endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -194,7 +185,6 @@ const getMocks = () => [
         facilityId: "3",
         startDate: getStartDateFromDaysAgo(30),
         endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
       },
     },
     result: {
@@ -202,44 +192,6 @@ const getMocks = () => [
         topLevelDashboardMetrics: {
           totalTestCount: 5,
           positiveTestCount: 0,
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: GetTopLevelDashboardMetricsNewDocument,
-      variables: {
-        facilityId: "3",
-        startDate: getStartDateFromDaysAgo(7),
-        endDate: getEndDateFromDaysAgo(0),
-        disease: "COVID-19",
-      },
-    },
-    result: {
-      data: {
-        topLevelDashboardMetrics: {
-          totalTestCount: 5,
-          positiveTestCount: 0,
-        },
-      },
-    },
-  },
-  {
-    request: {
-      query: GetTopLevelDashboardMetricsNewDocument,
-      variables: {
-        facilityId: "",
-        startDate: getStartDateFromDaysAgo(7),
-        endDate: getEndDateFromDaysAgo(0),
-        disease: "Flu A",
-      },
-    },
-    result: {
-      data: {
-        topLevelDashboardMetrics: {
-          totalTestCount: 736,
-          positiveTestCount: 289,
         },
       },
     },
@@ -268,7 +220,7 @@ describe("Analytics", () => {
   it("renders", async () => {
     renderWithUser();
     expect(
-      await screen.findByText("Central Schools - COVID-19 testing data")
+      await screen.findByText("COVID-19 testing data")
     ).toBeInTheDocument();
   });
   it("shows the total test count", async () => {
@@ -289,7 +241,7 @@ describe("Analytics", () => {
   });
   it("allows filtering by Lincoln Middle School", async () => {
     const { user } = renderWithUser();
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Testing facility"), [
       "Lincoln Middle School",
@@ -301,7 +253,7 @@ describe("Analytics", () => {
   });
   it("allows filtering by Rosa Parks High School", async () => {
     const { user } = renderWithUser();
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Testing facility"), [
       "Rosa Parks High School",
@@ -313,7 +265,7 @@ describe("Analytics", () => {
   });
   it("allows filtering by last day", async () => {
     const { user } = renderWithUser();
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Date range"), [
       "Last day (24 hours)",
@@ -326,7 +278,7 @@ describe("Analytics", () => {
   });
   it("allows filtering by last week", async () => {
     const { user } = renderWithUser();
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Date range"), [
       "Last week (7 days)",
@@ -336,7 +288,7 @@ describe("Analytics", () => {
   });
   it("allows filtering by last month", async () => {
     const { user } = renderWithUser();
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Date range"), [
       "Last month (30 days)",
@@ -349,13 +301,13 @@ describe("Analytics", () => {
   });
   it("allows filtering by a custom date range", async () => {
     const { user } = renderWithUser();
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Date range"), [
       "Custom date range",
     ]);
 
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
     const startDate = screen.getByTestId("startDate") as HTMLInputElement;
     const endDate = screen.getByTestId("endDate") as HTMLInputElement;
 
@@ -375,7 +327,7 @@ describe("Analytics", () => {
   });
   it("shows N/A for positivity rate at Empty School", async () => {
     const { user } = renderWithUser();
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Testing facility"), [
       "Empty School",
@@ -385,37 +337,18 @@ describe("Analytics", () => {
   });
   it("shows 0% for positivity rate at Empty School over last month", async () => {
     const { user } = renderWithUser();
-    await screen.findByText("Central Schools - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Testing facility"), [
       "Empty School",
     ]);
 
-    await screen.findByText("Empty School - COVID-19 testing data");
+    await screen.findByText("COVID-19 testing data");
 
     await user.selectOptions(screen.getByLabelText("Date range"), [
       "Last month (30 days)",
     ]);
 
     expect(await screen.findByText("0.0%")).toBeInTheDocument();
-  });
-  it("allows selection of a different disease", async () => {
-    const { user } = renderWithUser();
-    await user.selectOptions(screen.getByLabelText("Condition"), ["Flu A"]);
-    await screen.findByText("Central Schools - Flu A testing data");
-
-    expect(await screen.findByText("736")).toBeInTheDocument();
-    expect(await screen.findByText("289")).toBeInTheDocument();
-    expect(await screen.findByText("447")).toBeInTheDocument();
-    expect(await screen.findByText("39.3%")).toBeInTheDocument();
-  });
-  it("filters out selection of disabled diseases", async () => {
-    const flagSpy = jest.spyOn(flaggedMock, "useFeature");
-    flagSpy.mockImplementation((flagName) => {
-      return flagName !== "hivEnabled";
-    });
-    renderWithUser();
-    const hivElement = screen.queryByText("HIV");
-    expect(hivElement).not.toBeInTheDocument();
   });
 });

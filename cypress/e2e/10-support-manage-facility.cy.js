@@ -84,8 +84,9 @@ describe("Support admin: manage facility", () => {
     cy.checkAccessibility();
     cy.get("button").contains("No, go back").click();
     cy.contains(`Delete ${facilityName}`).should("not.exist");
+  });
 
-    // Deletes a facility
+  it("Deletes a facility", () => {
     cy.get("button").contains("Delete facility").click();
     cy.get("button").contains("Yes, delete facility").click();
     cy.get(".Toastify").contains(

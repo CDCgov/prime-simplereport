@@ -8,42 +8,21 @@ interface TestResultsListProps {
   results: MultiplexResults;
   isPatientApp: boolean;
 }
-const setDiseaseResultTitle = (
-  diseaseName: MultiplexDisease,
-  t: translateFn,
-  isPxp: boolean
-) => {
-  const translationKey = setDiseaseResultKey(diseaseName, isPxp);
-  if (translationKey) {
-    return t(translationKey);
-  }
-  return "";
-};
 
-const setDiseaseResultKey = (diseaseName: MultiplexDisease, isPxp: boolean) => {
+const setDiseaseName = (diseaseName: MultiplexDisease, t: translateFn) => {
   switch (diseaseName) {
     case MULTIPLEX_DISEASES.COVID_19:
-      return isPxp
-        ? "constants.diseaseResultTitle.COVID19"
-        : "constants.disease.COVID19";
+      return t("constants.disease.COVID19");
     case MULTIPLEX_DISEASES.FLU_A:
-      return isPxp
-        ? "constants.diseaseResultTitle.FLUA"
-        : "constants.disease.FLUA";
+      return t("constants.disease.FLUA");
     case MULTIPLEX_DISEASES.FLU_B:
-      return isPxp
-        ? "constants.diseaseResultTitle.FLUB"
-        : "constants.disease.FLUB";
+      return t("constants.disease.FLUB");
     case MULTIPLEX_DISEASES.HIV:
-      return isPxp
-        ? "constants.diseaseResultTitle.HIV"
-        : "constants.disease.HIV";
+      return t("constants.disease.HIV");
     case MULTIPLEX_DISEASES.RSV:
-      return isPxp
-        ? "constants.diseaseResultTitle.RSV"
-        : "constants.disease.RSV";
+      return t("constants.disease.RSV");
     default:
-      return null;
+      return "";
   }
 };
 
@@ -76,7 +55,7 @@ const reportingAppResultListItem = (
 ) => {
   return (
     <li key={`${diseaseName}-${result}`}>
-      <b>{setDiseaseResultTitle(diseaseName, t, false)}</b>
+      <b>{setDiseaseName(diseaseName, t)}</b>
       <div>
         <strong>
           <span className="text-uppercase">{setResult(result, t)}</span>
@@ -98,7 +77,7 @@ const pxpAppResultListItem = (
   return (
     <div key={`${diseaseName}-${result}`}>
       <h2 className="font-heading-sm">
-        {setDiseaseResultTitle(diseaseName, t, true)}
+        {setDiseaseName(diseaseName, t) + " " + t("testResult.resultLiteral")}
       </h2>
       <p className="margin-top-05 text-uppercase">
         {setResult(result, t)}

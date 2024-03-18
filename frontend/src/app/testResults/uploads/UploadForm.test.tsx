@@ -181,9 +181,7 @@ describe("Uploads", () => {
               )
             );
           });
-      });
 
-      const fileUploadSetup = async () => {
         const { user } = renderWithUser();
 
         const fileInput = screen.getByTestId("upload-csv-input");
@@ -202,21 +200,18 @@ describe("Uploads", () => {
             screen.getByText("Success: File Accepted")
           ).toBeInTheDocument();
         });
-      };
+      });
 
       it("performs HTTP request to rest endpoint to submit CSV file", async () => {
-        await fileUploadSetup();
         expect(uploadResultsSpy).toHaveBeenCalled();
       });
 
       it("displays a success message and the returned Report ID", async () => {
-        await fileUploadSetup();
         expect(screen.getByText("Confirmation Code")).toBeInTheDocument();
         expect(screen.getByText("fake-report-id")).toBeInTheDocument();
       });
 
-      it("logs success event to App Insights", async () => {
-        await fileUploadSetup();
+      it("logs success event to App Insights", () => {
         expect(mockTrackEvent).toHaveBeenCalledWith({
           name: "Spreadsheet upload success",
           properties: {
@@ -228,8 +223,7 @@ describe("Uploads", () => {
         });
       });
 
-      it("input should be valid", async () => {
-        await fileUploadSetup();
+      it("input should be valid", () => {
         expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
           "aria-invalid",
           "false"

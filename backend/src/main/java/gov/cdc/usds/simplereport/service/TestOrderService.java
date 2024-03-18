@@ -598,13 +598,9 @@ public class TestOrderService {
 
     List<AggregateFacilityMetrics> facilityMetrics = new ArrayList<AggregateFacilityMetrics>();
 
-    // we don't seem to be using the "organizationLevelDashboardMetrics" query anywhere so we can
-    // probably clean up this method
-    String diseaseLoinc = "96741-4";
-
     for (UUID facilityId : facilityIds) {
       List<TestResultWithCount> results =
-          _testEventRepo.countByResultForFacility(facilityId, startDate, endDate, diseaseLoinc);
+          _testEventRepo.countByResultForFacility(facilityId, startDate, endDate);
       Facility facility = _organizationService.getFacilityInCurrentOrg(facilityId);
       Map<TestResult, Long> testResultMap =
           results.stream()
@@ -636,7 +632,7 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
   public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
-      UUID facilityId, Date startDate, Date endDate, String disease) {
+      UUID facilityId, Date startDate, Date endDate) {
     Set<UUID> facilityIds;
 
     if (startDate == null || endDate == null) {
@@ -655,15 +651,8 @@ public class TestOrderService {
               .collect(Collectors.toSet());
     }
 
-    // default to COVID-19
-    String diseaseLoinc = "96741-4";
-
-    if (disease != null && !disease.isBlank()) {
-      diseaseLoinc = _diseaseService.getDiseaseByName(disease).getLoinc();
-    }
-
     List<TestResultWithCount> testResultList =
-        _testEventRepo.countByResultByFacility(facilityIds, startDate, endDate, diseaseLoinc);
+        _testEventRepo.countByResultByFacility(facilityIds, startDate, endDate);
     Map<TestResult, Long> testResultMap =
         testResultList.stream()
             .collect(

@@ -866,7 +866,6 @@ export type QueryTestResultsPageArgs = {
 };
 
 export type QueryTopLevelDashboardMetricsArgs = {
-  disease?: InputMaybe<Scalars["String"]["input"]>;
   endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   facilityId?: InputMaybe<Scalars["ID"]["input"]>;
   startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -1524,7 +1523,6 @@ export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
   facilityId?: InputMaybe<Scalars["ID"]["input"]>;
   startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  disease?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type GetTopLevelDashboardMetricsNewQuery = {
@@ -4279,13 +4277,11 @@ export const GetTopLevelDashboardMetricsNewDocument = gql`
     $facilityId: ID
     $startDate: DateTime
     $endDate: DateTime
-    $disease: String
   ) {
     topLevelDashboardMetrics(
       facilityId: $facilityId
       startDate: $startDate
       endDate: $endDate
-      disease: $disease
     ) {
       positiveTestCount
       totalTestCount
@@ -4308,7 +4304,6 @@ export const GetTopLevelDashboardMetricsNewDocument = gql`
  *      facilityId: // value for 'facilityId'
  *      startDate: // value for 'startDate'
  *      endDate: // value for 'endDate'
- *      disease: // value for 'disease'
  *   },
  * });
  */

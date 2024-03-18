@@ -12,8 +12,8 @@ import { ArchivedStatus } from "../../../generated/graphql";
 
 import AddToQueueSearch, { QUERY_PATIENT } from "./AddToQueueSearch";
 
-let refetchQueueMock: any;
-let setStartTestPatientIdMock: any;
+let refetchQueueMock;
+let setStartTestPatientIdMock;
 
 const facilityId = "fake-facility-id";
 
@@ -76,9 +76,7 @@ describe("AddToSearchQueue", () => {
   beforeEach(async () => {
     refetchQueueMock = jest.fn();
     setStartTestPatientIdMock = jest.fn();
-  });
 
-  const renderContainer = () =>
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
@@ -93,10 +91,10 @@ describe("AddToSearchQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
+  });
 
   describe("patient search", () => {
     it("does not search on too few input search characters", async () => {
-      renderContainer();
       fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "a" },
       });
@@ -105,7 +103,6 @@ describe("AddToSearchQueue", () => {
     });
 
     it("performs search on input change", async () => {
-      renderContainer();
       fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "bar" },
       });
@@ -118,7 +115,6 @@ describe("AddToSearchQueue", () => {
     });
 
     it("does not allow adding new test if patient already in queue", async () => {
-      renderContainer();
       fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "joh" },
       });

@@ -52,8 +52,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_I
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SIMPLE_REPORT_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TESTKIT_NAME_ID_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
@@ -817,34 +815,6 @@ public class FhirConverter {
     return observations;
   }
 
-  public Set<Observation> convertToAOEGenderOfSexualPartnersObservation(
-      Set<String> sexualPartners) {
-    HashSet<Observation> observations = new LinkedHashSet<>();
-
-    for (String sexualPartner : sexualPartners) {
-
-      String genderSNOMED = genderIdentitySnomedSet.get(sexualPartner);
-
-      String genderStatusDisplay = genderIdentityDisplaySet.get(sexualPartner);
-
-      CodeableConcept genderOfSexualPartnerStatusCode =
-          createSimpleReportConcept(
-              SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS,
-              "What is the gender of their sexual partners",
-              "What is the gender of their sexual partners");
-
-      CodeableConcept genderOfSexualPartnerValueCode =
-          createSNOMEDConcept(genderSNOMED, genderStatusDisplay);
-
-      observations.add(
-          createAOEObservation(
-              uuidGenerator.randomUUID().toString(),
-              genderOfSexualPartnerStatusCode,
-              genderOfSexualPartnerValueCode));
-    }
-    return observations;
-  }
-
   public Observation convertToAOEPregnancyObservation(String pregnancyStatusSnomed) {
     String pregnancyStatusDisplay = pregnancyStatusDisplayMap.get(pregnancyStatusSnomed);
     CodeableConcept pregnancyStatusCode =
@@ -978,11 +948,6 @@ public class FhirConverter {
       }
     }
 
-    if (surveyData.getGenderOfSexualPartners() != null) {
-      Set<String> sexualPartners = new HashSet<>(surveyData.getGenderOfSexualPartners());
-      observations.addAll(convertToAOEGenderOfSexualPartnersObservation(sexualPartners));
-    }
-
     return observations;
   }
 
@@ -1010,19 +975,6 @@ public class FhirConverter {
     if (StringUtils.isNotBlank(codingDisplay)) {
       coding.setDisplay(codingDisplay);
     }
-
-    return concept;
-  }
-
-  private CodeableConcept createSimpleReportConcept(
-      String codingCode, String codingDisplay, String text) {
-    CodeableConcept concept = new CodeableConcept().setText(text);
-
-    concept
-        .addCoding()
-        .setSystem(SIMPLE_REPORT_CODE_SYSTEM)
-        .setCode(codingCode)
-        .setDisplay(codingDisplay);
 
     return concept;
   }

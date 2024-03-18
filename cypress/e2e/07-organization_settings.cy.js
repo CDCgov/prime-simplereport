@@ -50,23 +50,23 @@ describe("Updating organization settings", () => {
     // Test a11y on the Manage organization page
     cy.injectSRAxe();
     cy.checkAccessibility();
-
-    // attempts an empty selection for organization type
+  });
+  it("attempts an empty selection for organization type", () => {
     cy.get('select[name="type"]')
       .find("option:selected")
       .should("have.text", "Camp");
     cy.get('select[name="type"]').select("- Select -");
     cy.contains("Save settings").should("be.enabled").click();
-
-    // displays a validation toast
+  });
+  it("displays a validation toast", () => {
     cy.contains("An organization type must be selected");
-
-    // attempts a valid selection for organization type
+  });
+  it("attempts a valid selection for organization type", () => {
     cy.get('select[name="type"]').select("Nursing home");
     cy.contains("Save settings").should("be.enabled").click();
     cy.wait("@AdminSetOrganization");
-
-    // displays a success toast
+  });
+  it("displays a success toast", () => {
     cy.get(".Toastify").contains("Updated organization");
   });
 });

@@ -303,24 +303,3 @@ WithNonPositiveRsvFlu.parameters = {
     ],
   },
 };
-
-/**
- * HIV result
- */
-export const WithHIV = Template.bind({});
-WithHIV.args = {
-  ...defaultProps,
-};
-WithHIV.parameters = {
-  apolloClient: {
-    mocks: [
-      GetTestResultForPrintDocumentMock(
-        { id: "1" },
-        {
-          ...testResult,
-          results: [{ disease: { name: "HIV" }, testResult: "NEGATIVE" }],
-        }
-      ),
-    ],
-  },
-};
