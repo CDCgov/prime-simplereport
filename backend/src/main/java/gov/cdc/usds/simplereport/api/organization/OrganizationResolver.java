@@ -155,11 +155,9 @@ public class OrganizationResolver {
     if (!acceptableStates.contains(state.toUpperCase())) {
       throw new IllegalGraphqlArgumentException("Not a valid state");
     }
-
     if (!acceptableTypes.contains(type.toLowerCase())) {
-      return _organizationService.sendOrgAdminEmailCSV(type, state);
-    } else {
       throw new IllegalGraphqlArgumentException("type can be \"facilities\" or \"patients\"");
     }
+    return _organizationService.sendOrgAdminEmailCSV(type, state);
   }
 }
