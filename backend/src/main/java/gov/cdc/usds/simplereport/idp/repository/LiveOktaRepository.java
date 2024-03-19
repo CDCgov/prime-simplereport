@@ -590,8 +590,13 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public List<String> fetchAdminUserEmail(Organization org) {
-    var admins = getOrgAdminUsers(org);
-    return admins.stream().map(u -> u.getProfile().getLogin()).toList();
+    try {
+      List<User> admins = getOrgAdminUsers(org);
+      return admins.stream().map(u -> u.getProfile().getLogin()).toList();
+    } catch (IllegalGraphqlArgumentException e) {
+      log.error(String.format("Error fetchAdminUserEmail:", e));
+      return List.of();
+    }
   }
 
   @Override

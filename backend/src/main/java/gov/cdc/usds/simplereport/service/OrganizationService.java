@@ -480,27 +480,26 @@ public class OrganizationService {
   }
 
   private List<ApiUser> getOrgAdminUsers(UUID orgId) {
-    Organization org =
-        organizationRepository.findById(orgId).orElseThrow(NonexistentOrgException::new);
-    try {
-      List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
-      return adminUserEmails.stream()
-          .map(
-              adminUserEmail -> {
-                Optional<ApiUser> foundUser = apiUserRepository.findByLoginEmail(adminUserEmail);
-                if (foundUser.isEmpty()) {
-                  log.warn(
-                      "Query for admin users in organization "
-                          + org.getInternalId()
-                          + " found a user in Okta but not in the database. Skipping...");
-                }
-                return foundUser.orElse(null);
-              })
-          .filter(Objects::nonNull)
-          .collect(Collectors.toList());
-    } catch (IllegalGraphqlArgumentException e) {
+    Organization org = organizationRepository.findById(orgId).orElse(null);
+    if (org == null) {
+      log.warn(String.format("Organization with internal id %s not found", orgId));
       return List.of();
     }
+    List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
+    return adminUserEmails.stream()
+        .map(
+            adminUserEmail -> {
+              Optional<ApiUser> foundUser = apiUserRepository.findByLoginEmail(adminUserEmail);
+              if (foundUser.isEmpty()) {
+                log.warn(
+                    "Query for admin users in organization "
+                        + org.getInternalId()
+                        + " found a user in Okta but not in the database. Skipping...");
+              }
+              return foundUser.orElse(null);
+            })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   private List<String> getOrgAdminUserEmails(UUID orgId) {

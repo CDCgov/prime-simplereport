@@ -126,7 +126,7 @@ class OrganizationResolverTest {
   }
 
   @Test
-  void sendOrgAdminEmailCSV_exception() {
+  void sendOrgAdminEmailCSV_unsupportedType_throwsException() {
     String type = "unsupportedType";
     String state = "NJ";
     IllegalGraphqlArgumentException caught =
@@ -136,5 +136,18 @@ class OrganizationResolverTest {
               organizationMutationResolver.sendOrgAdminEmailCSV(type, state);
             });
     assertEquals("type can be \"facilities\" or \"patients\"", caught.getMessage());
+  }
+
+  @Test
+  void sendOrgAdminEmailCSV_unsupportedState_throwsException() {
+    String type = "patients";
+    String state = "ZW";
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              organizationMutationResolver.sendOrgAdminEmailCSV(type, state);
+            });
+    assertEquals("Not a valid state", caught.getMessage());
   }
 }

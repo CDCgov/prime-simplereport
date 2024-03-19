@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
+
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
@@ -147,7 +149,13 @@ public class OrganizationResolver {
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public Integer sendOrgAdminEmailCSV(@Argument String type, @Argument String state) {
+    Set<String> acceptableStates = STATE_CODES;
     List<String> acceptableTypes = List.of("facilities", "patients");
+
+    if (!acceptableStates.contains(state.toUpperCase())) {
+      throw new IllegalGraphqlArgumentException("Not a valid state");
+    }
+
     if (acceptableTypes.contains(type.toLowerCase())) {
       return _organizationService.sendOrgAdminEmailCSV(type, state);
     } else {

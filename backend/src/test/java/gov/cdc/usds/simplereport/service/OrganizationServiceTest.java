@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -486,9 +485,10 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getOrgAdminUserIds_throws_forNonExistentOrg() {
+  void getOrgAdminUserIds_returnsEmptyList_forNonExistentOrg() {
     UUID mismatchedUUID = UUID.fromString("5ebf893a-bb57-48ca-8fc2-1ef6b25e465b");
-    assertThrows(NonexistentOrgException.class, () -> _service.getOrgAdminUserIds(mismatchedUUID));
+    List<UUID> adminIds = _service.getOrgAdminUserIds(mismatchedUUID);
+    assertThat(adminIds).isEmpty();
   }
 
   @Test
