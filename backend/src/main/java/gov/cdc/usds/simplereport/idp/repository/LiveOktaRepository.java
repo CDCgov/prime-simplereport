@@ -594,7 +594,7 @@ public class LiveOktaRepository implements OktaRepository {
       List<User> admins = getOrgAdminUsers(org);
       return admins.stream().map(u -> u.getProfile().getLogin()).toList();
     } catch (IllegalGraphqlArgumentException e) {
-      log.error(String.format("Error fetchAdminUserEmail:", e));
+      log.error(String.format("Error fetchAdminUserEmail: %s", e));
       return List.of();
     }
   }
