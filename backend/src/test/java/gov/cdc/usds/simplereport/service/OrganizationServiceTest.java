@@ -575,7 +575,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     String type = "unsupportedType";
 
     Integer caCount = _service.sendOrgAdminEmailCSV(type, "CA");
-    assertThat(caCount).isEqualTo(0);
+    assertThat(caCount).isZero();
   }
 
   @Test
