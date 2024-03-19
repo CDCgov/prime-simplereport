@@ -571,6 +571,15 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
+  void sendOrgAdminEmailCSV_byUnsupportedType_success() {
+    String type = "unsupportedType";
+
+    Integer caCount = _service.sendOrgAdminEmailCSV(type, "CA");
+    assertThat(caCount).isEqualTo(0);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
   void deleteE2EOktaOrganization_succeeds() {
     Organization createdOrg = _dataFactory.saveValidOrganization();
     Organization deletedOrg = _service.deleteE2EOktaOrganization(createdOrg.getExternalId());

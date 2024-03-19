@@ -1168,6 +1168,49 @@ class LiveOktaRepositoryTest {
         .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID2);
   }
 
+  @Test
+  void fetchAdminUser_emptyGroups() {
+    Organization org = new Organization("orgName", "orgType", "1", true);
+    when(groupApi.listGroups(anyString(), any(), any(), any(), any(), any(), any(), any()))
+        .thenReturn(List.of());
+    List<String> adminUserEmails = _repo.fetchAdminUserEmail(org);
+    verify(groupApi, times(1))
+        .listGroups("SR-UNITTEST-TENANT:1:ADMIN", null, null, null, null, null, null, null);
+    assertThat(adminUserEmails).isEmpty();
+  }
+
+  @Test
+  void fetchAdminUser_success() {
+    Organization org = new Organization("orgName", "orgType", "1", true);
+    String groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId() + ":ADMIN";
+
+    Group mockGroup = mock(Group.class);
+    List<Group> mockGroupList = List.of(mockGroup);
+    User mockUser = mock(User.class);
+    when(mockGroup.getId()).thenReturn("mockInitialGroupId");
+    UserProfile mockUserProfile = mock(UserProfile.class);
+    PagedList<User> mockedUserList = new PagedList<>(List.of(mockUser), "", "", null);
+    when(groupApi.listGroups(
+            eq(groupProfilePrefix),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull()))
+        .thenReturn(mockGroupList);
+    when(groupApi.listGroupUsers(any(), any(), any())).thenReturn(mockedUserList);
+    when(mockUser.getProfile()).thenReturn(mockUserProfile);
+    when(mockUserProfile.getLogin()).thenReturn("email@example.com");
+
+    List<String> adminUserEmails = _repo.fetchAdminUserEmail(org);
+    verify(groupApi, times(1))
+        .listGroups("SR-UNITTEST-TENANT:1:ADMIN", null, null, null, null, null, null, null);
+    verify(groupApi, times(1)).listGroupUsers("mockInitialGroupId", null, null);
+    assertThat(adminUserEmails).isEqualTo(List.of("email@example.com"));
+  }
+
   private Set<Facility> generateMockFacilitiesFromUUIDs(List<UUID> facilitiesToGenerate) {
     return facilitiesToGenerate.stream()
         .map(
