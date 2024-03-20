@@ -30,11 +30,13 @@ import { addOrgToQueueURL, graphqlURL } from "../utils/request-utils";
 
 // read environment variables
 
-const username = Cypress.env("OKTA_USERNAME");
-const password = Cypress.env("OKTA_PASSWORD");
+const username = Cypress.env("OKTA_USERNAME") || "ruby@example.com";
+const password = Cypress.env("OKTA_PASSWORD") || "notapassword";
 const secret = Cypress.env("OKTA_SECRET");
 const scope = Cypress.env("OKTA_SCOPE") || "simple_report_dev";
 const clientId = Cypress.env("OKTA_CLIENT_ID") || "0oa1k0163nAwfVxNW1d7";
+const skipOkta = Cypress.env("SKIP_OKTA");
+
 const redirectUri =
   Cypress.env("OKTA_REDIRECT_URI") ||
   "https%3A%2F%2Flocalhost.simplereport.gov%2F";
@@ -48,7 +50,7 @@ Cypress.Commands.add("login", () => {
       cy.setLocalStorage("access_token", access_token);
       cy.saveLocalStorage();
       return;
-    } else {
+    } else if (!skipOkta) {
       cy.session([username, password], () => {
         cy.request("POST", "https://hhs-prime.oktapreview.com/api/v1/authn", {
           username,
