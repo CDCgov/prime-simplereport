@@ -1,4 +1,5 @@
 global.specRunVersions = new Map();
+const fs = require("fs");
 
 module.exports = {
   viewportWidth: 1200,
