@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.util.ArrayList;
@@ -56,6 +57,8 @@ public class OrganizationService {
   private final OrderingProviderRequiredValidator orderingProviderValidator;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
+
+  private final EmailService _emailService;
 
   public void resetOrganizationRolesContext() {
     organizationRolesContext.reset();
@@ -476,26 +479,75 @@ public class OrganizationService {
     return orgId != null ? orgId : getCurrentOrganization().getInternalId();
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<UUID> getOrgAdminUserIds(UUID orgId) {
-    Organization org =
-        organizationRepository.findById(orgId).orElseThrow(NonexistentOrgException::new);
+  private List<ApiUser> getOrgAdminUsers(UUID orgId) {
+    Organization org = organizationRepository.findById(orgId).orElse(null);
+    if (org == null) {
+      log.warn(String.format("Organization with internal id %s not found", orgId));
+      return List.of();
+    }
     List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
-
     return adminUserEmails.stream()
         .map(
-            email -> {
-              Optional<ApiUser> foundUser = apiUserRepository.findByLoginEmail(email);
+            adminUserEmail -> {
+              Optional<ApiUser> foundUser = apiUserRepository.findByLoginEmail(adminUserEmail);
               if (foundUser.isEmpty()) {
                 log.warn(
                     "Query for admin users in organization "
-                        + orgId
+                        + org.getInternalId()
                         + " found a user in Okta but not in the database. Skipping...");
               }
-              return foundUser.map(user -> user.getInternalId()).orElse(null);
+              return foundUser.orElse(null);
             })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
+  }
+
+  private List<String> getOrgAdminUserEmails(UUID orgId) {
+    return getOrgAdminUsers(orgId).stream()
+        .map(ApiUser::getLoginEmail)
+        .collect(Collectors.toList());
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<UUID> getOrgAdminUserIds(UUID orgId) {
+    return getOrgAdminUsers(orgId).stream()
+        .map(ApiUser::getInternalId)
+        .collect(Collectors.toList());
+  }
+
+  private List<String> getOrgAdminEmailsByFacilityState(String state) {
+    List<Facility> facilitiesInState = facilityRepository.findByFacilityState(state);
+    return facilitiesInState.stream()
+        .map(f -> f.getOrganization().getInternalId())
+        .distinct()
+        .map(this::getOrgAdminUserEmails)
+        .flatMap(List::stream)
+        .sorted()
+        .collect(Collectors.toList());
+  }
+
+  private List<String> getOrgAdminEmailsByPatientState(String state) {
+    List<Organization> orgs = organizationRepository.findAllByPatientStateWithTestEvents(state);
+    return orgs.stream()
+        .map(o -> o.getInternalId())
+        .map(this::getOrgAdminUserEmails)
+        .flatMap(List::stream)
+        .sorted()
+        .collect(Collectors.toList());
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Integer sendOrgAdminEmailCSV(String type, String state) {
+    List<String> emailsByState;
+    if ("facilities".equalsIgnoreCase(type)) {
+      emailsByState = getOrgAdminEmailsByFacilityState(state);
+    } else if ("patients".equalsIgnoreCase(type)) {
+      emailsByState = getOrgAdminEmailsByPatientState(state);
+    } else {
+      return 0;
+    }
+    _emailService.sendWithCSVAttachment(emailsByState, state, type);
+    return emailsByState.size();
   }
 
   /**

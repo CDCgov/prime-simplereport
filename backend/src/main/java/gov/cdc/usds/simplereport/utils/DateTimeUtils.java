@@ -133,4 +133,10 @@ public class DateTimeUtils {
     }
     return localDateTime;
   }
+
+  public static String getCurrentDatestamp(LocalDateTime time) {
+    ZonedDateTime zonedDateTime = time.atZone(easternTimeZoneId);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    return formatter.format(zonedDateTime);
+  }
 }

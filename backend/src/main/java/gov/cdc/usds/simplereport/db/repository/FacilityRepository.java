@@ -40,4 +40,7 @@ public interface FacilityRepository extends EternalAuditedEntityRepository<Facil
 
   @Query("from Facility e where :deviceType member of e.configuredDeviceTypes")
   Set<Facility> findByDeviceType(DeviceType deviceType);
+
+  @Query(EternalAuditedEntityRepository.BASE_QUERY + " and lower(e.address.state) = lower(:state)")
+  List<Facility> findByFacilityState(String state);
 }
