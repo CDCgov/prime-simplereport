@@ -109,7 +109,7 @@ simple-report:
     waitlist-recipient:
       - support@simplereport.gov
     outreach-mailing-list-recipient:
-      - support@simplereport.gov
+      - tof4@cdc.gov
     dynamic-templates:
       # The templates are added and edited at: https://mc.sendgrid.com/dynamic-templates
       # The keys in this map should match (but don't have to) the names of SendGrid Dynamic Templates that
