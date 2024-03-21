@@ -17,13 +17,14 @@ import {
 const specRunName = "spec09";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
-loginHooks();
 describe("Testing with multiplex devices", () => {
   let facilityId, patientId;
   const patient = generatePatient();
   const multiplexDevice = generateMultiplexDevice();
 
   before(() => {
+    loginHooks();
+
     cy.task("getSpecRunVersionName", specRunName).then(
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {
@@ -48,6 +49,8 @@ describe("Testing with multiplex devices", () => {
   });
 
   beforeEach(() => {
+    loginHooks();
+
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
@@ -62,6 +65,11 @@ describe("Testing with multiplex devices", () => {
   });
 
   after("clean up spec data", () => {
+    // for some reason for this test in particular, the cleanup hooks
+    // lose access to the session they need to do the cleanup and error out,
+    // causing the test to fail. Repopulating the session into the cache seems to fix it???
+    loginHooks();
+
     cleanUpPreviousRunSetupData(currentSpecRunVersionName);
     cleanUpRunOktaOrgs(currentSpecRunVersionName);
   });

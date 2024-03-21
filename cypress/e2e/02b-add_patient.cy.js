@@ -10,8 +10,9 @@ const specRunName = "spec02b";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 describe("Adding a single patient", () => {
-  loginHooks();
   before("store patient info", () => {
+    loginHooks();
+
     // TODO: clean up after no tests rely on this patient
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);
@@ -37,6 +38,10 @@ describe("Adding a single patient", () => {
 
   after(() => {
     cleanUpRunOktaOrgs(currentSpecRunVersionName);
+  });
+
+  beforeEach(() => {
+    loginHooks();
   });
 
   it("navigates to and fills out add patient form", () => {

@@ -35,7 +35,7 @@ const createAndVerifyOrganization = (orgName) => {
 const archivePatientsForFacility = (facilityId) => {
   return getPatientsByFacilityId(facilityId).then((res) => {
     let patients = res.body.data.patients;
-    if (patients.length > 0) {
+    if (patients && patients.length > 0) {
       patients.map((patient) => markPatientAsDeleted(patient.internalId, true));
     }
   });
@@ -45,10 +45,10 @@ export const cleanUpPreviousRunSetupData = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
   getOrganizationsByName(orgName).then((res) => {
     let orgs = res.body.data.organizationsByName;
-    let org = orgs.length > 0 ? orgs[0] : null;
+    let org = orgs && orgs.length > 0 ? orgs[0] : null;
     if (org) {
       let facilities = org.facilities;
-      if (facilities.length > 0) {
+      if (facilities && facilities.length > 0) {
         facilities.map((facility) => archivePatientsForFacility(facility.id));
       }
       markOrganizationAsDeleted(org.id, true);
@@ -63,14 +63,14 @@ export const cleanUpRunOktaOrgs = (specRunVersionName) => {
   // orgs so that the order of app vs okta deletion doesn't matter
   getOrganizationsByName(orgName, true).then((res) => {
     let orgs = res.body.data.organizationsByName;
-    let org = orgs.length > 0 ? orgs[0] : null;
+    let org = orgs && orgs.length > 0 ? orgs[0] : null;
     if (org) {
       deleteOktaOrgs(org.externalId);
     }
   });
   getOrganizationsByName(orgName).then((res) => {
     let orgs = res.body.data.organizationsByName;
-    let org = orgs.length > 0 ? orgs[0] : null;
+    let org = orgs && orgs.length > 0 ? orgs[0] : null;
     if (org) {
       deleteOktaOrgs(org.externalId);
     }
@@ -92,10 +92,10 @@ export const getCreatedFacility = (specRunVersionName) => {
   let orgName = createOrgName(specRunVersionName);
   return getOrganizationsByName(orgName).then((res) => {
     let orgs = res.body.data.organizationsByName;
-    let org = orgs.length > 0 ? orgs[0] : null;
+    let org = orgs && orgs.length > 0 ? orgs[0] : null;
     if (org) {
       let facilities = org.facilities;
-      return facilities.length > 0 ? facilities[0] : null;
+      return facilities && facilities.length > 0 ? facilities[0] : null;
     }
   });
 };
@@ -131,7 +131,9 @@ export const setupDevice = (
     .then((result) => {
       const specimenTypes = result.body.data.specimenTypes;
       specimenTypeId =
-        specimenTypes.length > 0 ? specimenTypes[0].internalId : null;
+        specimenTypes && specimenTypes.length > 0
+          ? specimenTypes[0].internalId
+          : null;
     })
     .then(() =>
       createDeviceType({
@@ -199,7 +201,9 @@ export const setupCovidOnlyDevice = (specRunVersionName, covidOnlyDevice) => {
     .then((result) => {
       const supportedDiseases = result.body.data.supportedDiseases;
       supportedDiseaseId =
-        supportedDiseases.length > 0 ? supportedDiseases[0].internalId : null;
+        supportedDiseases && supportedDiseases.length > 0
+          ? supportedDiseases[0].internalId
+          : null;
     })
     .then(() =>
       setupDevice(
@@ -246,7 +250,7 @@ export const setupTestOrder = (
 };
 
 export const accessOrganizationByName = (orgName) => {
-  return getOrganizationsByName(orgName)
-    .then((res) =>
-      accessOrganization(res.body.data.organizationsByName[0].externalId));
+  return getOrganizationsByName(orgName).then((res) =>
+    accessOrganization(res.body.data.organizationsByName[0].externalId),
+  );
 };
