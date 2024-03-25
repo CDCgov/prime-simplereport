@@ -92,7 +92,7 @@ smarty-streets:
   token: ${SMARTY_AUTH_TOKEN}
 simple-report:
   id-verification-reminders:
-    enabled: false
+    enabled: true
   authorization:
     # these are overridden by application-dev, -prod, -test, etc
     role-claim: dev_roles
@@ -101,7 +101,7 @@ simple-report:
     states-not-required:
       - ND
   sendgrid:
-    enabled: false
+    enabled: true
     from-email: support@simplereport.gov
     from-display-name: SimpleReport Support (CDC)
     account-request-recipient:

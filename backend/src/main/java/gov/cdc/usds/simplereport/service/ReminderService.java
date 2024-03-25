@@ -37,7 +37,7 @@ public class ReminderService {
    * Wrapper method for sending account reminder emails so automation can call the inner method
    * without hitting the lock or conditions.
    */
-  @Scheduled(cron = "0 0 1 * * *", zone = "America/New_York")
+  @Scheduled(cron = "0 15 16 * * *", zone = "America/New_York")
   @SchedulerLock(
       name = "ReminderService_sendAccountReminderEmails",
       lockAtLeastFor = "PT30S",
@@ -57,7 +57,7 @@ public class ReminderService {
 
     // For now, the date range to consider is the previous day
     Date rangeStartDate = localDateTimeToDate(tz.toZoneId(), now.minusDays(1).atStartOfDay());
-    Date rangeStopDate = localDateTimeToDate(tz.toZoneId(), now.atStartOfDay());
+    Date rangeStopDate = localDateTimeToDate(tz.toZoneId(), LocalDateTime.now(tz.toZoneId()));
 
     log.info("CRON -- account reminder emails for {} - {}", rangeStartDate, rangeStopDate);
 
