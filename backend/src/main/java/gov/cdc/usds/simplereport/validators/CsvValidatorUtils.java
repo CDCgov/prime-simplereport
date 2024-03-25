@@ -41,6 +41,7 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TRE
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentityAbbreviationSet;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
 
@@ -64,6 +65,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -595,6 +597,36 @@ public class CsvValidatorUtils {
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
     if (nonSNOMEDValue) {
       return validateInSet(input, acceptableValues);
+    }
+    return errors;
+  }
+
+  public static Set<String> extractSubstringsGenderOfSexualPartners(String value) {
+    Set<String> results = new HashSet<>();
+    String[] innerValues = value.split(",");
+    for (String innerValue : innerValues) {
+      results.add(innerValue.strip().toUpperCase());
+    }
+    return results;
+  }
+
+  public static List<FeedbackMessage> validateGendersOfSexualPartners(ValueOrError input) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    Set<String> genders = extractSubstringsGenderOfSexualPartners(value);
+    if (!genderIdentityAbbreviationSet.keySet().containsAll(genders)) {
+      errors.add(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
+              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(ResultUploadErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
     }
     return errors;
   }

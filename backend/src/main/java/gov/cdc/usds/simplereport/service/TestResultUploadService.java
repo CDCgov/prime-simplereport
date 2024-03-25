@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.EQUIPMENT_MODEL_NAME;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.GENDERS_OF_SEXUAL_PARTNERS;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_CITY;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_NAME;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_PHONE_NUMBER;
@@ -302,6 +303,8 @@ public class TestResultUploadService {
         TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME,
         testingLabSpecimenReceivedDate.toOffsetDateTime().toString());
     row.put(DATE_RESULT_RELEASED_COLUMN_NAME, dateResultReleased.toOffsetDateTime().toString());
+
+    row.remove(GENDERS_OF_SEXUAL_PARTNERS);
 
     return row;
   }

@@ -829,4 +829,14 @@ public class PersonUtils {
           TRANS_WOMAN, "Female gender identity",
           OTHER, "Non-binary gender identity",
           REFUSED, "Asked But Declined");
+
+  public static final Map<String, String> genderIdentityAbbreviationSet =
+      Map.of(
+          "F", FEMALE,
+          "M", MALE,
+          "NB", NON_BINARY,
+          "TM", TRANS_MAN,
+          "TW", TRANS_WOMAN,
+          "O", OTHER,
+          "R", REFUSED);
 }

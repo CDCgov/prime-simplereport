@@ -13,6 +13,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDat
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateResidence;
@@ -102,6 +103,7 @@ public class TestResultRow implements FileRow {
   final ValueOrError comment;
   final ValueOrError testResultStatus;
   final ValueOrError testOrderedCode;
+  final ValueOrError gendersOfSexualPartners;
 
   static final String PATIENT_LAST_NAME = "patient_last_name";
   static final String PATIENT_FIRST_NAME = "patient_first_name";
@@ -145,6 +147,7 @@ public class TestResultRow implements FileRow {
   public static final String ORDERING_FACILITY_STATE = "ordering_facility_state";
   public static final String ORDERING_FACILITY_ZIP_CODE = "ordering_facility_zip_code";
   public static final String ORDERING_FACILITY_PHONE_NUMBER = "ordering_facility_phone_number";
+  public static final String GENDERS_OF_SEXUAL_PARTNERS = "genders_of_sexual_partners";
 
   public static final ImmutableMap<String, String> diseaseSpecificLoincMap =
       new ImmutableMap.Builder<String, String>()
@@ -446,6 +449,8 @@ public class TestResultRow implements FileRow {
     comment = getValue(rawRow, "comment", isRequired("comment"));
     testResultStatus = getValue(rawRow, "test_result_status", isRequired("test_result_status"));
     testOrderedCode = getValue(rawRow, "test_ordered_code", isRequired("test_ordered_code"));
+    gendersOfSexualPartners =
+        getValue(rawRow, GENDERS_OF_SEXUAL_PARTNERS, isRequired(GENDERS_OF_SEXUAL_PARTNERS));
   }
 
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
@@ -577,6 +582,8 @@ public class TestResultRow implements FileRow {
     errors.addAll(
         validateDeviceModelAndTestPerformedCode(
             equipmentModelName.getValue(), testPerformedCode.getValue()));
+
+    errors.addAll(validateGendersOfSexualPartners(gendersOfSexualPartners));
 
     return errors;
   }

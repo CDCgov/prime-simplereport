@@ -25,8 +25,11 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
@@ -203,7 +206,7 @@ public class BulkUploadResultsToFhirTest {
             .filter(
                 observation -> observation.getResource().getNamedProperty("identifier").hasValues())
             .toList();
-    assertThat(asymptomaticNotCongregateAOE).hasSize(6);
+    assertThat(asymptomaticNotCongregateAOE).hasSize(11);
 
     var symptomaticCongregateSettingEntry = serializedBundles.get(1);
     var deserializedSymptomaticCongregateEntry =
@@ -216,7 +219,7 @@ public class BulkUploadResultsToFhirTest {
         symptomaticCongregateObservations.stream()
             .filter(obs -> obs.getResource().getNamedProperty("identifier").hasValues())
             .toList();
-    assertThat(symptomaticCongregateAOE).hasSize(8);
+    assertThat(symptomaticCongregateAOE).hasSize(10);
   }
 
   private InputStream loadCsv(String csvFile) {
@@ -610,5 +613,41 @@ public class BulkUploadResultsToFhirTest {
         .isEqualTo(specimenCollectionDate);
     assertThat(specimen.getReceivedTime()).isEqualTo(orderTestDate);
     assertThat(diagnosticReport.getIssued()).isEqualTo(testResultDate);
+  }
+
+  @Test
+  void convertExistingCsv_validHivPositive_withAOEdataColumns() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-hiv-only.csv");
+
+    FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
+    var first = serializedBundles.get(0);
+    var deserializedBundle = (Bundle) parser.parseResource(first);
+
+    var gendersOfSexualPartnersObservations =
+        (List<Observation>)
+            deserializedBundle.getEntry().stream()
+                .filter(entry -> entry.getFullUrl().contains("Observation/"))
+                .map(x -> (Observation) x.getResource())
+                .filter(
+                    x ->
+                        Objects.equals(
+                            x.getCode().getText(), "What is the gender of their sexual partners"))
+                .collect(Collectors.toList());
+
+    List<String> codeableConceptValues =
+        gendersOfSexualPartnersObservations.stream()
+            .map(x -> x.getValueCodeableConcept().getCoding().get(0).getDisplay())
+            .collect(Collectors.toList());
+
+    List<String> expectedGenders = new ArrayList<>();
+    expectedGenders.add("Non-binary gender identity");
+    expectedGenders.add("Female gender identity");
+    expectedGenders.add("Male gender identity");
+    expectedGenders.add("Female gender identity");
+    expectedGenders.add("Male gender identity");
+
+    assertThat(gendersOfSexualPartnersObservations).hasSize(5);
+    assertThat(codeableConceptValues).containsExactlyInAnyOrderElementsOf(expectedGenders);
   }
 }
