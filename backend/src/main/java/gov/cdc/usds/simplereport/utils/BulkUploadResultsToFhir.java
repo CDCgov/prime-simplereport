@@ -6,7 +6,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EM
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_HOSPITALIZED;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ICU;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentityAbbreviationSet;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
@@ -534,10 +534,11 @@ public class BulkUploadResultsToFhir {
     if (StringUtils.isNotBlank(gendersOfSexualPartnersValue)) {
       Set<String> gendersOfSexualPartnersSet =
           extractSubstringsGenderOfSexualPartners(gendersOfSexualPartnersValue);
+      Map<String, String> genderAbbreviationMap = getGenderIdentityAbbreviationMap();
       Set<String> abbrConvertedGenders =
           gendersOfSexualPartnersSet.stream()
               .distinct()
-              .map(genderIdentityAbbreviationSet::get)
+              .map(genderAbbreviationMap::get)
               .collect(Collectors.toSet());
       aoeObservations.addAll(
           fhirConverter.convertToAOEGenderOfSexualPartnersObservation(abbrConvertedGenders));

@@ -41,7 +41,7 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TRE
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentityAbbreviationSet;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
 
@@ -617,7 +617,7 @@ public class CsvValidatorUtils {
       return errors;
     }
     Set<String> genders = extractSubstringsGenderOfSexualPartners(value);
-    if (!genderIdentityAbbreviationSet.keySet().containsAll(genders)) {
+    if (!getGenderIdentityAbbreviationMap().keySet().containsAll(genders)) {
       errors.add(
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
