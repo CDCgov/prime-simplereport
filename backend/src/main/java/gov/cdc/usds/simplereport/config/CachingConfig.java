@@ -12,6 +12,8 @@ public class CachingConfig {
 
   public static final String COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
       "covidEquipmentModelAndTestPerformedCodeSet";
+  public static final String HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
+      "hivEquipmentModelAndTestPerformedCodeSet";
   public static final String DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP =
       "deviceModelAndTestPerformedCodeMap";
   public static final String SPECIMEN_NAME_TO_SNOMED_MAP = "specimenTypeNameSNOMEDMap";

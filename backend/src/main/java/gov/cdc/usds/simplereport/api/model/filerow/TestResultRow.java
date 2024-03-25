@@ -15,6 +15,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEma
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePositiveHIVRequiredAOEFields;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateResidence;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
@@ -475,6 +476,14 @@ public class TestResultRow implements FileRow {
     return emptyList();
   }
 
+  private boolean isHivResult() {
+    return resultsUploaderCachingService
+        .getHivEquipmentModelAndTestPerformedCodeSet()
+        .contains(
+            ResultsUploaderCachingService.getKey(
+                equipmentModelName.getValue(), testPerformedCode.getValue()));
+  }
+
   private List<FeedbackMessage> generateInvalidDataErrorMessages() {
     String errorMessage =
         "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
@@ -584,6 +593,11 @@ public class TestResultRow implements FileRow {
             equipmentModelName.getValue(), testPerformedCode.getValue()));
 
     errors.addAll(validateGendersOfSexualPartners(gendersOfSexualPartners));
+
+    if (isHivResult()) {
+      errors.addAll(
+          validatePositiveHIVRequiredAOEFields(testResult, gendersOfSexualPartners, pregnant));
+    }
 
     return errors;
   }

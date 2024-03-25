@@ -254,6 +254,12 @@ public class CsvValidatorUtils {
     return "File is missing data in the " + columnName + " column.";
   }
 
+  private static String getRequiredHivAoeValuesErrorMessage(String columnName) {
+    return "File is missing data in the "
+        + columnName
+        + " column. This is required because the row contains a positive HIV test result.";
+  }
+
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
   }
@@ -626,6 +632,41 @@ public class CsvValidatorUtils {
               .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
+              .build());
+    }
+    return errors;
+  }
+
+  public static List<FeedbackMessage> validatePositiveHIVRequiredAOEFields(
+      ValueOrError testResult, ValueOrError gendersOfSexualPartners, ValueOrError pregnant) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    Set<String> positiveTestResultValues = Set.of("positive", "detected");
+    if (!positiveTestResultValues.contains(testResult.getValue().toLowerCase())) {
+      return errors;
+    }
+
+    if (gendersOfSexualPartners.getValue() == null
+        || gendersOfSexualPartners.getValue().isBlank()) {
+      errors.add(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(gendersOfSexualPartners.getHeader())
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
+              .message(getRequiredHivAoeValuesErrorMessage(gendersOfSexualPartners.getHeader()))
+              .errorType(ResultUploadErrorType.MISSING_DATA)
+              .fieldRequired(gendersOfSexualPartners.isRequired())
+              .build());
+    }
+
+    if (pregnant.getValue() == null || pregnant.getValue().isBlank()) {
+      errors.add(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(pregnant.getHeader())
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
+              .message(getRequiredHivAoeValuesErrorMessage(pregnant.getHeader()))
+              .errorType(ResultUploadErrorType.MISSING_DATA)
+              .fieldRequired(pregnant.isRequired())
               .build());
     }
     return errors;
