@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDat
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePartialUnkAddress;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
@@ -272,5 +273,17 @@ class CsvValidatorUtilsTest {
     for (var datetime : invalidDateTimes) {
       assertThat(validateDateTime(datetime)).hasSize(1);
     }
+  }
+
+  @Test
+  void validGendersOfSexualPartners() {
+    ValueOrError genders = new ValueOrError("m, F, TM, tw, nb, O, R", "genders_of_sexual_partners");
+    assertThat(validateGendersOfSexualPartners(genders)).isEmpty();
+  }
+
+  @Test
+  void invalidGendersOfSexualPartners() {
+    ValueOrError genders = new ValueOrError("m, f, t, n", "genders_of_sexual_partners");
+    assertThat(validateGendersOfSexualPartners(genders)).hasSize(1);
   }
 }

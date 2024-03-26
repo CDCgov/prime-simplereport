@@ -94,7 +94,8 @@ class TestResultRowTest {
           "test_result",
           "test_result_status",
           "specimen_type",
-          "testing_lab_clia");
+          "testing_lab_clia",
+          "genders_of_sexual_partners");
 
   @BeforeEach
   public void init() {
@@ -161,6 +162,7 @@ class TestResultRowTest {
     validRowMap.put("ordering_facility_phone_number", "205-888-2000");
     validRowMap.put("comment", "Test Comment");
     validRowMap.put("test_result_status", "");
+    validRowMap.put("genders_of_sexual_partners", "M, F, TM, TW");
   }
 
   @Test
@@ -352,7 +354,10 @@ class TestResultRowTest {
             from(TestResultRow::getComment).andThen(ValueOrError::getValue))
         .returns(
             validRowMap.get("test_result_status"),
-            from(TestResultRow::getTestResultStatus).andThen(ValueOrError::getValue));
+            from(TestResultRow::getTestResultStatus).andThen(ValueOrError::getValue))
+        .returns(
+            validRowMap.get("genders_of_sexual_partners"),
+            from(TestResultRow::getGendersOfSexualPartners).andThen(ValueOrError::getValue));
   }
 
   @Test
@@ -405,6 +410,7 @@ class TestResultRowTest {
     invalidIndividualFields.put("test_result_status", "complete");
     invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
+    invalidIndividualFields.put("genders_of_sexual_partners", "ma, f");
     var testResultRow =
         new TestResultRow(
             invalidIndividualFields,

@@ -829,4 +829,25 @@ public class PersonUtils {
           TRANS_WOMAN, "Female gender identity",
           OTHER, "Non-binary gender identity",
           REFUSED, "Asked But Declined");
+
+  public static Map<String, String> getGenderIdentityAbbreviationMap() {
+    Map<String, String> genderMap = new HashMap<>();
+
+    genderMap.put("F", FEMALE);
+    genderMap.put("FEMALE", FEMALE);
+    genderMap.put("M", MALE);
+    genderMap.put("MALE", MALE);
+    genderMap.put("NB", NON_BINARY);
+    genderMap.put("NONBINARY", NON_BINARY);
+    genderMap.put("TM", TRANS_MAN);
+    genderMap.put("TRANS MAN", TRANS_MAN);
+    genderMap.put("TW", TRANS_WOMAN);
+    genderMap.put("TRANS WOMAN", TRANS_WOMAN);
+    genderMap.put("O", OTHER);
+    genderMap.put("OTHER", OTHER);
+    genderMap.put("R", REFUSED);
+    genderMap.put("REFUSED", REFUSED);
+
+    return genderMap;
+  }
 }

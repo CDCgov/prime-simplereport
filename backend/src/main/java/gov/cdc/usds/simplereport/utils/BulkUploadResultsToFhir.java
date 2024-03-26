@@ -6,10 +6,12 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EM
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_HOSPITALIZED;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ICU;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.ResultUtils.mapTestResultStatusToSRValue;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.extractSubstringsGenderOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
@@ -50,9 +52,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -524,6 +528,20 @@ public class BulkUploadResultsToFhir {
       aoeObservations.addAll(
           fhirConverter.convertToAOEResidenceObservation(
               residesInCongregateSetting, residenceTypeSnomed));
+    }
+
+    String gendersOfSexualPartnersValue = row.getGendersOfSexualPartners().getValue();
+    if (StringUtils.isNotBlank(gendersOfSexualPartnersValue)) {
+      Set<String> gendersOfSexualPartnersSet =
+          extractSubstringsGenderOfSexualPartners(gendersOfSexualPartnersValue);
+      Map<String, String> genderAbbreviationMap = getGenderIdentityAbbreviationMap();
+      Set<String> abbrConvertedGenders =
+          gendersOfSexualPartnersSet.stream()
+              .distinct()
+              .map(genderAbbreviationMap::get)
+              .collect(Collectors.toSet());
+      aoeObservations.addAll(
+          fhirConverter.convertToAOEGenderOfSexualPartnersObservation(abbrConvertedGenders));
     }
 
     var serviceRequest =
