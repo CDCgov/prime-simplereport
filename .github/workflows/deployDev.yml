@@ -17,7 +17,24 @@ on:
           - dev5
           - dev6
           - pentest
-
+      replace_keys:
+        description: 'Replace keys'
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+  workflow_call:
+    inputs:
+      deploy_env:
+        description: 'The environment to deploy to'
+        required: true
+        type: string
+      replace_keys:
+        description: 'Replace keys'
+        default: "false"
+        type: string
 env:
   NODE_VERSION: 18
 
@@ -53,7 +70,7 @@ jobs:
           okta_url: https://hhs-prime.oktapreview.com
           okta_client_id: ${{ vars.OKTA_CLIENT_ID }}
 
-  prerelease_backend:
+  prerelease:
     runs-on: ubuntu-latest
     needs: [build_frontend, build_docker]
     steps:
@@ -68,6 +85,7 @@ jobs:
           terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
           terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
           okta_api_token: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
+          replace_keys: ${{ inputs.replace_keys }}
       - uses: ./.github/actions/stg-wait-for-slot-commit
         name: Wait for correct commit to be deployed in staging slot
         timeout-minutes: 5
@@ -84,7 +102,7 @@ jobs:
     environment:
       name: ${{ inputs.deploy_env }}
       url: https://${{ inputs.deploy_env }}.simplereport.gov
-    needs: [prerelease_backend]
+    needs: [prerelease]
     steps:
       - uses: actions/checkout@v4
       - name: Promote and deploy

@@ -22,6 +22,10 @@ inputs:
   okta_api_token:
     description: Okta API token
     required: true
+  replace_keys:
+    description: Replace Keys ( 'true' | 'false' )
+    default: 'false'
+    required: false
 
 runs:
   using: composite
@@ -36,9 +40,32 @@ runs:
       uses: ./.github/actions/build-reportstream-functions
       with:
         deploy-env: ${{ inputs.deploy_env }}
+    # all Azure interaction is through Terraform
     - name: Terraform Init
       working-directory: ./ops
-      env: # all Azure interaction is through Terraform
+      env:
+        ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
+        ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
+        ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
+        OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
+      shell: bash
+      run: make init-${{ inputs.deploy_env }}
+    - name: Terraform replace keys
+      if: ${{ inputs.replace_keys == 'true' }}
+      working-directory: ./ops
+      env:
+        ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
+        ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
+        ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
+        OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
+      shell: bash
+      run: make apply-key-replacement-${{ inputs.deploy_env }}
+    - name: Terraform re-init
+      if: ${{ inputs.replace_keys == 'true' }}
+      working-directory: ./ops
+      env:
         ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
         ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
         ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
@@ -48,7 +75,6 @@ runs:
       run: make init-${{ inputs.deploy_env }}
     - name: Terraform deploy (infrastructure and staging slot)
       working-directory: ./ops
-      env: # all Azure interaction is through Terraform
         ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
         ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
         ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}

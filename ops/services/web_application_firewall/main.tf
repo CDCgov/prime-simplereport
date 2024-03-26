@@ -256,4 +256,10 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
     file_upload_limit_in_mb     = 100
     max_request_body_size_in_kb = 128 //Can go to 2000 in modern provider version. Proposed is 1024.
   }
+
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }

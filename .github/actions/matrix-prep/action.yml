@@ -1,0 +1,26 @@
+name: Matrix Prep
+description: Prepares a matrix of environments
+inputs:
+  env:
+    description: The environment
+    required: true
+outputs:
+  matrix:
+    description: Matrix of environments
+    value: ${{ steps.set_matrix.outputs.matrix }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Set vars
+      id: set_matrix
+      shell: bash
+      run: |
+        if [[ "${{ inputs.env }}" == "all_environments" ]]; then
+          matrix=[{\"env\":\"dev\"},{\"env\":\"dev2\"},{\"env\":\"dev3\"},{\"env\":\"dev4\"},{\"env\":\"dev5\"},{\"env\":\"dev6\"},{\"env\":\"pentest\"},{\"env\":\"test\"},{\"env\":\"demo\"},{\"env\":\"training\"},{\"env\":\"stg\"},{\"env\":\"prod\"}]
+        else
+          matrix=[{\"env\":\"${{ inputs.env }}\"}]
+        fi               
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT

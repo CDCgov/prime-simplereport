@@ -25,6 +25,7 @@ permissions:
   packages: write
 
 jobs:
+
 # Check for changes in the backend, cypress, database, frontend, and nginx directories
   workflow_changes:
     with:
