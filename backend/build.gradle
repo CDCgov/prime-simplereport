@@ -39,7 +39,7 @@ dependencies {
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
     // graphql-java-extended-validation schema directives
-    implementation 'com.graphql-java:graphql-java-extended-validation:20.0'
+    implementation 'com.graphql-java:graphql-java-extended-validation:21.0'
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:20.0'
 
