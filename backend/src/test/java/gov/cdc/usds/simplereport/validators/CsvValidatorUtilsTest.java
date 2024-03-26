@@ -11,6 +11,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFle
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePartialUnkAddress;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePositiveHIVRequiredAOEFields;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -285,5 +286,29 @@ class CsvValidatorUtilsTest {
   void invalidGendersOfSexualPartners() {
     ValueOrError genders = new ValueOrError("m, f, t, n", "genders_of_sexual_partners");
     assertThat(validateGendersOfSexualPartners(genders)).hasSize(1);
+  }
+
+  @Test
+  void validNegativeHIVNoRequiredAOEFields() {
+    ValueOrError testResult = new ValueOrError("negative", "test_result");
+    ValueOrError genders = new ValueOrError("", "genders_of_sexual_partners");
+    ValueOrError pregnant = new ValueOrError("", "pregnant");
+    assertThat(validatePositiveHIVRequiredAOEFields(testResult, genders, pregnant)).isEmpty();
+  }
+
+  @Test
+  void validPositiveHIVRequiredAOEFields() {
+    ValueOrError testResult = new ValueOrError("positive", "test_result");
+    ValueOrError genders = new ValueOrError("m, f, tm, tw", "genders_of_sexual_partners");
+    ValueOrError pregnant = new ValueOrError("n", "pregnant");
+    assertThat(validatePositiveHIVRequiredAOEFields(testResult, genders, pregnant)).isEmpty();
+  }
+
+  @Test
+  void invalidPositiveHIVRequiredAOEFields() {
+    ValueOrError testResult = new ValueOrError("positive", "test_result");
+    ValueOrError genders = new ValueOrError("", "genders_of_sexual_partners");
+    ValueOrError pregnant = new ValueOrError("", "pregnant");
+    assertThat(validatePositiveHIVRequiredAOEFields(testResult, genders, pregnant)).hasSize(2);
   }
 }
