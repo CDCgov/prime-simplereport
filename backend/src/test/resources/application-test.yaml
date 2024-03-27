@@ -65,7 +65,7 @@ simple-report:
     waitlist-recipient:
       - support@simplereport.gov
     outreach-mailing-list-recipient:
-      - tof4@cdc.gov
+      - elisa@skylight.digital
   azure-reporting-queue:
     exception-webhook-enabled: true
     exception-webhook-token: WATERMELON
