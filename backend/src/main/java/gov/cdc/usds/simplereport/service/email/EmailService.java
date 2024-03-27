@@ -167,7 +167,7 @@ public class EmailService {
     return results;
   }
 
-  public void sendWithCSVAttachment(List<String> emails, String state, String type) {
+  public void sendWithCSVAttachment(List<String> emails, String state, String type, String email) {
     String dateTimestamp = getCurrentDatestamp(LocalDateTime.now());
     List<String> emailRecipients = sendGridProperties.getOutreachMailingListRecipient();
     String filename = String.format("%s-%s_%s-org_admin_emails.csv", dateTimestamp, type, state);
@@ -182,7 +182,7 @@ public class EmailService {
     String emailSubject =
         String.format("Org admin email CSVs for outreach - %s in %s", type, state);
     try {
-      sendWithProvider(emailRecipients, emailSubject, emailSubject, attachments);
+      sendWithProvider(List.of(email), emailSubject, emailSubject, attachments);
     } catch (IOException e) {
       log.error(String.format("Error sending org admin email CSVs: %s", e));
     }

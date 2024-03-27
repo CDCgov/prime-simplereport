@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,7 +44,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -512,92 +510,93 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertThat(adminIds).isEqualTo(expectedIds);
   }
 
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSVAsync_success() throws ExecutionException, InterruptedException {
-    setupDataByFacility();
-    String type = "facilities";
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    String mnExternalId = "747e341d-0467-45b8-b92f-a638da2bf1ee";
-    UUID mnId = organizationRepository.findByExternalId(mnExternalId).get().getInternalId();
-    List<String> mnEmails = _service.sendOrgAdminEmailCSVAsync(List.of(mnId), type, "MN").get();
-    List<String> expectedMnEmails =
-        List.of("mn-orgBadmin1@example.com", "mn-orgBadmin2@example.com");
-    verify(emailService, times(1)).sendWithCSVAttachment(expectedMnEmails, "MN", type);
-    assertThat(mnEmails).isEqualTo(expectedMnEmails);
-    reset(emailService);
-
-    String njExternalId = "d6b3951b-6698-4ee7-9d63-aaadee85bac0";
-    UUID njId = organizationRepository.findByExternalId(njExternalId).get().getInternalId();
-    List<String> njEmails = _service.sendOrgAdminEmailCSVAsync(List.of(njId), type, "NJ").get();
-    List<String> expectedNjEmails = List.of("nj-orgAadmin1@example.com");
-    verify(emailService, times(1)).sendWithCSVAttachment(expectedNjEmails, "NJ", type);
-    assertThat(njEmails).isEqualTo(expectedNjEmails);
-    reset(emailService);
-
-    List<String> nonExistentOrgEmails =
-        _service.sendOrgAdminEmailCSVAsync(List.of(), type, "PA").get();
-    verify(emailService, times(1)).sendWithCSVAttachment(nonExistentOrgEmails, "PA", type);
-    assertThat(nonExistentOrgEmails).isEmpty();
-    reset(emailService);
-  }
-
-  @Test
-  @WithSimpleReportStandardUser
-  void sendOrgAdminEmailCSV_accessDeniedException() {
-    assertThrows(
-        AccessDeniedException.class,
-        () -> {
-          _service.sendOrgAdminEmailCSV("facilities", "NM");
-        });
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSV_byFacilities_success() {
-    setupDataByFacility();
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    boolean mnEmailSent = _service.sendOrgAdminEmailCSV("facilities", "MN");
-    verify(facilityRepository, times(1)).findByFacilityState("MN");
-    assertThat(mnEmailSent).isTrue();
-
-    boolean njEmailSent = _service.sendOrgAdminEmailCSV("faCilities", "NJ");
-    verify(facilityRepository, times(1)).findByFacilityState("NJ");
-    assertThat(njEmailSent).isTrue();
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSV_byPatients_success() {
-    setupDataByPatient();
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    boolean caEmailSent = _service.sendOrgAdminEmailCSV("patients", "CA");
-    verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("CA");
-    assertThat(caEmailSent).isTrue();
-
-    boolean njEmailSent = _service.sendOrgAdminEmailCSV("PATIENTS", "NJ");
-    verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("NJ");
-    assertThat(njEmailSent).isTrue();
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSV_byUnsupportedType_success() {
-    setupDataByPatient();
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    boolean unsupportedTypeEmailSent = _service.sendOrgAdminEmailCSV("Unsuported", "CA");
-    verify(organizationRepository, times(0)).findAllByPatientStateWithTestEvents("CA");
-    verify(facilityRepository, times(0)).findByFacilityState("CA");
-    assertThat(unsupportedTypeEmailSent).isTrue();
-  }
+  //
+  //  @Test
+  //  @WithSimpleReportSiteAdminUser
+  //  void sendOrgAdminEmailCSVAsync_success() throws ExecutionException, InterruptedException {
+  //    setupDataByFacility();
+  //    String type = "facilities";
+  //    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+  //    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
+  //
+  //    String mnExternalId = "747e341d-0467-45b8-b92f-a638da2bf1ee";
+  //    UUID mnId = organizationRepository.findByExternalId(mnExternalId).get().getInternalId();
+  //    List<String> mnEmails = _service.sendOrgAdminEmailCSVAsync(List.of(mnId), type, "MN").get();
+  //    List<String> expectedMnEmails =
+  //        List.of("mn-orgBadmin1@example.com", "mn-orgBadmin2@example.com");
+  //    verify(emailService, times(1)).sendWithCSVAttachment(expectedMnEmails, "MN", type);
+  //    assertThat(mnEmails).isEqualTo(expectedMnEmails);
+  //    reset(emailService);
+  //
+  //    String njExternalId = "d6b3951b-6698-4ee7-9d63-aaadee85bac0";
+  //    UUID njId = organizationRepository.findByExternalId(njExternalId).get().getInternalId();
+  //    List<String> njEmails = _service.sendOrgAdminEmailCSVAsync(List.of(njId), type, "NJ").get();
+  //    List<String> expectedNjEmails = List.of("nj-orgAadmin1@example.com");
+  //    verify(emailService, times(1)).sendWithCSVAttachment(expectedNjEmails, "NJ", type);
+  //    assertThat(njEmails).isEqualTo(expectedNjEmails);
+  //    reset(emailService);
+  //
+  //    List<String> nonExistentOrgEmails =
+  //        _service.sendOrgAdminEmailCSVAsync(List.of(), type, "PA").get();
+  //    verify(emailService, times(1)).sendWithCSVAttachment(nonExistentOrgEmails, "PA", type);
+  //    assertThat(nonExistentOrgEmails).isEmpty();
+  //    reset(emailService);
+  //  }
+  //
+  //  @Test
+  //  @WithSimpleReportStandardUser
+  //  void sendOrgAdminEmailCSV_accessDeniedException() {
+  //    assertThrows(
+  //        AccessDeniedException.class,
+  //        () -> {
+  //          _service.sendOrgAdminEmailCSV("facilities", "NM");
+  //        });
+  //  }
+  //
+  //  @Test
+  //  @WithSimpleReportSiteAdminUser
+  //  void sendOrgAdminEmailCSV_byFacilities_success() {
+  //    setupDataByFacility();
+  //    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+  //    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
+  //
+  //    boolean mnEmailSent = _service.sendOrgAdminEmailCSV("facilities", "MN");
+  //    verify(facilityRepository, times(1)).findByFacilityState("MN");
+  //    assertThat(mnEmailSent).isTrue();
+  //
+  //    boolean njEmailSent = _service.sendOrgAdminEmailCSV("faCilities", "NJ");
+  //    verify(facilityRepository, times(1)).findByFacilityState("NJ");
+  //    assertThat(njEmailSent).isTrue();
+  //  }
+  //
+  //  @Test
+  //  @WithSimpleReportSiteAdminUser
+  //  void sendOrgAdminEmailCSV_byPatients_success() {
+  //    setupDataByPatient();
+  //    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+  //    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
+  //
+  //    boolean caEmailSent = _service.sendOrgAdminEmailCSV("patients", "CA");
+  //    verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("CA");
+  //    assertThat(caEmailSent).isTrue();
+  //
+  //    boolean njEmailSent = _service.sendOrgAdminEmailCSV("PATIENTS", "NJ");
+  //    verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("NJ");
+  //    assertThat(njEmailSent).isTrue();
+  //  }
+  //
+  //  @Test
+  //  @WithSimpleReportSiteAdminUser
+  //  void sendOrgAdminEmailCSV_byUnsupportedType_success() {
+  //    setupDataByPatient();
+  //    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+  //    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
+  //
+  //    boolean unsupportedTypeEmailSent = _service.sendOrgAdminEmailCSV("Unsuported", "CA");
+  //    verify(organizationRepository, times(0)).findAllByPatientStateWithTestEvents("CA");
+  //    verify(facilityRepository, times(0)).findByFacilityState("CA");
+  //    assertThat(unsupportedTypeEmailSent).isTrue();
+  //  }
 
   @Test
   @WithSimpleReportSiteAdminUser

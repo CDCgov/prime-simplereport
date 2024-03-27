@@ -410,6 +410,7 @@ export type MutationResetUserPasswordArgs = {
 };
 
 export type MutationSendOrgAdminEmailCsvArgs = {
+  email: Scalars["String"]["input"];
   state: Scalars["String"]["input"];
   type: Scalars["String"]["input"];
 };

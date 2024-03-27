@@ -232,7 +232,8 @@ public class OrganizationMutationResolver {
    */
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean sendOrgAdminEmailCSV(@Argument String type, @Argument String state) {
+  public boolean sendOrgAdminEmailCSV(
+      @Argument String type, @Argument String state, @Argument String email) {
     Set<String> acceptableStates = STATE_CODES;
     List<String> acceptableTypes = List.of("facilities", "patients");
 
@@ -242,6 +243,6 @@ public class OrganizationMutationResolver {
     if (!acceptableTypes.contains(type.toLowerCase())) {
       throw new IllegalGraphqlArgumentException("type can be \"facilities\" or \"patients\"");
     }
-    return organizationService.sendOrgAdminEmailCSV(type, state);
+    return organizationService.sendOrgAdminEmailCSV(type, state, email);
   }
 }

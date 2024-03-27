@@ -520,7 +520,7 @@ public class OrganizationService {
   @Async
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public CompletableFuture<List<String>> sendOrgAdminEmailCSVAsync(
-      List<UUID> orgInternalIds, String type, String state) {
+      List<UUID> orgInternalIds, String type, String state, String email) {
     List<List<UUID>> partitionedOrgIds =
         ListUtils.partition(orgInternalIds, oktaRepository.getOktaOrgsLimit());
     ArrayList<String> allAdminEmails = new ArrayList<>();
@@ -540,7 +540,7 @@ public class OrganizationService {
             }
           }
           List<String> sortedEmails = allAdminEmails.stream().sorted().collect(Collectors.toList());
-          emailService.sendWithCSVAttachment(sortedEmails, state, type);
+          emailService.sendWithCSVAttachment(sortedEmails, state, type, email);
           return sortedEmails;
         });
   }
@@ -561,9 +561,9 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean sendOrgAdminEmailCSV(String type, String state) {
+  public boolean sendOrgAdminEmailCSV(String type, String state, String email) {
     List<UUID> orgInternalIds = getOrgIdsForAdminEmailCSV(type, state);
-    sendOrgAdminEmailCSVAsync(orgInternalIds, type, state);
+    sendOrgAdminEmailCSVAsync(orgInternalIds, type, state, email);
     return true;
   }
 
