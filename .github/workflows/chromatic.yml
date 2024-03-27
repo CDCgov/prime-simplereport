@@ -35,7 +35,7 @@ jobs:
 
       - name: Publish to Chromatic
         if: github.ref != 'refs/heads/main'
-        uses: chromaui/action@v10.9.6
+        uses: chromaui/action@v11
         with:
           workingDir: frontend
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -46,7 +46,7 @@ jobs:
 
       - name: Publish to Chromatic (auto-accept changes on merge main)
         if: github.ref == 'refs/heads/main'
-        uses: chromaui/action@v10.9.6
+        uses: chromaui/action@v11
         with:
           workingDir: frontend
           token: ${{ secrets.GITHUB_TOKEN }}
