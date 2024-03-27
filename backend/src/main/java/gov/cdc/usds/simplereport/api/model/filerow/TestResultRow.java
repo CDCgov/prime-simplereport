@@ -477,6 +477,9 @@ public class TestResultRow implements FileRow {
   }
 
   private boolean isHivResult() {
+    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
+      return false;
+    }
     return resultsUploaderCachingService
         .getHivEquipmentModelAndTestPerformedCodeSet()
         .contains(

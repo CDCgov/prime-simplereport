@@ -169,7 +169,7 @@ public class ResultsUploaderCachingService {
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
   @Caching(
       evict = {
-        @CacheEvict(value = COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET, allEntries = true)
+        @CacheEvict(value = HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET, allEntries = true)
       })
   public void cacheHivEquipmentModelAndTestPerformedCodeSet() {
     log.info("clear and generate hivEquipmentModelAndTestPerformedCodeSet cache");
