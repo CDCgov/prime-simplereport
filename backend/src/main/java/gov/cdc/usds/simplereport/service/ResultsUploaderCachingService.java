@@ -147,13 +147,13 @@ public class ResultsUploaderCachingService {
   @Cacheable(HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
   public Set<String> getHivEquipmentModelAndTestPerformedCodeSet() {
     log.info("generating hivEquipmentModelAndTestPerformedCodeSet cache");
-    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet("HIV");
+    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.HIV_NAME);
   }
 
   @Cacheable(COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
   public Set<String> getCovidEquipmentModelAndTestPerformedCodeSet() {
     log.info("generating covidEquipmentModelAndTestPerformedCodeSet cache");
-    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet("COVID-19");
+    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.COVID19_NAME);
   }
 
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
