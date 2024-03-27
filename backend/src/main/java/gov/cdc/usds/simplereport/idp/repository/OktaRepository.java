@@ -17,6 +17,16 @@ import java.util.Set;
  * <p>Handles all user/organization management in Okta
  */
 public interface OktaRepository {
+  Integer OKTA_ORGS_LIMIT = 200;
+  Integer OKTA_RATE_LIMIT_SLEEP_MS = 60000;
+
+  default Integer getOktaOrgsLimit() {
+    return OKTA_ORGS_LIMIT;
+  }
+
+  default Integer getOktaRateLimitSleepMs() {
+    return OKTA_RATE_LIMIT_SLEEP_MS;
+  }
 
   Optional<OrganizationRoleClaims> createUser(
       IdentityAttributes userIdentity,
