@@ -640,7 +640,8 @@ public class CsvValidatorUtils {
   public static List<FeedbackMessage> validatePositiveHIVRequiredAOEFields(
       ValueOrError testResult, ValueOrError gendersOfSexualPartners, ValueOrError pregnant) {
     List<FeedbackMessage> errors = new ArrayList<>();
-    Set<String> positiveTestResultValues = Set.of("positive", "detected");
+    // includes SNOMED values for positive and detected
+    Set<String> positiveTestResultValues = Set.of("positive", "detected", "260373001", "10828004");
     if (!positiveTestResultValues.contains(testResult.getValue().toLowerCase())) {
       return errors;
     }
