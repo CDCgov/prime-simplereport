@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -427,6 +428,37 @@ class TestResultRowTest {
             .collect(Collectors.toSet());
     assertThat(actual).hasSize(individualFields.size());
     individualFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
+  }
+
+  @Test
+  void validatePositiveHivRequiredAoeFields() {
+    var missingHivRequiredAoeFields = validRowMap;
+    missingHivRequiredAoeFields.put("equipment_model_name", "HIV model");
+    missingHivRequiredAoeFields.put("test_performed_code", "80387-4");
+    missingHivRequiredAoeFields.put("specimen_type", "123456789");
+    missingHivRequiredAoeFields.put("test_result", "Detected");
+    missingHivRequiredAoeFields.put("pregnant", "");
+    missingHivRequiredAoeFields.put("genders_of_sexual_partners", "");
+
+    var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("hiv model|80387-4", TestDataBuilder.createDeviceType()));
+    when(resultsUploaderCachingService.getHivEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of("hiv model|80387-4"));
+
+    var testResultRow =
+        new TestResultRow(
+            missingHivRequiredAoeFields,
+            resultsUploaderCachingService,
+            mock(FeatureFlagsConfig.class));
+
+    var actual = testResultRow.validateIndividualValues();
+
+    assertThat(actual).hasSize(2);
+    actual.forEach(
+        message ->
+            assertThat(message.getMessage())
+                .contains("This is required because the row contains a positive HIV test result."));
   }
 
   private ResultsUploaderCachingService mockResultsUploaderCachingService() {
