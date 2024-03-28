@@ -19,6 +19,7 @@ export const liveJurisdictions = [
   "DE",
   "FL",
   "GU",
+  "HI",
   "IA",
   "ID",
   "IL",
