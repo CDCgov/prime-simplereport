@@ -73,6 +73,8 @@ simple-report-initialization:
       collection-location-code: "71836000"
     - name: Venous blood specimen
       type-code: "122555007"
+    - name: Oral fluid specimen
+      type-code: "441620008"
   device-types:
     - name: Abbott Alinity M
       manufacturer: Abbott
@@ -170,6 +172,14 @@ simple-report-initialization:
         - test-performed-loinc-code: "80387-4"
           supported-disease: "HIV"
           testkit-name-id: "bioLytical Laboratories_INSTI HIV-1/HIV-2 Antibody Test"
+    - name: "OraQuick In-Home HIV Test"
+      manufacturer: "OraQuick"
+      model: "In-Home HIV Test"
+      specimen-types:
+        - "441620008"
+      test-performed-loincs:
+        - test-performed-loinc-code: "49580-4"
+          supported-disease: "HIV"
   patient-registration-links:
     - link: dis-org
       organization-external-id: DIS_ORG
