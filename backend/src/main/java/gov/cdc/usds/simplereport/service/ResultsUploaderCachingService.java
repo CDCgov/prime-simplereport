@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SNOMED_TO_SPECIMEN_NAME_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_TO_SNOMED_MAP;
 
@@ -117,10 +118,7 @@ public class ResultsUploaderCachingService {
     getModelAndTestPerformedCodeToDeviceMap();
   }
 
-  @Cacheable(COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
-  public Set<String> getCovidEquipmentModelAndTestPerformedCodeSet() {
-    log.info("generating covidEquipmentModelAndTestPerformedCodeSet cache");
-
+  private Set<String> getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(String diseaseName) {
     Set<String> resultSet = new HashSet<>();
 
     deviceTypeRepository
@@ -134,7 +132,7 @@ public class ResultsUploaderCachingService {
                           if (deviceTypeDisease
                               .getSupportedDisease()
                               .getName()
-                              .equals("COVID-19")) {
+                              .equals(diseaseName)) {
                             String model = deviceType.getModel();
                             String testPerformedCode =
                                 deviceTypeDisease.getTestPerformedLoincCode();
@@ -143,8 +141,19 @@ public class ResultsUploaderCachingService {
                             }
                           }
                         }));
-
     return resultSet;
+  }
+
+  @Cacheable(HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  public Set<String> getHivEquipmentModelAndTestPerformedCodeSet() {
+    log.info("generating hivEquipmentModelAndTestPerformedCodeSet cache");
+    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.HIV_NAME);
+  }
+
+  @Cacheable(COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  public Set<String> getCovidEquipmentModelAndTestPerformedCodeSet() {
+    log.info("generating covidEquipmentModelAndTestPerformedCodeSet cache");
+    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.COVID19_NAME);
   }
 
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
@@ -155,6 +164,16 @@ public class ResultsUploaderCachingService {
   public void cacheCovidEquipmentModelAndTestPerformedCodeSet() {
     log.info("clear and generate covidEquipmentModelAndTestPerformedCodeSet cache");
     getCovidEquipmentModelAndTestPerformedCodeSet();
+  }
+
+  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
+  @Caching(
+      evict = {
+        @CacheEvict(value = HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET, allEntries = true)
+      })
+  public void cacheHivEquipmentModelAndTestPerformedCodeSet() {
+    log.info("clear and generate hivEquipmentModelAndTestPerformedCodeSet cache");
+    getHivEquipmentModelAndTestPerformedCodeSet();
   }
 
   @Cacheable(SNOMED_TO_SPECIMEN_NAME_MAP)
