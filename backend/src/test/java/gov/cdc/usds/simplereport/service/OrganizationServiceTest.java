@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,14 +53,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.AccessDeniedException;
 
+@EnableAsync
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private TestDataFactory testDataFactory;
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @Autowired @SpyBean private FacilityRepository facilityRepository;
-  @Autowired private OrganizationRepository organizationRepository;
+  @Autowired @SpyBean private OrganizationRepository organizationRepository;
   @Autowired private DeviceTypeRepository deviceTypeRepository;
   @Autowired @SpyBean private OktaRepository oktaRepository;
   @Autowired @SpyBean private PersonRepository personRepository;
@@ -510,6 +513,39 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
+  @WithSimpleReportSiteAdminUser
+  void sendOrgAdminEmailCSVAsync_success() throws ExecutionException, InterruptedException {
+    setupDataByFacility();
+    String type = "facilities";
+    reset(emailService);
+    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
+
+    String mnExternalId = "747e341d-0467-45b8-b92f-a638da2bf1ee";
+    UUID mnId = organizationRepository.findByExternalId(mnExternalId).get().getInternalId();
+    List<String> mnEmails = _service.sendOrgAdminEmailCSVAsync(List.of(mnId), type, "MN").get();
+    List<String> expectedMnEmails =
+        List.of("mn-orgBadmin1@example.com", "mn-orgBadmin2@example.com");
+    verify(emailService, times(1)).sendWithCSVAttachment(expectedMnEmails, "MN", type);
+    assertThat(mnEmails).isEqualTo(expectedMnEmails);
+    reset(emailService);
+
+    String njExternalId = "d6b3951b-6698-4ee7-9d63-aaadee85bac0";
+    UUID njId = organizationRepository.findByExternalId(njExternalId).get().getInternalId();
+    List<String> njEmails = _service.sendOrgAdminEmailCSVAsync(List.of(njId), type, "NJ").get();
+    List<String> expectedNjEmails = List.of("nj-orgAadmin1@example.com");
+    verify(emailService, times(1)).sendWithCSVAttachment(expectedNjEmails, "NJ", type);
+    assertThat(njEmails).isEqualTo(expectedNjEmails);
+    reset(emailService);
+
+    List<String> nonExistentOrgEmails =
+        _service.sendOrgAdminEmailCSVAsync(List.of(), type, "PA").get();
+    verify(emailService, times(1)).sendWithCSVAttachment(nonExistentOrgEmails, "PA", type);
+    assertThat(nonExistentOrgEmails).isEmpty();
+    reset(emailService);
+  }
+
+  @Test
   @WithSimpleReportStandardUser
   void sendOrgAdminEmailCSV_accessDeniedException() {
     assertThrows(
@@ -523,59 +559,45 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void sendOrgAdminEmailCSV_byFacilities_success() {
     setupDataByFacility();
-    String type = "facilities";
+    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
 
-    Integer mnCount = _service.sendOrgAdminEmailCSV(type, "MN");
+    boolean mnEmailSent = _service.sendOrgAdminEmailCSV("facilities", "MN");
     verify(facilityRepository, times(1)).findByFacilityState("MN");
-    verify(emailService, times(1))
-        .sendWithCSVAttachment(
-            List.of("mn-orgBadmin1@example.com", "mn-orgBadmin2@example.com"), "MN", type);
-    assertThat(mnCount).isEqualTo(2);
-    reset(emailService);
+    assertThat(mnEmailSent).isTrue();
 
-    Integer njCount = _service.sendOrgAdminEmailCSV(type, "nj");
-    verify(facilityRepository, times(1)).findByFacilityState("nj");
-    verify(emailService, times(1))
-        .sendWithCSVAttachment(List.of("nj-orgAadmin1@example.com"), "nj", type);
-    assertThat(njCount).isEqualTo(1);
-    reset(emailService);
-
-    Integer paCount = _service.sendOrgAdminEmailCSV(type, "PA");
-    verify(facilityRepository, times(1)).findByFacilityState("PA");
-    verify(emailService, times(1)).sendWithCSVAttachment(List.of(), "PA", type);
-    assertThat(paCount).isZero();
+    boolean njEmailSent = _service.sendOrgAdminEmailCSV("faCilities", "NJ");
+    verify(facilityRepository, times(1)).findByFacilityState("NJ");
+    assertThat(njEmailSent).isTrue();
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
   void sendOrgAdminEmailCSV_byPatients_success() {
     setupDataByPatient();
-    String type = "patients";
+    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
 
-    Integer caCount = _service.sendOrgAdminEmailCSV(type, "CA");
-    verify(emailService, times(1))
-        .sendWithCSVAttachment(List.of("mn-orgBadmin1@example.com"), "CA", type);
-    assertThat(caCount).isEqualTo(1);
-    reset(emailService);
+    boolean caEmailSent = _service.sendOrgAdminEmailCSV("patients", "CA");
+    verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("CA");
+    assertThat(caEmailSent).isTrue();
 
-    Integer njCount = _service.sendOrgAdminEmailCSV(type, "nj");
-    verify(emailService, times(1))
-        .sendWithCSVAttachment(List.of("ca-orgAadmin1@example.com"), "nj", type);
-    assertThat(njCount).isEqualTo(1);
-    reset(emailService);
-
-    Integer mnCount = _service.sendOrgAdminEmailCSV(type, "MN");
-    verify(emailService, times(1)).sendWithCSVAttachment(List.of(), "MN", type);
-    assertThat(mnCount).isZero();
+    boolean njEmailSent = _service.sendOrgAdminEmailCSV("PATIENTS", "NJ");
+    verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("NJ");
+    assertThat(njEmailSent).isTrue();
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
   void sendOrgAdminEmailCSV_byUnsupportedType_success() {
-    String type = "unsupportedType";
+    setupDataByPatient();
+    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
 
-    Integer caCount = _service.sendOrgAdminEmailCSV(type, "CA");
-    assertThat(caCount).isZero();
+    boolean unsupportedTypeEmailSent = _service.sendOrgAdminEmailCSV("Unsuported", "CA");
+    verify(organizationRepository, times(0)).findAllByPatientStateWithTestEvents("CA");
+    verify(facilityRepository, times(0)).findByFacilityState("CA");
+    assertThat(unsupportedTypeEmailSent).isTrue();
   }
 
   @Test

@@ -1,9 +1,12 @@
 package gov.cdc.usds.simplereport.api.organization;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -11,6 +14,7 @@ import gov.cdc.usds.simplereport.api.model.AddFacilityInput;
 import gov.cdc.usds.simplereport.api.model.AddressInput;
 import gov.cdc.usds.simplereport.api.model.ProviderInput;
 import gov.cdc.usds.simplereport.api.model.UpdateFacilityInput;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -287,5 +291,39 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     // THEN
     verify(mockedOrganizationQueueService)
         .markPendingOrganizationAsDeleted(pendingOrg.getExternalId(), true);
+  }
+
+  @Test
+  void sendOrgAdminEmailCSV_success() {
+    String type = "patients";
+    String state = "NJ";
+    organizationMutationResolver.sendOrgAdminEmailCSV(type, state);
+    verify(mockedOrganizationService, times(1)).sendOrgAdminEmailCSV(type, state);
+  }
+
+  @Test
+  void sendOrgAdminEmailCSV_unsupportedType_throwsException() {
+    String type = "unsupportedType";
+    String state = "NJ";
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              organizationMutationResolver.sendOrgAdminEmailCSV(type, state);
+            });
+    assertEquals("type can be \"facilities\" or \"patients\"", caught.getMessage());
+  }
+
+  @Test
+  void sendOrgAdminEmailCSV_unsupportedState_throwsException() {
+    String type = "patients";
+    String state = "ZW";
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              organizationMutationResolver.sendOrgAdminEmailCSV(type, state);
+            });
+    assertEquals("Not a valid state", caught.getMessage());
   }
 }

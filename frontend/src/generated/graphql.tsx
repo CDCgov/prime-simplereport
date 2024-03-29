@@ -216,7 +216,7 @@ export type Mutation = {
   resendToReportStream?: Maybe<Scalars["Boolean"]["output"]>;
   resetUserMfa?: Maybe<User>;
   resetUserPassword?: Maybe<User>;
-  sendOrgAdminEmailCSV?: Maybe<Scalars["Int"]["output"]>;
+  sendOrgAdminEmailCSV?: Maybe<Scalars["Boolean"]["output"]>;
   sendPatientLinkEmail?: Maybe<Scalars["Boolean"]["output"]>;
   sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]["output"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]["output"]>;

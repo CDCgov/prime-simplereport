@@ -32,11 +32,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,8 +60,7 @@ public class OrganizationService {
   private final OrderingProviderRequiredValidator orderingProviderValidator;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
-
-  private final EmailService _emailService;
+  private final EmailService emailService;
 
   public void resetOrganizationRolesContext() {
     organizationRolesContext.reset();
@@ -515,39 +517,54 @@ public class OrganizationService {
         .collect(Collectors.toList());
   }
 
-  private List<String> getOrgAdminEmailsByFacilityState(String state) {
-    List<Facility> facilitiesInState = facilityRepository.findByFacilityState(state);
-    return facilitiesInState.stream()
-        .map(f -> f.getOrganization().getInternalId())
-        .distinct()
-        .map(this::getOrgAdminUserEmails)
-        .flatMap(List::stream)
-        .sorted()
-        .collect(Collectors.toList());
+  @Async
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public CompletableFuture<List<String>> sendOrgAdminEmailCSVAsync(
+      List<UUID> orgInternalIds, String type, String state) {
+    List<List<UUID>> partitionedOrgIds =
+        ListUtils.partition(orgInternalIds, oktaRepository.getOktaOrgsLimit());
+    ArrayList<String> allAdminEmails = new ArrayList<>();
+    return CompletableFuture.supplyAsync(
+        () -> {
+          for (List<UUID> orgIds : partitionedOrgIds) {
+            List<String> adminEmails =
+                orgIds.stream()
+                    .map(this::getOrgAdminUserEmails)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+            allAdminEmails.addAll(adminEmails);
+            try {
+              Thread.sleep(oktaRepository.getOktaRateLimitSleepMs());
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+            }
+          }
+          List<String> sortedEmails = allAdminEmails.stream().sorted().collect(Collectors.toList());
+          emailService.sendWithCSVAttachment(sortedEmails, state, type);
+          return sortedEmails;
+        });
   }
 
-  private List<String> getOrgAdminEmailsByPatientState(String state) {
-    List<Organization> orgs = organizationRepository.findAllByPatientStateWithTestEvents(state);
-    return orgs.stream()
-        .map(o -> o.getInternalId())
-        .map(this::getOrgAdminUserEmails)
-        .flatMap(List::stream)
-        .sorted()
-        .collect(Collectors.toList());
+  private List<UUID> getOrgIdsForAdminEmailCSV(String type, String state) {
+    if ("facilities".equalsIgnoreCase(type)) {
+      List<Facility> facilitiesInState = facilityRepository.findByFacilityState(state);
+      return facilitiesInState.stream()
+          .map(f -> f.getOrganization().getInternalId())
+          .distinct()
+          .collect(Collectors.toList());
+    }
+    if ("patients".equalsIgnoreCase(type)) {
+      List<Organization> orgs = organizationRepository.findAllByPatientStateWithTestEvents(state);
+      return orgs.stream().map(o -> o.getInternalId()).distinct().collect(Collectors.toList());
+    }
+    return List.of();
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Integer sendOrgAdminEmailCSV(String type, String state) {
-    List<String> emailsByState;
-    if ("facilities".equalsIgnoreCase(type)) {
-      emailsByState = getOrgAdminEmailsByFacilityState(state);
-    } else if ("patients".equalsIgnoreCase(type)) {
-      emailsByState = getOrgAdminEmailsByPatientState(state);
-    } else {
-      return 0;
-    }
-    _emailService.sendWithCSVAttachment(emailsByState, state, type);
-    return emailsByState.size();
+  public boolean sendOrgAdminEmailCSV(String type, String state) {
+    List<UUID> orgInternalIds = getOrgIdsForAdminEmailCSV(type, state);
+    sendOrgAdminEmailCSVAsync(orgInternalIds, type, state);
+    return true;
   }
 
   /**
