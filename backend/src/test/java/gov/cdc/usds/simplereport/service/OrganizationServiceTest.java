@@ -517,6 +517,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   void sendOrgAdminEmailCSVAsync_success() throws ExecutionException, InterruptedException {
     setupDataByFacility();
     String type = "facilities";
+    reset(emailService);
     when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
     when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
 
