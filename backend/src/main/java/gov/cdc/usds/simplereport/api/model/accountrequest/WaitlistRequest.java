@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
@@ -16,6 +17,9 @@ public class WaitlistRequest implements TemplateVariablesProvider {
   @NotNull private String phone;
   @NotNull private String state;
   @NotNull private String organization;
+
+  private List<String> diseaseInterest;
+  private String additionalConditions;
   private String referral;
 
   @Override
@@ -32,6 +36,8 @@ public class WaitlistRequest implements TemplateVariablesProvider {
     variableMap.put("phone", phone);
     variableMap.put("state", state);
     variableMap.put("organization", organization);
+    variableMap.put("diseaseInterest", getDiseaseInterest());
+    variableMap.put("additionalConditions", additionalConditions);
     variableMap.put("referral", referral);
 
     return variableMap;
@@ -75,6 +81,17 @@ public class WaitlistRequest implements TemplateVariablesProvider {
 
   public void setOrganization(String organization) {
     this.organization = organization;
+  }
+
+  public String getDiseaseInterest() {
+    if (!diseaseInterest.isEmpty()) {
+      return diseaseInterest.toString();
+    }
+    return "";
+  }
+
+  public void setAdditionalConditions(String additionalConditions) {
+    this.additionalConditions = additionalConditions;
   }
 
   public String getReferral() {

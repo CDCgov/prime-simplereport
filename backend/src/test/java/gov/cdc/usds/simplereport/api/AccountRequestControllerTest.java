@@ -77,7 +77,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   @Test
   void waitlistIsOk() throws Exception {
     String requestBody =
-        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"referral\":\"Ea error voluptate v\"}";
+        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"disease-interest\":[\"Flu A\", \"RSV\"],\"additional-conditions\":\"other conditions\",\"referral\":\"Ea error voluptate v\"}";
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.WAITLIST_REQUEST)
@@ -102,14 +102,53 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             "new SimpleReport waitlist request",
             "Angela Chan",
             "qasas@mailinator.com",
+            "other conditions",
+            "[Flu A, RSV]",
             "Exercitation odit pr");
+  }
+
+  @Test
+  void waitlistIsOk_withEmptyOptionalFields() throws Exception {
+    String requestBody =
+        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"disease-interest\":[],\"additional-conditions\":\"\",\"referral\":\"\"}";
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.WAITLIST_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    this._mockMvc.perform(builder).andExpect(status().isOk());
+
+    verify(emailService)
+        .send(
+            eq(List.of("support@simplereport.gov")),
+            eq("New waitlist request"),
+            contentCaptor.capture());
+
+    verify(mockSendGrid, times(1)).send(mail.capture());
+    assertThat(mail.getValue().getContent().get(0).getValue())
+        .isEqualTo(
+            """
+                    A new SimpleReport waitlist request has been submitted with the following details:<br>
+                    <br>
+                    <b>Name: </b>Angela Chan<br>
+                    <b>Email address: </b>qasas@mailinator.com<br>
+                    <b>Phone number: </b>+1 (157) 294-1842<br>
+                    <b>State: </b>Exercitation odit pr<br>
+                    <b>Organization: </b>Lane Moss LLC<br>
+                    <b>Disease interest:</b> <br>
+                    <b>Additional conditions:</b> <br>
+                    <b>Referral: </b>
+                    """);
   }
 
   @Test
   @DisplayName("waitlist request fails without email")
   void waitlistValidatesInput() throws Exception {
     String requestBody =
-        "{\"name\":\"Angela Chan\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"referral\":\"Ea error voluptate v\"}";
+        "{\"name\":\"Angela Chan\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"referral\":\"Ea error voluptate v\",\"disease-interest\":[],\"additional-conditions\":\"\",}";
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.WAITLIST_REQUEST)
