@@ -177,7 +177,7 @@ public class EmailService {
     attachments.setFilename(filename);
     attachments.setType("text/csv");
     attachments.setDisposition("attachment");
-    String attachmentContent = Base64.getMimeEncoder().encodeToString(emailsCSVBytes);
+    String attachmentContent = Base64.getEncoder().encodeToString(emailsCSVBytes);
     attachments.setContent(attachmentContent);
     String emailSubject =
         String.format("Org admin email CSVs for outreach - %s in %s", type, state);
