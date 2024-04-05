@@ -382,10 +382,10 @@ class QueueManagementTest extends BaseGraphqlTest {
       // add more tests to the queue. (which needs more patients)
       Person p = _dataFactory.createFullPerson(_org);
       String personId = p.getInternalId().toString();
-      variables = getFacilityScopedArguments();
-      variables.put("id", personId);
-      variables.put("symptomOnsetDate", "2020-11-30");
-      performEnqueueMutation(variables, Optional.empty());
+      HashMap<String, Object> enqueueVars = getFacilityScopedArguments();
+      enqueueVars.put("id", personId);
+      enqueueVars.put("symptomOnsetDate", "2020-11-30");
+      performEnqueueMutation(enqueueVars, Optional.empty());
     }
 
     startQueryCount = QueryCountService.get().getSelect();
