@@ -45,6 +45,7 @@ export const liveJurisdictions = [
   "PA",
   "PR",
   "RI",
+  "SC",
   "SD",
   "TN",
   "TX",
