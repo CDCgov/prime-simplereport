@@ -36,10 +36,8 @@ describe("Patient self registration", () => {
     // gets the self registration link and navigates to it
 
     cy.visit("/settings");
-    // breaking apart contains.as --> click() because chaining it together was  
-    // creating race conditions / causing flakage in CI 
-    cy.contains("Patient self-registration").as("selfRegNav");
-    cy.get("@selfRegNav").click();
+
+    cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
 
     // Test a11y on the Patient self registration page
