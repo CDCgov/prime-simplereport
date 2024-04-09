@@ -5258,3 +5258,21 @@ databaseChangeLog:
             tableName: feature_flag
             where: name in ('rsvEnabled', 'testCardRefactorEnabled', 'singleEntryRsvEnabled')
       rollback: ""
+  - changeSet:
+      id: add-syphilis-to-supported_disease-table
+      author: bobby@skylight.digital
+      comment: Add Syphilis to the supported_disease table.
+      changes:
+        - tagDatabase:
+            tag: add-syphilis-to-supported_disease-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'Syphilis', 'LL2467-0')
+      rollback:
+        - sql:
+            sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Syphilis';
