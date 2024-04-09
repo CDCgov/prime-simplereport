@@ -8,6 +8,10 @@ export const useSupportedDiseaseList = () => {
   if (!hivEnabled) {
     allDiseases = allDiseases.filter((d) => d !== MULTIPLEX_DISEASES.HIV);
   }
+  const syphilisEnabled = Boolean(useFeature("syphilisEnabled"));
+  if (!syphilisEnabled) {
+    allDiseases = allDiseases.filter((d) => d !== MULTIPLEX_DISEASES.SYPHILIS);
+  }
   return allDiseases;
 };
 
