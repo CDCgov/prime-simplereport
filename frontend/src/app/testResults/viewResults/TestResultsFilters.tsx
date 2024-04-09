@@ -13,7 +13,6 @@ import { useFeature } from "flagged";
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import SearchResults from "../../testQueue/addToQueue/SearchResults";
 import Select from "../../commonComponents/Select";
-import { MULTIPLEX_DISEASES } from "../constants";
 import {
   COVID_RESULTS,
   ROLE_VALUES,
@@ -39,6 +38,7 @@ import {
   SEARCH_DEBOUNCE_TIME,
 } from "../../testQueue/constants";
 import useComponentVisible from "../../commonComponents/ComponentVisible";
+import { useSupportedDiseaseOptionList } from "../../utils/disease";
 
 import { ALL_FACILITIES_ID, DateRangeFilter } from "./TestResultsList";
 import { getTodaysDate } from "./utils";
@@ -271,31 +271,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
   /**
    * Disease select
    */
-  const diseaseOptions = [
-    {
-      value: MULTIPLEX_DISEASES.COVID_19,
-      label: MULTIPLEX_DISEASES.COVID_19,
-    },
-    {
-      value: MULTIPLEX_DISEASES.FLU_A,
-      label: MULTIPLEX_DISEASES.FLU_A,
-    },
-    {
-      value: MULTIPLEX_DISEASES.FLU_B,
-      label: MULTIPLEX_DISEASES.FLU_B,
-    },
-    {
-      value: MULTIPLEX_DISEASES.RSV,
-      label: MULTIPLEX_DISEASES.RSV,
-    },
-  ];
-  if (hivEnabled) {
-    diseaseOptions.push({
-      value: MULTIPLEX_DISEASES.HIV,
-      label: MULTIPLEX_DISEASES.HIV,
-    });
-  }
-  diseaseOptions.sort((a, b) => (a.label > b.label ? 1 : -1));
+  const diseaseOptions = useSupportedDiseaseOptionList();
 
   useEffect(() => {
     if (data) {

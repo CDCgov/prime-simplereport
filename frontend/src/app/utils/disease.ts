@@ -10,3 +10,15 @@ export const useSupportedDiseaseList = () => {
   }
   return allDiseases;
 };
+
+export const useSupportedDiseaseOptionList = () => {
+  const supportedDiseases = useSupportedDiseaseList();
+  const options = supportedDiseases.map((disease) => {
+    return {
+      value: disease,
+      label: disease,
+    };
+  });
+  options.sort((a, b) => (a.label > b.label ? 1 : -1));
+  return options;
+};
