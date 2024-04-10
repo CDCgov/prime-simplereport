@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import moment from "moment/moment";
 import { useLazyQuery } from "@apollo/client";
-import { useFeature } from "flagged";
 
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import SearchResults from "../../testQueue/addToQueue/SearchResults";
@@ -94,7 +93,6 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
     useAppSelector((state) => state.user.permissions),
     appPermissions.settings.canView
   );
-  const hivEnabled = useFeature("hivEnabled");
 
   /**
    * Patient search
