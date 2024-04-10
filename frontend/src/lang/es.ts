@@ -41,6 +41,7 @@ export const es: LanguageConfig = {
         FLUB: "Flu B",
         RSV: "VRS",
         HIV: "VIH",
+        SYPHILIS: "Sífilis",
       },
       diseaseResultTitle: {
         COVID19: "COVID-19 resultado",
@@ -48,6 +49,7 @@ export const es: LanguageConfig = {
         FLUB: "Flu B resultado",
         RSV: "RSV resultado",
         HIV: "Resultado de la prueba del VIH",
+        SYPHILIS: "Sífilis resultado",
       },
       role: {
         STAFF: "Personal",
@@ -428,6 +430,12 @@ export const es: LanguageConfig = {
           p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del VIH.</0> (cdc.gov/hiv/spanish/basics/hiv-testing/positive-hiv-results.html)",
           positiveHivLink:
             "https://www.cdc.gov/hiv/spanish/basics/hiv-testing/positive-hiv-results.html",
+        },
+      },
+      syphilisNotes: {
+        h1: "Para Sífilis:",
+        all: {
+          p0: "Sífilis",
         },
       },
       tos: {
