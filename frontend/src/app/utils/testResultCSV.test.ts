@@ -1,3 +1,5 @@
+import { MULTIPLEX_DISEASES } from "../testResults/constants";
+
 import { parseDataForCSV } from "./testResultCSV";
 
 const data = [
@@ -36,6 +38,12 @@ const data = [
       {
         disease: {
           name: "HIV",
+        },
+        testResult: "POSITIVE",
+      },
+      {
+        disease: {
+          name: "Syphilis",
         },
         testResult: "POSITIVE",
       },
@@ -86,7 +94,7 @@ const data = [
   },
 ] as TestResult[];
 
-const resultNoHIV = [
+const resultNoSTD = [
   {
     "COVID-19 result": "Negative",
     "Device manufacturer": "Access Bio, Inc.",
@@ -131,28 +139,34 @@ const resultNoHIV = [
   },
 ];
 
-const result = [
+const resultAllDiseases = [
   {
-    ...resultNoHIV[0],
+    ...resultNoSTD[0],
     "HIV result": "Positive",
+    "Syphilis result": "Positive",
   },
 ];
 
 describe("parseDataForCSV", () => {
   it("parses multiplex data", () => {
-    expect(parseDataForCSV(true, data)).toEqual(result);
+    expect(parseDataForCSV(data)).toEqual(resultAllDiseases);
   });
   it("parse data does not fail if tribalAffiliation is null", () => {
     expect(
-      parseDataForCSV(true, [
+      parseDataForCSV([
         {
           ...data[0],
           patient: { ...data[0].patient, tribalAffiliation: null },
         },
       ])
-    ).toEqual(result);
+    ).toEqual(resultAllDiseases);
   });
-  it("doesn't include HIV if includeHIV are false", () => {
-    expect(parseDataForCSV(false, data)).toEqual(resultNoHIV);
+  it("doesn't include STD data if feature flags are false", () => {
+    expect(
+      parseDataForCSV(data, [
+        MULTIPLEX_DISEASES.HIV,
+        MULTIPLEX_DISEASES.SYPHILIS,
+      ])
+    ).toEqual(resultNoSTD);
   });
 });

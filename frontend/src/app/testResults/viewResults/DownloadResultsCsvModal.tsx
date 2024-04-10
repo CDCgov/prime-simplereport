@@ -4,15 +4,15 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
 import { ApolloError } from "@apollo/client";
-import { useFeature } from "flagged";
 
 import { showError } from "../../utils/srToast";
-import { parseDataForCSV } from "../../utils/testResultCSV";
 import Button from "../../commonComponents/Button/Button";
 import {
   useGetFacilityResultsForCsvWithCountLazyQuery,
   GetFacilityResultsForCsvWithCountQuery,
 } from "../../../generated/graphql";
+import { parseDataForCSV } from "../../utils/testResultCSV";
+import { useDisabledFeatureDiseaseList } from "../../utils/disease";
 
 import { ALL_FACILITIES_ID, ResultsQueryVariables } from "./TestResultsList";
 
@@ -38,7 +38,7 @@ export const DownloadResultsCsvModal = ({
   >(null);
   // Disable downloads because backend will hang on over 20k results (#3953)
   const disableDownload = totalEntries > rowsMaxLimit;
-  const hivEnabled = Boolean(useFeature("hivEnabled"));
+  const disabledFeatureDiseaseList = useDisabledFeatureDiseaseList();
 
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
     // active facility in the facility filter is the default
@@ -70,8 +70,8 @@ export const DownloadResultsCsvModal = ({
   const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
     if (data?.testResultsPage?.content) {
       const csvResults = parseDataForCSV(
-        hivEnabled,
-        data.testResultsPage.content
+        data.testResultsPage.content,
+        disabledFeatureDiseaseList
       );
       setResults(csvResults);
     } else {
