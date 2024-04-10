@@ -7,8 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
+@Getter
+@Setter
 public class WaitlistRequest implements TemplateVariablesProvider {
   private static final String TEMPLATE_NAME = "waitlist-request";
 
@@ -21,6 +25,7 @@ public class WaitlistRequest implements TemplateVariablesProvider {
   private List<String> diseaseInterest;
   private String additionalConditions;
   private String referral;
+  private String formHoneypot;
 
   @Override
   public String getTemplateName() {
@@ -39,48 +44,9 @@ public class WaitlistRequest implements TemplateVariablesProvider {
     variableMap.put("diseaseInterest", getDiseaseInterest());
     variableMap.put("additionalConditions", additionalConditions);
     variableMap.put("referral", referral);
+    variableMap.put("formHoneypot", formHoneypot);
 
     return variableMap;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getPhone() {
-    return phone;
-  }
-
-  public void setPhone(String phone) {
-    this.phone = phone;
-  }
-
-  public String getState() {
-    return state;
-  }
-
-  public void setState(String state) {
-    this.state = state;
-  }
-
-  public String getOrganization() {
-    return organization;
-  }
-
-  public void setOrganization(String organization) {
-    this.organization = organization;
   }
 
   public String getDiseaseInterest() {
@@ -92,13 +58,5 @@ public class WaitlistRequest implements TemplateVariablesProvider {
 
   public void setAdditionalConditions(String additionalConditions) {
     this.additionalConditions = additionalConditions;
-  }
-
-  public String getReferral() {
-    return referral;
-  }
-
-  public void setReferral(String referral) {
-    this.referral = referral;
   }
 }
