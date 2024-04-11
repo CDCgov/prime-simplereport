@@ -68,7 +68,7 @@ public class AccountRequestController {
   @PostMapping("/waitlist")
   public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest request)
       throws IOException {
-    Boolean containsFormHoneypot = Boolean.valueOf(request.getFormHoneypot());
+    boolean containsFormHoneypot = Boolean.parseBoolean(request.getFormHoneypot());
     if (containsFormHoneypot) {
       log.error(
           "Waitlist request is probably a bot submission. Aborting waitlist email submission");
