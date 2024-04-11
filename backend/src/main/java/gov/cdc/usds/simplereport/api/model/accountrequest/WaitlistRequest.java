@@ -55,8 +55,4 @@ public class WaitlistRequest implements TemplateVariablesProvider {
     }
     return "";
   }
-
-  public void setAdditionalConditions(String additionalConditions) {
-    this.additionalConditions = additionalConditions;
-  }
 }
