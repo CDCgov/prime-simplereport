@@ -18,7 +18,7 @@ export const useSupportedDiseaseList = () => {
 export const useDisabledFeatureDiseaseList = () => {
   const allDiseases = Object.values(MULTIPLEX_DISEASES);
   const supportedDiseases = useSupportedDiseaseList();
-  return allDiseases.filter((d) => supportedDiseases.includes(d));
+  return allDiseases.filter((d) => !supportedDiseases.includes(d));
 };
 
 export const useSupportedDiseaseOptionList = () => {
