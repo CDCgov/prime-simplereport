@@ -7,12 +7,15 @@ import {
 import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
 
-import { symptomsStringToArray, hasSymptomsForView } from "./symptoms";
+import { hasSymptomsForView, symptomsStringToArray } from "./symptoms";
 import { getResultByDiseaseName } from "./testResults";
 
 import { displayFullName, facilityDisplayName } from "./index";
 
-export function parseDataForCSV(includeHIV: boolean, data: TestResult[]) {
+export function parseDataForCSV(
+  data: TestResult[],
+  excludedDiseases: MULTIPLEX_DISEASES[] = []
+) {
   return data.sort(byDateTested).map((r: any) => {
     const symptomList = r.symptoms ? symptomsStringToArray(r.symptoms) : [];
 
@@ -85,18 +88,27 @@ export function parseDataForCSV(includeHIV: boolean, data: TestResult[]) {
 
     return {
       ...csvData1,
-      ...(includeHIV && {
-        "HIV result":
-          TEST_RESULT_DESCRIPTIONS[
-            getResultByDiseaseName(r.results, MULTIPLEX_DISEASES.HIV) as Results
-          ],
-      }),
       ...{
         "RSV result":
           TEST_RESULT_DESCRIPTIONS[
             getResultByDiseaseName(r.results, MULTIPLEX_DISEASES.RSV) as Results
           ],
       },
+      ...(!excludedDiseases.includes(MULTIPLEX_DISEASES.HIV) && {
+        "HIV result":
+          TEST_RESULT_DESCRIPTIONS[
+            getResultByDiseaseName(r.results, MULTIPLEX_DISEASES.HIV) as Results
+          ],
+      }),
+      ...(!excludedDiseases.includes(MULTIPLEX_DISEASES.SYPHILIS) && {
+        "Syphilis result":
+          TEST_RESULT_DESCRIPTIONS[
+            getResultByDiseaseName(
+              r.results,
+              MULTIPLEX_DISEASES.SYPHILIS
+            ) as Results
+          ],
+      }),
       ...csvData2,
     };
   });

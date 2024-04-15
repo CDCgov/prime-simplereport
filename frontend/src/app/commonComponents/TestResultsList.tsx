@@ -42,6 +42,10 @@ const setDiseaseResultKey = (diseaseName: MultiplexDisease, isPxp: boolean) => {
       return isPxp
         ? "constants.diseaseResultTitle.RSV"
         : "constants.disease.RSV";
+    case MULTIPLEX_DISEASES.SYPHILIS:
+      return isPxp
+        ? "constants.diseaseResultTitle.SYPHILIS"
+        : "constants.disease.SYPHILIS";
     default:
       return null;
   }

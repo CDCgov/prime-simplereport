@@ -38,6 +38,7 @@ export const en = {
         FLUB: "Flu B",
         RSV: "RSV",
         HIV: "HIV",
+        SYPHILIS: "Syphilis",
       },
       diseaseResultTitle: {
         COVID19: "COVID-19 result",
@@ -45,6 +46,7 @@ export const en = {
         FLUB: "Flu B result",
         RSV: "RSV result",
         HIV: "HIV result",
+        SYPHILIS: "Syphilis result",
       },
       role: {
         STAFF: "Staff",
@@ -405,6 +407,12 @@ export const en = {
           p1: "<0>Visit the CDC website to learn more about a positive HIV result</0> (cdc.gov/hiv/basics/hiv-testing/positive-hiv-results.html)",
           positiveHivLink:
             "https://www.cdc.gov/hiv/basics/hiv-testing/positive-hiv-results.html",
+        },
+      },
+      syphilisNotes: {
+        h1: "For Syphilis:",
+        all: {
+          p0: "Syphilis notes need to be added here",
         },
       },
       tos: {
