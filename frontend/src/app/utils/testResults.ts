@@ -91,7 +91,6 @@ export const displayGuidance = (results: MultiplexResults) => {
     hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.COVID_19) ||
     hasPositiveFluResults(results) ||
     hasPositiveRsvResults(results) ||
-    hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.HIV) ||
-    hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.SYPHILIS)
+    hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.HIV)
   );
 };
