@@ -15,3 +15,7 @@ simple-report:
       - https://dev4.simplereport.gov
 twilio:
   enabled: true
+  features:
+    syphilisEnabled: true
+    hivEnabled: true
+
