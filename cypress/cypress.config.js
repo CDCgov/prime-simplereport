@@ -2,6 +2,7 @@ global.specRunVersions = new Map();
 const fs = require("fs");
 
 module.exports = {
+  projectId: "sqvmy6",
   viewportWidth: 1200,
   viewportHeight: 800,
   defaultCommandTimeout: 10000,

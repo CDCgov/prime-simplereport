@@ -116,5 +116,5 @@ if [[ $RUN_OPEN = true ]]; then
   export CYPRESS_CHECK_URL="$FRONTEND_URL_PATH"
   yarn run cypress open
 else
-  CYPRESS_CACHE_FOLDER=./tmp/Cypress DEBUG=cypress:* yarn run cypress run --browser "$BROWSER" --spec "$SPEC_PATH" --config-file cypress.config.js --config baseUrl="$TEST_ENV$PUBLIC_URL" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+  CYPRESS_CACHE_FOLDER=./tmp/Cypress DEBUG=cypress:* yarn run cypress run --browser "$BROWSER" --spec "$SPEC_PATH" --config-file cypress.config.js --config baseUrl="$TEST_ENV$PUBLIC_URL" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH" --record --key "$CYPRESS_RECORD_KEY"
 fi;
