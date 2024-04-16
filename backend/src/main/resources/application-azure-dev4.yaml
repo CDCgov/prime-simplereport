@@ -17,5 +17,4 @@ twilio:
   enabled: true
   features:
     syphilisEnabled: true
-    hivEnabled: true
 
