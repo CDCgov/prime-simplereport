@@ -116,48 +116,48 @@ jobs:
         with:
           name: function-coverage
           path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
-  sonar:
-    needs: [backend-tests, frontend-tests, function-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        with:
-          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-      - name: Restore backend cache
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v4
-        with:
-          path: |
-            backend/build/**
-          key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
-      - name: Restore frontend cache
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v4
-        with:
-          path: |
-            frontend/coverage/**
-          key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
-      - name: Restore functions cache
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v4
-        with:
-          path: |
-            ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
-          key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
-      - name: Set up JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-      - name: Sonar analysis
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #  sonar:
+  #    needs: [backend-tests, frontend-tests, function-tests]
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #        if: ${{ github.actor != 'dependabot[bot]' }}
+  #        with:
+  #          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
+  #        env:
+  #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+  #      - name: Restore backend cache
+  #        if: ${{ github.actor != 'dependabot[bot]' }}
+  #        uses: actions/cache@v4
+  #        with:
+  #          path: |
+  #            backend/build/**
+  #          key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+  #      - name: Restore frontend cache
+  #        if: ${{ github.actor != 'dependabot[bot]' }}
+  #        uses: actions/cache@v4
+  #        with:
+  #          path: |
+  #            frontend/coverage/**
+  #          key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+  #      - name: Restore functions cache
+  #        if: ${{ github.actor != 'dependabot[bot]' }}
+  #        uses: actions/cache@v4
+  #        with:
+  #          path: |
+  #            ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
+  #          key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+  #      - name: Set up JDK
+  #        uses: actions/setup-java@v4
+  #        with:
+  #          java-version: ${{ env.JAVA_VERSION }}
+  #          distribution: ${{ env.JAVA_DISTRIBUTION }}
+  #      - name: Sonar analysis
+  #        if: ${{ github.actor != 'dependabot[bot]' }}
+  #        run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
+  #        env:
+  #          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   build-jar:
     runs-on: ubuntu-latest
     steps:

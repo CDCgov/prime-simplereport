@@ -236,6 +236,7 @@ jobs:
       CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
       CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
       CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+      CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
       OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
       SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
       SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
@@ -261,18 +262,18 @@ jobs:
   #      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
   #      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
 
-#  tests:
-#    if: |
-#      always() && !failure() && !cancelled()
-#    needs:
-#      - build_database_image
-#    uses: ./.github/workflows/test.yml
-#    secrets:
-#      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_TEST_ACCOUNT_SID }}
-#      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TEST_AUTH_TOKEN }}
-#    with:
-#      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+  tests:
+    if: |
+      always() && !failure() && !cancelled()
+    needs:
+      - build_database_image
+    uses: ./.github/workflows/test.yml
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_TEST_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TEST_AUTH_TOKEN }}
+    with:
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
 
 #  liquibase_action_checks:
 #    if: |
