@@ -19,7 +19,7 @@ on:
           - pentest
 
 env:
-  NODE_VERSION: 18
+  NODE_VERSION: 20
 
 concurrency:
   group: ${{ github.event.inputs.deploy_env }}-deploy
