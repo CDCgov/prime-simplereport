@@ -89,6 +89,6 @@ module.exports = {
     },
     baseUrl: "http://localhost.simplereport.gov",
 
-    // another another comment change
+    // another comment change
   },
 };
