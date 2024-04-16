@@ -15,6 +15,7 @@ services:
       CYPRESS_OKTA_REDIRECT_URI: $CYPRESS_OKTA_REDIRECT_URI
       CYPRESS_OKTA_SCOPE: $CYPRESS_OKTA_SCOPE
       CYPRESS_BACKEND_URL: $CYPRESS_BACKEND_URL
+      CYPRESS_RECORD_KEY: $CYPRESS_RECORD_KEY
       SPEC_PATH: $SPEC_PATH
       TEST_ENV: $TEST_ENV
     depends_on:
@@ -27,7 +28,7 @@ services:
       - ./cypress/videos/:/app/cypress/videos/
       - ./.git/:/app/.git/
     command:
-      ["-s", "$SPEC_PATH", "-r", "$TEST_ENV"]
+      ["-s", "$SPEC_PATH", "-r", "$TEST_ENV", "$CYPRESS_RECORD_KEY"]
   backend:
     environment:
       SPRING_PROFILES_ACTIVE: $SPRING_PROFILES_ACTIVE

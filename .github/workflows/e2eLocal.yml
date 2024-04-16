@@ -15,6 +15,8 @@ on:
         required: true
       CYPRESS_OKTA_SECRET:
         required: true
+      CYPRESS_RECORD_KEY:
+          required: true
     inputs:
       DOCKER_BACKEND_IMAGE_VERSION:
         required: false
@@ -94,6 +96,7 @@ jobs:
         CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
         CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
         CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+        CYPRESS_RECORD_KEY: ${{secrets.CYPRESS_RECORD_KEY}}
         CYPRESS_BACKEND_URL: "https://localhost.simplereport.gov/api"
         SPEC_PATH: "cypress/e2e/**"
         TEST_ENV: "https://localhost.simplereport.gov"
