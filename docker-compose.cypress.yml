@@ -28,7 +28,7 @@ services:
       - ./cypress/videos/:/app/cypress/videos/
       - ./.git/:/app/.git/
     command:
-      [ "-s", "$SPEC_PATH", "-r", "$TEST_ENV" ]
+      [ "-s", "$SPEC_PATH", "-r", "$TEST_ENV", "$CYPRESS_RECORD_KEY" ]
   backend:
     environment:
       SPRING_PROFILES_ACTIVE: $SPRING_PROFILES_ACTIVE
