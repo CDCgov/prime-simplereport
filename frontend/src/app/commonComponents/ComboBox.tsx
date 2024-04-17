@@ -1,5 +1,9 @@
-import { ComboBox as TrussComboBox, Label } from "@trussworks/react-uswds";
-import React, { ComponentPropsWithRef, forwardRef } from "react";
+import {
+  ComboBox as TrussComboBox,
+  ComboBoxRef,
+  Label,
+} from "@trussworks/react-uswds";
+import React, { ComponentPropsWithRef, forwardRef, RefAttributes } from "react";
 
 import Required from "./Required";
 
@@ -8,9 +12,11 @@ export type ComboBoxProps = TrussComponentProps & {
   required?: boolean;
 };
 
+type ComboBoxRefProps = Omit<ComboBoxProps, "ref"> & RefAttributes<ComboBoxRef>;
+
 // props here are only the required ones from Truss and can be extended
 // as needed with additional values.
-const ComboBox: React.FC<ComboBoxProps> = forwardRef(function (
+const ComboBox: React.FC<ComboBoxRefProps> = forwardRef(function (
   { id, name, required, options, onChange, disabled }: ComboBoxProps,
   ref
 ) {
