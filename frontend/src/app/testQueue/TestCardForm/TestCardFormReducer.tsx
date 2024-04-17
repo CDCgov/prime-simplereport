@@ -20,6 +20,7 @@ export interface TestFormState {
 
 export interface AoeQuestionResponses {
   pregnancy?: PregnancyCode;
+  syphilisHistory?: PregnancyCode;
   noSymptoms?: boolean | null;
   symptoms?: string | null;
   symptomOnset?: string;

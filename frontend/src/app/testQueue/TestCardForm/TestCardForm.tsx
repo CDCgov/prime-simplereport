@@ -52,8 +52,8 @@ import {
 } from "./TestCardForm.utils";
 import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
-import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
+import { SyphilisAoEForm } from "./diseaseSpecificComponents/SyphilisAoEForm";
 
 const DEBOUNCE_TIME = 300;
 
@@ -117,13 +117,21 @@ const TestCardForm = ({
   const { patientFullName } = useTestOrderPatient(testOrder);
 
   const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
-
   // AOE responses required for HIV positive result
   const hivAOEResponsesRequired =
     whichAOEFormOption === AOEFormOption.HIV &&
     state.testResults.some(
       (x) => x.diseaseName === "HIV" && x.testResult === TEST_RESULTS.POSITIVE
     );
+
+  const syphilisAOEResponsesRequired =
+    whichAOEFormOption === AOEFormOption.SYPHILIS &&
+    state.testResults.some(
+      (x) =>
+        x.diseaseName === "Syphilis" && x.testResult === TEST_RESULTS.POSITIVE
+    );
+
+  console.log(syphilisAOEResponsesRequired);
 
   /**
    * When backend sends an updated test order, update the form state
@@ -559,9 +567,9 @@ const TestCardForm = ({
             />
           </div>
         )}
-        {hivAOEResponsesRequired && (
+        {syphilisAOEResponsesRequired && (
           <div className="grid-row grid-gap">
-            <HIVAoEForm
+            <SyphilisAoEForm
               testOrder={testOrder}
               responses={state.aoeResponses}
               hasAttemptedSubmit={hasAttemptedSubmit}
@@ -574,6 +582,8 @@ const TestCardForm = ({
             />
           </div>
         )}
+
+        {}
         <div className="grid-row margin-top-4">
           <div className="grid-col-auto">
             <Button onClick={() => submitForm()} type={"button"}>
