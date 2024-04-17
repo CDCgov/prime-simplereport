@@ -22,13 +22,14 @@ const IncompleteAOEWarningModal = ({
   return (
     <Modal
       ref={submitModalRef}
-      aria-labelledby={"submit-modal-heading"}
+      aria-labelledby="submit-modal-heading"
       id="submit-modal"
+      aria-describedby="submit-modal-description"
     >
       <ModalHeading id="submit-modal-heading">
         The test questionnaire for {name} has not been completed.
       </ModalHeading>
-      <p>Do you want to submit results anyway?</p>
+      <p id="submit-modal-description">Do you want to submit results anyway?</p>
       <ModalFooter id={"submit-modal-footer"}>
         <ButtonGroup>
           <ModalToggleButton

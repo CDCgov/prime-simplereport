@@ -485,6 +485,7 @@ Object {
       </div>
     </div>
     <div
+      aria-describedby="submit-modal-description"
       aria-labelledby="submit-modal-heading"
       class="usa-modal-wrapper is-hidden"
       data-force-action="false"
@@ -516,7 +517,9 @@ Object {
                 Dixon, Althea Hedda Mclaughlin
                  has not been completed.
               </h2>
-              <p>
+              <p
+                id="submit-modal-description"
+              >
                 Do you want to submit results anyway?
               </p>
               <div
@@ -1950,6 +1953,7 @@ Object {
       </div>
     </div>
     <div
+      aria-describedby="submit-modal-description"
       aria-labelledby="submit-modal-heading"
       class="usa-modal-wrapper is-hidden"
       data-force-action="false"
@@ -1981,7 +1985,9 @@ Object {
                 Dixon, Althea Hedda Mclaughlin
                  has not been completed.
               </h2>
-              <p>
+              <p
+                id="submit-modal-description"
+              >
                 Do you want to submit results anyway?
               </p>
               <div
@@ -3172,6 +3178,7 @@ Object {
       </div>
     </div>
     <div
+      aria-describedby="submit-modal-description"
       aria-labelledby="submit-modal-heading"
       class="usa-modal-wrapper is-hidden"
       data-force-action="false"
@@ -3203,7 +3210,9 @@ Object {
                 Dixon, Althea Hedda Mclaughlin
                  has not been completed.
               </h2>
-              <p>
+              <p
+                id="submit-modal-description"
+              >
                 Do you want to submit results anyway?
               </p>
               <div

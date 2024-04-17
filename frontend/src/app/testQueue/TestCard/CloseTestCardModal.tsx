@@ -22,13 +22,14 @@ const CloseTestCardModal = ({
   return (
     <Modal
       ref={closeModalRef}
-      aria-labelledby={"close-modal-heading"}
+      aria-describedby="close-modal-description"
+      aria-labelledby="close-modal-heading"
       id="close-modal"
     >
       <ModalHeading id="close-modal-heading">
         Are you sure you want to stop {name}'s test?
       </ModalHeading>
-      <p>
+      <p id="close-modal-description">
         Doing so will remove this person from the list. You can use the search
         bar to start their test again later.
       </p>
