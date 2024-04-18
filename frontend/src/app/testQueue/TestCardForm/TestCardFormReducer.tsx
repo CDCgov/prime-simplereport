@@ -1,7 +1,10 @@
 import moment from "moment/moment";
 import { isEqual, sortBy } from "lodash";
 
-import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
+import {
+  PregnancyCode,
+  SyphilisHistoryCode,
+} from "../../../patientApp/timeOfTest/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
 
 import { convertFromMultiplexResponse } from "./TestCardForm.utils";
@@ -20,7 +23,7 @@ export interface TestFormState {
 
 export interface AoeQuestionResponses {
   pregnancy?: PregnancyCode;
-  syphilisHistory?: PregnancyCode;
+  syphilisHistory?: SyphilisHistoryCode;
   noSymptoms?: boolean | null;
   symptoms?: string | null;
   symptomOnset?: string;

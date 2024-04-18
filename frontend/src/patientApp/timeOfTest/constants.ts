@@ -1,5 +1,25 @@
 // BEGIN things that should be service calls
-export const symptomsMap = {
+export const pregnancyMap = {
+  "77386006": "Yes",
+  "60001007": "No",
+  "261665006": "Prefer not to answer",
+} as const;
+
+export type Pregnancy = typeof pregnancyMap;
+export type PregnancyCode = keyof Pregnancy;
+export type PregnancyDescription = Pregnancy[PregnancyCode];
+
+type PregnancyResponses = {
+  label: PregnancyDescription;
+  value: PregnancyCode;
+}[];
+
+const pregnancyOrder: PregnancyCode[] = ["77386006", "60001007", "261665006"];
+
+export const getPregnancyResponses = (): PregnancyResponses =>
+  pregnancyOrder.map((value) => ({ value, label: pregnancyMap[value] }));
+
+export const respiratorySymptomsMap = {
   "426000000": "Fever over 100.4F",
   "103001002": "Feeling feverish",
   "43724002": "Chills",
@@ -19,21 +39,12 @@ export const symptomsMap = {
   "62315008": "Diarrhea",
 } as const;
 
-export type Symptoms = typeof symptomsMap;
-export type SymptomCode = keyof Symptoms;
-export type SymptomName = Symptoms[SymptomCode];
+export type RespiratorySymptoms = typeof respiratorySymptomsMap;
+export type RespiratorySymptomCode = keyof RespiratorySymptoms;
+export type RespiratorySymptomName =
+  RespiratorySymptoms[RespiratorySymptomCode];
 
-export const pregnancyMap = {
-  "77386006": "Yes",
-  "60001007": "No",
-  "261665006": "Prefer not to answer",
-} as const;
-
-export type Pregnancy = typeof pregnancyMap;
-export type PregnancyCode = keyof Pregnancy;
-export type PregnancyDescription = Pregnancy[PregnancyCode];
-
-const symptomOrder: SymptomCode[] = [
+const respiratorySymptomOrder: RespiratorySymptomCode[] = [
   "426000000",
   "103001002",
   "43724002",
@@ -53,17 +64,70 @@ const symptomOrder: SymptomCode[] = [
   "62315008",
 ];
 
-export const globalSymptomDefinitions = symptomOrder.map((value) => ({
-  value,
-  label: symptomsMap[value],
-}));
+export const respiratorySymptomDefinitions = respiratorySymptomOrder.map(
+  (value) => ({
+    value,
+    label: respiratorySymptomsMap[value],
+  })
+);
+export const syphillisHistoryMap = {
+  // Snomed for "history of syphilis"
+  "1087151000119108": "Yes",
+  // This is the general snomed for "No history of" since I couldn't find one
+  // specific to Syphilis
+  "14732006": "No",
+  // general unknown code, taken from pregnancy
+  "261665006": "Prefer not to answer",
+} as const;
 
-type PregnancyResponses = {
-  label: PregnancyDescription;
-  value: PregnancyCode;
+export type SyphilisHistory = typeof syphillisHistoryMap;
+export type SyphilisHistoryCode = keyof SyphilisHistory;
+export type SyphilisHistoryDescription = SyphilisHistory[SyphilisHistoryCode];
+
+type SyphilisHistoryResponses = {
+  label: SyphilisHistoryDescription;
+  value: SyphilisHistoryCode;
 }[];
 
-const pregnancyOrder: PregnancyCode[] = ["77386006", "60001007", "261665006"];
+const syphilisOrder: SyphilisHistoryCode[] = [
+  "1087151000119108",
+  "14732006",
+  "261665006",
+];
 
-export const getPregnancyResponses = (): PregnancyResponses =>
-  pregnancyOrder.map((value) => ({ value, label: pregnancyMap[value] }));
+export const getSyphilisHistoryValues = (): SyphilisHistoryResponses =>
+  syphilisOrder.map((value) => ({ value, label: syphillisHistoryMap[value] }));
+
+export const syphilisSymptomsMap = {
+  "724386005": "Genital sore/lesion",
+  // Anal skin tag (195469007); Anal tag (195469007); Fibrous polyp of anus (195469007)
+  "195469007": "Anal sore/lesion",
+  // 	Ulcer of mouth (26284000); Oral ulcer (26284000); Mouth ulceration (26284000); Ulceration of oral mucosa (26284000); Mouth ulcer (26284000)
+  "26284000": "Sore(s) in mouth/lips",
+  "266128007": "Body Rash",
+  "56940005": "Palmar (hand)/plantar (foot) rash",
+  "91554004": "Flat white warts",
+  "15188001": "Hearing loss",
+  "246636008": "Blurred vision",
+} as const;
+
+export type SyphilisSymptoms = typeof syphilisSymptomsMap;
+export type SyphilisSymptomCode = keyof SyphilisSymptoms;
+
+const syphilisSymptomOrder: SyphilisSymptomCode[] = [
+  "724386005",
+  "195469007",
+  "26284000",
+  "266128007",
+  "56940005",
+  "91554004",
+  "15188001",
+  "246636008",
+];
+
+export const syphilisSymptomOrderDefinitions = syphilisSymptomOrder.map(
+  (value) => ({
+    value,
+    label: syphilisSymptomsMap[value],
+  })
+);

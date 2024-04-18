@@ -4,8 +4,10 @@ import moment from "moment";
 import RadioGroup from "../../../commonComponents/RadioGroup";
 import {
   getPregnancyResponses,
-  globalSymptomDefinitions,
   PregnancyCode,
+  getSyphilisHistoryValues,
+  SyphilisHistoryCode,
+  syphilisSymptomOrderDefinitions,
 } from "../../../../patientApp/timeOfTest/constants";
 import { useTranslatedConstants } from "../../../constants";
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
@@ -26,6 +28,7 @@ interface SyphillisAoeFormProps {
 }
 
 const pregnancyResponses = getPregnancyResponses();
+const syphilisHistoryResponses = getSyphilisHistoryValues();
 
 export const SyphilisAoEForm = ({
   testOrder,
@@ -39,7 +42,7 @@ export const SyphilisAoEForm = ({
     onResponseChange({ ...responses, pregnancy: pregnancyCode });
   };
 
-  const onSyphilisHistoryChange = (syphilisHistory: PregnancyCode) => {
+  const onSyphilisHistoryChange = (syphilisHistory: SyphilisHistoryCode) => {
     onResponseChange({ ...responses, syphilisHistory: syphilisHistory });
   };
 
@@ -111,56 +114,10 @@ export const SyphilisAoEForm = ({
           legend="Has the patient been told they have syphilis before?"
           name={`syphilisHistory-${testOrder.internalId}`}
           onChange={onSyphilisHistoryChange}
-          buttons={pregnancyResponses}
+          buttons={syphilisHistoryResponses}
           selectedRadio={responses.syphilisHistory}
         />
       </div>
-      <div className="grid-row">
-        <div className="grid-col-auto">
-          <YesNoRadioGroup
-            name={`has-any-symptoms-${testOrder.internalId}`}
-            legend="Is the patient currently experiencing any symptoms?"
-            value={hasSymptoms}
-            onChange={onHasAnySymptomsChange}
-          />
-        </div>
-      </div>
-      {hasSymptoms === "YES" && (
-        <>
-          <div className="grid-row grid-gap">
-            <TextInput
-              data-testid="symptom-date"
-              name={`symptom-date-${testOrder.internalId}`}
-              type="date"
-              label="When did the patient's symptoms start?"
-              aria-label="Symptom onset date"
-              min={formatDate(new Date("Jan 1, 2020"))}
-              max={formatDate(moment().toDate())}
-              value={
-                responses.symptomOnset
-                  ? formatDate(
-                      moment(responses.symptomOnset).format("YYYY-MM-DD")
-                    )
-                  : ""
-              }
-              onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
-            ></TextInput>
-          </div>
-          <div className="grid-row grid-gap">
-            <Checkboxes
-              boxes={globalSymptomDefinitions.map(({ label, value }) => ({
-                label,
-                value,
-                checked: symptoms[value],
-              }))}
-              legend="Select any symptoms the patient is experiencing"
-              name={`symptoms-${testOrder.internalId}`}
-              onChange={(e) => onSymptomsChange(e, symptoms)}
-            />
-          </div>
-        </>
-      )}
-
       <div className="grid-row">
         <div className="tablet:grid-col-6">
           <MultiSelect
@@ -196,6 +153,53 @@ export const SyphilisAoEForm = ({
           />
         </div>
       </div>
+      <div className="grid-row">
+        <div className="grid-col-auto">
+          <YesNoRadioGroup
+            name={`has-any-symptoms-${testOrder.internalId}`}
+            legend="Is the patient currently experiencing any symptoms?"
+            value={hasSymptoms}
+            onChange={onHasAnySymptomsChange}
+          />
+        </div>
+      </div>
+      {hasSymptoms === "YES" && (
+        <>
+          <div className="grid-row grid-gap">
+            <TextInput
+              data-testid="symptom-date"
+              name={`symptom-date-${testOrder.internalId}`}
+              type="date"
+              label="When did the patient's symptoms start?"
+              aria-label="Symptom onset date"
+              min={formatDate(new Date("Jan 1, 2020"))}
+              max={formatDate(moment().toDate())}
+              value={
+                responses.symptomOnset
+                  ? formatDate(
+                      moment(responses.symptomOnset).format("YYYY-MM-DD")
+                    )
+                  : ""
+              }
+              onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
+            ></TextInput>
+          </div>
+          <div className="grid-row grid-gap">
+            <Checkboxes
+              boxes={syphilisSymptomOrderDefinitions.map(
+                ({ label, value }) => ({
+                  label,
+                  value,
+                  checked: symptoms[value],
+                })
+              )}
+              legend="Select any symptoms the patient is experiencing"
+              name={`symptoms-${testOrder.internalId}`}
+              onChange={(e) => onSymptomsChange(e, symptoms)}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

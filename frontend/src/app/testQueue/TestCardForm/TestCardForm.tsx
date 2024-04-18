@@ -54,6 +54,7 @@ import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
 import { SyphilisAoEForm } from "./diseaseSpecificComponents/SyphilisAoEForm";
+import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 
 const DEBOUNCE_TIME = 300;
 
@@ -130,8 +131,6 @@ const TestCardForm = ({
       (x) =>
         x.diseaseName === "Syphilis" && x.testResult === TEST_RESULTS.POSITIVE
     );
-
-  console.log(syphilisAOEResponsesRequired);
 
   /**
    * When backend sends an updated test order, update the form state
@@ -558,6 +557,21 @@ const TestCardForm = ({
             <CovidAoEForm
               testOrder={testOrder}
               responses={state.aoeResponses}
+              onResponseChange={(responses) => {
+                dispatch({
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+            />
+          </div>
+        )}
+        {hivAOEResponsesRequired && (
+          <div className="grid-row grid-gap">
+            <HIVAoEForm
+              testOrder={testOrder}
+              responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
               onResponseChange={(responses) => {
                 dispatch({
                   type: TestFormActionCase.UPDATE_AOE_RESPONSES,

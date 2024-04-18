@@ -25,7 +25,7 @@ import {
 export const AOEFormOption = {
   COVID: "COVID",
   HIV: "HIV",
-  SYPHILIS: "SYPHILIS",
+  SYPHILIS: "Syphilis",
   NONE: "NONE",
 } as const;
 
