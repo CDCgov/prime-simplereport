@@ -5,8 +5,6 @@ module.exports = {
   viewportWidth: 1200,
   viewportHeight: 800,
   defaultCommandTimeout: 10000,
-  video: true,
-  videoCompression: false,
   retries: {
     runMode: 1,
     openMode: 1,
@@ -66,39 +64,6 @@ module.exports = {
         getSpecRunVersionName(specRunName) {
           return global.specRunVersions.get(specRunName) || null;
         },
-      });
-      on("before:browser:launch", (browser = {}, launchOptions = {}) => {
-        launchOptions.args = launchOptions.args.filter(
-          (item) => item !== "--disable-dev-shm-usage",
-        );
-        if (browser.name === "chrome" && browser.isHeadless) {
-          launchOptions.args.push("--window-size=1200,800");
-          launchOptions.args.push("--force-device-scale-factor=1");
-        }
-
-        if (browser.name === "electron" && browser.isHeadless) {
-          launchOptions.preferences.width = 1200;
-          launchOptions.preferences.height = 1800;
-        }
-
-        if (browser.name === "firefox" && browser.isHeadless) {
-          launchOptions.args.push("--width=1200");
-          launchOptions.args.push("--height=800");
-        }
-
-        return launchOptions;
-      });
-      on("after:spec", (spec, results) => {
-        if (results && results.video) {
-          // Do we have failures for any retry attempts?
-          const failures = results.tests.some((test) =>
-            test.attempts.some((attempt) => attempt.state === "failed"),
-          );
-          if (!failures) {
-            // delete the video if the spec passed and no tests retried
-            fs.unlinkSync(results.video);
-          }
-        }
       });
     },
     baseUrl: "http://localhost.simplereport.gov",
