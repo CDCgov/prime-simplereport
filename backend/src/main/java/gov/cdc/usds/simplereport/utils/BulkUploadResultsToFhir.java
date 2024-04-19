@@ -299,36 +299,7 @@ public class BulkUploadResultsToFhir {
             testingLabAddr,
             DEFAULT_COUNTRY);
 
-    Organization orderingFacility = null;
-    if (StringUtils.isNotEmpty(row.getOrderingFacilityStreet().getValue())
-        || StringUtils.isNotEmpty(row.getOrderingFacilityStreet2().getValue())
-        || StringUtils.isNotEmpty(row.getOrderingFacilityCity().getValue())
-        || StringUtils.isNotEmpty(row.getOrderingFacilityState().getValue())
-        || StringUtils.isNotEmpty(row.getOrderingFacilityZipCode().getValue())
-        || StringUtils.isNotEmpty(row.getOrderingFacilityName().getValue())
-        || StringUtils.isNotEmpty(row.getOrderingFacilityPhoneNumber().getValue())) {
-      var orderingFacilityAddr =
-          new StreetAddress(
-              row.getOrderingFacilityStreet().getValue(),
-              row.getOrderingFacilityStreet2().getValue(),
-              row.getOrderingFacilityCity().getValue(),
-              row.getOrderingFacilityState().getValue(),
-              row.getOrderingFacilityZipCode().getValue(),
-              null);
-      orderingFacility =
-          fhirConverter.convertToOrganization(
-              uuidGenerator.randomUUID().toString(),
-              row.getOrderingFacilityName().getValue(),
-              row.getTestingLabClia().getValue(),
-              row.getOrderingFacilityPhoneNumber().getValue(),
-              null,
-              orderingFacilityAddr,
-              DEFAULT_COUNTRY);
-    }
-
-    if (orderingFacility == null) {
-      orderingFacility = testingLabOrg;
-    }
+    Organization orderingFacility = getOrderingFacilityOrgResource(row);
 
     var practitioner =
         fhirConverter.convertToPractitioner(
@@ -710,5 +681,54 @@ public class BulkUploadResultsToFhir {
     }
 
     return Optional.ofNullable(diseaseSpecificLoincMap.get(testPerformedCode));
+  }
+
+  private String getOrderingFacilityValOrDefault(
+      String orderingFacilityVal, String testingLabDefaultVal) {
+    return StringUtils.isNotEmpty(orderingFacilityVal) ? orderingFacilityVal : testingLabDefaultVal;
+  }
+
+  private Organization getOrderingFacilityOrgResource(TestResultRow row) {
+    String orderingFacilityStreet =
+        getOrderingFacilityValOrDefault(
+            row.getOrderingFacilityStreet().getValue(), row.getTestingLabStreet().getValue());
+    String orderingFacilityStreet2 =
+        getOrderingFacilityValOrDefault(
+            row.getOrderingFacilityStreet2().getValue(), row.getTestingLabStreet2().getValue());
+    String orderingFacilityCity =
+        getOrderingFacilityValOrDefault(
+            row.getOrderingFacilityCity().getValue(), row.getTestingLabCity().getValue());
+    String orderingFacilityState =
+        getOrderingFacilityValOrDefault(
+            row.getOrderingFacilityState().getValue(), row.getTestingLabState().getValue());
+    String orderingFacilityZipCode =
+        getOrderingFacilityValOrDefault(
+            row.getOrderingFacilityZipCode().getValue(), row.getTestingLabZipCode().getValue());
+
+    StreetAddress orderingFacilityAddr =
+        new StreetAddress(
+            orderingFacilityStreet,
+            orderingFacilityStreet2,
+            orderingFacilityCity,
+            orderingFacilityState,
+            orderingFacilityZipCode,
+            null);
+
+    String orderingFacilityName =
+        getOrderingFacilityValOrDefault(
+            row.getOrderingFacilityName().getValue(), row.getTestingLabName().getValue());
+    String orderingFacilityPhoneNumber =
+        getOrderingFacilityValOrDefault(
+            row.getOrderingFacilityPhoneNumber().getValue(),
+            row.getTestingLabPhoneNumber().getValue());
+
+    return fhirConverter.convertToOrganization(
+        uuidGenerator.randomUUID().toString(),
+        orderingFacilityName,
+        row.getTestingLabClia().getValue(),
+        orderingFacilityPhoneNumber,
+        null,
+        orderingFacilityAddr,
+        DEFAULT_COUNTRY);
   }
 }
