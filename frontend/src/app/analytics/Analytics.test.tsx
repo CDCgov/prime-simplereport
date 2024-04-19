@@ -409,7 +409,7 @@ describe("Analytics", () => {
     expect(await screen.findByText("447")).toBeInTheDocument();
     expect(await screen.findByText("39.3%")).toBeInTheDocument();
   });
-  it("filters out selection of disabled diseases", async () => {
+  it("filters out HIV form dropdown", async () => {
     const flagSpy = jest.spyOn(flaggedMock, "useFeature");
     flagSpy.mockImplementation((flagName) => {
       return flagName !== "hivEnabled";
@@ -417,5 +417,15 @@ describe("Analytics", () => {
     renderWithUser();
     const hivElement = screen.queryByText("HIV");
     expect(hivElement).not.toBeInTheDocument();
+  });
+  it("filters out syphilis from dropdown", async () => {
+    const flagSpy = jest.spyOn(flaggedMock, "useFeature");
+    flagSpy.mockImplementation((flagName) => {
+      return flagName !== "syphilisEnabled";
+    });
+
+    renderWithUser();
+    const syphilisElement = screen.queryByText("syphilis");
+    expect(syphilisElement).not.toBeInTheDocument();
   });
 });
