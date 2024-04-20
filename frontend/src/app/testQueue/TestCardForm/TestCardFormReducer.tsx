@@ -178,6 +178,7 @@ export const testCardFormReducer = (
         symptoms: JSON.stringify(parseSymptoms(payload.symptoms)),
         symptomOnset: payload.symptomOnset,
         pregnancy: payload.pregnancy,
+        syphilisHistory: payload.syphilisHistory,
         genderOfSexualPartners: payload.genderOfSexualPartners,
       } as AoeQuestionResponses;
       if (!isEqual(aoeAnswers, prevState.aoeResponses)) {

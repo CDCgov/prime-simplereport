@@ -27,7 +27,10 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
-import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
+import {
+  PregnancyCode,
+  SyphilisHistoryCode,
+} from "../../../patientApp/timeOfTest/constants";
 import { QueueItemSubmitLoader } from "../QueueItemSubmitLoader";
 
 import {
@@ -84,6 +87,7 @@ const TestCardForm = ({
     testResults: convertFromMultiplexResponse(testOrder.results),
     aoeResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
+      syphilisHistory: testOrder.syphilisHistory as SyphilisHistoryCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
       symptoms: JSON.stringify(parseSymptoms(testOrder.symptoms)),
@@ -206,6 +210,7 @@ const TestCardForm = ({
           ? state.aoeResponses.symptomOnset
           : null,
         pregnancy: state.aoeResponses.pregnancy,
+        syphilisHistory: state.aoeResponses.syphilisHistory,
         genderOfSexualPartners:
           state.aoeResponses.genderOfSexualPartners ?? null,
       },

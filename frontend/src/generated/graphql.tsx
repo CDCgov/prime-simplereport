@@ -285,6 +285,7 @@ export type MutationAddPatientToQueueArgs = {
   pregnancy?: InputMaybe<Scalars["String"]["input"]>;
   symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
   symptoms?: InputMaybe<Scalars["String"]["input"]>;
+  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
@@ -532,6 +533,7 @@ export type MutationUpdateTimeOfTestQuestionsArgs = {
   pregnancy?: InputMaybe<Scalars["String"]["input"]>;
   symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
   symptoms?: InputMaybe<Scalars["String"]["input"]>;
+  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
@@ -994,6 +996,7 @@ export type TestOrder = {
   specimenType: SpecimenType;
   symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
   symptoms?: Maybe<Scalars["String"]["output"]>;
+  syphilisHistory?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type TestResult = {
@@ -1015,6 +1018,7 @@ export type TestResult = {
   results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
   symptoms?: Maybe<Scalars["String"]["output"]>;
+  syphilisHistory?: Maybe<Scalars["String"]["output"]>;
 };
 
 export enum TestResultDeliveryPreference {
@@ -2164,6 +2168,7 @@ export type AddPatientToQueueMutationVariables = Exact<{
   symptoms?: InputMaybe<Scalars["String"]["input"]>;
   symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
   pregnancy?: InputMaybe<Scalars["String"]["input"]>;
+  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
   noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 }>;
@@ -2178,6 +2183,7 @@ export type UpdateAoeMutationVariables = Exact<{
   symptoms?: InputMaybe<Scalars["String"]["input"]>;
   symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
   pregnancy?: InputMaybe<Scalars["String"]["input"]>;
+  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
   noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
   genderOfSexualPartners?: InputMaybe<
@@ -2258,6 +2264,7 @@ export type GetFacilityQueueQuery = {
     __typename?: "TestOrder";
     internalId: string;
     pregnancy?: string | null;
+    syphilisHistory?: string | null;
     dateAdded: string;
     symptoms?: string | null;
     symptomOnset?: any | null;
@@ -7070,6 +7077,7 @@ export const AddPatientToQueueDocument = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
+    $syphilisHistory: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -7077,6 +7085,7 @@ export const AddPatientToQueueDocument = gql`
       facilityId: $facilityId
       patientId: $patientId
       pregnancy: $pregnancy
+      syphilisHistory: $syphilisHistory
       noSymptoms: $noSymptoms
       symptoms: $symptoms
       symptomOnset: $symptomOnset
@@ -7107,6 +7116,7 @@ export type AddPatientToQueueMutationFn = Apollo.MutationFunction<
  *      symptoms: // value for 'symptoms'
  *      symptomOnset: // value for 'symptomOnset'
  *      pregnancy: // value for 'pregnancy'
+ *      syphilisHistory: // value for 'syphilisHistory'
  *      noSymptoms: // value for 'noSymptoms'
  *      testResultDelivery: // value for 'testResultDelivery'
  *   },
@@ -7139,6 +7149,7 @@ export const UpdateAoeDocument = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
+    $syphilisHistory: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
     $genderOfSexualPartners: [String]
@@ -7146,6 +7157,7 @@ export const UpdateAoeDocument = gql`
     updateTimeOfTestQuestions(
       patientId: $patientId
       pregnancy: $pregnancy
+      syphilisHistory: $syphilisHistory
       symptoms: $symptoms
       noSymptoms: $noSymptoms
       symptomOnset: $symptomOnset
@@ -7176,6 +7188,7 @@ export type UpdateAoeMutationFn = Apollo.MutationFunction<
  *      symptoms: // value for 'symptoms'
  *      symptomOnset: // value for 'symptomOnset'
  *      pregnancy: // value for 'pregnancy'
+ *      syphilisHistory: // value for 'syphilisHistory'
  *      noSymptoms: // value for 'noSymptoms'
  *      testResultDelivery: // value for 'testResultDelivery'
  *      genderOfSexualPartners: // value for 'genderOfSexualPartners'
@@ -7401,6 +7414,7 @@ export const GetFacilityQueueDocument = gql`
     queue(facilityId: $facilityId) {
       internalId
       pregnancy
+      syphilisHistory
       dateAdded
       symptoms
       symptomOnset

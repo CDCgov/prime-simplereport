@@ -56,6 +56,7 @@ public class QueueMutationResolver {
       @Argument UUID facilityId,
       @Argument UUID patientId,
       @Argument String pregnancy,
+      @Argument String syphilisHistory,
       @Argument String symptoms,
       @Argument LocalDate symptomOnset,
       @Argument Boolean noSymptoms,
@@ -69,6 +70,7 @@ public class QueueMutationResolver {
             facilityId,
             personService.getPatientNoPermissionsCheck(patientId),
             pregnancy,
+            syphilisHistory,
             symptomsMap,
             symptomOnset,
             noSymptoms);
@@ -90,6 +92,7 @@ public class QueueMutationResolver {
   public void updateTimeOfTestQuestions(
       @Argument UUID patientId,
       @Argument String pregnancy,
+      @Argument String syphilisHistory,
       @Argument String symptoms,
       @Argument LocalDate symptomOnset,
       @Argument Boolean noSymptoms,
@@ -99,7 +102,13 @@ public class QueueMutationResolver {
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
     testOrderService.updateTimeOfTestQuestions(
-        patientId, pregnancy, symptomsMap, symptomOnset, noSymptoms, genderOfSexualPartners);
+        patientId,
+        pregnancy,
+        syphilisHistory,
+        symptomsMap,
+        symptomOnset,
+        noSymptoms,
+        genderOfSexualPartners);
 
     if (testResultDelivery != null) {
       personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);

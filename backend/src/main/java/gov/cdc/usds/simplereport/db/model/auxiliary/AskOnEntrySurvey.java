@@ -23,6 +23,7 @@ import org.json.JSONObject;
 public class AskOnEntrySurvey {
 
   private String pregnancy;
+  private String syphilisHistory;
   private Map<String, Boolean> symptoms;
   private Boolean noSymptoms;
   private LocalDate symptomOnsetDate;
@@ -30,6 +31,7 @@ public class AskOnEntrySurvey {
 
   public AskOnEntrySurvey(
       String pregnancy,
+      String syphilisHistory,
       Map<String, Boolean> symptoms,
       Boolean noSymptoms,
       LocalDate symptomOnsetDate,
@@ -39,6 +41,7 @@ public class AskOnEntrySurvey {
     this.noSymptoms = noSymptoms;
     this.symptomOnsetDate = symptomOnsetDate;
     this.genderOfSexualPartners = genderOfSexualPartners;
+    this.syphilisHistory = syphilisHistory;
   }
 
   @JsonIgnore
