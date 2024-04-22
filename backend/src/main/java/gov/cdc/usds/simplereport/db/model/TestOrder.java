@@ -111,10 +111,6 @@ public class TestOrder extends BaseTestInfo {
     return askOnEntrySurvey.getSurvey().getPregnancy();
   }
 
-  public String getSyphilisHistory() {
-    return askOnEntrySurvey.getSurvey().getSyphilisHistory();
-  }
-
   public String getSymptoms() {
     return askOnEntrySurvey.getSurvey().getSymptomsJSON();
   }
