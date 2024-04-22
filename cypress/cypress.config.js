@@ -1,6 +1,7 @@
 global.specRunVersions = new Map();
+const { defineConfig } = require("cypress");
 
-module.exports = {
+module.exports = defineConfig({
   projectId: "sqvmy6",
   viewportWidth: 1200,
   viewportHeight: 800,
@@ -10,6 +11,7 @@ module.exports = {
     openMode: 1,
   },
   e2e: {
+    testIsolation: true,
     supportFile: "cypress/support/e2e.js",
     setupNodeEvents(on, config) {
       on("task", {
@@ -91,4 +93,4 @@ module.exports = {
 
     // another another comment change
   },
-};
+});
