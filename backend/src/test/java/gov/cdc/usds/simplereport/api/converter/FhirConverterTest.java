@@ -1884,7 +1884,15 @@ class FhirConverterTest {
     var testOrder = new TestOrder(person, facility);
     PatientAnswers answers =
         new PatientAnswers(
-            new AskOnEntrySurvey(null, null, Map.of("fake", false), false, null, null));
+            AskOnEntrySurvey.builder()
+                .pregnancy(null)
+                .syphilisHistory(null)
+                .symptoms(Map.of("fake", false))
+                .symptomOnsetDate(null)
+                .genderOfSexualPartners(null)
+                .noSymptoms(false)
+                .build());
+
     testOrder.setAskOnEntrySurvey(answers);
 
     var covidResult =
