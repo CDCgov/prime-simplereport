@@ -131,17 +131,17 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     assertThat(mail.getValue().getContent().get(0).getValue())
         .isEqualTo(
             """
-                    A new SimpleReport waitlist request has been submitted with the following details:<br>
-                    <br>
-                    <b>Name: </b>Angela Chan<br>
-                    <b>Email address: </b>qasas@mailinator.com<br>
-                    <b>Phone number: </b>+1 (157) 294-1842<br>
-                    <b>State: </b>Exercitation odit pr<br>
-                    <b>Organization: </b>Lane Moss LLC<br>
-                    <b>Disease interest:</b> <br>
-                    <b>Additional conditions:</b> <br>
-                    <b>Referral: </b>
-                    """);
+                                A new SimpleReport waitlist request has been submitted with the following details:<br>
+                                <br>
+                                <b>Name: </b>Angela Chan<br>
+                                <b>Email address: </b>qasas@mailinator.com<br>
+                                <b>Phone number: </b>+1 (157) 294-1842<br>
+                                <b>State: </b>Exercitation odit pr<br>
+                                <b>Organization: </b>Lane Moss LLC<br>
+                                <b>Disease interest:</b> <br>
+                                <b>Additional conditions:</b> <br>
+                                <b>Referral: </b>
+                                """);
   }
 
   @Test
@@ -158,6 +158,23 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+    verifyNoInteractions(emailService);
+  }
+
+  @Test
+  @DisplayName("waitlist request early exits with form honeypot set to true")
+  void waitlistFailsWithFormHoneypot() throws Exception {
+    String requestBody =
+        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"disease-interest\":[],\"additional-conditions\":\"\",\"referral\":\"\",\"form-honeypot\":\"true\"}";
+
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.WAITLIST_REQUEST)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    this._mockMvc.perform(builder).andExpect(status().isOk());
     verifyNoInteractions(emailService);
   }
 

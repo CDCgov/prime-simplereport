@@ -20,7 +20,7 @@
   },
   "main": "dist/**/index.js",
   "dependencies": {
-    "@azure/functions": "^4.3.0",
+    "@azure/functions": "^4.4.0",
     "@azure/storage-queue": "^12.16.0",
     "applicationinsights": "^2.9.5",
     "csv-stringify": "^6.4.6",
@@ -43,7 +43,7 @@
     "prettier": "3.2.5",
     "rimraf": "^5.0.5",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.5"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
