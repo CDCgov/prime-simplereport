@@ -792,9 +792,9 @@ public class PersonUtils {
     return residenceTypeMap;
   }
 
-  private static final String PREGNANT_SNOMED = "77386006";
-  private static final String NOT_PREGNANT_SNOMED = "60001007";
-  private static final String PREGNANT_UNKNOWN_SNOMED = "102874004";
+  public static final String PREGNANT_SNOMED = "77386006";
+  public static final String NOT_PREGNANT_SNOMED = "60001007";
+  public static final String PREGNANT_UNKNOWN_SNOMED = "102874004";
 
   public static final String YES_SYPHILIS_HISTORY_SNOMED = "1087151000119108";
   public static final String NO_SYPHILIS_HISTORY_SNOMED = "14732006";
