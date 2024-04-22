@@ -56,7 +56,8 @@ public class TestOrder extends BaseTestInfo {
   private Set<Result> results = new HashSet<>();
 
   protected TestOrder() {
-    /* for hibernate */ }
+    /* for hibernate */
+  }
 
   public TestOrder(Person patient, Facility facility) {
     super(patient, facility, facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
@@ -108,6 +109,10 @@ public class TestOrder extends BaseTestInfo {
 
   public String getPregnancy() {
     return askOnEntrySurvey.getSurvey().getPregnancy();
+  }
+
+  public String getSyphilisHistory() {
+    return askOnEntrySurvey.getSurvey().getSyphilisHistory();
   }
 
   public String getSymptoms() {

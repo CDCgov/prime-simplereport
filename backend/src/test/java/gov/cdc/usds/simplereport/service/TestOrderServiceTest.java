@@ -157,6 +157,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
+        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -226,7 +227,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null);
 
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
 
     List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     _service.addMultiplexResult(
@@ -245,7 +252,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
 
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1866, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1866, 12, 25),
+        false);
     _service.addMultiplexResult(
         _dataFactory.getGenericDevice().getInternalId(),
         _dataFactory.getGenericSpecimen().getInternalId(),
@@ -306,7 +319,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "Space-faring maverick");
 
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -348,11 +367,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.addPatientToQueue(facilityId, p, "", symptoms, symptomOnsetDate, false));
+        () -> _service.addPatientToQueue(facilityId, p, "", "", symptoms, symptomOnsetDate, false));
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
     TestUserIdentities.setFacilityAuthorities();
 
     assertThrows(AccessDeniedException.class, () -> _service.getQueue(facilityId));
@@ -394,7 +419,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
 
     UUID defaultDeviceType = facility.getDefaultDeviceType().getInternalId();
     UUID defaultSpecimenType = facility.getDefaultSpecimenType().getInternalId();
@@ -442,7 +473,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null);
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
 
     UUID defaultDeviceType = facility.getDefaultDeviceType().getInternalId();
     UUID defaultSpecimenType = facility.getDefaultSpecimenType().getInternalId();
@@ -520,12 +557,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility1.getInternalId(),
         p1,
         "",
+        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
     _service.addPatientToQueue(
         facility1.getInternalId(),
         p2,
+        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -588,7 +627,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
     DeviceType deviceType = _dataFactory.getGenericDevice();
     SpecimenType specimenType = _dataFactory.getGenericSpecimen();
     facility.setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
@@ -615,7 +660,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
     DeviceType deviceType = _dataFactory.getGenericDevice();
     SpecimenType specimenType = _dataFactory.getGenericSpecimen();
     facility.setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
@@ -645,7 +696,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
     _service.addPatientToQueue(
-        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facility.getInternalId(),
+        p,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
     DeviceType deviceType = _dataFactory.getGenericDevice();
     SpecimenType specimenType = _dataFactory.getGenericSpecimen();
     facility.setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
@@ -708,6 +765,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
+        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -750,6 +808,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
+        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -789,6 +848,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(),
         patient,
+        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -833,6 +893,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
+        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -872,6 +933,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(),
         patient,
+        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -914,6 +976,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
+        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -949,6 +1012,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(),
         patient,
+        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -1368,7 +1432,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null);
 
     _service.addPatientToQueue(
-        facilityId, p1, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facilityId, p1, "", "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     // get the first query count
     long startQueryCount = QueryCountService.get().getSelect();
@@ -1403,7 +1467,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               null);
 
       _service.addPatientToQueue(
-          facilityId, p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+          facilityId, p, "", "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     }
 
     startQueryCount = QueryCountService.get().getSelect();
@@ -2212,6 +2276,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
+        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -2436,6 +2501,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _service.addPatientToQueue(
             facility.getInternalId(),
             patient,
+            "",
             "",
             Collections.emptyMap(),
             LocalDate.of(2022, 6, 5),

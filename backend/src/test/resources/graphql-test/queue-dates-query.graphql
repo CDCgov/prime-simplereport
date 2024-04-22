@@ -2,6 +2,7 @@ query fetchFacilityQueue($facilityId: ID!) {
   queue(facilityId: $facilityId) {
     internalId
     pregnancy
+    syphilisHistory
     dateAdded
     symptoms
     symptomOnset
