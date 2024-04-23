@@ -41,4 +41,10 @@ resource "azurerm_container_group" "db_client" {
       period_seconds        = 10
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
