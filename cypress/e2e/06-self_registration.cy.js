@@ -4,6 +4,8 @@ import {
   setupRunData,
   cleanUpRunOktaOrgs,
 } from "../utils/setup-utils";
+import { graphqlURL } from "../utils/request-utils";
+import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
 const patient = generatePatient();
 const specRunName = "spec06";
@@ -27,6 +29,12 @@ describe("Patient self registration", () => {
     });
   });
 
+  beforeEach("alias graphql operations", () => {
+    cy.intercept("POST", graphqlURL, (req) => {
+      aliasGraphqlOperations(req);
+    });
+  });
+
   after("clean up patient info", () => {
     cleanUpRunOktaOrgs(currentSpecRunVersionName);
     cleanUpPreviousRunSetupData(currentSpecRunVersionName);
@@ -36,6 +44,8 @@ describe("Patient self registration", () => {
     // gets the self registration link and navigates to it
 
     cy.visit("/settings");
+    cy.wait("@GetUsersAndStatus");
+    cy.wait("@GetUser");
 
     cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
@@ -73,8 +83,8 @@ describe("Patient self registration", () => {
 
     // shows what fields are missing on submit
     cy.get(".self-registration-button").first().click();
-    cy.get(".prime-formgroup").contains("Last name is missing");
-    cy.get(".prime-formgroup").contains("City is missing");
+    cy.get(".prime-formgroup").contains("Last name is missing").click();
+    cy.get(".prime-formgroup").contains("City is missing").click();
 
     // fills out the remaining fields and submits
     cy.get('input[name="lastName"]').type(patient.lastName);
