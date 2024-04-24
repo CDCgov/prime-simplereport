@@ -1,6 +1,7 @@
 global.specRunVersions = new Map();
+const { defineConfig } = require("cypress");
 
-module.exports = {
+module.exports = defineConfig({
   projectId: "sqvmy6",
   viewportWidth: 1200,
   viewportHeight: 800,
@@ -91,4 +92,4 @@ module.exports = {
 
     // another another comment change
   },
-};
+});
