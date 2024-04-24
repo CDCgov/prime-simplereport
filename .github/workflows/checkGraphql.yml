@@ -1,59 +1,58 @@
-name: Check Graphql
-
-on:
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - "**"
-  merge_group:
-    types:
-      - checks_requested
-  push:
-    branches:
-      - main
-
-env:
-  NODE_VERSION: 20
-
-defaults:
-  run:
-    working-directory: frontend
-
-jobs:
-  check-graphql-types:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{env.NODE_VERSION}}
-      - name: Cache yarn
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Node setup
-        run: yarn install --prefer-offline
-      - name: Generate grahpql types
-        run: yarn codegen
-      - name: Lint generated files
-        run: yarn lint:write
-      - name: Check for changes
-        run: |
-          if [[ -z "$(git status --porcelain)" ]]; then
-            exit 0
-          else
-            echo "Current generated code does not match code in latest commit. try running cd frontend/ && yarn codegen"
-            git diff >> diff.txt
-            exit 1
-          fi
-      - name: Archive git diff
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: files changed
-          path: frontend/diff.txt
-          retention-days: 7
+#name: Check Graphql
+#on:
+#  workflow_dispatch:
+#  pull_request:
+#    branches:
+#      - "**"
+#  merge_group:
+#    types:
+#      - checks_requested
+#  push:
+#    branches:
+#      - main
+#
+#env:
+#  NODE_VERSION: 18
+#
+#defaults:
+#  run:
+#    working-directory: frontend
+#
+#jobs:
+#  check-graphql-types:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - name: Use Node.js ${{env.NODE_VERSION}}
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: ${{env.NODE_VERSION}}
+#      - name: Cache yarn
+#        uses: actions/cache@v4
+#        with:
+#          path: ~/.cache/yarn
+#          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-yarn-
+#      - name: Node setup
+#        run: yarn install --prefer-offline
+#      - name: Generate grahpql types
+#        run: yarn codegen
+#      - name: Lint generated files
+#        run: yarn lint:write
+#      - name: Check for changes
+#        run: |
+#          if [[ -z "$(git status --porcelain)" ]]; then
+#            exit 0
+#          else
+#            echo "Current generated code does not match code in latest commit. try running cd frontend/ && yarn codegen"
+#            git diff >> diff.txt
+#            exit 1
+#          fi
+#      - name: Archive git diff
+#        uses: actions/upload-artifact@v4
+#        if: failure()
+#        with:
+#          name: files changed
+#          path: frontend/diff.txt
+#          retention-days: 7

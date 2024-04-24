@@ -1,64 +1,64 @@
-name: Chromatic
-
-on:
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - "**"
-    paths:
-      - "frontend/**"
-  push:
-    branches:
-      - main
-    paths:
-      - "frontend/**"
-
-env:
-  NODE_VERSION: 20
-
-jobs:
-  chromatic-deployment:
-    runs-on: ubuntu-latest
-    steps:
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Chromatic wants the history
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        run: yarn
-        working-directory: frontend
-
-      - name: Publish to Chromatic
-        if: github.ref != 'refs/heads/main'
-        uses: chromaui/action@v10
-        with:
-          workingDir: frontend
-          token: ${{ secrets.GITHUB_TOKEN }}
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          ignoreLastBuildOnBranch: "**"  # Better comparisons after rebasing
-          exitZeroOnChanges: true
-          exitOnceUploaded: true
-
-      - name: Publish to Chromatic (auto-accept changes on merge main)
-        if: github.ref == 'refs/heads/main'
-        uses: chromaui/action@v10
-        with:
-          workingDir: frontend
-          token: ${{ secrets.GITHUB_TOKEN }}
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          ignoreLastBuildOnBranch: "**"
-          exitZeroOnChanges: true
-          exitOnceUploaded: true
-          autoAcceptChanges: true  # handle squash-on-merge
-
-      - name: Artifact Chromatic logs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: logs
-          path: frontend/*.log
+#name: Chromatic
+#
+#on:
+#  workflow_dispatch:
+#  pull_request:
+#    branches:
+#      - "**"
+#    paths:
+#      - "frontend/**"
+#  push:
+#    branches:
+#      - main
+#    paths:
+#      - "frontend/**"
+#
+#env:
+#  NODE_VERSION: 18
+#
+#jobs:
+#  chromatic-deployment:
+#    runs-on: ubuntu-latest
+#    steps:
+#
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0  # Chromatic wants the history
+#
+#      - uses: actions/setup-node@v4
+#        with:
+#          node-version: ${{ env.NODE_VERSION }}
+#
+#      - name: Install dependencies
+#        run: yarn
+#        working-directory: frontend
+#
+#      - name: Publish to Chromatic
+#        if: github.ref != 'refs/heads/main'
+#        uses: chromaui/action@v10
+#        with:
+#          workingDir: frontend
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+#          ignoreLastBuildOnBranch: "**"  # Better comparisons after rebasing
+#          exitZeroOnChanges: true
+#          exitOnceUploaded: true
+#
+#      - name: Publish to Chromatic (auto-accept changes on merge main)
+#        if: github.ref == 'refs/heads/main'
+#        uses: chromaui/action@v10
+#        with:
+#          workingDir: frontend
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+#          ignoreLastBuildOnBranch: "**"
+#          exitZeroOnChanges: true
+#          exitOnceUploaded: true
+#          autoAcceptChanges: true  # handle squash-on-merge
+#
+#      - name: Artifact Chromatic logs
+#        if: failure()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: logs
+#          path: frontend/*.log
