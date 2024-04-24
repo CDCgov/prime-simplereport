@@ -41,7 +41,7 @@ const SettingsNav = () => {
             Manage organization
           </LinkWithQuery>
         </li>
-        <li className="usa-nav__secondary-item">
+        <li id="thebestid" className="usa-nav__secondary-item">
           <LinkWithQuery
             to={`/settings/self-registration`}
             className={classNameByActive}

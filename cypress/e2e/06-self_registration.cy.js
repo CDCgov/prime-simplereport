@@ -36,20 +36,22 @@ describe("Patient self registration", () => {
     // gets the self registration link and navigates to it
 
     cy.visit("/settings");
-
-    cy.contains("Patient self-registration")
-    cy.get('Patient self-registration').click();
-    cy.contains("Patients can now register themselves online");
-
+    
     // Test a11y on the Patient self registration page
     cy.injectSRAxe();
-    cy.checkAccessibility();
+    cy.checkAccessibility(); // PXP page
+
+    cy.contains("self-registration")
+    cy.get('#thebestid').click();
+    cy.contains("Patients can now register themselves online");
 
     cy.get("#org-link").then(($link) => cy.visit($link.val()));
-    cy.contains("Terms of service");
 
     cy.injectSRAxe();
     cy.checkAccessibility(); // Terms of Service
+
+    cy.contains("Terms of service");
+
     cy.contains("I agree").click();
     cy.get("#registration-container").contains("General information");
 
