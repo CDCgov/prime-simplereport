@@ -14,46 +14,62 @@ export type QueriedTestResult = NonNullable<
   >["content"]
 >[number];
 
-export interface ResultCsvRow {
-  "Patient first name": string | null | undefined;
-  "Patient middle name": string | null | undefined;
-  "Patient last name": string | null | undefined;
-  "Patient full name": string | null | undefined;
-  "Patient date of birth": string | null | undefined;
-  "Test date": string | null | undefined;
-  Condition: string | null | undefined;
-  Result: string | null | undefined;
-  "Result reported date": string | null | undefined;
-  "Test correction status": string | null | undefined;
-  "Test correction reason": string | null | undefined;
-  "Device name": string | null | undefined;
-  "Device manufacturer": string | null | undefined;
-  "Device model": string | null | undefined;
-  "Device swab type": string | null | undefined;
-  "Has symptoms": string | null | undefined;
-  "Symptoms present": string | null | undefined;
-  "Symptom onset": string | null | undefined;
-  "Facility name": string | null | undefined;
-  Submitter: string | null | undefined;
-  "Patient role": string | null | undefined;
-  "Patient ID (Student ID, Employee ID, etc.)": string | null | undefined;
-  "Patient preferred language": string | null | undefined;
-  "Patient phone number": string | null | undefined;
-  "Patient email": string | null | undefined;
-  "Patient street address": string | null | undefined;
-  "Patient street address 2": string | null | undefined;
-  "Patient city": string | null | undefined;
-  "Patient state": string | null | undefined;
-  "Patient zip code": string | null | undefined;
-  "Patient county": string | null | undefined;
-  "Patient country": string | null | undefined;
-  "Patient gender": string | null | undefined;
-  "Patient race": string | null | undefined;
-  "Patient ethnicity": string | null | undefined;
-  "Patient tribal affiliation": string | null | undefined;
-  "Patient is a resident in a congregate setting": boolean | null | undefined;
-  "Patient is employed in healthcare": boolean | null | undefined;
-}
+const resultCSVHeadersString = [
+  "Patient first name",
+  "Patient middle name",
+  "Patient first name",
+  "Patient middle name",
+  "Patient last name",
+  "Patient full name",
+  "Patient date of birth",
+  "Test date",
+  "Condition",
+  "Result",
+  "Result reported date",
+  "Test correction status",
+  "Test correction reason",
+  "Device name",
+  "Device manufacturer",
+  "Device model",
+  "Device swab type",
+  "Has symptoms",
+  "Symptoms present",
+  "Symptom onset",
+  "Facility name",
+  "Submitter",
+  "Patient role",
+  "Patient ID (Student ID, Employee ID, etc.)",
+  "Patient preferred language",
+  "Patient phone number",
+  "Patient email",
+  "Patient street address",
+  "Patient street address 2",
+  "Patient city",
+  "Patient state",
+  "Patient zip code",
+  "Patient county",
+  "Patient country",
+  "Patient gender",
+  "Patient race",
+  "Patient ethnicity",
+  "Patient tribal affiliation",
+] as const;
+
+const resultCSVHeadersBoolean = [
+  "Patient is a resident in a congregate setting",
+  "Patient is employed in healthcare",
+] as const;
+
+export type ResultCsvRow =
+  | {
+      [K in (typeof resultCSVHeadersString)[number]]: string | null | undefined;
+    }
+  | {
+      [K in (typeof resultCSVHeadersBoolean)[number]]:
+        | boolean
+        | null
+        | undefined;
+    };
 
 export function parseDataForCSV(
   data: QueriedTestResult[],
@@ -65,7 +81,7 @@ export function parseDataForCSV(
 
     const swabTypes = r?.deviceType?.swabTypes ?? [];
 
-    const csvData1: Partial<ResultCsvRow> = {
+    const csvOrderedColumns1: Partial<ResultCsvRow> = {
       "Patient first name": r?.patient?.firstName,
       "Patient middle name": r?.patient?.middleName,
       "Patient last name": r?.patient?.lastName,
@@ -79,7 +95,7 @@ export function parseDataForCSV(
       ),
       "Test date": moment(r?.dateTested).format("MM/DD/YYYY h:mma"),
     };
-    const csvData2: Partial<ResultCsvRow> = {
+    const csvOrderedColumns2: Partial<ResultCsvRow> = {
       "Result reported date": moment(r?.dateUpdated).format("MM/DD/YYYY h:mma"),
       "Test correction status": r?.correctionStatus,
       "Test correction reason": r?.reasonForCorrection,
@@ -139,9 +155,9 @@ export function parseDataForCSV(
         Result: result?.testResult ?? "Unknown",
       };
       csvRows.push({
-        ...csvData1,
+        ...csvOrderedColumns1,
         ...csvConditionData,
-        ...csvData2,
+        ...csvOrderedColumns2,
       } as ResultCsvRow);
     });
   });
