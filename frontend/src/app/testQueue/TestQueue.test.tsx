@@ -25,6 +25,7 @@ import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
 import mockSupportedDiseaseCovid from "./mocks/mockSupportedDiseaseCovid";
 import mockSupportedDiseaseMultiplex from "./mocks/mockSupportedDiseaseMultiplex";
 
+jest.mock("../../../__mocks__/focus-trap-react.js");
 jest.mock("@microsoft/applicationinsights-react-js", () => {
   return {
     useAppInsightsContext: jest.fn(),
