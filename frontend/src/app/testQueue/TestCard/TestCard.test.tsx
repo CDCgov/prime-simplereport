@@ -5,7 +5,7 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor,
+  waitFor, waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
 import moment from "moment";
@@ -36,7 +36,9 @@ import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/
 import { QueriedFacility, QueriedTestOrder } from "../TestCardForm/types";
 
 import { TestCard, TestCardProps } from "./TestCard";
+import {waitForElement} from "../../utils/elements";
 
+jest.mock("focus-trap-react");
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
@@ -806,7 +808,10 @@ describe("TestCard", () => {
 
       // Submit
       await user.click(screen.getByText("Submit results"));
-
+      // await waitForElementToBeRemoved(screen.queryByText("Submitting test data for"));
+      await waitFor(() =>
+        expect(screen.queryByText("Do you want to submit results anyway?")).toBeInTheDocument()
+      );
       await user.click(
         screen.getByText("Submit anyway", {
           exact: false,
