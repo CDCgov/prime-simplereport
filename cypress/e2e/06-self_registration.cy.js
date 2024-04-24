@@ -37,7 +37,8 @@ describe("Patient self registration", () => {
 
     cy.visit("/settings");
 
-    cy.contains("Patient self-registration").click();
+    cy.contains("Patient self-registration")
+    cy.get('Patient self-registration').click();
     cy.contains("Patients can now register themselves online");
 
     // Test a11y on the Patient self registration page
