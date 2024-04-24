@@ -68,7 +68,6 @@ export const DownloadResultsCsvModal = ({
     });
 
   const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
-    const unknownErrorMessage = "Unknown error downloading results";
     if (data?.testResultsPage?.content) {
       try {
         const csvResults = parseDataForCSV(
@@ -77,10 +76,10 @@ export const DownloadResultsCsvModal = ({
         );
         setResults(csvResults);
       } catch (e) {
-        showError(unknownErrorMessage);
+        showError("Error creating results file to download");
       }
     } else {
-      showError(unknownErrorMessage);
+      showError("Unknown error downloading results");
     }
   };
 
