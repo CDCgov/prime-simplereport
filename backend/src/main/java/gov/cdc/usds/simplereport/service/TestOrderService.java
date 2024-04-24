@@ -402,6 +402,7 @@ public class TestOrderService {
       UUID facilityId,
       Person patient,
       String pregnancy,
+      String syphilisHistory,
       Map<String, Boolean> symptoms,
       LocalDate symptomOnsetDate,
       Boolean noSymptoms) {
@@ -442,6 +443,7 @@ public class TestOrderService {
     AskOnEntrySurvey survey =
         AskOnEntrySurvey.builder()
             .pregnancy(pregnancy)
+            .syphilisHistory(syphilisHistory)
             .symptoms(symptoms)
             .noSymptoms(noSymptoms)
             .symptomOnsetDate(symptomOnsetDate)
@@ -456,6 +458,7 @@ public class TestOrderService {
   public void updateTimeOfTestQuestions(
       UUID patientId,
       String pregnancy,
+      String syphilisHistory,
       Map<String, Boolean> symptoms,
       LocalDate symptomOnsetDate,
       Boolean noSymptoms,
@@ -465,6 +468,7 @@ public class TestOrderService {
     PatientAnswers answers = order.getAskOnEntrySurvey();
     AskOnEntrySurvey survey = answers.getSurvey();
     survey.setPregnancy(pregnancy);
+    survey.setSyphilisHistory(syphilisHistory);
     survey.setSymptoms(symptoms);
     survey.setNoSymptoms(noSymptoms);
     survey.setSymptomOnsetDate(symptomOnsetDate);

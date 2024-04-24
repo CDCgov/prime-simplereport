@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.NO_SYPHILIS_HISTORY_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.PREGNANT_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.YES_SYPHILIS_HISTORY_SNOMED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -140,7 +143,14 @@ class TestResultTest extends BaseGraphqlTest {
     _dataFactory.createTestOrder(
         p,
         _site,
-        new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate, List.of("male")));
+        AskOnEntrySurvey.builder()
+            .pregnancy(PREGNANT_SNOMED)
+            .syphilisHistory(YES_SYPHILIS_HISTORY_SNOMED)
+            .symptoms(symptoms)
+            .symptomOnsetDate(symptomOnsetDate)
+            .genderOfSexualPartners(List.of("male"))
+            .noSymptoms(false)
+            .build());
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     List<MultiplexResultInput> results = new ArrayList<>();
@@ -204,9 +214,27 @@ class TestResultTest extends BaseGraphqlTest {
     LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
 
     _dataFactory.createTestOrder(
-        p1, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate, null));
+        p1,
+        _site,
+        AskOnEntrySurvey.builder()
+            .pregnancy(PREGNANT_SNOMED)
+            .syphilisHistory(NO_SYPHILIS_HISTORY_SNOMED)
+            .symptoms(symptoms)
+            .symptomOnsetDate(symptomOnsetDate)
+            .genderOfSexualPartners(null)
+            .noSymptoms(false)
+            .build());
     _dataFactory.createTestOrder(
-        p2, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate, null));
+        p2,
+        _site,
+        AskOnEntrySurvey.builder()
+            .pregnancy(PREGNANT_SNOMED)
+            .syphilisHistory(NO_SYPHILIS_HISTORY_SNOMED)
+            .symptoms(symptoms)
+            .symptomOnsetDate(symptomOnsetDate)
+            .genderOfSexualPartners(null)
+            .noSymptoms(false)
+            .build());
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     // The test default standard user is configured to access _site by default,

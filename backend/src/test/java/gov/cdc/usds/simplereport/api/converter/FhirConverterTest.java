@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SY
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.PREGNANT_UNKNOWN_SNOMED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -1018,7 +1019,15 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_noSymptoms_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null, null);
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy(null)
+            .syphilisHistory(null)
+            .symptoms(Map.of("fake", false))
+            .noSymptoms(true)
+            .symptomOnsetDate(null)
+            .genderOfSexualPartners(null)
+            .build();
     String testId = "fakeId";
 
     var actual =
@@ -1037,8 +1046,16 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_symptomatic_matchesJson() throws IOException {
-    var answers =
-        new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4), null);
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy(null)
+            .syphilisHistory(null)
+            .symptoms(Map.of("fake", true))
+            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
+            .genderOfSexualPartners(null)
+            .noSymptoms(false)
+            .build();
+
     String testId = "fakeId";
 
     var actual =
@@ -1059,7 +1076,15 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_employedInHealthcare_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, null);
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy(null)
+            .syphilisHistory(null)
+            .symptoms(Map.of("fake", false))
+            .genderOfSexualPartners(null)
+            .noSymptoms(null)
+            .build();
+
     String testId = "fakeId";
 
     var birthDate = LocalDate.of(2022, 12, 13);
@@ -1103,7 +1128,15 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_residesInCongregateSetting_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null, null);
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy(null)
+            .syphilisHistory(null)
+            .symptoms(Map.of("fake", false))
+            .genderOfSexualPartners(null)
+            .noSymptoms(null)
+            .build();
+
     String testId = "fakeId";
 
     var birthDate = LocalDate.of(2022, 12, 13);
@@ -1147,7 +1180,16 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_pregnancyStatus_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey("77386006", Map.of("fake", false), null, null, null);
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy("77386006")
+            .syphilisHistory(null)
+            .symptoms(Map.of("fake", false))
+            .genderOfSexualPartners(null)
+            .symptomOnsetDate(null)
+            .noSymptoms(null)
+            .build();
+
     String testId = "fakeId";
 
     var actual =
@@ -1170,7 +1212,14 @@ class FhirConverterTest {
   void convertToAoeObservation_genderOfSexualPartners_matchesJson() throws IOException {
     List<String> sexualPartners = List.of("transwoman", "transman", "nonbinary");
     AskOnEntrySurvey answers =
-        new AskOnEntrySurvey(null, Map.of("fake", false), null, null, sexualPartners);
+        AskOnEntrySurvey.builder()
+            .pregnancy(null)
+            .syphilisHistory(null)
+            .symptoms(Map.of("fake", false))
+            .genderOfSexualPartners(sexualPartners)
+            .noSymptoms(null)
+            .build();
+
     String testId = "fakeId";
 
     var actual =
@@ -1190,9 +1239,16 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_allAOE_matchesJson() throws IOException {
-    var answers =
-        new AskOnEntrySurvey(
-            "102874004", Map.of("fake", true), false, LocalDate.of(2023, 3, 4), null);
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy(PREGNANT_UNKNOWN_SNOMED)
+            .syphilisHistory(null)
+            .symptoms(Map.of("fake", true))
+            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
+            .genderOfSexualPartners(null)
+            .noSymptoms(false)
+            .build();
+
     String testId = "fakeId";
 
     var birthDate = LocalDate.of(2022, 12, 13);
@@ -1234,7 +1290,16 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_noAnswer_matchesJson() throws IOException {
-    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null, null);
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy(null)
+            .syphilisHistory(null)
+            .symptoms(Map.of("fake", false))
+            .symptomOnsetDate(null)
+            .genderOfSexualPartners(null)
+            .noSymptoms(false)
+            .build();
+
     String testId = "fakeId";
 
     var actual =
@@ -1817,8 +1882,17 @@ class FhirConverterTest {
             null,
             "Adventurer of the cosmos");
     var testOrder = new TestOrder(person, facility);
-    var answers =
-        new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null, null));
+    PatientAnswers answers =
+        new PatientAnswers(
+            AskOnEntrySurvey.builder()
+                .pregnancy(null)
+                .syphilisHistory(null)
+                .symptoms(Map.of("fake", false))
+                .symptomOnsetDate(null)
+                .genderOfSexualPartners(null)
+                .noSymptoms(false)
+                .build());
+
     testOrder.setAskOnEntrySurvey(answers);
 
     var covidResult =

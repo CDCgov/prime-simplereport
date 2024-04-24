@@ -65,6 +65,14 @@ public class ApiTestOrderDataResolver {
         .thenApply(patientAnswers -> patientAnswers.getSurvey().getPregnancy());
   }
 
+  @SchemaMapping(typeName = "TestOrder", field = "syphilisHistory")
+  public CompletableFuture<String> syphilisHistory(
+      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
+    return loader
+        .load(apiTestOrder.getWrapped().getPatientAnswersId())
+        .thenApply(patientAnswers -> patientAnswers.getSurvey().getSyphilisHistory());
+  }
+
   @SchemaMapping(typeName = "TestOrder", field = "noSymptoms")
   public CompletableFuture<Boolean> noSymptoms(
       ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {

@@ -3,12 +3,14 @@ mutation UpdateAOE(
   $symptoms: String
   $symptomOnset: LocalDate
   $pregnancy: String
+  $syphilisHistory: String
   $noSymptoms: Boolean
   $genderOfSexualPartners: [String]
 ) {
   updateTimeOfTestQuestions(
     patientId: $patientId
     pregnancy: $pregnancy
+    syphilisHistory: $syphilisHistory
     symptoms: $symptoms
     noSymptoms: $noSymptoms
     symptomOnset: $symptomOnset

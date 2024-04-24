@@ -56,7 +56,8 @@ public class TestOrder extends BaseTestInfo {
   private Set<Result> results = new HashSet<>();
 
   protected TestOrder() {
-    /* for hibernate */ }
+    /* for hibernate */
+  }
 
   public TestOrder(Person patient, Facility facility) {
     super(patient, facility, facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
