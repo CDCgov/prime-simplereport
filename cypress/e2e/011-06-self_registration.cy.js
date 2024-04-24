@@ -44,8 +44,6 @@ describe("Patient self registration", () => {
     // gets the self registration link and navigates to it
 
     cy.visit("/settings");
-    cy.wait("@GetUsersAndStatus");
-    cy.wait("@GetUser");
 
     cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
