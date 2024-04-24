@@ -36,9 +36,7 @@ import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/
 import { QueriedFacility, QueriedTestOrder } from "../TestCardForm/types";
 
 import { TestCard, TestCardProps } from "./TestCard";
-import {waitForElement} from "../../utils/elements";
 
-jest.mock("../../../../__mocks__/focus-trap-react.js");
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));

@@ -1,7 +1,6 @@
 import React from "react";
 import FocusTrap from "focus-trap-react";
 
-
 /**
  * Override displayCheck for testing. See: https://github.com/focus-trap/tabbable#testing-in-jsdom
  */
