@@ -1,4 +1,4 @@
-FROM cypress/browsers:node-18.16.1-chrome-114.0.5735.133-1-ff-114.0.2-edge-114.0.1823.51-1
+FROM cypress/browsers:node-20.12.0-chrome-123.0.6312.86-1-ff-124.0.2-edge-123.0.2420.65-1
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 RUN apt-get update

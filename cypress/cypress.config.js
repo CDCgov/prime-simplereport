@@ -1,6 +1,8 @@
 global.specRunVersions = new Map();
+const { defineConfig } = require("cypress");
+const fs = require("fs");
 
-module.exports = {
+module.exports = defineConfig({
   viewportWidth: 1200,
   viewportHeight: 800,
   defaultCommandTimeout: 10000,
@@ -32,29 +34,17 @@ module.exports = {
           global.patientName = name;
           return null;
         },
-        getPatientName() {
-          return global.patientName;
-        },
         setPatientDOB(dob) {
           global.patientDOB = dob;
           return null;
-        },
-        getPatientDOB() {
-          return global.patientDOB;
         },
         setTestEventId(link) {
           global.testEventId = link;
           return null;
         },
-        getTestEventId() {
-          return global.testEventId;
-        },
         setPatientPhone(phone) {
           global.patientPhone = phone;
           return null;
-        },
-        getPatientPhone() {
-          return global.patientPhone;
         },
         setSpecRunVersionName(data) {
           global.specRunVersions.set(data.specRunName, data.versionName);
@@ -64,7 +54,19 @@ module.exports = {
           return global.specRunVersions.get(specRunName) || null;
         },
       });
+      on("after:spec", (spec, results) => {
+        if (results && results.video) {
+          // Do we have failures for any retry attempts?
+          const failures = results.tests.some((test) =>
+            test.attempts.some((attempt) => attempt.state === "failed"),
+          );
+          if (!failures) {
+            // delete the video if the spec passed and no tests retried
+            fs.unlinkSync(results.video);
+          }
+        }
+      });
     },
     baseUrl: "http://localhost.simplereport.gov",
   },
-};
+});
