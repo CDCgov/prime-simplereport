@@ -80,12 +80,8 @@ describe("Organization sign up", () => {
 
     cy.contains("Access data").click();
     cy.contains("Support admin");
-  });
-  it("navigates to the manage facilities page", () => {
-    loginHooks();
 
-    cy.visit("/admin");
-    cy.contains("Support admin");
+    // navigates to the manage facilities page
     cy.get("#desktop-settings-button").click();
     cy.contains("Manage facilities").click();
     cy.contains("CLIA number");
@@ -120,11 +116,8 @@ describe("Organization sign up", () => {
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.contains("+ New facility");
-  });
 
-  it("enables adding patients", () => {
-    loginHooks();
-    cy.visit("/");
+    // enables adding patients
     cy.get("#desktop-patient-nav-link").click();
     cy.contains("No results");
 
