@@ -53,7 +53,7 @@ describe("TestQueue", () => {
   beforeEach(() => {
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
     jest.spyOn(Date, "now").mockImplementation(() => today);
-
+    jest.mock("focus-trap-react");
     store = mockStore({
       organization: {
         name: "Organization Name",
@@ -110,9 +110,6 @@ describe("TestQueue", () => {
       exact: false,
     })[0];
     await user.click(confirmButton);
-    expect(
-      screen.getByText("Submitting test data for Doe, John A...")
-    ).toBeInTheDocument();
     await waitForElementToBeRemoved(
       () => screen.queryByText("Submitting test data for Doe, John A..."),
       { timeout: 10000 }

@@ -1,10 +1,12 @@
-import React from "react";
-import FocusTrap from "focus-trap-react";
+import type * as FocusTrapType from "focus-trap-react"
+import { ComponentType } from "react";
+
+const FocusTrap = jest.requireActual<ComponentType<FocusTrapType.Props>>("focus-trap-react");
 
 /**
  * Override displayCheck for testing. See: https://github.com/focus-trap/tabbable#testing-in-jsdom
  */
-const FixedComponent = ({focusTrapOptions, ...props}) => {
+const Modal = ({focusTrapOptions, ...props}: FocusTrapType.Props) => {
   const fixedOptions = {...focusTrapOptions};
   fixedOptions.tabbableOptions = {
     ...fixedOptions.tabbableOptions,
@@ -12,4 +14,5 @@ const FixedComponent = ({focusTrapOptions, ...props}) => {
   }
   return <FocusTrap {...props} focusTrapOptions={fixedOptions} />
 }
-export default FixedComponent;
+
+module.exports = Modal;

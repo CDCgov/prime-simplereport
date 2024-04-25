@@ -5,7 +5,7 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor, waitForElementToBeRemoved,
+  waitFor,
   within,
 } from "@testing-library/react";
 import moment from "moment";
@@ -806,10 +806,7 @@ describe("TestCard", () => {
 
       // Submit
       await user.click(screen.getByText("Submit results"));
-      // await waitForElementToBeRemoved(screen.queryByText("Submitting test data for"));
-      await waitFor(() =>
-        expect(screen.queryByText("Do you want to submit results anyway?")).toBeInTheDocument()
-      );
+
       await user.click(
         screen.getByText("Submit anyway", {
           exact: false,

@@ -11,13 +11,12 @@ import moment from "moment";
 import { toHaveNoViolations } from "jest-axe";
 import { loadDevMessages, loadErrorMessages } from "@apollo/client/dev";
 
-
 fetchMock.enableMocks();
 
 loadDevMessages();
 loadErrorMessages();
 
-jest.mock("../__mocks__/focus-trap-react");
+jest.mock("focus-trap-react");
 jest.mock("@microsoft/applicationinsights-react-js", () => {
   return {
     useAppInsightsContext: jest.fn(),
