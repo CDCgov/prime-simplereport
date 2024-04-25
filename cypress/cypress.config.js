@@ -5,14 +5,11 @@ module.exports = defineConfig({
   viewportWidth: 1200,
   viewportHeight: 800,
   defaultCommandTimeout: 10000,
-  video: true,
-  videoCompression: false,
   retries: {
     runMode: 1,
     openMode: 1,
   },
   e2e: {
-    testIsolation: true,
     supportFile: "cypress/support/e2e.js",
     setupNodeEvents(on, config) {
       on("task", {
