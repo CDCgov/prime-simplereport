@@ -37,6 +37,7 @@ describe("Patient self registration", () => {
 
     cy.visit("/settings");
 
+    cy.get(".prime-home").contains("Loading...").should("not.exist");
     cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
 
@@ -75,6 +76,9 @@ describe("Patient self registration", () => {
     cy.get(".self-registration-button").first().click();
     cy.get(".prime-formgroup").contains("Last name is missing");
     cy.get(".prime-formgroup").contains("City is missing");
+
+    cy.get(".usa-alert__body").contains("Last name is missing").click();
+    cy.get(".usa-alert__body").contains("City is missing").click();
 
     // fills out the remaining fields and submits
     cy.get('input[name="lastName"]').type(patient.lastName);
