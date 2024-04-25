@@ -5,6 +5,8 @@ module.exports = defineConfig({
   viewportWidth: 1200,
   viewportHeight: 800,
   defaultCommandTimeout: 10000,
+  video: true,
+  videoCompression: false,
   retries: {
     runMode: 1,
     openMode: 1,
@@ -33,29 +35,17 @@ module.exports = defineConfig({
           global.patientName = name;
           return null;
         },
-        getPatientName() {
-          return global.patientName;
-        },
         setPatientDOB(dob) {
           global.patientDOB = dob;
           return null;
-        },
-        getPatientDOB() {
-          return global.patientDOB;
         },
         setTestEventId(link) {
           global.testEventId = link;
           return null;
         },
-        getTestEventId() {
-          return global.testEventId;
-        },
         setPatientPhone(phone) {
           global.patientPhone = phone;
           return null;
-        },
-        getPatientPhone() {
-          return global.patientPhone;
         },
         setSpecRunVersionName(data) {
           global.specRunVersions.set(data.specRunName, data.versionName);
