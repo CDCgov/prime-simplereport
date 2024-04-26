@@ -1,7 +1,8 @@
 global.specRunVersions = new Map();
+const { defineConfig } = require("cypress");
 const fs = require("fs");
 
-module.exports = {
+module.exports = defineConfig({
   viewportWidth: 1200,
   viewportHeight: 800,
   defaultCommandTimeout: 10000,
@@ -31,34 +32,6 @@ module.exports = {
           console.log(message);
           return null;
         },
-        setPatientName: (name) => {
-          global.patientName = name;
-          return null;
-        },
-        getPatientName() {
-          return global.patientName;
-        },
-        setPatientDOB(dob) {
-          global.patientDOB = dob;
-          return null;
-        },
-        getPatientDOB() {
-          return global.patientDOB;
-        },
-        setTestEventId(link) {
-          global.testEventId = link;
-          return null;
-        },
-        getTestEventId() {
-          return global.testEventId;
-        },
-        setPatientPhone(phone) {
-          global.patientPhone = phone;
-          return null;
-        },
-        getPatientPhone() {
-          return global.patientPhone;
-        },
         setSpecRunVersionName(data) {
           global.specRunVersions.set(data.specRunName, data.versionName);
           return null;
@@ -66,27 +39,6 @@ module.exports = {
         getSpecRunVersionName(specRunName) {
           return global.specRunVersions.get(specRunName) || null;
         },
-      });
-      on("before:browser:launch", (browser = {}, launchOptions = {}) => {
-        launchOptions.args = launchOptions.args.filter(
-          (item) => item !== "--disable-dev-shm-usage",
-        );
-        if (browser.name === "chrome" && browser.isHeadless) {
-          launchOptions.args.push("--window-size=1200,800");
-          launchOptions.args.push("--force-device-scale-factor=1");
-        }
-
-        if (browser.name === "electron" && browser.isHeadless) {
-          launchOptions.preferences.width = 1200;
-          launchOptions.preferences.height = 1800;
-        }
-
-        if (browser.name === "firefox" && browser.isHeadless) {
-          launchOptions.args.push("--width=1200");
-          launchOptions.args.push("--height=800");
-        }
-
-        return launchOptions;
       });
       on("after:spec", (spec, results) => {
         if (results && results.video) {
@@ -103,4 +55,4 @@ module.exports = {
     },
     baseUrl: "http://localhost.simplereport.gov",
   },
-};
+});

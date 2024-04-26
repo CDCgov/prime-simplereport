@@ -13,11 +13,6 @@ describe("Adding a single patient", () => {
   before("store patient info", () => {
     loginHooks();
 
-    // TODO: clean up after no tests rely on this patient
-    cy.task("setPatientName", patient.fullName);
-    cy.task("setPatientDOB", patient.dobForPatientLink);
-    cy.task("setPatientPhone", patient.phone);
-
     cy.task("getSpecRunVersionName", specRunName).then(
       (prevSpecRunVersionName) => {
         if (prevSpecRunVersionName) {

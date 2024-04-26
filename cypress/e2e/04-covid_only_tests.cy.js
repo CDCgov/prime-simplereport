@@ -160,15 +160,6 @@ describe("Conducting a COVID test from:", () => {
     cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
 
-    // // stores the patient link
-    cy.get(".sr-test-result-row").then(($row) => {
-      const dataTestId = $row.attr("data-testid");
-      const testEventId = dataTestId.split("-").slice(2, 7).join("-");
-
-      cy.task("setTestEventId", testEventId);
-      cy.task("setPatientName", patientName);
-    });
-
     cy.checkAccessibility();
   });
 
