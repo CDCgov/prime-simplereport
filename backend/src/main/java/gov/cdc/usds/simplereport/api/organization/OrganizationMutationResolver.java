@@ -190,7 +190,7 @@ public class OrganizationMutationResolver {
     Organization orgToBeUpdated = organizationService.getOrganizationById(organizationId);
     List<ApiUser> usersInOrgToBeUpdated = apiUserService.getAllUsersByOrganization(orgToBeUpdated);
 
-    // Only set user to be deleted if they are an active user
+    // Only set user to be deleted if they are an active, without check mutation will fail.
     usersInOrgToBeUpdated.forEach(
         user -> {
           if (!user.isDeleted()) {
