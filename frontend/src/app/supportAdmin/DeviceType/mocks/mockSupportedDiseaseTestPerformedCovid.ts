@@ -13,19 +13,4 @@ const mockSupportedDiseaseTestPerformedCovid = [
   },
 ];
 
-export const mockSupportedDiseaseTestPerformedRSV = [
-  {
-    supportedDisease: {
-      internalId: "9a9be4ab-8b6c-4199-9d07-5ca63b3c0fe1",
-      loinc: "LP14244-5",
-      name: "RSV",
-    },
-    testPerformedLoincCode: "4567-1",
-    equipmentUid: "equipmentUid456",
-    equipmentUidType: "equipmentUidType456",
-    testkitNameId: "testkitNameId456",
-    testOrderedLoincCode: "1598-1",
-  },
-];
-
 export default mockSupportedDiseaseTestPerformedCovid;

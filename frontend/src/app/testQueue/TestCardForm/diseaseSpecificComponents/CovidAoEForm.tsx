@@ -8,7 +8,7 @@ import { formatDate } from "../../../utils/date";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import {
   getPregnancyResponses,
-  globalSymptomDefinitions,
+  respiratorySymptomDefinitions,
   PregnancyCode,
 } from "../../../../patientApp/timeOfTest/constants";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
@@ -30,7 +30,7 @@ export const parseSymptoms = (
     const parsedSymptoms: { [key: string]: string | boolean } =
       JSON.parse(symptomsJsonString);
 
-    globalSymptomDefinitions.forEach((opt) => {
+    respiratorySymptomDefinitions.forEach((opt) => {
       const val = opt.value;
       if (typeof parsedSymptoms[val] === "string") {
         symptoms[val] = parsedSymptoms[val] === "true";
@@ -39,7 +39,7 @@ export const parseSymptoms = (
       }
     });
   } else {
-    globalSymptomDefinitions.forEach((opt) => {
+    respiratorySymptomDefinitions.forEach((opt) => {
       symptoms[opt.value] = false;
     });
   }
@@ -141,7 +141,7 @@ const CovidAoEForm = ({
           </div>
           <div className="grid-row grid-gap">
             <Checkboxes
-              boxes={globalSymptomDefinitions.map(({ label, value }) => ({
+              boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
                 label,
                 value,
                 checked: symptoms[value],

@@ -22,11 +22,14 @@ import {
 } from "./types";
 
 /** Add more options as other disease AOEs are needed */
-export enum AOEFormOption {
-  COVID = "COVID",
-  HIV = "HIV",
-  NONE = "NONE",
-}
+export const AOEFormOption = {
+  COVID: "COVID",
+  HIV: "HIV",
+  SYPHILIS: "SYPHILIS",
+  NONE: "NONE",
+} as const;
+
+type AOEFormValues = (typeof AOEFormOption)[keyof typeof AOEFormOption];
 
 export function useTestOrderPatient(testOrder: QueriedTestOrder) {
   const patientFullName = displayFullName(
@@ -41,9 +44,20 @@ export function useTestOrderPatient(testOrder: QueriedTestOrder) {
 }
 
 const filterHIVFromDevice = (deviceType: QueriedDeviceType) => {
+  return filterDiseaseFromDevice(deviceType, "HIV");
+};
+
+const filterSyphilisFromDevice = (deviceType: QueriedDeviceType) => {
+  return filterDiseaseFromDevice(deviceType, "Syphilis");
+};
+
+const filterDiseaseFromDevice = (
+  deviceType: QueriedDeviceType,
+  diseaseName: string
+) => {
   const filteredSupportedTests =
     deviceType.supportedDiseaseTestPerformed.filter(
-      (t) => t.supportedDisease.name !== "HIV"
+      (t) => t.supportedDisease.name !== diseaseName
     );
   return {
     ...deviceType,
@@ -59,13 +73,28 @@ const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
   );
 };
 
+const filterSyphilisFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
+  const filteredDeviceTypes = deviceTypes.map((d) =>
+    filterSyphilisFromDevice(d)
+  );
+
+  return filteredDeviceTypes.filter(
+    (d) => d.supportedDiseaseTestPerformed.length > 0
+  );
+};
+
 export function useFilteredDeviceTypes(facility: QueriedFacility) {
   const hivEnabled = useFeature("hivEnabled");
+  const syphilisEnabled = useFeature("syphilisEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
 
   if (!hivEnabled) {
     deviceTypes = filterHIVFromAllDevices(deviceTypes);
+  }
+
+  if (!syphilisEnabled) {
+    deviceTypes = filterSyphilisFromAllDevices(deviceTypes);
   }
   return deviceTypes;
 }
@@ -187,6 +216,15 @@ export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
   ) {
     return AOEFormOption.HIV;
   }
+  if (
+    devicesMap
+      .get(deviceId)
+      ?.supportedDiseaseTestPerformed.filter(
+        (x) => x.supportedDisease.name.toUpperCase() === "SYPHILIS"
+      ).length === 1
+  ) {
+    return AOEFormOption.SYPHILIS;
+  }
   return isDeviceFluOnly(deviceId, devicesMap)
     ? AOEFormOption.NONE
     : AOEFormOption.COVID;
@@ -208,7 +246,7 @@ export const convertFromMultiplexResponse = (
 
 export const areAOEAnswersComplete = (
   formState: TestFormState,
-  whichAOE: AOEFormOption
+  whichAOE: AOEFormValues
 ) => {
   if (whichAOE === AOEFormOption.COVID) {
     const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
