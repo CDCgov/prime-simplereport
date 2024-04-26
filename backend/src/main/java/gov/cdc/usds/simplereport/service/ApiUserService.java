@@ -309,7 +309,6 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
-    // fails here
     ApiUser apiUser = getApiUser(userId, !deleted);
     apiUser.setIsDeleted(deleted);
     apiUser = _apiUserRepo.save(apiUser);
