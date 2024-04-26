@@ -194,7 +194,7 @@ public class OrganizationMutationResolver {
     usersInOrgToBeUpdated.forEach(
         user -> {
           if (!user.isDeleted()) {
-            apiUserService.setIsDeleted(user.getInternalId(), true);
+            apiUserService.setIsDeleted(user.getInternalId(), deleted);
           }
         });
     Set<Facility> facilitiesToBeUpdated =
