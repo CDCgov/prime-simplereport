@@ -5276,3 +5276,98 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Syphilis';
+  - changeSet:
+      id: create-user-role-and-user-facility-tables
+      author: ttu8@cdc.gov
+      comment: creates role, api_user_role, and api_user_facility tables to begin migration of Okta role and groups
+      changes:
+        - tagDatabase:
+            tag: create-user-role-and-user-facility
+        - sql:
+            remarks: Create the OrganizationRole enumerations needed for role
+            sql: CREATE TYPE ${database.defaultSchemaName}.ORGANIZATION_ROLE as ENUM('ALL_FACILITIES', 'ENTRY_ONLY', 'USER', 'ADMIN');
+        - createTable:
+            tableName: role
+            remarks: named references to a OrganizationRole enum
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: ${database.defaultSchemaName}.ORGANIZATION_ROLE
+                  remarks: The name of the role that is an enumerated value.
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: api_user_facility
+            remarks: creates a new table to store the relationship between api_user and facility
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: api_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__api_user
+                    references: api_user
+              - column:
+                  name: facility_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__facility
+                    references: facility
+        - createTable:
+            tableName: api_user_role
+            remarks: creates a new table to store the relationship between api_user and role
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: api_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__api_user
+                    references: api_user
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__organization
+                    references: organization
+              - column:
+                  name: role_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__role
+                    references: role
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.role TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_facility TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};
+      rollback:
+        - sql:
+            sql: |
+              DROP TABLE ${database.defaultSchemaName}.API_USER_FACILITY;
+              DROP TABLE ${database.defaultSchemaName}.API_USER_ROLE;
+              DROP TABLE ${database.defaultSchemaName}.ROLE;
+              DROP TYPE ${database.defaultSchemaName}.ORGANIZATION_ROLE;
