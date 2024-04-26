@@ -32,22 +32,6 @@ module.exports = defineConfig({
           console.log(message);
           return null;
         },
-        setPatientName: (name) => {
-          global.patientName = name;
-          return null;
-        },
-        setPatientDOB(dob) {
-          global.patientDOB = dob;
-          return null;
-        },
-        setTestEventId(link) {
-          global.testEventId = link;
-          return null;
-        },
-        setPatientPhone(phone) {
-          global.patientPhone = phone;
-          return null;
-        },
         setSpecRunVersionName(data) {
           global.specRunVersions.set(data.specRunName, data.versionName);
           return null;
