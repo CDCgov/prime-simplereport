@@ -19,36 +19,6 @@ locals {
     local.base_url_map,
     var.additional_uptime_test_urls
   )
-
-  base_azurerm_monitor_metric_alert_rule = {
-    name                = "uptime-${each.key}"
-    description         = "${each.key} is not responding"
-    resource_group_name = var.rg_name
-    scopes              = [azurerm_application_insights_web_test.uptime[each.key].id, var.app_insights_id]
-    frequency           = "PT1M"
-    window_size         = "PT5M"
-    severity            = var.severity
-    enabled             = contains(var.disabled_alerts, "uptime") ? false : true
-
-    application_insights_web_test_location_availability_criteria {
-      web_test_id           = azurerm_application_insights_web_test.uptime[each.key].id
-      component_id          = var.app_insights_id
-      failed_location_count = 3
-    }
-
-    dynamic "action" {
-      for_each = var.action_group_ids
-      content {
-        action_group_id    = action.value
-        webhook_properties = var.wiki_docs_json
-      }
-    }
-    lifecycle {
-      ignore_changes = [
-        tags
-      ]
-    }
-  }
 }
 
 resource "azurerm_application_insights_web_test" "uptime" {
@@ -85,16 +55,63 @@ XML
 resource "azurerm_monitor_metric_alert" "uptime" {
   for_each = local.base_url_map
 
-  local.base_azurerm_monitor_metric_alert_rule
-})
+  name                = "uptime-${each.key}"
+  description         = "${each.key} is not responding"
+  resource_group_name = var.rg_name
+  scopes              = [azurerm_application_insights_web_test.uptime[each.key].id, var.app_insights_id]
+  frequency           = "PT1M"
+  window_size         = "PT5M"
+  severity            = var.severity
+  enabled             = contains(var.disabled_alerts, "uptime") ? false : true
+
+  application_insights_web_test_location_availability_criteria {
+    web_test_id           = azurerm_application_insights_web_test.uptime[each.key].id
+    component_id          = var.app_insights_id
+    failed_location_count = 3
+  }
+
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id    = action.value
+      webhook_properties = var.wiki_docs_json
+    }
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
+}
 
 resource "azurerm_monitor_metric_alert" "uptime-redirects" {
   for_each = var.additional_uptime_test_urls
 
-  merge(
-    local.base_azurerm_monitor_metric_alert_rule,
-    {
-        window_size         = "PT15M"
+  name                = "uptime-${each.key}"
+  description         = "${each.key} is not responding"
+  resource_group_name = var.rg_name
+  scopes              = [azurerm_application_insights_web_test.uptime[each.key].id, var.app_insights_id]
+  frequency           = "PT1M"
+  window_size         = "PT15M"
+  severity            = var.severity
+  enabled             = contains(var.disabled_alerts, "uptime") ? false : true
+
+  application_insights_web_test_location_availability_criteria {
+    web_test_id           = azurerm_application_insights_web_test.uptime[each.key].id
+    component_id          = var.app_insights_id
+    failed_location_count = 3
+  }
+
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id    = action.value
+      webhook_properties = var.wiki_docs_json
     }
-  )
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
