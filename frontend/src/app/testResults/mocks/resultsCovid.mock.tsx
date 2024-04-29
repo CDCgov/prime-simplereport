@@ -84,6 +84,11 @@ const data = [
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
       name: "Abbott IDNow",
       __typename: "DeviceType",
+      swabTypes: [
+        {
+          name: "Nasal swab",
+        },
+      ],
     },
     patient: {
       internalId: "f74ad245-3a69-44b5-bb6d-efe06308bb85",
