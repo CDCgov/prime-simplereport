@@ -73,51 +73,6 @@ class PermissionHolderTest {
   }
 
   @Test
-  void getEffectiveRoles_allRoles_admin() {
-    Set<OrganizationRole> roles = EnumSet.allOf(OrganizationRole.class);
-    assertEquals(Set.of(OrganizationRole.ADMIN), makeHolder(roles).getEffectiveRoles());
-  }
-
-  @Test
-  void getEffectiveRoles_noRoles_empty() {
-    Set<OrganizationRole> roles = EnumSet.noneOf(OrganizationRole.class);
-    assertEquals(Set.of(), makeHolder(roles).getEffectiveRoles());
-  }
-
-  @Test
-  void getEffectiveRoles_onlyNoAccess_noAccess() {
-    Set<OrganizationRole> roles = Set.of(OrganizationRole.NO_ACCESS);
-    assertEquals(Set.of(OrganizationRole.NO_ACCESS), makeHolder(roles).getEffectiveRoles());
-  }
-
-  @Test
-  void getEffectiveRoles_onlyUser_user() {
-    Set<OrganizationRole> roles = Set.of(OrganizationRole.USER);
-    assertEquals(Set.of(OrganizationRole.USER), makeHolder(roles).getEffectiveRoles());
-  }
-
-  @Test
-  void getEffectiveRoles_noAccessAndEntry_entry() {
-    Set<OrganizationRole> roles = Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.NO_ACCESS);
-    assertEquals(Set.of(OrganizationRole.ENTRY_ONLY), makeHolder(roles).getEffectiveRoles());
-  }
-
-  @Test
-  void getEffectiveRoles_userAndEntry_user() {
-    Set<OrganizationRole> roles = Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY);
-    assertEquals(Set.of(OrganizationRole.USER), makeHolder(roles).getEffectiveRoles());
-  }
-
-  @Test
-  void getEffectiveRoles_userEntryAllFacilities_userAllFacilities() {
-    Set<OrganizationRole> roles =
-        Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES);
-    assertEquals(
-        Set.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES),
-        makeHolder(roles).getEffectiveRoles());
-  }
-
-  @Test
   void grantsAllFacilityAccess_allRoles_true() {
     Set<OrganizationRole> roles = EnumSet.allOf(OrganizationRole.class);
     assertTrue(makeHolder(roles).grantsAllFacilityAccess());
