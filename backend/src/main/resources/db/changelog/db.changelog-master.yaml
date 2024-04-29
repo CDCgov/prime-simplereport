@@ -5360,10 +5360,6 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__api_user_role__role
                     references: role
-        - sql: |
-            GRANT SELECT ON ${database.defaultSchemaName}.role TO ${noPhiUsername};
-            GRANT SELECT ON ${database.defaultSchemaName}.api_user_facility TO ${noPhiUsername};
-            GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};
       rollback:
         - sql:
             sql: |
@@ -5371,3 +5367,17 @@ databaseChangeLog:
               DROP TABLE ${database.defaultSchemaName}.API_USER_ROLE;
               DROP TABLE ${database.defaultSchemaName}.ROLE;
               DROP TYPE ${database.defaultSchemaName}.ORGANIZATION_ROLE;
+  - changeSet:
+      id: add-user-role-and-user-facility-to-metabase
+      author: ttu8@cdc.gov
+      comment: Adds permission for the no-PHI user to select from the role, api_user_role, and api_user_facility tables
+      changes:
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.role TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_facility TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};
+      rollback:
+        - sql: |
+            REVOKE SELECT ON TABLE ${database.defaultSchemaName}.role FROM ${noPhiUsername};
+            REVOKE SELECT ON TABLE ${database.defaultSchemaName}.api_user_facility FROM ${noPhiUsername};
+            REVOKE SELECT ON TABLE ${database.defaultSchemaName}.api_user_role FROM ${noPhiUsername};
