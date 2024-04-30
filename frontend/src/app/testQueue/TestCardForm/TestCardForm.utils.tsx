@@ -194,7 +194,7 @@ export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
     devicesMap
       .get(deviceId)
       ?.supportedDiseaseTestPerformed.filter(
-        (x) => x.supportedDisease.name === "HIV"
+        (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.HIV
       ).length === 1
   ) {
     return AOEFormOption.HIV;
@@ -203,7 +203,8 @@ export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
     devicesMap
       .get(deviceId)
       ?.supportedDiseaseTestPerformed.filter(
-        (x) => x.supportedDisease.name.toUpperCase() === "SYPHILIS"
+        (x) =>
+          x.supportedDisease.name.toUpperCase() === MULTIPLEX_DISEASES.SYPHILIS
       ).length === 1
   ) {
     return AOEFormOption.SYPHILIS;
