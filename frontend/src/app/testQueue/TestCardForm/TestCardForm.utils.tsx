@@ -22,14 +22,12 @@ import {
 } from "./types";
 
 /** Add more options as other disease AOEs are needed */
-export const AOEFormOption = {
-  COVID: "COVID",
-  HIV: "HIV",
-  SYPHILIS: "SYPHILIS",
-  NONE: "NONE",
-} as const;
-
-type AOEFormValues = (typeof AOEFormOption)[keyof typeof AOEFormOption];
+export enum AOEFormOption {
+  COVID = "COVID",
+  HIV = "HIV",
+  SYPHILIS = "SYPHILIS",
+  NONE = "NONE",
+}
 
 export function useTestOrderPatient(testOrder: QueriedTestOrder) {
   const patientFullName = displayFullName(
@@ -231,7 +229,7 @@ export const convertFromMultiplexResponse = (
 
 export const areAOEAnswersComplete = (
   formState: TestFormState,
-  whichAOE: AOEFormValues
+  whichAOE: AOEFormOption
 ) => {
   if (whichAOE === AOEFormOption.COVID) {
     const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
