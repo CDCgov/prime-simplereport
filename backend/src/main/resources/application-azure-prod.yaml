@@ -21,6 +21,7 @@ twilio:
   enabled: true
   from-number: "+14045312484"
 features:
+  oktaMigrationEnabled: false
   syphilisEnabled: false
   hivBulkUploadEnabled: false
   hivEnabled: false

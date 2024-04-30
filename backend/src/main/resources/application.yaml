@@ -168,6 +168,7 @@ datahub:
   csv-upload-api-client: "simple_report.csvuploader"
   csv-upload-api-fhir-client: "simple_report.fullelr"
 features:
+  oktaMigrationEnabled: false
   syphilisEnabled: true
   hivBulkUploadEnabled: true
   hivEnabled: true
