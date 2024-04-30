@@ -43,40 +43,19 @@ export function useTestOrderPatient(testOrder: QueriedTestOrder) {
   return { patientFullName, patientDateOfBirth };
 }
 
-const filterHIVFromDevice = (deviceType: QueriedDeviceType) => {
-  return filterDiseaseFromDevice(deviceType, "HIV");
-};
-
-const filterSyphilisFromDevice = (deviceType: QueriedDeviceType) => {
-  return filterDiseaseFromDevice(deviceType, "Syphilis");
-};
-
-const filterDiseaseFromDevice = (
-  deviceType: QueriedDeviceType,
-  diseaseName: string
+const filterDiseaseFromAllDevices = (
+  deviceTypes: QueriedDeviceType[],
+  diseaseName: MULTIPLEX_DISEASES
 ) => {
-  const filteredSupportedTests =
-    deviceType.supportedDiseaseTestPerformed.filter(
+  const filteredDeviceTypes = deviceTypes.map((d) => {
+    const filteredSupportedTests = d.supportedDiseaseTestPerformed.filter(
       (t) => t.supportedDisease.name !== diseaseName
     );
-  return {
-    ...deviceType,
-    supportedDiseaseTestPerformed: filteredSupportedTests,
-  };
-};
-
-const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
-  const filteredDeviceTypes = deviceTypes.map((d) => filterHIVFromDevice(d));
-
-  return filteredDeviceTypes.filter(
-    (d) => d.supportedDiseaseTestPerformed.length > 0
-  );
-};
-
-const filterSyphilisFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
-  const filteredDeviceTypes = deviceTypes.map((d) =>
-    filterSyphilisFromDevice(d)
-  );
+    return {
+      ...d,
+      supportedDiseaseTestPerformed: filteredSupportedTests,
+    };
+  });
 
   return filteredDeviceTypes.filter(
     (d) => d.supportedDiseaseTestPerformed.length > 0
@@ -90,11 +69,17 @@ export function useFilteredDeviceTypes(facility: QueriedFacility) {
   let deviceTypes = [...facility!.deviceTypes];
 
   if (!hivEnabled) {
-    deviceTypes = filterHIVFromAllDevices(deviceTypes);
+    deviceTypes = filterDiseaseFromAllDevices(
+      deviceTypes,
+      MULTIPLEX_DISEASES.HIV
+    );
   }
 
   if (!syphilisEnabled) {
-    deviceTypes = filterSyphilisFromAllDevices(deviceTypes);
+    deviceTypes = filterDiseaseFromAllDevices(
+      deviceTypes,
+      MULTIPLEX_DISEASES.SYPHILIS
+    );
   }
   return deviceTypes;
 }
