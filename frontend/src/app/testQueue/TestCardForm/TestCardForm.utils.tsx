@@ -25,6 +25,7 @@ import {
 export enum AOEFormOption {
   COVID = "COVID",
   HIV = "HIV",
+  SYPHILIS = "SYPHILIS",
   NONE = "NONE",
 }
 
@@ -40,19 +41,19 @@ export function useTestOrderPatient(testOrder: QueriedTestOrder) {
   return { patientFullName, patientDateOfBirth };
 }
 
-const filterHIVFromDevice = (deviceType: QueriedDeviceType) => {
-  const filteredSupportedTests =
-    deviceType.supportedDiseaseTestPerformed.filter(
-      (t) => t.supportedDisease.name !== "HIV"
+const filterDiseaseFromAllDevices = (
+  deviceTypes: QueriedDeviceType[],
+  diseaseName: MULTIPLEX_DISEASES
+) => {
+  const filteredDeviceTypes = deviceTypes.map((d) => {
+    const filteredSupportedTests = d.supportedDiseaseTestPerformed.filter(
+      (t) => t.supportedDisease.name !== diseaseName
     );
-  return {
-    ...deviceType,
-    supportedDiseaseTestPerformed: filteredSupportedTests,
-  };
-};
-
-const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
-  const filteredDeviceTypes = deviceTypes.map((d) => filterHIVFromDevice(d));
+    return {
+      ...d,
+      supportedDiseaseTestPerformed: filteredSupportedTests,
+    };
+  });
 
   return filteredDeviceTypes.filter(
     (d) => d.supportedDiseaseTestPerformed.length > 0
@@ -61,11 +62,22 @@ const filterHIVFromAllDevices = (deviceTypes: QueriedDeviceType[]) => {
 
 export function useFilteredDeviceTypes(facility: QueriedFacility) {
   const hivEnabled = useFeature("hivEnabled");
+  const syphilisEnabled = useFeature("syphilisEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
 
   if (!hivEnabled) {
-    deviceTypes = filterHIVFromAllDevices(deviceTypes);
+    deviceTypes = filterDiseaseFromAllDevices(
+      deviceTypes,
+      MULTIPLEX_DISEASES.HIV
+    );
+  }
+
+  if (!syphilisEnabled) {
+    deviceTypes = filterDiseaseFromAllDevices(
+      deviceTypes,
+      MULTIPLEX_DISEASES.SYPHILIS
+    );
   }
   return deviceTypes;
 }
@@ -182,10 +194,20 @@ export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
     devicesMap
       .get(deviceId)
       ?.supportedDiseaseTestPerformed.filter(
-        (x) => x.supportedDisease.name === "HIV"
+        (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.HIV
       ).length === 1
   ) {
     return AOEFormOption.HIV;
+  }
+  if (
+    devicesMap
+      .get(deviceId)
+      ?.supportedDiseaseTestPerformed.filter(
+        (x) =>
+          x.supportedDisease.name.toUpperCase() === MULTIPLEX_DISEASES.SYPHILIS
+      ).length === 1
+  ) {
+    return AOEFormOption.SYPHILIS;
   }
   return isDeviceFluOnly(deviceId, devicesMap)
     ? AOEFormOption.NONE
