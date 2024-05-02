@@ -2,18 +2,10 @@ package gov.cdc.usds.simplereport.config.authorization;
 
 import java.security.Principal;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- * The roles that can be granted (via Okta) to a user. Since multiple roles can be granted, this
- * class also contains the logic for determining which role "matters" more for determining the
- * effective role of a user.
- *
- * <p>Specifically, the {@link EffectiveRoleComparator} can order a list of roles such that the
- * first role in the list is the "effective" role for the applicable user.
- */
+/** The roles that can be granted (via Okta) to a user. */
 public enum OrganizationRole implements Principal {
   /**
    * This is the base role that we expect every user to have. Any other role that has more specific
@@ -99,20 +91,6 @@ public enum OrganizationRole implements Principal {
   @Override
   public String getName() {
     return name();
-  }
-
-  // Allows us to sort OrganizationRole's based on the number of permissions they grant,
-  // from greatest to least; effectively sorting from the most to least permission-granting.
-  // In the event that two roles grant an equal number of permissions, the one listed later
-  // in the OrganizationRole enum will take precedence.
-  public static final class EffectiveRoleComparator implements Comparator<OrganizationRole> {
-    public int compare(OrganizationRole one, OrganizationRole other) {
-      if (other.getGrantedPermissions().size() == one.getGrantedPermissions().size()) {
-        return other.compareTo(one);
-      }
-      return Integer.compare(
-          other.getGrantedPermissions().size(), one.getGrantedPermissions().size());
-    }
   }
 
   public static final OrganizationRole getDefault() {
