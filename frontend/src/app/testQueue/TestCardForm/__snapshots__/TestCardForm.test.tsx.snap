@@ -485,104 +485,8 @@ Object {
       </div>
     </div>
     <div
-      aria-labelledby="submit-modal-heading"
-      class="usa-modal-wrapper is-hidden"
-      data-force-action="false"
-      id="submit-modal"
-      role="dialog"
-    >
-      <div
-        aria-controls="submit-modal"
-        class="usa-modal-overlay"
-        data-testid="modalOverlay"
-      >
-        <div
-          class="usa-modal"
-          data-force-action="false"
-          data-testid="modalWindow"
-          tabindex="-1"
-        >
-          <div
-            class="usa-modal__content"
-          >
-            <div
-              class="usa-modal__main"
-            >
-              <h2
-                class="usa-modal__heading"
-                id="submit-modal-heading"
-              >
-                The test questionnaire for 
-                Dixon, Althea Hedda Mclaughlin
-                 has not been completed.
-              </h2>
-              <p>
-                Do you want to submit results anyway?
-              </p>
-              <div
-                class="usa-modal__footer"
-                data-testid="modalFooter"
-                id="submit-modal-footer"
-              >
-                <ul
-                  class="usa-button-group"
-                >
-                  <li
-                    class="usa-button-group__item"
-                  >
-                    <button
-                      aria-controls="submit-modal"
-                      class="usa-button margin-right-1"
-                      data-close-modal="true"
-                      data-testid="button"
-                      type="button"
-                    >
-                      Submit anyway.
-                    </button>
-                  </li>
-                  <li
-                    class="usa-button-group__item"
-                  >
-                    <button
-                      aria-controls="submit-modal"
-                      class="usa-button usa-button--unstyled"
-                      data-close-modal="true"
-                      data-testid="button"
-                      type="button"
-                    >
-                      No, go back.
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <button
-              aria-controls="submit-modal"
-              aria-label="Close this window"
-              class="usa-button usa-modal__close"
-              data-close-modal="true"
-              data-testid="button"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="usa-icon"
-                focusable="false"
-                height="1em"
-                role="img"
-                viewBox="0 0 24 24"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      class="modal--basic"
+    />
   </body>,
   "container": <div>
     <div
@@ -1538,9 +1442,7 @@ exports[`TestCardForm initial state matches snapshot for flu device 1`] = `
 exports[`TestCardForm initial state matches snapshot for hiv device 1`] = `
 Object {
   "asFragment": [Function],
-  "baseElement": <body
-    style="padding-right: 0px;"
-  >
+  "baseElement": <body>
     <div>
       <div
         aria-hidden="true"
@@ -1950,104 +1852,8 @@ Object {
       </div>
     </div>
     <div
-      aria-labelledby="submit-modal-heading"
-      class="usa-modal-wrapper is-hidden"
-      data-force-action="false"
-      id="submit-modal"
-      role="dialog"
-    >
-      <div
-        aria-controls="submit-modal"
-        class="usa-modal-overlay"
-        data-testid="modalOverlay"
-      >
-        <div
-          class="usa-modal"
-          data-force-action="false"
-          data-testid="modalWindow"
-          tabindex="-1"
-        >
-          <div
-            class="usa-modal__content"
-          >
-            <div
-              class="usa-modal__main"
-            >
-              <h2
-                class="usa-modal__heading"
-                id="submit-modal-heading"
-              >
-                The test questionnaire for 
-                Dixon, Althea Hedda Mclaughlin
-                 has not been completed.
-              </h2>
-              <p>
-                Do you want to submit results anyway?
-              </p>
-              <div
-                class="usa-modal__footer"
-                data-testid="modalFooter"
-                id="submit-modal-footer"
-              >
-                <ul
-                  class="usa-button-group"
-                >
-                  <li
-                    class="usa-button-group__item"
-                  >
-                    <button
-                      aria-controls="submit-modal"
-                      class="usa-button margin-right-1"
-                      data-close-modal="true"
-                      data-testid="button"
-                      type="button"
-                    >
-                      Submit anyway.
-                    </button>
-                  </li>
-                  <li
-                    class="usa-button-group__item"
-                  >
-                    <button
-                      aria-controls="submit-modal"
-                      class="usa-button usa-button--unstyled"
-                      data-close-modal="true"
-                      data-testid="button"
-                      type="button"
-                    >
-                      No, go back.
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <button
-              aria-controls="submit-modal"
-              aria-label="Close this window"
-              class="usa-button usa-modal__close"
-              data-close-modal="true"
-              data-testid="button"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="usa-icon"
-                focusable="false"
-                height="1em"
-                role="img"
-                viewBox="0 0 24 24"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      class="modal--basic"
+    />
   </body>,
   "container": <div>
     <div
@@ -2533,9 +2339,7 @@ Object {
 exports[`TestCardForm initial state matches snapshot for multiplex device 1`] = `
 Object {
   "asFragment": [Function],
-  "baseElement": <body
-    style="padding-right: 0px;"
-  >
+  "baseElement": <body>
     <div>
       <div
         aria-hidden="true"
@@ -3172,104 +2976,8 @@ Object {
       </div>
     </div>
     <div
-      aria-labelledby="submit-modal-heading"
-      class="usa-modal-wrapper is-hidden"
-      data-force-action="false"
-      id="submit-modal"
-      role="dialog"
-    >
-      <div
-        aria-controls="submit-modal"
-        class="usa-modal-overlay"
-        data-testid="modalOverlay"
-      >
-        <div
-          class="usa-modal"
-          data-force-action="false"
-          data-testid="modalWindow"
-          tabindex="-1"
-        >
-          <div
-            class="usa-modal__content"
-          >
-            <div
-              class="usa-modal__main"
-            >
-              <h2
-                class="usa-modal__heading"
-                id="submit-modal-heading"
-              >
-                The test questionnaire for 
-                Dixon, Althea Hedda Mclaughlin
-                 has not been completed.
-              </h2>
-              <p>
-                Do you want to submit results anyway?
-              </p>
-              <div
-                class="usa-modal__footer"
-                data-testid="modalFooter"
-                id="submit-modal-footer"
-              >
-                <ul
-                  class="usa-button-group"
-                >
-                  <li
-                    class="usa-button-group__item"
-                  >
-                    <button
-                      aria-controls="submit-modal"
-                      class="usa-button margin-right-1"
-                      data-close-modal="true"
-                      data-testid="button"
-                      type="button"
-                    >
-                      Submit anyway.
-                    </button>
-                  </li>
-                  <li
-                    class="usa-button-group__item"
-                  >
-                    <button
-                      aria-controls="submit-modal"
-                      class="usa-button usa-button--unstyled"
-                      data-close-modal="true"
-                      data-testid="button"
-                      type="button"
-                    >
-                      No, go back.
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <button
-              aria-controls="submit-modal"
-              aria-label="Close this window"
-              class="usa-button usa-modal__close"
-              data-close-modal="true"
-              data-testid="button"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="usa-icon"
-                focusable="false"
-                height="1em"
-                role="img"
-                viewBox="0 0 24 24"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      class="modal--basic"
+    />
   </body>,
   "container": <div>
     <div

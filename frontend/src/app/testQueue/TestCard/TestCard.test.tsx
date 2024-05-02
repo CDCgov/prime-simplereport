@@ -601,6 +601,12 @@ describe("TestCard", () => {
         )
       ).not.toBeInTheDocument();
 
+      // select results
+      await user.click(
+        within(
+          screen.getByTestId(`COVID-19-test-result-${testOrderInfo.internalId}`)
+        ).getByLabelText("Positive", { exact: false })
+      );
       await user.click(submitButton);
 
       // able to submit after selecting valid device

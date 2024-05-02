@@ -5,9 +5,8 @@ import {
   Checkbox,
   FormGroup,
   Label,
-  ModalRef,
 } from "@trussworks/react-uswds";
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 
 import TextInput from "../../commonComponents/TextInput";
 import { formatDate } from "../../utils/date";
@@ -50,10 +49,10 @@ import {
   useSpecimenTypeOptions,
   useTestOrderPatient,
 } from "./TestCardForm.utils";
-import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
 import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
+import { IncompleteAOEWarningModal } from "./IncompleteAOEWarningModal";
 
 const DEBOUNCE_TIME = 300;
 
@@ -103,7 +102,7 @@ const TestCardForm = ({
   const { trackSubmitTestResult, trackUpdateAoEResponse } =
     useAppInsightTestCardEvents();
 
-  const submitModalRef = useRef<ModalRef>(null);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   const filteredDeviceTypes = useFilteredDeviceTypes(facility);
 
@@ -335,12 +334,12 @@ const TestCardForm = ({
     }
 
     if (!forceSubmit && !areAOEAnswersComplete(state, whichAOEFormOption)) {
-      submitModalRef.current?.toggleModal();
+      setIsSubmitModalOpen(true);
       return;
     }
 
     trackSubmitTestResult();
-
+    setIsSubmitModalOpen(false);
     const result = await submitTestResult({
       variables: {
         patientId: testOrder.patient?.internalId,
@@ -365,9 +364,10 @@ const TestCardForm = ({
     <>
       <QueueItemSubmitLoader show={submitLoading} name={patientFullName} />
       <IncompleteAOEWarningModal
-        submitModalRef={submitModalRef}
         name={patientFullName}
         submitForm={submitForm}
+        showModal={isSubmitModalOpen}
+        onClose={() => setIsSubmitModalOpen(false)}
       />
       <div className="grid-container">
         {/* error and warning alerts */}
