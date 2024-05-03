@@ -109,7 +109,7 @@ export function alphabetizeSymptomKeysFromMapValues(dict: {
   [key: string]: string;
 }) {
   const values = Object.values(dict);
-  const alphabetizedValues = values.sort();
+  const alphabetizedValues = values.sort((a, b) => a.localeCompare(b));
   const reversedMap = Object.fromEntries(
     Object.entries(dict).map((a) => a.reverse())
   );
