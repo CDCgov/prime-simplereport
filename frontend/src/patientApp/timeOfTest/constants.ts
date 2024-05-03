@@ -44,7 +44,7 @@ export type RespiratorySymptomCode = keyof RespiratorySymptoms;
 export type RespiratorySymptomName =
   RespiratorySymptoms[RespiratorySymptomCode];
 
-const respiratorySymptomOrder: RespiratorySymptomCode[] =
+export const respiratorySymptomOrder: RespiratorySymptomCode[] =
   alphabetizeSymptomKeysFromMapValues(respiratorySymptomsMap);
 
 export const respiratorySymptomDefinitions: SymptomDefinitionMap[] =
