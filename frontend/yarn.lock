@@ -4648,10 +4648,10 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trussworks/react-uswds@5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@trussworks/react-uswds/-/react-uswds-5.1.1.tgz#77b536132adf0e893c0738f4e7db5012af6130e2"
-  integrity sha512-SAlgEIFGCIKyV5aQjIi8dBUwLGdqNkbDHDvXPPWyySlhJkut5MNmZQ73BpFTxke6WqJreljkApPubMWUPiynlw==
+"@trussworks/react-uswds@9.0.0":
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/@trussworks/react-uswds/-/react-uswds-9.0.0.tgz#640d798e3fe99a03caf8c2442ef17eb7e1f88408"
+  integrity sha512-zAUuQf6QYZFqS6321F/mFHgFSTz7Fi5VFdxcwel7mv2gFdIry6+sJOu7gzaXTZLxaWXArMfH/36uzzicOjyhfQ==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"
@@ -5595,13 +5595,12 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@uswds/uswds@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@uswds/uswds/-/uswds-3.1.0.tgz#764d6053ea6d2a3b80bd4023d408f726608a2a97"
-  integrity sha512-6XTeaQD/ipc3x4713mud4Rrr+lRc4nJ1Qw5Oy35dbVEXuKr7DjN4EBoAkbze9OoV0UdmAIvoxolBF/UcpFVKOg==
+"@uswds/uswds@^3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@uswds/uswds/-/uswds-3.8.0.tgz#dba0b0b38182053779276f9ae6809474bd31d548"
+  integrity sha512-rMwCXe/u4HGkfskvS1Iuabapi/EXku3ChaIFW7y/dUhc7R1TXQhbbfp8YXEjmXPF0yqJnv9T08WPgS0fQqWZ8w==
   dependencies:
-    classlist-polyfill "1.0.3"
-    domready "1.0.8"
+    classlist-polyfill "1.2.0"
     object-assign "4.1.1"
     receptor "1.0.0"
     resolve-id-refs "0.1.0"
@@ -7308,10 +7307,10 @@ cjs-module-lexer@^1.2.3:
   resolved "https://registry.yarnpkg.com/cjs-module-lexer/-/cjs-module-lexer-1.2.3.tgz#6c370ab19f8a3394e318fe682686ec0ac684d107"
   integrity sha512-0TNiGstbQmCFwt4akjjBg5pLRTSyj/PkWQ1ZoO2zntmg9yLqSRxwEa4iCfQLGjqhiqBfOJa7W/E8wfGrTDmlZQ==
 
-classlist-polyfill@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/classlist-polyfill/-/classlist-polyfill-1.0.3.tgz#7cd5a9207c8d6932f592fdeaa6b45352ed71690d"
-  integrity sha512-bDLDUsSg5LYFWsc2hphtG6ulyaCFSupdEBU3wxNECKWHnyPVvY8EB9Wbt9DzWkstWclFZhDaZK/VnEK/DmqE/Q==
+classlist-polyfill@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/classlist-polyfill/-/classlist-polyfill-1.2.0.tgz#935bc2dfd9458a876b279617514638bcaa964a2e"
+  integrity sha512-GzIjNdcEtH4ieA2S8NmrSxv7DfEV5fmixQeyTmqmRmRJPGpRBaSnA2a0VrCjyT8iW8JjEdMbKzDotAJf+ajgaQ==
 
 classnames@*, classnames@^2.2.6:
   version "2.3.2"
@@ -8416,11 +8415,6 @@ domhandler@^4.0.0, domhandler@^4.2.0, domhandler@^4.3.1:
   integrity sha512-GrwoxYN+uWlzO8uhUXRl0P+kHE4GtVPfYzVLcUxPL7KNdHKj66vvlhiweIHqYYXWlw+T8iLMp42Lm67ghw4WMQ==
   dependencies:
     domelementtype "^2.2.0"
-
-domready@1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/domready/-/domready-1.0.8.tgz#91f252e597b65af77e745ae24dd0185d5e26d58c"
-  integrity sha512-uIzsOJUNk+AdGE9a6VDeessoMCzF8RrZvJCX/W8QtyfgdR6Uofn/MvRonih3OtCO79b2VDzDOymuiABrQ4z3XA==
 
 domutils@^1.5.1, domutils@^1.7.0:
   version "1.7.0"
@@ -9542,6 +9536,21 @@ flow-parser@0.*:
   version "0.218.0"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.218.0.tgz#ec2e446b00eba373c661b4f5ccd9705996278c0a"
   integrity sha512-mk4e7UK4P/W3tjrJyto6oxPuCjwvRMyzBh72hTl8T0dOcTzkP0M2JJHpncgyhKphMFi9pnjwHfc8e0oe4Uk3LA==
+
+focus-trap-react@^10.2.3:
+  version "10.2.3"
+  resolved "https://registry.yarnpkg.com/focus-trap-react/-/focus-trap-react-10.2.3.tgz#a5a2ea7fbb042ffa4337fde72758325ed0fb793a"
+  integrity sha512-YXBpFu/hIeSu6NnmV2xlXzOYxuWkoOtar9jzgp3lOmjWLWY59C/b8DtDHEAV4SPU07Nd/t+nS/SBNGkhUBFmEw==
+  dependencies:
+    focus-trap "^7.5.4"
+    tabbable "^6.2.0"
+
+focus-trap@^7.5.4:
+  version "7.5.4"
+  resolved "https://registry.yarnpkg.com/focus-trap/-/focus-trap-7.5.4.tgz#6c4e342fe1dae6add9c2aa332a6e7a0bbd495ba2"
+  integrity sha512-N7kHdlgsO/v+iD/dMoJKtsSqs5Dz/dXZVebRgJw23LDk+jMi/974zyiOYDziY2JPp8xivq9BmUGwIJMiuSBi7w==
+  dependencies:
+    tabbable "^6.2.0"
 
 follow-redirects@^1.0.0, follow-redirects@^1.14.8:
   version "1.15.6"
@@ -16268,6 +16277,11 @@ sync-fetch@0.3.0:
   dependencies:
     buffer "^5.7.0"
     node-fetch "^2.6.1"
+
+tabbable@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-6.2.0.tgz#732fb62bc0175cfcec257330be187dcfba1f3b97"
+  integrity sha512-Cat63mxsVJlzYvN51JmVXIgNoUokrIaT2zLclCXjRd8boZ0004U4KCs/sToJ75C6sdlByWxpYnb5Boif1VSFew==
 
 table@^6.6.0:
   version "6.8.1"
