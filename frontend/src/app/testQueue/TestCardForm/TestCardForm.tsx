@@ -124,7 +124,6 @@ const TestCardForm = ({
         x.diseaseName === MULTIPLEX_DISEASES.HIV &&
         x.testResult === TEST_RESULTS.POSITIVE
     );
-    );
 
   /**
    * When backend sends an updated test order, update the form state
