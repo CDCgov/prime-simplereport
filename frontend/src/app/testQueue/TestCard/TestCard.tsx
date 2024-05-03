@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Icon,
-  ModalRef,
-} from "@trussworks/react-uswds";
+import { Card, CardBody, CardHeader, Icon } from "@trussworks/react-uswds";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -21,7 +15,7 @@ import {
   QueriedTestOrder,
 } from "../TestCardForm/types";
 
-import CloseTestCardModal from "./CloseTestCardModal";
+import { CloseTestCardModal } from "./CloseTestCardModal";
 
 export interface TestCardProps {
   testOrder: QueriedTestOrder;
@@ -50,7 +44,8 @@ export const TestCard = ({
   const organization = useSelector<RootState, Organization>(
     (state: any) => state.organization as Organization
   );
-  const closeModalRef = useRef<ModalRef>(null);
+
+  const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
 
   const [isExpanded, setIsExpanded] = useState(true);
 
@@ -84,9 +79,10 @@ export const TestCard = ({
   return (
     <>
       <CloseTestCardModal
-        closeModalRef={closeModalRef}
         name={patientFullName}
         removeTestFromQueue={removeTestFromQueue}
+        showModal={isCloseModalOpen}
+        onClose={() => setIsCloseModalOpen(false)}
       />
       <Card
         className={"list-style-none margin-bottom-1em test-card-container"}
@@ -156,7 +152,7 @@ export const TestCard = ({
               <Button
                 className={"card-close-button"}
                 variant="unstyled"
-                onClick={closeModalRef.current?.toggleModal}
+                onClick={() => setIsCloseModalOpen(true)}
                 ariaLabel={`Close test for ${patientFullName}`}
               >
                 <Icon.Close size={3} focusable={true} role={"presentation"} />

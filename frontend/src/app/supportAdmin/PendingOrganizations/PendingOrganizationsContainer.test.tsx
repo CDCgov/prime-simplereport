@@ -262,7 +262,7 @@ describe("PendingOrganizationsContainer", () => {
           screen.getByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
 
-        await user.click(screen.getByRole("button", { name: "Close" }));
+        await user.click(screen.getByAltText("Close"));
 
         expect(
           screen.getByText("Space Camp", { exact: false })
