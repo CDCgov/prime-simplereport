@@ -13,20 +13,20 @@ export type CheckboxProps = {
 };
 type InputProps = JSX.IntrinsicElements["input"];
 type Checkbox = CheckboxProps & InputProps;
-interface Props {
-  boxes: Checkbox[];
+
+type Props = FragmentProps & {
   legend: React.ReactNode;
   legendSrOnly?: boolean;
   hintText?: string;
-  name: string;
-  disabled?: boolean;
   className?: string;
   errorMessage?: string;
   validationStatus?: "error" | "success";
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
-  inputRef?: React.RefObject<HTMLInputElement>;
-}
+  displayAsColumns?: true;
+  columnItemlength?: number;
+};
+
+const DEFAULT_COLUMN_ITEM_LIMIT = 3;
 
 const Checkboxes = (props: Props) => {
   const {
@@ -40,7 +40,31 @@ const Checkboxes = (props: Props) => {
     required,
     inputRef,
     hintText,
+    displayAsColumns,
+    columnItemlength = DEFAULT_COLUMN_ITEM_LIMIT,
   } = props;
+  
+  const checkboxFragmentToRender = (boxes: Checkbox[]) => (
+    <CheckboxesFragment
+      boxes={boxes}
+      name={name}
+      onChange={onChange}
+      inputRef={inputRef}
+    />
+  );
+
+  const columnSegmentedBoxes: Checkbox[][] = [];
+  if (displayAsColumns) {
+    let tempSegment: Checkbox[] = [];
+    boxes.forEach((box) => {
+      tempSegment.push(box);
+      if (tempSegment.length === columnItemlength) {
+        columnSegmentedBoxes.push(tempSegment);
+        tempSegment = [];
+      }
+    });
+    if (tempSegment.length > 0) columnSegmentedBoxes.push(tempSegment);
+  }
 
   return (
     <div
@@ -68,35 +92,61 @@ const Checkboxes = (props: Props) => {
             {errorMessage}
           </div>
         )}
-        <UIDConsumer>
-          {(_, uid) => (
-            <div className="checkboxes">
-              {boxes.map(
-                ({ value, label, disabled, checked, ...inputProps }, i) => (
-                  <div className="usa-checkbox" key={uid(i)}>
-                    <input
-                      className="usa-checkbox__input"
-                      checked={checked}
-                      id={uid(i)}
-                      onChange={onChange}
-                      type="checkbox"
-                      value={value}
-                      name={name}
-                      ref={inputRef}
-                      disabled={disabled || props.disabled}
-                      {...inputProps}
-                    />
-                    <label className="usa-checkbox__label" htmlFor={uid(i)}>
-                      {label}
-                    </label>
-                  </div>
-                )
-              )}
-            </div>
-          )}
-        </UIDConsumer>
+        {displayAsColumns ? (
+          <div className="grid-row">
+            {columnSegmentedBoxes.map((boxes) => (
+              <div className="tablet: grid-col">
+                {checkboxFragmentToRender(boxes)}
+              </div>
+            ))}
+          </div>
+        ) : (
+          checkboxFragmentToRender(boxes)
+        )}
       </fieldset>
     </div>
+  );
+};
+
+type FragmentProps = {
+  boxes: Checkbox[];
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  name: string;
+  disabled?: boolean;
+};
+
+const CheckboxesFragment = (props: FragmentProps) => {
+  const { boxes, name, inputRef, onChange } = props;
+
+  return (
+    <UIDConsumer>
+      {(_, uid) => (
+        <div className="checkboxes">
+          {boxes.map(
+            ({ value, label, disabled, checked, ...inputProps }, i) => (
+              <div className="usa-checkbox" key={uid(i)}>
+                <input
+                  className="usa-checkbox__input"
+                  checked={checked}
+                  id={uid(i)}
+                  onChange={onChange}
+                  type="checkbox"
+                  value={value}
+                  name={name}
+                  ref={inputRef}
+                  disabled={disabled || props.disabled}
+                  {...inputProps}
+                />
+                <label className="usa-checkbox__label" htmlFor={uid(i)}>
+                  {label}
+                </label>
+              </div>
+            )
+          )}
+        </div>
+      )}
+    </UIDConsumer>
   );
 };
 

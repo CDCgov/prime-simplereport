@@ -44,32 +44,19 @@ export type RespiratorySymptomCode = keyof RespiratorySymptoms;
 export type RespiratorySymptomName =
   RespiratorySymptoms[RespiratorySymptomCode];
 
-const respiratorySymptomOrder: RespiratorySymptomCode[] = [
-  "426000000",
-  "103001002",
-  "43724002",
-  "49727002",
-  "267036007",
-  "230145002",
-  "84229001",
-  "68962001",
-  "25064002",
-  "36955009",
-  "44169009",
-  "162397003",
-  "68235000",
-  "64531003",
-  "422587007",
-  "422400008",
-  "62315008",
-];
+const respiratorySymptomOrder: RespiratorySymptomCode[] =
+  alphabetizeSymptomKeysFromMapValues(respiratorySymptomsMap);
 
-export const respiratorySymptomDefinitions = respiratorySymptomOrder.map(
-  (value) => ({
+export const respiratorySymptomDefinitions: SymptomDefinitionMap[] =
+  respiratorySymptomOrder.map((value) => ({
     value,
     label: respiratorySymptomsMap[value],
-  })
-);
+  }));
+
+export type SymptomDefinitionMap = {
+  value: string;
+  label: string;
+};
 export const syphillisHistoryMap = {
   // Snomed for "history of syphilis"
   "1087151000119108": "Yes",
@@ -108,26 +95,32 @@ export const syphilisSymptomsMap = {
   "56940005": "Palmar (hand)/plantar (foot) rash",
   "91554004": "Flat white warts",
   "15188001": "Hearing loss",
-  "246636008": "Blurred vision",
+  "46636008": "Blurred vision",
+  "68225006": "Patchy hair loss",
 } as const;
 
 export type SyphilisSymptoms = typeof syphilisSymptomsMap;
 export type SyphilisSymptomCode = keyof SyphilisSymptoms;
 
-const syphilisSymptomOrder: SyphilisSymptomCode[] = [
-  "724386005",
-  "195469007",
-  "26284000",
-  "266128007",
-  "56940005",
-  "91554004",
-  "15188001",
-  "246636008",
-];
+const syphilisSymptomOrder: SyphilisSymptomCode[] =
+  alphabetizeSymptomKeysFromMapValues(syphilisSymptomsMap);
 
-export const syphilisSymptomOrderDefinitions = syphilisSymptomOrder.map(
-  (value) => ({
+export function alphabetizeSymptomKeysFromMapValues(dict: {
+  [key: string]: string;
+}) {
+  const values = Object.values(dict);
+  const alphabetizedValues = values.sort();
+  const reversedMap = Object.fromEntries(
+    Object.entries(dict).map((a) => a.reverse())
+  );
+
+  return alphabetizedValues.map((val) => {
+    return reversedMap[val];
+  });
+}
+
+export const syphilisSymptomDefinitions: SymptomDefinitionMap[] =
+  syphilisSymptomOrder.map((value) => ({
     value,
     label: syphilisSymptomsMap[value],
-  })
-);
+  }));
