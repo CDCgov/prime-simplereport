@@ -43,7 +43,7 @@ const Checkboxes = (props: Props) => {
     displayAsColumns,
     columnItemlength = DEFAULT_COLUMN_ITEM_LIMIT,
   } = props;
-  
+
   const checkboxFragmentToRender = (boxes: Checkbox[]) => (
     <CheckboxesFragment
       boxes={boxes}

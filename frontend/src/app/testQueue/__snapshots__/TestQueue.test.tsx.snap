@@ -702,13 +702,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-0"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="426000000"
+                                  value="43724002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-0"
                                 >
-                                  Fever over 100.4F
+                                  Chills
                                 </label>
                               </div>
                               <div
@@ -719,13 +719,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-1"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="103001002"
+                                  value="49727002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-1"
                                 >
-                                  Feeling feverish
+                                  Cough
                                 </label>
                               </div>
                               <div
@@ -736,13 +736,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-2"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="43724002"
+                                  value="62315008"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-2"
                                 >
-                                  Chills
+                                  Diarrhea
                                 </label>
                               </div>
                               <div
@@ -753,13 +753,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-3"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="49727002"
+                                  value="230145002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-3"
                                 >
-                                  Cough
+                                  Difficulty breathing
                                 </label>
                               </div>
                               <div
@@ -770,13 +770,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-4"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="267036007"
+                                  value="84229001"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-4"
                                 >
-                                  Shortness of breath
+                                  Fatigue
                                 </label>
                               </div>
                               <div
@@ -787,13 +787,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-5"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="230145002"
+                                  value="103001002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-5"
                                 >
-                                  Difficulty breathing
+                                  Feeling feverish
                                 </label>
                               </div>
                               <div
@@ -804,13 +804,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-6"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="84229001"
+                                  value="426000000"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-6"
                                 >
-                                  Fatigue
+                                  Fever over 100.4F
                                 </label>
                               </div>
                               <div
@@ -821,13 +821,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-7"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="68962001"
+                                  value="25064002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-7"
                                 >
-                                  Muscle or body aches
+                                  Headache
                                 </label>
                               </div>
                               <div
@@ -838,13 +838,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-8"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="25064002"
+                                  value="68962001"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-8"
                                 >
-                                  Headache
+                                  Muscle or body aches
                                 </label>
                               </div>
                               <div
@@ -855,13 +855,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-9"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="36955009"
+                                  value="68235000"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-9"
                                 >
-                                  New loss of taste
+                                  Nasal congestion
                                 </label>
                               </div>
                               <div
@@ -872,13 +872,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-10"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="44169009"
+                                  value="422587007"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-10"
                                 >
-                                  New loss of smell
+                                  Nausea
                                 </label>
                               </div>
                               <div
@@ -889,13 +889,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-11"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="162397003"
+                                  value="44169009"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-11"
                                 >
-                                  Sore throat
+                                  New loss of smell
                                 </label>
                               </div>
                               <div
@@ -906,13 +906,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-12"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="68235000"
+                                  value="36955009"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-12"
                                 >
-                                  Nasal congestion
+                                  New loss of taste
                                 </label>
                               </div>
                               <div
@@ -940,13 +940,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-14"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="422587007"
+                                  value="267036007"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-14"
                                 >
-                                  Nausea
+                                  Shortness of breath
                                 </label>
                               </div>
                               <div
@@ -957,13 +957,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-15"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="422400008"
+                                  value="162397003"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-15"
                                 >
-                                  Vomiting
+                                  Sore throat
                                 </label>
                               </div>
                               <div
@@ -974,13 +974,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="7-val-16"
                                   name="symptoms-abc"
                                   type="checkbox"
-                                  value="62315008"
+                                  value="422400008"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="7-val-16"
                                 >
-                                  Diarrhea
+                                  Vomiting
                                 </label>
                               </div>
                             </div>
@@ -1651,13 +1651,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-0"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="426000000"
+                                  value="43724002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-0"
                                 >
-                                  Fever over 100.4F
+                                  Chills
                                 </label>
                               </div>
                               <div
@@ -1668,13 +1668,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-1"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="103001002"
+                                  value="49727002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-1"
                                 >
-                                  Feeling feverish
+                                  Cough
                                 </label>
                               </div>
                               <div
@@ -1685,13 +1685,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-2"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="43724002"
+                                  value="62315008"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-2"
                                 >
-                                  Chills
+                                  Diarrhea
                                 </label>
                               </div>
                               <div
@@ -1702,13 +1702,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-3"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="49727002"
+                                  value="230145002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-3"
                                 >
-                                  Cough
+                                  Difficulty breathing
                                 </label>
                               </div>
                               <div
@@ -1719,13 +1719,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-4"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="267036007"
+                                  value="84229001"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-4"
                                 >
-                                  Shortness of breath
+                                  Fatigue
                                 </label>
                               </div>
                               <div
@@ -1736,13 +1736,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-5"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="230145002"
+                                  value="103001002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-5"
                                 >
-                                  Difficulty breathing
+                                  Feeling feverish
                                 </label>
                               </div>
                               <div
@@ -1753,13 +1753,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-6"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="84229001"
+                                  value="426000000"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-6"
                                 >
-                                  Fatigue
+                                  Fever over 100.4F
                                 </label>
                               </div>
                               <div
@@ -1770,13 +1770,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-7"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="68962001"
+                                  value="25064002"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-7"
                                 >
-                                  Muscle or body aches
+                                  Headache
                                 </label>
                               </div>
                               <div
@@ -1787,13 +1787,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-8"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="25064002"
+                                  value="68962001"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-8"
                                 >
-                                  Headache
+                                  Muscle or body aches
                                 </label>
                               </div>
                               <div
@@ -1804,13 +1804,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-9"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="36955009"
+                                  value="68235000"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-9"
                                 >
-                                  New loss of taste
+                                  Nasal congestion
                                 </label>
                               </div>
                               <div
@@ -1821,13 +1821,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-10"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="44169009"
+                                  value="422587007"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-10"
                                 >
-                                  New loss of smell
+                                  Nausea
                                 </label>
                               </div>
                               <div
@@ -1838,13 +1838,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-11"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="162397003"
+                                  value="44169009"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-11"
                                 >
-                                  Sore throat
+                                  New loss of smell
                                 </label>
                               </div>
                               <div
@@ -1855,13 +1855,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-12"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="68235000"
+                                  value="36955009"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-12"
                                 >
-                                  Nasal congestion
+                                  New loss of taste
                                 </label>
                               </div>
                               <div
@@ -1889,13 +1889,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-14"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="422587007"
+                                  value="267036007"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-14"
                                 >
-                                  Nausea
+                                  Shortness of breath
                                 </label>
                               </div>
                               <div
@@ -1906,13 +1906,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-15"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="422400008"
+                                  value="162397003"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-15"
                                 >
-                                  Vomiting
+                                  Sore throat
                                 </label>
                               </div>
                               <div
@@ -1923,13 +1923,13 @@ exports[`TestQueue should render the test queue 1`] = `
                                   id="14-val-16"
                                   name="symptoms-def"
                                   type="checkbox"
-                                  value="62315008"
+                                  value="422400008"
                                 />
                                 <label
                                   class="usa-checkbox__label"
                                   for="14-val-16"
                                 >
-                                  Diarrhea
+                                  Vomiting
                                 </label>
                               </div>
                             </div>
