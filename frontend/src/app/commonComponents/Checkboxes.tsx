@@ -28,6 +28,24 @@ type Props = FragmentProps & {
 
 const DEFAULT_COLUMN_ITEM_LIMIT = 3;
 
+// Take the list of checkboxes and generate an array (ie columns) of box arrays
+export function generateSubArrayForColumnDisplay<T>(
+  items: T[],
+  columnItemlength: number
+): T[][] {
+  const columnSegmentedItems: T[][] = [];
+  let tempSegment: T[] = [];
+  items.forEach((item) => {
+    tempSegment.push(item);
+    if (tempSegment.length === columnItemlength) {
+      columnSegmentedItems.push(tempSegment);
+      tempSegment = [];
+    }
+  });
+  if (tempSegment.length > 0) columnSegmentedItems.push(tempSegment);
+  return columnSegmentedItems;
+}
+
 const Checkboxes = (props: Props) => {
   const {
     boxes,
@@ -53,18 +71,12 @@ const Checkboxes = (props: Props) => {
     />
   );
 
-  const columnSegmentedBoxes: Checkbox[][] = [];
-  if (displayAsColumns) {
-    let tempSegment: Checkbox[] = [];
-    boxes.forEach((box) => {
-      tempSegment.push(box);
-      if (tempSegment.length === columnItemlength) {
-        columnSegmentedBoxes.push(tempSegment);
-        tempSegment = [];
-      }
-    });
-    if (tempSegment.length > 0) columnSegmentedBoxes.push(tempSegment);
-  }
+  // display as one column if displayAsColumn = false
+  const boxColumnLength = displayAsColumns ? columnItemlength : boxes.length;
+  const columnSegmentedBoxes: Checkbox[][] = generateSubArrayForColumnDisplay(
+    boxes,
+    boxColumnLength
+  );
 
   return (
     <div
@@ -92,17 +104,13 @@ const Checkboxes = (props: Props) => {
             {errorMessage}
           </div>
         )}
-        {displayAsColumns ? (
-          <div className="grid-row">
-            {columnSegmentedBoxes.map((boxes) => (
-              <div className="tablet: grid-col">
-                {checkboxFragmentToRender(boxes)}
-              </div>
-            ))}
-          </div>
-        ) : (
-          checkboxFragmentToRender(boxes)
-        )}
+        <div className="grid-row checkboxes">
+          {columnSegmentedBoxes.map((boxes, i) => (
+            <div className="tablet: grid-col">
+              {checkboxFragmentToRender(boxes)}
+            </div>
+          ))}
+        </div>
       </fieldset>
     </div>
   );
@@ -119,35 +127,29 @@ type FragmentProps = {
 const CheckboxesFragment = (props: FragmentProps) => {
   const { boxes, name, inputRef, onChange } = props;
 
-  return (
+  return boxes.map(({ value, label, disabled, checked, ...inputProps }) => (
     <UIDConsumer>
       {(_, uid) => (
-        <div className="checkboxes">
-          {boxes.map(
-            ({ value, label, disabled, checked, ...inputProps }, i) => (
-              <div className="usa-checkbox" key={uid(i)}>
-                <input
-                  className="usa-checkbox__input"
-                  checked={checked}
-                  id={uid(i)}
-                  onChange={onChange}
-                  type="checkbox"
-                  value={value}
-                  name={name}
-                  ref={inputRef}
-                  disabled={disabled || props.disabled}
-                  {...inputProps}
-                />
-                <label className="usa-checkbox__label" htmlFor={uid(i)}>
-                  {label}
-                </label>
-              </div>
-            )
-          )}
+        <div className="usa-checkbox" key={uid(value)}>
+          <input
+            className="usa-checkbox__input"
+            checked={checked}
+            id={uid(value)}
+            onChange={onChange}
+            type="checkbox"
+            value={value}
+            name={name}
+            ref={inputRef}
+            disabled={disabled || props.disabled}
+            {...inputProps}
+          />
+          <label className="usa-checkbox__label" htmlFor={uid(value)}>
+            {label}
+          </label>
         </div>
       )}
     </UIDConsumer>
-  );
+  ));
 };
 
 export default Checkboxes;
