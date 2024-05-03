@@ -20,6 +20,7 @@ import {
   QueriedFacility,
   QueriedTestOrder,
 } from "./types";
+import { parseSyphilisSymptoms } from "./diseaseSpecificComponents/SyphilisAoEForm";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
@@ -262,6 +263,39 @@ export const areAOEAnswersComplete = (
       !!formState.aoeResponses.genderOfSexualPartners &&
       formState.aoeResponses.genderOfSexualPartners.length > 0;
     return isPregnancyAnswered && isGenderOfSexualPartnersAnswered;
+  }
+
+  const hasPositiveSyphilisResult = formState.testResults.some(
+    (x) =>
+      x.diseaseName === MULTIPLEX_DISEASES.SYPHILIS &&
+      x.testResult === TEST_RESULTS.POSITIVE
+  );
+  if (whichAOE === AOEFormOption.SYPHILIS && hasPositiveSyphilisResult) {
+    const isSyphilisHistoryAnswered = !!formState.aoeResponses.syphilisHistory;
+    const hasNoSymptoms = formState.aoeResponses.noSymptoms;
+    const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
+    const isGenderOfSexualPartnersAnswered =
+      !!formState.aoeResponses.genderOfSexualPartners &&
+      formState.aoeResponses.genderOfSexualPartners.length > 0;
+
+    const nonSymptomAoeAnswered =
+      isSyphilisHistoryAnswered &&
+      isPregnancyAnswered &&
+      isGenderOfSexualPartnersAnswered;
+
+    if (formState.aoeResponses.noSymptoms === false) {
+      const symptoms = parseSyphilisSymptoms(formState.aoeResponses.symptoms);
+      const areSymptomsFilledIn = Object.values(symptoms).some((x) =>
+        x?.valueOf()
+      );
+      const isSymptomOnsetDateAnswered = !!formState.aoeResponses.symptomOnset;
+      return (
+        nonSymptomAoeAnswered &&
+        areSymptomsFilledIn &&
+        isSymptomOnsetDateAnswered
+      );
+    }
+    return hasNoSymptoms && nonSymptomAoeAnswered;
   }
   return true;
 };

@@ -26,7 +26,10 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
-import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
+import {
+  PregnancyCode,
+  SyphilisHistoryCode,
+} from "../../../patientApp/timeOfTest/constants";
 import { QueueItemSubmitLoader } from "../QueueItemSubmitLoader";
 
 import {
@@ -53,6 +56,7 @@ import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInpu
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
 import { IncompleteAOEWarningModal } from "./IncompleteAOEWarningModal";
 import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
+import { SyphilisAoEForm } from "./diseaseSpecificComponents/SyphilisAoEForm";
 
 const DEBOUNCE_TIME = 300;
 
@@ -82,6 +86,7 @@ const TestCardForm = ({
     testResults: convertFromMultiplexResponse(testOrder.results),
     aoeResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
+      syphilisHistory: testOrder.syphilisHistory as SyphilisHistoryCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
       symptoms: JSON.stringify(parseRespiratorySymptoms(testOrder.symptoms)),
@@ -122,6 +127,14 @@ const TestCardForm = ({
     state.testResults.some(
       (x) =>
         x.diseaseName === MULTIPLEX_DISEASES.HIV &&
+        x.testResult === TEST_RESULTS.POSITIVE
+    );
+
+  const syphilisAOEResponsesRequired =
+    whichAOEFormOption === AOEFormOption.SYPHILIS &&
+    state.testResults.some(
+      (x) =>
+        x.diseaseName === MULTIPLEX_DISEASES.SYPHILIS &&
         x.testResult === TEST_RESULTS.POSITIVE
     );
 
@@ -201,6 +214,7 @@ const TestCardForm = ({
           ? state.aoeResponses.symptomOnset
           : null,
         pregnancy: state.aoeResponses.pregnancy,
+        syphilisHistory: state.aoeResponses.syphilisHistory,
         genderOfSexualPartners:
           state.aoeResponses.genderOfSexualPartners ?? null,
       },
@@ -282,6 +296,13 @@ const TestCardForm = ({
     if (
       hivAOEResponsesRequired &&
       !areAOEAnswersComplete(state, AOEFormOption.HIV)
+    ) {
+      return "Please answer all required questions.";
+    }
+
+    if (
+      syphilisAOEResponsesRequired &&
+      !areAOEAnswersComplete(state, AOEFormOption.SYPHILIS)
     ) {
       return "Please answer all required questions.";
     }
@@ -569,6 +590,22 @@ const TestCardForm = ({
               responses={state.aoeResponses}
               hasAttemptedSubmit={hasAttemptedSubmit}
               onResponseChange={(responses) => {
+                dispatch({
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+            />
+          </div>
+        )}
+        {syphilisAOEResponsesRequired && (
+          <div className="grid-row grid-gap">
+            <SyphilisAoEForm
+              testOrder={testOrder}
+              responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
+              onResponseChange={(responses) => {
+                setHasAttemptedSubmit(false);
                 dispatch({
                   type: TestFormActionCase.UPDATE_AOE_RESPONSES,
                   payload: responses,

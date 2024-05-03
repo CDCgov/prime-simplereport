@@ -24,12 +24,14 @@ const multiplexDeviceName = "Multiplex";
 const multiplexAndCovidOnlyDeviceName = "MultiplexAndCovidOnly";
 const fluDeviceName = "FLU";
 const hivDeviceName = "HIV";
+const syphilisDeviceName = "SYPHILIS";
 
 const covidDeviceId = "COVID-DEVICE-ID";
 const multiplexDeviceId = "MULTIPLEX-DEVICE-ID";
 const multiplexAndCovidOnlyDeviceId = "MULTIPLEX-COVID-DEVICE-ID";
 const fluDeviceId = "FLU-DEVICE-ID";
 const hivDeviceId = "HIV-DEVICE-ID";
+const syphilisDeviceId = "SYPHILIS-DEVICE-ID";
 
 const specimen1Name = "Swab of internal nose";
 const specimen1Id = "SPECIMEN-1-ID";
@@ -329,6 +331,26 @@ describe("TestCardForm", () => {
             internalId: hivDeviceId,
             name: hivDeviceName,
             model: hivDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      expect(await renderTestCardForm({ props })).toMatchSnapshot();
+    });
+
+    it("matches snapshot for syphilis device", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [
+            { testResult: "UNDETERMINED", disease: { name: "SYPHILIS" } },
+          ],
+          deviceType: {
+            internalId: syphilisDeviceId,
+            name: syphilisDeviceName,
+            model: syphilisDeviceName,
             testLength: 15,
           },
         },
