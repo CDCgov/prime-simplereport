@@ -1,6 +1,5 @@
 import React from "react";
 import classnames from "classnames";
-import { UIDConsumer } from "react-uid";
 
 import Required from "../commonComponents/Required";
 import Optional from "../commonComponents/Optional";
@@ -78,6 +77,10 @@ const Checkboxes = (props: Props) => {
     boxColumnLength
   );
 
+  const checkboxesToDisplay = columnSegmentedBoxes.map((boxes) => (
+    <div className="tablet: grid-col">{checkboxFragmentToRender(boxes)}</div>
+  ));
+
   return (
     <div
       className={classnames(
@@ -104,13 +107,7 @@ const Checkboxes = (props: Props) => {
             {errorMessage}
           </div>
         )}
-        <div className="grid-row checkboxes">
-          {columnSegmentedBoxes.map((boxes, i) => (
-            <div className="tablet: grid-col">
-              {checkboxFragmentToRender(boxes)}
-            </div>
-          ))}
-        </div>
+        <div className="grid-row checkboxes">{checkboxesToDisplay}</div>
       </fieldset>
     </div>
   );
@@ -128,27 +125,23 @@ const CheckboxesFragment = (props: FragmentProps) => {
   const { boxes, name, inputRef, onChange } = props;
 
   return boxes.map(({ value, label, disabled, checked, ...inputProps }) => (
-    <UIDConsumer>
-      {(_, uid) => (
-        <div className="usa-checkbox" key={uid(value)}>
-          <input
-            className="usa-checkbox__input"
-            checked={checked}
-            id={uid(value)}
-            onChange={onChange}
-            type="checkbox"
-            value={value}
-            name={name}
-            ref={inputRef}
-            disabled={disabled || props.disabled}
-            {...inputProps}
-          />
-          <label className="usa-checkbox__label" htmlFor={uid(value)}>
-            {label}
-          </label>
-        </div>
-      )}
-    </UIDConsumer>
+    <div className="usa-checkbox" key={value}>
+      <input
+        className="usa-checkbox__input"
+        checked={checked}
+        id={`symptom-${value}`}
+        onChange={onChange}
+        type="checkbox"
+        value={value}
+        name={name}
+        ref={inputRef}
+        disabled={disabled || props.disabled}
+        {...inputProps}
+      />
+      <label className="usa-checkbox__label" htmlFor={`symptom-${value}`}>
+        {label}
+      </label>
+    </div>
   ));
 };
 

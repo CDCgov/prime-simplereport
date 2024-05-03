@@ -692,296 +692,300 @@ exports[`TestQueue should render the test queue 1`] = `
                               Select any symptoms the patient is experiencing
                             </legend>
                             <div
-                              class="checkboxes"
+                              class="grid-row checkboxes"
                             >
                               <div
-                                class="usa-checkbox"
+                                class="tablet: grid-col"
                               >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-0"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="43724002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-0"
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Chills
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-1"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="49727002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-1"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-43724002"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="43724002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-43724002"
+                                  >
+                                    Chills
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Cough
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-2"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="62315008"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-2"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-49727002"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="49727002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-49727002"
+                                  >
+                                    Cough
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Diarrhea
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-3"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="230145002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-3"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-62315008"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="62315008"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-62315008"
+                                  >
+                                    Diarrhea
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Difficulty breathing
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-4"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="84229001"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-4"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-230145002"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="230145002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-230145002"
+                                  >
+                                    Difficulty breathing
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Fatigue
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-5"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="103001002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-5"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-84229001"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="84229001"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-84229001"
+                                  >
+                                    Fatigue
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Feeling feverish
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-6"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="426000000"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-6"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-103001002"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="103001002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-103001002"
+                                  >
+                                    Feeling feverish
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Fever over 100.4F
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-7"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="25064002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-7"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-426000000"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="426000000"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-426000000"
+                                  >
+                                    Fever over 100.4F
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Headache
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-8"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="68962001"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-8"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-25064002"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="25064002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-25064002"
+                                  >
+                                    Headache
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Muscle or body aches
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-9"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="68235000"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-9"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-68962001"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="68962001"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-68962001"
+                                  >
+                                    Muscle or body aches
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Nasal congestion
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-10"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="422587007"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-10"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-68235000"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="68235000"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-68235000"
+                                  >
+                                    Nasal congestion
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Nausea
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-11"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="44169009"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-11"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-422587007"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="422587007"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-422587007"
+                                  >
+                                    Nausea
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  New loss of smell
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-12"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="36955009"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-12"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-44169009"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="44169009"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-44169009"
+                                  >
+                                    New loss of smell
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  New loss of taste
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-13"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="64531003"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-13"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-36955009"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="36955009"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-36955009"
+                                  >
+                                    New loss of taste
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Runny nose
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-14"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="267036007"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-14"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-64531003"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="64531003"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-64531003"
+                                  >
+                                    Runny nose
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Shortness of breath
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-15"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="162397003"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-15"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-267036007"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="267036007"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-267036007"
+                                  >
+                                    Shortness of breath
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Sore throat
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="7-val-16"
-                                  name="symptoms-abc"
-                                  type="checkbox"
-                                  value="422400008"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="7-val-16"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-162397003"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="162397003"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-162397003"
+                                  >
+                                    Sore throat
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Vomiting
-                                </label>
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-422400008"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="422400008"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-422400008"
+                                  >
+                                    Vomiting
+                                  </label>
+                                </div>
                               </div>
                             </div>
                           </fieldset>
@@ -1211,7 +1215,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       >
                         <label
                           class="usa-label"
-                          for="8"
+                          for="7"
                         >
                           <span
                             class="usa-tooltip usa-text-with-tooltip"
@@ -1308,7 +1312,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       >
                         <label
                           class="usa-label"
-                          for="9"
+                          for="8"
                         >
                           Specimen type
                           <abbr
@@ -1385,7 +1389,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <input
                                     class="usa-radio__input"
                                     data-required="true"
-                                    id="10-val-POSITIVE"
+                                    id="9-val-POSITIVE"
                                     name="COVID-19-test-result-def"
                                     type="radio"
                                     value="POSITIVE"
@@ -1393,7 +1397,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <label
                                     class="usa-radio__label"
                                     data-cy="radio-group-option-COVID-19-test-result-def-POSITIVE"
-                                    for="10-val-POSITIVE"
+                                    for="9-val-POSITIVE"
                                   >
                                     Positive (+)
                                   </label>
@@ -1404,7 +1408,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <input
                                     class="usa-radio__input"
                                     data-required="true"
-                                    id="10-val-NEGATIVE"
+                                    id="9-val-NEGATIVE"
                                     name="COVID-19-test-result-def"
                                     type="radio"
                                     value="NEGATIVE"
@@ -1412,7 +1416,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <label
                                     class="usa-radio__label"
                                     data-cy="radio-group-option-COVID-19-test-result-def-NEGATIVE"
-                                    for="10-val-NEGATIVE"
+                                    for="9-val-NEGATIVE"
                                   >
                                     Negative (-)
                                   </label>
@@ -1423,7 +1427,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <input
                                     class="usa-radio__input"
                                     data-required="true"
-                                    id="10-val-UNDETERMINED"
+                                    id="9-val-UNDETERMINED"
                                     name="COVID-19-test-result-def"
                                     type="radio"
                                     value="UNDETERMINED"
@@ -1431,7 +1435,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <label
                                     class="usa-radio__label"
                                     data-cy="radio-group-option-COVID-19-test-result-def-UNDETERMINED"
-                                    for="10-val-UNDETERMINED"
+                                    for="9-val-UNDETERMINED"
                                   >
                                     Inconclusive
                                   </label>
@@ -1478,7 +1482,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <input
                                     class="usa-radio__input"
                                     data-required="false"
-                                    id="11-val-77386006"
+                                    id="10-val-77386006"
                                     name="pregnancy-def"
                                     type="radio"
                                     value="77386006"
@@ -1486,7 +1490,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <label
                                     class="usa-radio__label"
                                     data-cy="radio-group-option-pregnancy-def-77386006"
-                                    for="11-val-77386006"
+                                    for="10-val-77386006"
                                   >
                                     Yes
                                   </label>
@@ -1497,7 +1501,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <input
                                     class="usa-radio__input"
                                     data-required="false"
-                                    id="11-val-60001007"
+                                    id="10-val-60001007"
                                     name="pregnancy-def"
                                     type="radio"
                                     value="60001007"
@@ -1505,7 +1509,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <label
                                     class="usa-radio__label"
                                     data-cy="radio-group-option-pregnancy-def-60001007"
-                                    for="11-val-60001007"
+                                    for="10-val-60001007"
                                   >
                                     No
                                   </label>
@@ -1516,7 +1520,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <input
                                     class="usa-radio__input"
                                     data-required="false"
-                                    id="11-val-261665006"
+                                    id="10-val-261665006"
                                     name="pregnancy-def"
                                     type="radio"
                                     value="261665006"
@@ -1524,7 +1528,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <label
                                     class="usa-radio__label"
                                     data-cy="radio-group-option-pregnancy-def-261665006"
-                                    for="11-val-261665006"
+                                    for="10-val-261665006"
                                   >
                                     Prefer not to answer
                                   </label>
@@ -1563,7 +1567,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                     checked=""
                                     class="usa-radio__input"
                                     data-required="false"
-                                    id="12-val-YES"
+                                    id="11-val-YES"
                                     name="has-any-symptoms-def"
                                     type="radio"
                                     value="YES"
@@ -1571,7 +1575,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <label
                                     class="usa-radio__label"
                                     data-cy="radio-group-option-has-any-symptoms-def-YES"
-                                    for="12-val-YES"
+                                    for="11-val-YES"
                                   >
                                     Yes
                                   </label>
@@ -1582,7 +1586,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <input
                                     class="usa-radio__input"
                                     data-required="false"
-                                    id="12-val-NO"
+                                    id="11-val-NO"
                                     name="has-any-symptoms-def"
                                     type="radio"
                                     value="NO"
@@ -1590,7 +1594,7 @@ exports[`TestQueue should render the test queue 1`] = `
                                   <label
                                     class="usa-radio__label"
                                     data-cy="radio-group-option-has-any-symptoms-def-NO"
-                                    for="12-val-NO"
+                                    for="11-val-NO"
                                   >
                                     No
                                   </label>
@@ -1608,7 +1612,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         >
                           <label
                             class="usa-label"
-                            for="13"
+                            for="12"
                           >
                             When did the patient's symptoms start?
                           </label>
@@ -1617,7 +1621,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             aria-required="false"
                             class="usa-input"
                             data-testid="symptom-date"
-                            id="13"
+                            id="12"
                             max="2023-10-17"
                             min="2020-01-01"
                             name="symptom-date-def"
@@ -1641,296 +1645,300 @@ exports[`TestQueue should render the test queue 1`] = `
                               Select any symptoms the patient is experiencing
                             </legend>
                             <div
-                              class="checkboxes"
+                              class="grid-row checkboxes"
                             >
                               <div
-                                class="usa-checkbox"
+                                class="tablet: grid-col"
                               >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-0"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="43724002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-0"
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Chills
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-1"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="49727002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-1"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-43724002"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="43724002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-43724002"
+                                  >
+                                    Chills
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Cough
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-2"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="62315008"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-2"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-49727002"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="49727002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-49727002"
+                                  >
+                                    Cough
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Diarrhea
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-3"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="230145002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-3"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-62315008"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="62315008"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-62315008"
+                                  >
+                                    Diarrhea
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Difficulty breathing
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-4"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="84229001"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-4"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-230145002"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="230145002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-230145002"
+                                  >
+                                    Difficulty breathing
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Fatigue
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-5"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="103001002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-5"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-84229001"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="84229001"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-84229001"
+                                  >
+                                    Fatigue
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Feeling feverish
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-6"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="426000000"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-6"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-103001002"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="103001002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-103001002"
+                                  >
+                                    Feeling feverish
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Fever over 100.4F
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-7"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="25064002"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-7"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-426000000"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="426000000"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-426000000"
+                                  >
+                                    Fever over 100.4F
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Headache
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-8"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="68962001"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-8"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-25064002"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="25064002"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-25064002"
+                                  >
+                                    Headache
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Muscle or body aches
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-9"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="68235000"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-9"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-68962001"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="68962001"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-68962001"
+                                  >
+                                    Muscle or body aches
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Nasal congestion
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-10"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="422587007"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-10"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-68235000"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="68235000"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-68235000"
+                                  >
+                                    Nasal congestion
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Nausea
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-11"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="44169009"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-11"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-422587007"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="422587007"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-422587007"
+                                  >
+                                    Nausea
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  New loss of smell
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-12"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="36955009"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-12"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-44169009"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="44169009"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-44169009"
+                                  >
+                                    New loss of smell
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  New loss of taste
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-13"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="64531003"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-13"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-36955009"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="36955009"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-36955009"
+                                  >
+                                    New loss of taste
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Runny nose
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-14"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="267036007"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-14"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-64531003"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="64531003"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-64531003"
+                                  >
+                                    Runny nose
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Shortness of breath
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-15"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="162397003"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-15"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-267036007"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="267036007"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-267036007"
+                                  >
+                                    Shortness of breath
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Sore throat
-                                </label>
-                              </div>
-                              <div
-                                class="usa-checkbox"
-                              >
-                                <input
-                                  class="usa-checkbox__input"
-                                  id="14-val-16"
-                                  name="symptoms-def"
-                                  type="checkbox"
-                                  value="422400008"
-                                />
-                                <label
-                                  class="usa-checkbox__label"
-                                  for="14-val-16"
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-162397003"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="162397003"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-162397003"
+                                  >
+                                    Sore throat
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
                                 >
-                                  Vomiting
-                                </label>
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-422400008"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="422400008"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-422400008"
+                                  >
+                                    Vomiting
+                                  </label>
+                                </div>
                               </div>
                             </div>
                           </fieldset>
