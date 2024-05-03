@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -36,11 +37,16 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
       name = "api_user_role",
       joinColumns = @JoinColumn(name = "api_user_id"),
       inverseJoinColumns = @JoinColumn(name = "role_id"))
-  @Getter
-  @Setter
   private Set<UserRole> roles;
 
-  @ManyToMany @Getter @Setter private Set<Facility> facilities;
+  @ManyToMany
+  @JoinTable(
+      name = "api_user_facility",
+      joinColumns = @JoinColumn(name = "api_user_id"),
+      inverseJoinColumns = @JoinColumn(name = "facility_id"))
+  @Getter
+  @Setter
+  private Set<Facility> facilities;
 
   protected ApiUser() {
     /* for hibernate */ }
@@ -74,4 +80,11 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   public void setNameInfo(PersonName name) {
     nameInfo = name;
   }
+
+  public Set<OrganizationRole> getRoles() {
+    return Set.of();
+    //    return roles.stream().map(UserRole::getName).collect(Collectors.toSet());
+  }
+
+  public void setRoles(Set<OrganizationRole> orgRoles) {}
 }

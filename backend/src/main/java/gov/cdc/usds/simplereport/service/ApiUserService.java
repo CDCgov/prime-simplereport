@@ -250,6 +250,10 @@ public class ApiUserService {
         newOrgClaims.map(c -> _orgService.getOrganizationRoles(org, c));
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
+    // test if JPA config is working
+    apiUser.setFacilities(facilitiesFound);
+    //    apiUser.setRoles(orgRoles.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()));
+
     createUserUpdatedAuditLog(apiUser.getInternalId(), getCurrentApiUser().getInternalId());
 
     return user;
