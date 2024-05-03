@@ -4,7 +4,13 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import java.util.Date;
+import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 
@@ -24,6 +30,17 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
 
   @Column(nullable = true)
   private Date lastSeen;
+
+  @ManyToMany
+  @JoinTable(
+      name = "api_user_role",
+      joinColumns = @JoinColumn(name = "api_user_id"),
+      inverseJoinColumns = @JoinColumn(name = "role_id"))
+  @Getter
+  @Setter
+  private Set<UserRole> roles;
+
+  @ManyToMany @Getter @Setter private Set<Facility> facilities;
 
   protected ApiUser() {
     /* for hibernate */ }
