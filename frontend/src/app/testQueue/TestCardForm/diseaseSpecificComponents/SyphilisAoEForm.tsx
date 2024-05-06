@@ -14,10 +14,10 @@ import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
 import YesNoRadioGroup from "../../../commonComponents/YesNoRadioGroup";
-import TextInput from "../../../commonComponents/TextInput";
-import { formatDate } from "../../../utils/date";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import { parseSymptoms } from "../utils";
+import TextInput from "../../../commonComponents/TextInput";
+import { formatDate } from "../../../utils/date";
 
 interface SyphillisAoeFormProps {
   testOrder: QueriedTestOrder;
@@ -134,6 +134,7 @@ export const SyphilisAoEForm = ({
       }),
     });
   };
+  const CHECKBOX_COLS_TO_DISPLAY = 3;
   return (
     <div
       className="grid-col"
@@ -204,25 +205,27 @@ export const SyphilisAoEForm = ({
         </div>
       </div>
       {hasSymptoms === "YES" && (
-        <div className="grid-row grid-gap">
-          <Checkboxes
-            boxes={syphilisSymptomDefinitions.map(({ label, value }) => ({
-              label,
-              value,
-              checked: symptoms[value],
-            }))}
-            required
-            legend="Select any symptoms the patient is experiencing"
-            name={`symptoms-${testOrder.internalId}`}
-            onChange={(e) => onSymptomsChange(e, symptoms)}
-            validationStatus={showSymptomOnsetError ? "error" : undefined}
-            errorMessage={
-              showSymptomOnsetError
-                ? "Please answer this required question."
-                : ""
-            }
-            displayAsColumns
-          />
+        <div className={"grid-row grid-gap width-full flex-start"}>
+          <div className={`flex-${CHECKBOX_COLS_TO_DISPLAY - 1}`}>
+            <Checkboxes
+              boxes={syphilisSymptomDefinitions.map(({ label, value }) => ({
+                label,
+                value,
+                checked: symptoms[value],
+              }))}
+              legend="Select any symptoms the patient is experiencing"
+              name={`symptoms-${testOrder.internalId}`}
+              onChange={(e) => onSymptomsChange(e, symptoms)}
+              numColumnsToDisplay={CHECKBOX_COLS_TO_DISPLAY}
+              validationStatus={showSymptomOnsetError ? "error" : undefined}
+              errorMessage={
+                showSymptomOnsetError
+                  ? "Please answer this required question."
+                  : ""
+              }
+            />
+          </div>
+
           <TextInput
             data-testid="symptom-date"
             name={`symptom-date-${testOrder.internalId}`}
