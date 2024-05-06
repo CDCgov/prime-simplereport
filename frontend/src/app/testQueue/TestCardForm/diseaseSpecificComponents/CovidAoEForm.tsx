@@ -1,6 +1,5 @@
 import moment from "moment/moment";
 import React from "react";
-import classnames from "classnames";
 
 import RadioGroup from "../../../commonComponents/RadioGroup";
 import YesNoRadioGroup from "../../../commonComponents/YesNoRadioGroup";
@@ -81,8 +80,6 @@ const CovidAoEForm = ({
     hasSymptoms = "YES";
   }
 
-  const CHECKBOX_COLS_TO_DISPLAY = 1;
-
   return (
     <div className="grid-col" id="covid-aoe-form">
       <div className="grid-row">
@@ -127,23 +124,16 @@ const CovidAoEForm = ({
               onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
             ></TextInput>
           </div>
-          <div className={classnames("grid-row width-full flex-start")}>
-            <div className={`flex-${CHECKBOX_COLS_TO_DISPLAY - 1}`}>
-              <Checkboxes
-                boxes={respiratorySymptomDefinitions.map(
-                  ({ label, value }) => ({
-                    label,
-                    value,
-                    checked: symptoms[value],
-                  })
-                )}
-                legend="Select any symptoms the patient is experiencing"
-                name={`symptoms-${testOrder.internalId}`}
-                onChange={(e) => onSymptomsChange(e, symptoms)}
-                numColumnsToDisplay={CHECKBOX_COLS_TO_DISPLAY}
-              />
-            </div>
-          </div>
+          <Checkboxes
+            boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
+              label,
+              value,
+              checked: symptoms[value],
+            }))}
+            legend="Select any symptoms the patient is experiencing"
+            name={`symptoms-${testOrder.internalId}`}
+            onChange={(e) => onSymptomsChange(e, symptoms)}
+          />
         </>
       )}
     </div>
