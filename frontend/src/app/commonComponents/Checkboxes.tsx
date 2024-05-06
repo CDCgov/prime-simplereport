@@ -79,7 +79,7 @@ const Checkboxes = (props: Props) => {
   );
 
   const checkboxesToDisplay = checkboxColumns.map((boxes) => (
-    <div className="tablet: grid-col" key={boxes.map((b) => b.value).join()}>
+    <div className="tablet:grid-col" key={boxes.map((b) => b.value).join()}>
       {checkboxFragmentToRender(boxes)}
     </div>
   ));
@@ -87,7 +87,7 @@ const Checkboxes = (props: Props) => {
   return (
     <div
       className={classnames(
-        "usa-form-group width-full",
+        "usa-form-group",
         validationStatus === "error" && "usa-form-group--error"
       )}
     >
