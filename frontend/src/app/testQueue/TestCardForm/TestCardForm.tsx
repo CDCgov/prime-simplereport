@@ -35,7 +35,7 @@ import {
   TestFormState,
 } from "./TestCardFormReducer";
 import CovidAoEForm, {
-  parseCovidSymptoms,
+  parseRespiratorySymptoms,
 } from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   AOEFormOption,
@@ -84,7 +84,7 @@ const TestCardForm = ({
       pregnancy: testOrder.pregnancy as PregnancyCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
-      symptoms: JSON.stringify(parseCovidSymptoms(testOrder.symptoms)),
+      symptoms: JSON.stringify(parseRespiratorySymptoms(testOrder.symptoms)),
       genderOfSexualPartners: testOrder.genderOfSexualPartners,
     },
   };
@@ -195,7 +195,7 @@ const TestCardForm = ({
         noSymptoms: state.aoeResponses.noSymptoms,
         // automatically converts boolean strings like "false" to false
         symptoms: JSON.stringify(
-          parseCovidSymptoms(state.aoeResponses.symptoms)
+          parseRespiratorySymptoms(state.aoeResponses.symptoms)
         ),
         symptomOnset: state.aoeResponses.symptomOnset
           ? state.aoeResponses.symptomOnset

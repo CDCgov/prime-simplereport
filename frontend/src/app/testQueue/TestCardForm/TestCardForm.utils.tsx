@@ -13,7 +13,7 @@ import {
 import { showError, showSuccess } from "../../utils/srToast";
 
 import { TestFormState } from "./TestCardFormReducer";
-import { parseCovidSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
+import { parseRespiratorySymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   DevicesMap,
   QueriedDeviceType,
@@ -235,7 +235,9 @@ export const areAOEAnswersComplete = (
     const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
     const hasNoSymptoms = formState.aoeResponses.noSymptoms;
     if (formState.aoeResponses.noSymptoms === false) {
-      const symptoms = parseCovidSymptoms(formState.aoeResponses.symptoms);
+      const symptoms = parseRespiratorySymptoms(
+        formState.aoeResponses.symptoms
+      );
       const areSymptomsFilledIn = Object.values(symptoms).some((x) =>
         x?.valueOf()
       );

@@ -8,7 +8,7 @@ import {
 import { MultiplexResultInput } from "../../../generated/graphql";
 
 import { convertFromMultiplexResponse } from "./TestCardForm.utils";
-import { parseCovidSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
+import { parseRespiratorySymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
 import { DevicesMap, QueriedTestOrder } from "./types";
 
 export interface TestFormState {
@@ -175,7 +175,7 @@ export const testCardFormReducer = (
       }
       const aoeAnswers = {
         noSymptoms: payload.noSymptoms,
-        symptoms: JSON.stringify(parseCovidSymptoms(payload.symptoms)),
+        symptoms: JSON.stringify(parseRespiratorySymptoms(payload.symptoms)),
         symptomOnset: payload.symptomOnset,
         pregnancy: payload.pregnancy,
         syphilisHistory: payload.syphilisHistory,

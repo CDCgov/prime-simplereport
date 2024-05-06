@@ -23,7 +23,7 @@ export interface CovidAoEFormProps {
 
 const pregnancyResponses = getPregnancyResponses();
 
-export const parseCovidSymptoms = (
+export const parseRespiratorySymptoms = (
   symptomsJsonString: string | null | undefined
 ) => {
   return parseSymptoms(symptomsJsonString, respiratorySymptomDefinitions);
@@ -34,7 +34,7 @@ const CovidAoEForm = ({
   responses,
   onResponseChange,
 }: CovidAoEFormProps) => {
-  const symptoms: Record<string, boolean> = parseCovidSymptoms(
+  const symptoms: Record<string, boolean> = parseRespiratorySymptoms(
     responses.symptoms
   );
 

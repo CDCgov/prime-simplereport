@@ -27,8 +27,9 @@ type Props = FragmentProps & {
 
 const DEFAULT_COLUMN_ITEM_LIMIT = 3;
 
-// Take the list of checkboxes and generate an array (ie columns) of box arrays
-export function generateSubArrayForColumnDisplay<T>(
+// Take the list of checkboxes and generate an array (ie columns) of checkbox
+// arrays to be displayed on the final card
+export function generateCheckboxColumns<T>(
   items: T[],
   columnItemlength: number
 ): T[][] {
@@ -71,14 +72,15 @@ const Checkboxes = (props: Props) => {
   );
 
   // display as one column if displayAsColumn = false
-  const boxColumnLength = displayAsColumns ? columnItemlength : boxes.length;
-  const columnSegmentedBoxes: Checkbox[][] = generateSubArrayForColumnDisplay(
+  const checkboxColumns: Checkbox[][] = generateCheckboxColumns(
     boxes,
-    boxColumnLength
+    displayAsColumns ? columnItemlength : boxes.length
   );
 
-  const checkboxesToDisplay = columnSegmentedBoxes.map((boxes) => (
-    <div className="tablet: grid-col">{checkboxFragmentToRender(boxes)}</div>
+  const checkboxesToDisplay = checkboxColumns.map((boxes) => (
+    <div className="tablet: grid-col" key={boxes.map((b) => b.value).join()}>
+      {checkboxFragmentToRender(boxes)}
+    </div>
   ));
 
   return (
