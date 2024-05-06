@@ -105,7 +105,7 @@ const CovidAoEForm = ({
       </div>
       {hasSymptoms === "YES" && (
         <>
-          <div className="grid-row">
+          <div className="grid-row grid-gap">
             <TextInput
               data-testid="symptom-date"
               name={`symptom-date-${testOrder.internalId}`}
@@ -124,16 +124,18 @@ const CovidAoEForm = ({
               onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
             ></TextInput>
           </div>
-          <Checkboxes
-            boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
-              label,
-              value,
-              checked: symptoms[value],
-            }))}
-            legend="Select any symptoms the patient is experiencing"
-            name={`symptoms-${testOrder.internalId}`}
-            onChange={(e) => onSymptomsChange(e, symptoms)}
-          />
+          <div className="grid-row grid-gap">
+            <Checkboxes
+              boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
+                label,
+                value,
+                checked: symptoms[value],
+              }))}
+              legend="Select any symptoms the patient is experiencing"
+              name={`symptoms-${testOrder.internalId}`}
+              onChange={(e) => onSymptomsChange(e, symptoms)}
+            />
+          </div>
         </>
       )}
     </div>
