@@ -84,17 +84,17 @@ resource "azurerm_monitor_metric_alert" "uptime" {
   }
 }
 
-resource "azurerm_monitor_metric_alert" "uptime-redirects" {
+resource "azurerm_monitor_metric_alert" "uptime_redirects" {
   for_each = var.additional_uptime_test_urls
 
-  name                = "uptime-${each.key}"
+  name                = "uptime_redirects-${each.key}"
   description         = "${each.key} is not responding"
   resource_group_name = var.rg_name
   scopes              = [azurerm_application_insights_web_test.uptime[each.key].id, var.app_insights_id]
   frequency           = "PT1M"
   window_size         = "PT15M"
   severity            = var.severity
-  enabled             = contains(var.disabled_alerts, "uptime") ? false : true
+  enabled             = contains(var.disabled_alerts, "uptime_redirects") ? false : true
 
   application_insights_web_test_location_availability_criteria {
     web_test_id           = azurerm_application_insights_web_test.uptime[each.key].id
