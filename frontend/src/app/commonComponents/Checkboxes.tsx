@@ -21,31 +21,34 @@ type Props = FragmentProps & {
   errorMessage?: string;
   validationStatus?: "error" | "success";
   required?: boolean;
-  displayAsColumns?: true;
-  columnItemlength?: number;
+  numColumnsToDisplay?: number;
 };
-
-const DEFAULT_COLUMN_ITEM_LIMIT = 3;
 
 // Take the list of checkboxes and generate an array (ie columns) of checkbox
 // arrays to be displayed on the final card
 export function generateCheckboxColumns<T>(
   items: T[],
-  columnItemlength: number
+  numColumnsToDisplay: number
 ): T[][] {
-  const columnSegmentedItems: T[][] = [];
-  let tempSegment: T[] = [];
-  items.forEach((item) => {
-    tempSegment.push(item);
-    if (tempSegment.length === columnItemlength) {
-      columnSegmentedItems.push(tempSegment);
-      tempSegment = [];
-    }
-  });
-  if (tempSegment.length > 0) columnSegmentedItems.push(tempSegment);
-  return columnSegmentedItems;
+  const subarrayLength = Math.ceil(items.length / numColumnsToDisplay);
+  return generateSubarraysFromItemList(items, subarrayLength);
 }
 
+function generateSubarraysFromItemList<T>(items: T[], subarrayLength: number) {
+  const arrayOfArrays: T[][] = [];
+  let curSubarray: T[] = [];
+  items.forEach((item) => {
+    curSubarray.push(item);
+    if (curSubarray.length === subarrayLength) {
+      arrayOfArrays.push(curSubarray);
+      curSubarray = [];
+    }
+  });
+  if (curSubarray.length > 0) arrayOfArrays.push(curSubarray);
+  return arrayOfArrays;
+}
+
+const DEFAULT_COLUMN_DISPLAY_NUMBER = 1;
 const Checkboxes = (props: Props) => {
   const {
     boxes,
@@ -58,8 +61,7 @@ const Checkboxes = (props: Props) => {
     required,
     inputRef,
     hintText,
-    displayAsColumns,
-    columnItemlength = DEFAULT_COLUMN_ITEM_LIMIT,
+    numColumnsToDisplay = DEFAULT_COLUMN_DISPLAY_NUMBER,
   } = props;
 
   const checkboxFragmentToRender = (boxes: Checkbox[]) => (
@@ -71,10 +73,9 @@ const Checkboxes = (props: Props) => {
     />
   );
 
-  // display as one column if displayAsColumn = false
   const checkboxColumns: Checkbox[][] = generateCheckboxColumns(
     boxes,
-    displayAsColumns ? columnItemlength : boxes.length
+    numColumnsToDisplay
   );
 
   const checkboxesToDisplay = checkboxColumns.map((boxes) => (
@@ -86,7 +87,7 @@ const Checkboxes = (props: Props) => {
   return (
     <div
       className={classnames(
-        "usa-form-group",
+        "usa-form-group width-full",
         validationStatus === "error" && "usa-form-group--error"
       )}
     >

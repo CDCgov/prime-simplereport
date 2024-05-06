@@ -498,7 +498,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     class="grid-row grid-gap"
                   >
                     <div
-                      class="grid-col-auto"
+                      class="grid-col"
                       id="covid-aoe-form"
                     >
                       <div
@@ -681,7 +681,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="grid-row grid-gap"
                       >
                         <div
-                          class="usa-form-group"
+                          class="usa-form-group width-full"
                         >
                           <fieldset
                             class="usa-fieldset prime-checkboxes"
@@ -1451,7 +1451,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     class="grid-row grid-gap"
                   >
                     <div
-                      class="grid-col-auto"
+                      class="grid-col"
                       id="covid-aoe-form"
                     >
                       <div
@@ -1634,7 +1634,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="grid-row grid-gap"
                       >
                         <div
-                          class="usa-form-group"
+                          class="usa-form-group width-full"
                         >
                           <fieldset
                             class="usa-fieldset prime-checkboxes"

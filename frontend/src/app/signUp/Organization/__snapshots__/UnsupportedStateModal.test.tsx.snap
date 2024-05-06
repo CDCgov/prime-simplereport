@@ -63,7 +63,7 @@ Object {
                     You can join the waitlist to be notified when SimpleReport is available in your state, or if your organization is reporting to a SimpleReport state, you can continue.
                   </p>
                   <div
-                    class="usa-form-group"
+                    class="usa-form-group width-full"
                   >
                     <fieldset
                       class="usa-fieldset prime-checkboxes"
