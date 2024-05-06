@@ -453,7 +453,7 @@ Object {
                 class="grid-row grid-gap"
               >
                 <div
-                  class="grid-col"
+                  class="grid-col-auto"
                   id="covid-aoe-form"
                 >
                   <div
