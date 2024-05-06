@@ -81,7 +81,7 @@ const CovidAoEForm = ({
   }
 
   return (
-    <div className="grid-col" id="covid-aoe-form">
+    <div className="grid-col-auto" id="covid-aoe-form">
       <div className="grid-row">
         <div className="grid-col-auto">
           <RadioGroup
