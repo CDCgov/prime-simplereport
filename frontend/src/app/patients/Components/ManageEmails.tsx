@@ -169,7 +169,7 @@ const ManageEmails: React.FC<Props> = ({
         </div>
       ))}
       <Button
-        className="margin-top-2"
+        className="margin-top-2 sr-add-another-button"
         onClick={onAddEmail}
         variant="unstyled"
         label={t("patient.form.contact.addEmail")}
