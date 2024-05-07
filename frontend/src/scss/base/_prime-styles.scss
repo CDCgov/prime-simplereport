@@ -1133,13 +1133,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   border: 2px solid #dfe1e2;
 }
 
-.usa-checkbox__input:disabled + .usa-checkbox__label::before,
-.usa-radio__input:disabled + .usa-radio__label::before {
-  background: #e6e6e6;
-  box-shadow: 0 0 0 2px #c9c9c9;
-  cursor: not-allowed;
-}
-
 .sr-element__sr-only {
   position: absolute;
   width: 1px;
