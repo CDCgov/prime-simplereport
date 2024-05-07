@@ -45,7 +45,7 @@ describe("Adding testing devices", () => {
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
-  })
+  });
 
   after("clean up spec data", () => {
     cleanUpPreviousRunSetupData(currentSpecRunVersionName);
@@ -102,7 +102,7 @@ describe("Adding testing devices", () => {
       "have.value",
       "789-123",
     );
-  })
+  });
 
   it("Adds devices to a testing facility", () => {
     accessOrganizationByName(`${currentSpecRunVersionName}-org`);
@@ -129,11 +129,11 @@ describe("Adding testing devices", () => {
     cy.wait("@UpdateFacility");
     cy.get(".Toastify").contains("Updated Facility");
     cy.wait("@GetManagedFacilities"); // waits until it goes back to manage facilities page
-  })
+  });
 });
 
 const visitAdminCreateDevicePage = () => {
   cy.visit("/admin/create-device-type");
   cy.wait("@getSpecimenTypes");
   cy.wait("@getSupportedDiseases");
-}
+};
