@@ -12,7 +12,6 @@ export default [
         },
         rules : {
             "cypress/require-data-selectors": "warn"
-
         }
     },
 ];
