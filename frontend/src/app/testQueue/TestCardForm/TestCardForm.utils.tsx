@@ -13,7 +13,7 @@ import {
 import { showError, showSuccess } from "../../utils/srToast";
 
 import { TestFormState } from "./TestCardFormReducer";
-import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
+import { parseRespiratorySymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   DevicesMap,
   QueriedDeviceType,
@@ -203,8 +203,7 @@ export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
     devicesMap
       .get(deviceId)
       ?.supportedDiseaseTestPerformed.filter(
-        (x) =>
-          x.supportedDisease.name.toUpperCase() === MULTIPLEX_DISEASES.SYPHILIS
+        (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.SYPHILIS
       ).length === 1
   ) {
     return AOEFormOption.SYPHILIS;
@@ -236,9 +235,11 @@ export const areAOEAnswersComplete = (
     const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
     const hasNoSymptoms = formState.aoeResponses.noSymptoms;
     if (formState.aoeResponses.noSymptoms === false) {
-      const symptoms = parseSymptoms(formState.aoeResponses.symptoms);
+      const symptoms = parseRespiratorySymptoms(
+        formState.aoeResponses.symptoms
+      );
       const areSymptomsFilledIn = Object.values(symptoms).some((x) =>
-        x.valueOf()
+        x?.valueOf()
       );
       const isSymptomOnsetDateAnswered = !!formState.aoeResponses.symptomOnset;
       return (
@@ -251,7 +252,9 @@ export const areAOEAnswersComplete = (
     return isPregnancyAnswered && hasNoSymptoms;
   }
   const hasPositiveHIVResult = formState.testResults.some(
-    (x) => x.diseaseName === "HIV" && x.testResult === TEST_RESULTS.POSITIVE
+    (x) =>
+      x.diseaseName === MULTIPLEX_DISEASES.HIV &&
+      x.testResult === TEST_RESULTS.POSITIVE
   );
   if (whichAOE === AOEFormOption.HIV && hasPositiveHIVResult) {
     const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;

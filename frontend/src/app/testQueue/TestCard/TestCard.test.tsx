@@ -41,6 +41,13 @@ jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
 
+const mockDiseaseEnabledFlag = (diseaseName: string) =>
+  jest
+    .spyOn(flaggedMock, "useFeature")
+    .mockImplementation((flagName: string) => {
+      return flagName === `${diseaseName.toLowerCase()}Enabled`;
+    });
+
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => {
   const original = jest.requireActual("react-router-dom");
@@ -1396,7 +1403,7 @@ describe("TestCard", () => {
     });
 
     it("shows radio buttons for HIV when an HIV device is chosen", async function () {
-      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+      mockDiseaseEnabledFlag("HIV");
 
       const mocks = [
         {
@@ -1443,7 +1450,7 @@ describe("TestCard", () => {
     });
 
     it("shows required HIV AOE questions when a positive HIV result is present", async function () {
-      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+      mockDiseaseEnabledFlag("HIV");
 
       const mocks = [
         {
@@ -1500,7 +1507,7 @@ describe("TestCard", () => {
     });
 
     it("hides AOE questions when there is no positive HIV result", async function () {
-      jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
+      mockDiseaseEnabledFlag("HIV");
 
       const mocks = [
         {

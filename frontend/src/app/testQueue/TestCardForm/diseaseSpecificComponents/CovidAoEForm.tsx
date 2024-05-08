@@ -13,6 +13,7 @@ import {
 } from "../../../../patientApp/timeOfTest/constants";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
+import { parseSymptoms } from "../utils";
 
 export interface CovidAoEFormProps {
   testOrder: QueriedTestOrder;
@@ -22,28 +23,10 @@ export interface CovidAoEFormProps {
 
 const pregnancyResponses = getPregnancyResponses();
 
-export const parseSymptoms = (
+export const parseRespiratorySymptoms = (
   symptomsJsonString: string | null | undefined
 ) => {
-  const symptoms: Record<string, boolean> = {};
-  if (symptomsJsonString) {
-    const parsedSymptoms: { [key: string]: string | boolean } =
-      JSON.parse(symptomsJsonString);
-
-    respiratorySymptomDefinitions.forEach((opt) => {
-      const val = opt.value;
-      if (typeof parsedSymptoms[val] === "string") {
-        symptoms[val] = parsedSymptoms[val] === "true";
-      } else {
-        symptoms[val] = parsedSymptoms[val] as boolean;
-      }
-    });
-  } else {
-    respiratorySymptomDefinitions.forEach((opt) => {
-      symptoms[opt.value] = false;
-    });
-  }
-  return symptoms;
+  return parseSymptoms(symptomsJsonString, respiratorySymptomDefinitions);
 };
 
 const CovidAoEForm = ({
@@ -51,7 +34,9 @@ const CovidAoEForm = ({
   responses,
   onResponseChange,
 }: CovidAoEFormProps) => {
-  const symptoms: Record<string, boolean> = parseSymptoms(responses.symptoms);
+  const symptoms: Record<string, boolean> = parseRespiratorySymptoms(
+    responses.symptoms
+  );
 
   const onPregnancyChange = (pregnancyCode: PregnancyCode) => {
     onResponseChange({ ...responses, pregnancy: pregnancyCode });

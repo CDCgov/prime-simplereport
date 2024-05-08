@@ -12,7 +12,7 @@ import TextInput from "../../commonComponents/TextInput";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
-import { TEST_RESULTS } from "../../testResults/constants";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import {
   MultiplexResultInput,
   useEditQueueItemMutation,
@@ -35,7 +35,7 @@ import {
   TestFormState,
 } from "./TestCardFormReducer";
 import CovidAoEForm, {
-  parseSymptoms,
+  parseRespiratorySymptoms,
 } from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   AOEFormOption,
@@ -50,9 +50,9 @@ import {
   useTestOrderPatient,
 } from "./TestCardForm.utils";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
-import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
 import { IncompleteAOEWarningModal } from "./IncompleteAOEWarningModal";
+import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 
 const DEBOUNCE_TIME = 300;
 
@@ -84,7 +84,7 @@ const TestCardForm = ({
       pregnancy: testOrder.pregnancy as PregnancyCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
-      symptoms: JSON.stringify(parseSymptoms(testOrder.symptoms)),
+      symptoms: JSON.stringify(parseRespiratorySymptoms(testOrder.symptoms)),
       genderOfSexualPartners: testOrder.genderOfSexualPartners,
     },
   };
@@ -116,12 +116,13 @@ const TestCardForm = ({
   const { patientFullName } = useTestOrderPatient(testOrder);
 
   const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
-
   // AOE responses required for HIV positive result
   const hivAOEResponsesRequired =
     whichAOEFormOption === AOEFormOption.HIV &&
     state.testResults.some(
-      (x) => x.diseaseName === "HIV" && x.testResult === TEST_RESULTS.POSITIVE
+      (x) =>
+        x.diseaseName === MULTIPLEX_DISEASES.HIV &&
+        x.testResult === TEST_RESULTS.POSITIVE
     );
 
   /**
@@ -193,7 +194,9 @@ const TestCardForm = ({
         patientId: testOrder.patient.internalId,
         noSymptoms: state.aoeResponses.noSymptoms,
         // automatically converts boolean strings like "false" to false
-        symptoms: JSON.stringify(parseSymptoms(state.aoeResponses.symptoms)),
+        symptoms: JSON.stringify(
+          parseRespiratorySymptoms(state.aoeResponses.symptoms)
+        ),
         symptomOnset: state.aoeResponses.symptomOnset
           ? state.aoeResponses.symptomOnset
           : null,
