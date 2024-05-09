@@ -33,7 +33,7 @@ jobs:
       - name: Smoke test the env
         uses: ./.github/actions/post-deploy-smoke-test
         with:
-          base_domain_name: ${{ vars.BASE_DOMAIN_NAME }}
+          base_domain_name: dev5.simplereport.gov
   slack_alert:
     runs-on: ubuntu-latest
     if: failure()
