@@ -23,8 +23,10 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.UserOrgRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.UserOrgRoleRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.idp.repository.PartialOktaUser;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -56,6 +58,8 @@ public class ApiUserService {
   @Autowired private AuthorizationService _authService;
 
   @Autowired private ApiUserRepository _apiUserRepo;
+
+  @Autowired private UserOrgRoleRepository _userOrgRoleRepo;
 
   @Autowired private IdentitySupplier _supplier;
 
@@ -252,7 +256,14 @@ public class ApiUserService {
 
     // test if JPA config is working
     apiUser.setFacilities(facilitiesFound);
-    //    apiUser.setRoles(orgRoles.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()));
+    Set<OrganizationRole> roles = EnumSet.of(role.toOrganizationRole());
+    if (accessAllFacilities) {
+      roles.add(OrganizationRole.ALL_FACILITIES);
+    }
+    Set<UserOrgRole> uor =
+        roles.stream().map(r -> new UserOrgRole(org, r)).collect(Collectors.toSet());
+    uor = uor.stream().map(r -> _userOrgRoleRepo.save(r)).collect(Collectors.toSet());
+    apiUser.setOrgRoles(uor);
 
     createUserUpdatedAuditLog(apiUser.getInternalId(), getCurrentApiUser().getInternalId());
 

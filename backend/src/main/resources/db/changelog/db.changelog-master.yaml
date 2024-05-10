@@ -5381,3 +5381,72 @@ databaseChangeLog:
             REVOKE SELECT ON TABLE ${database.defaultSchemaName}.role FROM ${noPhiUsername};
             REVOKE SELECT ON TABLE ${database.defaultSchemaName}.api_user_facility FROM ${noPhiUsername};
             REVOKE SELECT ON TABLE ${database.defaultSchemaName}.api_user_role FROM ${noPhiUsername};
+  - changeSet:
+      id: remove-internal_id-from-user-facility-table
+      author: tnd8@cdc.gov
+      comment: Remove internal_id column from join table
+      changes:
+        - dropColumn:
+            tableName: api_user_facility
+            columnName: internal_id
+      rollback:
+        - addColumn:
+            tableName: api_user_facility
+            column:
+              name: internal_id
+              type: uuid
+              remarks: The internal database identifier for this entity.
+              constraints:
+                primaryKey: true
+                nullable: false
+  - changeSet:
+      id: drop-role-table-and-move-role-name-to-api_user_role-table
+      author: tnd8@cdc.gov
+      changes:
+        - dropColumn:
+            tableName: api_user_role
+            columnName: role_id
+        - addColumn:
+            tableName: api_user_role
+            columns:
+              - column:
+                  name: role
+                  type: ${database.defaultSchemaName}.ORGANIZATION_ROLE
+                  remarks: The name of the role that is an enumerated value.
+                  constraints:
+                    nullable: false
+        - dropTable:
+            tableName: role
+      rollback:
+        - createTable:
+            tableName: role
+            remarks: named references to a OrganizationRole enum
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: ${database.defaultSchemaName}.ORGANIZATION_ROLE
+                  remarks: The name of the role that is an enumerated value.
+                  constraints:
+                    nullable: false
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.role TO ${noPhiUsername};
+        - dropColumn:
+            tableName: api_user_role
+            columnName: role
+        - addColumn:
+            tableName: api_user_role
+            columns:
+              - column:
+                  name: role_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__role
+                    references: role

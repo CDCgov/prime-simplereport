@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -8,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.Date;
 import java.util.Set;
 import lombok.Getter;
@@ -18,6 +18,9 @@ import org.hibernate.annotations.NaturalId;
 /**
  * The bare minimum required to link an authenticated identity to actions and data elsewhere in the
  * schema.
+ *
+ * <p>should we make a subclass for users who need authorization via roles and facilities? e.g.
+ * AuthorizedUser extends ApiUser
  */
 @Entity
 @DynamicUpdate
@@ -32,12 +35,10 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   @Column(nullable = true)
   private Date lastSeen;
 
-  @ManyToMany
-  @JoinTable(
-      name = "api_user_role",
-      joinColumns = @JoinColumn(name = "api_user_id"),
-      inverseJoinColumns = @JoinColumn(name = "role_id"))
-  private Set<UserRole> roles;
+  //  @OneToMany(cascade=ALL, mappedBy="apiUser")
+  @OneToMany(orphanRemoval = true)
+  @JoinColumn(name = "api_user_id")
+  private Set<UserOrgRole> orgRoles;
 
   @ManyToMany
   @JoinTable(
@@ -81,10 +82,10 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     nameInfo = name;
   }
 
-  public Set<OrganizationRole> getRoles() {
-    return Set.of();
-    //    return roles.stream().map(UserRole::getName).collect(Collectors.toSet());
+  public void setOrgRoles(Set<UserOrgRole> newOrgRoles) {
+    this.orgRoles.clear();
+    if (newOrgRoles != null) {
+      this.orgRoles.addAll(newOrgRoles);
+    }
   }
-
-  public void setRoles(Set<OrganizationRole> orgRoles) {}
 }
