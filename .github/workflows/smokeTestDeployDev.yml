@@ -8,6 +8,21 @@ on:
       - completed
     branches:
       - "mike/7160-post-deploy-alert**"
+  workflow_dispatch:
+    inputs:
+      deploy_env:
+        description: 'The environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - ""
+          - dev
+          - dev2
+          - dev3
+          - dev4
+          - dev5
+          - dev6
+          - pentest
 
 env:
   NODE_VERSION: 20
@@ -15,7 +30,7 @@ env:
 jobs:
   smoke-test-front-and-back-end:
     runs-on: ubuntu-latest
-    environment: dev5
+    environment: ${{ inputs.deploy_env }}
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -33,7 +48,7 @@ jobs:
       - name: Smoke test the env
         uses: ./.github/actions/post-deploy-smoke-test
         with:
-          base_domain_name: dev5.simplereport.gov
+          base_domain_name: ${{ inputs.deploy_env }}.simplereport.gov
   slack_alert:
     runs-on: ubuntu-latest
     if: failure()
