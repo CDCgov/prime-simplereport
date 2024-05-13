@@ -2,12 +2,6 @@ name: Smoke test deploy Dev
 run-name: Smoke test the deploy for dev by @${{ github.actor }}
 
 on:
-  workflow_run:
-    workflows: [ "Deploy Dev" ]
-    types:
-      - completed
-    branches:
-      - "mike/7160-post-deploy-alert**"
   workflow_dispatch:
     inputs:
       deploy_env:
@@ -60,6 +54,6 @@ jobs:
         with:
           username: ${{ github.actor }}
           description: |
-            :construction: Dev testing to confirm post-deploy smoke test works correctly. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :construction:
+            :construction: Post-deploy smoke test for ${{ inputs.deploy_env }} couldn't verify that the frontend is talking to the backend. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :construction:
           webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
           user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}
