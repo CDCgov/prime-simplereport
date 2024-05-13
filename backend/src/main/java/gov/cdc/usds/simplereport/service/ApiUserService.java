@@ -727,6 +727,9 @@ public class ApiUserService {
   /*
   Given a list of facility UUIDs, validate that they belong in the given org, and return the list of facility entities
   that the user should be given access to.
+
+  Open question: do we trust the frontend to accurately tell us whether the user has allfacilities access or should we
+  be checking if their role has UserPermission.ACCESS_ALL_FACILITIES?
    */
   private Set<Facility> getFacilitiesToGiveAccess(
       Organization org, boolean accessAllFacilities, Set<UUID> facilities) {
