@@ -554,6 +554,7 @@ const TestCardForm = ({
             <CovidAoEForm
               testOrder={testOrder}
               responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
               onResponseChange={(responses) => {
                 dispatch({
                   type: TestFormActionCase.UPDATE_AOE_RESPONSES,

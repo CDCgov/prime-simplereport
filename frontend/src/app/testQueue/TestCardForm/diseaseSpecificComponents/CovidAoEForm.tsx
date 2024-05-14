@@ -9,17 +9,21 @@ import Checkboxes from "../../../commonComponents/Checkboxes";
 import {
   getPregnancyResponses,
   respiratorySymptomDefinitions,
-  PregnancyCode,
 } from "../../../../patientApp/timeOfTest/constants";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
 
-import { mapRespiratorySymptomBoolLiteralsToBool } from "./aoeUtils";
+import {
+  generateAoeListenerHooks,
+  generateSymptomAoeConstants,
+  mapRespiratorySymptomBoolLiteralsToBool,
+} from "./aoeUtils";
 
 export interface CovidAoEFormProps {
   testOrder: QueriedTestOrder;
   responses: AoeQuestionResponses;
   onResponseChange: (responses: AoeQuestionResponses) => void;
+  hasAttemptedSubmit: boolean;
 }
 
 const pregnancyResponses = getPregnancyResponses();
@@ -28,52 +32,22 @@ const CovidAoEForm = ({
   testOrder,
   responses,
   onResponseChange,
+  hasAttemptedSubmit,
 }: CovidAoEFormProps) => {
   const symptoms: Record<string, boolean> =
     mapRespiratorySymptomBoolLiteralsToBool(responses.symptoms);
 
-  const onPregnancyChange = (pregnancyCode: PregnancyCode) => {
-    onResponseChange({ ...responses, pregnancy: pregnancyCode });
-  };
-
-  const onHasAnySymptomsChange = (hasAnySymptoms: YesNo) => {
-    onResponseChange({
-      ...responses,
-      noSymptoms: hasAnySymptoms === "NO",
-    });
-  };
-
-  const onSymptomOnsetDateChange = (symptomOnsetDate: string) => {
-    onResponseChange({
-      ...responses,
-      symptomOnset: symptomOnsetDate
-        ? moment(symptomOnsetDate).format("YYYY-MM-DD")
-        : undefined,
-    });
-  };
-  const onSymptomsChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    currentSymptoms: Record<string, boolean>
-  ) => {
-    onResponseChange({
-      ...responses,
-      symptoms: JSON.stringify({
-        ...currentSymptoms,
-        [event.target.value]: event.target.checked,
-      }),
-    });
-  };
-
-  // backend currently stores this in "noSymptoms"
-  // so we need to convert to YesNo or undefined
-  let hasSymptoms: YesNo | undefined = undefined;
-  if (responses.noSymptoms) {
-    hasSymptoms = "NO";
-  }
-  if (responses.noSymptoms === false) {
-    hasSymptoms = "YES";
-  }
-
+  const {
+    onPregnancyChange,
+    onHasAnySymptomsChange,
+    onSymptomsChange,
+    onSymptomOnsetDateChange,
+  } = generateAoeListenerHooks(onResponseChange, responses);
+  const { hasSymptoms } = generateSymptomAoeConstants(
+    responses,
+    hasAttemptedSubmit,
+    mapRespiratorySymptomBoolLiteralsToBool
+  );
   return (
     <div className="grid-col-auto" id="covid-aoe-form">
       <div className="grid-row">
