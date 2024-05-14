@@ -498,7 +498,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     String orgToMoveExternalId = orgToTestMovementTo.getExternalId();
 
     _service.updateUserPrivilegesAndGroupAccess(
-        email, orgToMoveExternalId, true, List.of(), OrganizationRole.ADMIN);
+        email, orgToMoveExternalId, true, List.of(), Role.ADMIN);
     verify(_oktaRepo, times(1))
         .updateUserPrivilegesAndGroupAccess(
             email, orgToTestMovementTo, Set.of(), OrganizationRole.ADMIN, true);
@@ -518,7 +518,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             PrivilegeUpdateFacilityAccessException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
-                    email, moveOrgExternalId, false, emptyList, OrganizationRole.USER));
+                    email, moveOrgExternalId, false, emptyList, Role.USER));
     assertEquals(PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR, caught.getMessage());
 
     PrivilegeUpdateFacilityAccessException caught2 =
@@ -526,7 +526,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             PrivilegeUpdateFacilityAccessException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
-                    email, moveOrgExternalId, false, OrganizationRole.USER));
+                    email, moveOrgExternalId, false, Role.USER));
     assertEquals(PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR, caught2.getMessage());
   }
 
@@ -549,11 +549,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             UnidentifiedFacilityException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
-                    email,
-                    moveOrgExternalId,
-                    false,
-                    facilityListThatShouldThrowId,
-                    OrganizationRole.USER));
+                    email, moveOrgExternalId, false, facilityListThatShouldThrowId, Role.USER));
     String expectedError =
         "Facilities with id(s) "
             + facilityListThatShouldThrowId
