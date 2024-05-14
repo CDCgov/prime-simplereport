@@ -862,7 +862,34 @@ describe("TestCard", () => {
   });
 
   it("updates custom test date/time", async () => {
-    const { user } = await renderQueueItem();
+    const { user } = await renderQueueItem({
+      mocks: [
+        {
+          request: {
+            query: EDIT_QUEUE_ITEM,
+            variables: {
+              id: testOrderInfo.internalId,
+              deviceTypeId: device4Id,
+              specimenTypeId: specimen1Id,
+              results: [],
+              dateTested: null,
+            } as EDIT_QUEUE_ITEM_VARIABLES,
+          },
+          result: {
+            data: {
+              editQueueItem: {
+                results: [],
+                dateTested: null,
+                deviceType: {
+                  internalId: device4Id,
+                  testLength: 10,
+                },
+              },
+            } as EDIT_QUEUE_ITEM_DATA,
+          },
+        },
+      ],
+    });
     const toggle = await screen.findByLabelText("Current date and time");
     await user.click(toggle);
     const dateInput = await screen.findByTestId("test-date");
