@@ -21,9 +21,10 @@ export const specimen1Name = "Swab of internal nose";
 export const specimen1Id = "SPECIMEN-1-ID";
 export const specimen2Name = "Nasopharyngeal swab";
 export const specimen2Id = "SPECIMEN-2-ID";
+export const FACILITY_INFO_TEST_ID = "f02cfff5-1921-4293-beff-e2a5d03e1fda";
 
 export const facilityInfo: QueriedFacility = {
-  id: "f02cfff5-1921-4293-beff-e2a5d03e1fda",
+  id: FACILITY_INFO_TEST_ID,
   name: "Testing Site",
   deviceTypes: [
     {
