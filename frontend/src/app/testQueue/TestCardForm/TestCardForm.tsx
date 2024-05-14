@@ -12,7 +12,7 @@ import TextInput from "../../commonComponents/TextInput";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
+import { TEST_RESULTS } from "../../testResults/constants";
 import {
   MultiplexResultInput,
   useEditQueueItemMutation,
@@ -26,7 +26,10 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
-import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
+import {
+  PregnancyCode,
+  SyphilisHistoryCode,
+} from "../../../patientApp/timeOfTest/constants";
 import { QueueItemSubmitLoader } from "../QueueItemSubmitLoader";
 
 import {
@@ -34,9 +37,7 @@ import {
   TestFormActionCase,
   TestFormState,
 } from "./TestCardFormReducer";
-import CovidAoEForm, {
-  parseRespiratorySymptoms,
-} from "./diseaseSpecificComponents/CovidAoEForm";
+import CovidAoEForm from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   AOEFormOption,
   areAOEAnswersComplete,
@@ -53,6 +54,7 @@ import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInpu
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
 import { IncompleteAOEWarningModal } from "./IncompleteAOEWarningModal";
 import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
+import { stringifySymptomJsonForAoeUpdate } from "./diseaseSpecificComponents/aoeUtils";
 
 const DEBOUNCE_TIME = 300;
 
@@ -82,9 +84,10 @@ const TestCardForm = ({
     testResults: convertFromMultiplexResponse(testOrder.results),
     aoeResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
+      syphilisHistory: testOrder.syphilisHistory as SyphilisHistoryCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
-      symptoms: JSON.stringify(parseRespiratorySymptoms(testOrder.symptoms)),
+      symptoms: stringifySymptomJsonForAoeUpdate(testOrder.symptoms),
       genderOfSexualPartners: testOrder.genderOfSexualPartners,
     },
   };
@@ -193,14 +196,12 @@ const TestCardForm = ({
       variables: {
         patientId: testOrder.patient.internalId,
         noSymptoms: state.aoeResponses.noSymptoms,
-        // automatically converts boolean strings like "false" to false
-        symptoms: JSON.stringify(
-          parseRespiratorySymptoms(state.aoeResponses.symptoms)
-        ),
+        symptoms: stringifySymptomJsonForAoeUpdate(state.aoeResponses.symptoms),
         symptomOnset: state.aoeResponses.symptomOnset
           ? state.aoeResponses.symptomOnset
           : null,
         pregnancy: state.aoeResponses.pregnancy,
+        syphilisHistory: state.aoeResponses.syphilisHistory,
         genderOfSexualPartners:
           state.aoeResponses.genderOfSexualPartners ?? null,
       },
