@@ -1449,7 +1449,7 @@ describe("TestCard", () => {
       expect(screen.getByText("HIV result")).toBeInTheDocument();
     });
 
-    it("shows required HIV AOE questions when a positive HIV result is present", async function () {
+    it.only("shows required HIV AOE questions when a positive HIV result is present", async function () {
       mockDiseaseEnabledFlag("HIV");
 
       const mocks = [

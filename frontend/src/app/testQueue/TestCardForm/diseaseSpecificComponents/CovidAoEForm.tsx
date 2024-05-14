@@ -14,6 +14,8 @@ import {
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
 
+import { mapRespiratorySymptomBoolLiteralsToBool } from "./aoeUtils";
+
 export interface CovidAoEFormProps {
   testOrder: QueriedTestOrder;
   responses: AoeQuestionResponses;
@@ -22,20 +24,13 @@ export interface CovidAoEFormProps {
 
 const pregnancyResponses = getPregnancyResponses();
 
-export const parseRespiratorySymptoms = (
-  symptomsJsonString: string | null | undefined
-) => {
-  return parseSymptoms(symptomsJsonString, respiratorySymptomDefinitions);
-};
-
 const CovidAoEForm = ({
   testOrder,
   responses,
   onResponseChange,
 }: CovidAoEFormProps) => {
-  const symptoms: Record<string, boolean> = parseRespiratorySymptoms(
-    responses.symptoms
-  );
+  const symptoms: Record<string, boolean> =
+    mapRespiratorySymptomBoolLiteralsToBool(responses.symptoms);
 
   const onPregnancyChange = (pregnancyCode: PregnancyCode) => {
     onResponseChange({ ...responses, pregnancy: pregnancyCode });

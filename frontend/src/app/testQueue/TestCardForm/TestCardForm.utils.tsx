@@ -13,13 +13,13 @@ import {
 import { showError, showSuccess } from "../../utils/srToast";
 
 import { TestFormState } from "./TestCardFormReducer";
-import { parseRespiratorySymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   DevicesMap,
   QueriedDeviceType,
   QueriedFacility,
   QueriedTestOrder,
 } from "./types";
+import { mapRespiratorySymptomBoolLiteralsToBool } from "./diseaseSpecificComponents/aoeUtils";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
@@ -235,7 +235,7 @@ export const areAOEAnswersComplete = (
     const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
     const hasNoSymptoms = formState.aoeResponses.noSymptoms;
     if (formState.aoeResponses.noSymptoms === false) {
-      const symptoms = parseRespiratorySymptoms(
+      const symptoms = mapRespiratorySymptomBoolLiteralsToBool(
         formState.aoeResponses.symptoms
       );
       const areSymptomsFilledIn = Object.values(symptoms).some((x) =>
