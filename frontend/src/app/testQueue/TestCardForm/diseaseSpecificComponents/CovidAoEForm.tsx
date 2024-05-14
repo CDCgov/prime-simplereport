@@ -13,7 +13,6 @@ import {
 } from "../../../../patientApp/timeOfTest/constants";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
-import { parseSymptoms } from "../utils";
 
 export interface CovidAoEFormProps {
   testOrder: QueriedTestOrder;

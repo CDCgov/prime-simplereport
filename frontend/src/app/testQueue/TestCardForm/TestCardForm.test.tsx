@@ -3,7 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
 import TestCardForm, { TestCardFormProps } from "./TestCardForm";
-import { submitEventMock, updateAoeMocks } from "./testUtils/submissionMocks";
 import {
   asymptomaticTestOrderInfo,
   covidDeviceId,
@@ -38,8 +37,6 @@ describe("TestCardForm", () => {
     props?: TestCardFormProps;
     mocks?: any;
   };
-
-  const submissionMocks = [submitEventMock, submitEventMock];
 
   async function renderTestCardForm({ props, mocks }: testRenderProps) {
     props = props || testProps;
