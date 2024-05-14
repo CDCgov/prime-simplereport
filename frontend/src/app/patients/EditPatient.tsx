@@ -275,8 +275,8 @@ const EditPatient = (props: Props) => {
 
   const getHeader = (
     person: Nullable<PersonFormData>,
-    onSave: (startTest?: boolean) => void
-    //formChanged: boolean
+    onSave: (startTest?: boolean) => void,
+    formChanged: boolean
   ) => (
     <div className="display-flex flex-justify">
       <div>
@@ -322,16 +322,12 @@ const EditPatient = (props: Props) => {
               onSave(true);
             }}
             variant="outline"
-            label={
-              loading
-                ? `${t("common.button.saving")}...`
-                : "Save and start test"
-            }
+            label={loading ? `${t("common.button.saving")}...` : "Start test"}
           />
         )}
         <button
           className="prime-save-patient-changes usa-button margin-right-0"
-          disabled={editPersonLoading}
+          disabled={editPersonLoading || !formChanged}
           onClick={() => onSave(props.fromQueue)}
         >
           {editPersonLoading
