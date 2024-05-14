@@ -32,7 +32,6 @@ export async function FHIRTestEventReporter(
   _myTimer: Timer,
   context: InvocationContext,
 ): Promise<void> {
-  const tagOverrides = { "ai.operation.id": context.traceContext.traceParent };
   const publishingQueue: QueueClient = getQueueClient(
     FHIR_TEST_EVENT_QUEUE_NAME,
   );
@@ -55,7 +54,6 @@ export async function FHIRTestEventReporter(
   telemetry.trackEvent({
     name: `Queue:${publishingQueue.name}. Messages Dequeued`,
     properties: { messagesDequeued: messages.length },
-    tagOverrides,
   });
 
   if (messages.length === 0) {
@@ -85,7 +83,6 @@ export async function FHIRTestEventReporter(
             const failureObj = {
               testEventBatch,
               publishingQueueName: publishingQueue.name,
-              tagOverrides,
             };
 
             trackFailures(telemetry, failureObj);
@@ -126,7 +123,6 @@ export async function FHIRTestEventReporter(
               duration: new Date().getTime() - uploadStart,
               resultCode: postResult.status,
               success: postResult.ok,
-              tagOverrides,
             });
 
             await handleReportStreamResponse(

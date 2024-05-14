@@ -1,6 +1,6 @@
 export const trackFailures = (
   telemetry,
-  { testEventBatch, tagOverrides, publishingQueueName },
+  { testEventBatch, publishingQueueName },
 ) => {
   if (testEventBatch.parseFailureCount > 0) {
     telemetry.trackEvent({
@@ -9,7 +9,6 @@ export const trackFailures = (
         count: testEventBatch.parseFailureCount,
         parseFailures: Object.keys(testEventBatch.parseFailure),
       },
-      tagOverrides,
     });
   }
 };
