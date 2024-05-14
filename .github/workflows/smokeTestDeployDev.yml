@@ -57,3 +57,17 @@ jobs:
             :construction: Post-deploy smoke test for ${{ inputs.deploy_env }} couldn't verify that the frontend is talking to the backend. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :construction:
           webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
           user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}
+  pagerduty_alert:
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [ smoke-test-front-and-back-end ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger PagerDuty alert
+        uses: ./.github/actions/pagerduty-alert
+        with:
+          summary: |
+            :construction: Post-deploy smoke test for ${{ inputs.deploy_env }} couldn't verify that the frontend is talking to the backend. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :construction:
+          severity: info
+          routing_key: ${{ secrets.pagerduty_dev_integration_key }}
+
