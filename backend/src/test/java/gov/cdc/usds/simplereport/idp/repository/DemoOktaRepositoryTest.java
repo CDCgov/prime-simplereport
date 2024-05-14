@@ -408,17 +408,7 @@ class DemoOktaRepositoryTest {
         Set.of(ABC_2),
         Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
         true);
-    _repo.deleteFacility(ABC_1);
 
-    OrganizationRoleClaims amos_expected =
-        new OrganizationRoleClaims(
-            ABC.getExternalId(),
-            Set.of(),
-            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
-
-    assertTrue(
-        new OrganizationRoleClaimsMatcher(amos_expected)
-            .matches(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get()));
     assertTrue(_repo.getAllUsersForOrganization(ABC).contains(AMOS.getUsername()));
     assertTrue(_repo.getAllUsersForOrganization(ABC).contains(BRAD.getUsername()));
 

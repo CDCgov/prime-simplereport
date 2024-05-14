@@ -79,8 +79,6 @@ public interface OktaRepository {
 
   void deleteOrganization(Organization org);
 
-  void deleteFacility(Facility facility);
-
   Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 
   Integer getUsersInSingleFacility(Facility facility);

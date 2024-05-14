@@ -320,30 +320,6 @@ public class DemoOktaRepository implements OktaRepository {
             .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
   }
 
-  public void deleteFacility(Facility facility) {
-    String orgExternalId = facility.getOrganization().getExternalId();
-    if (!orgFacilitiesMap.containsKey(orgExternalId)) {
-      throw new IllegalGraphqlArgumentException(
-          "Cannot delete Okta facility from nonexistent organization.");
-    }
-    orgFacilitiesMap.get(orgExternalId).remove(facility.getInternalId());
-    // remove this facility from every user's OrganizationRoleClaims, as necessary
-    usernameOrgRolesMap =
-        usernameOrgRolesMap.entrySet().stream()
-            .collect(
-                Collectors.toMap(
-                    e -> e.getKey(),
-                    e -> {
-                      OrganizationRoleClaims oldRoleClaims = e.getValue();
-                      Set<UUID> newFacilities =
-                          oldRoleClaims.getFacilities().stream()
-                              .filter(f -> !f.equals(facility.getInternalId()))
-                              .collect(Collectors.toSet());
-                      return new OrganizationRoleClaims(
-                          orgExternalId, newFacilities, oldRoleClaims.getGrantedRoles());
-                    }));
-  }
-
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromTenantDataAccess(
       Collection<String> groupNames) {
     List<OrganizationRoleClaims> claims = organizationExtractor.convertClaims(groupNames);
