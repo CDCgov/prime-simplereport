@@ -62,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,8 +155,9 @@ public class TestDataFactory {
 
   public UserInfo createValidApiUser(String username, Organization org, Role role) {
     PersonName name = new PersonName("John", null, "June", null);
+    Facility facility = createValidFacility(org);
     return apiUserService.createUser(
-        username, name, org.getExternalId(), role, false, Collections.emptySet());
+        username, name, org.getExternalId(), role, false, Set.of(facility.getInternalId()));
   }
 
   public OrganizationQueueItem saveOrganizationQueueItem(
