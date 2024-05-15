@@ -164,20 +164,18 @@ export const updateAoeMocks = [
 ];
 
 type EditQueueMockParams = {
-  diseaseResults: [] | [
-    { diseaseName: MULTIPLEX_DISEASES; testResult: TEST_RESULTS }
-  ];
+  diseaseResults?:
+    | []
+    | [{ diseaseName: MULTIPLEX_DISEASES; testResult: TEST_RESULTS }];
   dateTested?: string;
   device?: {
     deviceName?: string;
     deviceId: string;
     supportedDiseases?: {
-      internalId: string
-      loinc: string 
-      name: MULTIPLEX_DISEASES
-    }[
-      
-    ]
+      internalId: string;
+      loinc: string;
+      name: MULTIPLEX_DISEASES;
+    }[];
   };
   specimen?: {
     specimenName: string;
@@ -185,25 +183,45 @@ type EditQueueMockParams = {
   };
 };
 
-export function generateEditQueueMock(params: EditQueueMockParams) {
+export function generateEmptyEditQueueMock() {
+  // dummy covid unknown submission that's overrided by the empty array
+  return generateEditQueueMock(
+    MULTIPLEX_DISEASES.COVID_19,
+    TEST_RESULTS.UNKNOWN,
+    {
+      diseaseResults: [],
+    }
+  );
+}
+
+export function generateEditQueueMock(
+  disease: MULTIPLEX_DISEASES,
+  testResult: TEST_RESULTS,
+  overrideParams?: EditQueueMockParams,
+) {
   return {
     request: {
       query: EditQueueItemDocument,
       variables: {
         id: sharedTestOrderInfo.internalId,
-        deviceTypeId: params.device?.deviceId ?? device1Id,
-        specimenTypeId: params.specimen?.specimenId ?? specimen1Id,
-        results: params.diseaseResults,
-        dateTested: params.dateTested,
+        deviceTypeId: overrideParams?.device?.deviceId ?? device1Id,
+        specimenTypeId: overrideParams?.specimen?.specimenId ?? specimen1Id,
+        results: overrideParams?.diseaseResults ?? [
+          {
+            diseaseName: disease,
+            testResult: testResult,
+          },
+        ],
+        dateTested: overrideParams?.dateTested,
       },
       result: {
         data: {
           editQueueItem: {
-            results: params.diseaseResults,
+            results: overrideParams?.diseaseResults,
           },
-          dateTested: params.dateTested,
+          dateTested: overrideParams?.dateTested,
           deviceType: {
-            internalId: params.device?.deviceId ?? device1Id,
+            internalId: overrideParams?.device?.deviceId ?? device1Id,
             testLength: 15,
           },
         },
@@ -216,16 +234,22 @@ type SubmitQueueMockParams = EditQueueMockParams & {
   deliverySuccess?: boolean;
 };
 
-export function generateSubmitQueueMock(params: SubmitQueueMockParams) {
+export function generateSubmitQueueMock(
+  disease: MULTIPLEX_DISEASES,
+  testResult: TEST_RESULTS,
+  overrideParams?: SubmitQueueMockParams
+) {
   return {
     request: {
       query: SubmitQueueItemDocument,
       variables: {
         patientId: symptomaticTestOrderInfo.patient.internalId,
-        deviceTypeId: params.device?.deviceId ?? device1Id,
-        specimenTypeId: params.specimen?.specimenId ?? specimen1Id,
-        results: params.diseaseResults,
-        dateTested: params.dateTested ?? null,
+        deviceTypeId: overrideParams?.device?.deviceId ?? device1Id,
+        specimenTypeId: overrideParams?.specimen?.specimenId ?? specimen1Id,
+        results: overrideParams?.diseaseResults ?? [
+          { diseaseName: disease, testResult: testResult },
+        ],
+        dateTested: overrideParams?.dateTested ?? null,
       } as SubmitQueueItemMutationVariables,
     },
     result: {
@@ -234,7 +258,7 @@ export function generateSubmitQueueMock(params: SubmitQueueMockParams) {
           testResult: {
             internalId: symptomaticTestOrderInfo.internalId,
           },
-          deliverySuccess: params.deliverySuccess ?? true,
+          deliverySuccess: overrideParams?.deliverySuccess ?? true,
         },
       },
     },
