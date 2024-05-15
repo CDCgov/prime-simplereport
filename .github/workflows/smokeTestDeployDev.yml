@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy_env:
-        description: 'The environment to deploy to'
+        description: 'The environment to smoke test'
         required: true
         type: choice
         options:
