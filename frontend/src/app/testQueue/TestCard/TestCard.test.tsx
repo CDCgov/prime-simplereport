@@ -110,6 +110,53 @@ describe("TestCard", () => {
   const trackMetricMock = jest.fn();
   const trackExceptionMock = jest.fn();
 
+  const testOrderInfo: QueriedTestOrder = {
+    internalId: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+    dateAdded: "2022-11-08 13:33:07.503",
+    symptoms:
+      '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
+    symptomOnset: null,
+    noSymptoms: true,
+    deviceType: {
+      internalId: device1Id,
+      name: device1Name,
+      model: "LumiraDx SARS-CoV-2 Ag Test*",
+      testLength: 15,
+    },
+    specimenType: {
+      internalId: specimen1Id,
+      name: specimen1Name,
+      typeCode: "445297001",
+    },
+    patient: {
+      internalId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
+      telephone: "(571) 867-5309",
+      birthDate: "2015-09-20",
+      firstName: "Althea",
+      middleName: "Hedda Mclaughlin",
+      lastName: "Dixon",
+      gender: "refused",
+      testResultDelivery: null,
+      preferredLanguage: null,
+      email: "sywaporoce@mailinator.com",
+      emails: ["sywaporoce@mailinator.com"],
+      phoneNumbers: [
+        {
+          type: PhoneType.Mobile,
+          number: "(553) 223-0559",
+        },
+        {
+          type: PhoneType.Landline,
+          number: "(669) 789-0799",
+        },
+      ],
+    },
+    results: [],
+    dateTested: null,
+    correctionStatus: "ORIGINAL",
+    reasonForCorrection: null,
+  };
+
   const facilityInfo: QueriedFacility = {
     id: "f02cfff5-1921-4293-beff-e2a5d03e1fda",
     name: "Testing Site",
@@ -247,52 +294,7 @@ describe("TestCard", () => {
     ],
   };
 
-  const testOrderInfo: QueriedTestOrder = {
-    internalId: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
-    dateAdded: "2022-11-08 13:33:07.503",
-    symptoms:
-      '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
-    symptomOnset: null,
-    noSymptoms: true,
-    deviceType: {
-      internalId: device1Id,
-      name: device1Name,
-      model: "LumiraDx SARS-CoV-2 Ag Test*",
-      testLength: 15,
-    },
-    specimenType: {
-      internalId: specimen1Id,
-      name: specimen1Name,
-      typeCode: "445297001",
-    },
-    patient: {
-      internalId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
-      telephone: "(571) 867-5309",
-      birthDate: "2015-09-20",
-      firstName: "Althea",
-      middleName: "Hedda Mclaughlin",
-      lastName: "Dixon",
-      gender: "refused",
-      testResultDelivery: null,
-      preferredLanguage: null,
-      email: "sywaporoce@mailinator.com",
-      emails: ["sywaporoce@mailinator.com"],
-      phoneNumbers: [
-        {
-          type: PhoneType.Mobile,
-          number: "(553) 223-0559",
-        },
-        {
-          type: PhoneType.Landline,
-          number: "(669) 789-0799",
-        },
-      ],
-    },
-    results: [],
-    dateTested: null,
-    correctionStatus: "ORIGINAL",
-    reasonForCorrection: null,
-  };
+
 
   const DEFAULT_DEVICE_ORDER = [
     device1Name,
