@@ -1,13 +1,16 @@
 import {
   EditQueueItemDocument,
-  PhoneType,
   SubmitQueueItemDocument,
   SubmitQueueItemMutationVariables,
   UpdateAoeDocument,
   UpdateAoeMutationVariables,
 } from "../../../../generated/graphql";
-import { QueriedTestOrder } from "../types";
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../../testResults/constants";
+import {
+  MULTIPLEX_DISEASES,
+  TEST_RESULTS,
+} from "../../../testResults/constants";
+
+import { device1Id, specimen1Id, sharedTestOrderInfo } from "./testConstants";
 
 const SYMPTOM_TRUE_OVERRIDE = { noSymptoms: false };
 const PREGNANCY_OVERRIDE = { pregnancy: "77386006" };
@@ -15,13 +18,15 @@ const COUGH_OVERRIDE = {
   symptoms:
     '{"25064002":false,"36955009":false,"43724002":false,"44169009":false,"49727002":true,"62315008":false,"64531003":false,"68235000":false,"68962001":false,"84229001":false,"103001002":false,"162397003":false,"230145002":false,"267036007":false,"422400008":false,"422587007":false,"426000000":false}',
 };
-const ALL_FALSE_SYMPTOM_OVERRIDE =  {
+const ALL_FALSE_SYMPTOM_OVERRIDE = {
   noSymptoms: false,
   symptoms:
     '{"25064002":false,"36955009":false,"43724002":false,"44169009":false,"49727002":false,"62315008":false,"64531003":false,"68235000":false,"68962001":false,"84229001":false,"103001002":false,"162397003":false,"230145002":false,"267036007":false,"422400008":false,"422587007":false,"426000000":false}',
 };
-export const TEST_CARD_SYMPTOM_ONSET_DATE_STRING = "2024-05-14"
-const SYMPTOM_ONSET_DATE_OVERRIDE = { symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING };
+export const TEST_CARD_SYMPTOM_ONSET_DATE_STRING = "2024-05-14";
+const SYMPTOM_ONSET_DATE_OVERRIDE = {
+  symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
+};
 export const updateAoeMutationRequest = (
   variableOverrides?: Partial<UpdateAoeMutationVariables>
 ) => {
@@ -98,14 +103,18 @@ export const blankUpdateAoeEventMock = {
   ...mutationResponse,
 };
 
-
 export const allFalseSymptomUpdateAoeEventMock = {
-  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({...ALL_FALSE_SYMPTOM_OVERRIDE}),
+  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
+    ...ALL_FALSE_SYMPTOM_OVERRIDE,
+  }),
   ...mutationResponse,
 };
 
 export const allFalseSymptomUpdateAoeEventMockWithSymptomOnset = {
-  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({...ALL_FALSE_SYMPTOM_OVERRIDE, symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING}),
+  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
+    ...ALL_FALSE_SYMPTOM_OVERRIDE,
+    symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
+  }),
   ...mutationResponse,
 };
 
@@ -150,7 +159,9 @@ export const updateAoeMocks = [
 ];
 
 type EditQueueMockParams = {
-  diseaseResults: [{ diseaseName: MULTIPLEX_DISEASES, testResult: TEST_RESULTS }];
+  diseaseResults: [
+    { diseaseName: MULTIPLEX_DISEASES; testResult: TEST_RESULTS }
+  ];
   dateTested?: string;
   device?: {
     deviceName: string;
@@ -162,17 +173,12 @@ type EditQueueMockParams = {
   };
 };
 
-const device1Name = "LumiraDX";
-const device1Id = "DEVICE-1-ID";
-const specimen1Name = "Swab of internal nose";
-const specimen1Id = "SPECIMEN-1-ID";
-
 export function generateEditQueueMock(params: EditQueueMockParams) {
   return {
     request: {
       query: EditQueueItemDocument,
       variables: {
-        id: testOrderInfo.internalId,
+        id: sharedTestOrderInfo.internalId,
         deviceTypeId: params.device?.deviceId ?? device1Id,
         specimenTypeId: params.specimen?.specimenId ?? specimen1Id,
         results: params.diseaseResults,
@@ -193,50 +199,3 @@ export function generateEditQueueMock(params: EditQueueMockParams) {
     },
   };
 }
-
-export const testOrderInfo: QueriedTestOrder = {
-  internalId: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
-  dateAdded: "2022-11-08 13:33:07.503",
-  symptoms:
-    '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
-  symptomOnset: null,
-  noSymptoms: true,
-  deviceType: {
-    internalId: device1Id,
-    name: device1Name,
-    model: "LumiraDx SARS-CoV-2 Ag Test*",
-    testLength: 15,
-  },
-  specimenType: {
-    internalId: specimen1Id,
-    name: specimen1Name,
-    typeCode: "445297001",
-  },
-  patient: {
-    internalId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
-    telephone: "(571) 867-5309",
-    birthDate: "2015-09-20",
-    firstName: "Althea",
-    middleName: "Hedda Mclaughlin",
-    lastName: "Dixon",
-    gender: "refused",
-    testResultDelivery: null,
-    preferredLanguage: null,
-    email: "sywaporoce@mailinator.com",
-    emails: ["sywaporoce@mailinator.com"],
-    phoneNumbers: [
-      {
-        type: PhoneType.Mobile,
-        number: "(553) 223-0559",
-      },
-      {
-        type: PhoneType.Landline,
-        number: "(669) 789-0799",
-      },
-    ],
-  },
-  results: [],
-  dateTested: null,
-  correctionStatus: "ORIGINAL",
-  reasonForCorrection: null,
-};

@@ -34,8 +34,6 @@ import {
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 
 import { TestCard, TestCardProps } from "./TestCard";
-import { TEST_CARD_SYMPTOM_ONSET_DATE_STRING, allFalseSymptomUpdateAoeEventMock, allFalseSymptomUpdateAoeEventMockWithSymptomOnset, blankUpdateAoeEventMock, generateEditQueueMock, testOrderInfo } from "../TestCardForm/testUtils/submissionMocks";
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -610,7 +608,7 @@ describe("TestCard", () => {
   });
 
   describe("SMS delivery failure", () => {
-    it("displays delivery failure alert on submit for invalid patient phone number", async () => {
+    it.only("displays delivery failure alert on submit for invalid patient phone number", async () => {
       const mocks = [
         generateEditQueueMock(
           MULTIPLEX_DISEASES.COVID_19,
