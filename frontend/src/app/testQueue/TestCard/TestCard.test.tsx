@@ -14,15 +14,7 @@ import * as flaggedMock from "flagged";
 
 import { getAppInsights } from "../../TelemetryService";
 import * as srToast from "../../utils/srToast";
-import {
-  SubmitQueueItemDocument as SUBMIT_TEST_RESULT,
-  EditQueueItemDocument as EDIT_QUEUE_ITEM,
-  SubmitQueueItemMutationVariables as SUBMIT_QUEUE_ITEM_VARIABLES,
-  EditQueueItemMutationVariables as EDIT_QUEUE_ITEM_VARIABLES,
-  SubmitQueueItemMutation as SUBMIT_QUEUE_ITEM_DATA,
-  EditQueueItemMutation as EDIT_QUEUE_ITEM_DATA,
-  PhoneType,
-} from "../../../generated/graphql";
+import { PhoneType } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 import { TestCorrectionReason } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
 import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
@@ -36,6 +28,7 @@ import {
   allFalseSymptomUpdateAoeEventMock,
   allFalseSymptomUpdateAoeEventMockWithSymptomOnset,
   generateEditQueueMock,
+  generateEmptyEditQueueMock,
   generateSubmitQueueMock,
 } from "../TestCardForm/testUtils/submissionMocks";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
@@ -500,30 +493,26 @@ describe("TestCard", () => {
   describe("when a selected device or specimen is deleted", () => {
     it("correctly handles when device is deleted from facility", async () => {
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: deletedDeviceId,
+              deviceName: deletedDeviceName,
             },
-          ],
-          device: {
-            deviceId: deletedDeviceId,
-            deviceName: deletedDeviceName,
-          },
-        }),
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
+          }
+        ),
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: device1Id,
+              deviceName: device1Name,
             },
-          ],
-          device: {
-            deviceId: device1Id,
-            deviceName: device1Name,
-          },
-        }),
+          }
+        ),
       ];
 
       const props = {
@@ -594,26 +583,20 @@ describe("TestCard", () => {
 
     it("correctly handles when specimen is deleted from device", async () => {
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE,
+          {
+            specimen: {
+              specimenId: deletedSpecimenId,
+              specimenName: deletedDeviceName,
             },
-          ],
-          specimen: {
-            specimenId: deletedSpecimenId,
-            specimenName: deletedDeviceName,
-          },
-        }),
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
-            },
-          ],
-        }),
+          }
+        ),
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE
+        ),
       ];
 
       const props = {
@@ -674,23 +657,17 @@ describe("TestCard", () => {
   describe("SMS delivery failure", () => {
     it("displays delivery failure alert on submit for invalid patient phone number", async () => {
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.UNDETERMINED,
-            },
-          ]
-        }),
-        generateSubmitQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.UNDETERMINED,
-            },
-          ],
-          deliverySuccess: false,
-        })
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE
+        ),
+        generateSubmitQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.UNDETERMINED,
+          {
+            deliverySuccess: false,
+          }
+        ),
       ];
 
       const props = {
@@ -758,9 +735,7 @@ describe("TestCard", () => {
 
   it("updates custom test date/time", async () => {
     const { user } = await renderQueueItem({
-      mocks: [
-        generateEditQueueMock({ diseaseResults: []}),
-      ],
+      mocks: [generateEmptyEditQueueMock()],
     });
     const toggle = await screen.findByLabelText("Current date and time");
     await user.click(toggle);
@@ -838,35 +813,17 @@ describe("TestCard", () => {
   describe("when device supports covid only and multiplex", () => {
     it("should allow you to submit covid only results", async () => {
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [],
-          device: {
-            deviceId: device4Id,
-            deviceName: device4Name
+        generateEmptyEditQueueMock(),
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: device4Id,
+              deviceName: device4Name,
+            },
           }
-        }),
-
-        generateEditQueueMock({
-          diseaseResults: [   {
-            diseaseName: MULTIPLEX_DISEASES.COVID_19,
-            testResult: TEST_RESULTS.POSITIVE,
-          },],
-          device: {
-            deviceId: device4Id,
-            deviceName: device4Name
-          }
-        }),
-       
-        generateEditQueueMock({
-          diseaseResults: [   {
-            diseaseName: MULTIPLEX_DISEASES.COVID_19,
-            testResult: TEST_RESULTS.POSITIVE,
-          },],
-          device: {
-            deviceId: device4Id,
-            deviceName: device4Name
-          }
-        }),
+        ),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -914,23 +871,21 @@ describe("TestCard", () => {
 
     it("tracks submitted test result as custom event", async () => {
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [   {
-            diseaseName: MULTIPLEX_DISEASES.COVID_19,
-            testResult: TEST_RESULTS.UNDETERMINED,
-          }],
-          device: {
-            deviceId: device4Id,
-            deviceName: device4Name
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: device4Id,
+              deviceName: device4Name,
+            },
           }
-        }),
-       
-        generateSubmitQueueMock({
-          diseaseResults: [   {
-            diseaseName: MULTIPLEX_DISEASES.COVID_19,
-            testResult: TEST_RESULTS.UNDETERMINED,
-          }]
-        })
+        ),
+
+        generateSubmitQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.UNDETERMINED
+        ),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -991,70 +946,36 @@ describe("TestCard", () => {
   describe("on device specimen type change", () => {
     it("updates test order on device type and specimen type change", async () => {
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE
+        ),
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: device3Id,
+              supportedDiseases: [
+                {
+                  internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
+                  loinc: "96741-4",
+                  name: MULTIPLEX_DISEASES.COVID_19,
+                },
+                {
+                  internalId: "e286f2a8-38e2-445b-80a5-c16507a96b66",
+                  loinc: "LP14239-5",
+                  name: MULTIPLEX_DISEASES.FLU_A,
+                },
+                {
+                  internalId: "14924488-268f-47db-bea6-aa706971a098",
+                  loinc: "LP14240-3",
+                  name: MULTIPLEX_DISEASES.FLU_B,
+                },
+              ],
             },
-          ],
-        }),
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
-            },
-          ],
-          device: {
-            deviceId: device3Id,
-            supportedDiseases: [
-              {
-                internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-                loinc: "96741-4",
-                name: MULTIPLEX_DISEASES.COVID_19,
-              },
-              {
-                internalId: "e286f2a8-38e2-445b-80a5-c16507a96b66",
-                loinc: "LP14239-5",
-                name: MULTIPLEX_DISEASES.FLU_A,
-              },
-              {
-                internalId: "14924488-268f-47db-bea6-aa706971a098",
-                loinc: "LP14240-3",
-                name: MULTIPLEX_DISEASES.FLU_B,
-              },
-            ],
           }
-        }),
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
-            },
-          ],
-          device: {
-            deviceId: device3Id,
-            supportedDiseases: [
-              {
-                internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-                loinc: "96741-4",
-                name: MULTIPLEX_DISEASES.COVID_19,
-              },
-              {
-                internalId: "e286f2a8-38e2-445b-80a5-c16507a96b66",
-                loinc: "LP14239-5",
-                name: MULTIPLEX_DISEASES.FLU_A,
-              },
-              {
-                internalId: "14924488-268f-47db-bea6-aa706971a098",
-                loinc: "LP14240-3",
-                name: MULTIPLEX_DISEASES.FLU_B,
-              },
-            ],
-          }
-        }),
+        ),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1085,14 +1006,10 @@ describe("TestCard", () => {
 
     it("adds radio buttons for Flu A and Flu B when a multiplex device is chosen", async () => {
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
-            },
-          ],
-        }),
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE
+        ),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1117,14 +1034,7 @@ describe("TestCard", () => {
       mockDiseaseEnabledFlag("HIV");
 
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.HIV,
-              testResult: TEST_RESULTS.POSITIVE,
-            },
-          ],
-        }),
+        generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.POSITIVE),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1143,14 +1053,7 @@ describe("TestCard", () => {
       mockDiseaseEnabledFlag("HIV");
 
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.HIV,
-              testResult: TEST_RESULTS.POSITIVE,
-            },
-          ],
-        }),
+        generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.POSITIVE),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1179,14 +1082,7 @@ describe("TestCard", () => {
       mockDiseaseEnabledFlag("HIV");
 
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.HIV,
-              testResult: TEST_RESULTS.UNKNOWN,
-            },
-          ],
-        }),
+        generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.UNKNOWN),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1210,14 +1106,10 @@ describe("TestCard", () => {
 
     it("should show no AOE questions when a flu only device is chosen", async function () {
       const mocks = [
-        generateEditQueueMock({
-          diseaseResults: [
-            {
-              diseaseName: MULTIPLEX_DISEASES.COVID_19,
-              testResult: TEST_RESULTS.POSITIVE,
-            },
-          ],
-        }),
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE
+        ),
       ];
 
       const { user } = await renderQueueItem({ mocks });
