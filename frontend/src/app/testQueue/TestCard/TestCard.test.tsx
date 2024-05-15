@@ -1148,7 +1148,7 @@ describe("TestCard", () => {
   });
 
   describe("on device specimen type change", () => {
-    it.only("updates test order on device type and specimen type change", async () => {
+    it("updates test order on device type and specimen type change", async () => {
       const mocks = [
         generateEditQueueMock({
           diseaseResults: [{ diseaseName: MULTIPLEX_DISEASES.COVID_19, testResult: TEST_RESULTS.POSITIVE }]
