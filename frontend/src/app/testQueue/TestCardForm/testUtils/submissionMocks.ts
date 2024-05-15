@@ -197,7 +197,7 @@ export function generateEmptyEditQueueMock() {
 export function generateEditQueueMock(
   disease: MULTIPLEX_DISEASES,
   testResult: TEST_RESULTS,
-  overrideParams?: EditQueueMockParams,
+  overrideParams?: EditQueueMockParams
 ) {
   return {
     request: {
