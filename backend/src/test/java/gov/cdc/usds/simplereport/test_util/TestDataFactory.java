@@ -3,11 +3,13 @@ package gov.cdc.usds.simplereport.test_util;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -64,6 +66,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -154,10 +157,23 @@ public class TestDataFactory {
   }
 
   public UserInfo createValidApiUser(String username, Organization org, Role role) {
+    boolean facilitiesNotRequired =
+        PermissionHolder.grantsAllFacilityAccess(Set.of(role.toOrganizationRole()));
+    Set<Facility> facilities =
+        facilitiesNotRequired ? Collections.emptySet() : Set.of(createValidFacility(org));
+    return createValidApiUser(username, org, role, facilities);
+  }
+
+  public UserInfo createValidApiUser(
+      String username, Organization org, Role role, Set<Facility> facilities) {
     PersonName name = new PersonName("John", null, "June", null);
-    Facility facility = createValidFacility(org);
     return apiUserService.createUser(
-        username, name, org.getExternalId(), role, false, Set.of(facility.getInternalId()));
+        username,
+        name,
+        org.getExternalId(),
+        role,
+        false,
+        facilities.stream().map(IdentifiedEntity::getInternalId).collect(Collectors.toSet()));
   }
 
   public OrganizationQueueItem saveOrganizationQueueItem(

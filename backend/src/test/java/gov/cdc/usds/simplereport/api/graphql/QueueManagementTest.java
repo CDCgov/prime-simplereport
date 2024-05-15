@@ -52,6 +52,7 @@ class QueueManagementTest extends BaseGraphqlTest {
 
   private Organization _org;
   private Facility _site;
+  private Facility _secondSite;
 
   private List<MultiplexResultInput> positiveCovidResult;
 
@@ -59,6 +60,7 @@ class QueueManagementTest extends BaseGraphqlTest {
   public void init() {
     _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
+    _secondSite = _orgService.getFacilities(_org).get(1);
     _site.setDefaultDeviceTypeSpecimenType(
         _dataFactory.getGenericDevice(), _dataFactory.getGenericSpecimen());
     positiveCovidResult =
@@ -318,7 +320,7 @@ class QueueManagementTest extends BaseGraphqlTest {
 
     // The test default standard user is configured to access _site by default,
     // so we need to remove access to establish a baseline in this test
-    updateSelfPrivileges(Role.USER, false, Set.of());
+    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
     HashMap<String, Object> enqueueVariables = getFacilityScopedArguments();
     enqueueVariables.put("id", personId.toString());
     enqueueVariables.put("symptomOnsetDate", "2020-11-30");
@@ -330,7 +332,7 @@ class QueueManagementTest extends BaseGraphqlTest {
     assertEquals(1, queueData.size());
     JsonNode queueEntry = queueData.get(0);
     UUID orderId = UUID.fromString(queueEntry.get("internalId").asText());
-    updateSelfPrivileges(Role.USER, false, Set.of());
+    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
     Map<String, Object> updateVariables =
         Map.of(
             "id",
@@ -349,14 +351,14 @@ class QueueManagementTest extends BaseGraphqlTest {
     updateSelfPrivileges(Role.USER, true, Set.of());
     performQueueUpdateMutation(updateVariables, Optional.empty());
 
-    updateSelfPrivileges(Role.USER, false, Set.of());
+    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
     // updateTimeOfTestQuestions uses the exact same security restrictions
     Map<String, Object> removeVariables = Map.of("patientId", personId.toString());
     performRemoveFromQueueMutation(removeVariables, Optional.of(ACCESS_ERROR));
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
     performRemoveFromQueueMutation(removeVariables, Optional.empty());
 
-    updateSelfPrivileges(Role.USER, false, Set.of());
+    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
     fetchQueueWithError(ACCESS_ERROR);
     updateSelfPrivileges(Role.USER, true, Set.of());
     fetchQueue();
