@@ -294,8 +294,6 @@ describe("TestCard", () => {
     ],
   };
 
-
-
   const DEFAULT_DEVICE_ORDER = [
     device1Name,
     device2Name,
