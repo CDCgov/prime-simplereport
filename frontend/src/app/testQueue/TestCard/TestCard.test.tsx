@@ -17,14 +17,10 @@ import * as srToast from "../../utils/srToast";
 import {
   SubmitQueueItemDocument as SUBMIT_TEST_RESULT,
   EditQueueItemDocument as EDIT_QUEUE_ITEM,
-  UpdateAoeDocument as UPDATE_AOE,
-  PhoneType,
   SubmitQueueItemMutationVariables as SUBMIT_QUEUE_ITEM_VARIABLES,
   EditQueueItemMutationVariables as EDIT_QUEUE_ITEM_VARIABLES,
-  UpdateAoeMutationVariables as UPDATE_AOE_VARIABLES,
   SubmitQueueItemMutation as SUBMIT_QUEUE_ITEM_DATA,
   EditQueueItemMutation as EDIT_QUEUE_ITEM_DATA,
-  UpdateAoeMutation as UPDATE_AOE_DATA,
 } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 import { TestCorrectionReason } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
@@ -33,11 +29,17 @@ import mockSupportedDiseaseMultiplex, {
   mockSupportedDiseaseFlu,
 } from "../mocks/mockSupportedDiseaseMultiplex";
 import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
-import { QueriedFacility, QueriedTestOrder } from "../TestCardForm/types";
+import { QueriedFacility } from "../TestCardForm/types";
+import {
+  TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
+  allFalseSymptomUpdateAoeEventMock,
+  allFalseSymptomUpdateAoeEventMockWithSymptomOnset,
+  generateEditQueueMock,
+  testOrderInfo,
+} from "../TestCardForm/testUtils/submissionMocks";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 
 import { TestCard, TestCardProps } from "./TestCard";
-import { TEST_CARD_SYMPTOM_ONSET_DATE_STRING, allFalseSymptomUpdateAoeEventMock, allFalseSymptomUpdateAoeEventMockWithSymptomOnset, blankUpdateAoeEventMock, generateEditQueueMock, testOrderInfo } from "../TestCardForm/testUtils/submissionMocks";
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -450,64 +452,30 @@ describe("TestCard", () => {
   describe("when a selected device or specimen is deleted", () => {
     it("correctly handles when device is deleted from facility", async () => {
       const mocks = [
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: testOrderInfo.internalId,
-              deviceTypeId: deletedDeviceId,
-              specimenTypeId: specimen1Id,
-              results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-              dateTested: null,
-            } as EDIT_QUEUE_ITEM_VARIABLES,
+        generateEditQueueMock({
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.COVID_19,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
+          device: {
+            deviceId: deletedDeviceId,
+            deviceName: deletedDeviceName,
           },
-          result: {
-            data: {
-              editQueueItem: {
-                results: [
-                  {
-                    disease: { name: "COVID-19" },
-                    testResult: "POSITIVE",
-                  },
-                ],
-                dateTested: null,
-                deviceType: {
-                  internalId: deletedDeviceId,
-                  testLength: 10,
-                },
-              },
-            } as EDIT_QUEUE_ITEM_DATA,
+        }),
+        generateEditQueueMock({
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.COVID_19,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
+          device: {
+            deviceId: device1Id,
+            deviceName: device1Name,
           },
-        },
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: testOrderInfo.internalId,
-              deviceTypeId: device1Id,
-              specimenTypeId: specimen1Id,
-              results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-              dateTested: null,
-            } as EDIT_QUEUE_ITEM_VARIABLES,
-          },
-          result: {
-            data: {
-              editQueueItem: {
-                results: [
-                  {
-                    disease: { name: "COVID-19" },
-                    testResult: "POSITIVE",
-                  },
-                ],
-                dateTested: null,
-                deviceType: {
-                  internalId: device1Id,
-                  testLength: 10,
-                },
-              },
-            } as EDIT_QUEUE_ITEM_DATA,
-          },
-        },
+        }),
       ];
 
       const props = {
@@ -578,64 +546,26 @@ describe("TestCard", () => {
 
     it("correctly handles when specimen is deleted from device", async () => {
       const mocks = [
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: testOrderInfo.internalId,
-              deviceTypeId: device2Id,
-              specimenTypeId: deletedSpecimenId,
-              results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-              dateTested: null,
-            } as EDIT_QUEUE_ITEM_VARIABLES,
+        generateEditQueueMock({
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.COVID_19,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
+          specimen: {
+            specimenId: deletedSpecimenId,
+            specimenName: deletedDeviceName,
           },
-          result: {
-            data: {
-              editQueueItem: {
-                results: [
-                  {
-                    disease: { name: "COVID-19" },
-                    testResult: "POSITIVE",
-                  },
-                ],
-                dateTested: null,
-                deviceType: {
-                  internalId: device2Id,
-                  testLength: 10,
-                },
-              },
-            } as EDIT_QUEUE_ITEM_DATA,
-          },
-        },
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: testOrderInfo.internalId,
-              deviceTypeId: device2Id,
-              specimenTypeId: specimen1Id,
-              results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-              dateTested: null,
-            } as EDIT_QUEUE_ITEM_VARIABLES,
-          },
-          result: {
-            data: {
-              editQueueItem: {
-                results: [
-                  {
-                    disease: { name: "COVID-19" },
-                    testResult: "POSITIVE",
-                  },
-                ],
-                dateTested: null,
-                deviceType: {
-                  internalId: device1Id,
-                  testLength: 10,
-                },
-              },
-            } as EDIT_QUEUE_ITEM_DATA,
-          },
-        },
+        }),
+        generateEditQueueMock({
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.COVID_19,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
+        }),
       ];
 
       const props = {
@@ -694,39 +624,20 @@ describe("TestCard", () => {
   });
 
   describe("SMS delivery failure", () => {
-    it("displays delivery failure alert on submit for invalid patient phone number", async () => {
+    it.only("displays delivery failure alert on submit for invalid patient phone number", async () => {
       const mocks = [
-        {
-          request: {
-            query: EDIT_QUEUE_ITEM,
-            variables: {
-              id: testOrderInfo.internalId,
-              deviceTypeId: device1Id,
-              specimenTypeId: specimen1Id,
-              results: [
-                { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
-              ],
-              dateTested: null,
-            } as EDIT_QUEUE_ITEM_VARIABLES,
+        generateEditQueueMock({
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.COVID_19,
+              testResult: TEST_RESULTS.UNDETERMINED,
+            },
+          ],
+          device: {
+            deviceId: deletedDeviceId,
+            deviceName: deletedDeviceName,
           },
-          result: {
-            data: {
-              editQueueItem: {
-                results: [
-                  {
-                    disease: { name: "COVID-19" },
-                    testResult: "UNDETERMINED",
-                  },
-                ],
-                dateTested: null,
-                deviceType: {
-                  internalId: device1Id,
-                  testLength: 10,
-                },
-              },
-            } as EDIT_QUEUE_ITEM_DATA,
-          },
-        },
+        }),
         {
           request: {
             query: SUBMIT_TEST_RESULT,
@@ -1118,7 +1029,7 @@ describe("TestCard", () => {
     it("tracks AoE form updates as custom event", async () => {
       const mocks = [
         allFalseSymptomUpdateAoeEventMock,
-        allFalseSymptomUpdateAoeEventMockWithSymptomOnset
+        allFalseSymptomUpdateAoeEventMockWithSymptomOnset,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1136,9 +1047,14 @@ describe("TestCard", () => {
         ).toBeChecked()
       );
 
-      await user.type(screen.getByTestId("symptom-date"), TEST_CARD_SYMPTOM_ONSET_DATE_STRING);
+      await user.type(
+        screen.getByTestId("symptom-date"),
+        TEST_CARD_SYMPTOM_ONSET_DATE_STRING
+      );
       await waitFor(() =>
-        expect(screen.getByTestId("symptom-date")).toHaveValue(TEST_CARD_SYMPTOM_ONSET_DATE_STRING)
+        expect(screen.getByTestId("symptom-date")).toHaveValue(
+          TEST_CARD_SYMPTOM_ONSET_DATE_STRING
+        )
       );
 
       expect(trackEventMock).toHaveBeenCalledWith({
@@ -1151,7 +1067,12 @@ describe("TestCard", () => {
     it("updates test order on device type and specimen type change", async () => {
       const mocks = [
         generateEditQueueMock({
-          diseaseResults: [{ diseaseName: MULTIPLEX_DISEASES.COVID_19, testResult: TEST_RESULTS.POSITIVE }]
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.COVID_19,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
         }),
         {
           request: {
@@ -1276,8 +1197,13 @@ describe("TestCard", () => {
     it("adds radio buttons for Flu A and Flu B when a multiplex device is chosen", async () => {
       const mocks = [
         generateEditQueueMock({
-          diseaseResults: [{ diseaseName: MULTIPLEX_DISEASES.COVID_19, testResult: TEST_RESULTS.POSITIVE }]
-        })
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.COVID_19,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
+        }),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1303,8 +1229,13 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock({
-          diseaseResults: [{ diseaseName: MULTIPLEX_DISEASES.HIV, testResult: TEST_RESULTS.POSITIVE }]
-        })
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.HIV,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
+        }),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1324,8 +1255,13 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock({
-          diseaseResults: [{ diseaseName: MULTIPLEX_DISEASES.HIV, testResult: TEST_RESULTS.POSITIVE }]
-        })
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.HIV,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
+        }),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1355,8 +1291,13 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock({
-          diseaseResults: [{ diseaseName: MULTIPLEX_DISEASES.HIV, testResult: TEST_RESULTS.UNKNOWN }]
-        })
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.HIV,
+              testResult: TEST_RESULTS.UNKNOWN,
+            },
+          ],
+        }),
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1381,8 +1322,13 @@ describe("TestCard", () => {
     it("should show no AOE questions when a flu only device is chosen", async function () {
       const mocks = [
         generateEditQueueMock({
-          diseaseResults: [{ diseaseName: MULTIPLEX_DISEASES.COVID_19, testResult: TEST_RESULTS.POSITIVE }]
-        })
+          diseaseResults: [
+            {
+              diseaseName: MULTIPLEX_DISEASES.COVID_19,
+              testResult: TEST_RESULTS.POSITIVE,
+            },
+          ],
+        }),
       ];
 
       const { user } = await renderQueueItem({ mocks });

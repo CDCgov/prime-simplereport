@@ -17,6 +17,8 @@ export const multiplexAndCovidOnlyDeviceId = "MULTIPLEX-COVID-DEVICE-ID";
 export const fluDeviceId = "FLU-DEVICE-ID";
 export const hivDeviceId = "HIV-DEVICE-ID";
 
+export const device1Name = "LumiraDX";
+export const device1Id = "DEVICE-1-ID";
 export const specimen1Name = "Swab of internal nose";
 export const specimen1Id = "SPECIMEN-1-ID";
 export const specimen2Name = "Nasopharyngeal swab";
