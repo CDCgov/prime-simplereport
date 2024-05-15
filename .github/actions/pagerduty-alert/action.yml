@@ -25,8 +25,8 @@ runs:
         --header 'Content-Type: application/json' \
         --data '{
           "payload": {
-              "summary": ${{ inputs.summary }}
-              "severity": ${{ inputs.severity }}
+              "summary": ${{ inputs.summary }},
+              "severity": ${{ inputs.severity }},
               "source": "GitHub Actions using PagerDuty Events API V2"
           },
           "routing_key": ${{ inputs.routing_key }},
