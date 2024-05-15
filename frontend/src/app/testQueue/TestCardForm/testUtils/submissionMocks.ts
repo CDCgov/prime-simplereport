@@ -10,7 +10,12 @@ import {
   TEST_RESULTS,
 } from "../../../testResults/constants";
 
-import { device1Id, specimen1Id, sharedTestOrderInfo } from "./testConstants";
+import {
+  device1Id,
+  specimen1Id,
+  sharedTestOrderInfo,
+  symptomaticTestOrderInfo,
+} from "./testConstants";
 
 const SYMPTOM_TRUE_OVERRIDE = { noSymptoms: false };
 const PREGNANCY_OVERRIDE = { pregnancy: "77386006" };
@@ -159,13 +164,20 @@ export const updateAoeMocks = [
 ];
 
 type EditQueueMockParams = {
-  diseaseResults: [
+  diseaseResults: [] | [
     { diseaseName: MULTIPLEX_DISEASES; testResult: TEST_RESULTS }
   ];
   dateTested?: string;
   device?: {
-    deviceName: string;
+    deviceName?: string;
     deviceId: string;
+    supportedDiseases?: {
+      internalId: string
+      loinc: string 
+      name: MULTIPLEX_DISEASES
+    }[
+      
+    ]
   };
   specimen?: {
     specimenName: string;
@@ -194,6 +206,35 @@ export function generateEditQueueMock(params: EditQueueMockParams) {
             internalId: params.device?.deviceId ?? device1Id,
             testLength: 15,
           },
+        },
+      },
+    },
+  };
+}
+
+type SubmitQueueMockParams = EditQueueMockParams & {
+  deliverySuccess?: boolean;
+};
+
+export function generateSubmitQueueMock(params: SubmitQueueMockParams) {
+  return {
+    request: {
+      query: SubmitQueueItemDocument,
+      variables: {
+        patientId: symptomaticTestOrderInfo.patient.internalId,
+        deviceTypeId: params.device?.deviceId ?? device1Id,
+        specimenTypeId: params.specimen?.specimenId ?? specimen1Id,
+        results: params.diseaseResults,
+        dateTested: params.dateTested ?? null,
+      } as SubmitQueueItemMutationVariables,
+    },
+    result: {
+      data: {
+        submitQueueItem: {
+          testResult: {
+            internalId: symptomaticTestOrderInfo.internalId,
+          },
+          deliverySuccess: params.deliverySuccess ?? true,
         },
       },
     },
