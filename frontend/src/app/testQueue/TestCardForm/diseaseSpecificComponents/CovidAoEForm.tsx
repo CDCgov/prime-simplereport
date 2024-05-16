@@ -46,7 +46,7 @@ const CovidAoEForm = ({
   const { hasSymptoms } = generateSymptomAoeConstants(
     responses,
     hasAttemptedSubmit,
-    mapRespiratorySymptomBoolLiteralsToBool
+    respiratorySymptomDefinitions
   );
   return (
     <div className="grid-col-auto" id="covid-aoe-form">

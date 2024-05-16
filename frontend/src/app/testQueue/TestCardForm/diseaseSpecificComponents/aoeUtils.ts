@@ -106,9 +106,7 @@ export function generateSexualActivityAoeConstants(
 export function generateSymptomAoeConstants(
   responses: AoeQuestionResponses,
   hasAttemptedSubmit: boolean,
-  symptomBoolLiteralToBoolTranslator: (
-    symptomsJsonString: string | null | undefined
-  ) => Record<string, boolean>
+  symptomDefinitionMap: SymptomDefinitionMap[]
 ) {
   const isSymptomsAnswered = typeof responses.noSymptoms == "boolean";
   const isSymptomOnsetDateAnswered = !!responses.symptomOnset;
@@ -127,22 +125,19 @@ export function generateSymptomAoeConstants(
   if (responses.noSymptoms === false) {
     hasSymptoms = "YES";
   }
+  const symptoms: Record<string, boolean> = mapSymptomBoolLiteralsToBool(
+    responses.symptoms,
+    symptomDefinitionMap
+  );
 
   const isSymptomOnsetAnswered =
-    !!responses.symptoms &&
-    Object.values(symptomBoolLiteralToBoolTranslator(responses.symptoms)).some(
-      (x) => x?.valueOf()
-    );
+    !!responses.symptoms && Object.values(symptoms).some((x) => x?.valueOf());
 
   const showSymptomOnsetError =
     hasAttemptedSubmit &&
     isSymptomsAnswered &&
     responses.noSymptoms === false &&
     !isSymptomOnsetAnswered;
-
-  const symptoms: Record<string, boolean> = symptomBoolLiteralToBoolTranslator(
-    responses.symptoms
-  );
 
   return {
     showSymptomsError,
@@ -164,12 +159,12 @@ export function stringifySymptomJsonForAoeUpdate(
 
   if (_.isEqual(symptomKeys, Object.keys(respiratorySymptomsMap))) {
     symptomPayload = JSON.stringify(
-      mapRespiratorySymptomBoolLiteralsToBool(symptomJson)
+      mapSymptomBoolLiteralsToBool(symptomJson, respiratorySymptomDefinitions)
     );
   }
   if (_.isEqual(symptomKeys, Object.keys(syphilisSymptomsMap))) {
     symptomPayload = JSON.stringify(
-      mapSyphilisSymptomBoolLiteralsToBool(symptomJson)
+      mapSymptomBoolLiteralsToBool(symptomJson, syphilisSymptomDefinitions)
     );
   }
   return symptomPayload;
@@ -180,10 +175,16 @@ export function mapSpecifiedSymptomBoolLiteralsToBool(
   disease: AOEFormOption
 ) {
   if (disease === AOEFormOption.COVID) {
-    return mapRespiratorySymptomBoolLiteralsToBool(symptomsJsonString);
+    return mapSymptomBoolLiteralsToBool(
+      symptomsJsonString,
+      syphilisSymptomDefinitions
+    );
   }
   if (disease === AOEFormOption.SYPHILIS) {
-    return mapSyphilisSymptomBoolLiteralsToBool(symptomsJsonString);
+    return mapSymptomBoolLiteralsToBool(
+      symptomsJsonString,
+      syphilisSymptomDefinitions
+    );
   }
   // there are no symptoms for that test card, so return true
   return {
@@ -197,15 +198,6 @@ export const mapRespiratorySymptomBoolLiteralsToBool = (
   return mapSymptomBoolLiteralsToBool(
     symptomsJsonString,
     respiratorySymptomDefinitions
-  );
-};
-
-export const mapSyphilisSymptomBoolLiteralsToBool = (
-  symptomsJsonString: string | null | undefined
-) => {
-  return mapSymptomBoolLiteralsToBool(
-    symptomsJsonString,
-    syphilisSymptomDefinitions
   );
 };
 
