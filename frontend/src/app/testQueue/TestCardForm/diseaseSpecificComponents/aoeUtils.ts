@@ -177,7 +177,7 @@ export function mapSpecifiedSymptomBoolLiteralsToBool(
   if (disease === AOEFormOption.COVID) {
     return mapSymptomBoolLiteralsToBool(
       symptomsJsonString,
-      syphilisSymptomDefinitions
+      respiratorySymptomDefinitions
     );
   }
   if (disease === AOEFormOption.SYPHILIS) {
