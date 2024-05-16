@@ -3,9 +3,7 @@ import {
   respiratorySymptomOrder,
 } from "../../../../patientApp/timeOfTest/constants";
 
-import {
-  mapSymptomBoolLiteralsToBool,
-} from "./aoeUtils";
+import { mapSymptomBoolLiteralsToBool } from "./aoeUtils";
 
 describe("mapSymptomBoolLiteralsToBool", () => {
   it("takes a JSON payload of {'Respiratory symptom SNOMEDS' : boolean strings} and parses the strings into booleans", () => {
