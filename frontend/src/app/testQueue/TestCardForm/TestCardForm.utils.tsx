@@ -20,9 +20,7 @@ import {
   QueriedFacility,
   QueriedTestOrder,
 } from "./types";
-import {
-  mapSymptomBoolLiteralsToBool,
-} from "./diseaseSpecificComponents/aoeUtils";
+import { mapSymptomBoolLiteralsToBool } from "./diseaseSpecificComponents/aoeUtils";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
