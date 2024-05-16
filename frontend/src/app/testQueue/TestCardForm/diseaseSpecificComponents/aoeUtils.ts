@@ -192,15 +192,6 @@ export function mapSpecifiedSymptomBoolLiteralsToBool(
   };
 }
 
-export const mapRespiratorySymptomBoolLiteralsToBool = (
-  symptomsJsonString: string | null | undefined
-) => {
-  return mapSymptomBoolLiteralsToBool(
-    symptomsJsonString,
-    respiratorySymptomDefinitions
-  );
-};
-
 export const mapSymptomBoolLiteralsToBool = (
   symptomsJsonString: string | null | undefined,
   symptomSelectionMap: SymptomDefinitionMap[]

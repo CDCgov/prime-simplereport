@@ -11,6 +11,7 @@ import {
   SomeoneWithName,
 } from "../constants";
 import { showError, showSuccess } from "../../utils/srToast";
+import { respiratorySymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 
 import { TestFormState } from "./TestCardFormReducer";
 import {
@@ -19,7 +20,9 @@ import {
   QueriedFacility,
   QueriedTestOrder,
 } from "./types";
-import { mapRespiratorySymptomBoolLiteralsToBool } from "./diseaseSpecificComponents/aoeUtils";
+import {
+  mapSymptomBoolLiteralsToBool,
+} from "./diseaseSpecificComponents/aoeUtils";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
@@ -235,8 +238,9 @@ export const areAOEAnswersComplete = (
     const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
     const hasNoSymptoms = formState.aoeResponses.noSymptoms;
     if (formState.aoeResponses.noSymptoms === false) {
-      const symptoms = mapRespiratorySymptomBoolLiteralsToBool(
-        formState.aoeResponses.symptoms
+      const symptoms = mapSymptomBoolLiteralsToBool(
+        formState.aoeResponses.symptoms,
+        respiratorySymptomDefinitions
       );
       const areSymptomsFilledIn = Object.values(symptoms).some((x) =>
         x?.valueOf()
