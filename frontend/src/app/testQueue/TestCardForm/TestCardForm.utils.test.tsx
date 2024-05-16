@@ -1,7 +1,9 @@
-import { TEST_RESULTS } from "../../testResults/constants";
-
 import { TestFormState } from "./TestCardFormReducer";
-import { AOEFormOption, areAOEAnswersComplete } from "./TestCardForm.utils";
+import {
+  AOEFormOption,
+  AoeValidationErrorMessages,
+  generateAoeValidationState,
+} from "./TestCardForm.utils";
 import { devicesMap } from "./testUtils/testConstants";
 
 describe("TestCardForm.utils", () => {
@@ -36,8 +38,15 @@ describe("TestCardForm.utils", () => {
 
     it("should correctly evaluate whether COVID AOE answers are complete", () => {
       expect(
-        areAOEAnswersComplete(incompleteState, AOEFormOption.COVID)
-      ).toEqual(false);
+        generateAoeValidationState(incompleteState, AOEFormOption.COVID)
+      ).toEqual(AoeValidationErrorMessages.INCOMPLETE);
+
+      expect(
+        generateAoeValidationState(
+          completeStateWithSymptoms,
+          AOEFormOption.COVID
+        )
+      ).toEqual(AoeValidationErrorMessages.COMPLETE);
 
       const completeStateNoSymptoms: TestFormState = {
         ...incompleteState,
@@ -51,10 +60,29 @@ describe("TestCardForm.utils", () => {
       };
 
       expect(
-        areAOEAnswersComplete(completeStateNoSymptoms, AOEFormOption.COVID)
-      ).toEqual(true);
+        generateAoeValidationState(completeStateNoSymptoms, AOEFormOption.COVID)
+      ).toEqual(AoeValidationErrorMessages.COMPLETE);
 
-      const partialIncompleteState: TestFormState = {
+      const noSymptomsFalseButWithoutRequiredSymptomSubquestionsState: TestFormState =
+        {
+          ...incompleteState,
+          aoeResponses: {
+            pregnancy: "60001007",
+            noSymptoms: false,
+            symptoms: null,
+            symptomOnset: undefined,
+            genderOfSexualPartners: null,
+          },
+        };
+
+      expect(
+        generateAoeValidationState(
+          noSymptomsFalseButWithoutRequiredSymptomSubquestionsState,
+          AOEFormOption.COVID
+        )
+      ).toEqual(AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR);
+
+      const incompleteStateHasSymptomsButNoSymptomMap: TestFormState = {
         ...incompleteState,
         aoeResponses: {
           pregnancy: "60001007",
@@ -66,45 +94,32 @@ describe("TestCardForm.utils", () => {
       };
 
       expect(
-        areAOEAnswersComplete(partialIncompleteState, AOEFormOption.COVID)
-      ).toEqual(false);
-
-      expect(
-        areAOEAnswersComplete(completeStateWithSymptoms, AOEFormOption.COVID)
-      ).toEqual(true);
+        generateAoeValidationState(
+          incompleteStateHasSymptomsButNoSymptomMap,
+          AOEFormOption.COVID
+        )
+      ).toEqual(AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR);
     });
 
-    it("should return true if HIV positive result is not selected", () => {
-      const unknownResultState: TestFormState = {
-        ...incompleteState,
-      };
-      expect(
-        areAOEAnswersComplete(unknownResultState, AOEFormOption.HIV)
-      ).toEqual(true);
-    });
-
-    it("should return false if HIV positive result is selected and questions are unanswered", () => {
+    it("should return false if HIV questions are unanswered", () => {
       const positiveHIVState: TestFormState = {
         ...incompleteState,
-        testResults: [
-          { testResult: TEST_RESULTS.POSITIVE, diseaseName: "HIV" },
-        ],
       };
       expect(
-        areAOEAnswersComplete(positiveHIVState, AOEFormOption.HIV)
-      ).toEqual(false);
+        generateAoeValidationState(positiveHIVState, AOEFormOption.HIV)
+      ).toEqual(AoeValidationErrorMessages.INCOMPLETE);
     });
 
     it("should return true when HIV positive is selected and questions are answered", () => {
       const positiveHIVStateCompleteAOE: TestFormState = {
         ...completeStateWithSymptoms,
-        testResults: [
-          { testResult: TEST_RESULTS.POSITIVE, diseaseName: "HIV" },
-        ],
       };
       expect(
-        areAOEAnswersComplete(positiveHIVStateCompleteAOE, AOEFormOption.HIV)
-      ).toEqual(true);
+        generateAoeValidationState(
+          positiveHIVStateCompleteAOE,
+          AOEFormOption.HIV
+        )
+      ).toEqual(AoeValidationErrorMessages.COMPLETE);
     });
   });
 });
