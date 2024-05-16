@@ -4,14 +4,17 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import java.util.Date;
+import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 
-/**
- * The bare minimum required to link an authenticated identity to actions and data elsewhere in the
- * schema.
- */
+/** An authenticated identity that may or may not be linked to authorization data. */
 @Entity
 @DynamicUpdate
 public class ApiUser extends EternalSystemManagedEntity implements PersonEntity {
@@ -24,6 +27,15 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
 
   @Column(nullable = true)
   private Date lastSeen;
+
+  @ManyToMany
+  @JoinTable(
+      name = "api_user_facility",
+      joinColumns = @JoinColumn(name = "api_user_id"),
+      inverseJoinColumns = @JoinColumn(name = "facility_id"))
+  @Getter
+  @Setter
+  private Set<Facility> facilities;
 
   protected ApiUser() {
     /* for hibernate */ }
