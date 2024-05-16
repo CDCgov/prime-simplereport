@@ -34,8 +34,6 @@ const CovidAoEForm = ({
   onResponseChange,
   hasAttemptedSubmit,
 }: CovidAoEFormProps) => {
-  const symptoms: Record<string, boolean> =
-    mapRespiratorySymptomBoolLiteralsToBool(responses.symptoms);
 
   const {
     onPregnancyChange,
@@ -43,7 +41,7 @@ const CovidAoEForm = ({
     onSymptomsChange,
     onSymptomOnsetDateChange,
   } = generateAoeListenerHooks(onResponseChange, responses);
-  const { hasSymptoms } = generateSymptomAoeConstants(
+  const { hasSymptoms, symptoms} = generateSymptomAoeConstants(
     responses,
     hasAttemptedSubmit,
     mapRespiratorySymptomBoolLiteralsToBool
