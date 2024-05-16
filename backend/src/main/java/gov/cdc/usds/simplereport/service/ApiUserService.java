@@ -20,13 +20,13 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.ApiUserRole;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.UserOrgRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
-import gov.cdc.usds.simplereport.db.repository.UserOrgRoleRepository;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRoleRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.idp.repository.PartialOktaUser;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -59,7 +59,7 @@ public class ApiUserService {
 
   @Autowired private ApiUserRepository _apiUserRepo;
 
-  @Autowired private UserOrgRoleRepository _userOrgRoleRepo;
+  @Autowired private ApiUserRoleRepository _userOrgRoleRepo;
 
   @Autowired private IdentitySupplier _supplier;
 
@@ -260,8 +260,8 @@ public class ApiUserService {
     if (accessAllFacilities) {
       roles.add(OrganizationRole.ALL_FACILITIES);
     }
-    Set<UserOrgRole> uor =
-        roles.stream().map(r -> new UserOrgRole(org, r)).collect(Collectors.toSet());
+    Set<ApiUserRole> uor =
+        roles.stream().map(r -> new ApiUserRole(org, r)).collect(Collectors.toSet());
     uor = uor.stream().map(r -> _userOrgRoleRepo.save(r)).collect(Collectors.toSet());
     apiUser.setOrgRoles(uor);
 
