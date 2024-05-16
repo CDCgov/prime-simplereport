@@ -15,6 +15,8 @@ import {
   hivDeviceName,
   multiplexDeviceId,
   multiplexDeviceName,
+  syphilisDeviceId,
+  syphilisDeviceName
 } from "./testUtils/testConstants";
 
 jest.mock("../../TelemetryService", () => ({
@@ -153,6 +155,24 @@ describe("TestCardForm", () => {
             internalId: hivDeviceId,
             name: hivDeviceName,
             model: hivDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      expect(await renderTestCardForm({ props })).toMatchSnapshot();
+    });
+
+    it("matches snapshot for syphilis device", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "SYPHILIS" } }],
+          deviceType: {
+            internalId: syphilisDeviceId,
+            name: syphilisDeviceName,
+            model: syphilisDeviceName,
             testLength: 15,
           },
         },
