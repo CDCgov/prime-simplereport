@@ -39,7 +39,12 @@ const CovidAoEForm = ({
     onSymptomsChange,
     onSymptomOnsetDateChange,
   } = generateAoeListenerHooks(onResponseChange, responses);
-  const { hasSymptoms, symptoms } = generateSymptomAoeConstants(
+  const {
+    hasSymptoms,
+    symptoms,
+    showSymptomOnsetError,
+    showSymptomOnsetDateError,
+  } = generateSymptomAoeConstants(
     responses,
     hasAttemptedSubmit,
     respiratorySymptomDefinitions
@@ -86,6 +91,12 @@ const CovidAoEForm = ({
                   : ""
               }
               onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
+              validationStatus={showSymptomOnsetDateError ? "error" : undefined}
+              errorMessage={
+                showSymptomOnsetDateError
+                  ? "This question is required if the patient has symptoms."
+                  : undefined
+              }
             ></TextInput>
           </div>
           <div className="grid-row grid-gap">
@@ -98,6 +109,12 @@ const CovidAoEForm = ({
               legend="Select any symptoms the patient is experiencing"
               name={`symptoms-${testOrder.internalId}`}
               onChange={(e) => onSymptomsChange(e, symptoms)}
+              validationStatus={showSymptomOnsetError ? "error" : undefined}
+              errorMessage={
+                showSymptomOnsetError
+                  ? "This question is required if the patient has symptoms."
+                  : undefined
+              }
             />
           </div>
         </>
