@@ -85,6 +85,7 @@ export async function handleReportStreamResponse(
       properties: {
         status: reportingResponse.status,
         responseBody,
+        operationId: logging.context.traceContext.traceparent,
       },
     });
 

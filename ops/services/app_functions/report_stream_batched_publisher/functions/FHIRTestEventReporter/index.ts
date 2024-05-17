@@ -32,6 +32,8 @@ export async function FHIRTestEventReporter(
   _myTimer: Timer,
   context: InvocationContext,
 ): Promise<void> {
+  const operationId = context.traceContext.traceParent;
+
   const publishingQueue: QueueClient = getQueueClient(
     FHIR_TEST_EVENT_QUEUE_NAME,
   );
@@ -53,7 +55,10 @@ export async function FHIRTestEventReporter(
 
   telemetry.trackEvent({
     name: `Queue:${publishingQueue.name}. Messages Dequeued`,
-    properties: { messagesDequeued: messages.length },
+    properties: {
+      messagesDequeued: messages.length,
+      operationId,
+    },
   });
 
   if (messages.length === 0) {
@@ -83,6 +88,7 @@ export async function FHIRTestEventReporter(
             const failureObj = {
               testEventBatch,
               publishingQueueName: publishingQueue.name,
+              operationId,
             };
 
             trackFailures(telemetry, failureObj);
@@ -119,6 +125,7 @@ export async function FHIRTestEventReporter(
               properties: {
                 recordCount: testEventBatch.parseSuccessCount,
                 queue: publishingQueue.name,
+                operationId,
               },
               duration: new Date().getTime() - uploadStart,
               resultCode: postResult.status,
