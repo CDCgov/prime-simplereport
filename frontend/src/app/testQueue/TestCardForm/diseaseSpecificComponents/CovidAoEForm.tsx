@@ -74,9 +74,8 @@ const CovidAoEForm = ({
       </div>
       {hasSymptoms === "YES" && (
         <>
-          <div className="grid-row grid-gap">
+          <div className="grid-row grid-gap" data-testid="symptom-date">
             <TextInput
-              data-testid="symptom-date"
               name={`symptom-date-${testOrder.internalId}`}
               type="date"
               label="When did the patient's symptoms start?"
@@ -99,7 +98,7 @@ const CovidAoEForm = ({
               }
             ></TextInput>
           </div>
-          <div className="grid-row grid-gap">
+          <div className="grid-row grid-gap" data-testid="symptom-selection">
             <Checkboxes
               boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
                 label,
