@@ -80,6 +80,7 @@ resource "azurerm_linux_function_app" "functions" {
     FUNCTION_APP_EDIT_MODE           = "readonly"
     HASH                             = azurerm_storage_blob.appcode.content_md5
     WEBSITE_RUN_FROM_PACKAGE         = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
+    APPLICATIONINSIGHTS_CONNECTION_STRING = data.azurerm_application_insights.app.connection_string
     APPINSIGHTS_INSTRUMENTATIONKEY   = data.azurerm_application_insights.app.instrumentation_key
     AZ_STORAGE_QUEUE_SVC_URL         = "https://${data.azurerm_storage_account.app.name}.queue.core.windows.net/"
     AZ_STORAGE_ACCOUNT_NAME          = data.azurerm_storage_account.app.name
