@@ -16,7 +16,6 @@ import { QueriedTestOrder } from "../types";
 import {
   generateAoeListenerHooks,
   generateSymptomAoeConstants,
-  mapSymptomBoolLiteralsToBool,
 } from "./aoeUtils";
 
 export interface CovidAoEFormProps {
@@ -40,7 +39,7 @@ const CovidAoEForm = ({
     onSymptomsChange,
     onSymptomOnsetDateChange,
   } = generateAoeListenerHooks(onResponseChange, responses);
-  const { hasSymptoms, symptoms} = generateSymptomAoeConstants(
+  const { hasSymptoms, symptoms } = generateSymptomAoeConstants(
     responses,
     hasAttemptedSubmit,
     respiratorySymptomDefinitions

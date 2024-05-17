@@ -11,7 +11,6 @@ import {
   SomeoneWithName,
 } from "../constants";
 import { showError, showSuccess } from "../../utils/srToast";
-import { respiratorySymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 
 import { AoeQuestionResponses, TestFormState } from "./TestCardFormReducer";
 import {
