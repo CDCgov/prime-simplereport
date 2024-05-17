@@ -117,6 +117,7 @@ export const testCardFormReducer = (
           prevState.devicesMap.get(payload)?.swabTypes[0].internalId ??
           prevState.specimenId,
         testResults: [],
+        aoeResponses: {},
         dirty: true,
       };
     }

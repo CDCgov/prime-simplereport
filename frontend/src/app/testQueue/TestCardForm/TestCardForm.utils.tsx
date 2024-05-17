@@ -13,14 +13,14 @@ import {
 import { showError, showSuccess } from "../../utils/srToast";
 import { respiratorySymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 
-import { TestFormState } from "./TestCardFormReducer";
+import { AoeQuestionResponses, TestFormState } from "./TestCardFormReducer";
 import {
   DevicesMap,
   QueriedDeviceType,
   QueriedFacility,
   QueriedTestOrder,
 } from "./types";
-import { mapSymptomBoolLiteralsToBool } from "./diseaseSpecificComponents/aoeUtils";
+import { mapSpecifiedSymptomBoolLiteralsToBool, mapSymptomBoolLiteralsToBool } from "./diseaseSpecificComponents/aoeUtils";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
@@ -228,45 +228,141 @@ export const convertFromMultiplexResponse = (
   });
 };
 
-export const areAOEAnswersComplete = (
+export const AoeValidationErrorMessages = {
+  COMPLETE: "COMPLETE",
+  SYMPTOM_VALIDATION_ERROR: "SYMPTOM_VALIDATION_ERROR",
+  INCOMPLETE: "INCOMPLETE",
+  UNKNOWN: "UNKNOWN",
+} as const;
+
+const REQUIRED_AOE_QUESTIONS_BY_DISEASE: {
+  [key in AOEFormOption]: Array<keyof AoeQuestionResponses>;
+} = {
+  // AOE responses for COVID not required, but include in completion validation
+  // to show "are you sure" modal if not filled
+  [AOEFormOption.COVID]: ["pregnancy", "noSymptoms"],
+  [AOEFormOption.HIV]: ["pregnancy", "genderOfSexualPartners"],
+  [AOEFormOption.SYPHILIS]: [
+    "pregnancy",
+    "syphilisHistory",
+    "genderOfSexualPartners",
+    "noSymptoms",
+  ],
+  [AOEFormOption.NONE]: [],
+};
+
+export function generateAoeValidationState(
   formState: TestFormState,
   whichAOE: AOEFormOption
-) => {
-  if (whichAOE === AOEFormOption.COVID) {
-    const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
-    const hasNoSymptoms = formState.aoeResponses.noSymptoms;
-    if (formState.aoeResponses.noSymptoms === false) {
-      const symptoms = mapSymptomBoolLiteralsToBool(
-        formState.aoeResponses.symptoms,
-        respiratorySymptomDefinitions
-      );
-      const areSymptomsFilledIn = Object.values(symptoms).some((x) =>
-        x?.valueOf()
-      );
-      const isSymptomOnsetDateAnswered = !!formState.aoeResponses.symptomOnset;
-      return (
-        isPregnancyAnswered &&
-        !hasNoSymptoms &&
-        areSymptomsFilledIn &&
-        isSymptomOnsetDateAnswered
-      );
+): keyof typeof AoeValidationErrorMessages {
+  const {
+    allNonSymptomAoeQuestionsAnswered,
+    hasSymptomsQuestionAnswered,
+    symptomOnsetAndSelectionQuestionsAnswered,
+  } = validateAoeQuestions(formState, whichAOE);
+
+  switch (true) {
+    case !allNonSymptomAoeQuestionsAnswered || !hasSymptomsQuestionAnswered:
+      return AoeValidationErrorMessages.INCOMPLETE;
+    case allNonSymptomAoeQuestionsAnswered &&
+      hasSymptomsQuestionAnswered &&
+      symptomOnsetAndSelectionQuestionsAnswered:
+      return AoeValidationErrorMessages.COMPLETE;
+    case allNonSymptomAoeQuestionsAnswered &&
+      hasSymptomsQuestionAnswered &&
+      !symptomOnsetAndSelectionQuestionsAnswered:
+      return AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR;
+    default:
+      return AoeValidationErrorMessages.UNKNOWN;
+  }
+}
+
+export function validateAoeQuestions(
+  formState: TestFormState,
+  whichAOE: AOEFormOption
+) {
+  const aoeQuestionsToCheck = REQUIRED_AOE_QUESTIONS_BY_DISEASE[whichAOE];
+  const nonSymptomAoeStatusMap: {
+    [key in keyof AoeQuestionResponses]: boolean;
+  } = {};
+  const symptomAoeStatusMap: {
+    [key in keyof AoeQuestionResponses]: boolean;
+  } = {};
+  aoeQuestionsToCheck.forEach((aoeQuestionKey) => {
+    if (aoeQuestionKey === "noSymptoms") {
+      const {
+        hasSymptomsQuestionAnswered,
+        symptomOnsetAndSelectionQuestionsAnswered,
+      } = areSymptomAoeQuestionsAnswered(formState, whichAOE);
+      symptomAoeStatusMap["noSymptoms"] = hasSymptomsQuestionAnswered;
+      symptomAoeStatusMap["symptoms"] =
+        symptomOnsetAndSelectionQuestionsAnswered;
+      symptomAoeStatusMap["symptomOnset"] =
+        symptomOnsetAndSelectionQuestionsAnswered;
+    } else {
+      nonSymptomAoeStatusMap[aoeQuestionKey] =
+        areNonSymptomAoeQuestionsAnswered(aoeQuestionKey, formState);
     }
-    return isPregnancyAnswered && hasNoSymptoms;
+  });
+  const allNonSymptomAoeQuestionsAnswered = Object.values(
+    nonSymptomAoeStatusMap
+  ).every(Boolean);
+
+  // if undefined, symptoms questions are not required for that disease. Coerce the status of those questions to true
+  const hasSymptomsQuestionAnswered = symptomAoeStatusMap["noSymptoms"] ?? true;
+  const symptomOnsetAndSelectionQuestionsAnswered =
+    symptomAoeStatusMap["symptomOnset"] ??
+    symptomAoeStatusMap["symptoms"] ??
+    true;
+
+  return {
+    allNonSymptomAoeQuestionsAnswered,
+    hasSymptomsQuestionAnswered,
+    symptomOnsetAndSelectionQuestionsAnswered,
+  };
+}
+
+export function areNonSymptomAoeQuestionsAnswered(
+  aoeQuestionKey: keyof AoeQuestionResponses,
+  formState: TestFormState
+) {
+  const aoeResponse = formState.aoeResponses[aoeQuestionKey];
+  if (Array.isArray(aoeResponse)) return aoeResponse.length > 0;
+  return Boolean(aoeResponse);
+}
+
+export function areSymptomAoeQuestionsAnswered(
+  formState: TestFormState,
+  whichAOE: AOEFormOption
+): {
+  hasSymptomsQuestionAnswered: boolean;
+  symptomOnsetAndSelectionQuestionsAnswered: boolean;
+} {
+  if (formState.aoeResponses.noSymptoms == null) {
+    return {
+      hasSymptomsQuestionAnswered: false,
+      symptomOnsetAndSelectionQuestionsAnswered: false,
+    };
   }
-  const hasPositiveHIVResult = formState.testResults.some(
-    (x) =>
-      x.diseaseName === MULTIPLEX_DISEASES.HIV &&
-      x.testResult === TEST_RESULTS.POSITIVE
+  if (formState.aoeResponses.noSymptoms) {
+    return {
+      hasSymptomsQuestionAnswered: true,
+      symptomOnsetAndSelectionQuestionsAnswered: true,
+    };
+  }
+
+  const symptoms = mapSpecifiedSymptomBoolLiteralsToBool(
+    formState.aoeResponses.symptoms,
+    whichAOE
   );
-  if (whichAOE === AOEFormOption.HIV && hasPositiveHIVResult) {
-    const isPregnancyAnswered = !!formState.aoeResponses.pregnancy;
-    const isGenderOfSexualPartnersAnswered =
-      !!formState.aoeResponses.genderOfSexualPartners &&
-      formState.aoeResponses.genderOfSexualPartners.length > 0;
-    return isPregnancyAnswered && isGenderOfSexualPartnersAnswered;
-  }
-  return true;
-};
+  const areSymptomsFilledIn = Object.values(symptoms).some((x) => x?.valueOf());
+  const isSymptomOnsetDateAnswered = !!formState.aoeResponses.symptomOnset;
+  return {
+    hasSymptomsQuestionAnswered: true,
+    symptomOnsetAndSelectionQuestionsAnswered:
+      areSymptomsFilledIn && isSymptomOnsetDateAnswered,
+  };
+}
 
 export const showTestResultDeliveryStatusAlert = (
   deliverySuccess: boolean | null | undefined,
