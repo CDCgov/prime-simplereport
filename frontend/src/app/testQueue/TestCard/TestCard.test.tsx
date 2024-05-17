@@ -30,6 +30,7 @@ import {
   generateEditQueueMock,
   generateEmptyEditQueueMock,
   generateSubmitQueueMock,
+  blankUpdateAoeEventMock,
 } from "../TestCardForm/testUtils/submissionMocks";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 
@@ -441,7 +442,9 @@ describe("TestCard", () => {
   });
 
   it("renders dropdown of device types", async () => {
-    const { user } = await renderQueueItem();
+    const { user } = await renderQueueItem({
+      mocks: [blankUpdateAoeEventMock],
+    });
 
     const deviceDropdown = (await screen.findByTestId(
       "device-type-dropdown"
@@ -513,6 +516,7 @@ describe("TestCard", () => {
             },
           }
         ),
+        blankUpdateAoeEventMock,
       ];
 
       const props = {
@@ -824,6 +828,8 @@ describe("TestCard", () => {
             },
           }
         ),
+        blankUpdateAoeEventMock,
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -976,6 +982,7 @@ describe("TestCard", () => {
             },
           }
         ),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1010,6 +1017,7 @@ describe("TestCard", () => {
           MULTIPLEX_DISEASES.COVID_19,
           TEST_RESULTS.POSITIVE
         ),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1035,6 +1043,7 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.POSITIVE),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1054,6 +1063,7 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.POSITIVE),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1083,6 +1093,7 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.UNKNOWN),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1110,6 +1121,7 @@ describe("TestCard", () => {
           MULTIPLEX_DISEASES.COVID_19,
           TEST_RESULTS.POSITIVE
         ),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
