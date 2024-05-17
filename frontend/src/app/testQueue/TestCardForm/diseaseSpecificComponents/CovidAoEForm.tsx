@@ -8,7 +8,9 @@ import { formatDate } from "../../../utils/date";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import {
   getPregnancyResponses,
+  ONSET_DATE_LABEL,
   respiratorySymptomDefinitions,
+  SYMPTOM_SUBQUESTION_ERROR,
 } from "../../../../patientApp/timeOfTest/constants";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
@@ -78,7 +80,7 @@ const CovidAoEForm = ({
             <TextInput
               name={`symptom-date-${testOrder.internalId}`}
               type="date"
-              label="When did the patient's symptoms start?"
+              label={ONSET_DATE_LABEL}
               aria-label="Symptom onset date"
               min={formatDate(new Date("Jan 1, 2020"))}
               max={formatDate(moment().toDate())}
@@ -93,7 +95,7 @@ const CovidAoEForm = ({
               validationStatus={showSymptomOnsetDateError ? "error" : undefined}
               errorMessage={
                 showSymptomOnsetDateError
-                  ? "This question is required if the patient has symptoms."
+                  ? SYMPTOM_SUBQUESTION_ERROR
                   : undefined
               }
             ></TextInput>
@@ -110,9 +112,7 @@ const CovidAoEForm = ({
               onChange={(e) => onSymptomsChange(e, symptoms)}
               validationStatus={showSymptomOnsetError ? "error" : undefined}
               errorMessage={
-                showSymptomOnsetError
-                  ? "This question is required if the patient has symptoms."
-                  : undefined
+                showSymptomOnsetError ? SYMPTOM_SUBQUESTION_ERROR : undefined
               }
             />
           </div>

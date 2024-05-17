@@ -130,3 +130,7 @@ export const syphilisSymptomDefinitions: SymptomDefinitionMap[] =
     value,
     label: syphilisSymptomsMap[value],
   }));
+
+export const SYMPTOM_SUBQUESTION_ERROR =
+  "This question is required if the patient has symptoms.";
+export const ONSET_DATE_LABEL = "When did the patient's symptoms start?";

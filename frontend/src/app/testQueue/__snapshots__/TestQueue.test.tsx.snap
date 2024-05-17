@@ -653,6 +653,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       </div>
                       <div
                         class="grid-row grid-gap"
+                        data-testid="symptom-date"
                       >
                         <div
                           class="usa-form-group"
@@ -667,7 +668,6 @@ exports[`TestQueue should render the test queue 1`] = `
                             aria-label="Symptom onset date"
                             aria-required="false"
                             class="usa-input"
-                            data-testid="symptom-date"
                             id="6"
                             max="2023-10-17"
                             min="2020-01-01"
@@ -679,6 +679,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       </div>
                       <div
                         class="grid-row grid-gap"
+                        data-testid="symptom-selection"
                       >
                         <div
                           class="usa-form-group"
@@ -984,6 +985,23 @@ exports[`TestQueue should render the test queue 1`] = `
                                     for="symptom-422400008"
                                   >
                                     Vomiting
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-261665006"
+                                    name="symptoms-abc"
+                                    type="checkbox"
+                                    value="261665006"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-261665006"
+                                  >
+                                    Other symptom not listed
                                   </label>
                                 </div>
                               </div>
@@ -1606,6 +1624,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       </div>
                       <div
                         class="grid-row grid-gap"
+                        data-testid="symptom-date"
                       >
                         <div
                           class="usa-form-group"
@@ -1620,7 +1639,6 @@ exports[`TestQueue should render the test queue 1`] = `
                             aria-label="Symptom onset date"
                             aria-required="false"
                             class="usa-input"
-                            data-testid="symptom-date"
                             id="12"
                             max="2023-10-17"
                             min="2020-01-01"
@@ -1632,6 +1650,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       </div>
                       <div
                         class="grid-row grid-gap"
+                        data-testid="symptom-selection"
                       >
                         <div
                           class="usa-form-group"
@@ -1937,6 +1956,23 @@ exports[`TestQueue should render the test queue 1`] = `
                                     for="symptom-422400008"
                                   >
                                     Vomiting
+                                  </label>
+                                </div>
+                                <div
+                                  class="usa-checkbox"
+                                >
+                                  <input
+                                    class="usa-checkbox__input"
+                                    id="symptom-261665006"
+                                    name="symptoms-def"
+                                    type="checkbox"
+                                    value="261665006"
+                                  />
+                                  <label
+                                    class="usa-checkbox__label"
+                                    for="symptom-261665006"
+                                  >
+                                    Other symptom not listed
                                   </label>
                                 </div>
                               </div>
