@@ -281,19 +281,19 @@ const TestCardForm = ({
       state,
       whichAOEFormOption
     );
-    if (aoeValidationMessage === AoeValidationErrorMessages.COMPLETE)
+    if (aoeValidationMessage === AoeValidationErrorMessages.COMPLETE) {
       return true;
+    }
     if (aoeValidationMessage === AoeValidationErrorMessages.INCOMPLETE) {
       if (whichAOEFormOption === AOEFormOption.COVID) {
         setIsSubmitModalOpen(true);
-        return false;
       } else {
         showError(
           "Please complete the required questions",
           "Invalid test questionnaire"
         );
-        return false;
       }
+      return false;
     }
     if (
       aoeValidationMessage ===
