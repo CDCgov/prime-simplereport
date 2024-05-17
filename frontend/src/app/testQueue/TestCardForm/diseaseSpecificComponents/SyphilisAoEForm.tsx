@@ -20,7 +20,6 @@ import {
   generateAoeListenerHooks,
   generateSymptomAoeConstants,
   generateSexualActivityAoeConstants,
-  mapSyphilisSymptomBoolLiteralsToBool,
 } from "./aoeUtils";
 
 interface SyphillisAoeFormProps {
@@ -64,7 +63,7 @@ export const SyphilisAoEForm = ({
   } = generateSymptomAoeConstants(
     responses,
     hasAttemptedSubmit,
-    mapSyphilisSymptomBoolLiteralsToBool
+    syphilisSymptomDefinitions
   );
 
   const CHECKBOX_COLS_TO_DISPLAY = 3;
