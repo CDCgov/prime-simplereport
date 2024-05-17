@@ -349,9 +349,8 @@ const TestCardForm = ({
 
   const submitForm = async (forceSubmit: boolean = false) => {
     setHasAttemptedSubmit(true);
-    const isValidForm = validateForm();
-    if (!isValidForm) return;
-    if (!areAoeQuestionsComplete() && !forceSubmit) return;
+    if (!validateForm()) return;
+    if (!forceSubmit && !areAoeQuestionsComplete()) return;
 
     trackSubmitTestResult();
     setIsSubmitModalOpen(false);
