@@ -182,7 +182,7 @@ export function mapSpecifiedSymptomBoolLiteralsToBool(
     symptomDefinitionToParse = syphilisSymptomDefinitions;
   }
   // there are no symptoms for that test card, so return true
-  if(!symptomDefinitionToParse) return {shouldReturn: true}
+  if (!symptomDefinitionToParse) return { shouldReturn: true };
   return mapSymptomBoolLiteralsToBool(
     symptomsJsonString,
     symptomDefinitionToParse
