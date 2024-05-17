@@ -11,7 +11,6 @@ import {
   SomeoneWithName,
 } from "../constants";
 import { showError, showSuccess } from "../../utils/srToast";
-import { respiratorySymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 
 import { AoeQuestionResponses, TestFormState } from "./TestCardFormReducer";
 import {
@@ -20,7 +19,9 @@ import {
   QueriedFacility,
   QueriedTestOrder,
 } from "./types";
-import { mapSpecifiedSymptomBoolLiteralsToBool, mapSymptomBoolLiteralsToBool } from "./diseaseSpecificComponents/aoeUtils";
+import {
+  mapSpecifiedSymptomBoolLiteralsToBool,
+} from "./diseaseSpecificComponents/aoeUtils";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
