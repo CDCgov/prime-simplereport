@@ -260,19 +260,18 @@ export function generateAoeValidationState(
     symptomOnsetAndSelectionQuestionsAnswered,
   } = validateAoeQuestions(formState, whichAOE);
 
-  switch (true) {
-    case !allNonSymptomAoeQuestionsAnswered || !hasSymptomsQuestionAnswered:
-      return AoeValidationErrorMessages.INCOMPLETE;
-    case allNonSymptomAoeQuestionsAnswered &&
-      hasSymptomsQuestionAnswered &&
-      symptomOnsetAndSelectionQuestionsAnswered:
+  if (allNonSymptomAoeQuestionsAnswered && hasSymptomsQuestionAnswered) {
+    if (symptomOnsetAndSelectionQuestionsAnswered) {
       return AoeValidationErrorMessages.COMPLETE;
-    case allNonSymptomAoeQuestionsAnswered &&
-      hasSymptomsQuestionAnswered &&
-      !symptomOnsetAndSelectionQuestionsAnswered:
-      return AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR;
-    default:
-      return AoeValidationErrorMessages.UNKNOWN;
+    }
+    return AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR;
+  } else if (
+    !allNonSymptomAoeQuestionsAnswered ||
+    !hasSymptomsQuestionAnswered
+  ) {
+    return AoeValidationErrorMessages.INCOMPLETE;
+  } else {
+    return AoeValidationErrorMessages.UNKNOWN;
   }
 }
 
