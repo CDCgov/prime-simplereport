@@ -18,11 +18,22 @@ const store = mockStore({
   facilities: [{ id: "1", name: "Lincoln Middle School" }],
 });
 
+const Template: StoryFn<Props> = (args) => (
+  <Provider store={store}>
+    <MemoryRouter>
+      <Submissions {...args} />
+    </MemoryRouter>
+  </Provider>
+);
+
 export default {
   title: "App/Test results/Submissions",
-  component: Submissions,
+  component: Template,
   argTypes: {},
   args: {},
+  parameters: {
+    msw: getMocks("GetUploadSubmissions", "EditQueueItem"),
+  },
   decorators: [
     (Story) => (
       <StoryGraphQLProvider>
@@ -32,22 +43,4 @@ export default {
   ],
 } as Meta;
 
-const Template: StoryFn<Props> = (args) => (
-  <Provider store={store}>
-    <MemoryRouter>
-      <Submissions {...args} />
-    </MemoryRouter>
-  </Provider>
-);
-
-export const WithResults = Template.bind({});
-WithResults.parameters = {
-  msw: getMocks("GetUploadSubmissions"),
-};
-WithResults.args = {};
-
-export const NoResults = Template.bind({});
-NoResults.parameters = {
-  msw: getMocks("GetEmptyUploadSubmissions"),
-};
-NoResults.args = {};
+export const Primary = {};
