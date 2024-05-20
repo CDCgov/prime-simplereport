@@ -1,56 +1,61 @@
-import {
-  DefaultRequestBody,
-  graphql,
-  GraphQLHandler,
-  GraphQLRequest,
-  MockedRequest,
-  rest,
-  RestHandler,
-} from "msw";
+import { graphql, http, HttpResponse } from "msw";
 import {
   ApolloClient,
   HttpLink,
   InMemoryCache,
   ApolloProvider,
 } from "@apollo/client";
+import React from "react";
 
 import { exampleQuestionSet } from "../app/signUp/IdentityVerification/constants";
-import { UploadResponse, UploadSubmissionPage } from "../generated/graphql";
+import { UploadSubmissionPage } from "../generated/graphql";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-const mocks = {
-  GetPatientsLastResult: graphql.query(
-    "GetPatientsLastResult",
-    (req, res, ctx) => {
-      return res(ctx.data({ patient: { lastTest: {} } }));
-    }
-  ),
-  SendPatientLinkSms: graphql.mutation("sendPatientLinkSms", (req, res, ctx) =>
-    res(ctx.data({}))
-  ),
-  UpdateAOE: graphql.mutation("UpdateAOE", (req, res, ctx) => {
-    return res(ctx.data({}));
+export const mocks = {
+  GetPatientsLastResult: graphql.query("GetPatientsLastResult", () => {
+    return HttpResponse.json({
+      data: {
+        patient: { lastTest: {} },
+      },
+    });
   }),
-  RemovePatientFromQueue: graphql.mutation(
-    "RemovePatientFromQueue",
-    (req, res, ctx) => res(ctx.data({}))
-  ),
+  SendPatientLinkSms: graphql.mutation("sendPatientLinkSms", () => {
+    return HttpResponse.json({
+      data: {},
+    });
+  }),
+  UpdateAOE: graphql.mutation("UpdateAOE", () => {
+    return HttpResponse.json({
+      data: {},
+    });
+  }),
+  EditQueueItem: graphql.mutation("EditQueueItem", () => {
+    return HttpResponse.json({
+      data: {},
+    });
+  }),
+  RemovePatientFromQueue: graphql.mutation("RemovePatientFromQueue", () => {
+    return HttpResponse.json({
+      data: {},
+    });
+  }),
   GetTopLevelDashboardMetricsNew: graphql.query(
     "GetTopLevelDashboardMetricsNew",
-    (req, res, ctx) =>
-      res(
-        ctx.data({
+    () => {
+      return HttpResponse.json({
+        data: {
           topLevelDashboardMetrics: {
             positiveTestCount: 64,
             totalTestCount: 562,
           },
-        })
-      )
+        },
+      });
+    }
   ),
-  GetUploadSubmission: graphql.query("GetUploadSubmission", (req, res, ctx) =>
-    res(
-      ctx.data({
+  GetUploadSubmission: graphql.query("GetUploadSubmission", ({ variables }) => {
+    return HttpResponse.json({
+      data: {
         uploadSubmission: {
           internalId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
           reportId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
@@ -59,13 +64,13 @@ const mocks = {
           recordsCount: 15,
           errors: [],
           warnings: [],
-        } as UploadResponse,
-      })
-    )
-  ),
-  GetUploadSubmissions: graphql.query("GetUploadSubmissions", (req, res, ctx) =>
-    res(
-      ctx.data({
+        },
+      },
+    });
+  }),
+  GetUploadSubmissions: graphql.query("GetUploadSubmissions", () => {
+    return HttpResponse.json({
+      data: {
         uploadSubmissions: {
           content: [
             {
@@ -98,77 +103,78 @@ const mocks = {
           ],
           totalElements: 3,
         } as UploadSubmissionPage,
-      })
-    )
-  ),
-  GetEmptyUploadSubmissions: graphql.query(
-    "GetUploadSubmissions",
-    (req, res, ctx) =>
-      res(
-        ctx.data({
-          uploadSubmissions: {
-            content: [],
-            totalElements: 0,
-          } as UploadSubmissionPage,
-        })
-      )
-  ),
-  enrollSecurityKeyMfa: rest.post(
+      },
+    });
+  }),
+  GetEmptyUploadSubmissions: graphql.query("GetUploadSubmissions", () => {
+    return HttpResponse.json({
+      data: {
+        uploadSubmissions: {
+          content: [],
+          totalElements: 0,
+        } as UploadSubmissionPage,
+      },
+    });
+  }),
+
+  enrollSecurityKeyMfa: http.post(
     `${BACKEND_URL}/user-account/enroll-security-key-mfa`,
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({ activation: { storybook: true } })
+    () => {
+      return HttpResponse.json(
+        { activation: { storybook: true } },
+        { status: 200 }
       );
     }
   ),
-  enrollTotpMfa: rest.post(
+  enrollTotpMfa: http.post(
     `${BACKEND_URL}/user-account/authenticator-qr`,
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({ qrcode: "https://i.redd.it/tvfnlka65zi51.jpg" })
+    () => {
+      return HttpResponse.json(
+        { qrcode: "https://i.redd.it/tvfnlka65zi51.jpg" },
+        { status: 200 }
       );
     }
   ),
-  getQuestions: rest.post(
+  getQuestions: http.post(
     `${BACKEND_URL}/identity-verification/get-questions`,
-    (req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.json({ questionSet: exampleQuestionSet })
+    () => {
+      return HttpResponse.json(
+        { questionSet: exampleQuestionSet },
+        { status: 200 }
       );
     }
   ),
-  getEntityName: rest.get(
-    `${BACKEND_URL}/pxp/register/entity-name*`,
-    (_, res, ctx) => {
-      return res(ctx.status(200), ctx.text("Shady Oaks"));
-    }
-  ),
-  duplicateRegistration: rest.post(
+  getEntityName: http.get(`${BACKEND_URL}/pxp/register/entity-name*`, () => {
+    return HttpResponse.json("Shady Oaks", { status: 200 });
+  }),
+  duplicateRegistration: http.post(
     `${BACKEND_URL}/pxp/register/existing-patient`,
-    (_, rest, ctx) => {
-      return rest(ctx.status(200), ctx.body("true"));
+    () => {
+      return HttpResponse.json(true, { status: 200 });
     }
   ),
-  uniqueRegistration: rest.post(
+  uniqueRegistration: http.post(
     `${BACKEND_URL}/pxp/register/existing-patient`,
-    (_, rest, ctx) => {
-      return rest(ctx.status(200), ctx.body("false"));
+    () => {
+      return HttpResponse.json(false, { status: 200 });
     }
   ),
-  register: rest.post(`${BACKEND_URL}/pxp/register`, (_, rest, ctx) => {
-    return rest(ctx.status(200));
+  register: http.post(`${BACKEND_URL}/pxp/register`, () => {
+    return HttpResponse.json({}, { status: 200 });
   }),
 };
 
-export const getMocks = (
-  ...names: (keyof typeof mocks)[]
-): (
-  | GraphQLHandler<GraphQLRequest<any>>
-  | RestHandler<MockedRequest<DefaultRequestBody>>
-)[] => names.map((name) => mocks[name]);
+export const getMocks = (...names: (keyof typeof mocks)[]) => {
+  return {
+    handlers: names.map((name) => mocks[name]),
+  };
+};
+
+export const getAllMocks = () => {
+  return Object.values(mocks);
+};
+
+export const handlers = getAllMocks();
 
 const cache = new InMemoryCache();
 const link = new HttpLink({
