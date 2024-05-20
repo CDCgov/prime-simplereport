@@ -258,7 +258,7 @@ export function generateAoeValidationState(
     allNonSymptomAoeQuestionsAnswered,
     hasSymptomsQuestionAnswered,
     symptomOnsetAndSelectionQuestionsAnswered,
-  } = validateAoeQuestions(formState, whichAOE);
+  } = areAoeQuestionsAnswered(formState, whichAOE);
 
   if (allNonSymptomAoeQuestionsAnswered && hasSymptomsQuestionAnswered) {
     if (symptomOnsetAndSelectionQuestionsAnswered) {
@@ -275,7 +275,7 @@ export function generateAoeValidationState(
   }
 }
 
-export function validateAoeQuestions(
+export function areAoeQuestionsAnswered(
   formState: TestFormState,
   whichAOE: AOEFormOption
 ) {
