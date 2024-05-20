@@ -276,7 +276,7 @@ const TestCardForm = ({
     whichAOEFormOption !== AOEFormOption.COVID
       ? whichAOEFormOption
       : null;
-  const areAoeQuestionsComplete = () => {
+  const validateAoeForm = () => {
     const aoeValidationMessage = generateAoeValidationState(
       state,
       whichAOEFormOption
@@ -350,7 +350,7 @@ const TestCardForm = ({
   const submitForm = async (forceSubmit: boolean = false) => {
     setHasAttemptedSubmit(true);
     if (!validateForm()) return;
-    if (!forceSubmit && !areAoeQuestionsComplete()) return;
+    if (!forceSubmit && !validateAoeForm()) return;
 
     trackSubmitTestResult();
     setIsSubmitModalOpen(false);
