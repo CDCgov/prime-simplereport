@@ -1,8 +1,24 @@
 import { initialize, mswLoader } from "msw-storybook-addon";
 import { MockedProvider } from "@apollo/client/testing";
 import "../src/scss/App.scss";
+import { BACKEND_URL, handlers } from "../src/stories/storyMocks";
 
-initialize();
+initialize({
+  serviceWorker: {
+    url: "../mockServiceWorker.js",
+  },
+  onUnhandledRequest: ({ url, method }) => {
+    const pathname = new URL(url).pathname;
+    if (pathname.startsWith(BACKEND_URL)) {
+      console.error(`Unhandled ${method} request to ${url}.
+
+        This exception has been only logged in the console, however, it's strongly recommended to resolve this error as you don't want unmocked data in Storybook stories.
+
+        If you wish to mock an error response, please refer to this guide: https://mswjs.io/docs/recipes/mocking-error-responses
+      `);
+    }
+  },
+});
 
 const preview = {
   parameters: {
@@ -32,6 +48,9 @@ const preview = {
     },
     apolloClient: {
       MockedProvider,
+    },
+    msw: {
+      handlers: handlers,
     },
   },
   // Provide the MSW addon loader globally

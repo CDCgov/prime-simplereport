@@ -19,5 +19,5 @@ module.exports = {
     name: "@storybook/react-webpack5",
     options: { fastRefresh: true },
   },
-  staticDirs: ["../storybook_public"],
+  staticDirs: ["../public"],
 };
