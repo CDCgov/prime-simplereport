@@ -322,7 +322,7 @@ const EditPatient = (props: Props) => {
               onSave(true);
             }}
             variant="outline"
-            label={loading ? `${t("common.button.saving")}...` : "Start test"}
+            label={formChanged ? `${t("Save and start test")}` : "Start test"}
           />
         )}
         <button
