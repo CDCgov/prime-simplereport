@@ -133,7 +133,7 @@ export function generateSymptomAoeConstants(
   const isSymptomOnsetAnswered =
     !!responses.symptoms && Object.values(symptoms).some((x) => x?.valueOf());
 
-  const showSymptomOnsetError =
+  const showSymptomSelectionError =
     hasAttemptedSubmit &&
     isSymptomsAnswered &&
     responses.noSymptoms === false &&
@@ -143,7 +143,7 @@ export function generateSymptomAoeConstants(
     showSymptomsError,
     showSymptomOnsetDateError,
     hasSymptoms,
-    showSymptomOnsetError,
+    showSymptomSelectionError,
     symptoms,
   };
 }
