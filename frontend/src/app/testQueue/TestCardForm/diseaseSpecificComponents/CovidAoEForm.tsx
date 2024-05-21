@@ -44,7 +44,7 @@ const CovidAoEForm = ({
   const {
     hasSymptoms,
     symptoms,
-    showSymptomOnsetError,
+    showSymptomSelectionError,
     showSymptomOnsetDateError,
   } = generateSymptomAoeConstants(
     responses,
@@ -110,9 +110,11 @@ const CovidAoEForm = ({
               legend="Select any symptoms the patient is experiencing"
               name={`symptoms-${testOrder.internalId}`}
               onChange={(e) => onSymptomsChange(e, symptoms)}
-              validationStatus={showSymptomOnsetError ? "error" : undefined}
+              validationStatus={showSymptomSelectionError ? "error" : undefined}
               errorMessage={
-                showSymptomOnsetError ? SYMPTOM_SUBQUESTION_ERROR : undefined
+                showSymptomSelectionError
+                  ? SYMPTOM_SUBQUESTION_ERROR
+                  : undefined
               }
             />
           </div>
