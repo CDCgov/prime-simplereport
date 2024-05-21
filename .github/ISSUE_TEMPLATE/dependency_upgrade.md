@@ -7,15 +7,6 @@ assignees: ''
 
 ---
 
----
-name: Design Issue request
-about: Report a design issue
-title: ''
-labels: ''
-assignees: ''
-
----
-
 ### Summary
 
 Describe the dependency, what version we're currently on, and what version we're moving to
