@@ -184,8 +184,11 @@ export const hasAnySupportedDiseaseTests = (
 };
 export const whichAoeFormToDisplay = (
   whichAoeFormOption: AOEFormOption,
-  resultHasPositive: boolean
+  testFormState: TestFormState
 ): AOEFormOption => {
+  const resultHasPositive = testFormState.testResults.some(
+    (x) => x.testResult === TEST_RESULTS.POSITIVE
+  );
   switch (whichAoeFormOption) {
     case AOEFormOption.COVID:
       return AOEFormOption.COVID;

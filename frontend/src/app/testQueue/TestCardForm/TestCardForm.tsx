@@ -272,14 +272,7 @@ const TestCardForm = ({
   };
 
   const whichAoeFormOption = useAOEFormOption(state.deviceId, devicesMap);
-
-  const positiveResultIndicated = state.testResults.some(
-    (x) => x.testResult === TEST_RESULTS.POSITIVE
-  );
-  const aoeFormToDisplay = whichAoeFormToDisplay(
-    whichAoeFormOption,
-    positiveResultIndicated
-  );
+  const aoeFormToDisplay = whichAoeFormToDisplay(whichAoeFormOption, state);
 
   const validateAoeForm = () => {
     const aoeValidationMessage = generateAoeValidationState(
