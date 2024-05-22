@@ -182,6 +182,21 @@ export const hasAnySupportedDiseaseTests = (
   }
   return false;
 };
+export const whichAoeFormToDisplay = (
+  whichAoeFormOption: AOEFormOption,
+  resultHasPositive: boolean
+): AOEFormOption => {
+  switch (whichAoeFormOption) {
+    case AOEFormOption.COVID:
+      return AOEFormOption.COVID;
+    case AOEFormOption.HIV:
+      return resultHasPositive ? AOEFormOption.HIV : AOEFormOption.NONE;
+    case AOEFormOption.SYPHILIS:
+      return resultHasPositive ? AOEFormOption.SYPHILIS : AOEFormOption.NONE;
+    case AOEFormOption.NONE:
+      return AOEFormOption.NONE;
+  }
+};
 
 // when other diseases are added, update this to use the correct AOE for that disease
 export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {

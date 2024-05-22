@@ -50,6 +50,7 @@ import {
   useSpecimenTypeOptions,
   useTestOrderPatient,
   AoeValidationErrorMessages,
+  whichAoeFormToDisplay,
 } from "./TestCardForm.utils";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
@@ -270,22 +271,26 @@ const TestCardForm = ({
     return null;
   };
 
-  const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
-  const whichAoeFormRequiredForPositives =
-    state.testResults.some((x) => x.testResult === TEST_RESULTS.POSITIVE) &&
-    whichAOEFormOption !== AOEFormOption.COVID
-      ? whichAOEFormOption
-      : null;
+  const whichAoeFormOption = useAOEFormOption(state.deviceId, devicesMap);
+
+  const positiveResultIndicated = state.testResults.some(
+    (x) => x.testResult === TEST_RESULTS.POSITIVE
+  );
+  const aoeFormToDisplay = whichAoeFormToDisplay(
+    whichAoeFormOption,
+    positiveResultIndicated
+  );
+
   const validateAoeForm = () => {
     const aoeValidationMessage = generateAoeValidationState(
       state,
-      whichAOEFormOption
+      whichAoeFormOption
     );
     if (aoeValidationMessage === AoeValidationErrorMessages.COMPLETE) {
       return true;
     }
     if (aoeValidationMessage === AoeValidationErrorMessages.INCOMPLETE) {
-      if (whichAOEFormOption === AOEFormOption.COVID) {
+      if (whichAoeFormOption === AOEFormOption.COVID) {
         setIsSubmitModalOpen(true);
       } else {
         showError(
@@ -559,7 +564,7 @@ const TestCardForm = ({
             ></TestResultInputGroup>
           </FormGroup>
         </div>
-        {whichAOEFormOption === AOEFormOption.COVID && (
+        {aoeFormToDisplay === AOEFormOption.COVID && (
           <div className="grid-row grid-gap">
             <CovidAoEForm
               testOrder={testOrder}
@@ -574,7 +579,7 @@ const TestCardForm = ({
             />
           </div>
         )}
-        {whichAoeFormRequiredForPositives === AOEFormOption.HIV && (
+        {aoeFormToDisplay === AOEFormOption.HIV && (
           <div className="grid-row grid-gap">
             <HIVAoEForm
               testOrder={testOrder}
