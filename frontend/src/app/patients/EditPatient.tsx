@@ -230,10 +230,7 @@ const EditPatient = (props: Props) => {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
-  const savePerson = async (
-    person: Nullable<PersonFormData>,
-    startTest: boolean = false
-  ) => {
+  const savePerson = async (person: Nullable<PersonFormData>) => {
     await updatePatient({
       variables: {
         patientId: props.patientId,
@@ -258,7 +255,9 @@ const EditPatient = (props: Props) => {
       "Information record has been updated.",
       `${PATIENT_TERM_CAP} record saved`
     );
+  };
 
+  const beginTest = (startTest: boolean) => {
     if (startTest) {
       const facility = data?.patient.facility?.id || activeFacilityId;
       setRedirect({
@@ -272,7 +271,16 @@ const EditPatient = (props: Props) => {
       setRedirect(personPath);
     }
   };
-
+  const saveAndStartTest = async (
+    person: Nullable<PersonFormData>,
+    formChanged: boolean,
+    startTest: boolean
+  ) => {
+    if (formChanged) {
+      await savePerson(person);
+    }
+    beginTest(startTest);
+  };
   const getHeader = (
     person: Nullable<PersonFormData>,
     onSave: (startTest?: boolean) => void,
@@ -313,7 +321,18 @@ const EditPatient = (props: Props) => {
         </div>
       </div>
       <div className="display-flex flex-align-center">
-        {!props.fromQueue && (
+        {!props.fromQueue && formChanged ? (
+          <Button
+            id="edit-patient-save-upper"
+            className="prime-save-patient-changes-start-test"
+            disabled={loading}
+            onClick={() => {
+              onSave(true);
+            }}
+            variant="outline"
+            label={formChanged ? `${t("Save and start test")}` : "Start test"}
+          />
+        ) : (
           <Button
             id="edit-patient-save-upper"
             className="prime-save-patient-changes-start-test"
