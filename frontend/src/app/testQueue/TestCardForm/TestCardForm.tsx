@@ -50,7 +50,6 @@ import {
   useSpecimenTypeOptions,
   useTestOrderPatient,
   AoeValidationErrorMessages,
-  whichAoeFormToDisplay,
 } from "./TestCardForm.utils";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
@@ -271,8 +270,7 @@ const TestCardForm = ({
     return null;
   };
 
-  const whichAoeFormOption = useAOEFormOption(state.deviceId, devicesMap);
-  const aoeFormToDisplay = whichAoeFormToDisplay(whichAoeFormOption, state);
+  const whichAoeFormOption = useAOEFormOption(state, devicesMap);
 
   const validateAoeForm = () => {
     const aoeValidationMessage = generateAoeValidationState(
@@ -557,7 +555,7 @@ const TestCardForm = ({
             ></TestResultInputGroup>
           </FormGroup>
         </div>
-        {aoeFormToDisplay === AOEFormOption.COVID && (
+        {whichAoeFormOption === AOEFormOption.COVID && (
           <div className="grid-row grid-gap">
             <CovidAoEForm
               testOrder={testOrder}
@@ -572,7 +570,7 @@ const TestCardForm = ({
             />
           </div>
         )}
-        {aoeFormToDisplay === AOEFormOption.HIV && (
+        {whichAoeFormOption === AOEFormOption.HIV && (
           <div className="grid-row grid-gap">
             <HIVAoEForm
               testOrder={testOrder}

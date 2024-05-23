@@ -182,51 +182,39 @@ export const hasAnySupportedDiseaseTests = (
   }
   return false;
 };
-export const whichAoeFormToDisplay = (
-  whichAoeFormOption: AOEFormOption,
-  testFormState: TestFormState
-): AOEFormOption => {
+
+// when other diseases are added, update this to use the correct AOE for that disease
+export const useAOEFormOption = (
+  testFormState: TestFormState,
+  devicesMap: DevicesMap
+) => {
   const resultHasPositive = testFormState.testResults.some(
     (x) => x.testResult === TEST_RESULTS.POSITIVE
   );
-  switch (whichAoeFormOption) {
-    case AOEFormOption.COVID:
-      return AOEFormOption.COVID;
-    case AOEFormOption.HIV:
-      return resultHasPositive ? AOEFormOption.HIV : AOEFormOption.NONE;
-    case AOEFormOption.SYPHILIS:
-      return resultHasPositive ? AOEFormOption.SYPHILIS : AOEFormOption.NONE;
-    case AOEFormOption.NONE:
-      return AOEFormOption.NONE;
-  }
-};
-
-// when other diseases are added, update this to use the correct AOE for that disease
-export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
   // some devices don't have any supported disease tests saved because historically they only supported COVID
   // this is often seen in some of the dev environments
-  if (!hasAnySupportedDiseaseTests(deviceId, devicesMap)) {
+  if (!hasAnySupportedDiseaseTests(testFormState.deviceId, devicesMap)) {
     return AOEFormOption.COVID;
   }
   if (
     devicesMap
-      .get(deviceId)
+      .get(testFormState.deviceId)
       ?.supportedDiseaseTestPerformed.filter(
         (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.HIV
       ).length === 1
   ) {
-    return AOEFormOption.HIV;
+    return resultHasPositive ? AOEFormOption.HIV : AOEFormOption.NONE;
   }
   if (
     devicesMap
-      .get(deviceId)
+      .get(testFormState.deviceId)
       ?.supportedDiseaseTestPerformed.filter(
         (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.SYPHILIS
       ).length === 1
   ) {
-    return AOEFormOption.SYPHILIS;
+    return resultHasPositive ? AOEFormOption.SYPHILIS : AOEFormOption.NONE;
   }
-  return isDeviceFluOnly(deviceId, devicesMap)
+  return isDeviceFluOnly(testFormState.deviceId, devicesMap)
     ? AOEFormOption.NONE
     : AOEFormOption.COVID;
 };
