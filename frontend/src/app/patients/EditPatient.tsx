@@ -273,8 +273,8 @@ const EditPatient = (props: Props) => {
   };
   const saveAndStartTest = async (
     person: Nullable<PersonFormData>,
-    formChanged: boolean,
-    startTest: boolean
+    startTest: boolean,
+    formChanged: boolean
   ) => {
     if (formChanged) {
       await savePerson(person);
@@ -330,7 +330,7 @@ const EditPatient = (props: Props) => {
               onSave(true);
             }}
             variant="outline"
-            label={formChanged ? `${t("Save and start test")}` : "Start test"}
+            label={"Save and start test"}
           />
         ) : (
           <Button
@@ -341,7 +341,7 @@ const EditPatient = (props: Props) => {
               onSave(true);
             }}
             variant="outline"
-            label={formChanged ? `${t("Save and start test")}` : "Start test"}
+            label={"Start test"}
           />
         )}
         <button
@@ -410,7 +410,7 @@ const EditPatient = (props: Props) => {
                   data.patient.street === "** Unknown / Not Given **",
               }}
               patientId={props.patientId}
-              savePerson={savePerson}
+              savePerson={saveAndStartTest}
               getHeader={getHeader}
               getFooter={getFooter}
             />
