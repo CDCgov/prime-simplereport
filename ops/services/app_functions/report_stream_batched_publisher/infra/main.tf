@@ -79,7 +79,7 @@ resource "azurerm_linux_function_app" "functions" {
   app_settings = {
     https_only                            = true
     FUNCTIONS_WORKER_RUNTIME              = "node"
-    WEBSITE_NODE_DEFAULT_VERSION          = "~18"
+    WEBSITE_NODE_DEFAULT_VERSION          = "~20"
     FUNCTION_APP_EDIT_MODE                = "readonly"
     HASH                                  = azurerm_storage_blob.appcode.content_md5
     WEBSITE_RUN_FROM_PACKAGE              = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
