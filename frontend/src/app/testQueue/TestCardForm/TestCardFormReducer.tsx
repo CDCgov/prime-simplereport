@@ -1,11 +1,13 @@
 import moment from "moment/moment";
 import { isEqual, sortBy } from "lodash";
 
-import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
+import {
+  PregnancyCode,
+  SyphilisHistoryCode,
+} from "../../../patientApp/timeOfTest/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
 
 import { convertFromMultiplexResponse } from "./TestCardForm.utils";
-import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
 import { DevicesMap, QueriedTestOrder } from "./types";
 
 export interface TestFormState {
@@ -20,6 +22,7 @@ export interface TestFormState {
 
 export interface AoeQuestionResponses {
   pregnancy?: PregnancyCode;
+  syphilisHistory?: SyphilisHistoryCode;
   noSymptoms?: boolean | null;
   symptoms?: string | null;
   symptomOnset?: string;
@@ -171,9 +174,10 @@ export const testCardFormReducer = (
       }
       const aoeAnswers = {
         noSymptoms: payload.noSymptoms,
-        symptoms: JSON.stringify(parseSymptoms(payload.symptoms)),
+        symptoms: payload.symptoms,
         symptomOnset: payload.symptomOnset,
         pregnancy: payload.pregnancy,
+        syphilisHistory: payload.syphilisHistory,
         genderOfSexualPartners: payload.genderOfSexualPartners,
       } as AoeQuestionResponses;
       if (!isEqual(aoeAnswers, prevState.aoeResponses)) {

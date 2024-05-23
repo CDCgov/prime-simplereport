@@ -21,7 +21,7 @@ const NextSteps = () => {
           verified.
         </p>
         <a
-          className="usa-button width-full margin-top-3"
+          className="usa-button width-full margin-top-3 display-block"
           href="https://calendly.com/simplereport-id-verification-sessions/simplereport-id-verification-sessions?back=1&month=2022-05"
         >
           Schedule identity verification

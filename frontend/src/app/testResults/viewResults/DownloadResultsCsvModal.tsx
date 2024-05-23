@@ -11,7 +11,7 @@ import {
   useGetFacilityResultsForCsvWithCountLazyQuery,
   GetFacilityResultsForCsvWithCountQuery,
 } from "../../../generated/graphql";
-import { parseDataForCSV } from "../../utils/testResultCSV";
+import { parseDataForCSV, ResultCsvRow } from "../../utils/testResultCSV";
 import { useDisabledFeatureDiseaseList } from "../../utils/disease";
 
 import { ALL_FACILITIES_ID, ResultsQueryVariables } from "./TestResultsList";
@@ -32,7 +32,7 @@ export const DownloadResultsCsvModal = ({
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
   const rowsMaxLimit = 20000;
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<ResultCsvRow[]>([]);
   const csvLink = useRef<
     CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
   >(null);
@@ -69,11 +69,15 @@ export const DownloadResultsCsvModal = ({
 
   const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
     if (data?.testResultsPage?.content) {
-      const csvResults = parseDataForCSV(
-        data.testResultsPage.content,
-        disabledFeatureDiseaseList
-      );
-      setResults(csvResults);
+      try {
+        const csvResults = parseDataForCSV(
+          data.testResultsPage.content,
+          disabledFeatureDiseaseList
+        );
+        setResults(csvResults);
+      } catch (e) {
+        showError("Error creating results file to download");
+      }
     } else {
       showError("Unknown error downloading results");
     }

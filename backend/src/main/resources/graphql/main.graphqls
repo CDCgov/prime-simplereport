@@ -268,6 +268,7 @@ type TestOrder {
   dateAdded: String!
   dateUpdated: DateTime
   pregnancy: String
+  syphilisHistory: String
   noSymptoms: Boolean
   symptoms: String
   symptomOnset: LocalDate
@@ -287,6 +288,7 @@ type TestResult {
   dateAdded: String
   dateUpdated: DateTime
   pregnancy: String
+  syphilisHistory: String
   noSymptoms: Boolean
   symptoms: String
   symptomOnset: LocalDate
@@ -674,6 +676,7 @@ type Mutation {
     facilityId: ID!
     patientId: ID!
     pregnancy: String
+    syphilisHistory: String
     symptoms: String @Size(min: 0, max: 1024)
     symptomOnset: LocalDate
     noSymptoms: Boolean
@@ -684,6 +687,7 @@ type Mutation {
   updateTimeOfTestQuestions(
     patientId: ID!
     pregnancy: String
+    syphilisHistory: String
     symptoms: String @Size(min: 0, max: 1024)
     symptomOnset: LocalDate
     noSymptoms: Boolean

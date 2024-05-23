@@ -52,6 +52,7 @@ jobs:
           okta_enabled: true
           okta_url: https://hhs-prime.oktapreview.com
           okta_client_id: ${{ vars.OKTA_CLIENT_ID }}
+          base_domain_name: ${{ inputs.deploy_env }}.simplereport.gov
 
   prerelease_backend:
     runs-on: ubuntu-latest

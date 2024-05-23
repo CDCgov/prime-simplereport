@@ -5276,3 +5276,144 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Syphilis';
+  - changeSet:
+      id: create-user-role-and-user-facility-tables
+      author: ttu8@cdc.gov
+      comment: creates role, api_user_role, and api_user_facility tables to begin migration of Okta role and groups
+      changes:
+        - tagDatabase:
+            tag: create-user-role-and-user-facility
+        - sql:
+            remarks: Create the OrganizationRole enumerations needed for role
+            sql: CREATE TYPE ${database.defaultSchemaName}.ORGANIZATION_ROLE as ENUM('ALL_FACILITIES', 'ENTRY_ONLY', 'USER', 'ADMIN');
+        - createTable:
+            tableName: role
+            remarks: named references to a OrganizationRole enum
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: ${database.defaultSchemaName}.ORGANIZATION_ROLE
+                  remarks: The name of the role that is an enumerated value.
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: api_user_facility
+            remarks: creates a new table to store the relationship between api_user and facility
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: api_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__api_user
+                    references: api_user
+              - column:
+                  name: facility_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__facility
+                    references: facility
+        - createTable:
+            tableName: api_user_role
+            remarks: creates a new table to store the relationship between api_user and role
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: api_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__api_user
+                    references: api_user
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__organization
+                    references: organization
+              - column:
+                  name: role_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__role
+                    references: role
+      rollback:
+        - sql:
+            sql: |
+              DROP TABLE ${database.defaultSchemaName}.API_USER_FACILITY;
+              DROP TABLE ${database.defaultSchemaName}.API_USER_ROLE;
+              DROP TABLE ${database.defaultSchemaName}.ROLE;
+              DROP TYPE ${database.defaultSchemaName}.ORGANIZATION_ROLE;
+  - changeSet:
+      id: add-user-role-and-user-facility-to-metabase
+      author: ttu8@cdc.gov
+      comment: Adds permission for the no-PHI user to select from the role, api_user_role, and api_user_facility tables
+      changes:
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.role TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_facility TO ${noPhiUsername};
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};
+      rollback:
+        - sql: |
+            REVOKE SELECT ON TABLE ${database.defaultSchemaName}.role FROM ${noPhiUsername};
+            REVOKE SELECT ON TABLE ${database.defaultSchemaName}.api_user_facility FROM ${noPhiUsername};
+            REVOKE SELECT ON TABLE ${database.defaultSchemaName}.api_user_role FROM ${noPhiUsername};
+  - changeSet:
+      id: add-flu-a-and-b-to-supported_disease-table
+      author: tmz1@cdc.gov
+      comment: Add Flu A and B to the supported_disease table.
+      changes:
+        - tagDatabase:
+            tag: add-flu-a-and-b-to-supported_disease-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'Flu A and B', '44567-6')
+      rollback:
+        - sql:
+            sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Flu A and B';
+  - changeSet:
+      id: remove-internal_id-from-user-facility-table
+      author: tnd8@cdc.gov
+      comment: Remove internal_id column from join table
+      changes:
+        - dropColumn:
+            tableName: api_user_facility
+            columnName: internal_id
+      rollback:
+        - addColumn:
+            tableName: api_user_facility
+            column:
+              name: internal_id
+              type: uuid
+              remarks: The internal database identifier for this entity.
+              constraints:
+                primaryKey: true
+                nullable: false

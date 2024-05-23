@@ -498,8 +498,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     }
   }
 }
-// MODAL
 
+// MODAL
 // the background behind the modal
 .prime-modal-overlay {
   background-color: rgba(0, 0, 0, 0.5);
@@ -511,29 +511,12 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   z-index: 1000;
 }
 
-.prime-modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  margin: 0 1em;
-}
-
-.prime-modal-buttons button {
-  margin-left: 1em;
-}
-
-.sr-modal-content p {
-  margin: 1em;
-}
-
-// Simple modal
 .modal--basic {
   .ReactModal__Content {
-    @include u-margin-x(4);
-
     max-height: 90vh;
     width: 700px;
 
-    @media (max-width: 768px) {
+    @media (max-width: 48rem) {
       width: units("mobile-lg");
     }
   }
@@ -593,17 +576,13 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
   display: block;
   margin-bottom: 0;
-  margin-right: units("neg-205");
-  margin-top: units("neg-205");
+  margin-right: 0;
+  margin-top: 0;
   text-align: center;
 }
 
 .modal__close-img {
   width: units(4);
-}
-
-.modal__content {
-  @extend .usa-prose;
 }
 
 .usa-alert--success {
@@ -1015,15 +994,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   margin-top: units(3);
 }
 
-.sr-time-of-test-buttons {
-  .modal__close-button {
-    height: auto;
-    padding-bottom: units(1);
-    padding-right: units(1);
-    padding-top: units(2);
-  }
-}
-
 .sr-time-of-test-buttons-footer {
   text-align: right;
 }
@@ -1161,13 +1131,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .usa-radio__input--tile + .usa-radio__label {
   border: 2px solid #dfe1e2;
-}
-
-.usa-checkbox__input:disabled + .usa-checkbox__label::before,
-.usa-radio__input:disabled + .usa-radio__label::before {
-  background: #e6e6e6;
-  box-shadow: 0 0 0 2px #c9c9c9;
-  cursor: not-allowed;
 }
 
 .sr-element__sr-only {

@@ -1,6 +1,6 @@
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
 
-import { parseDataForCSV } from "./testResultCSV";
+import { parseDataForCSV, QueriedTestResult } from "./testResultCSV";
 
 const data = [
   {
@@ -54,7 +54,11 @@ const data = [
       name: "Access Bio CareStart",
       manufacturer: "Access Bio, Inc.",
       model: "CareStart COVID-19 Antigen test*",
-      swabType: "258500001",
+      swabTypes: [
+        {
+          name: "Nasal swab",
+        },
+      ],
     },
     patient: {
       firstName: "John",
@@ -92,58 +96,81 @@ const data = [
     noSymptoms: false,
     symptomOnset: null,
   },
-] as TestResult[];
+] as QueriedTestResult[];
+
+const csvRowWithoutResult = {
+  "Device manufacturer": "Access Bio, Inc.",
+  "Device model": "CareStart COVID-19 Antigen test*",
+  "Device name": "Access Bio CareStart",
+  "Device swab type": "Nasal swab",
+  "Facility name": "test facility",
+  "Has symptoms": "Unknown",
+  "Patient ID (Student ID, Employee ID, etc.)": null,
+  "Patient city": "Minneapolis",
+  "Patient country": "USA",
+  "Patient county": null,
+  "Patient date of birth": "01/01/1980",
+  "Patient email": "foo@bar.com",
+  "Patient ethnicity": "hispanic",
+  "Patient first name": "John",
+  "Patient full name": "Doe, John E",
+  "Patient gender": "female",
+  "Patient is a resident in a congregate setting": null,
+  "Patient is employed in healthcare": null,
+  "Patient last name": "Doe",
+  "Patient middle name": "E",
+  "Patient phone number": "(123) 456-7890",
+  "Patient preferred language": "English",
+  "Patient race": "white",
+  "Patient role": "STAFF",
+  "Patient state": "MN",
+  "Patient street address": "1234 Green Street",
+  "Patient street address 2": "",
+  "Patient tribal affiliation": "",
+  "Patient zip code": "90210",
+  "Result reported date": "03/13/2022 7:24pm",
+  Submitter: "Doe, Jane",
+  "Symptom onset": "Invalid date",
+  "Symptoms present": "No symptoms",
+  "Test correction reason": "DUPLICATE_TEST",
+  "Test correction status": "REMOVED",
+  "Test date": "06/13/2022 7:24pm",
+};
 
 const resultNoSTD = [
   {
-    "COVID-19 result": "Negative",
-    "Device manufacturer": "Access Bio, Inc.",
-    "Device model": "CareStart COVID-19 Antigen test*",
-    "Device name": "Access Bio CareStart",
-    "Device swab type": "258500001",
-    "Facility name": "test facility",
-    "Has symptoms": "Unknown",
-    "Patient ID (Student ID, Employee ID, etc.)": null,
-    "Patient city": "Minneapolis",
-    "Patient country": "USA",
-    "Patient county": null,
-    "Patient date of birth": "01/01/1980",
-    "Patient email": "foo@bar.com",
-    "Patient ethnicity": "hispanic",
-    "Patient first name": "John",
-    "Patient full name": "Doe, John E",
-    "Patient gender": "female",
-    "Patient is a resident in a congregate setting": null,
-    "Patient is employed in healthcare": null,
-    "Patient last name": "Doe",
-    "Patient middle name": "E",
-    "Patient phone number": "(123) 456-7890",
-    "Patient preferred language": "English",
-    "Patient race": "white",
-    "Patient role": "STAFF",
-    "Patient state": "MN",
-    "Patient street address": "1234 Green Street",
-    "Patient street address 2": "",
-    "Patient tribal affiliation": "",
-    "Patient zip code": "90210",
-    "Result reported date": "03/13/2022 7:24pm",
-    Submitter: "Doe, Jane",
-    "Symptom onset": "Invalid date",
-    "Symptoms present": "No symptoms",
-    "Test correction reason": "DUPLICATE_TEST",
-    "Test correction status": "REMOVED",
-    "Test date": "06/13/2022 7:24pm",
-    "Flu A result": "Negative",
-    "Flu B result": "Negative",
-    "RSV result": "Inconclusive",
+    ...csvRowWithoutResult,
+    Condition: "COVID-19",
+    Result: "NEGATIVE",
+  },
+  {
+    ...csvRowWithoutResult,
+    Condition: "Flu A",
+    Result: "NEGATIVE",
+  },
+  {
+    ...csvRowWithoutResult,
+    Condition: "Flu B",
+    Result: "NEGATIVE",
+  },
+  {
+    ...csvRowWithoutResult,
+    Condition: "RSV",
+    Result: "UNDETERMINED",
   },
 ];
 
 const resultAllDiseases = [
+  ...resultNoSTD,
   {
-    ...resultNoSTD[0],
-    "HIV result": "Positive",
-    "Syphilis result": "Positive",
+    ...csvRowWithoutResult,
+    Condition: "HIV",
+    Result: "POSITIVE",
+  },
+  {
+    ...csvRowWithoutResult,
+    Condition: "Syphilis",
+    Result: "POSITIVE",
   },
 ];
 
@@ -156,7 +183,7 @@ describe("parseDataForCSV", () => {
       parseDataForCSV([
         {
           ...data[0],
-          patient: { ...data[0].patient, tribalAffiliation: null },
+          patient: { ...data[0]?.patient, tribalAffiliation: null },
         },
       ])
     ).toEqual(resultAllDiseases);

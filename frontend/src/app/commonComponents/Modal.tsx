@@ -7,7 +7,8 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import iconClose from "../../img/close.svg";
 
-type ModalVariant = "warning";
+type ModalVariantWithIcon = "warning";
+type ModalVariant = ModalVariantWithIcon | "mobile-lg";
 
 interface Props {
   onClose: () => void;
@@ -15,15 +16,16 @@ interface Props {
   contentLabel: string;
   showClose?: boolean;
   containerClassName?: string;
-  variant?: "warning";
+  variant?: ModalVariant | null;
   title?: string;
   children?: React.ReactNode;
 }
 
 type IconDefinition = typeof faExclamationCircle;
 
-const variantIcons: Record<ModalVariant, IconDefinition> = {
+const variantIcons: Record<ModalVariant, IconDefinition | null> = {
   warning: faExclamationCircle,
+  "mobile-lg": null,
 };
 
 type HeaderProps = {
@@ -44,28 +46,54 @@ const Footer: React.FC<FooterProps> = ({ children, styleClassNames }) => (
   <div className={"modal__footer " + styleClassNames}>{children}</div>
 );
 
+const getVariantModalStyles = (variant: ModalVariant | null) => {
+  switch (variant) {
+    case "mobile-lg":
+      return {
+        width: 480,
+      };
+    case "warning":
+      return {
+        borderRadius: 0,
+      };
+    default:
+      return {};
+  }
+};
+
+const getVariantContainerClasses = (variant: ModalVariant | null) => {
+  if (variant === "warning") {
+    return "border-left-1 modal__variant border-gold";
+  } else {
+    return "";
+  }
+};
+
+const getVariantMainElemClasses = (variant: ModalVariant | null) => {
+  switch (variant) {
+    case "mobile-lg":
+      return "padding-4";
+    case "warning":
+      return "";
+    default:
+      return "padding-205";
+  }
+};
+
 const Modal = ({
   onClose,
   showModal,
   children,
   showClose = true,
   containerClassName,
-  variant,
+  variant = null,
   contentLabel,
 }: Props): JSX.Element => {
   const containerClasses = classnames(
-    containerClassName,
     "modal__container",
-    variant && "border-left-1 modal__variant",
-    variant === "warning" && "border-gold"
+    containerClassName,
+    getVariantContainerClasses(variant)
   );
-
-  const variantStyles = variant
-    ? {
-        padding: 0,
-        borderRadius: 0,
-      }
-    : {};
 
   return (
     <ReactModal
@@ -76,7 +104,8 @@ const Modal = ({
         content: {
           position: "initial",
           border: 0,
-          ...variantStyles,
+          padding: 0,
+          ...getVariantModalStyles(variant),
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
@@ -93,9 +122,9 @@ const Modal = ({
             <img className="modal__close-img" src={iconClose} alt="Close" />
           </button>
         )}
-        <main>
-          <div className="modal__content grid-row">
-            {variant && (
+        <main className={getVariantMainElemClasses(variant)}>
+          <div className="modal__content grid-row usa-prose">
+            {variant && variantIcons[variant] && (
               <div className="grid-col flex-auto margin-right-2">
                 <FontAwesomeIcon
                   icon={variantIcons[variant] as IconProp}

@@ -28,11 +28,11 @@ Object {
           aria-modal="true"
           class="ReactModal__Content"
           role="dialog"
-          style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 0px; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px;"
+          style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 0px; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 0px;"
           tabindex="-1"
         >
           <div
-            class="unsupported-state-modal modal__container"
+            class="modal__container unsupported-state-modal"
           >
             <button
               class="modal__close-button"
@@ -44,9 +44,11 @@ Object {
                 src="close.svg"
               />
             </button>
-            <main>
+            <main
+              class="padding-205"
+            >
               <div
-                class="modal__content grid-row"
+                class="modal__content grid-row usa-prose"
               >
                 <div
                   class="grid-col"
@@ -70,34 +72,38 @@ Object {
                         class="usa-legend"
                       />
                       <div
-                        class="checkboxes"
+                        class="grid-row checkboxes"
                       >
                         <div
-                          class="usa-checkbox"
+                          class="tablet:grid-col"
                         >
-                          <input
-                            aria-label="acknowledged"
-                            class="usa-checkbox__input"
-                            id="1-val-0"
-                            name="acknowledge"
-                            type="checkbox"
-                            value="acknowledged"
-                          />
-                          <label
-                            class="usa-checkbox__label"
-                            for="1-val-0"
+                          <div
+                            class="usa-checkbox"
                           >
-                            My organization is submitting test results to a
-                             
-                            <a
-                              href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions"
-                              rel="noopener noreferrer"
-                              target="_blank"
+                            <input
+                              aria-label="acknowledged"
+                              class="usa-checkbox__input"
+                              id="symptom-acknowledged"
+                              name="acknowledge"
+                              type="checkbox"
+                              value="acknowledged"
+                            />
+                            <label
+                              class="usa-checkbox__label"
+                              for="symptom-acknowledged"
                             >
-                              state that is connected to SimpleReport
-                            </a>
-                            .
-                          </label>
+                              My organization is submitting test results to a
+                               
+                              <a
+                                href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions"
+                                rel="noopener noreferrer"
+                                target="_blank"
+                              >
+                                state that is connected to SimpleReport
+                              </a>
+                              .
+                            </label>
+                          </div>
                         </div>
                       </div>
                     </fieldset>

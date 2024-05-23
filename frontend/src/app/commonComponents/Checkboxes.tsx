@@ -1,6 +1,5 @@
 import React from "react";
 import classnames from "classnames";
-import { UIDConsumer } from "react-uid";
 
 import Required from "../commonComponents/Required";
 import Optional from "../commonComponents/Optional";
@@ -13,21 +12,43 @@ export type CheckboxProps = {
 };
 type InputProps = JSX.IntrinsicElements["input"];
 type Checkbox = CheckboxProps & InputProps;
-interface Props {
-  boxes: Checkbox[];
+
+type Props = FragmentProps & {
   legend: React.ReactNode;
   legendSrOnly?: boolean;
   hintText?: string;
-  name: string;
-  disabled?: boolean;
   className?: string;
   errorMessage?: string;
   validationStatus?: "error" | "success";
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
-  inputRef?: React.RefObject<HTMLInputElement>;
+  numColumnsToDisplay?: number;
+};
+
+// Take the list of checkboxes and generate an array (ie columns) of checkbox
+// arrays to be displayed on the final card
+export function generateCheckboxColumns<T>(
+  items: T[],
+  numColumnsToDisplay: number
+): T[][] {
+  const subarrayLength = Math.ceil(items.length / numColumnsToDisplay);
+  return generateSubarraysFromItemList(items, subarrayLength);
 }
 
+function generateSubarraysFromItemList<T>(items: T[], subarrayLength: number) {
+  const arrayOfArrays: T[][] = [];
+  let curSubarray: T[] = [];
+  items.forEach((item) => {
+    curSubarray.push(item);
+    if (curSubarray.length === subarrayLength) {
+      arrayOfArrays.push(curSubarray);
+      curSubarray = [];
+    }
+  });
+  if (curSubarray.length > 0) arrayOfArrays.push(curSubarray);
+  return arrayOfArrays;
+}
+
+const DEFAULT_COLUMN_DISPLAY_NUMBER = 1;
 const Checkboxes = (props: Props) => {
   const {
     boxes,
@@ -40,7 +61,28 @@ const Checkboxes = (props: Props) => {
     required,
     inputRef,
     hintText,
+    numColumnsToDisplay = DEFAULT_COLUMN_DISPLAY_NUMBER,
   } = props;
+
+  const checkboxFragmentToRender = (boxes: Checkbox[]) => (
+    <CheckboxesFragment
+      boxes={boxes}
+      name={name}
+      onChange={onChange}
+      inputRef={inputRef}
+    />
+  );
+
+  const checkboxColumns: Checkbox[][] = generateCheckboxColumns(
+    boxes,
+    numColumnsToDisplay
+  );
+
+  const checkboxesToDisplay = checkboxColumns.map((boxes) => (
+    <div className="tablet:grid-col" key={boxes.map((b) => b.value).join()}>
+      {checkboxFragmentToRender(boxes)}
+    </div>
+  ));
 
   return (
     <div
@@ -68,36 +110,42 @@ const Checkboxes = (props: Props) => {
             {errorMessage}
           </div>
         )}
-        <UIDConsumer>
-          {(_, uid) => (
-            <div className="checkboxes">
-              {boxes.map(
-                ({ value, label, disabled, checked, ...inputProps }, i) => (
-                  <div className="usa-checkbox" key={uid(i)}>
-                    <input
-                      className="usa-checkbox__input"
-                      checked={checked}
-                      id={uid(i)}
-                      onChange={onChange}
-                      type="checkbox"
-                      value={value}
-                      name={name}
-                      ref={inputRef}
-                      disabled={disabled || props.disabled}
-                      {...inputProps}
-                    />
-                    <label className="usa-checkbox__label" htmlFor={uid(i)}>
-                      {label}
-                    </label>
-                  </div>
-                )
-              )}
-            </div>
-          )}
-        </UIDConsumer>
+        <div className="grid-row checkboxes">{checkboxesToDisplay}</div>
       </fieldset>
     </div>
   );
+};
+
+type FragmentProps = {
+  boxes: Checkbox[];
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  name: string;
+  disabled?: boolean;
+};
+
+const CheckboxesFragment = (props: FragmentProps) => {
+  const { boxes, name, inputRef, onChange } = props;
+
+  return boxes.map(({ value, label, disabled, checked, ...inputProps }) => (
+    <div className="usa-checkbox" key={value}>
+      <input
+        className="usa-checkbox__input"
+        checked={checked}
+        id={`symptom-${value}`}
+        onChange={onChange}
+        type="checkbox"
+        value={value}
+        name={name}
+        ref={inputRef}
+        disabled={disabled || props.disabled}
+        {...inputProps}
+      />
+      <label className="usa-checkbox__label" htmlFor={`symptom-${value}`}>
+        {label}
+      </label>
+    </div>
+  ));
 };
 
 export default Checkboxes;
