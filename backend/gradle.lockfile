@@ -176,6 +176,7 @@ org.json:json:20231013=compileClasspath,runtimeClasspath
 org.liquibase:liquibase-core:4.20.0=compileClasspath,runtimeClasspath
 org.openapitools:jackson-databind-nullable:0.2.6=compileClasspath,runtimeClasspath
 org.ow2.asm:asm:9.3=compileClasspath,runtimeClasspath
+org.owasp.encoder:encoder:1.2=compileClasspath,runtimeClasspath
 org.postgresql:postgresql:42.6.0=compileClasspath,runtimeClasspath
 org.projectlombok:lombok:1.18.30=compileClasspath
 org.reactivestreams:reactive-streams:1.0.4=compileClasspath,runtimeClasspath

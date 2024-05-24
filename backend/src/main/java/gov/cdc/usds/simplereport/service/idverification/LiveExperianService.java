@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
@@ -186,7 +187,7 @@ public class LiveExperianService
       boolean passed = hasPassed(responseEntity);
 
       // Generate a searchable log message so we can monitor decisions from Experian
-      String requestData = _objectMapper.writeValueAsString(answersRequest);
+      String requestData = Encode.forJava(_objectMapper.writeValueAsString(answersRequest));
       log.info("EXPERIAN_DECISION ({}): {}", passed, requestData);
 
       return new IdentityVerificationAnswersResponse(passed);
