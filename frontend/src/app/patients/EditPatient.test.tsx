@@ -684,4 +684,34 @@ describe("EditPatient", () => {
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
   });
+  describe("Start test and Save and start test from edit paitient", () => {
+    const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+      <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />,
+      store,
+      mocks,
+      false
+    );
+    const renderWithUser = () => ({
+      user: userEvent.setup(),
+      ...render(elementToRender),
+    });
+
+    it("Prompts user to start test when no edits have been made ", async () => {
+      const { user } = renderWithUser();
+      expect(await screen.findByText("Start test")).toBeInTheDocument();
+      //expect(await screen.findByText("Save and start test")).not.toBeInTheDocument();
+    });
+    it("Prompts user to Save and start test when edits have been made ", async () => {
+      const { user } = renderWithUser();
+      await screen.findAllByText("Franecki, Eugenia", { exact: false });
+      const name = await screen.findByLabelText("First name", { exact: false });
+      //start test switches to start and save test on edit
+      await user.clear(name);
+      await user.tab();
+      //expect(await screen.findByText("Start test")).not.toBeInTheDocument();
+      expect(
+        await screen.findByText("Save and start test")
+      ).toBeInTheDocument();
+    });
+  });
 });
