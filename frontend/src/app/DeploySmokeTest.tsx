@@ -10,7 +10,7 @@ const DeploySmokeTest = (): JSX.Element => {
       .getRequest("/actuator/health/backend-and-db-smoke-test")
       .then((response) => {
         const status = JSON.parse(response);
-        if (status.status === "UP") return setSuccess(true);
+        if (status.status === "UP") return setSuccess(false);
         setSuccess(false);
       })
       .catch((e) => {
