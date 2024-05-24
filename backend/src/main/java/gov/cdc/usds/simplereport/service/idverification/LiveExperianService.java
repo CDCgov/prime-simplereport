@@ -90,10 +90,14 @@ public class LiveExperianService
 
     final JsonNodeFactory factory = JsonNodeFactory.instance;
     ObjectNode requestBody = factory.objectNode();
-    requestBody.put("username", _experianProperties.getCrosscoreUsername());
-    requestBody.put("password", _experianProperties.getCrosscorePassword());
-    requestBody.put("client_id", _experianProperties.getClientId());
-    requestBody.put("client_secret", _experianProperties.getClientSecret());
+    String crosscoreUsername = _experianProperties.getCrosscoreUsername();
+    String crosscorePassword = _experianProperties.getCrosscorePassword();
+    String clientId = _experianProperties.getClientId();
+    String clientSecret = _experianProperties.getClientSecret();
+    requestBody.put("username", crosscoreUsername);
+    requestBody.put("password", crosscorePassword);
+    requestBody.put("client_id", clientId);
+    requestBody.put("client_secret", clientSecret);
 
     HttpEntity<ObjectNode> entity = new HttpEntity<>(requestBody, headers);
     int retryOn500AuthCounter = 0;
