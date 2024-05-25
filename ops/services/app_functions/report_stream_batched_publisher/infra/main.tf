@@ -59,13 +59,16 @@ resource "azurerm_linux_function_app" "functions" {
   site_config {
     use_32_bit_worker        = false
     application_insights_key = data.azurerm_application_insights.app.instrumentation_key
+
+    ip_restriction_default_action     = "Deny" # Should use behavior set in the ip_restriction
+    scm_ip_restriction_default_action = "Deny" # We don't use Kudu or the SCM site tools
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
       action                    = "Allow"
     }
     application_stack {
-      node_version = "18"
+      node_version = "20"
     }
   }
 
@@ -76,7 +79,7 @@ resource "azurerm_linux_function_app" "functions" {
   app_settings = {
     https_only                            = true
     FUNCTIONS_WORKER_RUNTIME              = "node"
-    WEBSITE_NODE_DEFAULT_VERSION          = "~18"
+    WEBSITE_NODE_DEFAULT_VERSION          = "~20"
     FUNCTION_APP_EDIT_MODE                = "readonly"
     HASH                                  = azurerm_storage_blob.appcode.content_md5
     WEBSITE_RUN_FROM_PACKAGE              = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
