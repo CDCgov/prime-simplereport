@@ -39,6 +39,8 @@ resource "azurerm_linux_web_app" "metabase" {
     scm_minimum_tls_version           = "1.2"
     use_32_bit_worker                 = false
     vnet_route_all_enabled            = false
+    ip_restriction_default_action     = "Deny" # Should use behavior set in the ip_restriction
+    scm_ip_restriction_default_action = "Deny" # We don't use Kudu or the SCM site tools
 
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
