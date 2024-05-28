@@ -400,9 +400,9 @@ describe("EditPatient", () => {
               role: "UNKNOWN",
               emails: ["foo@bar.com"],
               county: null,
-              race: null,
-              ethnicity: null,
-              gender: null,
+              race: "other",
+              ethnicity: "not_hispanic",
+              gender: "male",
               genderIdentity: null,
               residentCongregateSetting: true,
               employedInHealthcare: true,
@@ -481,9 +481,9 @@ describe("EditPatient", () => {
             birthDate: "1939-10-11",
             street: "736 Jackson PI NW",
             streetTwo: "DC",
-            city: null,
+            city: "Washington, D.C.",
             state: "DC",
-            zipCode: null,
+            zipCode: 20005,
             telephone: "(270) 867-5309",
             phoneNumbers: [
               {
@@ -493,8 +493,8 @@ describe("EditPatient", () => {
             ],
             role: "UNKNOWN",
             emails: ["foo@bar.com"],
-            county: null,
-            country: null,
+            county: "DC.",
+            country: "USA",
             race: "refused",
             ethnicity: "refused",
             gender: "refused",
@@ -685,24 +685,47 @@ describe("EditPatient", () => {
     });
   });
   describe("Start test and Save and start test from edit paitient", () => {
-    const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
-      <EditPatient facilityId={mockFacilityID} patientId={mockPatientID} />,
-      store,
-      mocks,
-      false
-    );
-    const renderWithUser = () => ({
+    const renderWithUser = (
+      elementToRender:
+        | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+        | undefined
+    ) => ({
       user: userEvent.setup(),
-      ...render(elementToRender),
+      ...render(
+        elementToRender as React.ReactElement<
+          any,
+          string | React.JSXElementConstructor<any>
+        >
+      ),
     });
 
     it("Prompts user to start test when no edits have been made ", async () => {
-      const { user } = renderWithUser();
+      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+        <EditPatient
+          facilityId={mockFacilityID}
+          patientId={mockPatientID}
+          fromQueue={true}
+        />,
+        store,
+        mocks,
+        false
+      );
+      const { user } = renderWithUser(elementToRender);
       expect(await screen.findByText("Start test")).toBeInTheDocument();
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
     it("Prompts user to Save and start test when edits have been made ", async () => {
-      const { user } = renderWithUser();
+      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+        <EditPatient
+          facilityId={mockFacilityID}
+          patientId={mockPatientID}
+          fromQueue={false}
+        />,
+        store,
+        mocks,
+        false
+      );
+      const { user } = renderWithUser(elementToRender);
       await screen.findAllByText("Franecki, Eugenia", { exact: false });
       const name = await screen.findByLabelText("First name", { exact: false });
       //start test switches to start and save test on edit
