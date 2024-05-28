@@ -400,9 +400,9 @@ describe("EditPatient", () => {
               role: "UNKNOWN",
               emails: ["foo@bar.com"],
               county: null,
-              race: "other",
-              ethnicity: "not_hispanic",
-              gender: "male",
+              race: null,
+              ethnicity: null,
+              gender: null,
               genderIdentity: null,
               residentCongregateSetting: true,
               employedInHealthcare: true,
@@ -481,9 +481,9 @@ describe("EditPatient", () => {
             birthDate: "1939-10-11",
             street: "736 Jackson PI NW",
             streetTwo: "DC",
-            city: "Washington, D.C.",
+            city: null,
             state: "DC",
-            zipCode: 20005,
+            zipCode: null,
             telephone: "(270) 867-5309",
             phoneNumbers: [
               {
@@ -493,8 +493,8 @@ describe("EditPatient", () => {
             ],
             role: "UNKNOWN",
             emails: ["foo@bar.com"],
-            county: "DC.",
-            country: "USA",
+            county: null,
+            country: null,
             race: "refused",
             ethnicity: "refused",
             gender: "refused",
@@ -722,10 +722,10 @@ describe("EditPatient", () => {
           fromQueue={false}
         />,
         store,
-        mocks,
-        false
+        mocks
       );
       const { user } = renderWithUser(elementToRender);
+      expect(await screen.findByText("Start test")).toBeInTheDocument();
       await screen.findAllByText("Franecki, Eugenia", { exact: false });
       const name = await screen.findByLabelText("First name", { exact: false });
       //start test switches to start and save test on edit
