@@ -171,11 +171,7 @@ public class UserMutationResolver {
       @Argument Role role) {
     List<UUID> facilityIdsToAssign = facilities == null ? List.of() : facilities;
     _us.updateUserPrivilegesAndGroupAccess(
-        username,
-        orgExternalId,
-        accessAllFacilities,
-        facilityIdsToAssign,
-        role.toOrganizationRole());
+        username, orgExternalId, accessAllFacilities, facilityIdsToAssign, role);
     return new User(_us.getUserByLoginEmail(username));
   }
 }
