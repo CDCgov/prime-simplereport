@@ -624,15 +624,6 @@ public class LiveOktaRepository implements OktaRepository {
     log.info("Created Okta group={}", facilityGroupName);
   }
 
-  public void deleteFacility(Facility facility) {
-    String orgExternalId = facility.getOrganization().getExternalId();
-    String groupName = generateFacilityGroupName(orgExternalId, facility.getInternalId());
-    var groups = groupApi.listGroups(groupName, null, null, null, null, null, null, null);
-    for (Group group : groups) {
-      groupApi.deleteGroup(group.getId());
-    }
-  }
-
   @Override
   public void deleteOrganization(Organization org) {
     String externalId = org.getExternalId();
