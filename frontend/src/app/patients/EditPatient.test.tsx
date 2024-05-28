@@ -699,7 +699,7 @@ describe("EditPatient", () => {
     it("Prompts user to start test when no edits have been made ", async () => {
       const { user } = renderWithUser();
       expect(await screen.findByText("Start test")).toBeInTheDocument();
-      //expect(await screen.findByText("Save and start test")).not.toBeInTheDocument();
+      expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
     it("Prompts user to Save and start test when edits have been made ", async () => {
       const { user } = renderWithUser();
@@ -708,10 +708,8 @@ describe("EditPatient", () => {
       //start test switches to start and save test on edit
       await user.clear(name);
       await user.tab();
-      //expect(await screen.findByText("Start test")).not.toBeInTheDocument();
-      expect(
-        await screen.findByText("Save and start test")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("Start test")).not.toBeInTheDocument();
+      expect(screen.getByText("Save and start test")).toBeInTheDocument();
     });
   });
 });
