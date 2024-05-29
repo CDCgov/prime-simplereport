@@ -18,9 +18,7 @@ import {
   multiplexDeviceId,
   multiplexDeviceName,
 } from "./testUtils/testConstants";
-import {
-  generateSubmitQueueMock,
-} from "./testUtils/submissionMocks";
+import { generateSubmitQueueMock } from "./testUtils/submissionMocks";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
