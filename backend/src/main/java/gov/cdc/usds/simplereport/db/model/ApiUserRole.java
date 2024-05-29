@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -19,6 +20,7 @@ import org.hibernate.type.SqlTypes;
 public class ApiUserRole extends IdentifiedEntity {
 
   @Column(name = "api_user_id")
+  @Setter
   private UUID apiUserId;
 
   @ManyToOne

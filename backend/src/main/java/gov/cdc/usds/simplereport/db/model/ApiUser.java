@@ -38,7 +38,7 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   //  @OneToMany(cascade=ALL, mappedBy="apiUser")
   @OneToMany(orphanRemoval = true)
   @JoinColumn(name = "api_user_id")
-  private Set<ApiUserRole> orgRoles;
+  private Set<ApiUserRole> apiUserRoles;
 
   @ManyToMany
   @JoinTable(
@@ -82,10 +82,10 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     nameInfo = name;
   }
 
-  public void setOrgRoles(Set<ApiUserRole> newOrgRoles) {
-    this.orgRoles.clear();
+  public void setApiUserRoles(Set<ApiUserRole> newOrgRoles) {
+    this.apiUserRoles.clear();
     if (newOrgRoles != null) {
-      this.orgRoles.addAll(newOrgRoles);
+      this.apiUserRoles.addAll(newOrgRoles);
     }
   }
 }
