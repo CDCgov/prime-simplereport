@@ -684,7 +684,7 @@ describe("EditPatient", () => {
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
   });
-  describe("Start test and Save and start test from edit paitient", () => {
+  describe("Start test and Save and start test from edit patient", () => {
     const renderWithUser = (
       elementToRender:
         | React.ReactElement<any, string | React.JSXElementConstructor<any>>
@@ -710,7 +710,7 @@ describe("EditPatient", () => {
         mocks,
         false
       );
-      const { user } = renderWithUser(elementToRender);
+      renderWithUser(elementToRender);
       expect(await screen.findByText("Start test")).toBeInTheDocument();
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
