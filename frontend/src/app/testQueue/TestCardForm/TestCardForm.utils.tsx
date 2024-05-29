@@ -275,10 +275,7 @@ export function generateAoeValidationState(
   if (!allNonSymptomAoeQuestionsAnswered || !hasSymptomsQuestionAnswered) {
     return AoeValidationErrorMessages.INCOMPLETE;
   }
-  if (
-    hasSymptomsQuestionAnswered &&
-    symptomOnsetAndSelectionQuestionsAnswered
-  ) {
+  if (symptomOnsetAndSelectionQuestionsAnswered) {
     return AoeValidationErrorMessages.COMPLETE;
   }
   return AoeValidationErrorMessages.UNKNOWN;
