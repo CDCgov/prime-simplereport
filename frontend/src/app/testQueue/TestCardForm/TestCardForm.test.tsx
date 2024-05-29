@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
@@ -20,8 +20,6 @@ import {
 } from "./testUtils/testConstants";
 import {
   generateSubmitQueueMock,
-  TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
-  updateAoeMocks,
 } from "./testUtils/submissionMocks";
 
 jest.mock("../../TelemetryService", () => ({
