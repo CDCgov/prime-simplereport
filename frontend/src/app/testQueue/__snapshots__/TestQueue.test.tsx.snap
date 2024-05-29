@@ -678,7 +678,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         </div>
                       </div>
                       <div
-                        class="grid-row grid-gap"
+                        class="grid-row grid-gap margin-left-0"
                         data-testid="symptom-selection"
                       >
                         <div
@@ -1649,7 +1649,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         </div>
                       </div>
                       <div
-                        class="grid-row grid-gap"
+                        class="grid-row grid-gap margin-left-0"
                         data-testid="symptom-selection"
                       >
                         <div

@@ -266,19 +266,22 @@ export function generateAoeValidationState(
     symptomOnsetAndSelectionQuestionsAnswered,
   } = areAoeQuestionsAnswered(formState, whichAOE);
 
-  if (allNonSymptomAoeQuestionsAnswered && hasSymptomsQuestionAnswered) {
-    if (symptomOnsetAndSelectionQuestionsAnswered) {
-      return AoeValidationErrorMessages.COMPLETE;
-    }
-    return AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR;
-  } else if (
-    !allNonSymptomAoeQuestionsAnswered ||
-    !hasSymptomsQuestionAnswered
+  if (
+    hasSymptomsQuestionAnswered &&
+    !symptomOnsetAndSelectionQuestionsAnswered
   ) {
-    return AoeValidationErrorMessages.INCOMPLETE;
-  } else {
-    return AoeValidationErrorMessages.UNKNOWN;
+    return AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR;
   }
+  if (!allNonSymptomAoeQuestionsAnswered || !hasSymptomsQuestionAnswered) {
+    return AoeValidationErrorMessages.INCOMPLETE;
+  }
+  if (
+    hasSymptomsQuestionAnswered &&
+    symptomOnsetAndSelectionQuestionsAnswered
+  ) {
+    return AoeValidationErrorMessages.COMPLETE;
+  }
+  return AoeValidationErrorMessages.UNKNOWN;
 }
 
 export function areAoeQuestionsAnswered(

@@ -184,7 +184,11 @@ describe("TestCardForm", () => {
         },
       };
 
-      const { user } = await renderTestCardForm({ props });
+      const { user } = await renderTestCardForm({
+        props,
+      });
+
+      // Submit to start form validation
       await user.click(screen.getByText("Submit results"));
 
       expect(

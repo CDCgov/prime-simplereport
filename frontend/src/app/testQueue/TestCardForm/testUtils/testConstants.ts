@@ -173,11 +173,17 @@ export const asymptomaticTestOrderInfo: QueriedTestOrder = {
   ...sharedTestOrderInfo,
   ...asymptomaticTestOrderPartialInfo,
 };
-
 export const symptomaticTestOrderInfo: QueriedTestOrder = {
   ...sharedTestOrderInfo,
   symptoms:
     '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
   symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
   noSymptoms: false,
+};
+
+export const invalidSymptomaticTestOrderInfo: QueriedTestOrder = {
+  ...sharedTestOrderInfo,
+  symptoms: null,
+  symptomOnset: null,
+  noSymptoms: true,
 };

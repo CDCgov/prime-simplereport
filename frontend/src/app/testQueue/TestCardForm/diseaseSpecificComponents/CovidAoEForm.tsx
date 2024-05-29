@@ -98,9 +98,13 @@ const CovidAoEForm = ({
                   ? SYMPTOM_SUBQUESTION_ERROR
                   : undefined
               }
+              className={showSymptomOnsetDateError ? "margin-left-0" : ""}
             ></TextInput>
           </div>
-          <div className="grid-row grid-gap" data-testid="symptom-selection">
+          <div
+            className="grid-row grid-gap margin-left-0"
+            data-testid="symptom-selection"
+          >
             <Checkboxes
               boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
                 label,
