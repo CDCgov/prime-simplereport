@@ -180,10 +180,3 @@ export const symptomaticTestOrderInfo: QueriedTestOrder = {
   symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
   noSymptoms: false,
 };
-
-export const invalidSymptomaticTestOrderInfo: QueriedTestOrder = {
-  ...sharedTestOrderInfo,
-  symptoms: null,
-  symptomOnset: null,
-  noSymptoms: true,
-};
