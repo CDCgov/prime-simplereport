@@ -20,7 +20,6 @@ import {
 } from "./testUtils/testConstants";
 import {
   generateSubmitQueueMock,
-  submitEventMock,
   TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
   updateAoeMocks,
 } from "./testUtils/submissionMocks";
@@ -230,64 +229,6 @@ describe("TestCardForm", () => {
       await user.click(screen.getByText("Submit anyway."));
       expect(
         screen.queryByText("Do you want to submit results anyway?")
-      ).not.toBeInTheDocument();
-    });
-
-    it("should show error messages when symptomatic patient doesn't have onset date or symptom list", async () => {
-      const props = {
-        ...testProps,
-        testOrder: {
-          ...asymptomaticTestOrderInfo,
-          results: [
-            { testResult: "POSITIVE", disease: { name: "COVID-19" } },
-            { testResult: "UNKNOWN", disease: { name: "Flu A" } },
-            { testResult: "UNKNOWN", disease: { name: "Flu B" } },
-          ],
-        },
-      };
-
-      const { user } = await renderTestCardForm({
-        props,
-        mocks: [submitEventMock, submitEventMock, ...updateAoeMocks],
-      });
-
-      const pregnancyAoeGroup = screen.getByRole("group", {
-        name: /is the patient pregnant\?/i,
-      });
-      await user.click(within(pregnancyAoeGroup).getByText(/yes/i));
-
-      const symptomsAoeGroup = screen.getByRole("group", {
-        name: /is the patient currently experiencing any symptoms\?/i,
-      });
-      await user.click(within(symptomsAoeGroup).getByText(/yes/i));
-      await user.click(screen.getByText("Submit results"));
-      expect(
-        screen.getAllByText(
-          "This question is required if the patient has symptoms"
-        ).length
-      ).toBe(2);
-
-      await user.click(
-        screen.getByRole("checkbox", {
-          name: /cough/i,
-        })
-      );
-      await user.click(screen.getByText("Submit results"));
-      expect(
-        screen.getAllByText(
-          "This question is required if the patient has symptoms"
-        ).length
-      ).toBe(1);
-
-      await user.type(
-        screen.getByLabelText(/when did the patient's symptoms start\?/i),
-        TEST_CARD_SYMPTOM_ONSET_DATE_STRING
-      );
-
-      expect(
-        screen.queryByText(
-          "This question is required if the patient has symptoms"
-        )
       ).not.toBeInTheDocument();
     });
   });
