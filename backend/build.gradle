@@ -56,7 +56,7 @@ dependencies {
      *
      * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 15 Feb 2024.
      */
-    implementation 'com.squareup.okio:okio:3.4.0'
+    implementation 'com.squareup.okio:okio:3.9.0'
     implementation 'org.springframework:spring-core:6.0.16'
 
     // non-pinned security dependencies
