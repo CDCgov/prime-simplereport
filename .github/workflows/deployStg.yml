@@ -84,7 +84,7 @@ jobs:
   smoke_test_front_and_back_end:
     runs-on: ubuntu-latest
     needs: [ deploy ]
-    if: ${{ needs.deploy.result == 'success' }}
+    if: ${{ always() }}
     environment:
       name: stg
       url: https://stg.simplereport.gov
@@ -97,7 +97,7 @@ jobs:
 
   failed_smoke_test_pagerduty_alert:
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.smoke_test_front_and_back_end.result != 'success' }}
+    if: ${{ always() && needs.smoke_test_front_and_back_end.result == 'failure' }}
     needs: [ smoke_test_front_and_back_end ]
     steps:
       - uses: actions/checkout@v4

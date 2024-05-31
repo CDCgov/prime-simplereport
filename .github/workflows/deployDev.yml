@@ -108,7 +108,7 @@ jobs:
 
   slack_alert:
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.smoke_test_front_and_back_end.result != 'success' }}
+    if: ${{ always() && needs.smoke_test_front_and_back_end.result == 'failure' }}
     needs: [ smoke_test_front_and_back_end ]
     steps:
       - uses: actions/checkout@v4
