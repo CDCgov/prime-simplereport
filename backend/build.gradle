@@ -59,6 +59,9 @@ dependencies {
     implementation 'com.squareup.okio:okio:3.4.0'
     implementation 'org.springframework:spring-core:6.0.16'
 
+    // non-pinned security dependencies
+    implementation 'org.owasp.encoder:encoder:1.2'
+
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'

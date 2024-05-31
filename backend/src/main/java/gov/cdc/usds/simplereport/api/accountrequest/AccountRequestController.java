@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.owasp.encoder.Encode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -75,7 +76,8 @@ public class AccountRequestController {
       return;
     }
     if (log.isInfoEnabled()) {
-      log.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(request));
+      String sanitizedLog = Encode.forJava(objectMapper.writeValueAsString(request));
+      log.info("Waitlist request submitted: {}", sanitizedLog);
     }
     String subject = "New waitlist request";
     _es.send(sendGridProperties.getWaitlistRecipient(), subject, request);
@@ -157,7 +159,8 @@ public class AccountRequestController {
   private void logOrganizationAccountRequest(@RequestBody @Valid OrganizationAccountRequest request)
       throws JsonProcessingException {
     if (log.isInfoEnabled()) {
-      log.info("Account request submitted: {}", objectMapper.writeValueAsString(request));
+      String sanitizedLog = Encode.forJava(objectMapper.writeValueAsString(request));
+      log.info("Account request submitted: {}", sanitizedLog);
     }
   }
 }
