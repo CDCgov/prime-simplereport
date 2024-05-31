@@ -9,6 +9,10 @@ export function isValidCLIANumber(input: string, state: string): boolean {
   if (state === "WA") {
     cliaNumberValidator = /^\d{2}[DZ]\d{7}$/;
   } else if (state === "CA") {
+    if (input === "00Z0000014") {
+      // OTC CLIA
+      return true;
+    }
     cliaNumberValidator = /^\w{2}D\w{1}\d{6}$/;
   } else if (state === "NM" && input.substring(0, 3) === "32Z") {
     cliaNumberValidator = /^32Z\d{7}$/;
