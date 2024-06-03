@@ -15,7 +15,7 @@ resource "azurerm_container_group" "db_client" {
 
   container {
     name   = "${var.name}-${var.env}-db-client"
-    image  = "${var.acr_server}/api/simple-report-db-client:2.0.0"
+    image  = "${var.acr_server}/api/simple-report-db-client:3.0.0"
     cpu    = "1"
     memory = "1.5"
 
