@@ -58,7 +58,7 @@ export const SyphilisAoEForm = ({
     showSymptomsError,
     showSymptomOnsetDateError,
     hasSymptoms,
-    showSymptomOnsetError,
+    showSymptomSelectionError,
     symptoms,
   } = generateSymptomAoeConstants(
     responses,
@@ -150,9 +150,9 @@ export const SyphilisAoEForm = ({
               name={`symptoms-${testOrder.internalId}`}
               onChange={(e) => onSymptomsChange(e, symptoms)}
               numColumnsToDisplay={CHECKBOX_COLS_TO_DISPLAY}
-              validationStatus={showSymptomOnsetError ? "error" : undefined}
+              validationStatus={showSymptomSelectionError ? "error" : undefined}
               errorMessage={
-                showSymptomOnsetError
+                showSymptomSelectionError
                   ? "Please answer this required question."
                   : ""
               }
