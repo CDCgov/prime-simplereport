@@ -18,6 +18,7 @@ const pregnancyOrder: PregnancyCode[] = ["77386006", "60001007", "261665006"];
 
 export const getPregnancyResponses = (): PregnancyResponses =>
   pregnancyOrder.map((value) => ({ value, label: pregnancyMap[value] }));
+export const OTHER_SYMPTOM_NOT_LISTED_LITERAL = "Other symptom not listed";
 
 export const respiratorySymptomsMap = {
   "426000000": "Fever over 100.4F",
@@ -37,6 +38,7 @@ export const respiratorySymptomsMap = {
   "422587007": "Nausea",
   "422400008": "Vomiting",
   "62315008": "Diarrhea",
+  "261665006": OTHER_SYMPTOM_NOT_LISTED_LITERAL,
 } as const;
 
 export type RespiratorySymptoms = typeof respiratorySymptomsMap;
@@ -109,7 +111,11 @@ export function alphabetizeSymptomKeysFromMapValues(dict: {
   [key: string]: string;
 }) {
   const values = Object.values(dict);
-  values.sort((a, b) => a.localeCompare(b));
+  values.sort((a, b) => {
+    if (a === OTHER_SYMPTOM_NOT_LISTED_LITERAL) return 1;
+    if (b === OTHER_SYMPTOM_NOT_LISTED_LITERAL) return -1;
+    else return a.localeCompare(b);
+  });
   const reversedMap = Object.fromEntries(
     Object.entries(dict).map((a) => a.reverse())
   );
@@ -124,3 +130,7 @@ export const syphilisSymptomDefinitions: SymptomDefinitionMap[] =
     value,
     label: syphilisSymptomsMap[value],
   }));
+
+export const SYMPTOM_SUBQUESTION_ERROR =
+  "This question is required if the patient has symptoms.";
+export const ONSET_DATE_LABEL = "When did the patient's symptoms start?";

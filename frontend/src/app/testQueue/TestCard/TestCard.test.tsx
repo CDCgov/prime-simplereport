@@ -25,13 +25,15 @@ import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/
 import { QueriedFacility, QueriedTestOrder } from "../TestCardForm/types";
 import {
   TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
-  allFalseSymptomUpdateAoeEventMock,
-  allFalseSymptomUpdateAoeEventMockWithSymptomOnset,
   generateEditQueueMock,
   generateEmptyEditQueueMock,
   generateSubmitQueueMock,
+  blankUpdateAoeEventMock,
+  falseNoSymptomWithSymptomOnsetUpdateAoeEventMock,
+  falseNoSymptomUpdateAoeEventMock,
 } from "../TestCardForm/testUtils/submissionMocks";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
+import { ONSET_DATE_LABEL } from "../../../patientApp/timeOfTest/constants";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
@@ -441,7 +443,9 @@ describe("TestCard", () => {
   });
 
   it("renders dropdown of device types", async () => {
-    const { user } = await renderQueueItem();
+    const { user } = await renderQueueItem({
+      mocks: [blankUpdateAoeEventMock],
+    });
 
     const deviceDropdown = (await screen.findByTestId(
       "device-type-dropdown"
@@ -513,6 +517,7 @@ describe("TestCard", () => {
             },
           }
         ),
+        blankUpdateAoeEventMock,
       ];
 
       const props = {
@@ -824,6 +829,8 @@ describe("TestCard", () => {
             },
           }
         ),
+        blankUpdateAoeEventMock,
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -908,8 +915,8 @@ describe("TestCard", () => {
 
     it("tracks AoE form updates as custom event", async () => {
       const mocks = [
-        allFalseSymptomUpdateAoeEventMock,
-        allFalseSymptomUpdateAoeEventMockWithSymptomOnset,
+        falseNoSymptomWithSymptomOnsetUpdateAoeEventMock,
+        falseNoSymptomUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -927,12 +934,13 @@ describe("TestCard", () => {
         ).toBeChecked()
       );
 
-      await user.type(
-        screen.getByTestId("symptom-date"),
-        TEST_CARD_SYMPTOM_ONSET_DATE_STRING
-      );
+      const symptomDateInput = within(
+        screen.getByTestId("symptom-date")
+      ).getByLabelText(ONSET_DATE_LABEL);
+
+      await user.type(symptomDateInput, TEST_CARD_SYMPTOM_ONSET_DATE_STRING);
       await waitFor(() =>
-        expect(screen.getByTestId("symptom-date")).toHaveValue(
+        expect(symptomDateInput).toHaveValue(
           TEST_CARD_SYMPTOM_ONSET_DATE_STRING
         )
       );
@@ -976,6 +984,7 @@ describe("TestCard", () => {
             },
           }
         ),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1010,6 +1019,7 @@ describe("TestCard", () => {
           MULTIPLEX_DISEASES.COVID_19,
           TEST_RESULTS.POSITIVE
         ),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1035,6 +1045,7 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.POSITIVE),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1054,6 +1065,7 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.POSITIVE),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1083,6 +1095,7 @@ describe("TestCard", () => {
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.UNKNOWN),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1110,6 +1123,7 @@ describe("TestCard", () => {
           MULTIPLEX_DISEASES.COVID_19,
           TEST_RESULTS.POSITIVE
         ),
+        blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });

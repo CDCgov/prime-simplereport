@@ -133,7 +133,7 @@ export function generateSymptomAoeConstants(
   const isSymptomOnsetAnswered =
     !!responses.symptoms && Object.values(symptoms).some((x) => x?.valueOf());
 
-  const showSymptomOnsetError =
+  const showSymptomSelectionError =
     hasAttemptedSubmit &&
     isSymptomsAnswered &&
     responses.noSymptoms === false &&
@@ -143,7 +143,7 @@ export function generateSymptomAoeConstants(
     showSymptomsError,
     showSymptomOnsetDateError,
     hasSymptoms,
-    showSymptomOnsetError,
+    showSymptomSelectionError,
     symptoms,
   };
 }
@@ -174,22 +174,19 @@ export function mapSpecifiedSymptomBoolLiteralsToBool(
   symptomsJsonString: string | null | undefined,
   disease: AOEFormOption
 ) {
+  let symptomDefinitionToParse;
   if (disease === AOEFormOption.COVID) {
-    return mapSymptomBoolLiteralsToBool(
-      symptomsJsonString,
-      respiratorySymptomDefinitions
-    );
+    symptomDefinitionToParse = respiratorySymptomDefinitions;
   }
   if (disease === AOEFormOption.SYPHILIS) {
-    return mapSymptomBoolLiteralsToBool(
-      symptomsJsonString,
-      syphilisSymptomDefinitions
-    );
+    symptomDefinitionToParse = syphilisSymptomDefinitions;
   }
   // there are no symptoms for that test card, so return true
-  return {
-    shouldReturn: true,
-  };
+  if (!symptomDefinitionToParse) return { shouldReturn: true };
+  return mapSymptomBoolLiteralsToBool(
+    symptomsJsonString,
+    symptomDefinitionToParse
+  );
 }
 
 export const mapSymptomBoolLiteralsToBool = (

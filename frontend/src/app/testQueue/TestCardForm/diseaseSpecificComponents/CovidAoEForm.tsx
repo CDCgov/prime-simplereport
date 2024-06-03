@@ -8,7 +8,9 @@ import { formatDate } from "../../../utils/date";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import {
   getPregnancyResponses,
+  ONSET_DATE_LABEL,
   respiratorySymptomDefinitions,
+  SYMPTOM_SUBQUESTION_ERROR,
 } from "../../../../patientApp/timeOfTest/constants";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
@@ -16,7 +18,6 @@ import { QueriedTestOrder } from "../types";
 import {
   generateAoeListenerHooks,
   generateSymptomAoeConstants,
-  mapSymptomBoolLiteralsToBool,
 } from "./aoeUtils";
 
 export interface CovidAoEFormProps {
@@ -34,17 +35,18 @@ const CovidAoEForm = ({
   onResponseChange,
   hasAttemptedSubmit,
 }: CovidAoEFormProps) => {
-  const symptoms: Record<string, boolean> = mapSymptomBoolLiteralsToBool(
-    responses.symptoms,
-    respiratorySymptomDefinitions
-  );
   const {
     onPregnancyChange,
     onHasAnySymptomsChange,
     onSymptomsChange,
     onSymptomOnsetDateChange,
   } = generateAoeListenerHooks(onResponseChange, responses);
-  const { hasSymptoms } = generateSymptomAoeConstants(
+  const {
+    hasSymptoms,
+    symptoms,
+    showSymptomSelectionError,
+    showSymptomOnsetDateError,
+  } = generateSymptomAoeConstants(
     responses,
     hasAttemptedSubmit,
     respiratorySymptomDefinitions
@@ -74,12 +76,11 @@ const CovidAoEForm = ({
       </div>
       {hasSymptoms === "YES" && (
         <>
-          <div className="grid-row grid-gap">
+          <div className="grid-row grid-gap" data-testid="symptom-date">
             <TextInput
-              data-testid="symptom-date"
               name={`symptom-date-${testOrder.internalId}`}
               type="date"
-              label="When did the patient's symptoms start?"
+              label={ONSET_DATE_LABEL}
               aria-label="Symptom onset date"
               min={formatDate(new Date("Jan 1, 2020"))}
               max={formatDate(moment().toDate())}
@@ -91,9 +92,19 @@ const CovidAoEForm = ({
                   : ""
               }
               onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
+              validationStatus={showSymptomOnsetDateError ? "error" : undefined}
+              errorMessage={
+                showSymptomOnsetDateError
+                  ? SYMPTOM_SUBQUESTION_ERROR
+                  : undefined
+              }
+              className={showSymptomOnsetDateError ? "margin-left-0" : ""}
             ></TextInput>
           </div>
-          <div className="grid-row grid-gap">
+          <div
+            className="grid-row grid-gap margin-left-0"
+            data-testid="symptom-selection"
+          >
             <Checkboxes
               boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
                 label,
@@ -103,6 +114,12 @@ const CovidAoEForm = ({
               legend="Select any symptoms the patient is experiencing"
               name={`symptoms-${testOrder.internalId}`}
               onChange={(e) => onSymptomsChange(e, symptoms)}
+              validationStatus={showSymptomSelectionError ? "error" : undefined}
+              errorMessage={
+                showSymptomSelectionError
+                  ? SYMPTOM_SUBQUESTION_ERROR
+                  : undefined
+              }
             />
           </div>
         </>
