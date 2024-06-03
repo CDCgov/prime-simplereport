@@ -682,8 +682,10 @@ describe("EditPatient", () => {
       expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
       expect(screen.queryByText(PATIENT_TERM_CAP)).not.toBeInTheDocument();
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
+      expect(screen.queryByText("Start test")).not.toBeInTheDocument();
     });
   });
+
   describe("Start test and Save and start test from edit patient", () => {
     const renderWithUser = (
       elementToRender:
@@ -704,7 +706,7 @@ describe("EditPatient", () => {
         <EditPatient
           facilityId={mockFacilityID}
           patientId={mockPatientID}
-          fromQueue={true}
+          fromQueue={false}
         />,
         store,
         mocks,
@@ -712,7 +714,6 @@ describe("EditPatient", () => {
       );
       renderWithUser(elementToRender);
       expect(await screen.findByText("Start test")).toBeInTheDocument();
-      expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
     });
     it("Prompts user to Save and start test when edits have been made ", async () => {
       const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
