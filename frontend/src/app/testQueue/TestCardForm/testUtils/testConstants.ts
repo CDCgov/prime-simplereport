@@ -125,9 +125,9 @@ export const sharedTestOrderInfo = {
   internalId: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
   dateAdded: "2022-11-08 13:33:07.503",
   deviceType: {
-    internalId: device1Id,
-    name: device1Name,
-    model: device1Name,
+    internalId: covidDeviceId,
+    name: covidDeviceName,
+    model: covidDeviceName,
     testLength: 15,
   },
   specimenType: {
@@ -173,7 +173,6 @@ export const asymptomaticTestOrderInfo: QueriedTestOrder = {
   ...sharedTestOrderInfo,
   ...asymptomaticTestOrderPartialInfo,
 };
-
 export const symptomaticTestOrderInfo: QueriedTestOrder = {
   ...sharedTestOrderInfo,
   symptoms:

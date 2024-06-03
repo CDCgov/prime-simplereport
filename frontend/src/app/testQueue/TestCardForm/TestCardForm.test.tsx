@@ -2,6 +2,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
+
 import TestCardForm, { TestCardFormProps } from "./TestCardForm";
 import {
   asymptomaticTestOrderInfo,
@@ -16,6 +18,7 @@ import {
   multiplexDeviceId,
   multiplexDeviceName,
 } from "./testUtils/testConstants";
+import { generateSubmitQueueMock } from "./testUtils/submissionMocks";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -176,7 +179,9 @@ describe("TestCardForm", () => {
         },
       };
 
-      const { user } = await renderTestCardForm({ props });
+      const { user } = await renderTestCardForm({
+        props,
+      });
 
       // Submit to start form validation
       await user.click(screen.getByText("Submit results"));
@@ -184,6 +189,43 @@ describe("TestCardForm", () => {
       expect(
         screen.getByText("Please enter a valid test result.")
       ).toBeInTheDocument();
+    });
+
+    it("should show validation modal when COVID result is submitted without AOE results", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "COVID-19" } }],
+        },
+      };
+
+      const { user } = await renderTestCardForm({
+        props,
+        mocks: [
+          generateSubmitQueueMock(
+            MULTIPLEX_DISEASES.COVID_19,
+            TEST_RESULTS.POSITIVE,
+            {
+              device: {
+                deviceId: covidDeviceId,
+              },
+            }
+          ),
+        ],
+      });
+
+      // Submit to start form validation
+      await user.click(screen.getByText("Submit results"));
+
+      expect(
+        screen.getByText("Do you want to submit results anyway?")
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByText("Submit anyway."));
+      expect(
+        screen.queryByText("Do you want to submit results anyway?")
+      ).not.toBeInTheDocument();
     });
   });
 });
