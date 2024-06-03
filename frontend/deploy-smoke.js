@@ -41,5 +41,6 @@ driver
       return;
     }
     console.log("Smoke test encountered unknown failure.");
+    console.log(`Root element value was: ${value}`);
     process.exitCode = 1;
   });

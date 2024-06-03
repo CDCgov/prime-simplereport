@@ -94,3 +94,29 @@ jobs:
           azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
           client_tarball: client.tgz
           deploy_env: ${{ inputs.deploy_env }}
+
+  smoke_test_front_and_back_end:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.deploy_env }}
+    needs: [deploy]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Smoke test the env
+        uses: ./.github/actions/post-deploy-smoke-test
+        with:
+          base_domain_name: ${{ inputs.deploy_env }}.simplereport.gov
+
+  slack_alert:
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.smoke_test_front_and_back_end.result == 'failure' }}
+    needs: [ smoke_test_front_and_back_end ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send alert to Slack
+        uses: ./.github/actions/slack-message
+        with:
+          username: ${{ github.actor }}
+          description: |
+            :warning: Post-deploy smoke test for ${{ inputs.deploy_env }} failed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :warning:
+          webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
+          user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}
