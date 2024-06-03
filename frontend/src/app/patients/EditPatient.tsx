@@ -321,7 +321,7 @@ const EditPatient = (props: Props) => {
         </div>
       </div>
       <div className="display-flex flex-align-center">
-        {!props.fromQueue && formChanged ? (
+        {!props.fromQueue && (
           <Button
             id="edit-patient-save-upper"
             className="prime-save-patient-changes-start-test"
@@ -333,19 +333,10 @@ const EditPatient = (props: Props) => {
             label={
               loading
                 ? `${t("common.button.saving")}...`
-                : "Save and start test"
+                : formChanged
+                ? "Save and start test"
+                : "Start test"
             }
-          />
-        ) : (
-          <Button
-            id="edit-patient-save-upper"
-            className="prime-save-patient-changes-start-test"
-            disabled={loading}
-            onClick={() => {
-              onSave(true);
-            }}
-            variant="outline"
-            label={"Start test"}
           />
         )}
         <button
