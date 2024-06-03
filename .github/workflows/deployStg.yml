@@ -81,6 +81,33 @@ jobs:
           client_tarball: client.tgz
           deploy_env: ${{ env.DEPLOY_ENV }}
 
+  smoke_test_front_and_back_end:
+    runs-on: ubuntu-latest
+    needs: [ deploy ]
+    if: ${{ always() }}
+    environment:
+      name: stg
+      url: https://stg.simplereport.gov
+    steps:
+      - uses: actions/checkout@v4
+      - name: Smoke test the env
+        uses: ./.github/actions/post-deploy-smoke-test
+        with:
+          base_domain_name: stg.simplereport.gov
+
+  failed_smoke_test_pagerduty_alert:
+    runs-on: ubuntu-latest
+    if: ${{ always() && needs.smoke_test_front_and_back_end.result == 'failure' }}
+    needs: [ smoke_test_front_and_back_end ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger PagerDuty alert
+        uses: ./.github/actions/pagerduty-alert
+        with:
+          summary: ":warning: Post-deploy smoke test for ${{ env.DEPLOY_ENV }} couldn't verify that the frontend is talking to the backend. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :warning:"
+          severity: error
+          routing_key: ${{ secrets.pagerduty_stg_integration_key }}
+
   slack_alert:
     runs-on: ubuntu-latest
     if: failure()
