@@ -18,7 +18,7 @@ import {
   multiplexDeviceId,
   multiplexDeviceName,
   syphilisDeviceId,
-  syphilisDeviceName
+  syphilisDeviceName,
 } from "./testUtils/testConstants";
 import { generateSubmitQueueMock } from "./testUtils/submissionMocks";
 
