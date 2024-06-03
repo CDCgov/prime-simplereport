@@ -56,6 +56,7 @@ import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
 import { IncompleteAOEWarningModal } from "./IncompleteAOEWarningModal";
 import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 import { stringifySymptomJsonForAoeUpdate } from "./diseaseSpecificComponents/aoeUtils";
+import { SyphilisAoEForm } from "./diseaseSpecificComponents/SyphilisAoEForm";
 
 const DEBOUNCE_TIME = 300;
 
@@ -577,6 +578,22 @@ const TestCardForm = ({
               responses={state.aoeResponses}
               hasAttemptedSubmit={hasAttemptedSubmit}
               onResponseChange={(responses) => {
+                dispatch({
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+            />
+          </div>
+        )}
+        {whichAoeFormOption === AOEFormOption.SYPHILIS && (
+          <div className="grid-row grid-gap">
+            <SyphilisAoEForm
+              testOrder={testOrder}
+              responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
+              onResponseChange={(responses) => {
+                setHasAttemptedSubmit(false);
                 dispatch({
                   type: TestFormActionCase.UPDATE_AOE_RESPONSES,
                   payload: responses,

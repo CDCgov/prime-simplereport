@@ -36,6 +36,7 @@ import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { ONSET_DATE_LABEL } from "../../../patientApp/timeOfTest/constants";
 
 import { TestCard, TestCardProps } from "./TestCard";
+import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -72,6 +73,7 @@ const device4Name = "Multiplex";
 const device5Name = "MultiplexAndCovidOnly";
 const device6Name = "FluOnly";
 const device7Name = "HIV device";
+const device8Name = "Syphilis device";
 
 const device1Id = "DEVICE-1-ID";
 const device2Id = "DEVICE-2-ID";
@@ -80,6 +82,7 @@ const device4Id = "DEVICE-4-ID";
 const device5Id = "DEVICE-5-ID";
 const device6Id = "DEVICE-6-ID";
 const device7Id = "DEVICE-7-ID";
+const device8Id = "DEVICE-8-ID";
 
 const deletedDeviceId = "DELETED-DEVICE-ID";
 const deletedDeviceName = "Deleted";
@@ -284,6 +287,21 @@ describe("TestCard", () => {
         testLength: 15,
         supportedDiseaseTestPerformed: [
           ...mockSupportedDiseaseTestPerformedHIV,
+        ],
+        swabTypes: [
+          {
+            name: specimen3Name,
+            internalId: specimen3Id,
+            typeCode: "122555007",
+          },
+        ],
+      },
+      {
+        internalId: device8Id,
+        name: device8Name,
+        testLength: 15,
+        supportedDiseaseTestPerformed: [
+          ...mockSupportedDiseaseTestPerformedSyphilis,
         ],
         swabTypes: [
           {
@@ -1114,6 +1132,120 @@ describe("TestCard", () => {
       ).not.toBeInTheDocument();
       expect(
         screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows radio buttons for Syphilis when a syphilis device is chosen", async function () {
+      mockDiseaseEnabledFlag("Syphilis");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      expect(screen.queryByText("Syphilis result")).not.toBeInTheDocument();
+
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device8Name);
+      expect(screen.getByText("Syphilis result")).toBeInTheDocument();
+    });
+
+    it("shows required syphilis AOE questions when a positive syphilis result is present", async function () {
+      mockDiseaseEnabledFlag("Syphilis");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH + 1
+      );
+
+      await user.selectOptions(deviceDropdown, device8Name);
+      expect(screen.getByText("Syphilis result")).toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+
+      expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
+      expect(
+        screen.getByText("Is the patient currently experiencing any symptoms?")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("What is the gender of their sexual partners?")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Has the patient been told they have syphilis before?")
+      ).toBeInTheDocument();
+    });
+
+    it("hides AOE questions when there is no positive syphilis result", async function () {
+      mockDiseaseEnabledFlag("Syphilis");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device8Name);
+      expect(screen.getByText("Syphilis result")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing any symptoms?"
+        )
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Has the patient been told they have syphilis before?"
+        )
+      ).not.toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing any symptoms?"
+        )
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Has the patient been told they have syphilis before?"
+        )
       ).not.toBeInTheDocument();
     });
 
