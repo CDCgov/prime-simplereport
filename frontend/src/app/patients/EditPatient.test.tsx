@@ -687,45 +687,27 @@ describe("EditPatient", () => {
   });
 
   describe("Start test and Save and start test from edit patient", () => {
-    const renderWithUser = (
-      elementToRender:
-        | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-        | undefined
-    ) => ({
+    const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
+      <EditPatient
+        facilityId={mockFacilityID}
+        patientId={mockPatientID}
+        fromQueue={false}
+      />,
+      store,
+      mocks,
+      false
+    );
+    const renderWithUser = () => ({
       user: userEvent.setup(),
-      ...render(
-        elementToRender as React.ReactElement<
-          any,
-          string | React.JSXElementConstructor<any>
-        >
-      ),
+      ...render(elementToRender),
     });
 
     it("Prompts user to start test when no edits have been made ", async () => {
-      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
-        <EditPatient
-          facilityId={mockFacilityID}
-          patientId={mockPatientID}
-          fromQueue={false}
-        />,
-        store,
-        mocks,
-        false
-      );
-      renderWithUser(elementToRender);
+      renderWithUser();
       expect(await screen.findByText("Start test")).toBeInTheDocument();
     });
     it("Prompts user to Save and start test when edits have been made ", async () => {
-      const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
-        <EditPatient
-          facilityId={mockFacilityID}
-          patientId={mockPatientID}
-          fromQueue={false}
-        />,
-        store,
-        mocks
-      );
-      const { user } = renderWithUser(elementToRender);
+      const { user } = renderWithUser();
       expect(await screen.findByText("Start test")).toBeInTheDocument();
       await screen.findAllByText("Franecki, Eugenia", { exact: false });
       const name = await screen.findByLabelText("First name", { exact: false });
