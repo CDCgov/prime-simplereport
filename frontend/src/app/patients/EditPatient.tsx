@@ -281,6 +281,9 @@ const EditPatient = (props: Props) => {
     }
     beginTest(startTest);
   };
+
+  const saveButtonLabel = (formChanged: boolean): string =>
+    formChanged ? "Save and start test" : "Start test";
   const getHeader = (
     person: Nullable<PersonFormData>,
     onSave: (startTest?: boolean) => void,
@@ -333,9 +336,7 @@ const EditPatient = (props: Props) => {
             label={
               loading
                 ? `${t("common.button.saving")}...`
-                : formChanged
-                ? "Save and start test"
-                : "Start test"
+                : saveButtonLabel(formChanged)
             }
           />
         )}
