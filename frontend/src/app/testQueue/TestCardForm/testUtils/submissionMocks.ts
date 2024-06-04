@@ -17,36 +17,30 @@ import {
   symptomaticTestOrderInfo,
 } from "./testConstants";
 
-const SYMPTOM_TRUE_OVERRIDE = { noSymptoms: false };
+export const BLURRED_VISION_LITERAL = "Blurred vision";
+export const TEST_CARD_SYMPTOM_ONSET_DATE_STRING = "2024-05-14";
+
+const NO_SYMPTOMS_FALSE_OVERRIDE = { noSymptoms: false };
+const NO_SYMPTOMS_TRUE_OVERRIDE = { noSymptoms: true };
+
 const PREGNANCY_OVERRIDE = { pregnancy: "77386006" };
 const COUGH_OVERRIDE = {
   symptoms:
     '{"25064002":false,"36955009":false,"43724002":false,"44169009":false,"49727002":true,"62315008":false,"64531003":false,"68235000":false,"68962001":false,"84229001":false,"103001002":false,"162397003":false,"230145002":false,"267036007":false,"422400008":false,"422587007":false,"426000000":false}',
 };
-export const TEST_CARD_SYMPTOM_ONSET_DATE_STRING = "2024-05-14";
 const SYMPTOM_ONSET_DATE_OVERRIDE = {
   symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
 };
-export const updateAoeMutationRequest = (
-  variableOverrides?: Partial<UpdateAoeMutationVariables>
-) => {
-  return {
-    request: {
-      query: UpdateAoeDocument,
-      variables: {
-        patientId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
-        noSymptoms: true,
-        symptoms: "{}",
-        symptomOnset: null,
-        pregnancy: null,
-        genderOfSexualPartners: null,
-        ...variableOverrides,
-      },
-    },
-  };
+const SYPHILIS_HISTORY_OVERRIDE = { syphilisHistory: "1087151000119108" };
+const GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE = {
+  genderOfSexualPartners: ["female"],
+};
+const BLURRED_VISION_OVERRIDE = {
+  symptoms:
+    '{"15188001":false,"26284000":false,"46636008":true,"56940005":false,"68225006":false,"91554004":false,"195469007":false,"266128007":false,"724386005":false}',
 };
 
-const updateAoeMutationRequestWithoutNoSymptomsAndPregnancy = (
+const baseUpdateAoeMutationRequest = (
   variableOverrides?: Partial<UpdateAoeMutationVariables>
 ) => {
   return {
@@ -78,42 +72,42 @@ const mutationResponse = {
 };
 
 export const blankUpdateAoeEventMock = {
-  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy(),
+  ...baseUpdateAoeMutationRequest(),
   ...mutationResponse,
 };
 
-export const falseNoSymptomUpdateAoeEventMock = {
-  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
-    noSymptoms: false,
+export const falseNoSymptomAoeMock = {
+  ...baseUpdateAoeMutationRequest({
+    ...NO_SYMPTOMS_FALSE_OVERRIDE,
   }),
   ...mutationResponse,
 };
 
-export const falseNoSymptomWithSymptomOnsetUpdateAoeEventMock = {
-  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
-    symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
-    noSymptoms: false,
+export const falseNoSymptomWithSymptomOnsetUpdateAoeMock = {
+  ...baseUpdateAoeMutationRequest({
+    ...NO_SYMPTOMS_FALSE_OVERRIDE,
+    ...SYMPTOM_ONSET_DATE_OVERRIDE,
   }),
   ...mutationResponse,
 };
 
 const updatePregnancyAoeEventMock = {
-  ...updateAoeMutationRequest({
+  ...baseUpdateAoeMutationRequest({
     ...PREGNANCY_OVERRIDE,
   }),
   ...mutationResponse,
 };
 
 const updateSymptomAoeEventMock = {
-  ...updateAoeMutationRequest({
-    ...SYMPTOM_TRUE_OVERRIDE,
+  ...baseUpdateAoeMutationRequest({
+    ...NO_SYMPTOMS_FALSE_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
   }),
   ...mutationResponse,
 };
 const updateCoughSymptomAoeEventMock = {
-  ...updateAoeMutationRequest({
-    ...SYMPTOM_TRUE_OVERRIDE,
+  ...baseUpdateAoeMutationRequest({
+    ...NO_SYMPTOMS_FALSE_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
     ...COUGH_OVERRIDE,
   }),
@@ -121,8 +115,8 @@ const updateCoughSymptomAoeEventMock = {
 };
 
 const updateOnsetSymptomDateAoeEventMock = {
-  ...updateAoeMutationRequest({
-    ...SYMPTOM_TRUE_OVERRIDE,
+  ...baseUpdateAoeMutationRequest({
+    ...NO_SYMPTOMS_FALSE_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
     ...COUGH_OVERRIDE,
     ...SYMPTOM_ONSET_DATE_OVERRIDE,
@@ -135,6 +129,121 @@ export const updateAoeMocks = [
   updateSymptomAoeEventMock,
   updateCoughSymptomAoeEventMock,
   updateOnsetSymptomDateAoeEventMock,
+];
+
+// Syphilis card
+const baseSyphilisAoeUpdateMock = (
+  variableOverrides?: Partial<UpdateAoeMutationVariables>
+) => {
+  return {
+    ...baseUpdateAoeMutationRequest({
+      genderOfSexualPartners: [],
+      ...variableOverrides,
+    }),
+    ...mutationResponse,
+  };
+};
+const yesSyphilisHistoryMock = {
+  ...baseSyphilisAoeUpdateMock({
+    ...SYPHILIS_HISTORY_OVERRIDE,
+  }),
+};
+
+const yesSyphilisHistoryPregnancyMock = {
+  ...baseSyphilisAoeUpdateMock({
+    ...SYPHILIS_HISTORY_OVERRIDE,
+    ...PREGNANCY_OVERRIDE,
+  }),
+  ...mutationResponse,
+};
+
+const yesSyphilisHistoryPregnancyFemaleSexPartnerMock = {
+  ...baseSyphilisAoeUpdateMock({
+    ...SYPHILIS_HISTORY_OVERRIDE,
+    ...PREGNANCY_OVERRIDE,
+    ...GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE,
+  }),
+  ...mutationResponse,
+};
+
+const falseNoSymptomOnsetDateBlankSymptomsAndYesSyphilisAoeMock = {
+  ...baseSyphilisAoeUpdateMock({
+    ...NO_SYMPTOMS_FALSE_OVERRIDE,
+    ...PREGNANCY_OVERRIDE,
+    ...SYPHILIS_HISTORY_OVERRIDE,
+    ...GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE,
+  }),
+  ...mutationResponse,
+};
+
+const falseNoSymptomBlurredVisionMockAndYesSyphilisAoeMock = {
+  ...baseSyphilisAoeUpdateMock({
+    ...NO_SYMPTOMS_FALSE_OVERRIDE,
+    ...PREGNANCY_OVERRIDE,
+    ...SYPHILIS_HISTORY_OVERRIDE,
+    ...GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE,
+    ...BLURRED_VISION_OVERRIDE,
+  }),
+  ...mutationResponse,
+};
+
+const falseNoSymptomBlurredVisionOnsetDateAndYesSyphilisAoeMock = {
+  ...baseSyphilisAoeUpdateMock({
+    ...NO_SYMPTOMS_FALSE_OVERRIDE,
+    ...PREGNANCY_OVERRIDE,
+    ...SYPHILIS_HISTORY_OVERRIDE,
+    ...GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE,
+    ...BLURRED_VISION_OVERRIDE,
+    ...SYMPTOM_ONSET_DATE_OVERRIDE,
+  }),
+  ...mutationResponse,
+};
+
+const noSymptomsTrueSymptomsBlankSyphilisHistory = {
+  ...baseSyphilisAoeUpdateMock({
+    ...NO_SYMPTOMS_TRUE_OVERRIDE,
+    ...PREGNANCY_OVERRIDE,
+    ...SYPHILIS_HISTORY_OVERRIDE,
+  }),
+  ...mutationResponse,
+};
+
+const noSymptomsTrueSymptomsBlankSyphilisFemaleHistory = {
+  ...baseSyphilisAoeUpdateMock({
+    ...NO_SYMPTOMS_TRUE_OVERRIDE,
+    ...PREGNANCY_OVERRIDE,
+    ...SYPHILIS_HISTORY_OVERRIDE,
+    ...GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE,
+  }),
+  ...mutationResponse,
+};
+
+export const updateSyphilisAoeMocks = [
+  blankUpdateAoeEventMock,
+  generateEditQueueMock(MULTIPLEX_DISEASES.SYPHILIS, TEST_RESULTS.POSITIVE, {
+    device: {
+      deviceId: "DEVICE-8-ID",
+    },
+    specimen: {
+      specimenId: "SPECIMEN-3-ID",
+    },
+  }),
+  generateSubmitQueueMock(MULTIPLEX_DISEASES.SYPHILIS, TEST_RESULTS.POSITIVE, {
+    device: {
+      deviceId: "DEVICE-8-ID",
+    },
+    specimen: {
+      specimenId: "SPECIMEN-3-ID",
+    },
+  }),
+  yesSyphilisHistoryMock,
+  yesSyphilisHistoryPregnancyMock,
+  yesSyphilisHistoryPregnancyFemaleSexPartnerMock,
+  falseNoSymptomBlurredVisionMockAndYesSyphilisAoeMock,
+  falseNoSymptomBlurredVisionOnsetDateAndYesSyphilisAoeMock,
+  falseNoSymptomOnsetDateBlankSymptomsAndYesSyphilisAoeMock,
+  noSymptomsTrueSymptomsBlankSyphilisHistory,
+  noSymptomsTrueSymptomsBlankSyphilisFemaleHistory,
 ];
 
 type EditQueueMockParams = {
@@ -152,7 +261,7 @@ type EditQueueMockParams = {
     }[];
   };
   specimen?: {
-    specimenName: string;
+    specimenName?: string;
     specimenId: string;
   };
 };
@@ -177,7 +286,7 @@ export function generateEditQueueMock(
     request: {
       query: EditQueueItemDocument,
       variables: {
-        id: sharedTestOrderInfo.internalId,
+        id: sharedTestOrderInfo?.internalId,
         deviceTypeId: overrideParams?.device?.deviceId ?? device1Id,
         specimenTypeId: overrideParams?.specimen?.specimenId ?? specimen1Id,
         results: overrideParams?.diseaseResults ?? [
@@ -186,18 +295,18 @@ export function generateEditQueueMock(
             testResult: testResult,
           },
         ],
-        dateTested: overrideParams?.dateTested,
+        dateTested: overrideParams?.dateTested ?? null,
       },
-      result: {
-        data: {
-          editQueueItem: {
-            results: overrideParams?.diseaseResults,
-          },
-          dateTested: overrideParams?.dateTested,
-          deviceType: {
-            internalId: overrideParams?.device?.deviceId ?? device1Id,
-            testLength: 15,
-          },
+    },
+    result: {
+      data: {
+        editQueueItem: {
+          results: overrideParams?.diseaseResults,
+        },
+        dateTested: overrideParams?.dateTested,
+        deviceType: {
+          internalId: overrideParams?.device?.deviceId ?? device1Id,
+          testLength: 15,
         },
       },
     },
@@ -217,7 +326,7 @@ export function generateSubmitQueueMock(
     request: {
       query: SubmitQueueItemDocument,
       variables: {
-        patientId: symptomaticTestOrderInfo.patient.internalId,
+        patientId: symptomaticTestOrderInfo?.patient.internalId,
         deviceTypeId: overrideParams?.device?.deviceId ?? device1Id,
         specimenTypeId: overrideParams?.specimen?.specimenId ?? specimen1Id,
         results: overrideParams?.diseaseResults ?? [
@@ -230,7 +339,7 @@ export function generateSubmitQueueMock(
       data: {
         submitQueueItem: {
           testResult: {
-            internalId: symptomaticTestOrderInfo.internalId,
+            internalId: symptomaticTestOrderInfo?.internalId,
           },
           deliverySuccess: overrideParams?.deliverySuccess ?? true,
         },

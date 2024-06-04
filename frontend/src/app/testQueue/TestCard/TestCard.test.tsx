@@ -29,11 +29,16 @@ import {
   generateEmptyEditQueueMock,
   generateSubmitQueueMock,
   blankUpdateAoeEventMock,
-  falseNoSymptomWithSymptomOnsetUpdateAoeEventMock,
-  falseNoSymptomUpdateAoeEventMock,
+  falseNoSymptomWithSymptomOnsetUpdateAoeMock,
+  falseNoSymptomAoeMock,
+  updateSyphilisAoeMocks,
+  BLURRED_VISION_LITERAL,
 } from "../TestCardForm/testUtils/submissionMocks";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { ONSET_DATE_LABEL } from "../../../patientApp/timeOfTest/constants";
+import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
+import { sharedTestOrderInfo } from "../TestCardForm/testUtils/testConstants";
+import { REQUIRED_AOE_QUESTIONS_BY_DISEASE } from "../TestCardForm/TestCardForm.utils";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
@@ -72,6 +77,7 @@ const device4Name = "Multiplex";
 const device5Name = "MultiplexAndCovidOnly";
 const device6Name = "FluOnly";
 const device7Name = "HIV device";
+const device8Name = "Syphilis device";
 
 const device1Id = "DEVICE-1-ID";
 const device2Id = "DEVICE-2-ID";
@@ -80,6 +86,7 @@ const device4Id = "DEVICE-4-ID";
 const device5Id = "DEVICE-5-ID";
 const device6Id = "DEVICE-6-ID";
 const device7Id = "DEVICE-7-ID";
+const device8Id = "DEVICE-8-ID";
 
 const deletedDeviceId = "DELETED-DEVICE-ID";
 const deletedDeviceName = "Deleted";
@@ -284,6 +291,21 @@ describe("TestCard", () => {
         testLength: 15,
         supportedDiseaseTestPerformed: [
           ...mockSupportedDiseaseTestPerformedHIV,
+        ],
+        swabTypes: [
+          {
+            name: specimen3Name,
+            internalId: specimen3Id,
+            typeCode: "122555007",
+          },
+        ],
+      },
+      {
+        internalId: device8Id,
+        name: device8Name,
+        testLength: 15,
+        supportedDiseaseTestPerformed: [
+          ...mockSupportedDiseaseTestPerformedSyphilis,
         ],
         swabTypes: [
           {
@@ -915,8 +937,8 @@ describe("TestCard", () => {
 
     it("tracks AoE form updates as custom event", async () => {
       const mocks = [
-        falseNoSymptomWithSymptomOnsetUpdateAoeEventMock,
-        falseNoSymptomUpdateAoeEventMock,
+        falseNoSymptomWithSymptomOnsetUpdateAoeMock,
+        falseNoSymptomAoeMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1040,6 +1062,35 @@ describe("TestCard", () => {
       expect(screen.getByText("Flu B result")).toBeInTheDocument();
     });
 
+    it("should show no AOE questions when a flu only device is chosen", async function () {
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.COVID_19,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+
+      const deviceDropdown = await getDeviceTypeDropdown();
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH
+      );
+      expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
+
+      // Change device type to a flu only device
+      await user.selectOptions(deviceDropdown, device6Name);
+
+      expect(screen.getByText("Flu A result")).toBeInTheDocument();
+      expect(screen.getByText("Flu A result")).toBeInTheDocument();
+      expect(screen.queryByText("COVID result")).not.toBeInTheDocument();
+
+      expect(
+        screen.queryByText("Is the patient currently experiencing any symptoms")
+      ).not.toBeInTheDocument();
+    });
+
     it("shows radio buttons for HIV when an HIV device is chosen", async function () {
       mockDiseaseEnabledFlag("HIV");
 
@@ -1117,33 +1168,244 @@ describe("TestCard", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("should show no AOE questions when a flu only device is chosen", async function () {
+    it("shows radio buttons for Syphilis when a syphilis device is chosen", async function () {
+      mockDiseaseEnabledFlag("Syphilis");
+
       const mocks = [
         generateEditQueueMock(
-          MULTIPLEX_DISEASES.COVID_19,
+          MULTIPLEX_DISEASES.SYPHILIS,
           TEST_RESULTS.POSITIVE
         ),
         blankUpdateAoeEventMock,
       ];
 
       const { user } = await renderQueueItem({ mocks });
+      expect(screen.queryByText("Syphilis result")).not.toBeInTheDocument();
 
       const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device8Name);
+      expect(screen.getByText("Syphilis result")).toBeInTheDocument();
+    });
+
+    it("shows required syphilis AOE questions when a positive syphilis result is present", async function () {
+      mockDiseaseEnabledFlag("Syphilis");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
       expect(deviceDropdown.options.length).toEqual(
-        DEFAULT_DEVICE_OPTIONS_LENGTH
+        DEFAULT_DEVICE_OPTIONS_LENGTH + 1
       );
-      expectDeviceOrder(deviceDropdown, DEFAULT_DEVICE_ORDER);
 
-      // Change device type to a flu only device
-      await user.selectOptions(deviceDropdown, device6Name);
+      await user.selectOptions(deviceDropdown, device8Name);
+      expect(screen.getByText("Syphilis result")).toBeInTheDocument();
 
-      expect(screen.getByText("Flu A result")).toBeInTheDocument();
-      expect(screen.getByText("Flu A result")).toBeInTheDocument();
-      expect(screen.queryByText("COVID result")).not.toBeInTheDocument();
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
 
+      expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
       expect(
-        screen.queryByText("Is the patient currently experiencing any symptoms")
+        screen.getByText("Is the patient currently experiencing any symptoms?")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("What is the gender of their sexual partners?")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Has the patient been told they have syphilis before?")
+      ).toBeInTheDocument();
+    });
+
+    it("hides AOE questions when there is no positive syphilis result", async function () {
+      mockDiseaseEnabledFlag("Syphilis");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device8Name);
+      expect(screen.getByText("Syphilis result")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Is the patient pregnant?")
       ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing any symptoms?"
+        )
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Has the patient been told they have syphilis before?"
+        )
+      ).not.toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing any symptoms?"
+        )
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Has the patient been told they have syphilis before?"
+        )
+      ).not.toBeInTheDocument();
+    });
+
+    it("checks that submission only works if AOE questions are valid", async function () {
+      mockDiseaseEnabledFlag("Syphilis");
+
+      const { user } = await renderQueueItem({ mocks: updateSyphilisAoeMocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device8Name);
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+      const AOE_ERROR_TEXT = "Please answer this required question.";
+
+      const requiredQuestions = screen.getAllByText(AOE_ERROR_TEXT);
+      expect(requiredQuestions.length).toEqual(
+        REQUIRED_AOE_QUESTIONS_BY_DISEASE.SYPHILIS.length
+      );
+
+      const historyFieldSet = screen.getByTestId(
+        `syphilisHistory-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(historyFieldSet).getByLabelText("Yes"));
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+
+      const pregnancyFieldSet = screen.getByTestId(
+        `pregnancy-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(pregnancyFieldSet).getByLabelText("Yes"));
+
+      const symptomFieldSet = screen.getByTestId(
+        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(symptomFieldSet).getByLabelText("No"));
+
+      const genderSexualPartnersFieldSet = screen.getByTestId(
+        `multi-select-option-list`
+      );
+      await user.click(
+        within(genderSexualPartnersFieldSet).getByTestId(
+          "multi-select-option-female"
+        )
+      );
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+      expect(screen.queryByText(AOE_ERROR_TEXT)).not.toBeInTheDocument();
+    });
+
+    it("checks that checking has symptom requires onset date and selection", async () => {
+      mockDiseaseEnabledFlag("Syphilis");
+      const mocks = [...updateSyphilisAoeMocks];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+      const AOE_ERROR_TEXT = "Please answer this required question.";
+
+      await user.selectOptions(deviceDropdown, device8Name);
+
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+
+      const historyFieldSet = screen.getByTestId(
+        `syphilisHistory-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(historyFieldSet).getByLabelText("Yes"));
+
+      const pregnancyFieldSet = screen.getByTestId(
+        `pregnancy-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(pregnancyFieldSet).getByLabelText("Yes"));
+
+      const genderSexualPartnersFieldSet = screen.getByTestId(
+        `multi-select-option-list`
+      );
+      await user.click(
+        within(genderSexualPartnersFieldSet).getByTestId(
+          "multi-select-option-female"
+        )
+      );
+
+      const symptomFieldSet = screen.getByTestId(
+        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(symptomFieldSet).getByLabelText("Yes"));
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+
+      const requiredQuestions = screen.getAllByText(AOE_ERROR_TEXT);
+      expect(requiredQuestions.length).toEqual(2);
+
+      await user.click(screen.getByText(BLURRED_VISION_LITERAL));
+      await user.type(
+        screen.getByTestId("symptom-date"),
+        TEST_CARD_SYMPTOM_ONSET_DATE_STRING
+      );
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+
+      expect(screen.queryByText(AOE_ERROR_TEXT)).not.toBeInTheDocument();
     });
   });
 });

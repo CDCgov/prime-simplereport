@@ -26,6 +26,8 @@ export const specimen1Id = "SPECIMEN-1-ID";
 export const specimen2Name = "Nasopharyngeal swab";
 export const specimen2Id = "SPECIMEN-2-ID";
 export const FACILITY_INFO_TEST_ID = "f02cfff5-1921-4293-beff-e2a5d03e1fda";
+export const syphilisDeviceName = "SYPHILIS";
+export const syphilisDeviceId = "SYPHILIS-DEVICE-ID";
 
 export const facilityInfo: QueriedFacility = {
   id: FACILITY_INFO_TEST_ID,
