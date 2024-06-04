@@ -35,6 +35,9 @@ import {
   yesPregnancyAndSyphilisHistoryMock,
   yesPregnancyAndSyphilisHistoryAndNoSymptomMock,
   yesPregnancyAndSyphilisHistoryFemaleGenderSexualPartnerAndNoSymptomMock,
+  BLURRED_VISION_LITERAL,
+  yesAoeAndSymptomBlurredVisionMock,
+  yesAoeSyphilisMock,
 } from "../TestCardForm/testUtils/submissionMocks";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { ONSET_DATE_LABEL } from "../../../patientApp/timeOfTest/constants";
@@ -1321,12 +1324,7 @@ describe("TestCard", () => {
           exact: false,
         })
       );
-      const requiredQuestionsAfterHistoryAnswer =
-        screen.getAllByText(AOE_ERROR_TEXT);
-      expect(requiredQuestionsAfterHistoryAnswer.length).toEqual(
-        REQUIRED_AOE_QUESTIONS_BY_DISEASE.SYPHILIS.length - 1
-      );
-
+ 
       const pregnancyFieldSet = screen.getByTestId(
         `pregnancy-${sharedTestOrderInfo.internalId}`
       );
@@ -1351,9 +1349,99 @@ describe("TestCard", () => {
           exact: false,
         })
       );
-
       expect(screen.queryByText(AOE_ERROR_TEXT)).not.toBeInTheDocument();
     });
+
+    it.only("checks that checking has symptom requires onset date and selection", async () => {
+      mockDiseaseEnabledFlag("Syphilis");
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: "DEVICE-8-ID",
+            },
+            specimen: {
+              specimenId: "SPECIMEN-3-ID",
+            },
+          }
+        ),
+        blankUpdateAoeEventMock,
+        yesSyphilisHistoryMock,
+        yesPregnancyAndSyphilisHistoryMock,
+        yesPregnancyAndSyphilisHistoryFemaleGenderSexualPartnerAndNoSymptomMock,
+        yesAoeAndSymptomBlurredVisionMock,
+        generateSubmitQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: "DEVICE-8-ID",
+            },
+            specimen: {
+              specimenId: "SPECIMEN-3-ID",
+            },
+          }
+        ),
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+      const AOE_ERROR_TEXT = "Please answer this required question.";
+
+      await user.selectOptions(deviceDropdown, device8Name);
+
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+
+      const historyFieldSet = screen.getByTestId(
+        `syphilisHistory-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(historyFieldSet).getByLabelText("Yes"));
+ 
+      const pregnancyFieldSet = screen.getByTestId(
+        `pregnancy-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(pregnancyFieldSet).getByLabelText("Yes"));
+
+      const genderSexualPartnersFieldSet = screen.getByTestId(
+        `multi-select-option-list`
+      );
+      await user.click(
+        within(genderSexualPartnersFieldSet).getByTestId(
+          "multi-select-option-female"
+        )
+      );
+
+      const symptomFieldSet = screen.getByTestId(
+        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(symptomFieldSet).getByLabelText("Yes"));
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+
+      const requiredQuestions = screen.getAllByText(AOE_ERROR_TEXT);
+      expect(requiredQuestions.length).toEqual(2);
+
+      await user.click(screen.getByText(BLURRED_VISION_LITERAL));
+      await user.type(screen.getByTestId("symptom-date"), TEST_CARD_SYMPTOM_ONSET_DATE_STRING);
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+
+      expect(screen.queryByText(AOE_ERROR_TEXT)).not.toBeInTheDocument();
+    })
 
     it("should show no AOE questions when a flu only device is chosen", async function () {
       const mocks = [

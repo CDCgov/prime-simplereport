@@ -23,6 +23,8 @@ const COUGH_OVERRIDE = {
   symptoms:
     '{"25064002":false,"36955009":false,"43724002":false,"44169009":false,"49727002":true,"62315008":false,"64531003":false,"68235000":false,"68962001":false,"84229001":false,"103001002":false,"162397003":false,"230145002":false,"267036007":false,"422400008":false,"422587007":false,"426000000":false}',
 };
+export const BLURRED_VISION_LITERAL = "Blurred vision"
+
 export const TEST_CARD_SYMPTOM_ONSET_DATE_STRING = "2024-05-14";
 const SYMPTOM_ONSET_DATE_OVERRIDE = {
   symptomOnset: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
@@ -110,6 +112,28 @@ export const yesPregnancyAndSyphilisHistoryFemaleGenderSexualPartnerAndNoSymptom
       pregnancy: "77386006",
       genderOfSexualPartners: ["female"],
       noSymptoms: true,
+    }),
+    ...mutationResponse,
+  };
+  export const yesAoeSyphilisMock =
+  {
+    ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
+      syphilisHistory: "1087151000119108",
+      pregnancy: "77386006",
+      genderOfSexualPartners: ["female"],
+      noSymptoms: true,
+    }),
+    ...mutationResponse,
+  };
+
+  export const yesAoeAndSymptomBlurredVisionMock =
+  {
+    ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
+      syphilisHistory: "1087151000119108",
+      pregnancy: "77386006",
+      genderOfSexualPartners: ["female"],
+      noSymptoms: false,
+      symptoms:"{\"15188001\":false,\"26284000\":false,\"46636008\":true,\"56940005\":false,\"68225006\":false,\"91554004\":false,\"195469007\":false,\"266128007\":false,\"724386005\":false}",
     }),
     ...mutationResponse,
   };
