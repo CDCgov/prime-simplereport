@@ -13,7 +13,7 @@ interface Props {
 export const SensitiveTopicsTooltipModal = ({
   tooltipText = "Why SimpleReport asks about sensitive topics like this",
   modalTitle = "Why we ask for gender of sexual partners and other sensitive topics",
-  showSyphilis,
+  showSyphilis = false,
 }: Props): React.ReactElement => {
   const [modalIsOpen, setIsOpen] = React.useState(false);
 

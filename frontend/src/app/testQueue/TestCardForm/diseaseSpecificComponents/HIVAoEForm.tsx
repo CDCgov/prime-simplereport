@@ -77,8 +77,7 @@ export const HIVAoEForm = ({
             validationStatus={
               showGenderOfSexualPartnersError ? "error" : undefined
             }
-            /* this should be removed before merging because this modal is actually for syphilis aoe, but just adding it to HIV aoe form for demo purposes */
-            hintText={<SensitiveTopicsTooltipModal showSyphilis={true} />}
+            hintText={<SensitiveTopicsTooltipModal />}
             hintTextClassName={""}
             errorMessage={
               showGenderOfSexualPartnersError &&
