@@ -31,10 +31,16 @@ import {
   blankUpdateAoeEventMock,
   falseNoSymptomWithSymptomOnsetUpdateAoeEventMock,
   falseNoSymptomUpdateAoeEventMock,
+  yesSyphilisHistoryMock,
+  yesPregnancyAndSyphilisHistoryMock,
+  yesPregnancyAndSyphilisHistoryAndNoSymptomMock,
+  yesPregnancyAndSyphilisHistoryFemaleGenderSexualPartnerAndNoSymptomMock,
 } from "../TestCardForm/testUtils/submissionMocks";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { ONSET_DATE_LABEL } from "../../../patientApp/timeOfTest/constants";
 import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
+import { sharedTestOrderInfo } from "../TestCardForm/testUtils/testConstants";
+import { REQUIRED_AOE_QUESTIONS_BY_DISEASE } from "../TestCardForm/TestCardForm.utils";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
@@ -1247,6 +1253,106 @@ describe("TestCard", () => {
           "Has the patient been told they have syphilis before?"
         )
       ).not.toBeInTheDocument();
+    });
+
+    it("checks that submission only works if AOE questions are valid", async function () {
+      mockDiseaseEnabledFlag("Syphilis");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: "DEVICE-8-ID",
+            },
+            specimen: {
+              specimenId: "SPECIMEN-3-ID",
+            },
+          }
+        ),
+        blankUpdateAoeEventMock,
+        yesSyphilisHistoryMock,
+        yesPregnancyAndSyphilisHistoryMock,
+        yesPregnancyAndSyphilisHistoryAndNoSymptomMock,
+        yesPregnancyAndSyphilisHistoryFemaleGenderSexualPartnerAndNoSymptomMock,
+        generateSubmitQueueMock(
+          MULTIPLEX_DISEASES.SYPHILIS,
+          TEST_RESULTS.POSITIVE,
+          {
+            device: {
+              deviceId: "DEVICE-8-ID",
+            },
+            specimen: {
+              specimenId: "SPECIMEN-3-ID",
+            },
+          }
+        ),
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device8Name);
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+      const AOE_ERROR_TEXT = "Please answer this required question.";
+
+      const requiredQuestions = screen.getAllByText(AOE_ERROR_TEXT);
+      expect(requiredQuestions.length).toEqual(
+        REQUIRED_AOE_QUESTIONS_BY_DISEASE.SYPHILIS.length
+      );
+
+      const historyFieldSet = screen.getByTestId(
+        `syphilisHistory-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(historyFieldSet).getByLabelText("Yes"));
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+      const requiredQuestionsAfterHistoryAnswer =
+        screen.getAllByText(AOE_ERROR_TEXT);
+      expect(requiredQuestionsAfterHistoryAnswer.length).toEqual(
+        REQUIRED_AOE_QUESTIONS_BY_DISEASE.SYPHILIS.length - 1
+      );
+
+      const pregnancyFieldSet = screen.getByTestId(
+        `pregnancy-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(pregnancyFieldSet).getByLabelText("Yes"));
+
+      const symptomFieldSet = screen.getByTestId(
+        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(symptomFieldSet).getByLabelText("No"));
+
+      const genderSexualPartnersFieldSet = screen.getByTestId(
+        `multi-select-option-list`
+      );
+      await user.click(
+        within(genderSexualPartnersFieldSet).getByTestId(
+          "multi-select-option-female"
+        )
+      );
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+
+      expect(screen.queryByText(AOE_ERROR_TEXT)).not.toBeInTheDocument();
     });
 
     it("should show no AOE questions when a flu only device is chosen", async function () {

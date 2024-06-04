@@ -76,6 +76,43 @@ const mutationResponse = {
     },
   },
 };
+export const yesSyphilisHistoryMock = {
+  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
+    syphilisHistory: "1087151000119108",
+    genderOfSexualPartners: [],
+  }),
+  ...mutationResponse,
+};
+
+export const yesPregnancyAndSyphilisHistoryMock = {
+  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
+    syphilisHistory: "1087151000119108",
+    pregnancy: "77386006",
+    genderOfSexualPartners: [],
+  }),
+  ...mutationResponse,
+};
+
+export const yesPregnancyAndSyphilisHistoryAndNoSymptomMock = {
+  ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
+    syphilisHistory: "1087151000119108",
+    pregnancy: "77386006",
+    genderOfSexualPartners: [],
+    noSymptoms: true,
+  }),
+  ...mutationResponse,
+};
+
+export const yesPregnancyAndSyphilisHistoryFemaleGenderSexualPartnerAndNoSymptomMock =
+  {
+    ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy({
+      syphilisHistory: "1087151000119108",
+      pregnancy: "77386006",
+      genderOfSexualPartners: ["female"],
+      noSymptoms: true,
+    }),
+    ...mutationResponse,
+  };
 
 export const blankUpdateAoeEventMock = {
   ...updateAoeMutationRequestWithoutNoSymptomsAndPregnancy(),
@@ -152,7 +189,7 @@ type EditQueueMockParams = {
     }[];
   };
   specimen?: {
-    specimenName: string;
+    specimenName?: string;
     specimenId: string;
   };
 };
@@ -186,18 +223,18 @@ export function generateEditQueueMock(
             testResult: testResult,
           },
         ],
-        dateTested: overrideParams?.dateTested,
+        dateTested: overrideParams?.dateTested ?? null,
       },
-      result: {
-        data: {
-          editQueueItem: {
-            results: overrideParams?.diseaseResults,
-          },
-          dateTested: overrideParams?.dateTested,
-          deviceType: {
-            internalId: overrideParams?.device?.deviceId ?? device1Id,
-            testLength: 15,
-          },
+    },
+    result: {
+      data: {
+        editQueueItem: {
+          results: overrideParams?.diseaseResults,
+        },
+        dateTested: overrideParams?.dateTested,
+        deviceType: {
+          internalId: overrideParams?.device?.deviceId ?? device1Id,
+          testLength: 15,
         },
       },
     },
