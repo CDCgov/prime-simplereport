@@ -24,10 +24,12 @@ export type MultiSelectProps = {
   validationStatus?: "error" | "success";
   ariaDescribedBy?: string;
   hintText?: string | React.ReactNode;
+  hintTextClassName?: string;
   onChange: (selectedItems: string[]) => void;
   labelClassName?: string;
   options: MultiSelectDropdownOption[];
   className?: string;
+  dropdownClassName?: string;
   initialSelectedValues?: string[];
   disabled?: boolean;
   inputProps?: JSX.IntrinsicElements["input"];
@@ -69,8 +71,10 @@ export const MultiSelect = ({
   validationStatus,
   ariaDescribedBy,
   hintText,
+  hintTextClassName,
   onChange,
   labelClassName,
+  dropdownClassName,
   options,
   disabled,
   initialSelectedValues,
@@ -166,9 +170,13 @@ export const MultiSelect = ({
     </>
   );
 
-  const getHintText = () => (
-    <>{hintText && <span className="usa-hint">{hintText}</span>}</>
-  );
+  const getHintText = () => {
+    const hintTextClasses = hintTextClassName ?? "usa-hint";
+
+    return (
+      <>{hintText && <span className={hintTextClasses}>{hintText}</span>}</>
+    );
+  };
 
   return (
     <UIDConsumer>
@@ -188,7 +196,7 @@ export const MultiSelect = ({
             name={name}
             options={availableOptions}
             onChange={DropdownComponent ? onItemAdded : onItemSelected}
-            className="multi-select-dropdown"
+            className={dropdownClassName ?? "multi-select-dropdown"}
             disabled={isDisabled}
             placeholder={placeholder}
             inputProps={{ "aria-required": required }}
