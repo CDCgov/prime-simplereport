@@ -19,8 +19,10 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -151,19 +153,14 @@ public class ApiUserService {
     IdentityAttributes userIdentity = new IdentityAttributes(apiUser.getLoginEmail(), name);
     _oktaRepo.reprovisionUser(userIdentity);
 
-    Set<Facility> facilitiesFound = Set.of();
-    if (!facilities.isEmpty()) {
-      facilitiesFound = _orgService.getFacilities(org, facilities);
-    }
+    Set<OrganizationRole> roles = getOrganizationRoles(role, accessAllFacilities);
+    Set<Facility> facilitiesFound = getFacilitiesToGiveAccess(org, roles, facilities);
     Optional<OrganizationRoleClaims> roleClaims =
-        _oktaRepo.updateUserPrivileges(
-            apiUser.getLoginEmail(),
-            org,
-            facilitiesFound,
-            getOrganizationRoles(role, accessAllFacilities));
+        _oktaRepo.updateUserPrivileges(apiUser.getLoginEmail(), org, facilitiesFound, roles);
 
     apiUser.setNameInfo(name);
     apiUser.setIsDeleted(false);
+    apiUser.setFacilities(facilitiesFound);
 
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
@@ -187,17 +184,13 @@ public class ApiUserService {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     boolean active = org.getIdentityVerified();
-    Set<Facility> facilitiesFound = Set.of();
-    if (!facilities.isEmpty()) {
-      facilitiesFound = _orgService.getFacilities(org, facilities);
-    }
+
+    Set<OrganizationRole> roles = getOrganizationRoles(role, accessAllFacilities);
+    Set<Facility> facilitiesFound = getFacilitiesToGiveAccess(org, roles, facilities);
+    apiUser.setFacilities(facilitiesFound);
+
     Optional<OrganizationRoleClaims> roleClaims =
-        _oktaRepo.createUser(
-            userIdentity,
-            org,
-            facilitiesFound,
-            getOrganizationRoles(role, accessAllFacilities),
-            active);
+        _oktaRepo.createUser(userIdentity, org, facilitiesFound, roles, active);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
@@ -242,13 +235,16 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    Set<Facility> facilitiesFound = _orgService.getFacilities(org, facilities);
+    Set<OrganizationRole> roles = getOrganizationRoles(role, accessAllFacilities);
+    Set<Facility> facilitiesFound = getFacilitiesToGiveAccess(org, roles, facilities);
+
     Optional<OrganizationRoleClaims> newOrgClaims =
-        _oktaRepo.updateUserPrivileges(
-            username, org, facilitiesFound, getOrganizationRoles(role, accessAllFacilities));
+        _oktaRepo.updateUserPrivileges(username, org, facilitiesFound, roles);
     Optional<OrganizationRoles> orgRoles =
         newOrgClaims.map(c -> _orgService.getOrganizationRoles(org, c));
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
+
+    apiUser.setFacilities(facilitiesFound);
 
     createUserUpdatedAuditLog(apiUser.getInternalId(), getCurrentApiUser().getInternalId());
 
@@ -695,7 +691,7 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public void updateUserPrivilegesAndGroupAccess(
-      String username, String orgExternalId, boolean allFacilitiesAccess, OrganizationRole role) {
+      String username, String orgExternalId, boolean allFacilitiesAccess, Role role) {
     updateUserPrivilegesAndGroupAccess(
         username, orgExternalId, allFacilitiesAccess, List.of(), role);
   }
@@ -706,36 +702,59 @@ public class ApiUserService {
       String orgExternalId,
       boolean allFacilitiesAccess,
       List<UUID> facilities,
-      OrganizationRole role)
+      Role role)
       throws IllegalGraphqlArgumentException {
 
-    if (!allFacilitiesAccess && facilities.isEmpty()) {
+    Organization newOrg = _orgService.getOrganization(orgExternalId);
+    Set<OrganizationRole> roles = getOrganizationRoles(role, allFacilitiesAccess);
+    Optional<ApiUser> foundUser = _apiUserRepo.findByLoginEmail(username);
+    ApiUser apiUser = foundUser.orElseThrow(NonexistentUserException::new);
+
+    Set<Facility> facilitiesToGiveAccessTo =
+        getFacilitiesToGiveAccess(newOrg, roles, new HashSet<>(facilities));
+    apiUser.setFacilities(facilitiesToGiveAccessTo);
+
+    _oktaRepo.updateUserPrivilegesAndGroupAccess(
+        username, newOrg, facilitiesToGiveAccessTo, role.toOrganizationRole(), allFacilitiesAccess);
+  }
+
+  /*
+  Given a list of facility UUIDs, validate that they belong in the given org, and return the list of facility entities
+  that the user should be given access to.
+
+  If a user can access all facilities, we do not persist relationships to any facilities.
+   */
+  private Set<Facility> getFacilitiesToGiveAccess(
+      Organization org, Set<OrganizationRole> roles, Set<UUID> facilities) {
+    boolean accessAllFacilitiesPermission = PermissionHolder.grantsAllFacilityAccess(roles);
+    if (!accessAllFacilitiesPermission && facilities.isEmpty()) {
       throw new PrivilegeUpdateFacilityAccessException();
     }
 
-    Organization newOrg = _orgService.getOrganization(orgExternalId);
     Set<UUID> facilityIdsToGiveAccess =
-        allFacilitiesAccess
-            // use an empty set of facilities if user can access all facilities anyway
+        accessAllFacilitiesPermission
+            // use an empty set of facilities if user can access all facilities
             ? Set.of()
-            : new HashSet<>(facilities);
+            : facilities;
 
     Set<Facility> facilitiesToGiveAccessTo =
-        _orgService.getFacilities(newOrg, facilityIdsToGiveAccess);
+        _orgService.getFacilities(org, facilityIdsToGiveAccess);
 
     if (facilitiesToGiveAccessTo.size() != facilityIdsToGiveAccess.size()) {
       Set<UUID> facilityIdDiff =
           dedupeFoundAndPassedInFacilityIds(facilitiesToGiveAccessTo, facilityIdsToGiveAccess);
-      throw new UnidentifiedFacilityException(facilityIdDiff, orgExternalId);
+      throw new UnidentifiedFacilityException(facilityIdDiff, org.getExternalId());
     }
-    _oktaRepo.updateUserPrivilegesAndGroupAccess(
-        username, newOrg, facilitiesToGiveAccessTo, role, allFacilitiesAccess);
+
+    return facilitiesToGiveAccessTo;
   }
 
   private Set<UUID> dedupeFoundAndPassedInFacilityIds(
       Set<Facility> facilitiesToGiveAccessTo, Set<UUID> facilityIdsToGiveAccess) {
     Set<UUID> facilityIdsFound =
-        facilitiesToGiveAccessTo.stream().map(f -> f.getInternalId()).collect(Collectors.toSet());
+        facilitiesToGiveAccessTo.stream()
+            .map(IdentifiedEntity::getInternalId)
+            .collect(Collectors.toSet());
     return facilityIdsToGiveAccess.stream()
         .filter(id -> !facilityIdsFound.contains(id))
         .collect(Collectors.toSet());

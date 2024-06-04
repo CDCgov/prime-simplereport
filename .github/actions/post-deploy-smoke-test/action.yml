@@ -7,6 +7,19 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{env.NODE_VERSION}}
+    - name: Cache yarn
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/yarn
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+    - name: Set up dependencies
+      working-directory: frontend
+      shell: bash
+      run: yarn install --prefer-offline
     - name: create env file
       shell: bash
       working-directory: frontend

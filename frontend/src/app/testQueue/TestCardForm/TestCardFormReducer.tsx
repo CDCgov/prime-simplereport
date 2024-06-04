@@ -8,7 +8,6 @@ import {
 import { MultiplexResultInput } from "../../../generated/graphql";
 
 import { convertFromMultiplexResponse } from "./TestCardForm.utils";
-import { parseRespiratorySymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
 import { DevicesMap, QueriedTestOrder } from "./types";
 
 export interface TestFormState {
@@ -118,6 +117,7 @@ export const testCardFormReducer = (
           prevState.devicesMap.get(payload)?.swabTypes[0].internalId ??
           prevState.specimenId,
         testResults: [],
+        aoeResponses: {},
         dirty: true,
       };
     }
@@ -175,7 +175,7 @@ export const testCardFormReducer = (
       }
       const aoeAnswers = {
         noSymptoms: payload.noSymptoms,
-        symptoms: JSON.stringify(parseRespiratorySymptoms(payload.symptoms)),
+        symptoms: payload.symptoms,
         symptomOnset: payload.symptomOnset,
         pregnancy: payload.pregnancy,
         syphilisHistory: payload.syphilisHistory,

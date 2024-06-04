@@ -1,0 +1,34 @@
+name: Pagerduty Alert
+description: Triggers an alert event for Pagerduty
+inputs:
+  summary:
+    description: A brief text summary of the event, used to generate the summaries/titles of any associated alerts. The maximum permitted length of this property is 1024 characters.
+    required: true
+  severity:
+    description: The perceived severity of the status the event is describing with respect to the affected system. This can be critical, error, warning or info.
+    required: true
+  routing_key:
+    description: This is the 32 character Integration Key for an integration on a service or on a global ruleset.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Send alert to Pagerduty
+      id: curl
+      shell: bash
+      run: |
+        curl --request 'POST' \
+        --url 'https://events.pagerduty.com/v2/enqueue' \
+        --header 'Content-Type: application/json' \
+        --data '{
+          "payload": {
+              "summary": "${{ inputs.summary }}",
+              "severity": "${{ inputs.severity }}",
+              "source": "GitHub Actions using PagerDuty Events API V2"
+          },
+          "routing_key": "${{ inputs.routing_key }}",
+          "event_action": "trigger"
+        }'

@@ -12,7 +12,7 @@ import TextInput from "../../commonComponents/TextInput";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
+import { TEST_RESULTS } from "../../testResults/constants";
 import {
   MultiplexResultInput,
   useEditQueueItemMutation,
@@ -26,7 +26,10 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
-import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
+import {
+  PregnancyCode,
+  SyphilisHistoryCode,
+} from "../../../patientApp/timeOfTest/constants";
 import { QueueItemSubmitLoader } from "../QueueItemSubmitLoader";
 
 import {
@@ -34,12 +37,10 @@ import {
   TestFormActionCase,
   TestFormState,
 } from "./TestCardFormReducer";
-import CovidAoEForm, {
-  parseRespiratorySymptoms,
-} from "./diseaseSpecificComponents/CovidAoEForm";
+import CovidAoEForm from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   AOEFormOption,
-  areAOEAnswersComplete,
+  generateAoeValidationState,
   convertFromMultiplexResponse,
   showTestResultDeliveryStatusAlert,
   useAOEFormOption,
@@ -48,11 +49,13 @@ import {
   useFilteredDeviceTypes,
   useSpecimenTypeOptions,
   useTestOrderPatient,
+  AoeValidationErrorMessages,
 } from "./TestCardForm.utils";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
 import { IncompleteAOEWarningModal } from "./IncompleteAOEWarningModal";
 import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
+import { stringifySymptomJsonForAoeUpdate } from "./diseaseSpecificComponents/aoeUtils";
 
 const DEBOUNCE_TIME = 300;
 
@@ -82,9 +85,10 @@ const TestCardForm = ({
     testResults: convertFromMultiplexResponse(testOrder.results),
     aoeResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
+      syphilisHistory: testOrder.syphilisHistory as SyphilisHistoryCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
-      symptoms: JSON.stringify(parseRespiratorySymptoms(testOrder.symptoms)),
+      symptoms: stringifySymptomJsonForAoeUpdate(testOrder.symptoms),
       genderOfSexualPartners: testOrder.genderOfSexualPartners,
     },
   };
@@ -114,16 +118,6 @@ const TestCardForm = ({
     useSpecimenTypeOptions(state);
 
   const { patientFullName } = useTestOrderPatient(testOrder);
-
-  const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
-  // AOE responses required for HIV positive result
-  const hivAOEResponsesRequired =
-    whichAOEFormOption === AOEFormOption.HIV &&
-    state.testResults.some(
-      (x) =>
-        x.diseaseName === MULTIPLEX_DISEASES.HIV &&
-        x.testResult === TEST_RESULTS.POSITIVE
-    );
 
   /**
    * When backend sends an updated test order, update the form state
@@ -193,14 +187,12 @@ const TestCardForm = ({
       variables: {
         patientId: testOrder.patient.internalId,
         noSymptoms: state.aoeResponses.noSymptoms,
-        // automatically converts boolean strings like "false" to false
-        symptoms: JSON.stringify(
-          parseRespiratorySymptoms(state.aoeResponses.symptoms)
-        ),
+        symptoms: stringifySymptomJsonForAoeUpdate(state.aoeResponses.symptoms),
         symptomOnset: state.aoeResponses.symptomOnset
           ? state.aoeResponses.symptomOnset
           : null,
         pregnancy: state.aoeResponses.pregnancy,
+        syphilisHistory: state.aoeResponses.syphilisHistory,
         genderOfSexualPartners:
           state.aoeResponses.genderOfSexualPartners ?? null,
       },
@@ -278,24 +270,49 @@ const TestCardForm = ({
     return null;
   };
 
-  const getAOEError = () => {
-    if (
-      hivAOEResponsesRequired &&
-      !areAOEAnswersComplete(state, AOEFormOption.HIV)
-    ) {
-      return "Please answer all required questions.";
+  const whichAoeFormOption = useAOEFormOption(state, devicesMap);
+
+  const validateAoeForm = () => {
+    const aoeValidationMessage = generateAoeValidationState(
+      state,
+      whichAoeFormOption
+    );
+    if (aoeValidationMessage === AoeValidationErrorMessages.COMPLETE) {
+      return true;
     }
-    return null;
+    if (aoeValidationMessage === AoeValidationErrorMessages.INCOMPLETE) {
+      if (whichAoeFormOption === AOEFormOption.COVID) {
+        setIsSubmitModalOpen(true);
+      } else {
+        showError(
+          "Please complete the required questions",
+          "Invalid test questionnaire"
+        );
+      }
+      return false;
+    }
+    if (
+      aoeValidationMessage ===
+      AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR
+    ) {
+      showError(
+        "Please complete symptom details or indicate patient doesn't have symptoms",
+        "Invalid test questionnaire"
+      );
+      return false;
+    }
+    showError(
+      "Something unexpected went wrong. Please try again or contact support@simplereport.gov for help",
+      "Invalid test questionnaire"
+    );
+    return false;
   };
 
   const dateTestedError = getDateTestedError();
   const deviceTypeError = getDeviceTypeError();
   const specimenTypeError = getSpecimenTypeError();
   const testResultsError = getTestResultsError();
-  const aoeError = getAOEError();
-
   const showTestResultsError = hasAttemptedSubmit && testResultsError !== null;
-
   // only show warning if date tested has no error
   const showDateMonthsAgoWarning =
     moment(state.dateTested) < moment().subtract(6, "months") &&
@@ -318,28 +335,18 @@ const TestCardForm = ({
     if (testResultsError) {
       showError(testResultsError, "Invalid test results");
     }
-    if (aoeError) {
-      showError(aoeError, "Invalid test questionnaire");
-    }
     return (
       dateTestedError === null &&
       deviceTypeError === null &&
       specimenTypeError === null &&
-      testResultsError === null &&
-      aoeError === null
+      testResultsError === null
     );
   };
 
   const submitForm = async (forceSubmit: boolean = false) => {
     setHasAttemptedSubmit(true);
-    if (!validateForm()) {
-      return;
-    }
-
-    if (!forceSubmit && !areAOEAnswersComplete(state, whichAOEFormOption)) {
-      setIsSubmitModalOpen(true);
-      return;
-    }
+    if (!validateForm()) return;
+    if (!forceSubmit && !validateAoeForm()) return;
 
     trackSubmitTestResult();
     setIsSubmitModalOpen(false);
@@ -548,11 +555,12 @@ const TestCardForm = ({
             ></TestResultInputGroup>
           </FormGroup>
         </div>
-        {whichAOEFormOption === AOEFormOption.COVID && (
+        {whichAoeFormOption === AOEFormOption.COVID && (
           <div className="grid-row grid-gap">
             <CovidAoEForm
               testOrder={testOrder}
               responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
               onResponseChange={(responses) => {
                 dispatch({
                   type: TestFormActionCase.UPDATE_AOE_RESPONSES,
@@ -562,7 +570,7 @@ const TestCardForm = ({
             />
           </div>
         )}
-        {hivAOEResponsesRequired && (
+        {whichAoeFormOption === AOEFormOption.HIV && (
           <div className="grid-row grid-gap">
             <HIVAoEForm
               testOrder={testOrder}

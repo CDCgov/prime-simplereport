@@ -6,7 +6,7 @@ plugins {
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube' version '5.0.0.4638'
-    id 'com.gorylenko.gradle-git-properties' version '2.4.1'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.2'
     id "com.diffplug.spotless" version "6.25.0"
 }
 
@@ -58,10 +58,13 @@ dependencies {
      *
      * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 15 Feb 2024.
      */
-    implementation 'com.squareup.okio:okio:3.4.0'
+    implementation 'com.squareup.okio:okio:3.9.0'
     implementation 'org.springframework:spring-core:6.0.16'
     implementation 'org.springframework.security:spring-security-core:6.1.8'
     implementation 'org.springframework.security:spring-security-oauth2-client:6.1.7'
+
+    // non-pinned security dependencies
+    implementation 'org.owasp.encoder:encoder:1.2'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
