@@ -240,7 +240,7 @@ export const AoeValidationErrorMessages = {
   UNKNOWN: "UNKNOWN",
 } as const;
 
-const REQUIRED_AOE_QUESTIONS_BY_DISEASE: {
+export const REQUIRED_AOE_QUESTIONS_BY_DISEASE: {
   [key in AOEFormOption]: Array<keyof AoeQuestionResponses>;
 } = {
   // AOE responses for COVID not required, but include in completion validation
