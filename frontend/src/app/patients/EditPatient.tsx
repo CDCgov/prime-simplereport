@@ -230,10 +230,7 @@ const EditPatient = (props: Props) => {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
-  const savePerson = async (
-    person: Nullable<PersonFormData>,
-    startTest: boolean = false
-  ) => {
+  const savePerson = async (person: Nullable<PersonFormData>) => {
     await updatePatient({
       variables: {
         patientId: props.patientId,
@@ -258,7 +255,9 @@ const EditPatient = (props: Props) => {
       "Information record has been updated.",
       `${PATIENT_TERM_CAP} record saved`
     );
+  };
 
+  const beginTest = (startTest: boolean) => {
     if (startTest) {
       const facility = data?.patient.facility?.id || activeFacilityId;
       setRedirect({
@@ -272,7 +271,19 @@ const EditPatient = (props: Props) => {
       setRedirect(personPath);
     }
   };
+  const saveAndStartTest = async (
+    person: Nullable<PersonFormData>,
+    startTest: boolean,
+    formChanged: boolean
+  ) => {
+    if (formChanged) {
+      await savePerson(person);
+    }
+    beginTest(startTest);
+  };
 
+  const saveButtonLabel = (formChanged: boolean): string =>
+    formChanged ? "Save and start test" : "Start test";
   const getHeader = (
     person: Nullable<PersonFormData>,
     onSave: (startTest?: boolean) => void,
@@ -317,7 +328,7 @@ const EditPatient = (props: Props) => {
           <Button
             id="edit-patient-save-upper"
             className="prime-save-patient-changes-start-test"
-            disabled={loading || !formChanged}
+            disabled={loading}
             onClick={() => {
               onSave(true);
             }}
@@ -325,7 +336,7 @@ const EditPatient = (props: Props) => {
             label={
               loading
                 ? `${t("common.button.saving")}...`
-                : "Save and start test"
+                : saveButtonLabel(formChanged)
             }
           />
         )}
@@ -395,7 +406,7 @@ const EditPatient = (props: Props) => {
                   data.patient.street === "** Unknown / Not Given **",
               }}
               patientId={props.patientId}
-              savePerson={savePerson}
+              savePerson={saveAndStartTest}
               getHeader={getHeader}
               getFooter={getFooter}
             />
