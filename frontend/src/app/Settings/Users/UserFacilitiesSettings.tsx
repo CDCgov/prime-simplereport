@@ -67,7 +67,7 @@ const UserFacilitiesSettings: React.FC<UserFacilitiesSettingProps> = ({
       boxes={boxes}
       legend="Facilities access"
       hintText={facilityAccessDescription}
-      name="facilities"
+      name="facilities-settings"
       required
       onChange={() => {}}
       validationStatus={error?.type ? "error" : undefined}

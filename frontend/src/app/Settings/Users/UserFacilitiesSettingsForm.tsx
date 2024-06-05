@@ -125,7 +125,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         boxes={boxes}
         legend="Facilities"
         legendSrOnly
-        name="facilities"
+        name="facilities-settings-form"
         onChange={(e) => {
           const { value, checked } = e.target;
           if (value === "ALL_FACILITIES") {
