@@ -136,6 +136,6 @@ jobs:
       - name: Trigger PagerDuty alert
         uses: ./.github/actions/pagerduty-alert
         with:
-          summary: ":siren-gif: Post-deploy smoke test for ${{ env.DEPLOY_ENV }} couldn't verify that the frontend is talking to the backend. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :siren-gif:"
+          summary: ":siren-gif: Post-deploy smoke test for ${{ env.DEPLOY_ENV }} could not verify that the frontend is talking to the backend. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :siren-gif:"
           severity: critical
           routing_key: ${{ secrets.pagerduty_prod_integration_key }}
