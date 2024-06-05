@@ -65,6 +65,7 @@ export const SensitiveTopicsTooltipModal = ({
           onClick={closeModal}
           type={"button"}
           className={"margin-top-2em"}
+          data-testid={"button-sensitive-topics-modal-confirm"}
         >
           Got it
         </Button>

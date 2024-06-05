@@ -40,6 +40,7 @@ export const WhereResultsAreSentModal: React.FC = () => {
           onClick={closeModal}
           type={"button"}
           className={"margin-top-2em"}
+          data-testid={"button-where-results-are-sent-modal-confirm"}
         >
           Got it
         </Button>
