@@ -70,9 +70,7 @@ describe("Conducting a COVID test from:", () => {
 
     cy.injectSRAxe();
     cy.get(".results-dropdown").within(() => {
-      cy.get("button.usa-button--unstyled:first-of-type")
-        .contains("Begin test")
-        .click();
+      cy.get("[data-cy='name0-birthdate0']").contains("Begin test").click();
     });
 
     cy.wait("@AddPatientToQueue");
