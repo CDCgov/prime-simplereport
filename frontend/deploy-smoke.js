@@ -24,8 +24,8 @@ const TIMEOUT_DURATION_MS = 10 * 1000;
 driver
   .navigate()
   .to(`${appUrl}`)
-  .sleep(TIMEOUT_DURATION_MS)
-  .then(() => {
+  .then(async () => {
+    driver.sleep(TIMEOUT_DURATION_MS);
     return driver.findElement({ id: "root" }).getText();
   })
   .then((value) => {
