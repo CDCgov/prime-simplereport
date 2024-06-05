@@ -18,9 +18,13 @@ const driver = new Builder()
   .forBrowser("chrome")
   .setChromeOptions(options.addArguments("--headless=new"))
   .build();
+
+const TIMEOUT_DURATION_MS = 10 * 1000;
+
 driver
   .navigate()
   .to(`${appUrl}`)
+  .sleep(TIMEOUT_DURATION_MS)
   .then(() => {
     let value = driver.findElement({ id: "root" }).getText();
     return value;
