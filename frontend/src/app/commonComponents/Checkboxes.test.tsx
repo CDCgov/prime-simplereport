@@ -1,7 +1,3 @@
-
-
-
-
 import { generateCheckboxColumns } from "./Checkboxes";
 
 describe("generateCheckboxColumns", () => {
