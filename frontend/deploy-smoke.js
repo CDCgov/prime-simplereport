@@ -26,8 +26,7 @@ driver
   .to(`${appUrl}`)
   .sleep(TIMEOUT_DURATION_MS)
   .then(() => {
-    let value = driver.findElement({ id: "root" }).getText();
-    return value;
+    return driver.findElement({ id: "root" }).getText();
   })
   .then((value) => {
     driver.quit();
