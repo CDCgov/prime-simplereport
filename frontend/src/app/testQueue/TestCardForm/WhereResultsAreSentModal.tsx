@@ -5,10 +5,10 @@ import { TextWithTooltipButton } from "../../commonComponents/TextWithTooltipBut
 import Modal from "../../commonComponents/Modal";
 
 export const WhereResultsAreSentModal: React.FC = () => {
-  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
 
   return (
     <>

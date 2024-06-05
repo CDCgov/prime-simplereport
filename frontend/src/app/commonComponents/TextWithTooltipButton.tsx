@@ -12,20 +12,18 @@ interface Props {
 
 export const TextWithTooltipButton = ({ text, onClick }: Props) => {
   return (
-    <>
-      <Button
-        type={"button"}
-        unstyled
-        className={"margin-top-05em"}
-        onClick={onClick}
-      >
-        <FontAwesomeIcon
-          alt-text="info"
-          className="info-circle-icon margin-right-05em"
-          icon={faInfoCircle as IconProp}
-        />
-        <strong className={"font-body-2xs"}>{text}</strong>
-      </Button>
-    </>
+    <Button
+      type={"button"}
+      unstyled
+      className={"margin-top-05em"}
+      onClick={onClick}
+    >
+      <FontAwesomeIcon
+        alt-text="info"
+        className="info-circle-icon margin-right-05em"
+        icon={faInfoCircle as IconProp}
+      />
+      <strong className={"font-body-2xs"}>{text}</strong>
+    </Button>
   );
 };

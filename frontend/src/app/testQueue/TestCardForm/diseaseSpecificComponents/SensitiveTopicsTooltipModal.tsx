@@ -15,10 +15,10 @@ export const SensitiveTopicsTooltipModal = ({
   modalTitle = "Why we ask for gender of sexual partners and other sensitive topics",
   showSyphilis = false,
 }: Props): React.ReactElement => {
-  const [modalIsOpen, setIsOpen] = React.useState(false);
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
 
   return (
     <>
