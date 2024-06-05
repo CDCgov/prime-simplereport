@@ -21,6 +21,7 @@ import {
   generateSymptomAoeConstants,
   generateSexualActivityAoeConstants,
 } from "./aoeUtils";
+import { SensitiveTopicsTooltipModal } from "./SensitiveTopicsTooltipModal";
 
 interface SyphillisAoeFormProps {
   testOrder: QueriedTestOrder;
@@ -94,8 +95,17 @@ export const SyphilisAoEForm = ({
             options={GENDER_IDENTITY_VALUES}
             onChange={onSexualPartnerGenderChange}
             initialSelectedValues={selectedGenders}
-            label={"What is the gender of their sexual partners?"}
+            label={
+              <>
+                What is the gender of their sexual partners?{" "}
+                <span className={"text-base-dark"}>
+                  (Select all that apply.)
+                </span>
+              </>
+            }
             required
+            hintText={<SensitiveTopicsTooltipModal showSyphilis={true} />}
+            hintTextClassName={""}
             validationStatus={
               showGenderOfSexualPartnersError ? "error" : undefined
             }
