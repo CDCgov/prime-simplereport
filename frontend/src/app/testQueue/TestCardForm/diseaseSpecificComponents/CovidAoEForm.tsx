@@ -123,6 +123,7 @@ const CovidAoEForm = ({
                   ? SYMPTOM_SUBQUESTION_ERROR
                   : undefined
               }
+              className={"padding-left-0"}
             />
           </div>
         </>

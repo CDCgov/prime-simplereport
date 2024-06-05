@@ -87,7 +87,7 @@ const Checkboxes = (props: Props) => {
   return (
     <div
       className={classnames(
-        "usa-form-group padding-left-0",
+        "usa-form-group padding-0",
         validationStatus === "error" && "usa-form-group--error"
       )}
     >
