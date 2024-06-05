@@ -117,7 +117,7 @@ dependencies {
     // test/check dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'net.ttddyy:datasource-proxy:1.9'
+    testImplementation 'net.ttddyy:datasource-proxy:1.10'
 
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
