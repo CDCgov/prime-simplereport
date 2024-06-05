@@ -128,11 +128,11 @@ const CheckboxesFragment = (props: FragmentProps) => {
   const { boxes, name, inputRef, onChange } = props;
 
   return boxes.map(({ value, label, disabled, checked, ...inputProps }) => (
-    <div className="usa-checkbox" key={value}>
+    <div className="usa-checkbox" key={`${name}-${value}`}>
       <input
         className="usa-checkbox__input"
         checked={checked}
-        id={`symptom-${value}`}
+        id={`${name}-${value}`}
         onChange={onChange}
         type="checkbox"
         value={value}
@@ -141,7 +141,7 @@ const CheckboxesFragment = (props: FragmentProps) => {
         disabled={disabled || props.disabled}
         {...inputProps}
       />
-      <label className="usa-checkbox__label" htmlFor={`symptom-${value}`}>
+      <label className="usa-checkbox__label" htmlFor={`${name}-${value}`}>
         {label}
       </label>
     </div>

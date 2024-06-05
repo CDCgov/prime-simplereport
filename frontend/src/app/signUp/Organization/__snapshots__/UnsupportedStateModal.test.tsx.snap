@@ -83,14 +83,14 @@ Object {
                             <input
                               aria-label="acknowledged"
                               class="usa-checkbox__input"
-                              id="symptom-acknowledged"
+                              id="acknowledge-acknowledged"
                               name="acknowledge"
                               type="checkbox"
                               value="acknowledged"
                             />
                             <label
                               class="usa-checkbox__label"
-                              for="symptom-acknowledged"
+                              for="acknowledge-acknowledged"
                             >
                               My organization is submitting test results to a
                                
