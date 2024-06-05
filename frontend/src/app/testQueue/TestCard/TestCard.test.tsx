@@ -1415,7 +1415,7 @@ describe("TestCard", () => {
   });
 
   describe("regression test", () => {
-    it.only("test card checkboxes don't conflict with each other", async () => {
+    it("test card checkboxes don't conflict with each other", async () => {
       //   https://github.com/CDCgov/prime-simplereport/issues/7768
       const secondTestOrder: QueriedTestOrder = {
         internalId: "01c807c9-d42b-45c7-aa9f-1fd290eb2fdf",

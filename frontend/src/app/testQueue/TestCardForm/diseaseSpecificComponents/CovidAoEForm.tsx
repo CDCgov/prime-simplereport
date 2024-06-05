@@ -105,7 +105,7 @@ const CovidAoEForm = ({
             ></TextInput>
           </div>
           <div
-            className="grid-row grid-gap margin-left-0"
+            className="grid-row grid-gap margin-left-0 "
             data-testid={`symptom-selection-${testOrder.internalId}`}
           >
             <Checkboxes
