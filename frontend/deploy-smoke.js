@@ -25,7 +25,7 @@ driver
   .navigate()
   .to(`${appUrl}`)
   .then(async () => {
-    driver.sleep(TIMEOUT_DURATION_MS);
+    await driver.sleep(TIMEOUT_DURATION_MS);
     return driver.findElement({ id: "root" }).getText();
   })
   .then((value) => {
