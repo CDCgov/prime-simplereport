@@ -52,7 +52,10 @@ const CovidAoEForm = ({
     respiratorySymptomDefinitions
   );
   return (
-    <div className="grid-col-auto" id="covid-aoe-form">
+    <div
+      className="grid-col-auto"
+      id={`covid-aoe-form-${testOrder.patient.internalId}`}
+    >
       <div className="grid-row">
         <div className="grid-col-auto">
           <RadioGroup
@@ -103,7 +106,7 @@ const CovidAoEForm = ({
           </div>
           <div
             className="grid-row grid-gap margin-left-0"
-            data-testid="symptom-selection"
+            data-testid={`symptom-selection-${testOrder.internalId}`}
           >
             <Checkboxes
               boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({

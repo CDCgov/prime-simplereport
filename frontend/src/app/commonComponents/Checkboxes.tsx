@@ -133,6 +133,7 @@ const CheckboxesFragment = (props: FragmentProps) => {
         className="usa-checkbox__input"
         checked={checked}
         id={`${name}-${value}`}
+        data-testid={`${name}-${value}`}
         onChange={onChange}
         type="checkbox"
         value={value}
