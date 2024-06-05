@@ -36,7 +36,11 @@ export const WhereResultsAreSentModal: React.FC = () => {
           identifiable data, such as name, in order to protect your patient's
           confidentiality.
         </p>
-        <Button onClick={closeModal} type={"button"}>
+        <Button
+          onClick={closeModal}
+          type={"button"}
+          className={"margin-top-2em"}
+        >
           Got it
         </Button>
       </Modal>

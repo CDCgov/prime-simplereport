@@ -32,34 +32,40 @@ export const SensitiveTopicsTooltipModal = ({
         <Modal.Header styleClassNames={"font-sans-lg line-height-sans-3"}>
           {modalTitle}
         </Modal.Header>
-        <h3>Gender of sexual partners</h3>
-        <p>
+        <h3 className={"margin-bottom-05em"}>Gender of sexual partners</h3>
+        <p className={"margin-top-05em"}>
           This helps public health departments understand which types of sexual
           connections are leading to STI spread and understand which populations
           to focus their support on.
         </p>
-        <h3>Patient pregnancy</h3>
-        <p>
+        <h3 className={"margin-bottom-05em"}>Patient pregnancy</h3>
+        <p className={"margin-top-05em"}>
           If a patient is pregnant, this increases the public health
           department's prioritization of the patient's care as STIs can pass
           onto the child.
         </p>
         {showSyphilis && (
           <>
-            <h3>Syphilis symptoms</h3>
-            <p>
+            <h3 className={"margin-bottom-05em"}>Syphilis symptoms</h3>
+            <p className={"margin-top-05em"}>
               This helps public health departments understand which stage of
               syphilis the patient may be in.
             </p>
-            <h3>When someone's had syphilis before</h3>
-            <p>
+            <h3 className={"margin-bottom-05em"}>
+              When someone's had syphilis before
+            </h3>
+            <p className={"margin-top-05em"}>
               If a patient has ever had syphilis, rapid tests will always return
               positive. This helps public health departments understand if this
               is a new case of syphilis.
             </p>
           </>
         )}
-        <Button onClick={closeModal} type={"button"}>
+        <Button
+          onClick={closeModal}
+          type={"button"}
+          className={"margin-top-2em"}
+        >
           Got it
         </Button>
       </Modal>
