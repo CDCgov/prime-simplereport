@@ -68,7 +68,9 @@ export const HIVAoEForm = ({
             label={
               <>
                 What is the gender of their sexual partners?{" "}
-                <span>(Select all that apply.)</span>
+                <span className={"text-base-dark"}>
+                  (Select all that apply.)
+                </span>
               </>
             }
             dropdownClassName={""}
