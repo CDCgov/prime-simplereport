@@ -1,10 +1,8 @@
-import Checkboxes, { generateCheckboxColumns } from "./Checkboxes";
-import {
-  respiratorySymptomDefinitions,
-  SYMPTOM_SUBQUESTION_ERROR,
-} from "../../patientApp/timeOfTest/constants";
-import React from "react";
-import { render, screen } from "@testing-library/react";
+
+
+
+
+import { generateCheckboxColumns } from "./Checkboxes";
 
 describe("generateCheckboxColumns", () => {
   it("creates array of arrays, subarrays of length n, when passed an array of items and n", () => {
