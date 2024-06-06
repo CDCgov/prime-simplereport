@@ -140,10 +140,8 @@ describe("Conducting a COVID test from:", () => {
       cy.get("input").type("2021-10-05");
     });
 
-    cy.get("[data-testid='symptom-selection']").within(() => {
-      cy.contains("label", "Chills").click();
-      cy.contains("label", "Headache").click();
-    });
+    cy.contains("label", "Chills").click();
+    cy.contains("label", "Headache").click();
 
     cy.checkAccessibility();
 
