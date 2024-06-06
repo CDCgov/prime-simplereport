@@ -20,7 +20,7 @@ import {
 export const BLURRED_VISION_LITERAL = "Blurred vision";
 export const TEST_CARD_SYMPTOM_ONSET_DATE_STRING = "2024-05-14";
 
-const NO_SYMPTOMS_FALSE_OVERRIDE = { noSymptoms: false };
+export const NO_SYMPTOMS_FALSE_OVERRIDE = { noSymptoms: false };
 const NO_SYMPTOMS_TRUE_OVERRIDE = { noSymptoms: true };
 
 const PREGNANCY_OVERRIDE = { pregnancy: "77386006" };
@@ -40,7 +40,7 @@ const BLURRED_VISION_OVERRIDE = {
     '{"15188001":false,"26284000":false,"46636008":true,"56940005":false,"68225006":false,"91554004":false,"195469007":false,"266128007":false,"724386005":false}',
 };
 
-const baseUpdateAoeMutationRequest = (
+export const baseUpdateAoeMutationRequest = (
   variableOverrides?: Partial<UpdateAoeMutationVariables>
 ) => {
   return {
@@ -57,7 +57,7 @@ const baseUpdateAoeMutationRequest = (
   };
 };
 
-const mutationResponse = {
+export const mutationResponse = {
   result: {
     data: {
       testResult: {

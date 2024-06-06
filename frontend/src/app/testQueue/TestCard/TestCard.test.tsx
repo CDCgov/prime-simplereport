@@ -41,6 +41,11 @@ import { sharedTestOrderInfo } from "../TestCardForm/testUtils/testConstants";
 import { REQUIRED_AOE_QUESTIONS_BY_DISEASE } from "../TestCardForm/TestCardForm.utils";
 
 import { TestCard, TestCardProps } from "./TestCard";
+import {
+  positiveGenerateMockOne,
+  firstCardSymptomUpdateMock,
+  secondCardSymptomUpdateMock,
+} from "./testMocks";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -1406,6 +1411,126 @@ describe("TestCard", () => {
       );
 
       expect(screen.queryByText(AOE_ERROR_TEXT)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("regression test", () => {
+    it("test card checkboxes don't conflict with each other", async () => {
+      //   https://github.com/CDCgov/prime-simplereport/issues/7768
+      const secondTestOrder: QueriedTestOrder = {
+        internalId: "01c807c9-d42b-45c7-aa9f-1fd290eb2fdf",
+        dateAdded: "2024-06-05 22:03:12.205",
+        symptoms:
+          '{"64531003":"true","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"true","422587007":"true","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
+        symptomOnset: null,
+        noSymptoms: true,
+        deviceType: {
+          internalId: device3Id,
+          name: device3Name,
+          model: "LumiraDx SARS-CoV-2 Ag Test*",
+          testLength: 15,
+        },
+        specimenType: {
+          internalId: specimen1Id,
+          name: specimen1Name,
+          typeCode: "445297001",
+        },
+        patient: {
+          internalId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
+          telephone: "(571) 867-5309",
+          birthDate: "2015-09-20",
+          firstName: "Althea",
+          middleName: "Hedda Mclaughlin",
+          lastName: "Dixon",
+          gender: "refused",
+          testResultDelivery: null,
+          preferredLanguage: null,
+          email: "sywaporoce@mailinator.com",
+          emails: ["sywaporoce@mailinator.com"],
+          phoneNumbers: [
+            {
+              type: PhoneType.Mobile,
+              number: "(553) 223-0559",
+            },
+            {
+              type: PhoneType.Landline,
+              number: "(669) 789-0799",
+            },
+          ],
+        },
+        results: [],
+        dateTested: null,
+        correctionStatus: "ORIGINAL",
+        reasonForCorrection: null,
+      };
+      const secondTestProps: TestCardProps = {
+        refetchQueue: jest.fn().mockReturnValue(null),
+        testOrder: secondTestOrder,
+        facility: facilityInfo,
+        devicesMap: devicesMap,
+        startTestPatientId: "",
+        setStartTestPatientId: setStartTestPatientIdMock,
+        removePatientFromQueue: removePatientFromQueueMock,
+      };
+
+      const firstCardMocks = [
+        falseNoSymptomAoeMock,
+        firstCardSymptomUpdateMock,
+        positiveGenerateMockOne,
+      ];
+      const { user } = await renderQueueItem({ mocks: firstCardMocks });
+
+      const secondCardMocks = [
+        falseNoSymptomAoeMock,
+        secondCardSymptomUpdateMock,
+      ];
+      await renderQueueItem({ props: secondTestProps, mocks: secondCardMocks });
+
+      // set up test card one
+      await user.click(
+        within(
+          screen.getByTestId(`COVID-19-test-result-${testOrderInfo.internalId}`)
+        ).getByText("Positive", { exact: false })
+      );
+
+      await user.click(
+        within(
+          screen.getByTestId(`has-any-symptoms-${testOrderInfo.internalId}`)
+        ).getByText("Yes", { exact: false })
+      );
+
+      const CHILLS_SNOMED_CODE = 43724002;
+      const firstChillsCheckBox = screen.getByTestId(
+        `symptoms-${testOrderInfo.internalId}-${CHILLS_SNOMED_CODE}`
+      );
+      await user.click(firstChillsCheckBox);
+
+      // set up test card two
+      await user.click(
+        within(
+          screen.getByTestId(
+            `COVID-19-test-result-${secondTestOrder.internalId}`
+          )
+        ).getByText("Positive", { exact: false })
+      );
+
+      await user.click(
+        within(
+          screen.getByTestId(`has-any-symptoms-${secondTestOrder.internalId}`)
+        ).getByText("Yes", { exact: false })
+      );
+
+      const secondChillsCheckBox = screen.getByTestId(
+        `symptoms-${secondTestOrder.internalId}-${CHILLS_SNOMED_CODE}`
+      );
+
+      expect(secondChillsCheckBox).not.toBeChecked();
+      await user.click(
+        within(
+          screen.getByTestId(`symptom-selection-${secondTestOrder.internalId}`)
+        ).getByText("Chills", { exact: false })
+      );
+      expect(firstChillsCheckBox).toBeChecked();
     });
   });
 });

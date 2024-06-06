@@ -66,6 +66,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
         <Button
           variant="unstyled"
           label="Begin test"
+          dataCy={`name${idx}-birthdate${idx}`}
           ariaDescribedBy={`name${idx} birthdate${idx}`}
           onClick={() => handleBeginTestClick(patient)}
         />

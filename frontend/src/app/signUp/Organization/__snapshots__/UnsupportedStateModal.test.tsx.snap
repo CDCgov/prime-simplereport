@@ -63,7 +63,7 @@ Object {
                     You can join the waitlist to be notified when SimpleReport is available in your state, or if your organization is reporting to a SimpleReport state, you can continue.
                   </p>
                   <div
-                    class="usa-form-group"
+                    class="usa-form-group padding-0"
                   >
                     <fieldset
                       class="usa-fieldset prime-checkboxes"
@@ -83,14 +83,15 @@ Object {
                             <input
                               aria-label="acknowledged"
                               class="usa-checkbox__input"
-                              id="symptom-acknowledged"
+                              data-testid="acknowledge-acknowledged"
+                              id="acknowledge-acknowledged"
                               name="acknowledge"
                               type="checkbox"
                               value="acknowledged"
                             />
                             <label
                               class="usa-checkbox__label"
-                              for="symptom-acknowledged"
+                              for="acknowledge-acknowledged"
                             >
                               My organization is submitting test results to a
                                
