@@ -73,7 +73,7 @@ export const HIVAoEForm = ({
                 </span>
               </>
             }
-            dropdownClassName={""}
+            dropdownClassName={"width-mobile-lg"}
             labelClassName={"multi-select-dropdown"}
             required={true}
             validationStatus={
