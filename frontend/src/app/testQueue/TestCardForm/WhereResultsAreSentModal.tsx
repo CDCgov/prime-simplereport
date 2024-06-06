@@ -4,7 +4,15 @@ import { Button } from "@trussworks/react-uswds";
 import { TextWithTooltipButton } from "../../commonComponents/TextWithTooltipButton";
 import Modal from "../../commonComponents/Modal";
 
-export const WhereResultsAreSentModal: React.FC = () => {
+interface Props {
+  tooltipText?: string;
+  modalTitle?: string;
+}
+
+export const WhereResultsAreSentModal: React.FC = ({
+  tooltipText = "Where results are sent",
+  modalTitle = "Where are SimpleReport test results sent?",
+}: Props) => {
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
   const openModal = () => setModalIsOpen(true);
@@ -12,18 +20,15 @@ export const WhereResultsAreSentModal: React.FC = () => {
 
   return (
     <>
-      <TextWithTooltipButton
-        text="Where results are sent"
-        onClick={openModal}
-      />
+      <TextWithTooltipButton text={tooltipText} onClick={openModal} />
       <Modal
         showModal={modalIsOpen}
-        contentLabel="Where are SimpleReport test results sent?"
+        contentLabel={modalTitle}
         onClose={closeModal}
         containerClassName={"margin-1em"}
       >
         <Modal.Header styleClassNames={"font-sans-lg line-height-sans-3"}>
-          Where are SimpleReport test results sent?
+          {modalTitle}
         </Modal.Header>
         <p>
           When you click submit, test results are automatically sent to your
