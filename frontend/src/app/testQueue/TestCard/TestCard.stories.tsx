@@ -3,7 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { Meta, StoryFn } from "@storybook/react";
 
 import { store } from "../../store";
-import { StoryGraphQLProvider } from "../../../stories/storyMocks";
+import { getMocks, StoryGraphQLProvider } from "../../../stories/storyMocks";
 import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
 import { PhoneType } from "../../../generated/graphql";
 import mockSupportedDiseaseMultiplex from "../mocks/mockSupportedDiseaseMultiplex";
@@ -15,7 +15,10 @@ export default {
   title: "App/Test Queue/Test Card",
   component: TestCard,
   argTypes: {},
-  args: {},
+  args: {
+    refetchQueue: () => {},
+    removePatientFromQueue: () => {},
+  },
   decorators: [
     (Story) => (
       <StoryGraphQLProvider>
@@ -23,6 +26,9 @@ export default {
       </StoryGraphQLProvider>
     ),
   ],
+  parameters: {
+    msw: getMocks("EditQueueItem", "UpdateAOE"),
+  },
 } as Meta;
 
 const Template: StoryFn<TestCardProps> = (args: TestCardProps) => (

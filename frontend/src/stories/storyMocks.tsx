@@ -13,31 +13,160 @@ import { UploadSubmissionPage } from "../generated/graphql";
 export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const mocks = {
-  GetPatientsLastResult: graphql.query("GetPatientsLastResult", () => {
+  // HTTP GET
+  getEntityName: http.get(`${BACKEND_URL}/pxp/register/entity-name*`, () => {
+    return HttpResponse.json("Shady Oaks", { status: 200 });
+  }),
+  getPxpResult: http.get(`${BACKEND_URL}/pxp/entity?patientLink=*`, () => {
+    return HttpResponse.json(
+      {
+        expiresAt: "2024-06-15T15:32:41.260+00:00",
+        facility: {
+          phone: "(800) 232-4636",
+          name: "Testing Site",
+        },
+        patient: {
+          firstName: "Mary",
+          lastName: "E.",
+        },
+      },
+      { status: 200 }
+    );
+  }),
+  // HTTP POST
+  duplicateRegistration: http.post(
+    `${BACKEND_URL}/pxp/register/existing-patient`,
+    () => {
+      return HttpResponse.json(true, { status: 200 });
+    }
+  ),
+  enrollEmailMfa: http.post(
+    `${BACKEND_URL}/user-account/enroll-email-mfa`,
+    () => {
+      return HttpResponse.json(
+        { activation: { storybook: true } },
+        { status: 200 }
+      );
+    }
+  ),
+  enrollSecurityKeyMfa: http.post(
+    `${BACKEND_URL}/user-account/enroll-security-key-mfa`,
+    () => {
+      return HttpResponse.json(
+        { activation: { storybook: true } },
+        { status: 200 }
+      );
+    }
+  ),
+  enrollTotpMfa: http.post(
+    `${BACKEND_URL}/user-account/authenticator-qr`,
+    () => {
+      return HttpResponse.json(
+        { qrcode: "https://i.redd.it/tvfnlka65zi51.jpg" },
+        { status: 200 }
+      );
+    }
+  ),
+  getQuestions: http.post(
+    `${BACKEND_URL}/identity-verification/get-questions`,
+    () => {
+      return HttpResponse.json(
+        { questionSet: exampleQuestionSet },
+        { status: 200 }
+      );
+    }
+  ),
+  register: http.post(`${BACKEND_URL}/pxp/register`, () => {
+    return HttpResponse.json({}, { status: 200 });
+  }),
+  uniqueRegistration: http.post(
+    `${BACKEND_URL}/pxp/register/existing-patient`,
+    () => {
+      return HttpResponse.json(false, { status: 200 });
+    }
+  ),
+  verifyActivationPasscode: http.post(
+    `${BACKEND_URL}/user-account/verify-activation-passcode`,
+    () => {
+      return HttpResponse.json(
+        { activation: { storybook: true } },
+        { status: 200 }
+      );
+    }
+  ),
+  // MUTATIONS
+  AddPatient: graphql.mutation("AddPatient", () => {
     return HttpResponse.json({
       data: {
-        patient: { lastTest: {} },
+        addPatient: {
+          internalId: "2ded0fd4-8953-4fb3-8af8-b702f188301e",
+          facility: null,
+        },
       },
-    });
-  }),
-  SendPatientLinkSms: graphql.mutation("sendPatientLinkSms", () => {
-    return HttpResponse.json({
-      data: {},
-    });
-  }),
-  UpdateAOE: graphql.mutation("UpdateAOE", () => {
-    return HttpResponse.json({
-      data: {},
     });
   }),
   EditQueueItem: graphql.mutation("EditQueueItem", () => {
     return HttpResponse.json({
-      data: {},
+      data: {
+        editQueueItem: {
+          results: [
+            {
+              disease: {
+                name: "COVID-19",
+              },
+              testResult: "POSITIVE",
+            },
+            {
+              disease: {
+                name: "Flu B",
+              },
+              testResult: "NEGATIVE",
+            },
+            {
+              disease: {
+                name: "Flu A",
+              },
+              testResult: "POSITIVE",
+            },
+          ],
+          dateTested: null,
+          deviceType: {
+            internalId: "bb53de6b-6fb7-43a1-be87-3a026f04f1c1",
+            testLength: 15,
+          },
+        },
+      },
     });
   }),
-  RemovePatientFromQueue: graphql.mutation("RemovePatientFromQueue", () => {
+  SubmitQueueItem: graphql.mutation("SubmitQueueItem", () => {
     return HttpResponse.json({
-      data: {},
+      data: {
+        submitQueueItem: {
+          testResult: {
+            internalId: "82330d381-6788-4dc0-b31f-6f77f8c37954",
+          },
+          deliverySuccess: true,
+          testEventId: "f734f94d-fc1c-4419-9bd3-9d4969e345d3",
+        },
+      },
+    });
+  }),
+  UpdateAOE: graphql.mutation("UpdateAOE", () => {
+    return HttpResponse.json({
+      data: {
+        updateTimeOfTestQuestions: null,
+      },
+    });
+  }),
+  // QUERIES
+  GetEmptyUploadSubmissions: graphql.query("GetUploadSubmissions", () => {
+    return HttpResponse.json({
+      data: {
+        uploadSubmissions: {
+          content: [],
+          totalElements: 0,
+        } as UploadSubmissionPage,
+      },
     });
   }),
   GetTopLevelDashboardMetricsNew: graphql.query(
@@ -53,7 +182,7 @@ export const mocks = {
       });
     }
   ),
-  GetUploadSubmission: graphql.query("GetUploadSubmission", ({ variables }) => {
+  GetUploadSubmission: graphql.query("GetUploadSubmission", () => {
     return HttpResponse.json({
       data: {
         uploadSubmission: {
@@ -106,61 +235,12 @@ export const mocks = {
       },
     });
   }),
-  GetEmptyUploadSubmissions: graphql.query("GetUploadSubmissions", () => {
+  PatientExists: graphql.query("PatientExists", () => {
     return HttpResponse.json({
       data: {
-        uploadSubmissions: {
-          content: [],
-          totalElements: 0,
-        } as UploadSubmissionPage,
+        patientExistsWithoutZip: false,
       },
     });
-  }),
-
-  enrollSecurityKeyMfa: http.post(
-    `${BACKEND_URL}/user-account/enroll-security-key-mfa`,
-    () => {
-      return HttpResponse.json(
-        { activation: { storybook: true } },
-        { status: 200 }
-      );
-    }
-  ),
-  enrollTotpMfa: http.post(
-    `${BACKEND_URL}/user-account/authenticator-qr`,
-    () => {
-      return HttpResponse.json(
-        { qrcode: "https://i.redd.it/tvfnlka65zi51.jpg" },
-        { status: 200 }
-      );
-    }
-  ),
-  getQuestions: http.post(
-    `${BACKEND_URL}/identity-verification/get-questions`,
-    () => {
-      return HttpResponse.json(
-        { questionSet: exampleQuestionSet },
-        { status: 200 }
-      );
-    }
-  ),
-  getEntityName: http.get(`${BACKEND_URL}/pxp/register/entity-name*`, () => {
-    return HttpResponse.json("Shady Oaks", { status: 200 });
-  }),
-  duplicateRegistration: http.post(
-    `${BACKEND_URL}/pxp/register/existing-patient`,
-    () => {
-      return HttpResponse.json(true, { status: 200 });
-    }
-  ),
-  uniqueRegistration: http.post(
-    `${BACKEND_URL}/pxp/register/existing-patient`,
-    () => {
-      return HttpResponse.json(false, { status: 200 });
-    }
-  ),
-  register: http.post(`${BACKEND_URL}/pxp/register`, () => {
-    return HttpResponse.json({}, { status: 200 });
   }),
 };
 
