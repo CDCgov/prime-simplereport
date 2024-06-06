@@ -87,7 +87,7 @@ const Checkboxes = (props: Props) => {
   return (
     <div
       className={classnames(
-        "usa-form-group",
+        "usa-form-group padding-0",
         validationStatus === "error" && "usa-form-group--error"
       )}
     >
@@ -128,11 +128,12 @@ const CheckboxesFragment = (props: FragmentProps) => {
   const { boxes, name, inputRef, onChange } = props;
 
   return boxes.map(({ value, label, disabled, checked, ...inputProps }) => (
-    <div className="usa-checkbox" key={value}>
+    <div className="usa-checkbox" key={`${name}-${value}`}>
       <input
         className="usa-checkbox__input"
         checked={checked}
-        id={`symptom-${value}`}
+        id={`${name}-${value}`}
+        data-testid={`${name}-${value}`}
         onChange={onChange}
         type="checkbox"
         value={value}
@@ -141,7 +142,7 @@ const CheckboxesFragment = (props: FragmentProps) => {
         disabled={disabled || props.disabled}
         {...inputProps}
       />
-      <label className="usa-checkbox__label" htmlFor={`symptom-${value}`}>
+      <label className="usa-checkbox__label" htmlFor={`${name}-${value}`}>
         {label}
       </label>
     </div>

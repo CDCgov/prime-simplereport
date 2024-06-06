@@ -52,7 +52,10 @@ const CovidAoEForm = ({
     respiratorySymptomDefinitions
   );
   return (
-    <div className="grid-col-auto" id="covid-aoe-form">
+    <div
+      className="grid-col-auto"
+      id={`covid-aoe-form-${testOrder.patient.internalId}`}
+    >
       <div className="grid-row">
         <div className="grid-col-auto">
           <RadioGroup
@@ -102,8 +105,8 @@ const CovidAoEForm = ({
             ></TextInput>
           </div>
           <div
-            className="grid-row grid-gap margin-left-0"
-            data-testid="symptom-selection"
+            className="grid-row grid-gap margin-left-0 "
+            data-testid={`symptom-selection-${testOrder.internalId}`}
           >
             <Checkboxes
               boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
@@ -120,6 +123,7 @@ const CovidAoEForm = ({
                   ? SYMPTOM_SUBQUESTION_ERROR
                   : undefined
               }
+              className={"padding-left-0"}
             />
           </div>
         </>
