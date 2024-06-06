@@ -11,6 +11,7 @@ import {
   generateAoeListenerHooks,
   generateSexualActivityAoeConstants,
 } from "./aoeUtils";
+import { SensitiveTopicsTooltipModal } from "./SensitiveTopicsTooltipModal";
 
 interface HIVAoeFormProps {
   testOrder: QueriedTestOrder;
@@ -58,17 +59,28 @@ export const HIVAoEForm = ({
         </div>
       </div>
       <div className="grid-row">
-        <div className="tablet:grid-col-6">
+        <div className="tablet:grid-col-12">
           <MultiSelect
             name={`sexual-partner-gender-${testOrder.internalId}`}
             options={GENDER_IDENTITY_VALUES}
             onChange={onSexualPartnerGenderChange}
             initialSelectedValues={selectedGenders}
-            label={"What is the gender of their sexual partners?"}
+            label={
+              <>
+                What is the gender of their sexual partners?{" "}
+                <span className={"text-base-dark"}>
+                  (Select all that apply.)
+                </span>
+              </>
+            }
+            dropdownClassName={"width-mobile-lg"}
+            labelClassName={"multi-select-dropdown"}
             required={true}
             validationStatus={
               showGenderOfSexualPartnersError ? "error" : undefined
             }
+            hintText={<SensitiveTopicsTooltipModal />}
+            hintTextClassName={""}
             errorMessage={
               showGenderOfSexualPartnersError &&
               "Please answer this required question."

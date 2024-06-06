@@ -623,6 +623,37 @@ Object {
                   </button>
                 </div>
               </div>
+              <div
+                class="grid-row margin-top-1"
+              >
+                <button
+                  class="usa-button usa-button--unstyled margin-top-05em"
+                  data-testid="button"
+                  type="button"
+                >
+                  <svg
+                    alt-text="info"
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+                    data-icon="circle-info"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <strong
+                    class="font-body-2xs"
+                  >
+                    Where results are sent
+                  </strong>
+                </button>
+              </div>
             </div>
           </div>
         </div>

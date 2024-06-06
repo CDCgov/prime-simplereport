@@ -4,6 +4,8 @@ import mockSupportedDiseaseMultiplex, {
   mockSupportedDiseaseFlu,
 } from "../../mocks/mockSupportedDiseaseMultiplex";
 import { PhoneType } from "../../../../generated/graphql";
+import mockSupportedDiseaseTestPerformedSyphilis from "../../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
+import mockSupportedDiseaseTestPerformedHIV from "../../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 
 import { TEST_CARD_SYMPTOM_ONSET_DATE_STRING } from "./submissionMocks";
 
@@ -114,6 +116,34 @@ export const facilityInfo: QueriedFacility = {
           name: specimen2Name,
           internalId: specimen2Id,
           typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: syphilisDeviceId,
+      name: syphilisDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseTestPerformedSyphilis,
+      ],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+      ],
+    },
+    {
+      internalId: hivDeviceId,
+      name: hivDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [...mockSupportedDiseaseTestPerformedHIV],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
         },
       ],
     },
