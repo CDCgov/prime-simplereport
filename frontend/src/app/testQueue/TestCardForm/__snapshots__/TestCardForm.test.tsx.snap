@@ -482,8 +482,42 @@ Object {
             </button>
           </div>
         </div>
+        <div
+          class="grid-row margin-top-1"
+        >
+          <button
+            class="usa-button usa-button--unstyled margin-top-05em"
+            data-testid="button"
+            type="button"
+          >
+            <svg
+              alt-text="info"
+              aria-hidden="true"
+              class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+              data-icon="circle-info"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                fill="currentColor"
+              />
+            </svg>
+            <strong
+              class="font-body-2xs"
+            >
+              Where results are sent
+            </strong>
+          </button>
+        </div>
       </div>
     </div>
+    <div
+      class="modal--basic"
+    />
     <div
       class="modal--basic"
     />
@@ -966,6 +1000,37 @@ Object {
           </button>
         </div>
       </div>
+      <div
+        class="grid-row margin-top-1"
+      >
+        <button
+          class="usa-button usa-button--unstyled margin-top-05em"
+          data-testid="button"
+          type="button"
+        >
+          <svg
+            alt-text="info"
+            aria-hidden="true"
+            class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+            data-icon="circle-info"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+              fill="currentColor"
+            />
+          </svg>
+          <strong
+            class="font-body-2xs"
+          >
+            Where results are sent
+          </strong>
+        </button>
+      </div>
     </div>
   </div>,
   "debug": [Function],
@@ -1435,6 +1500,37 @@ exports[`TestCardForm initial state matches snapshot for flu device 1`] = `
         </button>
       </div>
     </div>
+    <div
+      class="grid-row margin-top-1"
+    >
+      <button
+        class="usa-button usa-button--unstyled margin-top-05em"
+        data-testid="button"
+        type="button"
+      >
+        <svg
+          alt-text="info"
+          aria-hidden="true"
+          class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+          data-icon="circle-info"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 512 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+            fill="currentColor"
+          />
+        </svg>
+        <strong
+          class="font-body-2xs"
+        >
+          Where results are sent
+        </strong>
+      </button>
+    </div>
   </div>
 </div>
 `;
@@ -1510,10 +1606,10 @@ Object {
             class="grid-col-auto"
           >
             <div
-              class="usa-form-group prime-dropdown  usa-form-group--error card-dropdown"
+              class="usa-form-group prime-dropdown  card-dropdown"
             >
               <label
-                class="usa-label usa-label--error"
+                class="usa-label"
                 for="17"
               >
                 <span
@@ -1567,32 +1663,14 @@ Object {
                   *
                 </abbr>
               </label>
-              <div
-                class="usa-error-message"
-                id="error_17"
-                role="alert"
-              >
-                <span
-                  class="usa-sr-only"
-                >
-                  Error: 
-                </span>
-                Please select a device.
-              </div>
               <select
-                aria-describedby="error_17"
-                aria-invalid="true"
                 aria-label="Test device"
                 aria-required="true"
-                class="usa-select usa-input--error"
+                class="usa-select"
                 data-testid="device-type-dropdown"
                 id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
                 name="testDevice"
               >
-                <option
-                  aria-selected="false"
-                  value=""
-                />
                 <option
                   aria-selected="false"
                   value="FLU-DEVICE-ID"
@@ -1645,10 +1723,16 @@ Object {
                 aria-required="true"
                 class="usa-select"
                 data-testid="specimen-type-dropdown"
-                disabled=""
                 id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
                 name="specimenType"
-              />
+              >
+                <option
+                  aria-selected="true"
+                  value="SPECIMEN-1-ID"
+                >
+                  Swab of internal nose
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -1676,165 +1760,6 @@ Object {
           </div>
         </div>
         <div
-          class="grid-row grid-gap"
-        >
-          <div
-            class="grid-col-auto"
-            id="covid-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
-          >
-            <div
-              class="grid-row"
-            >
-              <div
-                class="grid-col-auto"
-              >
-                <div
-                  class="usa-form-group"
-                >
-                  <fieldset
-                    class="usa-fieldset prime-radios"
-                    data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  >
-                    <legend
-                      class="usa-legend"
-                    >
-                      Is the patient pregnant?
-                    </legend>
-                    <div
-                      class=""
-                    >
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="19-val-77386006"
-                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                          type="radio"
-                          value="77386006"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
-                          for="19-val-77386006"
-                        >
-                          Yes
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="19-val-60001007"
-                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                          type="radio"
-                          value="60001007"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
-                          for="19-val-60001007"
-                        >
-                          No
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="19-val-261665006"
-                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                          type="radio"
-                          value="261665006"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
-                          for="19-val-261665006"
-                        >
-                          Prefer not to answer
-                        </label>
-                      </div>
-                    </div>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-            <div
-              class="grid-row"
-            >
-              <div
-                class="grid-col-auto"
-              >
-                <div
-                  class="usa-form-group"
-                >
-                  <fieldset
-                    class="usa-fieldset prime-radios"
-                    data-testid="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                    id="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  >
-                    <legend
-                      class="usa-legend"
-                    >
-                      Is the patient currently experiencing any symptoms?
-                    </legend>
-                    <div
-                      class=""
-                    >
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="20-val-YES"
-                          name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                          type="radio"
-                          value="YES"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
-                          for="20-val-YES"
-                        >
-                          Yes
-                        </label>
-                      </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          checked=""
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="20-val-NO"
-                          name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                          type="radio"
-                          value="NO"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
-                          for="20-val-NO"
-                        >
-                          No
-                        </label>
-                      </div>
-                    </div>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
           class="grid-row margin-top-4"
         >
           <div
@@ -1849,8 +1774,42 @@ Object {
             </button>
           </div>
         </div>
+        <div
+          class="grid-row margin-top-1"
+        >
+          <button
+            class="usa-button usa-button--unstyled margin-top-05em"
+            data-testid="button"
+            type="button"
+          >
+            <svg
+              alt-text="info"
+              aria-hidden="true"
+              class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+              data-icon="circle-info"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                fill="currentColor"
+              />
+            </svg>
+            <strong
+              class="font-body-2xs"
+            >
+              Where results are sent
+            </strong>
+          </button>
+        </div>
       </div>
     </div>
+    <div
+      class="modal--basic"
+    />
     <div
       class="modal--basic"
     />
@@ -1922,10 +1881,10 @@ Object {
           class="grid-col-auto"
         >
           <div
-            class="usa-form-group prime-dropdown  usa-form-group--error card-dropdown"
+            class="usa-form-group prime-dropdown  card-dropdown"
           >
             <label
-              class="usa-label usa-label--error"
+              class="usa-label"
               for="17"
             >
               <span
@@ -1979,32 +1938,14 @@ Object {
                 *
               </abbr>
             </label>
-            <div
-              class="usa-error-message"
-              id="error_17"
-              role="alert"
-            >
-              <span
-                class="usa-sr-only"
-              >
-                Error: 
-              </span>
-              Please select a device.
-            </div>
             <select
-              aria-describedby="error_17"
-              aria-invalid="true"
               aria-label="Test device"
               aria-required="true"
-              class="usa-select usa-input--error"
+              class="usa-select"
               data-testid="device-type-dropdown"
               id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
               name="testDevice"
             >
-              <option
-                aria-selected="false"
-                value=""
-              />
               <option
                 aria-selected="false"
                 value="FLU-DEVICE-ID"
@@ -2057,10 +1998,16 @@ Object {
               aria-required="true"
               class="usa-select"
               data-testid="specimen-type-dropdown"
-              disabled=""
               id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
               name="specimenType"
-            />
+            >
+              <option
+                aria-selected="true"
+                value="SPECIMEN-1-ID"
+              >
+                Swab of internal nose
+              </option>
+            </select>
           </div>
         </div>
       </div>
@@ -2088,165 +2035,6 @@ Object {
         </div>
       </div>
       <div
-        class="grid-row grid-gap"
-      >
-        <div
-          class="grid-col-auto"
-          id="covid-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
-        >
-          <div
-            class="grid-row"
-          >
-            <div
-              class="grid-col-auto"
-            >
-              <div
-                class="usa-form-group"
-              >
-                <fieldset
-                  class="usa-fieldset prime-radios"
-                  data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                >
-                  <legend
-                    class="usa-legend"
-                  >
-                    Is the patient pregnant?
-                  </legend>
-                  <div
-                    class=""
-                  >
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="19-val-77386006"
-                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="77386006"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
-                        for="19-val-77386006"
-                      >
-                        Yes
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="19-val-60001007"
-                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="60001007"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
-                        for="19-val-60001007"
-                      >
-                        No
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="19-val-261665006"
-                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="261665006"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
-                        for="19-val-261665006"
-                      >
-                        Prefer not to answer
-                      </label>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="grid-row"
-          >
-            <div
-              class="grid-col-auto"
-            >
-              <div
-                class="usa-form-group"
-              >
-                <fieldset
-                  class="usa-fieldset prime-radios"
-                  data-testid="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                >
-                  <legend
-                    class="usa-legend"
-                  >
-                    Is the patient currently experiencing any symptoms?
-                  </legend>
-                  <div
-                    class=""
-                  >
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="20-val-YES"
-                        name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="YES"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
-                        for="20-val-YES"
-                      >
-                        Yes
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        checked=""
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="20-val-NO"
-                        name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="NO"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
-                        for="20-val-NO"
-                      >
-                        No
-                      </label>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
         class="grid-row margin-top-4"
       >
         <div
@@ -2260,6 +2048,37 @@ Object {
             Submit results
           </button>
         </div>
+      </div>
+      <div
+        class="grid-row margin-top-1"
+      >
+        <button
+          class="usa-button usa-button--unstyled margin-top-05em"
+          data-testid="button"
+          type="button"
+        >
+          <svg
+            alt-text="info"
+            aria-hidden="true"
+            class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+            data-icon="circle-info"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+              fill="currentColor"
+            />
+          </svg>
+          <strong
+            class="font-body-2xs"
+          >
+            Where results are sent
+          </strong>
+        </button>
       </div>
     </div>
   </div>,
@@ -2973,8 +2792,42 @@ Object {
             </button>
           </div>
         </div>
+        <div
+          class="grid-row margin-top-1"
+        >
+          <button
+            class="usa-button usa-button--unstyled margin-top-05em"
+            data-testid="button"
+            type="button"
+          >
+            <svg
+              alt-text="info"
+              aria-hidden="true"
+              class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+              data-icon="circle-info"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                fill="currentColor"
+              />
+            </svg>
+            <strong
+              class="font-body-2xs"
+            >
+              Where results are sent
+            </strong>
+          </button>
+        </div>
       </div>
     </div>
+    <div
+      class="modal--basic"
+    />
     <div
       class="modal--basic"
     />
@@ -3612,6 +3465,37 @@ Object {
           </button>
         </div>
       </div>
+      <div
+        class="grid-row margin-top-1"
+      >
+        <button
+          class="usa-button usa-button--unstyled margin-top-05em"
+          data-testid="button"
+          type="button"
+        >
+          <svg
+            alt-text="info"
+            aria-hidden="true"
+            class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+            data-icon="circle-info"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+              fill="currentColor"
+            />
+          </svg>
+          <strong
+            class="font-body-2xs"
+          >
+            Where results are sent
+          </strong>
+        </button>
+      </div>
     </div>
   </div>,
   "debug": [Function],
@@ -3758,11 +3642,11 @@ Object {
             class="grid-col-auto"
           >
             <div
-              class="usa-form-group prime-dropdown  usa-form-group--error card-dropdown"
+              class="usa-form-group prime-dropdown  card-dropdown"
             >
               <label
-                class="usa-label usa-label--error"
-                for="21"
+                class="usa-label"
+                for="19"
               >
                 <span
                   class="usa-tooltip usa-text-with-tooltip"
@@ -3815,32 +3699,14 @@ Object {
                   *
                 </abbr>
               </label>
-              <div
-                class="usa-error-message"
-                id="error_21"
-                role="alert"
-              >
-                <span
-                  class="usa-sr-only"
-                >
-                  Error: 
-                </span>
-                Please select a device.
-              </div>
               <select
-                aria-describedby="error_21"
-                aria-invalid="true"
                 aria-label="Test device"
                 aria-required="true"
-                class="usa-select usa-input--error"
+                class="usa-select"
                 data-testid="device-type-dropdown"
                 id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
                 name="testDevice"
               >
-                <option
-                  aria-selected="false"
-                  value=""
-                />
                 <option
                   aria-selected="false"
                   value="FLU-DEVICE-ID"
@@ -3877,7 +3743,7 @@ Object {
             >
               <label
                 class="usa-label"
-                for="22"
+                for="20"
               >
                 Specimen type
                 <abbr
@@ -3893,10 +3759,16 @@ Object {
                 aria-required="true"
                 class="usa-select"
                 data-testid="specimen-type-dropdown"
-                disabled=""
                 id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
                 name="specimenType"
-              />
+              >
+                <option
+                  aria-selected="true"
+                  value="SPECIMEN-1-ID"
+                >
+                  Swab of internal nose
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -3927,9 +3799,313 @@ Object {
           class="grid-row grid-gap"
         >
           <div
-            class="grid-col-auto"
-            id="covid-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+            class="grid-col"
+            id="syphillis-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
           >
+            <div
+              class="grid-col-auto"
+            >
+              <div
+                class="usa-form-group"
+              >
+                <fieldset
+                  class="usa-fieldset prime-radios"
+                  data-testid="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                >
+                  <legend
+                    class="usa-legend"
+                  >
+                    Has the patient been told they have syphilis before?
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </legend>
+                  <div
+                    class=""
+                  >
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="21-val-1087151000119108"
+                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="1087151000119108"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-1087151000119108"
+                        for="21-val-1087151000119108"
+                      >
+                        Yes
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="21-val-14732006"
+                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="14732006"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-14732006"
+                        for="21-val-14732006"
+                      >
+                        No
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="21-val-261665006"
+                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="261665006"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
+                        for="21-val-261665006"
+                      >
+                        Prefer not to answer
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+            <div
+              class="grid-row"
+            >
+              <div
+                class="tablet:grid-col-6"
+              >
+                <div
+                  class="usa-form-group"
+                >
+                  <label
+                    class="usa-label"
+                    for="22"
+                    id="label-for-22"
+                  >
+                    What is the gender of their sexual partners?
+                     
+                    <span
+                      class="text-base-dark"
+                    >
+                      (Select all that apply.)
+                    </span>
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </label>
+                  <span
+                    class=""
+                  >
+                    <button
+                      class="usa-button usa-button--unstyled margin-top-05em"
+                      data-testid="button"
+                      type="button"
+                    >
+                      <svg
+                        alt-text="info"
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+                        data-icon="circle-info"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      <strong
+                        class="font-body-2xs"
+                      >
+                        Why SimpleReport asks about sensitive topics like this
+                      </strong>
+                    </button>
+                  </span>
+                  <div
+                    class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
+                    data-testid="multi-select"
+                    id="22"
+                  >
+                    <input
+                      aria-controls="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
+                      aria-expanded="false"
+                      aria-invalid="false"
+                      aria-labelledby="label-for-22"
+                      aria-owns="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
+                      aria-required="true"
+                      autocapitalize="off"
+                      autocomplete="off"
+                      class="usa-combo-box__input"
+                      data-testid="multi-select-input"
+                      role="combobox"
+                      type="text"
+                      value=""
+                    />
+                    <span
+                      class="usa-combo-box__input-button-separator"
+                    >
+                       
+                    </span>
+                    <span
+                      class="usa-combo-box__toggle-list__wrapper"
+                      tabindex="-1"
+                    >
+                      <button
+                        aria-hidden="true"
+                        class="usa-combo-box__toggle-list"
+                        data-testid="multi-select-toggle"
+                        tabindex="-1"
+                        type="button"
+                      >
+                         
+                      </button>
+                    </span>
+                    <ul
+                      class="usa-combo-box__list"
+                      data-testid="multi-select-option-list"
+                      hidden=""
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
+                      role="listbox"
+                      tabindex="-1"
+                    >
+                      <li
+                        aria-posinset="1"
+                        aria-selected="false"
+                        aria-setsize="64"
+                        class="usa-combo-box__list-option"
+                        data-testid="multi-select-option-female"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-0"
+                        role="option"
+                        tabindex="-1"
+                        value="female"
+                      >
+                        Female
+                      </li>
+                      <li
+                        aria-posinset="2"
+                        aria-selected="false"
+                        aria-setsize="64"
+                        class="usa-combo-box__list-option"
+                        data-testid="multi-select-option-other"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
+                        role="option"
+                        tabindex="-1"
+                        value="other"
+                      >
+                        Gender identity not listed here
+                      </li>
+                      <li
+                        aria-posinset="3"
+                        aria-selected="false"
+                        aria-setsize="64"
+                        class="usa-combo-box__list-option"
+                        data-testid="multi-select-option-male"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-2"
+                        role="option"
+                        tabindex="-1"
+                        value="male"
+                      >
+                        Male
+                      </li>
+                      <li
+                        aria-posinset="4"
+                        aria-selected="false"
+                        aria-setsize="64"
+                        class="usa-combo-box__list-option"
+                        data-testid="multi-select-option-nonbinary"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-3"
+                        role="option"
+                        tabindex="-1"
+                        value="nonbinary"
+                      >
+                        Nonbinary or gender non-conforming
+                      </li>
+                      <li
+                        aria-posinset="5"
+                        aria-selected="false"
+                        aria-setsize="64"
+                        class="usa-combo-box__list-option"
+                        data-testid="multi-select-option-refused"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-4"
+                        role="option"
+                        tabindex="-1"
+                        value="refused"
+                      >
+                        Prefer not to answer
+                      </li>
+                      <li
+                        aria-posinset="6"
+                        aria-selected="false"
+                        aria-setsize="64"
+                        class="usa-combo-box__list-option"
+                        data-testid="multi-select-option-transman"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-5"
+                        role="option"
+                        tabindex="-1"
+                        value="transman"
+                      >
+                        Transman
+                      </li>
+                      <li
+                        aria-posinset="7"
+                        aria-selected="false"
+                        aria-setsize="64"
+                        class="usa-combo-box__list-option"
+                        data-testid="multi-select-option-transwoman"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-6"
+                        role="option"
+                        tabindex="-1"
+                        value="transwoman"
+                      >
+                        Transwoman
+                      </li>
+                    </ul>
+                    <div
+                      class="usa-combo-box__status usa-sr-only"
+                      role="status"
+                    />
+                  </div>
+                  <fieldset
+                    class="fieldset--unstyled pill-container pill-container--hidden"
+                    data-testid="pill-container"
+                  >
+                    <legend
+                      class="usa-sr-only"
+                    >
+                      Selected [object Object]
+                    </legend>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
             <div
               class="grid-row"
             >
@@ -3948,6 +4124,13 @@ Object {
                       class="usa-legend"
                     >
                       Is the patient pregnant?
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -3957,7 +4140,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="23-val-77386006"
                           name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
@@ -3976,7 +4159,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="23-val-60001007"
                           name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
@@ -3995,7 +4178,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="23-val-261665006"
                           name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
@@ -4032,6 +4215,13 @@ Object {
                       class="usa-legend"
                     >
                       Is the patient currently experiencing any symptoms?
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
                     </legend>
                     <div
                       class=""
@@ -4041,7 +4231,7 @@ Object {
                       >
                         <input
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="24-val-YES"
                           name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
@@ -4061,7 +4251,7 @@ Object {
                         <input
                           checked=""
                           class="usa-radio__input"
-                          data-required="false"
+                          data-required="true"
                           id="24-val-NO"
                           name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                           type="radio"
@@ -4097,8 +4287,45 @@ Object {
             </button>
           </div>
         </div>
+        <div
+          class="grid-row margin-top-1"
+        >
+          <button
+            class="usa-button usa-button--unstyled margin-top-05em"
+            data-testid="button"
+            type="button"
+          >
+            <svg
+              alt-text="info"
+              aria-hidden="true"
+              class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+              data-icon="circle-info"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                fill="currentColor"
+              />
+            </svg>
+            <strong
+              class="font-body-2xs"
+            >
+              Where results are sent
+            </strong>
+          </button>
+        </div>
       </div>
     </div>
+    <div
+      class="modal--basic"
+    />
+    <div
+      class="modal--basic"
+    />
     <div
       class="modal--basic"
     />
@@ -4170,11 +4397,11 @@ Object {
           class="grid-col-auto"
         >
           <div
-            class="usa-form-group prime-dropdown  usa-form-group--error card-dropdown"
+            class="usa-form-group prime-dropdown  card-dropdown"
           >
             <label
-              class="usa-label usa-label--error"
-              for="21"
+              class="usa-label"
+              for="19"
             >
               <span
                 class="usa-tooltip usa-text-with-tooltip"
@@ -4227,32 +4454,14 @@ Object {
                 *
               </abbr>
             </label>
-            <div
-              class="usa-error-message"
-              id="error_21"
-              role="alert"
-            >
-              <span
-                class="usa-sr-only"
-              >
-                Error: 
-              </span>
-              Please select a device.
-            </div>
             <select
-              aria-describedby="error_21"
-              aria-invalid="true"
               aria-label="Test device"
               aria-required="true"
-              class="usa-select usa-input--error"
+              class="usa-select"
               data-testid="device-type-dropdown"
               id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
               name="testDevice"
             >
-              <option
-                aria-selected="false"
-                value=""
-              />
               <option
                 aria-selected="false"
                 value="FLU-DEVICE-ID"
@@ -4289,7 +4498,7 @@ Object {
           >
             <label
               class="usa-label"
-              for="22"
+              for="20"
             >
               Specimen type
               <abbr
@@ -4305,10 +4514,16 @@ Object {
               aria-required="true"
               class="usa-select"
               data-testid="specimen-type-dropdown"
-              disabled=""
               id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
               name="specimenType"
-            />
+            >
+              <option
+                aria-selected="true"
+                value="SPECIMEN-1-ID"
+              >
+                Swab of internal nose
+              </option>
+            </select>
           </div>
         </div>
       </div>
@@ -4339,9 +4554,313 @@ Object {
         class="grid-row grid-gap"
       >
         <div
-          class="grid-col-auto"
-          id="covid-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+          class="grid-col"
+          id="syphillis-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
         >
+          <div
+            class="grid-col-auto"
+          >
+            <div
+              class="usa-form-group"
+            >
+              <fieldset
+                class="usa-fieldset prime-radios"
+                data-testid="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                id="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+              >
+                <legend
+                  class="usa-legend"
+                >
+                  Has the patient been told they have syphilis before?
+                  <abbr
+                    class="usa-hint usa-hint--required"
+                    title="required"
+                  >
+                     
+                    *
+                  </abbr>
+                </legend>
+                <div
+                  class=""
+                >
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="true"
+                      id="21-val-1087151000119108"
+                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="1087151000119108"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-1087151000119108"
+                      for="21-val-1087151000119108"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="true"
+                      id="21-val-14732006"
+                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="14732006"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-14732006"
+                      for="21-val-14732006"
+                    >
+                      No
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="true"
+                      id="21-val-261665006"
+                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="261665006"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
+                      for="21-val-261665006"
+                    >
+                      Prefer not to answer
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div
+            class="grid-row"
+          >
+            <div
+              class="tablet:grid-col-6"
+            >
+              <div
+                class="usa-form-group"
+              >
+                <label
+                  class="usa-label"
+                  for="22"
+                  id="label-for-22"
+                >
+                  What is the gender of their sexual partners?
+                   
+                  <span
+                    class="text-base-dark"
+                  >
+                    (Select all that apply.)
+                  </span>
+                  <abbr
+                    class="usa-hint usa-hint--required"
+                    title="required"
+                  >
+                     
+                    *
+                  </abbr>
+                </label>
+                <span
+                  class=""
+                >
+                  <button
+                    class="usa-button usa-button--unstyled margin-top-05em"
+                    data-testid="button"
+                    type="button"
+                  >
+                    <svg
+                      alt-text="info"
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+                      data-icon="circle-info"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <strong
+                      class="font-body-2xs"
+                    >
+                      Why SimpleReport asks about sensitive topics like this
+                    </strong>
+                  </button>
+                </span>
+                <div
+                  class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
+                  data-testid="multi-select"
+                  id="22"
+                >
+                  <input
+                    aria-controls="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
+                    aria-expanded="false"
+                    aria-invalid="false"
+                    aria-labelledby="label-for-22"
+                    aria-owns="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
+                    aria-required="true"
+                    autocapitalize="off"
+                    autocomplete="off"
+                    class="usa-combo-box__input"
+                    data-testid="multi-select-input"
+                    role="combobox"
+                    type="text"
+                    value=""
+                  />
+                  <span
+                    class="usa-combo-box__input-button-separator"
+                  >
+                     
+                  </span>
+                  <span
+                    class="usa-combo-box__toggle-list__wrapper"
+                    tabindex="-1"
+                  >
+                    <button
+                      aria-hidden="true"
+                      class="usa-combo-box__toggle-list"
+                      data-testid="multi-select-toggle"
+                      tabindex="-1"
+                      type="button"
+                    >
+                       
+                    </button>
+                  </span>
+                  <ul
+                    class="usa-combo-box__list"
+                    data-testid="multi-select-option-list"
+                    hidden=""
+                    id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
+                    role="listbox"
+                    tabindex="-1"
+                  >
+                    <li
+                      aria-posinset="1"
+                      aria-selected="false"
+                      aria-setsize="64"
+                      class="usa-combo-box__list-option"
+                      data-testid="multi-select-option-female"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-0"
+                      role="option"
+                      tabindex="-1"
+                      value="female"
+                    >
+                      Female
+                    </li>
+                    <li
+                      aria-posinset="2"
+                      aria-selected="false"
+                      aria-setsize="64"
+                      class="usa-combo-box__list-option"
+                      data-testid="multi-select-option-other"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
+                      role="option"
+                      tabindex="-1"
+                      value="other"
+                    >
+                      Gender identity not listed here
+                    </li>
+                    <li
+                      aria-posinset="3"
+                      aria-selected="false"
+                      aria-setsize="64"
+                      class="usa-combo-box__list-option"
+                      data-testid="multi-select-option-male"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-2"
+                      role="option"
+                      tabindex="-1"
+                      value="male"
+                    >
+                      Male
+                    </li>
+                    <li
+                      aria-posinset="4"
+                      aria-selected="false"
+                      aria-setsize="64"
+                      class="usa-combo-box__list-option"
+                      data-testid="multi-select-option-nonbinary"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-3"
+                      role="option"
+                      tabindex="-1"
+                      value="nonbinary"
+                    >
+                      Nonbinary or gender non-conforming
+                    </li>
+                    <li
+                      aria-posinset="5"
+                      aria-selected="false"
+                      aria-setsize="64"
+                      class="usa-combo-box__list-option"
+                      data-testid="multi-select-option-refused"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-4"
+                      role="option"
+                      tabindex="-1"
+                      value="refused"
+                    >
+                      Prefer not to answer
+                    </li>
+                    <li
+                      aria-posinset="6"
+                      aria-selected="false"
+                      aria-setsize="64"
+                      class="usa-combo-box__list-option"
+                      data-testid="multi-select-option-transman"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-5"
+                      role="option"
+                      tabindex="-1"
+                      value="transman"
+                    >
+                      Transman
+                    </li>
+                    <li
+                      aria-posinset="7"
+                      aria-selected="false"
+                      aria-setsize="64"
+                      class="usa-combo-box__list-option"
+                      data-testid="multi-select-option-transwoman"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-6"
+                      role="option"
+                      tabindex="-1"
+                      value="transwoman"
+                    >
+                      Transwoman
+                    </li>
+                  </ul>
+                  <div
+                    class="usa-combo-box__status usa-sr-only"
+                    role="status"
+                  />
+                </div>
+                <fieldset
+                  class="fieldset--unstyled pill-container pill-container--hidden"
+                  data-testid="pill-container"
+                >
+                  <legend
+                    class="usa-sr-only"
+                  >
+                    Selected [object Object]
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
           <div
             class="grid-row"
           >
@@ -4360,6 +4879,13 @@ Object {
                     class="usa-legend"
                   >
                     Is the patient pregnant?
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
                   </legend>
                   <div
                     class=""
@@ -4369,7 +4895,7 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="false"
+                        data-required="true"
                         id="23-val-77386006"
                         name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
@@ -4388,7 +4914,7 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="false"
+                        data-required="true"
                         id="23-val-60001007"
                         name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
@@ -4407,7 +4933,7 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="false"
+                        data-required="true"
                         id="23-val-261665006"
                         name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
@@ -4444,6 +4970,13 @@ Object {
                     class="usa-legend"
                   >
                     Is the patient currently experiencing any symptoms?
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
                   </legend>
                   <div
                     class=""
@@ -4453,7 +4986,7 @@ Object {
                     >
                       <input
                         class="usa-radio__input"
-                        data-required="false"
+                        data-required="true"
                         id="24-val-YES"
                         name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
@@ -4473,7 +5006,7 @@ Object {
                       <input
                         checked=""
                         class="usa-radio__input"
-                        data-required="false"
+                        data-required="true"
                         id="24-val-NO"
                         name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                         type="radio"
@@ -4508,6 +5041,37 @@ Object {
             Submit results
           </button>
         </div>
+      </div>
+      <div
+        class="grid-row margin-top-1"
+      >
+        <button
+          class="usa-button usa-button--unstyled margin-top-05em"
+          data-testid="button"
+          type="button"
+        >
+          <svg
+            alt-text="info"
+            aria-hidden="true"
+            class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+            data-icon="circle-info"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+              fill="currentColor"
+            />
+          </svg>
+          <strong
+            class="font-body-2xs"
+          >
+            Where results are sent
+          </strong>
+        </button>
       </div>
     </div>
   </div>,

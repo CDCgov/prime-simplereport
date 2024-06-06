@@ -247,5 +247,115 @@ describe("TestCardForm", () => {
         screen.queryByText("Do you want to submit results anyway?")
       ).not.toBeInTheDocument();
     });
+
+    it("should show where tests are sent modal", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "COVID-19" } }],
+        },
+      };
+
+      const { user } = await renderTestCardForm({
+        props,
+        mocks: [
+          generateSubmitQueueMock(
+            MULTIPLEX_DISEASES.COVID_19,
+            TEST_RESULTS.POSITIVE,
+            {
+              device: {
+                deviceId: covidDeviceId,
+              },
+            }
+          ),
+        ],
+      });
+
+      // Submit to start form validation
+      await user.click(screen.getByText("Where results are sent"));
+
+      expect(
+        screen.getByText("Where are SimpleReport test results sent?")
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByText("Got it"));
+      expect(
+        screen.queryByText("Where are SimpleReport test results sent?")
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows where tests results are sent modal", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "COVID-19" } }],
+        },
+      };
+
+      const { user } = await renderTestCardForm({
+        props,
+        mocks: [
+          generateSubmitQueueMock(
+            MULTIPLEX_DISEASES.COVID_19,
+            TEST_RESULTS.POSITIVE,
+            {
+              device: {
+                deviceId: covidDeviceId,
+              },
+            }
+          ),
+        ],
+      });
+
+      await user.click(screen.getByText("Where results are sent"));
+
+      expect(
+        screen.getByText("Where are SimpleReport test results sent?")
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByText("Got it"));
+      expect(
+        screen.queryByText("Where are SimpleReport test results sent?")
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows sensitive topics modal", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "SYPHILIS" } }],
+          deviceType: {
+            internalId: syphilisDeviceId,
+            name: syphilisDeviceName,
+            model: syphilisDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      const { user } = await renderTestCardForm({ props });
+
+      await user.click(
+        screen.getByText(
+          "Why SimpleReport asks about sensitive topics like this"
+        )
+      );
+
+      expect(
+        screen.getByText(
+          "Why we ask for gender of sexual partners and other sensitive topics"
+        )
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByText("Got it"));
+      expect(
+        screen.queryByText(
+          "Why we ask for gender of sexual partners and other sensitive topics"
+        )
+      ).not.toBeInTheDocument();
+    });
   });
 });

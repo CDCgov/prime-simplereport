@@ -57,6 +57,7 @@ import { IncompleteAOEWarningModal } from "./IncompleteAOEWarningModal";
 import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 import { stringifySymptomJsonForAoeUpdate } from "./diseaseSpecificComponents/aoeUtils";
 import { SyphilisAoEForm } from "./diseaseSpecificComponents/SyphilisAoEForm";
+import { WhereResultsAreSentModal } from "./WhereResultsAreSentModal";
 
 const DEBOUNCE_TIME = 300;
 
@@ -608,6 +609,9 @@ const TestCardForm = ({
               Submit results
             </Button>
           </div>
+        </div>
+        <div className="grid-row margin-top-1">
+          <WhereResultsAreSentModal />
         </div>
       </div>
     </>
