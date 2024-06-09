@@ -43,7 +43,7 @@ dependencies {
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:21.0'
     // graphql-java-extended-scalars
-    implementation 'com.graphql-java:graphql-java-extended-scalars:20.0'
+    implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 
     //Feign HTTP Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
