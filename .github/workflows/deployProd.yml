@@ -103,7 +103,7 @@ jobs:
 
   failed_deploy_pagerduty_alert:
     runs-on: ubuntu-latest
-    if: ${{ always() && needs.deploy.result != 'success' }}
+    if: ${{ always() && needs.deploy.result != 'success' && github.event.workflow_run.conclusion == 'success' }}
     needs: [ deploy ]
     steps:
       - uses: actions/checkout@v4
