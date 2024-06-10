@@ -398,6 +398,7 @@ export type MutationResendActivationEmailArgs = {
 };
 
 export type MutationResendToReportStreamArgs = {
+  covidOnly: Scalars["Boolean"]["input"];
   fhirOnly: Scalars["Boolean"]["input"];
   testEventIds: Array<Scalars["ID"]["input"]>;
 };
