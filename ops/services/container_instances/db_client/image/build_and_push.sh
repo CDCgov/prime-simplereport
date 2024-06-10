@@ -4,7 +4,7 @@
 
 # Increment this version only if the container has undergone a major change.
 # Ensure this version is also updated in the infra folder, within db_client.tf.
-ACR_TAG="simplereportacr.azurecr.io/api/simple-report-db-client:2.0.0"
+ACR_TAG="simplereportacr.azurecr.io/api/simple-report-db-client:3.0.0"
 
 export DOCKER_CLI_EXPERIMENTAL=enabled # to get "manifest inspect"
 
