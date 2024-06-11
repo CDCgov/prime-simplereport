@@ -1797,6 +1797,8 @@ export type GetDeviceTypeListQuery = {
       equipmentUid?: string | null;
       equipmentUidType?: string | null;
       testOrderedLoincCode?: string | null;
+      testOrderedLoincLongName?: string | null;
+      testPerformedLoincLongName?: string | null;
       supportedDisease: {
         __typename?: "SupportedDisease";
         internalId: string;
@@ -5317,6 +5319,8 @@ export const GetDeviceTypeListDocument = gql`
         equipmentUid
         equipmentUidType
         testOrderedLoincCode
+        testOrderedLoincLongName
+        testPerformedLoincLongName
       }
       testLength
     }

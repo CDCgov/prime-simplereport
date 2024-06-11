@@ -21,7 +21,7 @@ export type SupportedDiseasesFormData = {
   testOrderedLoincCode?: string;
   testkitNameId?: string;
   testOrderedLoincLongName?: string;
-  testPreformedLoincLongName?: string;
+  testPerformedLoincLongName?: string;
 };
 
 export type DeviceFormData = {
@@ -113,10 +113,10 @@ const DeviceForm = (props: Props) => {
             convertedSupportedDisease["testOrderedLoincLongName"] =
               supportedDisease.testOrderedLoincLongName;
           }
-          if (supportedDisease.testPreformedLoincLongName) {
+          if (supportedDisease.testPerformedLoincLongName) {
             // @ts-ignore
-            convertedSupportedDisease["testPreformedLoincLongName"] =
-              supportedDisease.testPreformedLoincLongName;
+            convertedSupportedDisease["testPerformedLoincLongName"] =
+              supportedDisease.testPerformedLoincLongName;
           }
           return convertedSupportedDisease;
         }
@@ -136,7 +136,6 @@ const DeviceForm = (props: Props) => {
     UpdateDeviceType | undefined
   >();
 
-  //wtf is this logic? 😭
   const loadingDeviceData = !!props.deviceOptions && !selectedDevice;
 
   useEffect(() => {
@@ -184,6 +183,10 @@ const DeviceForm = (props: Props) => {
                 equipmentUid: diseaseTestPerformed.equipmentUid,
                 equipmentUidType: diseaseTestPerformed.equipmentUidType,
                 testOrderedLoincCode: diseaseTestPerformed.testOrderedLoincCode,
+                testPerformedLoincLongName:
+                  diseaseTestPerformed.testPerformedLoincLongName,
+                testOrderedLoincLongName:
+                  diseaseTestPerformed.testOrderedLoincLongName,
               })
             ),
         }

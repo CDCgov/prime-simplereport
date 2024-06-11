@@ -167,7 +167,7 @@ const DiseaseInformation = ({
             label="Test perfromed loinc long name"
             disabled={disabled}
             className={"margin-top-1"}
-            value={values?.[index]?.testPreformedLoincLongName}
+            value={values?.[index]?.testPerformedLoincLongName}
             registrationProps={register(
               `supportedDiseases.${index}.testPerformedLoincLongName` as const
             )}
@@ -213,7 +213,7 @@ const DiseaseInformation = ({
                 testkitNameId: "",
                 testOrderedLoincCode: "",
                 testOrderedLoincLongName: "",
-                testPreformedLoincLongName: "",
+                testPerformedLoincLongName: "",
               });
             }}
             variant="unstyled"
