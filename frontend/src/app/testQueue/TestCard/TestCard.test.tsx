@@ -14,39 +14,64 @@ import * as flaggedMock from "flagged";
 
 import { getAppInsights } from "../../TelemetryService";
 import * as srToast from "../../utils/srToast";
-import { PhoneType } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 import { TestCorrectionReason } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
 import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
-import mockSupportedDiseaseMultiplex, {
-  mockSupportedDiseaseFlu,
-} from "../mocks/mockSupportedDiseaseMultiplex";
-import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
-import { QueriedFacility, QueriedTestOrder } from "../TestCardForm/types";
-import {
-  TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
-  generateEditQueueMock,
-  generateEmptyEditQueueMock,
-  generateSubmitQueueMock,
-  blankUpdateAoeEventMock,
-  falseNoSymptomWithSymptomOnsetUpdateAoeMock,
-  falseNoSymptomAoeMock,
-  updateSyphilisAoeMocks,
-  BLURRED_VISION_LITERAL,
-} from "../TestCardForm/testUtils/submissionMocks";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import { ONSET_DATE_LABEL } from "../../../patientApp/timeOfTest/constants";
-import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
-import { sharedTestOrderInfo } from "../TestCardForm/testUtils/testConstants";
 import { REQUIRED_AOE_QUESTIONS_BY_DISEASE } from "../TestCardForm/TestCardForm.utils";
-
-import { TestCard, TestCardProps } from "./TestCard";
 import {
   positiveGenerateMockOne,
   firstCardSymptomUpdateMock,
   secondCardSymptomUpdateMock,
   positiveDeviceThreeEditMock,
-} from "./testMocks";
+  secondTestOrder,
+  device3Id,
+  device3Name,
+  device1Name,
+  device2Name,
+  device4Name,
+  device5Name,
+  device6Name,
+  testOrderInfo,
+  DEFAULT_DEVICE_OPTIONS_LENGTH,
+  deletedDeviceId,
+  deletedDeviceName,
+  device1Id,
+  deletedSpecimenId,
+  device2Id,
+  specimen1Id,
+  device4Id,
+  device5Id,
+  specimen2Name,
+  specimen2Id,
+  device7Name,
+  device8Name,
+  generateSubmitQueueMock,
+  blankUpdateAoeEventMock,
+  generateEditQueueMock,
+  generateEmptyEditQueueMock,
+  falseNoSymptomWithSymptomOnsetUpdateAoeMock,
+  falseNoSymptomAoeMock,
+  TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
+  updateSyphilisAoeMocks,
+  sharedTestOrderInfo,
+  BLURRED_VISION_LITERAL,
+  specimen1Name,
+  device6Id,
+  device7Id,
+  specimen3Name,
+  specimen3Id,
+  device8Id,
+} from "../testCardTestConstants";
+import { QueriedFacility } from "../TestCardForm/types";
+import mockSupportedDiseaseMultiplex, {
+  mockSupportedDiseaseFlu,
+} from "../mocks/mockSupportedDiseaseMultiplex";
+import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
+import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
+
+import { TestCard, TestCardProps } from "./TestCard";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -73,39 +98,6 @@ const updatedTimeString = "10:05";
 
 const setStartTestPatientIdMock = jest.fn();
 
-// 6 instead of 7 because HIV devices are filtered out when HIV feature flag is disabled
-const DEFAULT_DEVICE_OPTIONS_LENGTH = 6;
-
-const device1Name = "LumiraDX";
-const device2Name = "Abbott BinaxNow";
-export const device3Name = "BD Veritor";
-const device4Name = "Multiplex";
-const device5Name = "MultiplexAndCovidOnly";
-const device6Name = "FluOnly";
-const device7Name = "HIV device";
-const device8Name = "Syphilis device";
-
-const device1Id = "DEVICE-1-ID";
-const device2Id = "DEVICE-2-ID";
-export const device3Id = "DEVICE-3-ID";
-const device4Id = "DEVICE-4-ID";
-const device5Id = "DEVICE-5-ID";
-const device6Id = "DEVICE-6-ID";
-const device7Id = "DEVICE-7-ID";
-const device8Id = "DEVICE-8-ID";
-
-const deletedDeviceId = "DELETED-DEVICE-ID";
-const deletedDeviceName = "Deleted";
-
-const specimen1Name = "Swab of internal nose";
-const specimen1Id = "SPECIMEN-1-ID";
-const specimen2Name = "Nasopharyngeal swab";
-const specimen2Id = "SPECIMEN-2-ID";
-const specimen3Name = "Venous blood specimen";
-const specimen3Id = "SPECIMEN-3-ID";
-
-const deletedSpecimenId = "DELETED-SPECIMEN-ID";
-
 const getDeviceTypeDropdown = async () =>
   (await screen.findByTestId("device-type-dropdown")) as HTMLSelectElement;
 
@@ -115,214 +107,167 @@ async function getSpecimenTypeDropdown() {
   )) as HTMLSelectElement;
 }
 
+const facilityInfo: QueriedFacility = {
+  id: "f02cfff5-1921-4293-beff-e2a5d03e1fda",
+  name: "Testing Site",
+  deviceTypes: [
+    {
+      internalId: device1Id,
+      name: device1Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: device2Id,
+      name: device2Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+      ],
+    },
+    {
+      internalId: device3Id,
+      name: device3Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: device4Id,
+      name: device4Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: device5Id,
+      name: device5Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseFlu,
+        {
+          supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
+          testPerformedLoincCode: "123456",
+          testOrderedLoincCode: "445566",
+        },
+        {
+          supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
+          testPerformedLoincCode: "123456",
+          testOrderedLoincCode: "778899",
+        },
+      ],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: device6Id,
+      name: device6Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [...mockSupportedDiseaseFlu],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: device7Id,
+      name: device7Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [...mockSupportedDiseaseTestPerformedHIV],
+      swabTypes: [
+        {
+          name: specimen3Name,
+          internalId: specimen3Id,
+          typeCode: "122555007",
+        },
+      ],
+    },
+    {
+      internalId: device8Id,
+      name: device8Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseTestPerformedSyphilis,
+      ],
+      swabTypes: [
+        {
+          name: specimen3Name,
+          internalId: specimen3Id,
+          typeCode: "122555007",
+        },
+      ],
+    },
+  ],
+};
+export const devicesMap = new Map();
+facilityInfo.deviceTypes.map((d) => devicesMap.set(d.internalId, d));
+
 describe("TestCard", () => {
   let nowFn = Date.now;
-  let store: MockStoreEnhanced<unknown, {}>;
+  let store: MockStoreEnhanced<unknown, unknown>;
   let alertSpy: jest.SpyInstance;
   const mockStore = configureStore([]);
   const trackEventMock = jest.fn();
   const removePatientFromQueueMock = jest.fn();
   const trackMetricMock = jest.fn();
   const trackExceptionMock = jest.fn();
-
-  const testOrderInfo: QueriedTestOrder = {
-    internalId: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
-    dateAdded: "2022-11-08 13:33:07.503",
-    symptoms:
-      '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
-    symptomOnset: null,
-    noSymptoms: true,
-    deviceType: {
-      internalId: device1Id,
-      name: device1Name,
-      model: "LumiraDx SARS-CoV-2 Ag Test*",
-      testLength: 15,
-    },
-    specimenType: {
-      internalId: specimen1Id,
-      name: specimen1Name,
-      typeCode: "445297001",
-    },
-    patient: {
-      internalId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
-      telephone: "(571) 867-5309",
-      birthDate: "2015-09-20",
-      firstName: "Althea",
-      middleName: "Hedda Mclaughlin",
-      lastName: "Dixon",
-      gender: "refused",
-      testResultDelivery: null,
-      preferredLanguage: null,
-      email: "sywaporoce@mailinator.com",
-      emails: ["sywaporoce@mailinator.com"],
-      phoneNumbers: [
-        {
-          type: PhoneType.Mobile,
-          number: "(553) 223-0559",
-        },
-        {
-          type: PhoneType.Landline,
-          number: "(669) 789-0799",
-        },
-      ],
-    },
-    results: [],
-    dateTested: null,
-    correctionStatus: "ORIGINAL",
-    reasonForCorrection: null,
-  };
-
-  const facilityInfo: QueriedFacility = {
-    id: "f02cfff5-1921-4293-beff-e2a5d03e1fda",
-    name: "Testing Site",
-    deviceTypes: [
-      {
-        internalId: device1Id,
-        name: device1Name,
-        testLength: 15,
-        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-      {
-        internalId: device2Id,
-        name: device2Name,
-        testLength: 15,
-        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-        ],
-      },
-      {
-        internalId: device3Id,
-        name: device3Name,
-        testLength: 15,
-        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-      {
-        internalId: device4Id,
-        name: device4Name,
-        testLength: 15,
-        supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-      {
-        internalId: device5Id,
-        name: device5Name,
-        testLength: 15,
-        supportedDiseaseTestPerformed: [
-          ...mockSupportedDiseaseFlu,
-          {
-            supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
-            testPerformedLoincCode: "123456",
-            testOrderedLoincCode: "445566",
-          },
-          {
-            supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
-            testPerformedLoincCode: "123456",
-            testOrderedLoincCode: "778899",
-          },
-        ],
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-      {
-        internalId: device6Id,
-        name: device6Name,
-        testLength: 15,
-        supportedDiseaseTestPerformed: [...mockSupportedDiseaseFlu],
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-      {
-        internalId: device7Id,
-        name: device7Name,
-        testLength: 15,
-        supportedDiseaseTestPerformed: [
-          ...mockSupportedDiseaseTestPerformedHIV,
-        ],
-        swabTypes: [
-          {
-            name: specimen3Name,
-            internalId: specimen3Id,
-            typeCode: "122555007",
-          },
-        ],
-      },
-      {
-        internalId: device8Id,
-        name: device8Name,
-        testLength: 15,
-        supportedDiseaseTestPerformed: [
-          ...mockSupportedDiseaseTestPerformedSyphilis,
-        ],
-        swabTypes: [
-          {
-            name: specimen3Name,
-            internalId: specimen3Id,
-            typeCode: "122555007",
-          },
-        ],
-      },
-    ],
-  };
 
   const DEFAULT_DEVICE_ORDER = [
     device1Name,
@@ -343,7 +288,7 @@ describe("TestCard", () => {
   };
 
   const devicesMap = new Map();
-  facilityInfo.deviceTypes.map((d) => devicesMap.set(d.internalId, d));
+  facilityInfo?.deviceTypes.map((d) => devicesMap.set(d.internalId, d));
 
   const testProps: TestCardProps = {
     refetchQueue: jest.fn().mockReturnValue(null),
@@ -363,7 +308,8 @@ describe("TestCard", () => {
   async function renderQueueItem(
     { props, mocks }: testRenderProps = { props: testProps, mocks: [] }
   ) {
-    props = props || testProps;
+    const renderProps = props || testProps;
+
     const { container } = render(
       <>
         <Provider store={store}>
@@ -377,19 +323,20 @@ describe("TestCard", () => {
             showWarnings={false}
           >
             <TestCard
-              refetchQueue={props.refetchQueue}
-              testOrder={props.testOrder}
-              startTestPatientId={props.startTestPatientId}
-              setStartTestPatientId={props.setStartTestPatientId}
-              facility={props.facility}
-              devicesMap={props.devicesMap}
-              removePatientFromQueue={props.removePatientFromQueue}
+              refetchQueue={renderProps.refetchQueue}
+              testOrder={renderProps.testOrder}
+              startTestPatientId={renderProps.startTestPatientId}
+              setStartTestPatientId={renderProps.setStartTestPatientId}
+              facility={renderProps.facility}
+              devicesMap={renderProps.devicesMap}
+              removePatientFromQueue={renderProps.removePatientFromQueue}
             />
           </MockedProvider>
         </Provider>
         <SRToastContainer />
       </>
     );
+
     return { container, user: userEvent.setup() };
   }
 
@@ -416,9 +363,6 @@ describe("TestCard", () => {
     jest.spyOn(console, "error").mockRestore();
     jest.spyOn(global.Math, "random").mockRestore();
     alertSpy.mockRestore();
-  });
-
-  afterAll(() => {
     jest.restoreAllMocks();
   });
 
@@ -459,7 +403,7 @@ describe("TestCard", () => {
     await user.click(patientName);
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: `/patient/${testOrderInfo.patient.internalId}`,
-      search: `?facility=${facilityInfo.id}&fromQueue=true`,
+      search: `?facility=${facilityInfo?.id}&fromQueue=true`,
     });
   });
 
@@ -1416,62 +1360,11 @@ describe("TestCard", () => {
   });
 
   describe("regression test", () => {
-    it.only("test card checkboxes don't conflict with each other", async () => {
+    it("test card checkboxes don't conflict with each other", async () => {
       //   https://github.com/CDCgov/prime-simplereport/issues/7768
-      const secondTestOrder: QueriedTestOrder = {
-        internalId: "01c807c9-d42b-45c7-aa9f-1fd290eb2fdf",
-        dateAdded: "2024-06-05 22:03:12.205",
-        symptoms:
-          '{"64531003":"true","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"true","422587007":"true","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
-        symptomOnset: null,
-        noSymptoms: true,
-        deviceType: {
-          internalId: device3Id,
-          name: device3Name,
-          model: "LumiraDx SARS-CoV-2 Ag Test*",
-          testLength: 15,
-        },
-        specimenType: {
-          internalId: specimen1Id,
-          name: specimen1Name,
-          typeCode: "445297001",
-        },
-        patient: {
-          internalId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
-          telephone: "(571) 867-5309",
-          birthDate: "2015-09-20",
-          firstName: "Althea",
-          middleName: "Hedda Mclaughlin",
-          lastName: "Dixon",
-          gender: "refused",
-          testResultDelivery: null,
-          preferredLanguage: null,
-          email: "sywaporoce@mailinator.com",
-          emails: ["sywaporoce@mailinator.com"],
-          phoneNumbers: [
-            {
-              type: PhoneType.Mobile,
-              number: "(553) 223-0559",
-            },
-            {
-              type: PhoneType.Landline,
-              number: "(669) 789-0799",
-            },
-          ],
-        },
-        results: [],
-        dateTested: null,
-        correctionStatus: "ORIGINAL",
-        reasonForCorrection: null,
-      };
       const secondTestProps: TestCardProps = {
-        refetchQueue: jest.fn().mockReturnValue(null),
+        ...testProps,
         testOrder: secondTestOrder,
-        facility: facilityInfo,
-        devicesMap: devicesMap,
-        startTestPatientId: "",
-        setStartTestPatientId: setStartTestPatientIdMock,
-        removePatientFromQueue: removePatientFromQueueMock,
       };
 
       const firstCardMocks = [
@@ -1486,6 +1379,7 @@ describe("TestCard", () => {
         secondCardSymptomUpdateMock,
         positiveDeviceThreeEditMock,
       ];
+
       await renderQueueItem({ props: secondTestProps, mocks: secondCardMocks });
 
       // set up test card one

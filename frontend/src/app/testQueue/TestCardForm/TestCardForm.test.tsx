@@ -3,30 +3,162 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
-
-import TestCardForm, { TestCardFormProps } from "./TestCardForm";
 import {
   asymptomaticTestOrderInfo,
   covidDeviceId,
   covidDeviceName,
   devicesMap,
-  facilityInfo,
+  FACILITY_INFO_TEST_ID,
   fluDeviceId,
   fluDeviceName,
+  generateSubmitQueueMock,
   hivDeviceId,
   hivDeviceName,
+  multiplexAndCovidOnlyDeviceId,
+  multiplexAndCovidOnlyDeviceName,
   multiplexDeviceId,
   multiplexDeviceName,
+  specimen1Id,
+  specimen1Name,
+  specimen2Id,
+  specimen2Name,
   syphilisDeviceId,
   syphilisDeviceName,
-} from "./testUtils/testConstants";
-import { generateSubmitQueueMock } from "./testUtils/submissionMocks";
+} from "../testCardTestConstants";
+import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
+import mockSupportedDiseaseMultiplex, {
+  mockSupportedDiseaseFlu,
+} from "../mocks/mockSupportedDiseaseMultiplex";
+import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
+import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
+
+import { QueriedFacility } from "./types";
+import TestCardForm, { TestCardFormProps } from "./TestCardForm";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
 
 const setStartTestPatientIdMock = jest.fn();
+
+const facilityInfo: QueriedFacility = {
+  id: FACILITY_INFO_TEST_ID,
+  name: "Testing Site",
+  deviceTypes: [
+    {
+      internalId: covidDeviceId,
+      name: covidDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: multiplexDeviceId,
+      name: multiplexDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: fluDeviceId,
+      name: fluDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [...mockSupportedDiseaseFlu],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: multiplexAndCovidOnlyDeviceId,
+      name: multiplexAndCovidOnlyDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseFlu,
+        {
+          supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
+          testPerformedLoincCode: "123456",
+          testOrderedLoincCode: "445566",
+        },
+        {
+          supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
+          testPerformedLoincCode: "123456",
+          testOrderedLoincCode: "778899",
+        },
+      ],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+        {
+          name: specimen2Name,
+          internalId: specimen2Id,
+          typeCode: "258500001",
+        },
+      ],
+    },
+    {
+      internalId: syphilisDeviceId,
+      name: syphilisDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseTestPerformedSyphilis,
+      ],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+      ],
+    },
+    {
+      internalId: hivDeviceId,
+      name: hivDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [...mockSupportedDiseaseTestPerformedHIV],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+      ],
+    },
+  ],
+};
 
 describe("TestCardForm", () => {
   const testProps: TestCardFormProps = {
@@ -273,42 +405,6 @@ describe("TestCardForm", () => {
       });
 
       // Submit to start form validation
-      await user.click(screen.getByText("Where results are sent"));
-
-      expect(
-        screen.getByText("Where are SimpleReport test results sent?")
-      ).toBeInTheDocument();
-
-      await user.click(screen.getByText("Got it"));
-      expect(
-        screen.queryByText("Where are SimpleReport test results sent?")
-      ).not.toBeInTheDocument();
-    });
-
-    it("shows where tests results are sent modal", async () => {
-      const props = {
-        ...testProps,
-        testOrder: {
-          ...testProps.testOrder,
-          results: [{ testResult: "POSITIVE", disease: { name: "COVID-19" } }],
-        },
-      };
-
-      const { user } = await renderTestCardForm({
-        props,
-        mocks: [
-          generateSubmitQueueMock(
-            MULTIPLEX_DISEASES.COVID_19,
-            TEST_RESULTS.POSITIVE,
-            {
-              device: {
-                deviceId: covidDeviceId,
-              },
-            }
-          ),
-        ],
-      });
-
       await user.click(screen.getByText("Where results are sent"));
 
       expect(
