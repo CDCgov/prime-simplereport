@@ -288,7 +288,7 @@ describe("TestCard", () => {
   };
 
   const devicesMap = new Map();
-  facilityInfo?.deviceTypes.map((d) => devicesMap.set(d.internalId, d));
+  facilityInfo.deviceTypes.map((d) => devicesMap.set(d.internalId, d));
 
   const testProps: TestCardProps = {
     refetchQueue: jest.fn().mockReturnValue(null),
@@ -403,7 +403,7 @@ describe("TestCard", () => {
     await user.click(patientName);
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: `/patient/${testOrderInfo.patient.internalId}`,
-      search: `?facility=${facilityInfo?.id}&fromQueue=true`,
+      search: `?facility=${facilityInfo.id}&fromQueue=true`,
     });
   });
 
