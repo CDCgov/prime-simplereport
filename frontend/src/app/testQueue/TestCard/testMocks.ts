@@ -36,3 +36,13 @@ export const positiveGenerateMockOne = generateEditQueueMock(
   MULTIPLEX_DISEASES.COVID_19,
   TEST_RESULTS.POSITIVE
 );
+
+export const positiveDeviceThreeEditMock = generateEditQueueMock(
+  MULTIPLEX_DISEASES.COVID_19,
+  TEST_RESULTS.POSITIVE,
+  {
+    device: {
+      deviceId: "DEVICE-3-ID",
+    },
+  }
+);

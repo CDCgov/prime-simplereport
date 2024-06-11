@@ -45,6 +45,7 @@ import {
   positiveGenerateMockOne,
   firstCardSymptomUpdateMock,
   secondCardSymptomUpdateMock,
+  positiveDeviceThreeEditMock,
 } from "./testMocks";
 
 jest.mock("../../TelemetryService", () => ({
@@ -77,7 +78,7 @@ const DEFAULT_DEVICE_OPTIONS_LENGTH = 6;
 
 const device1Name = "LumiraDX";
 const device2Name = "Abbott BinaxNow";
-const device3Name = "BD Veritor";
+export const device3Name = "BD Veritor";
 const device4Name = "Multiplex";
 const device5Name = "MultiplexAndCovidOnly";
 const device6Name = "FluOnly";
@@ -86,7 +87,7 @@ const device8Name = "Syphilis device";
 
 const device1Id = "DEVICE-1-ID";
 const device2Id = "DEVICE-2-ID";
-const device3Id = "DEVICE-3-ID";
+export const device3Id = "DEVICE-3-ID";
 const device4Id = "DEVICE-4-ID";
 const device5Id = "DEVICE-5-ID";
 const device6Id = "DEVICE-6-ID";
@@ -1415,7 +1416,7 @@ describe("TestCard", () => {
   });
 
   describe("regression test", () => {
-    it("test card checkboxes don't conflict with each other", async () => {
+    it.only("test card checkboxes don't conflict with each other", async () => {
       //   https://github.com/CDCgov/prime-simplereport/issues/7768
       const secondTestOrder: QueriedTestOrder = {
         internalId: "01c807c9-d42b-45c7-aa9f-1fd290eb2fdf",
@@ -1483,6 +1484,7 @@ describe("TestCard", () => {
       const secondCardMocks = [
         falseNoSymptomAoeMock,
         secondCardSymptomUpdateMock,
+        positiveDeviceThreeEditMock,
       ];
       await renderQueueItem({ props: secondTestProps, mocks: secondCardMocks });
 
