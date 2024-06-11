@@ -57,6 +57,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       return addPatientToQueue(patient);
     }
   };
+  // whitespace change
 
   const actionByPage = (patient: Patient, idx: Number) => {
     if (props.page === "queue") {
