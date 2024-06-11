@@ -350,9 +350,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     performQueueUpdateMutation(updateVariables, Optional.empty());
     updateSelfPrivileges(Role.USER, true, Set.of());
     performQueueUpdateMutation(updateVariables, Optional.empty());
-
-    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
-    // updateTimeOfTestQuestions uses the exact same security restrictions
+    
+    updateSelfPrivileges(Role.USER, false, Set.of());
+    // updateAoeQuestions uses the exact same security restrictions
     Map<String, Object> removeVariables = Map.of("patientId", personId.toString());
     performRemoveFromQueueMutation(removeVariables, Optional.of(ACCESS_ERROR));
     updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));

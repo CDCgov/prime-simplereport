@@ -694,6 +694,16 @@ type Mutation {
     genderOfSexualPartners: [String]
     testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
+  updateAoeQuestions(
+    patientId: ID!
+    pregnancy: String
+    syphilisHistory: String
+    symptoms: String @Size(min: 0, max: 1024)
+    symptomOnset: LocalDate
+    noSymptoms: Boolean
+    genderOfSexualPartners: [String]
+    testResultDelivery: TestResultDeliveryPreference
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSmsByTestEventId(testEventId: ID!): Boolean
