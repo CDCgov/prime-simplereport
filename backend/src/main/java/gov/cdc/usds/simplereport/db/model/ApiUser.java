@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static jakarta.persistence.CascadeType.ALL;
+
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -35,9 +37,9 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   @Column(nullable = true)
   private Date lastSeen;
 
-  //  @OneToMany(cascade=ALL, mappedBy="apiUser")
-  @OneToMany(orphanRemoval = true)
-  @JoinColumn(name = "api_user_id")
+  @OneToMany(cascade = ALL, mappedBy = "apiUser")
+  //  @OneToMany(orphanRemoval = false)
+  //  @JoinColumn(name = "api_user_id")
   private Set<ApiUserRole> apiUserRoles;
 
   @ManyToMany

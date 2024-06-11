@@ -262,7 +262,7 @@ public class ApiUserService {
     }
     Set<ApiUserRole> uor =
         roles.stream().map(r -> new ApiUserRole(org, r)).collect(Collectors.toSet());
-    uor.forEach(r -> r.setApiUserId(apiUser.getInternalId()));
+    uor.forEach(r -> r.setApiUser(apiUser));
     uor = uor.stream().map(r -> _userOrgRoleRepo.save(r)).collect(Collectors.toSet());
     apiUser.setApiUserRoles(uor);
 
