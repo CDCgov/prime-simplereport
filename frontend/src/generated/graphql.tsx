@@ -228,6 +228,7 @@ export type Mutation = {
   setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]["output"]>;
   setUserIsDeleted?: Maybe<User>;
   submitQueueItem?: Maybe<AddTestResultResponse>;
+  updateAoeQuestions?: Maybe<Scalars["String"]["output"]>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
   updateFeatureFlag?: Maybe<FeatureFlag>;
@@ -464,6 +465,19 @@ export type MutationSubmitQueueItemArgs = {
   patientId: Scalars["ID"]["input"];
   results: Array<InputMaybe<MultiplexResultInput>>;
   specimenTypeId: Scalars["ID"]["input"];
+};
+
+export type MutationUpdateAoeQuestionsArgs = {
+  genderOfSexualPartners?: InputMaybe<
+    Array<InputMaybe<Scalars["String"]["input"]>>
+  >;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
+  patientId: Scalars["ID"]["input"];
+  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  symptoms?: InputMaybe<Scalars["String"]["input"]>;
+  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
 export type MutationUpdateDeviceTypeArgs = {
