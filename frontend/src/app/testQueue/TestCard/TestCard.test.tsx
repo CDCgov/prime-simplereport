@@ -636,7 +636,7 @@ describe("TestCard", () => {
       const mocks = [
         generateEditQueueMock(
           MULTIPLEX_DISEASES.COVID_19,
-          TEST_RESULTS.POSITIVE
+          TEST_RESULTS.UNDETERMINED
         ),
         generateSubmitQueueMock(
           MULTIPLEX_DISEASES.COVID_19,
