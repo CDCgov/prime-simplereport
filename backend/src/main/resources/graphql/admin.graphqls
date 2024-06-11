@@ -10,7 +10,7 @@ extend type Query {
   getOrgAdminUserIds(orgId: ID!): [ID]
 }
 extend type Mutation {
-  resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean!, covidOnly: Boolean!): Boolean
+  resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean = false, covidOnly: Boolean = false): Boolean
   createDeviceType(input: CreateDeviceType!): DeviceType
   updateDeviceType(input: UpdateDeviceType!): DeviceType
   createSpecimenType(input: CreateSpecimenType!): SpecimenType
