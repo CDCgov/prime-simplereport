@@ -148,6 +148,30 @@ const DiseaseInformation = ({
             )}
           />
         </div>
+        <div className="tablet:grid-col">
+          <TextInput
+            name={`supportedDiseases.${index}.testPerformedLoincLongName`}
+            label="Test perfromed loinc long name"
+            disabled={disabled}
+            className={"margin-top-1"}
+            value={values?.[index]?.testPreformedLoincLongName}
+            registrationProps={register(
+              `supportedDiseases.${index}.testPerformedLoincLongName` as const
+            )}
+          />
+        </div>
+        <div className="tablet:grid-col">
+          <TextInput
+            name={`supportedDiseases.${index}.testOrderedLoincLongName`}
+            label="Test ordered loinc long name"
+            disabled={disabled}
+            className={"margin-top-1"}
+            value={values?.[index]?.testOrderedLoincLongName}
+            registrationProps={register(
+              `supportedDiseases.${index}.testOrderedLoincLongName` as const
+            )}
+          />
+        </div>
         <div className="flex-align-self-end">
           {index > 0 ? (
             <button
@@ -187,6 +211,8 @@ const DiseaseInformation = ({
                 equipmentUid: "",
                 testkitNameId: "",
                 testOrderedLoincCode: "",
+                testOrderedLoincLongName: "",
+                testPreformedLoincLongName: "",
               });
             }}
             variant="unstyled"

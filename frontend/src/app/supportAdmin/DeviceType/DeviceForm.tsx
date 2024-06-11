@@ -126,6 +126,7 @@ const DeviceForm = (props: Props) => {
     UpdateDeviceType | undefined
   >();
 
+  //wtf is this logic? 😭
   const loadingDeviceData = !!props.deviceOptions && !selectedDevice;
 
   useEffect(() => {
