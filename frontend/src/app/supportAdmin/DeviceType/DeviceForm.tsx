@@ -108,6 +108,16 @@ const DeviceForm = (props: Props) => {
             convertedSupportedDisease["testOrderedLoincCode"] =
               supportedDisease.testOrderedLoincCode;
           }
+          if (supportedDisease.testOrderedLoincLongName) {
+            // @ts-ignore
+            convertedSupportedDisease["testOrderedLoincLongName"] =
+              supportedDisease.testOrderedLoincLongName;
+          }
+          if (supportedDisease.testPreformedLoincLongName) {
+            // @ts-ignore
+            convertedSupportedDisease["testPreformedLoincLongName"] =
+              supportedDisease.testPreformedLoincLongName;
+          }
           return convertedSupportedDisease;
         }
       ),
