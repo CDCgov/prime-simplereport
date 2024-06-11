@@ -32,10 +32,12 @@ public class TestResultMutationResolver {
         .findAllByInternalIdIn(testEventIds)
         .forEach(
             testEvent -> {
-              if (!fhirOnly) {
+              if (fhirOnly) {
+                fhirReportingService.report(testEvent);
+              } else if (covidOnly) {
                 testEventReportingService.report(testEvent);
-              }
-              if (!covidOnly) {
+              } else {
+                testEventReportingService.report(testEvent);
                 fhirReportingService.report(testEvent);
               }
             });
