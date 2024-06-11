@@ -30,7 +30,7 @@ class TestResultMutationResolverTest {
 
     var actual =
         testResultMutationResolver.resendToReportStream(
-            List.of(UUID.randomUUID(), UUID.randomUUID()), false);
+            List.of(UUID.randomUUID(), UUID.randomUUID()), false, false);
 
     verify(mockCsvReporter, times(2)).report(any());
     verify(mockFhirReporter, times(2)).report(any());
@@ -50,10 +50,30 @@ class TestResultMutationResolverTest {
 
     var actual =
         testResultMutationResolver.resendToReportStream(
-            List.of(UUID.randomUUID(), UUID.randomUUID()), true);
+            List.of(UUID.randomUUID(), UUID.randomUUID()), true, false);
 
     verify(mockCsvReporter, times(0)).report(any());
     verify(mockFhirReporter, times(2)).report(any());
+    assertThat(actual).isTrue();
+  }
+
+  @Test
+  void resendToReportStream_covidOnly_success() {
+    var mockCsvReporter = mock(TestEventReportingService.class);
+    var mockFhirReporter = mock(TestEventReportingService.class);
+    var mockTestEventRepository = mock(TestEventRepository.class);
+
+    when(mockTestEventRepository.findAllByInternalIdIn(any()))
+        .thenReturn(List.of(createCovidTestEvent(), createMultiplexTestEvent()));
+    var testResultMutationResolver =
+        new TestResultMutationResolver(mockTestEventRepository, mockCsvReporter, mockFhirReporter);
+
+    var actual =
+        testResultMutationResolver.resendToReportStream(
+            List.of(UUID.randomUUID(), UUID.randomUUID()), false, true);
+
+    verify(mockCsvReporter, times(2)).report(any());
+    verify(mockFhirReporter, times(0)).report(any());
     assertThat(actual).isTrue();
   }
 }
