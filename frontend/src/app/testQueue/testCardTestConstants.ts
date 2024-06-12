@@ -628,13 +628,16 @@ type EditQueueMockParams = {
   };
 };
 
-export function generateEmptyEditQueueMock() {
+export function generateEmptyEditQueueMock(
+  overrideParams?: EditQueueMockParams
+) {
   // dummy covid unknown submission that's overrided by the empty array
   return generateEditQueueMock(
     MULTIPLEX_DISEASES.COVID_19,
     TEST_RESULTS.UNKNOWN,
     {
       diseaseResults: [],
+      ...overrideParams,
     }
   );
 }

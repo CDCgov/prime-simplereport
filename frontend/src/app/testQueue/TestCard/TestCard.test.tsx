@@ -712,7 +712,11 @@ describe("TestCard", () => {
 
   it("updates custom test date/time", async () => {
     const { user } = await renderQueueItem({
-      mocks: [generateEmptyEditQueueMock()],
+      mocks: [
+        generateEmptyEditQueueMock({
+          dateTested: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
+        }),
+      ],
     });
     const toggle = await screen.findByLabelText("Current date and time");
     await user.click(toggle);
@@ -852,7 +856,7 @@ describe("TestCard", () => {
       const mocks = [
         generateEditQueueMock(
           MULTIPLEX_DISEASES.COVID_19,
-          TEST_RESULTS.POSITIVE,
+          TEST_RESULTS.UNDETERMINED,
           {
             device: {
               deviceId: device4Id,
