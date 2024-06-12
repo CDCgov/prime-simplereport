@@ -714,7 +714,7 @@ describe("TestCard", () => {
     const { user } = await renderQueueItem({
       mocks: [
         generateEmptyEditQueueMock({
-          dateTested: TEST_CARD_SYMPTOM_ONSET_DATE_STRING,
+          dateTested: new Date().toISOString(),
         }),
       ],
     });
@@ -856,15 +856,8 @@ describe("TestCard", () => {
       const mocks = [
         generateEditQueueMock(
           MULTIPLEX_DISEASES.COVID_19,
-          TEST_RESULTS.UNDETERMINED,
-          {
-            device: {
-              deviceId: device4Id,
-              deviceName: device4Name,
-            },
-          }
+          TEST_RESULTS.UNDETERMINED
         ),
-
         generateSubmitQueueMock(
           MULTIPLEX_DISEASES.COVID_19,
           TEST_RESULTS.UNDETERMINED
