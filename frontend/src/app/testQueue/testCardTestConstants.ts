@@ -288,7 +288,7 @@ export const positiveDeviceThreeEditMock = generateEditQueueMock(
   {
     testOrderId: secondTestOrder.internalId,
     device: {
-      deviceId: device3Name,
+      deviceId: device3Id,
     },
   }
 );
