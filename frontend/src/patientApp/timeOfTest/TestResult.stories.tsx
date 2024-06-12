@@ -12,7 +12,7 @@ import TestResult from "./TestResult";
 const mockStore = createMockStore([]);
 
 export default {
-  title: "Pxp Test Results",
+  title: "App/PXP/Step 3: Test Result",
   component: TestResult,
   parameters: {
     layout: "fullscreen",

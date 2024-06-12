@@ -1,40 +1,42 @@
-import { StoryFn, Meta } from "@storybook/react";
+import { Meta } from "@storybook/react";
 import { Provider } from "react-redux";
-import { MemoryRouter as Router } from "react-router-dom";
+import {
+  createMemoryRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 import createMockStore from "redux-mock-store";
-
-import { getMocks } from "../../stories/storyMocks";
+import React from "react";
 
 import { SelfRegistration } from "./SelfRegistration";
 
+const element = (
+  <Provider store={createMockStore()({})}>
+    <SelfRegistration />
+  </Provider>
+);
 export default {
-  title: "App/Self-Registration",
+  title: "App/PXP/Self-Registration",
   component: SelfRegistration,
-  decorators: [
-    (Story) => (
-      <Provider store={createMockStore()({})}>
-        <Router initialEntries={["/register/shady-oaks"]}>
-          <Story />
-        </Router>
-      </Provider>
-    ),
-  ],
   parameters: {
     layout: "fullscreen",
   },
   argTypes: {},
 } as Meta;
 
-const Template: StoryFn = (args) => <SelfRegistration {...args} />;
+const route = createRoutesFromElements(
+  <>
+    <Route element={element} path={"/register/shady-oaks"} />
+  </>
+);
+
+const router = createMemoryRouter(route, {
+  initialEntries: [`/register/shady-oaks`],
+});
+
+const Template = (): React.ReactElement => {
+  return <RouterProvider router={router} />;
+};
 
 export const Default = Template.bind({});
-Default.args = {};
-Default.parameters = {
-  msw: getMocks("getEntityName", "uniqueRegistration", "register"),
-};
-
-export const Duplicate = Template.bind({});
-Duplicate.args = {};
-Duplicate.parameters = {
-  msw: getMocks("getEntityName", "duplicateRegistration"),
-};

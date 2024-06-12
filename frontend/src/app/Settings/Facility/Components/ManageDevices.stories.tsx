@@ -5,7 +5,7 @@ import { userEvent, within } from "@storybook/testing-library";
 import ManageDevices from "./ManageDevices";
 
 export default {
-  title: "App / Manage Facility / Manage Devices",
+  title: "App/Settings/Manage Facilities/Manage Devices",
   component: ManageDevices,
   argTypes: {},
 } as Meta;

@@ -1,10 +1,10 @@
 import { StoryFn, Meta } from "@storybook/react";
 import React, { useState } from "react";
 
-import Checkboxes from "../app/commonComponents/Checkboxes";
+import Checkboxes from "./Checkboxes";
 
 export default {
-  title: "Components/Form controls/Checkbox",
+  title: "Components/Form controls/Checkboxes",
   component: Checkboxes,
   parameters: {
     layout: "fullscreen",

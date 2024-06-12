@@ -1,6 +1,6 @@
 import { StoryFn, Meta } from "@storybook/react";
 
-import StepIndicator from "../app/commonComponents/StepIndicator";
+import StepIndicator from "./StepIndicator";
 
 export default {
   title: "Components/Step indicator",
