@@ -8,32 +8,18 @@ import {
   covidDeviceId,
   covidDeviceName,
   devicesMap,
-  FACILITY_INFO_TEST_ID,
   facilityInfo,
   fluDeviceId,
   fluDeviceName,
   generateSubmitQueueMock,
   hivDeviceId,
   hivDeviceName,
-  multiplexAndCovidOnlyDeviceId,
-  multiplexAndCovidOnlyDeviceName,
   multiplexDeviceId,
   multiplexDeviceName,
-  specimen1Id,
-  specimen1Name,
-  specimen2Id,
-  specimen2Name,
   syphilisDeviceId,
   syphilisDeviceName,
 } from "../testCardTestConstants";
-import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
-import mockSupportedDiseaseMultiplex, {
-  mockSupportedDiseaseFlu,
-} from "../mocks/mockSupportedDiseaseMultiplex";
-import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
-import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 
-import { QueriedFacility } from "./types";
 import TestCardForm, { TestCardFormProps } from "./TestCardForm";
 
 jest.mock("../../TelemetryService", () => ({
