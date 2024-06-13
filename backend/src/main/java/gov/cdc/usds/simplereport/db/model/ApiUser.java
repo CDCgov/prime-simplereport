@@ -1,16 +1,15 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.stream.Collectors;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 
@@ -28,14 +27,8 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   @Column(nullable = true)
   private Date lastSeen;
 
-  @ManyToMany
-  @JoinTable(
-      name = "api_user_facility",
-      joinColumns = @JoinColumn(name = "api_user_id"),
-      inverseJoinColumns = @JoinColumn(name = "facility_id"))
-  @Getter
-  @Setter
-  private Set<Facility> facilities;
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "apiUser", orphanRemoval = true)
+  private Set<ApiUserFacility> facilityAssignments = new HashSet<>();
 
   protected ApiUser() {
     /* for hibernate */ }
@@ -68,5 +61,21 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
 
   public void setNameInfo(PersonName name) {
     nameInfo = name;
+  }
+
+  public Set<Facility> getFacilities() {
+    return this.facilityAssignments.stream()
+        .map(ApiUserFacility::getFacility)
+        .collect(Collectors.toSet());
+  }
+
+  public void setFacilities(Set<Facility> facilities) {
+    this.facilityAssignments.clear();
+    for (Facility f : facilities) {
+      ApiUserFacility auf = new ApiUserFacility();
+      auf.setApiUser(this);
+      auf.setFacility(f);
+      this.facilityAssignments.add(auf);
+    }
   }
 }
