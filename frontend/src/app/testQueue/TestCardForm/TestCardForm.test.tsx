@@ -9,6 +9,7 @@ import {
   covidDeviceName,
   devicesMap,
   FACILITY_INFO_TEST_ID,
+  facilityInfo,
   fluDeviceId,
   fluDeviceName,
   generateSubmitQueueMock,
@@ -40,125 +41,6 @@ jest.mock("../../TelemetryService", () => ({
 }));
 
 const setStartTestPatientIdMock = jest.fn();
-
-const facilityInfo: QueriedFacility = {
-  id: FACILITY_INFO_TEST_ID,
-  name: "Testing Site",
-  deviceTypes: [
-    {
-      internalId: covidDeviceId,
-      name: covidDeviceName,
-      testLength: 15,
-      supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
-      swabTypes: [
-        {
-          name: specimen1Name,
-          internalId: specimen1Id,
-          typeCode: "445297001",
-        },
-        {
-          name: specimen2Name,
-          internalId: specimen2Id,
-          typeCode: "258500001",
-        },
-      ],
-    },
-    {
-      internalId: multiplexDeviceId,
-      name: multiplexDeviceName,
-      testLength: 15,
-      supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
-      swabTypes: [
-        {
-          name: specimen1Name,
-          internalId: specimen1Id,
-          typeCode: "445297001",
-        },
-        {
-          name: specimen2Name,
-          internalId: specimen2Id,
-          typeCode: "258500001",
-        },
-      ],
-    },
-    {
-      internalId: fluDeviceId,
-      name: fluDeviceName,
-      testLength: 15,
-      supportedDiseaseTestPerformed: [...mockSupportedDiseaseFlu],
-      swabTypes: [
-        {
-          name: specimen1Name,
-          internalId: specimen1Id,
-          typeCode: "445297001",
-        },
-        {
-          name: specimen2Name,
-          internalId: specimen2Id,
-          typeCode: "258500001",
-        },
-      ],
-    },
-    {
-      internalId: multiplexAndCovidOnlyDeviceId,
-      name: multiplexAndCovidOnlyDeviceName,
-      testLength: 15,
-      supportedDiseaseTestPerformed: [
-        ...mockSupportedDiseaseFlu,
-        {
-          supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
-          testPerformedLoincCode: "123456",
-          testOrderedLoincCode: "445566",
-        },
-        {
-          supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
-          testPerformedLoincCode: "123456",
-          testOrderedLoincCode: "778899",
-        },
-      ],
-      swabTypes: [
-        {
-          name: specimen1Name,
-          internalId: specimen1Id,
-          typeCode: "445297001",
-        },
-        {
-          name: specimen2Name,
-          internalId: specimen2Id,
-          typeCode: "258500001",
-        },
-      ],
-    },
-    {
-      internalId: syphilisDeviceId,
-      name: syphilisDeviceName,
-      testLength: 15,
-      supportedDiseaseTestPerformed: [
-        ...mockSupportedDiseaseTestPerformedSyphilis,
-      ],
-      swabTypes: [
-        {
-          name: specimen1Name,
-          internalId: specimen1Id,
-          typeCode: "445297001",
-        },
-      ],
-    },
-    {
-      internalId: hivDeviceId,
-      name: hivDeviceName,
-      testLength: 15,
-      supportedDiseaseTestPerformed: [...mockSupportedDiseaseTestPerformedHIV],
-      swabTypes: [
-        {
-          name: specimen1Name,
-          internalId: specimen1Id,
-          typeCode: "445297001",
-        },
-      ],
-    },
-  ],
-};
 
 describe("TestCardForm", () => {
   const testProps: TestCardFormProps = {
