@@ -92,6 +92,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.SnomedConceptRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -698,6 +699,9 @@ public class FhirConverter {
       Date resultDate) {
     if (result != null && result.getDisease() != null) {
 
+      SnomedConceptRecord resultConceptRecord =
+          Translators.convertConceptCodeToConceptName(result.getResultSNOMED());
+
       return convertToObservation(
           ConvertToObservationProps.builder()
               .testPerformedLoinc(deviceTypeDisease.getTestPerformedLoincCode())
@@ -706,8 +710,7 @@ public class FhirConverter {
               .correctionStatus(correctionStatus)
               .correctionReason(correctionReason)
               .id(result.getInternalId().toString())
-              .resultDescription(
-                  Translators.convertConceptCodeToConceptName(result.getResultSNOMED()))
+              .resultDescription(resultConceptRecord == null ? null : resultConceptRecord.name())
               .testkitNameId(testkitNameId)
               .deviceModel(deviceModel)
               .issued(resultDate)

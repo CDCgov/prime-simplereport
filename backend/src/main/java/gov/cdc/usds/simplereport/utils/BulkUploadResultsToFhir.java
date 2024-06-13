@@ -39,6 +39,7 @@ import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.SnomedConceptRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
@@ -415,6 +416,9 @@ public class BulkUploadResultsToFhir {
                 .receivedTime(testingLabSpecimenReceivedDate)
                 .build());
 
+    SnomedConceptRecord resultConceptRecord =
+        Translators.convertConceptCodeToConceptName(row.getTestResult().getValue());
+
     var resultObservation =
         List.of(
             fhirConverter.convertToObservation(
@@ -427,8 +431,7 @@ public class BulkUploadResultsToFhir {
                     .correctionReason(null)
                     .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
-                        Translators.convertConceptCodeToConceptName(
-                            getTestResultSnomed(row.getTestResult().getValue())))
+                        resultConceptRecord == null ? null : resultConceptRecord.name())
                     .testkitNameId(testKitNameId)
                     .deviceModel(row.getEquipmentModelName().getValue())
                     .issued(Date.from(testResultDate.toInstant()))
