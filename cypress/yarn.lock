@@ -476,10 +476,10 @@ cypress-axe@^1.5.0:
   resolved "https://registry.yarnpkg.com/cypress-axe/-/cypress-axe-1.5.0.tgz#95082734583da77b51ce9b7784e14a442016c7a1"
   integrity sha512-Hy/owCjfj+25KMsecvDgo4fC/781ccL+e8p+UUYoadGVM2ogZF9XIKbiM6KI8Y3cEaSreymdD6ZzccbI2bY0lQ==
 
-cypress-localstorage-commands@^2.2.5:
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/cypress-localstorage-commands/-/cypress-localstorage-commands-2.2.5.tgz#81c8f53a06e2ed93c1e068c1101da85f80f27f61"
-  integrity sha512-07zpwzWdY+uPi1NEHFhWQNylIJqRxR78Ile05L6WT8h1Gz0OaxgBSZRuzp+pqUni/3Pk4d2ieq/cSh++ZmujEA==
+cypress-localstorage-commands@^2.2.6:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/cypress-localstorage-commands/-/cypress-localstorage-commands-2.2.6.tgz#537557ae7420f91060d373e0e0c0612c7c322d13"
+  integrity sha512-l3nZ+Lu6YbBWk4UIfNrRkNK56BkF8zVbCrqzCf35x4Nlx2wA2r0spBOZXnKjbutQZgo6qDqtS8uXoSqV36YM1Q==
 
 cypress@^13.6.6:
   version "13.7.3"
@@ -536,10 +536,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-dayjs@^1.10.4, dayjs@^1.11.10:
-  version "1.11.10"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.10.tgz#68acea85317a6e164457d6d6947564029a6a16a0"
-  integrity sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==
+dayjs@^1.10.4, dayjs@^1.11.11:
+  version "1.11.11"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.11.tgz#dfe0e9d54c5f8b68ccf8ca5f72ac603e7e5ed59e"
+  integrity sha512-okzr3f11N6WuqYtZSvm+F776mB41wRZMhKP+hc34YdW+KmtYYK9iqvHSwo2k9FEH3fhGXvOPV6yz2IcSrfRUDg==
 
 debug@^3.1.0:
   version "3.2.7"
@@ -631,10 +631,10 @@ escape-string-regexp@^4.0.0:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-4.0.0.tgz#14ba83a5d373e3d311e5afca29cf5bfad965bf34"
   integrity sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==
 
-eslint-plugin-cypress@^2.15.1:
-  version "2.15.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-cypress/-/eslint-plugin-cypress-2.15.2.tgz#f22e12fad4c434edad7b298ef92bac8fa087ffa0"
-  integrity sha512-CtcFEQTDKyftpI22FVGpx8bkpKyYXBlNge6zSo0pl5/qJvBAnzaD76Vu2AsP16d6mTj478Ldn2mhgrWV+Xr0vQ==
+eslint-plugin-cypress@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-cypress/-/eslint-plugin-cypress-3.3.0.tgz#4ab963193d21ad22aca8379e1d15ba02619ae8db"
+  integrity sha512-HPHMPzYBIshzJM8wqgKSKHG2p/8R0Gbg4Pb3tcdC9WrmkuqxiKxSKbjunUrajhV5l7gCIFrh1P7C7GuBqH6YuQ==
   dependencies:
     globals "^13.20.0"
 

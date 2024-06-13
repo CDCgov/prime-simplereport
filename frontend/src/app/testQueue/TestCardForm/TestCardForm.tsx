@@ -5,9 +5,8 @@ import {
   Checkbox,
   FormGroup,
   Label,
-  ModalRef,
 } from "@trussworks/react-uswds";
-import React, { useEffect, useReducer, useRef, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 
 import TextInput from "../../commonComponents/TextInput";
 import { formatDate } from "../../utils/date";
@@ -27,7 +26,10 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
-import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
+import {
+  PregnancyCode,
+  SyphilisHistoryCode,
+} from "../../../patientApp/timeOfTest/constants";
 import { QueueItemSubmitLoader } from "../QueueItemSubmitLoader";
 
 import {
@@ -35,12 +37,10 @@ import {
   TestFormActionCase,
   TestFormState,
 } from "./TestCardFormReducer";
-import CovidAoEForm, {
-  parseSymptoms,
-} from "./diseaseSpecificComponents/CovidAoEForm";
+import CovidAoEForm from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   AOEFormOption,
-  areAOEAnswersComplete,
+  generateAoeValidationState,
   convertFromMultiplexResponse,
   showTestResultDeliveryStatusAlert,
   useAOEFormOption,
@@ -49,11 +49,15 @@ import {
   useFilteredDeviceTypes,
   useSpecimenTypeOptions,
   useTestOrderPatient,
+  AoeValidationErrorMessages,
 } from "./TestCardForm.utils";
-import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
 import { TestResultInputGroup } from "./diseaseSpecificComponents/TestResultInputGroup";
-import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "./types";
+import { IncompleteAOEWarningModal } from "./IncompleteAOEWarningModal";
+import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
+import { stringifySymptomJsonForAoeUpdate } from "./diseaseSpecificComponents/aoeUtils";
+import { SyphilisAoEForm } from "./diseaseSpecificComponents/SyphilisAoEForm";
+import { WhereResultsAreSentModal } from "./WhereResultsAreSentModal";
 
 const DEBOUNCE_TIME = 300;
 
@@ -83,9 +87,10 @@ const TestCardForm = ({
     testResults: convertFromMultiplexResponse(testOrder.results),
     aoeResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
+      syphilisHistory: testOrder.syphilisHistory as SyphilisHistoryCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
-      symptoms: JSON.stringify(parseSymptoms(testOrder.symptoms)),
+      symptoms: stringifySymptomJsonForAoeUpdate(testOrder.symptoms),
       genderOfSexualPartners: testOrder.genderOfSexualPartners,
     },
   };
@@ -103,7 +108,7 @@ const TestCardForm = ({
   const { trackSubmitTestResult, trackUpdateAoEResponse } =
     useAppInsightTestCardEvents();
 
-  const submitModalRef = useRef<ModalRef>(null);
+  const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
 
   const filteredDeviceTypes = useFilteredDeviceTypes(facility);
 
@@ -115,15 +120,6 @@ const TestCardForm = ({
     useSpecimenTypeOptions(state);
 
   const { patientFullName } = useTestOrderPatient(testOrder);
-
-  const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
-
-  // AOE responses required for HIV positive result
-  const hivAOEResponsesRequired =
-    whichAOEFormOption === AOEFormOption.HIV &&
-    state.testResults.some(
-      (x) => x.diseaseName === "HIV" && x.testResult === TEST_RESULTS.POSITIVE
-    );
 
   /**
    * When backend sends an updated test order, update the form state
@@ -193,12 +189,12 @@ const TestCardForm = ({
       variables: {
         patientId: testOrder.patient.internalId,
         noSymptoms: state.aoeResponses.noSymptoms,
-        // automatically converts boolean strings like "false" to false
-        symptoms: JSON.stringify(parseSymptoms(state.aoeResponses.symptoms)),
+        symptoms: stringifySymptomJsonForAoeUpdate(state.aoeResponses.symptoms),
         symptomOnset: state.aoeResponses.symptomOnset
           ? state.aoeResponses.symptomOnset
           : null,
         pregnancy: state.aoeResponses.pregnancy,
+        syphilisHistory: state.aoeResponses.syphilisHistory,
         genderOfSexualPartners:
           state.aoeResponses.genderOfSexualPartners ?? null,
       },
@@ -276,24 +272,49 @@ const TestCardForm = ({
     return null;
   };
 
-  const getAOEError = () => {
-    if (
-      hivAOEResponsesRequired &&
-      !areAOEAnswersComplete(state, AOEFormOption.HIV)
-    ) {
-      return "Please answer all required questions.";
+  const whichAoeFormOption = useAOEFormOption(state, devicesMap);
+
+  const validateAoeForm = () => {
+    const aoeValidationMessage = generateAoeValidationState(
+      state,
+      whichAoeFormOption
+    );
+    if (aoeValidationMessage === AoeValidationErrorMessages.COMPLETE) {
+      return true;
     }
-    return null;
+    if (aoeValidationMessage === AoeValidationErrorMessages.INCOMPLETE) {
+      if (whichAoeFormOption === AOEFormOption.COVID) {
+        setIsSubmitModalOpen(true);
+      } else {
+        showError(
+          "Please complete the required questions",
+          "Invalid test questionnaire"
+        );
+      }
+      return false;
+    }
+    if (
+      aoeValidationMessage ===
+      AoeValidationErrorMessages.SYMPTOM_VALIDATION_ERROR
+    ) {
+      showError(
+        "Please complete symptom details or indicate patient doesn't have symptoms",
+        "Invalid test questionnaire"
+      );
+      return false;
+    }
+    showError(
+      "Something unexpected went wrong. Please try again or contact support@simplereport.gov for help",
+      "Invalid test questionnaire"
+    );
+    return false;
   };
 
   const dateTestedError = getDateTestedError();
   const deviceTypeError = getDeviceTypeError();
   const specimenTypeError = getSpecimenTypeError();
   const testResultsError = getTestResultsError();
-  const aoeError = getAOEError();
-
   const showTestResultsError = hasAttemptedSubmit && testResultsError !== null;
-
   // only show warning if date tested has no error
   const showDateMonthsAgoWarning =
     moment(state.dateTested) < moment().subtract(6, "months") &&
@@ -316,31 +337,21 @@ const TestCardForm = ({
     if (testResultsError) {
       showError(testResultsError, "Invalid test results");
     }
-    if (aoeError) {
-      showError(aoeError, "Invalid test questionnaire");
-    }
     return (
       dateTestedError === null &&
       deviceTypeError === null &&
       specimenTypeError === null &&
-      testResultsError === null &&
-      aoeError === null
+      testResultsError === null
     );
   };
 
   const submitForm = async (forceSubmit: boolean = false) => {
     setHasAttemptedSubmit(true);
-    if (!validateForm()) {
-      return;
-    }
-
-    if (!forceSubmit && !areAOEAnswersComplete(state, whichAOEFormOption)) {
-      submitModalRef.current?.toggleModal();
-      return;
-    }
+    if (!validateForm()) return;
+    if (!forceSubmit && !validateAoeForm()) return;
 
     trackSubmitTestResult();
-
+    setIsSubmitModalOpen(false);
     const result = await submitTestResult({
       variables: {
         patientId: testOrder.patient?.internalId,
@@ -365,9 +376,10 @@ const TestCardForm = ({
     <>
       <QueueItemSubmitLoader show={submitLoading} name={patientFullName} />
       <IncompleteAOEWarningModal
-        submitModalRef={submitModalRef}
         name={patientFullName}
         submitForm={submitForm}
+        showModal={isSubmitModalOpen}
+        onClose={() => setIsSubmitModalOpen(false)}
       />
       <div className="grid-container">
         {/* error and warning alerts */}
@@ -545,11 +557,12 @@ const TestCardForm = ({
             ></TestResultInputGroup>
           </FormGroup>
         </div>
-        {whichAOEFormOption === AOEFormOption.COVID && (
+        {whichAoeFormOption === AOEFormOption.COVID && (
           <div className="grid-row grid-gap">
             <CovidAoEForm
               testOrder={testOrder}
               responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
               onResponseChange={(responses) => {
                 dispatch({
                   type: TestFormActionCase.UPDATE_AOE_RESPONSES,
@@ -559,7 +572,7 @@ const TestCardForm = ({
             />
           </div>
         )}
-        {hivAOEResponsesRequired && (
+        {whichAoeFormOption === AOEFormOption.HIV && (
           <div className="grid-row grid-gap">
             <HIVAoEForm
               testOrder={testOrder}
@@ -574,12 +587,31 @@ const TestCardForm = ({
             />
           </div>
         )}
+        {whichAoeFormOption === AOEFormOption.SYPHILIS && (
+          <div className="grid-row grid-gap">
+            <SyphilisAoEForm
+              testOrder={testOrder}
+              responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
+              onResponseChange={(responses) => {
+                setHasAttemptedSubmit(false);
+                dispatch({
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+            />
+          </div>
+        )}
         <div className="grid-row margin-top-4">
           <div className="grid-col-auto">
             <Button onClick={() => submitForm()} type={"button"}>
               Submit results
             </Button>
           </div>
+        </div>
+        <div className="grid-row margin-top-1">
+          <WhereResultsAreSentModal />
         </div>
       </div>
     </>

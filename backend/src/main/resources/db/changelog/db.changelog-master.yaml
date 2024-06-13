@@ -5382,6 +5382,42 @@ databaseChangeLog:
             REVOKE SELECT ON TABLE ${database.defaultSchemaName}.api_user_facility FROM ${noPhiUsername};
             REVOKE SELECT ON TABLE ${database.defaultSchemaName}.api_user_role FROM ${noPhiUsername};
   - changeSet:
+      id: add-flu-a-and-b-to-supported_disease-table
+      author: tmz1@cdc.gov
+      comment: Add Flu A and B to the supported_disease table.
+      changes:
+        - tagDatabase:
+            tag: add-flu-a-and-b-to-supported_disease-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'Flu A and B', '44567-6')
+      rollback:
+        - sql:
+            sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Flu A and B';
+  - changeSet:
+      id: remove-internal_id-from-user-facility-table
+      author: tnd8@cdc.gov
+      comment: Remove internal_id column from join table
+      changes:
+        - dropColumn:
+            tableName: api_user_facility
+            columnName: internal_id
+      rollback:
+        - addColumn:
+            tableName: api_user_facility
+            column:
+              name: internal_id
+              type: uuid
+              remarks: The internal database identifier for this entity.
+              constraints:
+                primaryKey: true
+                nullable: false
+  - changeSet:
       id: remove-internal_id-from-user-facility-table
       author: tnd8@cdc.gov
       comment: Remove internal_id column from join table

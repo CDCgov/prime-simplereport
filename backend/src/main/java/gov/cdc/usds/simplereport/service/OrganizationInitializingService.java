@@ -307,9 +307,9 @@ public class OrganizationInitializingService {
     for (DemoUser user : users) {
       IdentityAttributes identity = user.getIdentity();
       Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
-      if (!userProbe.isPresent()) {
-        _apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
-      }
+      ApiUser apiUser =
+          userProbe.orElseGet(
+              () -> _apiUserRepo.save(new ApiUser(identity.getUsername(), identity)));
       DemoAuthorization authorization = user.getAuthorization();
       if (authorization != null) {
         Set<OrganizationRole> roles = authorization.getGrantedRoles();
@@ -340,6 +340,7 @@ public class OrganizationInitializingService {
               identity.getUsername(),
               authorization.getOrganizationExternalId());
         } else {
+          apiUser.setFacilities(authorizedFacilities);
           log.info(
               "User={} will have access to facilities={} in organization={}",
               identity.getUsername(),

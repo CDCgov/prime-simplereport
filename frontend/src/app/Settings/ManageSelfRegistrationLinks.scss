@@ -10,8 +10,9 @@
   }
 
   .sr-organization-link-copy-button {
-    width: 100%;
     border-radius: 0 0 4px 4px;
+    column-gap: 0;
+    width: 100%;
   }
 
   @media (min-width: 480px) {

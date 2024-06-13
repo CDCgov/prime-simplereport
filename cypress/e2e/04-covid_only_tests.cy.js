@@ -70,9 +70,7 @@ describe("Conducting a COVID test from:", () => {
 
     cy.injectSRAxe();
     cy.get(".results-dropdown").within(() => {
-      cy.get("button.usa-button--unstyled:first-of-type")
-        .contains("Begin test")
-        .click();
+      cy.get("[data-cy='name0-birthdate0']").contains("Begin test").click();
     });
 
     cy.wait("@AddPatientToQueue");
@@ -138,16 +136,12 @@ describe("Conducting a COVID test from:", () => {
       "exist",
     );
 
-    cy.contains("label", "When did the patient's symptoms start?")
-      .next("input")
-      .type("2021-10-05");
+    cy.get("[data-testid='symptom-date']").within(() => {
+      cy.get("input").type("2021-10-05");
+    });
 
-    cy.contains("legend", "Select any symptoms the patient is experiencing")
-      .next("div")
-      .within(() => {
-        cy.contains("label", "Chills").click();
-        cy.contains("label", "Headache").click();
-      });
+    cy.contains("label", "Chills").click();
+    cy.contains("label", "Headache").click();
 
     cy.checkAccessibility();
 

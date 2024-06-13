@@ -2,13 +2,14 @@ import { Meta } from "@storybook/react";
 import configureStore from "redux-mock-store";
 import React from "react";
 import { Provider } from "react-redux";
-import { MockedProvider } from "@apollo/client/testing";
 import {
   createMemoryRouter,
   createRoutesFromElements,
   Route,
   RouterProvider,
 } from "react-router-dom";
+
+import { getMocks, StoryGraphQLProvider } from "../../stories/storyMocks";
 
 import AddPatient from "./AddPatient";
 
@@ -21,14 +22,22 @@ const store = mockStore({
 
 const element = (
   <Provider store={store}>
-    <MockedProvider mocks={[]} addTypename={false}>
-      <AddPatient />
-    </MockedProvider>
+    <AddPatient />
   </Provider>
 );
 
 export default {
-  title: "Add Patient",
+  title: "App/Add Patient",
+  parameters: {
+    msw: getMocks("AddPatient", "PatientExists"),
+  },
+  decorators: [
+    (Story) => (
+      <StoryGraphQLProvider>
+        <Story />
+      </StoryGraphQLProvider>
+    ),
+  ],
 } as Meta;
 
 const route = createRoutesFromElements(
@@ -38,6 +47,7 @@ const route = createRoutesFromElements(
      within the component doesn't cause 404's */}
     <Route element={element} path={"/upload-patients"} />
     <Route element={element} path={"/patients"} />
+    <Route element={element} path={"/queue"} />
   </>
 );
 const router = createMemoryRouter(route, {

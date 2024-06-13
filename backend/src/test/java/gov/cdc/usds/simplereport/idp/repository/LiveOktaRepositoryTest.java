@@ -1051,26 +1051,6 @@ class LiveOktaRepositoryTest {
   }
 
   @Test
-  void deleteFacility() {
-    var org = new Organization("orgName", "orgType", "1", true);
-    var facilityID = UUID.randomUUID();
-    var groupName = "SR-UNITTEST-TENANT:1:FACILITY_ACCESS:" + facilityID;
-    var mockFacility = mock(Facility.class);
-    var mockGroup = mock(Group.class);
-    var mockGroupList = List.of(mockGroup);
-    when(mockFacility.getOrganization()).thenReturn(org);
-    when(mockFacility.getInternalId()).thenReturn(facilityID);
-    when(groupApi.listGroups(
-            eq(groupName), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockGroupList);
-    when(mockGroup.getId()).thenReturn("1234");
-
-    _repo.deleteFacility(mockFacility);
-
-    verify(groupApi).deleteGroup("1234");
-  }
-
-  @Test
   void deleteOrganization() {
     var org = new Organization("orgName", "orgType", "1", true);
     var mockGroup = mock(Group.class);

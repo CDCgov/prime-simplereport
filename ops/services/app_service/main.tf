@@ -56,6 +56,8 @@ resource "azurerm_linux_web_app" "service" {
     use_32_bit_worker                 = false
     ftps_state                        = "Disabled"
     vnet_route_all_enabled            = false
+    ip_restriction_default_action     = "Deny" # Should use behavior set in the ip_restriction
+    scm_ip_restriction_default_action = "Deny" # We don't use Kudu or the SCM site tools
 
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
@@ -101,6 +103,8 @@ resource "azurerm_linux_web_app_slot" "staging" {
     use_32_bit_worker                 = false
     ftps_state                        = "Disabled"
     vnet_route_all_enabled            = false
+    ip_restriction_default_action     = "Deny" # Should use behavior set in the ip_restriction
+    scm_ip_restriction_default_action = "Deny" # We don't use Kudu or the SCM site tools
 
     # This application stack is what we use to deploy the docker image to the staging slot
     # After it becomes healthy, we swap the staging slot with the production slot to complete the deployment

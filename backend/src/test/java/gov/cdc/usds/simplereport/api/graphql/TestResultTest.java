@@ -239,7 +239,7 @@ class TestResultTest extends BaseGraphqlTest {
 
     // The test default standard user is configured to access _site by default,
     // so we need to remove access to establish a baseline in this test
-    updateSelfPrivileges(Role.USER, false, Set.of());
+    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
     Map<String, Object> submitP1Variables =
         Map.of(
             "deviceId",
@@ -272,7 +272,7 @@ class TestResultTest extends BaseGraphqlTest {
     submitQueueItem(submitP1Variables, Optional.empty());
     submitQueueItem(submitP2Variables, Optional.empty());
 
-    updateSelfPrivileges(Role.USER, false, Set.of());
+    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
     Map<String, Object> fetchVariables = getFacilityScopedArguments();
     fetchTestResultsWithError(fetchVariables, ACCESS_ERROR);
 
@@ -282,7 +282,7 @@ class TestResultTest extends BaseGraphqlTest {
     UUID t1Id = UUID.fromString(testResults.get(0).get("internalId").asText());
     UUID t2Id = UUID.fromString(testResults.get(1).get("internalId").asText());
 
-    updateSelfPrivileges(Role.USER, false, Set.of());
+    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
 
     Map<String, Object> correctT1Variables =
         Map.of("id", t1Id.toString(), "reason", "nobody's perfect");
@@ -297,7 +297,7 @@ class TestResultTest extends BaseGraphqlTest {
     correctTest(correctT1Variables, Optional.empty());
     correctTest(correctT2Variables, Optional.empty());
 
-    updateSelfPrivileges(Role.USER, false, Set.of());
+    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
     Map<String, Object> fetchT1Variables = Map.of("id", t1Id.toString());
     Map<String, Object> fetchT2Variables = Map.of("id", t2Id.toString());
 

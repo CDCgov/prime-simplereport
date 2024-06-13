@@ -49,7 +49,7 @@ RUN echo "REACT_APP_CONTENT_SECURITY_POLICY_SCRIPT_SRC=''" >> .env.production.lo
 RUN yarn run build
 
 # production environment
-FROM node:18-alpine
+FROM node:20-alpine
 RUN npm install -g serve
 WORKDIR /app/frontend
 COPY --from=build /app/frontend/build /app/frontend/build

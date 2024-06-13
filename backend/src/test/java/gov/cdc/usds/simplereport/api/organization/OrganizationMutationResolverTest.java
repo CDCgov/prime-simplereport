@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.model.AddFacilityInput;
 import gov.cdc.usds.simplereport.api.model.AddressInput;
 import gov.cdc.usds.simplereport.api.model.ProviderInput;
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.UpdateFacilityInput;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -74,7 +75,8 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     facility = _dataFactory.createValidFacility(org);
     pendingOrg = _dataFactory.saveOrganizationQueueItem();
     address = facility.getAddress();
-    orgUserInfo = _dataFactory.createValidApiUser("demo@example.com", org);
+    orgUserInfo =
+        _dataFactory.createValidApiUser("demo@example.com", org, Role.USER, Set.of(facility));
   }
 
   @Test

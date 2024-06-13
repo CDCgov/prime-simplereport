@@ -26,7 +26,8 @@ export async function QueueBatchedTestEventPublisher(
   _myTimer: Timer,
   context: InvocationContext,
 ): Promise<void> {
-  const tagOverrides = { "ai.operation.id": context.traceContext.traceParent };
+  const operationId = context.traceContext.traceParent;
+
   const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
   const exceptionQueue = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME);
   const publishingErrorQueue = getQueueClient(PUBLISHING_ERROR_QUEUE_NAME);
@@ -38,8 +39,10 @@ export async function QueueBatchedTestEventPublisher(
   const messages = await dequeueMessages(context, publishingQueue);
   telemetry.trackEvent({
     name: `Queue: ${TEST_EVENT_QUEUE_NAME}. Messages Dequeued`,
-    properties: { messagesDequeued: messages.length },
-    tagOverrides,
+    properties: {
+      messagesDequeued: messages.length,
+      operationId,
+    },
   });
 
   const { csvPayload, parseFailure, parseFailureCount, parseSuccessCount } =
@@ -51,8 +54,8 @@ export async function QueueBatchedTestEventPublisher(
       properties: {
         count: parseFailureCount,
         parseFailures: Object.keys(parseFailure),
+        operationId,
       },
-      tagOverrides,
     });
   }
 
@@ -77,11 +80,11 @@ export async function QueueBatchedTestEventPublisher(
     properties: {
       recordCount: parseSuccessCount,
       queue: TEST_EVENT_QUEUE_NAME,
+      operationId,
     },
     duration: new Date().getTime() - uploadStart,
     resultCode: postResult.status,
     success: postResult.ok,
-    tagOverrides,
   });
 
   if (postResult.ok) {
@@ -121,8 +124,8 @@ export async function QueueBatchedTestEventPublisher(
       properties: {
         status: postResult.status,
         responseBody,
+        operationId,
       },
-      tagOverrides,
     });
 
     if (postResult.status === 400) {

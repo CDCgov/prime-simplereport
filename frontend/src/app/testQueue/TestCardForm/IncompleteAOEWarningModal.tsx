@@ -1,51 +1,42 @@
-import {
-  ButtonGroup,
-  Modal,
-  ModalFooter,
-  ModalHeading,
-  ModalRef,
-  ModalToggleButton,
-} from "@trussworks/react-uswds";
 import React from "react";
 
-interface IncompleteAOEWarningModalProps {
-  submitModalRef: React.RefObject<ModalRef>;
+import Button from "../../commonComponents/Button/Button";
+import Modal from "../../commonComponents/Modal";
+
+export type IncompleteAOEWarningModalProps = {
   name: string;
   submitForm: (forceSubmit: boolean) => Promise<void>;
-}
+  showModal: boolean;
+  onClose: () => void;
+};
 
-const IncompleteAOEWarningModal = ({
-  submitModalRef,
-  name,
-  submitForm,
-}: IncompleteAOEWarningModalProps) => {
+export const IncompleteAOEWarningModal: React.FC<
+  IncompleteAOEWarningModalProps
+> = ({ name, submitForm, showModal, onClose }) => {
   return (
     <Modal
-      ref={submitModalRef}
-      aria-labelledby={"submit-modal-heading"}
-      id="submit-modal"
+      onClose={onClose}
+      showModal={showModal}
+      showClose={true}
+      variant="mobile-lg"
+      contentLabel={"Incomplete ask on entry"}
     >
-      <ModalHeading id="submit-modal-heading">
+      <Modal.Header styleClassNames={"font-sans-lg line-height-sans-3"}>
         The test questionnaire for {name} has not been completed.
-      </ModalHeading>
+      </Modal.Header>
       <p>Do you want to submit results anyway?</p>
-      <ModalFooter id={"submit-modal-footer"}>
-        <ButtonGroup>
-          <ModalToggleButton
-            modalRef={submitModalRef}
-            closer
-            className={"margin-right-1"}
-            onClick={() => submitForm(true)}
-          >
-            Submit anyway.
-          </ModalToggleButton>
-          <ModalToggleButton modalRef={submitModalRef} unstyled closer>
-            No, go back.
-          </ModalToggleButton>
-        </ButtonGroup>
-      </ModalFooter>
+      <Modal.Footer styleClassNames={"margin-top-2 float-left"}>
+        <Button onClick={() => submitForm(true)} className={"margin-0"}>
+          Submit anyway.
+        </Button>
+        <Button
+          onClick={onClose}
+          variant={"unstyled"}
+          className={"font-sans-sm"}
+        >
+          No, go back
+        </Button>
+      </Modal.Footer>
     </Modal>
   );
 };
-
-export default IncompleteAOEWarningModal;

@@ -12,7 +12,7 @@ Object {
           lang="es"
         >
           <button
-            class="usa-button usa-button--unstyled"
+            class="usa-button sr-language-toggler usa-button--unstyled"
             type="button"
           >
             <svg
@@ -289,7 +289,7 @@ Object {
         lang="es"
       >
         <button
-          class="usa-button usa-button--unstyled"
+          class="usa-button sr-language-toggler usa-button--unstyled"
           type="button"
         >
           <svg
@@ -623,7 +623,7 @@ Object {
           lang="es"
         >
           <button
-            class="usa-button usa-button--unstyled"
+            class="usa-button sr-language-toggler usa-button--unstyled"
             type="button"
           >
             <svg
@@ -968,7 +968,7 @@ Object {
         lang="es"
       >
         <button
-          class="usa-button usa-button--unstyled"
+          class="usa-button sr-language-toggler usa-button--unstyled"
           type="button"
         >
           <svg
@@ -1370,7 +1370,7 @@ Object {
           lang="es"
         >
           <button
-            class="usa-button usa-button--unstyled"
+            class="usa-button sr-language-toggler usa-button--unstyled"
             type="button"
           >
             <svg
@@ -1726,7 +1726,7 @@ your local health department.
         lang="es"
       >
         <button
-          class="usa-button usa-button--unstyled"
+          class="usa-button sr-language-toggler usa-button--unstyled"
           type="button"
         >
           <svg
@@ -2139,7 +2139,7 @@ Object {
           lang="es"
         >
           <button
-            class="usa-button usa-button--unstyled"
+            class="usa-button sr-language-toggler usa-button--unstyled"
             type="button"
           >
             <svg
@@ -2545,7 +2545,7 @@ Object {
         lang="es"
       >
         <button
-          class="usa-button usa-button--unstyled"
+          class="usa-button sr-language-toggler usa-button--unstyled"
           type="button"
         >
           <svg
@@ -3005,7 +3005,7 @@ exports[`TestResultPrintModal with only COVID results matches screenshot 1`] = `
       lang="es"
     >
       <button
-        class="usa-button usa-button--unstyled"
+        class="usa-button sr-language-toggler usa-button--unstyled"
         type="button"
       >
         <svg

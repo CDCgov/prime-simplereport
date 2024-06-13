@@ -1,3 +1,4 @@
+import React from "react";
 import Modal from "react-modal";
 import classnames from "classnames";
 
@@ -110,22 +111,17 @@ export const DetachedTestResultDetailsModal = ({
 
   return (
     <>
-      <div className="display-flex flex-justify">
-        <h1
-          id="result-detail-title"
-          className="font-heading-lg margin-top-05 margin-bottom-0"
-        >
+      <div className="display-flex flex-justify flex-align-center">
+        <h1 id="result-detail-title" className="font-heading-lg margin-0">
           Result details
         </h1>
-        <div className="sr-time-of-test-buttons">
-          <button
-            className="modal__close-button"
-            style={{ cursor: "pointer" }}
-            onClick={closeModal}
-          >
-            <img className="modal__close-img" src={iconClose} alt="Close" />
-          </button>
-        </div>
+        <button
+          className="modal__close-button margin-top-0"
+          style={{ cursor: "pointer" }}
+          onClick={closeModal}
+        >
+          <img className="modal__close-img" src={iconClose} alt="Close" />
+        </button>
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
       <h2 className="font-sans-md margin-top-3">Patient</h2>

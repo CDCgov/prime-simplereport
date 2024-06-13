@@ -2,16 +2,25 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
-import { getAppInsights } from "../../TelemetryService";
-import * as srToast from "../../utils/srToast";
-import { PhoneType } from "../../../generated/graphql";
-import mockSupportedDiseaseCovid from "../mocks/mockSupportedDiseaseCovid";
-import mockSupportedDiseaseMultiplex, {
-  mockSupportedDiseaseFlu,
-} from "../mocks/mockSupportedDiseaseMultiplex";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
+import {
+  asymptomaticTestOrderInfo,
+  covidDeviceId,
+  covidDeviceName,
+  devicesMap,
+  facilityInfo,
+  fluDeviceId,
+  fluDeviceName,
+  generateSubmitQueueMock,
+  hivDeviceId,
+  hivDeviceName,
+  multiplexDeviceId,
+  multiplexDeviceName,
+  syphilisDeviceId,
+  syphilisDeviceName,
+} from "../testCardTestConstants";
 
 import TestCardForm, { TestCardFormProps } from "./TestCardForm";
-import { QueriedFacility, QueriedTestOrder } from "./types";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -19,177 +28,13 @@ jest.mock("../../TelemetryService", () => ({
 
 const setStartTestPatientIdMock = jest.fn();
 
-const covidDeviceName = "LumiraDX";
-const multiplexDeviceName = "Multiplex";
-const multiplexAndCovidOnlyDeviceName = "MultiplexAndCovidOnly";
-const fluDeviceName = "FLU";
-const hivDeviceName = "HIV";
-
-const covidDeviceId = "COVID-DEVICE-ID";
-const multiplexDeviceId = "MULTIPLEX-DEVICE-ID";
-const multiplexAndCovidOnlyDeviceId = "MULTIPLEX-COVID-DEVICE-ID";
-const fluDeviceId = "FLU-DEVICE-ID";
-const hivDeviceId = "HIV-DEVICE-ID";
-
-const specimen1Name = "Swab of internal nose";
-const specimen1Id = "SPECIMEN-1-ID";
-const specimen2Name = "Nasopharyngeal swab";
-const specimen2Id = "SPECIMEN-2-ID";
-
 describe("TestCardForm", () => {
-  let nowFn = Date.now;
-  let alertSpy: jest.SpyInstance;
-  const trackEventMock = jest.fn();
-  const trackMetricMock = jest.fn();
-  const trackExceptionMock = jest.fn();
-
-  const testOrderInfo: QueriedTestOrder = {
-    internalId: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
-    dateAdded: "2022-11-08 13:33:07.503",
-    symptoms:
-      '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
-    symptomOnset: null,
-    noSymptoms: true,
-    deviceType: {
-      internalId: multiplexDeviceId,
-      name: multiplexDeviceName,
-      model: multiplexDeviceName,
-      testLength: 15,
-    },
-    specimenType: {
-      internalId: specimen1Id,
-      name: specimen1Name,
-      typeCode: "445297001",
-    },
-    patient: {
-      internalId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
-      telephone: "(571) 867-5309",
-      birthDate: "2015-09-20",
-      firstName: "Althea",
-      middleName: "Hedda Mclaughlin",
-      lastName: "Dixon",
-      gender: "refused",
-      testResultDelivery: null,
-      preferredLanguage: null,
-      email: "sywaporoce@mailinator.com",
-      emails: ["sywaporoce@mailinator.com"],
-      phoneNumbers: [
-        {
-          type: PhoneType.Mobile,
-          number: "(553) 223-0559",
-        },
-        {
-          type: PhoneType.Landline,
-          number: "(669) 789-0799",
-        },
-      ],
-    },
-    results: [],
-    dateTested: null,
-    correctionStatus: "ORIGINAL",
-    reasonForCorrection: null,
-  };
-
-  const facilityInfo: QueriedFacility = {
-    id: "f02cfff5-1921-4293-beff-e2a5d03e1fda",
-    name: "Testing Site",
-    deviceTypes: [
-      {
-        internalId: covidDeviceId,
-        name: covidDeviceName,
-        testLength: 15,
-        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-      {
-        internalId: multiplexDeviceId,
-        name: multiplexDeviceName,
-        testLength: 15,
-        supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-      {
-        internalId: fluDeviceId,
-        name: fluDeviceName,
-        testLength: 15,
-        supportedDiseaseTestPerformed: [...mockSupportedDiseaseFlu],
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-      {
-        internalId: multiplexAndCovidOnlyDeviceId,
-        name: multiplexAndCovidOnlyDeviceName,
-        testLength: 15,
-        supportedDiseaseTestPerformed: [
-          ...mockSupportedDiseaseFlu,
-          {
-            supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
-            testPerformedLoincCode: "123456",
-            testOrderedLoincCode: "445566",
-          },
-          {
-            supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
-            testPerformedLoincCode: "123456",
-            testOrderedLoincCode: "778899",
-          },
-        ],
-        swabTypes: [
-          {
-            name: specimen1Name,
-            internalId: specimen1Id,
-            typeCode: "445297001",
-          },
-          {
-            name: specimen2Name,
-            internalId: specimen2Id,
-            typeCode: "258500001",
-          },
-        ],
-      },
-    ],
-  };
-
-  const devicesMap = new Map();
-  facilityInfo.deviceTypes.map((d) => devicesMap.set(d.internalId, d));
-
   const testProps: TestCardFormProps = {
     refetchQueue: jest.fn().mockReturnValue(null),
-    testOrder: testOrderInfo,
+    testOrder: asymptomaticTestOrderInfo,
     facility: facilityInfo,
     devicesMap: devicesMap,
-    startTestPatientId: "",
+    startTestPatientId: "f2dde6ff-52bc-4a6c-9946-f48724f46e6e",
     setStartTestPatientId: setStartTestPatientIdMock,
   };
 
@@ -198,9 +43,7 @@ describe("TestCardForm", () => {
     mocks?: any;
   };
 
-  async function renderTestCardForm(
-    { props, mocks }: testRenderProps = { props: testProps, mocks: [] }
-  ) {
+  async function renderTestCardForm({ props, mocks }: testRenderProps) {
     props = props || testProps;
     const view = render(
       <>
@@ -228,25 +71,11 @@ describe("TestCardForm", () => {
   }
 
   beforeEach(() => {
-    (getAppInsights as jest.Mock).mockImplementation(() => ({
-      trackEvent: trackEventMock,
-      trackMetric: trackMetricMock,
-      trackException: trackExceptionMock,
-    }));
-    // jest.spyOn(console, "error").mockImplementation(() => {});
     jest.spyOn(global.Math, "random").mockReturnValue(1);
-    alertSpy = jest.spyOn(srToast, "showError");
   });
 
   afterEach(() => {
-    Date.now = nowFn;
-    (getAppInsights as jest.Mock).mockReset();
-    jest.spyOn(console, "error").mockRestore();
     jest.spyOn(global.Math, "random").mockRestore();
-    alertSpy.mockRestore();
-  });
-
-  afterAll(() => {
     jest.restoreAllMocks();
   });
 
@@ -336,6 +165,24 @@ describe("TestCardForm", () => {
 
       expect(await renderTestCardForm({ props })).toMatchSnapshot();
     });
+
+    it("matches snapshot for syphilis device", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "SYPHILIS" } }],
+          deviceType: {
+            internalId: syphilisDeviceId,
+            name: syphilisDeviceName,
+            model: syphilisDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      expect(await renderTestCardForm({ props })).toMatchSnapshot();
+    });
   });
 
   describe("error handling", () => {
@@ -352,7 +199,9 @@ describe("TestCardForm", () => {
         },
       };
 
-      const { user } = await renderTestCardForm({ props });
+      const { user } = await renderTestCardForm({
+        props,
+      });
 
       // Submit to start form validation
       await user.click(screen.getByText("Submit results"));
@@ -360,6 +209,117 @@ describe("TestCardForm", () => {
       expect(
         screen.getByText("Please enter a valid test result.")
       ).toBeInTheDocument();
+    });
+
+    it("should show validation modal when COVID result is submitted without AOE results", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "COVID-19" } }],
+        },
+      };
+
+      const { user } = await renderTestCardForm({
+        props,
+        mocks: [
+          generateSubmitQueueMock(
+            MULTIPLEX_DISEASES.COVID_19,
+            TEST_RESULTS.POSITIVE,
+            {
+              device: {
+                deviceId: covidDeviceId,
+              },
+            }
+          ),
+        ],
+      });
+
+      // Submit to start form validation
+      await user.click(screen.getByText("Submit results"));
+
+      expect(
+        screen.getByText("Do you want to submit results anyway?")
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByText("Submit anyway."));
+      expect(
+        screen.queryByText("Do you want to submit results anyway?")
+      ).not.toBeInTheDocument();
+    });
+
+    it("should show where tests are sent modal", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "COVID-19" } }],
+        },
+      };
+
+      const { user } = await renderTestCardForm({
+        props,
+        mocks: [
+          generateSubmitQueueMock(
+            MULTIPLEX_DISEASES.COVID_19,
+            TEST_RESULTS.POSITIVE,
+            {
+              device: {
+                deviceId: covidDeviceId,
+              },
+            }
+          ),
+        ],
+      });
+
+      // Submit to start form validation
+      await user.click(screen.getByText("Where results are sent"));
+
+      expect(
+        screen.getByText("Where are SimpleReport test results sent?")
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByText("Got it"));
+      expect(
+        screen.queryByText("Where are SimpleReport test results sent?")
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows sensitive topics modal", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "SYPHILIS" } }],
+          deviceType: {
+            internalId: syphilisDeviceId,
+            name: syphilisDeviceName,
+            model: syphilisDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      const { user } = await renderTestCardForm({ props });
+
+      await user.click(
+        screen.getByText(
+          "Why SimpleReport asks about sensitive topics like this"
+        )
+      );
+
+      expect(
+        screen.getByText(
+          "Why we ask for gender of sexual partners and other sensitive topics"
+        )
+      ).toBeInTheDocument();
+
+      await user.click(screen.getByText("Got it"));
+      expect(
+        screen.queryByText(
+          "Why we ask for gender of sexual partners and other sensitive topics"
+        )
+      ).not.toBeInTheDocument();
     });
   });
 });

@@ -8,95 +8,54 @@ import { formatDate } from "../../../utils/date";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import {
   getPregnancyResponses,
+  ONSET_DATE_LABEL,
   respiratorySymptomDefinitions,
-  PregnancyCode,
+  SYMPTOM_SUBQUESTION_ERROR,
 } from "../../../../patientApp/timeOfTest/constants";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
+
+import {
+  generateAoeListenerHooks,
+  generateSymptomAoeConstants,
+} from "./aoeUtils";
 
 export interface CovidAoEFormProps {
   testOrder: QueriedTestOrder;
   responses: AoeQuestionResponses;
   onResponseChange: (responses: AoeQuestionResponses) => void;
+  hasAttemptedSubmit: boolean;
 }
 
 const pregnancyResponses = getPregnancyResponses();
-
-export const parseSymptoms = (
-  symptomsJsonString: string | null | undefined
-) => {
-  const symptoms: Record<string, boolean> = {};
-  if (symptomsJsonString) {
-    const parsedSymptoms: { [key: string]: string | boolean } =
-      JSON.parse(symptomsJsonString);
-
-    respiratorySymptomDefinitions.forEach((opt) => {
-      const val = opt.value;
-      if (typeof parsedSymptoms[val] === "string") {
-        symptoms[val] = parsedSymptoms[val] === "true";
-      } else {
-        symptoms[val] = parsedSymptoms[val] as boolean;
-      }
-    });
-  } else {
-    respiratorySymptomDefinitions.forEach((opt) => {
-      symptoms[opt.value] = false;
-    });
-  }
-  return symptoms;
-};
 
 const CovidAoEForm = ({
   testOrder,
   responses,
   onResponseChange,
+  hasAttemptedSubmit,
 }: CovidAoEFormProps) => {
-  const symptoms: Record<string, boolean> = parseSymptoms(responses.symptoms);
-
-  const onPregnancyChange = (pregnancyCode: PregnancyCode) => {
-    onResponseChange({ ...responses, pregnancy: pregnancyCode });
-  };
-
-  const onHasAnySymptomsChange = (hasAnySymptoms: YesNo) => {
-    onResponseChange({
-      ...responses,
-      noSymptoms: hasAnySymptoms === "NO",
-    });
-  };
-
-  const onSymptomOnsetDateChange = (symptomOnsetDate: string) => {
-    onResponseChange({
-      ...responses,
-      symptomOnset: symptomOnsetDate
-        ? moment(symptomOnsetDate).format("YYYY-MM-DD")
-        : undefined,
-    });
-  };
-  const onSymptomsChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    currentSymptoms: Record<string, boolean>
-  ) => {
-    onResponseChange({
-      ...responses,
-      symptoms: JSON.stringify({
-        ...currentSymptoms,
-        [event.target.value]: event.target.checked,
-      }),
-    });
-  };
-
-  // backend currently stores this in "noSymptoms"
-  // so we need to convert to YesNo or undefined
-  let hasSymptoms: YesNo | undefined = undefined;
-  if (responses.noSymptoms) {
-    hasSymptoms = "NO";
-  }
-  if (responses.noSymptoms === false) {
-    hasSymptoms = "YES";
-  }
-
+  const {
+    onPregnancyChange,
+    onHasAnySymptomsChange,
+    onSymptomsChange,
+    onSymptomOnsetDateChange,
+  } = generateAoeListenerHooks(onResponseChange, responses);
+  const {
+    hasSymptoms,
+    symptoms,
+    showSymptomSelectionError,
+    showSymptomOnsetDateError,
+  } = generateSymptomAoeConstants(
+    responses,
+    hasAttemptedSubmit,
+    respiratorySymptomDefinitions
+  );
   return (
-    <div className="grid-col-auto" id="covid-aoe-form">
+    <div
+      className="grid-col-auto"
+      id={`covid-aoe-form-${testOrder.patient.internalId}`}
+    >
       <div className="grid-row">
         <div className="grid-col-auto">
           <RadioGroup
@@ -120,12 +79,11 @@ const CovidAoEForm = ({
       </div>
       {hasSymptoms === "YES" && (
         <>
-          <div className="grid-row grid-gap">
+          <div className="grid-row grid-gap" data-testid="symptom-date">
             <TextInput
-              data-testid="symptom-date"
               name={`symptom-date-${testOrder.internalId}`}
               type="date"
-              label="When did the patient's symptoms start?"
+              label={ONSET_DATE_LABEL}
               aria-label="Symptom onset date"
               min={formatDate(new Date("Jan 1, 2020"))}
               max={formatDate(moment().toDate())}
@@ -137,9 +95,19 @@ const CovidAoEForm = ({
                   : ""
               }
               onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
+              validationStatus={showSymptomOnsetDateError ? "error" : undefined}
+              errorMessage={
+                showSymptomOnsetDateError
+                  ? SYMPTOM_SUBQUESTION_ERROR
+                  : undefined
+              }
+              className={showSymptomOnsetDateError ? "margin-left-0" : ""}
             ></TextInput>
           </div>
-          <div className="grid-row grid-gap">
+          <div
+            className="grid-row grid-gap margin-left-0 "
+            data-testid={`symptom-selection-${testOrder.internalId}`}
+          >
             <Checkboxes
               boxes={respiratorySymptomDefinitions.map(({ label, value }) => ({
                 label,
@@ -149,6 +117,13 @@ const CovidAoEForm = ({
               legend="Select any symptoms the patient is experiencing"
               name={`symptoms-${testOrder.internalId}`}
               onChange={(e) => onSymptomsChange(e, symptoms)}
+              validationStatus={showSymptomSelectionError ? "error" : undefined}
+              errorMessage={
+                showSymptomSelectionError
+                  ? SYMPTOM_SUBQUESTION_ERROR
+                  : undefined
+              }
+              className={"padding-left-0"}
             />
           </div>
         </>

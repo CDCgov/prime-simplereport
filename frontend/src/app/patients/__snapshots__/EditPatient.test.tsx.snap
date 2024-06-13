@@ -2094,7 +2094,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     </div>
                   </div>
                   <button
-                    class="usa-button usa-button--unstyled margin-top-2"
+                    class="usa-button usa-button--unstyled margin-top-2 sr-add-another-button"
                     id="add-phone-number-btn"
                     type="button"
                   >
@@ -2213,7 +2213,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     </div>
                   </div>
                   <button
-                    class="usa-button usa-button--unstyled margin-top-2"
+                    class="usa-button usa-button--unstyled margin-top-2 sr-add-another-button"
                     id="add-email-btn"
                     type="button"
                   >

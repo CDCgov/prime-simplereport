@@ -17,13 +17,7 @@ import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 
-/**
- * The bare minimum required to link an authenticated identity to actions and data elsewhere in the
- * schema.
- *
- * <p>should we make a subclass for users who need authorization via roles and facilities? e.g.
- * AuthorizedUser extends ApiUser
- */
+/** An authenticated identity that may or may not be linked to authorization data. */
 @Entity
 @DynamicUpdate
 public class ApiUser extends EternalSystemManagedEntity implements PersonEntity {
@@ -37,11 +31,6 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   @Column(nullable = true)
   private Date lastSeen;
 
-  @OneToMany(cascade = ALL, mappedBy = "apiUser")
-  //  @OneToMany(orphanRemoval = false)
-  //  @JoinColumn(name = "api_user_id")
-  private Set<ApiUserRole> apiUserRoles;
-
   @ManyToMany
   @JoinTable(
       name = "api_user_facility",
@@ -50,6 +39,11 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   @Getter
   @Setter
   private Set<Facility> facilities;
+
+  @OneToMany(cascade = ALL, mappedBy = "apiUser")
+  //  @OneToMany(orphanRemoval = false)
+  //  @JoinColumn(name = "api_user_id")
+  private Set<ApiUserRole> apiUserRoles;
 
   protected ApiUser() {
     /* for hibernate */ }

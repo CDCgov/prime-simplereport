@@ -1,18 +1,20 @@
 plugins {
     id 'org.springframework.boot' version '3.1.7'
-    id 'org.liquibase.gradle' version '2.2.1'
+    id 'org.liquibase.gradle' version '2.2.2'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'java'
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube' version '5.0.0.4638'
-    id 'com.gorylenko.gradle-git-properties' version '2.4.1'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.2'
     id "com.diffplug.spotless" version "6.25.0"
 }
 
 group = 'gov.cdc.usds'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+}
 
 ext {
     set('springCloudVersion', "2022.0.4")
@@ -29,7 +31,7 @@ jar {
 
 dependencies {
     // core infrastructure
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.2.0'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-actuator'
     implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
@@ -56,15 +58,20 @@ dependencies {
      *
      * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 15 Feb 2024.
      */
-    implementation 'com.squareup.okio:okio:3.4.0'
+    implementation 'com.squareup.okio:okio:3.9.0'
     implementation 'org.springframework:spring-core:6.0.16'
+    implementation 'org.springframework.security:spring-security-core:6.1.8'
+    implementation 'org.springframework.security:spring-security-oauth2-client:6.1.7'
+
+    // non-pinned security dependencies
+    implementation 'org.owasp.encoder:encoder:1.2'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.5.2' // this provides additional types for JsonB and for ListArray types in Postgres
-    implementation 'org.liquibase:liquibase-core'
-    implementation 'org.postgresql:postgresql'
+    implementation 'org.liquibase:liquibase-core:4.27.0'
+    implementation 'org.postgresql:postgresql:42.6.1'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.28'
@@ -75,6 +82,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:3.0.5'
@@ -114,7 +122,7 @@ dependencies {
     // test/check dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'net.ttddyy:datasource-proxy:1.9'
+    testImplementation 'net.ttddyy:datasource-proxy:1.10'
 
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
@@ -134,7 +142,7 @@ dependencies {
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.10.4'
 
-    implementation 'commons-validator:commons-validator:1.8.0'
+    implementation 'commons-validator:commons-validator:1.9.0'
 
     // Needed for Liquibase Gradle Plugin 2.2.0
     liquibaseRuntime 'info.picocli:picocli:4.7.5'

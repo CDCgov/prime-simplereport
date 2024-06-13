@@ -398,7 +398,8 @@ export type MutationResendActivationEmailArgs = {
 };
 
 export type MutationResendToReportStreamArgs = {
-  fhirOnly: Scalars["Boolean"]["input"];
+  covidOnly?: InputMaybe<Scalars["Boolean"]["input"]>;
+  fhirOnly?: InputMaybe<Scalars["Boolean"]["input"]>;
   testEventIds: Array<Scalars["ID"]["input"]>;
 };
 

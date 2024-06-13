@@ -6,28 +6,24 @@ Object {
   "baseElement": <body>
     <div>
       <div
-        class="display-flex flex-justify"
+        class="display-flex flex-justify flex-align-center"
       >
         <h1
-          class="font-heading-lg margin-top-05 margin-bottom-0"
+          class="font-heading-lg margin-0"
           id="result-detail-title"
         >
           Result details
         </h1>
-        <div
-          class="sr-time-of-test-buttons"
+        <button
+          class="modal__close-button margin-top-0"
+          style="cursor: pointer;"
         >
-          <button
-            class="modal__close-button"
-            style="cursor: pointer;"
-          >
-            <img
-              alt="Close"
-              class="modal__close-img"
-              src="close.svg"
-            />
-          </button>
-        </div>
+          <img
+            alt="Close"
+            class="modal__close-img"
+            src="close.svg"
+          />
+        </button>
       </div>
       <div
         class="border-top border-base-lighter margin-x-neg-205 margin-top-1"
@@ -158,28 +154,24 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="display-flex flex-justify"
+      class="display-flex flex-justify flex-align-center"
     >
       <h1
-        class="font-heading-lg margin-top-05 margin-bottom-0"
+        class="font-heading-lg margin-0"
         id="result-detail-title"
       >
         Result details
       </h1>
-      <div
-        class="sr-time-of-test-buttons"
+      <button
+        class="modal__close-button margin-top-0"
+        style="cursor: pointer;"
       >
-        <button
-          class="modal__close-button"
-          style="cursor: pointer;"
-        >
-          <img
-            alt="Close"
-            class="modal__close-img"
-            src="close.svg"
-          />
-        </button>
-      </div>
+        <img
+          alt="Close"
+          class="modal__close-img"
+          src="close.svg"
+        />
+      </button>
     </div>
     <div
       class="border-top border-base-lighter margin-x-neg-205 margin-top-1"
@@ -367,28 +359,24 @@ Object {
   "baseElement": <body>
     <div>
       <div
-        class="display-flex flex-justify"
+        class="display-flex flex-justify flex-align-center"
       >
         <h1
-          class="font-heading-lg margin-top-05 margin-bottom-0"
+          class="font-heading-lg margin-0"
           id="result-detail-title"
         >
           Result details
         </h1>
-        <div
-          class="sr-time-of-test-buttons"
+        <button
+          class="modal__close-button margin-top-0"
+          style="cursor: pointer;"
         >
-          <button
-            class="modal__close-button"
-            style="cursor: pointer;"
-          >
-            <img
-              alt="Close"
-              class="modal__close-img"
-              src="close.svg"
-            />
-          </button>
-        </div>
+          <img
+            alt="Close"
+            class="modal__close-img"
+            src="close.svg"
+          />
+        </button>
       </div>
       <div
         class="border-top border-base-lighter margin-x-neg-205 margin-top-1"
@@ -567,28 +555,24 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="display-flex flex-justify"
+      class="display-flex flex-justify flex-align-center"
     >
       <h1
-        class="font-heading-lg margin-top-05 margin-bottom-0"
+        class="font-heading-lg margin-0"
         id="result-detail-title"
       >
         Result details
       </h1>
-      <div
-        class="sr-time-of-test-buttons"
+      <button
+        class="modal__close-button margin-top-0"
+        style="cursor: pointer;"
       >
-        <button
-          class="modal__close-button"
-          style="cursor: pointer;"
-        >
-          <img
-            alt="Close"
-            class="modal__close-img"
-            src="close.svg"
-          />
-        </button>
-      </div>
+        <img
+          alt="Close"
+          class="modal__close-img"
+          src="close.svg"
+        />
+      </button>
     </div>
     <div
       class="border-top border-base-lighter margin-x-neg-205 margin-top-1"
@@ -824,28 +808,24 @@ Object {
   "baseElement": <body>
     <div>
       <div
-        class="display-flex flex-justify"
+        class="display-flex flex-justify flex-align-center"
       >
         <h1
-          class="font-heading-lg margin-top-05 margin-bottom-0"
+          class="font-heading-lg margin-0"
           id="result-detail-title"
         >
           Result details
         </h1>
-        <div
-          class="sr-time-of-test-buttons"
+        <button
+          class="modal__close-button margin-top-0"
+          style="cursor: pointer;"
         >
-          <button
-            class="modal__close-button"
-            style="cursor: pointer;"
-          >
-            <img
-              alt="Close"
-              class="modal__close-img"
-              src="close.svg"
-            />
-          </button>
-        </div>
+          <img
+            alt="Close"
+            class="modal__close-img"
+            src="close.svg"
+          />
+        </button>
       </div>
       <div
         class="border-top border-base-lighter margin-x-neg-205 margin-top-1"
@@ -988,28 +968,24 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="display-flex flex-justify"
+      class="display-flex flex-justify flex-align-center"
     >
       <h1
-        class="font-heading-lg margin-top-05 margin-bottom-0"
+        class="font-heading-lg margin-0"
         id="result-detail-title"
       >
         Result details
       </h1>
-      <div
-        class="sr-time-of-test-buttons"
+      <button
+        class="modal__close-button margin-top-0"
+        style="cursor: pointer;"
       >
-        <button
-          class="modal__close-button"
-          style="cursor: pointer;"
-        >
-          <img
-            alt="Close"
-            class="modal__close-img"
-            src="close.svg"
-          />
-        </button>
-      </div>
+        <img
+          alt="Close"
+          class="modal__close-img"
+          src="close.svg"
+        />
+      </button>
     </div>
     <div
       class="border-top border-base-lighter margin-x-neg-205 margin-top-1"

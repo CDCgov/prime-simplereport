@@ -80,16 +80,13 @@ export async function handleReportStreamResponse(
       responseBody,
     );
 
-    const tagOverrides = {
-      "ai.operation.id": logging.context.traceContext.traceparent,
-    };
     logging.telemetry.trackEvent({
       name: `Queue: ${testEventQueue.name}. ReportStream Upload Failed`,
       properties: {
         status: reportingResponse.status,
         responseBody,
+        operationId: logging.context.traceContext.traceparent,
       },
-      tagOverrides,
     });
 
     if (reportingResponse.status === 400) {

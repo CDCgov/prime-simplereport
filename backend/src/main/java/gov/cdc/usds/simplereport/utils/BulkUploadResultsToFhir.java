@@ -66,6 +66,7 @@ import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.ServiceRequest;
+import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
@@ -382,9 +383,9 @@ public class BulkUploadResultsToFhir {
     } else {
       log.info(
           "No device found for model ("
-              + modelName
+              + Encode.forJava(modelName)
               + ") and test performed code ("
-              + testPerformedCode
+              + Encode.forJava(testPerformedCode)
               + ")");
     }
 

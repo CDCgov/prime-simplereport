@@ -5,6 +5,7 @@ mutation addUserToCurrentOrgOp(
     $suffix: String
     $email: String!
     $role: Role!
+    $facilities: [ID!]
 ){
     addUserToCurrentOrg(
         userInput: {
@@ -16,6 +17,7 @@ mutation addUserToCurrentOrgOp(
             }
             email: $email
             role: $role
+            facilities: $facilities
         }
     ) {
         id,
@@ -45,6 +47,7 @@ mutation addUserToCurrentOrgLegacyOp(
     $suffix: String
     $email: String!
     $role: Role!
+    $facilities: [ID!]
 ){
     addUserToCurrentOrg(
         userInput: {
@@ -54,6 +57,7 @@ mutation addUserToCurrentOrgLegacyOp(
             suffix: $suffix
             email: $email
             role: $role
+            facilities: $facilities
         }
     ) {
         id,
@@ -82,6 +86,7 @@ mutation addUserToCurrentOrgNovel(
     $name: NameInput
     $email: String!
     $role: Role!
+    $facilities: [ID!]
 ){
     addUserToCurrentOrg(
         userInput: {
@@ -90,6 +95,7 @@ mutation addUserToCurrentOrgNovel(
             lastName: $lastName
             email: $email
             role: $role
+            facilities: $facilities
         }
     ) {
         id,

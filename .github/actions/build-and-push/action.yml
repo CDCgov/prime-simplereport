@@ -19,7 +19,11 @@ runs:
     - name: Login to ACR
       shell: bash
       run: docker login ${{ inputs.acr_registry }} -u ${{ inputs.acr_username }} -p ${{ inputs.acr_password }}
-    - name: Build and push Docker images
+    - name: Build and push Backend image
       working-directory: ./backend
+      shell: bash
+      run: ./build_and_push.sh
+    - name: Build and push db client image
+      working-directory: ./ops/services/container_instances/db_client/image
       shell: bash
       run: ./build_and_push.sh

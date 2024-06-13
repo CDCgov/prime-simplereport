@@ -1,14 +1,17 @@
 import React from "react";
 
 import RadioGroup from "../../../commonComponents/RadioGroup";
-import {
-  getPregnancyResponses,
-  PregnancyCode,
-} from "../../../../patientApp/timeOfTest/constants";
-import { useTranslatedConstants } from "../../../constants";
+import { getPregnancyResponses } from "../../../../patientApp/timeOfTest/constants";
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
+import { useTranslatedConstants } from "../../../constants";
+
+import {
+  generateAoeListenerHooks,
+  generateSexualActivityAoeConstants,
+} from "./aoeUtils";
+import { SensitiveTopicsTooltipModal } from "./SensitiveTopicsTooltipModal";
 
 interface HIVAoeFormProps {
   testOrder: QueriedTestOrder;
@@ -25,35 +28,15 @@ export const HIVAoEForm = ({
   hasAttemptedSubmit,
   onResponseChange,
 }: HIVAoeFormProps) => {
-  const onPregnancyChange = (pregnancyCode: PregnancyCode) => {
-    onResponseChange({ ...responses, pregnancy: pregnancyCode });
-  };
+  const { onPregnancyChange, onSexualPartnerGenderChange } =
+    generateAoeListenerHooks(onResponseChange, responses);
 
   const { GENDER_IDENTITY_VALUES } = useTranslatedConstants();
-
-  const onSexualPartnerGenderChange = (selectedItems: string[]) => {
-    onResponseChange({
-      ...responses,
-      genderOfSexualPartners: selectedItems,
-    });
-  };
-
-  const isPregnancyFilled = !!responses.pregnancy;
-  const isGenderOfSexualPartnersAnswered =
-    !!responses.genderOfSexualPartners &&
-    responses.genderOfSexualPartners.length > 0;
-
-  const showPregnancyError = hasAttemptedSubmit && !isPregnancyFilled;
-  const showGenderOfSexualPartnersError =
-    hasAttemptedSubmit && !isGenderOfSexualPartnersAnswered;
-
-  const selectedGenders: string[] = [];
-  responses.genderOfSexualPartners?.forEach((g) => {
-    if (g) {
-      selectedGenders.push(g);
-    }
-  });
-
+  const {
+    showPregnancyError,
+    selectedGenders,
+    showGenderOfSexualPartnersError,
+  } = generateSexualActivityAoeConstants(responses, hasAttemptedSubmit);
   return (
     <div
       className="grid-col"
@@ -76,17 +59,28 @@ export const HIVAoEForm = ({
         </div>
       </div>
       <div className="grid-row">
-        <div className="tablet:grid-col-6">
+        <div className="tablet:grid-col-12">
           <MultiSelect
             name={`sexual-partner-gender-${testOrder.internalId}`}
             options={GENDER_IDENTITY_VALUES}
             onChange={onSexualPartnerGenderChange}
             initialSelectedValues={selectedGenders}
-            label={"What is the gender of their sexual partners?"}
+            label={
+              <>
+                What is the gender of their sexual partners?{" "}
+                <span className={"text-base-dark"}>
+                  (Select all that apply.)
+                </span>
+              </>
+            }
+            dropdownClassName={"width-mobile-lg"}
+            labelClassName={"multi-select-dropdown"}
             required={true}
             validationStatus={
               showGenderOfSexualPartnersError ? "error" : undefined
             }
+            hintText={<SensitiveTopicsTooltipModal />}
+            hintTextClassName={""}
             errorMessage={
               showGenderOfSexualPartnersError &&
               "Please answer this required question."

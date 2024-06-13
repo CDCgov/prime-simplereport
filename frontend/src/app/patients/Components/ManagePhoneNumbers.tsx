@@ -293,7 +293,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         <div>
           {generatePhoneNumberRows()}
           <Button
-            className="margin-top-2"
+            className="margin-top-2 sr-add-another-button"
             onClick={onAddPhoneNumber}
             variant="unstyled"
             label={t("patient.form.contact.addNumber")}

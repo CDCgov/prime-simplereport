@@ -285,14 +285,19 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @WithSimpleReportSiteAdminUser
   void getAllUsersByOrganization_success() {
     Organization org = _dataFactory.saveValidOrganization();
-    _dataFactory.createValidApiUser("allfacilities@example.com", org);
-    _dataFactory.createValidApiUser("nofacilities@example.com", org);
-    UserInfo userToBeDeleted = _dataFactory.createValidApiUser("somefacilities@example.com", org);
+    Facility facility = _dataFactory.createValidFacility(org);
+    _dataFactory.createValidApiUser("allfacilities@example.com", org, Role.USER, Set.of(facility));
+    _dataFactory.createValidApiUser("nofacilities@example.com", org, Role.USER, Set.of(facility));
+    UserInfo userToBeDeleted =
+        _dataFactory.createValidApiUser(
+            "somefacilities@example.com", org, Role.USER, Set.of(facility));
     _service.setIsDeleted(userToBeDeleted.getInternalId(), true);
 
     Organization differentOrg =
         _dataFactory.saveOrganization("other org", "k12", "OTHER_ORG", true);
-    _dataFactory.createValidApiUser("otherorgfacilities@example.com", differentOrg);
+    Facility differentFacility = _dataFactory.createValidFacility(differentOrg);
+    _dataFactory.createValidApiUser(
+        "otherorgfacilities@example.com", differentOrg, Role.USER, Set.of(differentFacility));
 
     List<ApiUser> activeUsers = _service.getAllUsersByOrganization(org);
     assertEquals(3, activeUsers.size());
@@ -498,7 +503,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     String orgToMoveExternalId = orgToTestMovementTo.getExternalId();
 
     _service.updateUserPrivilegesAndGroupAccess(
-        email, orgToMoveExternalId, true, List.of(), OrganizationRole.ADMIN);
+        email, orgToMoveExternalId, true, List.of(), Role.ADMIN);
     verify(_oktaRepo, times(1))
         .updateUserPrivilegesAndGroupAccess(
             email, orgToTestMovementTo, Set.of(), OrganizationRole.ADMIN, true);
@@ -518,7 +523,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             PrivilegeUpdateFacilityAccessException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
-                    email, moveOrgExternalId, false, emptyList, OrganizationRole.USER));
+                    email, moveOrgExternalId, false, emptyList, Role.USER));
     assertEquals(PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR, caught.getMessage());
 
     PrivilegeUpdateFacilityAccessException caught2 =
@@ -526,7 +531,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             PrivilegeUpdateFacilityAccessException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
-                    email, moveOrgExternalId, false, OrganizationRole.USER));
+                    email, moveOrgExternalId, false, Role.USER));
     assertEquals(PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR, caught2.getMessage());
   }
 
@@ -549,11 +554,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             UnidentifiedFacilityException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
-                    email,
-                    moveOrgExternalId,
-                    false,
-                    facilityListThatShouldThrowId,
-                    OrganizationRole.USER));
+                    email, moveOrgExternalId, false, facilityListThatShouldThrowId, Role.USER));
     String expectedError =
         "Facilities with id(s) "
             + facilityListThatShouldThrowId

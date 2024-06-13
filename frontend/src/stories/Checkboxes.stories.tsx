@@ -15,35 +15,44 @@ export default {
     label: "Radio button",
     legend: "Fruit",
     errorMessage: "Helpful error message",
-    boxes: [
-      {
-        label: "Apple",
-        value: "apple",
-        checked: false,
-      },
-      {
-        label: "Orange",
-        value: "orange",
-        checked: false,
-      },
-      {
-        label: "Pear",
-        value: "pear",
-        checked: false,
-      },
-    ],
   },
 } as Meta;
 
 type Props = React.ComponentProps<typeof Checkboxes>;
 
 const Template: StoryFn<Props> = (args) => {
-  const [fruits, setFruits] = useState({});
+  const [fruits, setFruits] = useState({
+    apple: false,
+    orange: false,
+    pear: false,
+  });
+  const boxes = [
+    {
+      label: "Apple",
+      value: "apple",
+      checked: fruits.apple,
+    },
+    {
+      label: "Orange",
+      value: "orange",
+      checked: fruits.orange,
+    },
+    {
+      label: "Pear",
+      value: "pear",
+      checked: fruits.pear,
+    },
+  ];
+
+  const checkboxArgs = {
+    ...args,
+    ...{ boxes },
+  };
 
   return (
     <div className="grid-container margin-top-2">
       <Checkboxes
-        {...args}
+        {...checkboxArgs}
         onChange={(e) =>
           setFruits({ ...fruits, [e.target.value]: e.target.checked })
         }

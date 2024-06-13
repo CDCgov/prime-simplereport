@@ -18,18 +18,32 @@ const driver = new Builder()
   .forBrowser("chrome")
   .setChromeOptions(options.addArguments("--headless=new"))
   .build();
+
+const TIMEOUT_DURATION_MS = 10 * 1000;
+
 driver
   .navigate()
   .to(`${appUrl}`)
-  .then(() => {
-    let value = driver.findElement({ id: "root" }).getText();
-    return value;
+  .then(async () => {
+    await driver.sleep(TIMEOUT_DURATION_MS);
+    return driver.findElement({ id: "root" }).getText();
   })
   .then((value) => {
     driver.quit();
     return value;
   })
   .then((value) => {
-    if (value.includes("success")) process.exit(0);
-    process.exit(1);
+    if (value.includes("success")) {
+      console.log(`Smoke test returned success status for ${appUrl}`);
+      process.exitCode = 0;
+      return;
+    }
+    if (value.includes("failure")) {
+      console.log(`Smoke test returned failure status for ${appUrl}`);
+      process.exitCode = 1;
+      return;
+    }
+    console.log("Smoke test encountered unknown failure.");
+    console.log(`Root element value was: ${value}`);
+    process.exitCode = 1;
   });

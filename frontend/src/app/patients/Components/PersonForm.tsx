@@ -52,12 +52,16 @@ export enum PersonFormView {
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
-  savePerson: (person: Nullable<PersonFormData>, startTest?: boolean) => void;
+  savePerson: (
+    person: Nullable<PersonFormData>,
+    startTest: boolean,
+    formChanged: boolean
+  ) => void;
   onBlur?: (person: Nullable<PersonFormData>) => void;
   hideFacilitySelect?: boolean;
   getHeader?: (
     person: Nullable<PersonFormData>,
-    onSave: (startTest?: boolean) => void,
+    onSave: (startTest?: boolean, formChanged?: boolean) => void,
     formChanged: boolean
   ) => React.ReactNode;
   getFooter: (
@@ -357,10 +361,10 @@ const PersonForm = (props: Props) => {
     person.phoneNumbers = person.phoneNumbers
       ? person.phoneNumbers.filter((pn) => pn.number && pn.type)
       : person.phoneNumbers;
+    props.savePerson(person, shouldStartTest, formChanged);
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
-    props.savePerson(person, shouldStartTest);
   };
 
   const commonInputProps = {
