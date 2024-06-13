@@ -6,6 +6,7 @@ mutation UpdateAOE(
   $syphilisHistory: String
   $noSymptoms: Boolean
   $genderOfSexualPartners: [String]
+  $testResultDelivery: TestResultDeliveryPreference
 ) {
   updateAoeQuestions(
     patientId: $patientId
@@ -15,5 +16,6 @@ mutation UpdateAOE(
     noSymptoms: $noSymptoms
     symptomOnset: $symptomOnset
     genderOfSexualPartners: $genderOfSexualPartners
+    testResultDelivery: $testResultDelivery
   )
 }
