@@ -455,7 +455,7 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
-  public void updateTimeOfTestQuestions(
+  public void updateAoeQuestions(
       UUID patientId,
       String pregnancy,
       String syphilisHistory,
