@@ -1,6 +1,6 @@
 import { StoryFn, Meta } from "@storybook/react";
 
-import Required from "../app/commonComponents/Required";
+import Required from "./Required";
 
 export default {
   title: "Components/Form controls/Required",

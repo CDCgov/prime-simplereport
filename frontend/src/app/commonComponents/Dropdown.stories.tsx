@@ -1,7 +1,7 @@
 import { StoryFn, Meta } from "@storybook/react";
 import { useState } from "react";
 
-import Dropdown from "../app/commonComponents/Dropdown";
+import Dropdown from "./Dropdown";
 
 const fruits = ["Apple", "Orange", "Pear"];
 

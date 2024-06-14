@@ -27,7 +27,7 @@ const element = (
 );
 
 export default {
-  title: "App/Add Patient",
+  title: "App/Patients/Add Patient",
   parameters: {
     msw: getMocks("AddPatient", "PatientExists"),
   },

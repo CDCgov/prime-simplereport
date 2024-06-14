@@ -1,6 +1,6 @@
 import { Meta } from "@storybook/react";
 
-import RequiredMessage from "../app/commonComponents/RequiredMessage";
+import RequiredMessage from "./RequiredMessage";
 
 export default {
   title: "Components/Form controls/Required message",

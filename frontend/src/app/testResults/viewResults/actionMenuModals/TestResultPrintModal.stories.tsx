@@ -7,7 +7,7 @@ import TestResultPrintModal, {
 } from "./TestResultPrintModal";
 
 export default {
-  title: "Print test results",
+  title: "App/Results/Print modal",
   component: TestResultPrintModal,
   parameters: {
     layout: "fullscreen",

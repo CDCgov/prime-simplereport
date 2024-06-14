@@ -4,7 +4,7 @@ import { ComponentProps } from "react";
 import { ManageSelfRegistrationLinks } from "./ManageSelfRegistrationLinks";
 
 export default {
-  title: "Org Admin/Settings/Self-registration",
+  title: "App/Settings/Self-registration",
   component: ManageSelfRegistrationLinks,
   argTypes: {
     isNewFeature: { control: "boolean" },

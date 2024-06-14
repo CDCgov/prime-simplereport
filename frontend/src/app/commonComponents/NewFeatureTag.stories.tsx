@@ -1,9 +1,6 @@
 import { StoryFn, Meta } from "@storybook/react";
 
-import {
-  featureList,
-  NewFeatureTag,
-} from "../app/commonComponents/NewFeatureTag";
+import { featureList, NewFeatureTag } from "./NewFeatureTag";
 
 export default {
   title: "Components/NewFeatureTag",

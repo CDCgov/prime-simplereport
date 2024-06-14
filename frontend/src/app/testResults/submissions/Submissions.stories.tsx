@@ -19,7 +19,7 @@ const store = mockStore({
 });
 
 export default {
-  title: "App/Test results/Submissions",
+  title: "App/Results/Upload history",
   component: Submissions,
   argTypes: {},
   args: {},
