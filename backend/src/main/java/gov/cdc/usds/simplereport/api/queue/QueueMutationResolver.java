@@ -101,7 +101,34 @@ public class QueueMutationResolver {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
-    testOrderService.updateTimeOfTestQuestions(
+    testOrderService.updateAoeQuestions(
+        patientId,
+        pregnancy,
+        syphilisHistory,
+        symptomsMap,
+        symptomOnset,
+        noSymptoms,
+        genderOfSexualPartners);
+
+    if (testResultDelivery != null) {
+      personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
+    }
+  }
+
+  @MutationMapping
+  public void updateAoeQuestions(
+      @Argument UUID patientId,
+      @Argument String pregnancy,
+      @Argument String syphilisHistory,
+      @Argument String symptoms,
+      @Argument LocalDate symptomOnset,
+      @Argument Boolean noSymptoms,
+      @Argument List<String> genderOfSexualPartners,
+      @Argument TestResultDeliveryPreference testResultDelivery) {
+
+    Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
+
+    testOrderService.updateAoeQuestions(
         patientId,
         pregnancy,
         syphilisHistory,
