@@ -1,7 +1,9 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static jakarta.persistence.CascadeType.ALL;
+
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -27,8 +29,11 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   @Column(nullable = true)
   private Date lastSeen;
 
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "apiUser", orphanRemoval = true)
+  @OneToMany(cascade = ALL, mappedBy = "apiUser", orphanRemoval = true)
   private Set<ApiUserFacility> facilityAssignments = new HashSet<>();
+
+  @OneToMany(cascade = ALL, mappedBy = "apiUser", orphanRemoval = true)
+  private Set<ApiUserRole> apiUserRoles = new HashSet<>();
 
   protected ApiUser() {
     /* for hibernate */ }
@@ -76,6 +81,24 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
       auf.setApiUser(this);
       auf.setFacility(f);
       this.facilityAssignments.add(auf);
+    }
+  }
+
+  public void setRoles(Set<OrganizationRole> newOrgRoles, Organization org) {
+    this.apiUserRoles.clear();
+    for (OrganizationRole o : newOrgRoles) {
+      if (o.equals(OrganizationRole.NO_ACCESS)) {
+        // the NO_ACCESS role is only relevant for the Okta implementation of auth and we don't want
+        // to persist it
+        // once we migrate off of Okta for role management, we should be able to deprecate the enum
+        // value completely
+        continue;
+      }
+      ApiUserRole aur = new ApiUserRole();
+      aur.setApiUser(this);
+      aur.setOrganization(org);
+      aur.setRole(o);
+      this.apiUserRoles.add(aur);
     }
   }
 }
