@@ -1,6 +1,6 @@
 import { StoryFn, Meta } from "@storybook/react";
 
-import Optional from "../app/commonComponents/Optional";
+import Optional from "./Optional";
 
 export default {
   title: "Components/Form controls/Optional",

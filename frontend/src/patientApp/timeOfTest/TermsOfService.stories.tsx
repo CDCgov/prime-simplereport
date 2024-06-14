@@ -9,7 +9,7 @@ import TermsOfService from "./TermsOfService";
 
 const mockStore = createMockStore([]);
 export default {
-  title: "App/Test Results/Step 1: Terms of Service",
+  title: "App/PXP/Step 1: Terms of Service",
   component: TermsOfService,
   argTypes: {},
 } as Meta;

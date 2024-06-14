@@ -1,7 +1,7 @@
 import { StoryFn, Meta } from "@storybook/react";
 import React, { useState } from "react";
 
-import RadioGroup from "../app/commonComponents/RadioGroup";
+import RadioGroup from "./RadioGroup";
 
 export default {
   title: "Components/Form controls/Radio buttons",

@@ -1,9 +1,9 @@
 import { Meta } from "@storybook/react";
 
-import USAGovBanner from "../app/commonComponents/USAGovBanner";
+import USAGovBanner from "./USAGovBanner";
 
 export default {
-  title: "Components/Banner",
+  title: "Components/USA Gov Banner",
   component: USAGovBanner,
 } as Meta;
 

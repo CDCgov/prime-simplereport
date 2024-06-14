@@ -1,6 +1,6 @@
 import { StoryFn, Meta } from "@storybook/react";
 
-import { TextInput } from "../app/commonComponents/TextInput";
+import { TextInput } from "./TextInput";
 
 export default {
   title: "Components/Form controls/Text input",

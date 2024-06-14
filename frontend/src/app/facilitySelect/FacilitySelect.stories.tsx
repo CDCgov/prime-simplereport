@@ -2,9 +2,7 @@ import { Meta, StoryFn } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
-import FacilitySelect, {
-  FacilitySelectProps,
-} from "../app/facilitySelect/FacilitySelect";
+import FacilitySelect, { FacilitySelectProps } from "./FacilitySelect";
 
 export default {
   title: "App/Facility select",
