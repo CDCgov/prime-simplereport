@@ -260,6 +260,12 @@ public class CsvValidatorUtils {
         + " column. This is required because the row contains a positive HIV test result.";
   }
 
+  private static String getRequiredSyphilisAoeValuesErrorMessage(String columnName) {
+    return "File is missing data in the "
+        + columnName
+        + " column. This is required because the row contains a positive Syphilis test result.";
+  }
+
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
   }
@@ -670,6 +676,51 @@ public class CsvValidatorUtils {
               .fieldRequired(pregnant.isRequired())
               .build());
     }
+    return errors;
+  }
+
+  private static FeedbackMessage buildSyphilisMissingDataFeedbackMessage(ValueOrError field) {
+    return FeedbackMessage.builder()
+        .scope(ITEM_SCOPE)
+        .fieldHeader(field.getHeader())
+        .source(ResultUploadErrorSource.SIMPLE_REPORT)
+        .message(getRequiredSyphilisAoeValuesErrorMessage(field.getHeader()))
+        .errorType(ResultUploadErrorType.MISSING_DATA)
+        .fieldRequired(field.isRequired())
+        .build();
+  }
+
+  public static List<FeedbackMessage> validatePositiveSyphilisRequiredAOEFields(
+      ValueOrError testResult,
+      ValueOrError gendersOfSexualPartners,
+      ValueOrError pregnant,
+      ValueOrError previousSyphilisDiagnosis,
+      ValueOrError symptomaticForDisease) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    // includes SNOMED values for positive and detected
+    Set<String> positiveTestResultValues = Set.of("positive", "detected", "260373001", "10828004");
+    if (!positiveTestResultValues.contains(testResult.getValue().toLowerCase())) {
+      return errors;
+    }
+
+    if (gendersOfSexualPartners.getValue() == null
+        || gendersOfSexualPartners.getValue().isBlank()) {
+      errors.add(buildSyphilisMissingDataFeedbackMessage(gendersOfSexualPartners));
+    }
+
+    if (pregnant.getValue() == null || pregnant.getValue().isBlank()) {
+      errors.add(buildSyphilisMissingDataFeedbackMessage(pregnant));
+    }
+
+    if (previousSyphilisDiagnosis.getValue() == null
+        || previousSyphilisDiagnosis.getValue().isBlank()) {
+      errors.add(buildSyphilisMissingDataFeedbackMessage(previousSyphilisDiagnosis));
+    }
+
+    if (symptomaticForDisease.getValue() == null || symptomaticForDisease.getValue().isBlank()) {
+      errors.add(buildSyphilisMissingDataFeedbackMessage(symptomaticForDisease));
+    }
+
     return errors;
   }
 

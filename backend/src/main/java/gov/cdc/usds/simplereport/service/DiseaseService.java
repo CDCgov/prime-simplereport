@@ -23,6 +23,7 @@ public class DiseaseService {
   public static final String FLU_RNA_NAME = "Flu RNA";
   public static final String RSV_NAME = "RSV";
   public static final String HIV_NAME = "HIV";
+  public static final String SYPHILIS_NAME = "Syphilis";
 
   private final DiseaseCacheService diseaseCacheService;
 
