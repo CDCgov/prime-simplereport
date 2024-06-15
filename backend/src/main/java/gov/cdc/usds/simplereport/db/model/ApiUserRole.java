@@ -12,7 +12,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity(name = "api_user_role")
-public class ApiUserRole extends IdentifiedEntity {
+public class ApiUserRole extends AuditedEntity {
 
   @ManyToOne
   @JoinColumn(name = "api_user_id", nullable = false)

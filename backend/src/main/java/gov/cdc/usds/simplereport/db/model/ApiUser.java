@@ -89,9 +89,8 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     for (OrganizationRole o : newOrgRoles) {
       if (o.equals(OrganizationRole.NO_ACCESS)) {
         // the NO_ACCESS role is only relevant for the Okta implementation of auth and we don't want
-        // to persist it
-        // once we migrate off of Okta for role management, we should be able to deprecate the enum
-        // value completely
+        // to persist it. once we migrate off of Okta for role management, we should be able to
+        // deprecate the enum value completely
         continue;
       }
       ApiUserRole aur = new ApiUserRole();
