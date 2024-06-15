@@ -12,7 +12,7 @@ import { DevicesMap } from "../TestCardForm/types";
 import { TestCard, TestCardProps } from "./TestCard";
 
 export default {
-  title: "App/Test Queue/Test Card",
+  title: "App/Queue/Test Card",
   component: TestCard,
   argTypes: {},
   args: {

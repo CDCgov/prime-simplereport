@@ -4,7 +4,7 @@ import { ComponentProps } from "react";
 import SingleFileInput from "./SingleFileInput";
 
 export default {
-  title: "Components/Single File Input",
+  title: "Components/Form controls/Single File Input",
   component: SingleFileInput,
   args: {
     id: "mySingleFileInput",

@@ -8,7 +8,7 @@ import { Analytics } from "./Analytics";
 
 const mockStore = createMockStore([]);
 export default {
-  title: "App/Analytics/COVID-19 testing data",
+  title: "App/Dashboard/COVID-19 testing data",
   component: Analytics,
   argTypes: {},
   parameters: {

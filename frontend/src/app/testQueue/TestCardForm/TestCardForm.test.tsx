@@ -3,8 +3,6 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
-
-import TestCardForm, { TestCardFormProps } from "./TestCardForm";
 import {
   asymptomaticTestOrderInfo,
   covidDeviceId,
@@ -13,14 +11,16 @@ import {
   facilityInfo,
   fluDeviceId,
   fluDeviceName,
+  generateSubmitQueueMock,
   hivDeviceId,
   hivDeviceName,
   multiplexDeviceId,
   multiplexDeviceName,
   syphilisDeviceId,
   syphilisDeviceName,
-} from "./testUtils/testConstants";
-import { generateSubmitQueueMock } from "./testUtils/submissionMocks";
+} from "../testCardTestConstants";
+
+import TestCardForm, { TestCardFormProps } from "./TestCardForm";
 
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -273,42 +273,6 @@ describe("TestCardForm", () => {
       });
 
       // Submit to start form validation
-      await user.click(screen.getByText("Where results are sent"));
-
-      expect(
-        screen.getByText("Where are SimpleReport test results sent?")
-      ).toBeInTheDocument();
-
-      await user.click(screen.getByText("Got it"));
-      expect(
-        screen.queryByText("Where are SimpleReport test results sent?")
-      ).not.toBeInTheDocument();
-    });
-
-    it("shows where tests results are sent modal", async () => {
-      const props = {
-        ...testProps,
-        testOrder: {
-          ...testProps.testOrder,
-          results: [{ testResult: "POSITIVE", disease: { name: "COVID-19" } }],
-        },
-      };
-
-      const { user } = await renderTestCardForm({
-        props,
-        mocks: [
-          generateSubmitQueueMock(
-            MULTIPLEX_DISEASES.COVID_19,
-            TEST_RESULTS.POSITIVE,
-            {
-              device: {
-                deviceId: covidDeviceId,
-              },
-            }
-          ),
-        ],
-      });
-
       await user.click(screen.getByText("Where results are sent"));
 
       expect(

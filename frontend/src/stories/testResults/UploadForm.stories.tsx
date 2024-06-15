@@ -8,7 +8,7 @@ import DiseaseSpecificUploadContainer from "../../app/testResults/uploads/Diseas
 import AgnosticUploadContainer from "../../app/testResults/uploads/AgnosticUploadContainer";
 
 export default {
-  title: "App/Test results/Upload CSV",
+  title: "App/Results/Bulk upload form",
   argTypes: {},
   args: {},
   decorators: [

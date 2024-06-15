@@ -1,10 +1,11 @@
+import { devicesMap } from "../testCardTestConstants";
+
 import { TestFormState } from "./TestCardFormReducer";
 import {
   AOEFormOption,
   AoeValidationErrorMessages,
   generateAoeValidationState,
 } from "./TestCardForm.utils";
-import { devicesMap } from "./testUtils/testConstants";
 
 describe("TestCardForm.utils", () => {
   describe("areAOEAnswersComplete", () => {

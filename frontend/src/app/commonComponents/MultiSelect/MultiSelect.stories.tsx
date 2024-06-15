@@ -5,7 +5,7 @@ import { MultiSelectDropdownOption } from "./MultiSelectDropdown/MultiSelectDrop
 import MultiSelect, { MultiSelectProps } from "./MultiSelect";
 
 export default {
-  title: "MultiSelect",
+  title: "Components/Form controls/MultiSelect",
   component: MultiSelect,
   argTypes: {},
   args: {

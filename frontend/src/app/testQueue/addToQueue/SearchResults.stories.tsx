@@ -27,7 +27,7 @@ const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
 }) => <MemoryRouter>{children}</MemoryRouter>;
 
 export default {
-  title: "Search Results",
+  title: "App/Queue/Patient Search Results",
   component: SearchResults,
   argTypes: {},
 } as Meta;
