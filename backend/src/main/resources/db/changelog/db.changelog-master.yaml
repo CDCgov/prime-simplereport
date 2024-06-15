@@ -5571,6 +5571,8 @@ databaseChangeLog:
         - sql:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};
       rollback:
+        - dropTable:
+            tableName: api_user_role
         - createTable:
             tableName: role
             remarks: named references to a OrganizationRole enum
