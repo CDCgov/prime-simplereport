@@ -400,7 +400,7 @@ class DemoOktaRepositoryTest {
   }
 
   @Test
-  void deleteOrgAndFacilities() {
+  void deleteOrg() {
     _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
     _repo.createUser(
         BRAD,
@@ -414,6 +414,9 @@ class DemoOktaRepositoryTest {
 
     _repo.deleteOrganization(ABC);
 
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> _repo.createFacility(getFacility(UUID.randomUUID(), ABC)));
     assertThrows(
         IllegalGraphqlArgumentException.class, () -> _repo.getAllUsersForOrganization(ABC));
   }

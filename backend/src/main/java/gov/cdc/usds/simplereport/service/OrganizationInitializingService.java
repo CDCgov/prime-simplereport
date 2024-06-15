@@ -317,6 +317,7 @@ public class OrganizationInitializingService {
             _orgRepo
                 .findByExternalId(authorization.getOrganizationExternalId())
                 .orElseThrow(MisconfiguredUserException::new);
+        apiUser.setRoles(roles, org);
         log.info(
             "User={} will have roles={} in organization={}",
             identity.getUsername(),

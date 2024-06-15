@@ -1,16 +1,17 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static jakarta.persistence.CascadeType.ALL;
+
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.stream.Collectors;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 
@@ -28,14 +29,11 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   @Column(nullable = true)
   private Date lastSeen;
 
-  @ManyToMany
-  @JoinTable(
-      name = "api_user_facility",
-      joinColumns = @JoinColumn(name = "api_user_id"),
-      inverseJoinColumns = @JoinColumn(name = "facility_id"))
-  @Getter
-  @Setter
-  private Set<Facility> facilities;
+  @OneToMany(cascade = ALL, mappedBy = "apiUser", orphanRemoval = true)
+  private Set<ApiUserFacility> facilityAssignments = new HashSet<>();
+
+  @OneToMany(cascade = ALL, mappedBy = "apiUser", orphanRemoval = true)
+  private Set<ApiUserRole> apiUserRoles = new HashSet<>();
 
   protected ApiUser() {
     /* for hibernate */ }
@@ -68,5 +66,38 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
 
   public void setNameInfo(PersonName name) {
     nameInfo = name;
+  }
+
+  public Set<Facility> getFacilities() {
+    return this.facilityAssignments.stream()
+        .map(ApiUserFacility::getFacility)
+        .collect(Collectors.toSet());
+  }
+
+  public void setFacilities(Set<Facility> facilities) {
+    this.facilityAssignments.clear();
+    for (Facility f : facilities) {
+      ApiUserFacility auf = new ApiUserFacility();
+      auf.setApiUser(this);
+      auf.setFacility(f);
+      this.facilityAssignments.add(auf);
+    }
+  }
+
+  public void setRoles(Set<OrganizationRole> newOrgRoles, Organization org) {
+    this.apiUserRoles.clear();
+    for (OrganizationRole o : newOrgRoles) {
+      if (o.equals(OrganizationRole.NO_ACCESS)) {
+        // the NO_ACCESS role is only relevant for the Okta implementation of auth and we don't want
+        // to persist it. once we migrate off of Okta for role management, we should be able to
+        // deprecate the enum value completely
+        continue;
+      }
+      ApiUserRole aur = new ApiUserRole();
+      aur.setApiUser(this);
+      aur.setOrganization(org);
+      aur.setRole(o);
+      this.apiUserRoles.add(aur);
+    }
   }
 }
