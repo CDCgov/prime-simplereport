@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TE
 import static gov.cdc.usds.simplereport.config.CachingConfig.HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SNOMED_TO_SPECIMEN_NAME_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_TO_SNOMED_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.SYPHILIS_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -148,6 +149,12 @@ public class ResultsUploaderCachingService {
   public Set<String> getHivEquipmentModelAndTestPerformedCodeSet() {
     log.info("generating hivEquipmentModelAndTestPerformedCodeSet cache");
     return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.HIV_NAME);
+  }
+
+  @Cacheable(SYPHILIS_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  public Set<String> getSyphilisEquipmentModelAndTestPerformedCodeSet() {
+    log.info("generating syphilisEquipmentModelAndTestPerformedCodeSet cache");
+    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.SYPHILIS_NAME);
   }
 
   @Cacheable(COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)

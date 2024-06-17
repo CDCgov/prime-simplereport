@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_STREET;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_STREET2;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_ZIP_CODE;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.SYPHILIS_HISTORY;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_CITY;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_NAME;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_PHONE_NUMBER;
@@ -305,6 +306,7 @@ public class TestResultUploadService {
     row.put(DATE_RESULT_RELEASED_COLUMN_NAME, dateResultReleased.toOffsetDateTime().toString());
 
     row.remove(GENDERS_OF_SEXUAL_PARTNERS);
+    row.remove(SYPHILIS_HISTORY);
 
     return row;
   }

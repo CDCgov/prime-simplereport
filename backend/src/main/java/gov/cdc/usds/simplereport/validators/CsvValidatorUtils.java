@@ -72,6 +72,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 public class CsvValidatorUtils {
 
@@ -138,6 +139,12 @@ public class CsvValidatorUtils {
   private static final String NOT_HISPANIC_LITERAL = "not hispanic or latino";
   private static final String NOT_HISPANIC_CODE = "2186-5";
   private static final String NOT_HISPANIC_DB_VALUE = "not_hispanic";
+  private static final String POSITIVE_LITERAL = "positive";
+  private static final String POSITIVE_CODE = "10828004";
+  private static final String DETECTED_LITERAL = "detected";
+  private static final String DETECTED_CODE = "260373001";
+  private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
+      Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_CODE, DETECTED_CODE);
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "m", MALE_LITERAL,
@@ -176,7 +183,7 @@ public class CsvValidatorUtils {
           "n", "no",
           "u", UNKNOWN_CODE);
   private static final Set<String> TEST_RESULT_VALUES =
-      Set.of("positive", "negative", "not detected", "detected", "invalid result");
+      Set.of(POSITIVE_LITERAL, "negative", "not detected", DETECTED_LITERAL, "invalid result");
 
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
@@ -254,10 +261,13 @@ public class CsvValidatorUtils {
     return "File is missing data in the " + columnName + " column.";
   }
 
-  private static String getRequiredHivAoeValuesErrorMessage(String columnName) {
+  private static String getPositiveResultRequiredValueErrorMessage(
+      String columnName, String diseaseName) {
     return "File is missing data in the "
         + columnName
-        + " column. This is required because the row contains a positive HIV test result.";
+        + " column. This is required because the row contains a positive "
+        + diseaseName
+        + " test result.";
   }
 
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
@@ -637,39 +647,35 @@ public class CsvValidatorUtils {
     return errors;
   }
 
-  public static List<FeedbackMessage> validatePositiveHIVRequiredAOEFields(
-      ValueOrError testResult, ValueOrError gendersOfSexualPartners, ValueOrError pregnant) {
+  public static List<FeedbackMessage> validateRequiredFieldsForPositiveResult(
+      ValueOrError testResult, String diseaseName, List<ValueOrError> fields) {
     List<FeedbackMessage> errors = new ArrayList<>();
-    // includes SNOMED values for positive and detected
-    Set<String> positiveTestResultValues = Set.of("positive", "detected", "260373001", "10828004");
-    if (!positiveTestResultValues.contains(testResult.getValue().toLowerCase())) {
+
+    if (testResult.getValue() == null) {
+      // if test result is null, then it should already give an error when validating required
+      // fields
       return errors;
     }
 
-    if (gendersOfSexualPartners.getValue() == null
-        || gendersOfSexualPartners.getValue().isBlank()) {
-      errors.add(
-          FeedbackMessage.builder()
-              .scope(ITEM_SCOPE)
-              .fieldHeader(gendersOfSexualPartners.getHeader())
-              .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(getRequiredHivAoeValuesErrorMessage(gendersOfSexualPartners.getHeader()))
-              .errorType(ResultUploadErrorType.MISSING_DATA)
-              .fieldRequired(gendersOfSexualPartners.isRequired())
-              .build());
+    if (!POSITIVE_TEST_RESULT_VALUES.contains(testResult.getValue().toLowerCase())) {
+      return errors;
     }
 
-    if (pregnant.getValue() == null || pregnant.getValue().isBlank()) {
-      errors.add(
-          FeedbackMessage.builder()
-              .scope(ITEM_SCOPE)
-              .fieldHeader(pregnant.getHeader())
-              .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(getRequiredHivAoeValuesErrorMessage(pregnant.getHeader()))
-              .errorType(ResultUploadErrorType.MISSING_DATA)
-              .fieldRequired(pregnant.isRequired())
-              .build());
-    }
+    fields.forEach(
+        field -> {
+          if (StringUtils.isBlank(field.getValue())) {
+            errors.add(
+                FeedbackMessage.builder()
+                    .scope(ITEM_SCOPE)
+                    .fieldHeader(field.getHeader())
+                    .source(ResultUploadErrorSource.SIMPLE_REPORT)
+                    .message(
+                        getPositiveResultRequiredValueErrorMessage(field.getHeader(), diseaseName))
+                    .errorType(ResultUploadErrorType.MISSING_DATA)
+                    .fieldRequired(field.isRequired())
+                    .build());
+          }
+        });
     return errors;
   }
 

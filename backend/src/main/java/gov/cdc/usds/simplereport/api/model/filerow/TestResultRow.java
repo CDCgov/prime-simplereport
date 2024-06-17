@@ -15,8 +15,8 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEma
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePositiveHIVRequiredAOEFields;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateResidence;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableMap;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -105,6 +106,7 @@ public class TestResultRow implements FileRow {
   final ValueOrError testResultStatus;
   final ValueOrError testOrderedCode;
   final ValueOrError gendersOfSexualPartners;
+  final ValueOrError syphilisHistory;
 
   static final String PATIENT_LAST_NAME = "patient_last_name";
   static final String PATIENT_FIRST_NAME = "patient_first_name";
@@ -149,6 +151,7 @@ public class TestResultRow implements FileRow {
   public static final String ORDERING_FACILITY_ZIP_CODE = "ordering_facility_zip_code";
   public static final String ORDERING_FACILITY_PHONE_NUMBER = "ordering_facility_phone_number";
   public static final String GENDERS_OF_SEXUAL_PARTNERS = "genders_of_sexual_partners";
+  public static final String SYPHILIS_HISTORY = "syphilis_history";
 
   public static final ImmutableMap<String, String> diseaseSpecificLoincMap =
       new ImmutableMap.Builder<String, String>()
@@ -452,6 +455,7 @@ public class TestResultRow implements FileRow {
     testOrderedCode = getValue(rawRow, "test_ordered_code", isRequired("test_ordered_code"));
     gendersOfSexualPartners =
         getValue(rawRow, GENDERS_OF_SEXUAL_PARTNERS, isRequired(GENDERS_OF_SEXUAL_PARTNERS));
+    syphilisHistory = getValue(rawRow, SYPHILIS_HISTORY, isRequired(SYPHILIS_HISTORY));
   }
 
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
@@ -482,6 +486,17 @@ public class TestResultRow implements FileRow {
     }
     return resultsUploaderCachingService
         .getHivEquipmentModelAndTestPerformedCodeSet()
+        .contains(
+            ResultsUploaderCachingService.getKey(
+                equipmentModelName.getValue(), testPerformedCode.getValue()));
+  }
+
+  private boolean isSyphilisResult() {
+    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
+      return false;
+    }
+    return resultsUploaderCachingService
+        .getSyphilisEquipmentModelAndTestPerformedCodeSet()
         .contains(
             ResultsUploaderCachingService.getKey(
                 equipmentModelName.getValue(), testPerformedCode.getValue()));
@@ -599,7 +614,16 @@ public class TestResultRow implements FileRow {
 
     if (isHivResult()) {
       errors.addAll(
-          validatePositiveHIVRequiredAOEFields(testResult, gendersOfSexualPartners, pregnant));
+          validateRequiredFieldsForPositiveResult(
+              testResult, DiseaseService.HIV_NAME, List.of(gendersOfSexualPartners, pregnant)));
+    }
+
+    if (isSyphilisResult()) {
+      errors.addAll(
+          validateRequiredFieldsForPositiveResult(
+              testResult,
+              DiseaseService.SYPHILIS_NAME,
+              List.of(gendersOfSexualPartners, pregnant, syphilisHistory, symptomaticForDisease)));
     }
 
     return errors;
