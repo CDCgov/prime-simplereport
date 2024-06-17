@@ -79,7 +79,7 @@ mutation UpdateAOE(
   $testResultDelivery: TestResultDeliveryPreference
   $genderOfSexualPartners: [String]
 ) {
-  updateTimeOfTestQuestions(
+  updateAoeQuestions(
     patientId: $patientId
     pregnancy: $pregnancy
     syphilisHistory: $syphilisHistory
