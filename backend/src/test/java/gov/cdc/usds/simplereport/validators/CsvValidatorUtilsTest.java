@@ -11,7 +11,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFle
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePartialUnkAddress;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePositiveHIVRequiredAOEFields;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.io.ContentReference;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.utils.UnknownAddressUtils;
 import java.io.IOException;
@@ -293,7 +294,10 @@ class CsvValidatorUtilsTest {
     ValueOrError testResult = new ValueOrError("negative", "test_result");
     ValueOrError genders = new ValueOrError("", "genders_of_sexual_partners");
     ValueOrError pregnant = new ValueOrError("", "pregnant");
-    assertThat(validatePositiveHIVRequiredAOEFields(testResult, genders, pregnant)).isEmpty();
+    assertThat(
+            validateRequiredFieldsForPositiveResult(
+                testResult, DiseaseService.HIV_NAME, List.of(genders, pregnant)))
+        .isEmpty();
   }
 
   @Test
@@ -301,7 +305,10 @@ class CsvValidatorUtilsTest {
     ValueOrError testResult = new ValueOrError("positive", "test_result");
     ValueOrError genders = new ValueOrError("m, f, tm, tw", "genders_of_sexual_partners");
     ValueOrError pregnant = new ValueOrError("n", "pregnant");
-    assertThat(validatePositiveHIVRequiredAOEFields(testResult, genders, pregnant)).isEmpty();
+    assertThat(
+            validateRequiredFieldsForPositiveResult(
+                testResult, DiseaseService.HIV_NAME, List.of(genders, pregnant)))
+        .isEmpty();
   }
 
   @Test
@@ -309,6 +316,9 @@ class CsvValidatorUtilsTest {
     ValueOrError testResult = new ValueOrError("positive", "test_result");
     ValueOrError genders = new ValueOrError("", "genders_of_sexual_partners");
     ValueOrError pregnant = new ValueOrError("", "pregnant");
-    assertThat(validatePositiveHIVRequiredAOEFields(testResult, genders, pregnant)).hasSize(2);
+    assertThat(
+            validateRequiredFieldsForPositiveResult(
+                testResult, DiseaseService.HIV_NAME, List.of(genders, pregnant)))
+        .hasSize(2);
   }
 }

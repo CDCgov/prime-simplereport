@@ -461,6 +461,40 @@ class TestResultRowTest {
                 .contains("This is required because the row contains a positive HIV test result."));
   }
 
+  @Test
+  void validatePositiveSyphilisRequiredAoeFields() {
+    var missingSyphilisRequiredAoeFields = validRowMap;
+    missingSyphilisRequiredAoeFields.put("equipment_model_name", "Syphilis model");
+    missingSyphilisRequiredAoeFields.put("test_performed_code", "80387-4");
+    missingSyphilisRequiredAoeFields.put("specimen_type", "123456789");
+    missingSyphilisRequiredAoeFields.put("test_result", "Detected");
+    missingSyphilisRequiredAoeFields.put("pregnant", "");
+    missingSyphilisRequiredAoeFields.put("genders_of_sexual_partners", "");
+    missingSyphilisRequiredAoeFields.put("previous_syphilis_diagnosis", "");
+    missingSyphilisRequiredAoeFields.put("symptomatic_for_disease", "");
+
+    var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("syphilis model|80387-4", TestDataBuilder.createDeviceType()));
+    when(resultsUploaderCachingService.getSyphilisEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of("syphilis model|80387-4"));
+
+    var testResultRow =
+        new TestResultRow(
+            missingSyphilisRequiredAoeFields,
+            resultsUploaderCachingService,
+            mock(FeatureFlagsConfig.class));
+
+    var actual = testResultRow.validateIndividualValues();
+
+    assertThat(actual).hasSize(4);
+    actual.forEach(
+        message ->
+            assertThat(message.getMessage())
+                .contains(
+                    "This is required because the row contains a positive Syphilis test result."));
+  }
+
   private ResultsUploaderCachingService mockResultsUploaderCachingService() {
     var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
