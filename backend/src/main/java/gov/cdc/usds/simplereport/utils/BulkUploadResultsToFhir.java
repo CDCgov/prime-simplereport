@@ -416,8 +416,8 @@ public class BulkUploadResultsToFhir {
                 .receivedTime(testingLabSpecimenReceivedDate)
                 .build());
 
-    SnomedConceptRecord resultConceptRecord =
-        Translators.convertConceptCodeToConceptName(row.getTestResult().getValue());
+    String testResultSnomed = getTestResultSnomed(row.getTestResult().getValue());
+    SnomedConceptRecord resultConceptRecord = Translators.getSnomedConceptByCode(testResultSnomed);
 
     var resultObservation =
         List.of(
@@ -425,7 +425,7 @@ public class BulkUploadResultsToFhir {
                 ConvertToObservationProps.builder()
                     .testPerformedLoinc(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
-                    .resultCode(getTestResultSnomed(row.getTestResult().getValue()))
+                    .resultCode(getTestResultSnomed(testResultSnomed))
                     .correctionStatus(
                         mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
                     .correctionReason(null)

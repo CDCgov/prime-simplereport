@@ -700,7 +700,7 @@ public class FhirConverter {
     if (result != null && result.getDisease() != null) {
 
       SnomedConceptRecord resultConceptRecord =
-          Translators.convertConceptCodeToConceptName(result.getResultSNOMED());
+          Translators.getSnomedConceptByCode(result.getResultSNOMED());
 
       return convertToObservation(
           ConvertToObservationProps.builder()
