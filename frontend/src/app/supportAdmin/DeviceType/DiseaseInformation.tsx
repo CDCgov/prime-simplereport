@@ -151,7 +151,7 @@ const DiseaseInformation = ({
         <div className="tablet:grid-col">
           <TextInput
             name={`supportedDiseases.${index}.testOrderedLoincLongName`}
-            label="Test ordered loinc long name"
+            label="Test Ordered Loinc Long Name"
             disabled={disabled}
             className={"margin-top-1"}
             value={values?.[index]?.testOrderedLoincLongName}
@@ -164,7 +164,7 @@ const DiseaseInformation = ({
         <div className="tablet:grid-col">
           <TextInput
             name={`supportedDiseases.${index}.testPerformedLoincLongName`}
-            label="Test perfromed loinc long name"
+            label="Test Performed Loinc Long Name"
             disabled={disabled}
             className={"margin-top-1"}
             value={values?.[index]?.testPerformedLoincLongName}

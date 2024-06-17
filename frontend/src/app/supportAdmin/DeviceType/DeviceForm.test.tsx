@@ -65,6 +65,8 @@ describe("create new device", () => {
     await user.selectOptions(screen.getByLabelText("Disease *"), "COVID-19");
     await addValue(user, "Test performed *", "1920-12");
     await addValue(user, "Test ordered *", "2102-91");
+    await addValue(user, "Test Ordered Loinc Long Name", "Test Value");
+    await addValue(user, "Test Performed Loinc Long Name", "Test Value II");
     await waitFor(() =>
       expect(
         screen.queryByText("This is a required field")
@@ -91,8 +93,15 @@ describe("create new device", () => {
         screen.getByLabelText("Equipment Uid"),
         "equipmentUid321"
       );
-
       await user.type(screen.getByLabelText("Uid Type"), "equipmentUidType123");
+      await user.type(
+        screen.getByLabelText("Test Performed Loinc Long Name"),
+        "longest loinc"
+      );
+      await user.type(
+        screen.getByLabelText("Test Ordered Loinc Long Name"),
+        "longest loinc"
+      );
     };
 
     it("enables the save button", async () => {
@@ -122,6 +131,8 @@ describe("create new device", () => {
               equipmentUid: "equipmentUid321",
               equipmentUidType: "equipmentUidType123",
               testOrderedLoincCode: "2102-91",
+              testOrderedLoincLongName: "longest loinc",
+              testPerformedLoincLongName: "longest loinc",
             },
           ],
         })
@@ -215,7 +226,7 @@ describe("update existing devices", () => {
   beforeEach(() => {
     saveDeviceType = jest.fn();
   });
-
+  ///start here
   it("renders the Device Form", () => {
     const { container } = renderWithUser();
     expect(container).toMatchSnapshot();
@@ -447,6 +458,16 @@ describe("update existing devices", () => {
           "equipmentUidType123"
         );
 
+        await user.type(
+          screen.getAllByLabelText("Test Ordered Loinc Long Name")[1],
+          "longLoinc123"
+        );
+
+        await user.type(
+          screen.getAllByLabelText("Test Performed Loinc Long Name")[1],
+          "longLoinc123"
+        );
+
         await user.click(screen.getByText("Save changes"));
 
         await waitFor(() =>
@@ -473,6 +494,8 @@ describe("update existing devices", () => {
                 equipmentUid: "equipmentUid321",
                 equipmentUidType: "equipmentUidType123",
                 testkitNameId: "testkitNameId123",
+                testOrderedLoincLongName: "longLoinc123",
+                testPerformedLoincLongName: "longLoinc123",
               },
             ],
           })
