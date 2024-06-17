@@ -425,7 +425,7 @@ public class BulkUploadResultsToFhir {
                 ConvertToObservationProps.builder()
                     .testPerformedLoinc(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
-                    .resultCode(getTestResultSnomed(testResultSnomed))
+                    .resultCode(testResultSnomed)
                     .correctionStatus(
                         mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
                     .correctionReason(null)
