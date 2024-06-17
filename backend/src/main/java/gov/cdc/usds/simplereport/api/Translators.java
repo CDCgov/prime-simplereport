@@ -487,12 +487,10 @@ public class Translators {
     return concept.code();
   }
 
-  public static String convertConceptCodeToConceptName(String snomedCode) {
-    SnomedConceptRecord concept =
-        RESULTS_SNOMED_CONCEPTS.stream()
-            .filter(snomedConcept -> snomedCode.equals(snomedConcept.code()))
-            .findFirst()
-            .orElse(INVALID_SNOMED_CONCEPT);
-    return concept.name();
+  public static SnomedConceptRecord getSnomedConceptByCode(String snomedCode) {
+    return RESULTS_SNOMED_CONCEPTS.stream()
+        .filter(snomedConcept -> snomedCode.equals(snomedConcept.code()))
+        .findFirst()
+        .orElse(null);
   }
 }
