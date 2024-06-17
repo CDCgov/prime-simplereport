@@ -54,7 +54,6 @@ import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
-import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.utils.UnknownAddressUtils;
 import java.io.BufferedReader;
@@ -73,6 +72,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 public class CsvValidatorUtils {
 
@@ -143,6 +143,8 @@ public class CsvValidatorUtils {
   private static final String POSITIVE_CODE = "10828004";
   private static final String DETECTED_LITERAL = "detected";
   private static final String DETECTED_CODE = "260373001";
+  private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
+      Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_CODE, DETECTED_CODE);
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "m", MALE_LITERAL,
@@ -645,92 +647,35 @@ public class CsvValidatorUtils {
     return errors;
   }
 
-  public static List<FeedbackMessage> validatePositiveHIVRequiredAOEFields(
-      ValueOrError testResult, ValueOrError gendersOfSexualPartners, ValueOrError pregnant) {
+  public static List<FeedbackMessage> validateRequiredFieldsForPositiveResult(
+      ValueOrError testResult, String diseaseName, List<ValueOrError> fields) {
     List<FeedbackMessage> errors = new ArrayList<>();
-    // includes SNOMED values for positive and detected
-    Set<String> positiveTestResultValues =
-        Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_CODE, DETECTED_CODE);
-    if (!positiveTestResultValues.contains(testResult.getValue().toLowerCase())) {
+
+    if (testResult.getValue() == null) {
+      // if test result is null, then it should already give an error when validating required
+      // fields
       return errors;
     }
 
-    if (gendersOfSexualPartners.getValue() == null
-        || gendersOfSexualPartners.getValue().isBlank()) {
-      errors.add(
-          FeedbackMessage.builder()
-              .scope(ITEM_SCOPE)
-              .fieldHeader(gendersOfSexualPartners.getHeader())
-              .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(
-                  getPositiveResultRequiredValueErrorMessage(
-                      gendersOfSexualPartners.getHeader(), DiseaseService.HIV_NAME))
-              .errorType(ResultUploadErrorType.MISSING_DATA)
-              .fieldRequired(gendersOfSexualPartners.isRequired())
-              .build());
-    }
-
-    if (pregnant.getValue() == null || pregnant.getValue().isBlank()) {
-      errors.add(
-          FeedbackMessage.builder()
-              .scope(ITEM_SCOPE)
-              .fieldHeader(pregnant.getHeader())
-              .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(
-                  getPositiveResultRequiredValueErrorMessage(
-                      pregnant.getHeader(), DiseaseService.HIV_NAME))
-              .errorType(ResultUploadErrorType.MISSING_DATA)
-              .fieldRequired(pregnant.isRequired())
-              .build());
-    }
-    return errors;
-  }
-
-  private static FeedbackMessage buildSyphilisMissingDataFeedbackMessage(ValueOrError field) {
-    return FeedbackMessage.builder()
-        .scope(ITEM_SCOPE)
-        .fieldHeader(field.getHeader())
-        .source(ResultUploadErrorSource.SIMPLE_REPORT)
-        .message(
-            getPositiveResultRequiredValueErrorMessage(
-                field.getHeader(), DiseaseService.SYPHILIS_NAME))
-        .errorType(ResultUploadErrorType.MISSING_DATA)
-        .fieldRequired(field.isRequired())
-        .build();
-  }
-
-  public static List<FeedbackMessage> validatePositiveSyphilisRequiredAOEFields(
-      ValueOrError testResult,
-      ValueOrError gendersOfSexualPartners,
-      ValueOrError pregnant,
-      ValueOrError previousSyphilisDiagnosis,
-      ValueOrError symptomaticForDisease) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    // includes SNOMED values for positive and detected
-    Set<String> positiveTestResultValues =
-        Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_CODE, DETECTED_CODE);
-    if (!positiveTestResultValues.contains(testResult.getValue().toLowerCase())) {
+    if (!POSITIVE_TEST_RESULT_VALUES.contains(testResult.getValue().toLowerCase())) {
       return errors;
     }
 
-    if (gendersOfSexualPartners.getValue() == null
-        || gendersOfSexualPartners.getValue().isBlank()) {
-      errors.add(buildSyphilisMissingDataFeedbackMessage(gendersOfSexualPartners));
-    }
-
-    if (pregnant.getValue() == null || pregnant.getValue().isBlank()) {
-      errors.add(buildSyphilisMissingDataFeedbackMessage(pregnant));
-    }
-
-    if (previousSyphilisDiagnosis.getValue() == null
-        || previousSyphilisDiagnosis.getValue().isBlank()) {
-      errors.add(buildSyphilisMissingDataFeedbackMessage(previousSyphilisDiagnosis));
-    }
-
-    if (symptomaticForDisease.getValue() == null || symptomaticForDisease.getValue().isBlank()) {
-      errors.add(buildSyphilisMissingDataFeedbackMessage(symptomaticForDisease));
-    }
-
+    fields.forEach(
+        field -> {
+          if (StringUtils.isBlank(field.getValue())) {
+            errors.add(
+                FeedbackMessage.builder()
+                    .scope(ITEM_SCOPE)
+                    .fieldHeader(field.getHeader())
+                    .source(ResultUploadErrorSource.SIMPLE_REPORT)
+                    .message(
+                        getPositiveResultRequiredValueErrorMessage(field.getHeader(), diseaseName))
+                    .errorType(ResultUploadErrorType.MISSING_DATA)
+                    .fieldRequired(field.isRequired())
+                    .build());
+          }
+        });
     return errors;
   }
 
