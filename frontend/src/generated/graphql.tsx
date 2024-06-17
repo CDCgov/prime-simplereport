@@ -236,7 +236,6 @@ export type Mutation = {
   updatePatient?: Maybe<Patient>;
   updateRegistrationLink?: Maybe<Scalars["String"]["output"]>;
   updateSpecimenType?: Maybe<SpecimenType>;
-  updateTimeOfTestQuestions?: Maybe<Scalars["String"]["output"]>;
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
@@ -537,19 +536,6 @@ export type MutationUpdateRegistrationLinkArgs = {
 
 export type MutationUpdateSpecimenTypeArgs = {
   input: UpdateSpecimenType;
-};
-
-export type MutationUpdateTimeOfTestQuestionsArgs = {
-  genderOfSexualPartners?: InputMaybe<
-    Array<InputMaybe<Scalars["String"]["input"]>>
-  >;
-  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
-  patientId: Scalars["ID"]["input"];
-  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  symptoms?: InputMaybe<Scalars["String"]["input"]>;
-  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
-  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
 export type MutationUpdateUserArgs = {
@@ -2209,7 +2195,7 @@ export type UpdateAoeMutationVariables = Exact<{
 
 export type UpdateAoeMutation = {
   __typename?: "Mutation";
-  updateTimeOfTestQuestions?: string | null;
+  updateAoeQuestions?: string | null;
 };
 
 export type RemovePatientFromQueueMutationVariables = Exact<{
@@ -7169,7 +7155,7 @@ export const UpdateAoeDocument = gql`
     $testResultDelivery: TestResultDeliveryPreference
     $genderOfSexualPartners: [String]
   ) {
-    updateTimeOfTestQuestions(
+    updateAoeQuestions(
       patientId: $patientId
       pregnancy: $pregnancy
       syphilisHistory: $syphilisHistory

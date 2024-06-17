@@ -429,6 +429,6 @@ class QueueManagementTest extends BaseGraphqlTest {
 
   private void performAOEUpdateMutation(
       Map<String, Object> variables, Optional<String> expectedError) {
-    runQuery("update-time-of-test-questions", variables, expectedError.orElse(null));
+    runQuery("update-aoe-questions", variables, expectedError.orElse(null));
   }
 }
