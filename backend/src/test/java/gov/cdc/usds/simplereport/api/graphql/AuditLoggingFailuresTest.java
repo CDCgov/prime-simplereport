@@ -55,8 +55,8 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
  *   <li>Do we successfully log requests where an error takes place in the main transaction?
  * </ol>
  *
- * Since MockMvc does not wrap error handling, this uses TestRestTemplate for PXP requests (this is
- * in any case what the graphql tests use, so there is no additional cost).
+ * Since MockMvc does not wrap error handling, this uses TestRestTemplate for PXP requests (this
+ * is in any case what the graphql tests use, so there is no additional cost).
  */
 @Slf4j
 class AuditLoggingFailuresTest extends BaseGraphqlTest {
@@ -115,9 +115,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     args.put("symptoms", "{}");
     args.put("noSymptoms", true);
     String clientErrorMessage =
-        assertThrows(
-                WebClientRequestException.class,
-                () -> runQuery("update-time-of-test-questions", args))
+        assertThrows(WebClientRequestException.class, () -> runQuery("update-aoe-questions", args))
             .getMessage();
     assertEquals(
         "Request processing failed: header: Something went wrong; body: Please check for errors and try again",
