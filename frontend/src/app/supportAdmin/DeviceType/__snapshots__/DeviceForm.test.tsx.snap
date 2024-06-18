@@ -292,7 +292,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                 >
                   <label
                     class="usa-label"
-                    for="45"
+                    for="53"
                   >
                     Device Name
                     <abbr
@@ -308,7 +308,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                     aria-required="true"
                     class="usa-input"
                     disabled=""
-                    id="45"
+                    id="53"
                     name="name"
                     type="text"
                     value=""
@@ -327,7 +327,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                 >
                   <label
                     class="usa-label"
-                    for="46"
+                    for="54"
                   >
                     Model
                     <abbr
@@ -343,7 +343,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                     aria-required="true"
                     class="usa-input"
                     disabled=""
-                    id="46"
+                    id="54"
                     name="model"
                     type="text"
                     value=""
@@ -362,7 +362,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                 >
                   <label
                     class="usa-label"
-                    for="47"
+                    for="55"
                   >
                     Manufacturer
                     <abbr
@@ -378,7 +378,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                     aria-required="true"
                     class="usa-input"
                     disabled=""
-                    id="47"
+                    id="55"
                     name="manufacturer"
                     type="text"
                     value=""
@@ -397,7 +397,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                 >
                   <label
                     class="usa-label"
-                    for="48"
+                    for="56"
                   >
                     Test length (minutes)
                     <abbr
@@ -413,7 +413,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                     aria-required="true"
                     class="usa-input"
                     disabled=""
-                    id="48"
+                    id="56"
                     name="testLength"
                     type="number"
                     value=""
@@ -432,8 +432,8 @@ exports[`update existing devices renders the Device Form 1`] = `
                 >
                   <label
                     class="usa-label"
-                    for="49"
-                    id="label-for-49"
+                    for="57"
+                    id="label-for-57"
                   >
                     SNOMED code for swab type(s)
                     <abbr
@@ -447,13 +447,13 @@ exports[`update existing devices renders the Device Form 1`] = `
                   <div
                     class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                     data-testid="multi-select"
-                    id="49"
+                    id="57"
                   >
                     <input
                       aria-controls="multi-select-swabTypes-list"
                       aria-expanded="false"
                       aria-invalid="false"
-                      aria-labelledby="label-for-49"
+                      aria-labelledby="label-for-57"
                       aria-owns="multi-select-swabTypes-list"
                       aria-required="true"
                       autocapitalize="off"
@@ -566,7 +566,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                       >
                         <label
                           class="usa-label"
-                          for="50"
+                          for="58"
                         >
                           Disease
                           <abbr
@@ -581,7 +581,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                           aria-required="true"
                           class="usa-select"
                           disabled=""
-                          id="50"
+                          id="58"
                           name="supportedDiseases.0.supportedDisease"
                         >
                           <option
@@ -616,7 +616,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                       >
                         <label
                           class="usa-label"
-                          for="51"
+                          for="59"
                         >
                           Test performed
                           <abbr
@@ -632,7 +632,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                           aria-required="true"
                           class="usa-input"
                           disabled=""
-                          id="51"
+                          id="59"
                           name="supportedDiseases.0.testPerformedLoincCode"
                           type="text"
                           value=""
@@ -647,7 +647,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                       >
                         <label
                           class="usa-label"
-                          for="52"
+                          for="60"
                         >
                           Test ordered
                           <abbr
@@ -663,7 +663,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                           aria-required="true"
                           class="usa-input"
                           disabled=""
-                          id="52"
+                          id="60"
                           name="supportedDiseases.0.testOrderedLoincCode"
                           type="text"
                           value=""
@@ -678,7 +678,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                       >
                         <label
                           class="usa-label"
-                          for="53"
+                          for="61"
                         >
                           Testkit Name Id
                         </label>
@@ -687,7 +687,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                           aria-required="false"
                           class="usa-input"
                           disabled=""
-                          id="53"
+                          id="61"
                           name="supportedDiseases.0.testkitNameId"
                           type="text"
                           value=""
@@ -702,7 +702,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                       >
                         <label
                           class="usa-label"
-                          for="54"
+                          for="62"
                         >
                           Equipment Uid
                         </label>
@@ -711,7 +711,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                           aria-required="false"
                           class="usa-input"
                           disabled=""
-                          id="54"
+                          id="62"
                           name="supportedDiseases.0.equipmentUid"
                           type="text"
                           value=""
@@ -726,7 +726,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                       >
                         <label
                           class="usa-label"
-                          for="55"
+                          for="63"
                         >
                           Uid Type
                         </label>
@@ -735,8 +735,56 @@ exports[`update existing devices renders the Device Form 1`] = `
                           aria-required="false"
                           class="usa-input"
                           disabled=""
-                          id="55"
+                          id="63"
                           name="supportedDiseases.0.equipmentUidType"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="64"
+                        >
+                          Test Ordered Loinc Long Name
+                        </label>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="64"
+                          name="supportedDiseases.0.testOrderedLoincLongName"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="65"
+                        >
+                          Test Performed Loinc Long Name
+                        </label>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="65"
+                          name="supportedDiseases.0.testPerformedLoincLongName"
                           type="text"
                           value=""
                         />

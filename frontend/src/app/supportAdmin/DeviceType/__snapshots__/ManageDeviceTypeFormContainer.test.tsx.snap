@@ -699,6 +699,54 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                       </div>
                     </div>
                     <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="12"
+                        >
+                          Test Ordered Loinc Long Name
+                        </label>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="12"
+                          name="supportedDiseases.0.testOrderedLoincLongName"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="13"
+                        >
+                          Test Performed Loinc Long Name
+                        </label>
+                        <input
+                          aria-disabled="true"
+                          aria-required="false"
+                          class="usa-input"
+                          disabled=""
+                          id="13"
+                          name="supportedDiseases.0.testPerformedLoincLongName"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
                       class="flex-align-self-end"
                     >
                       <div

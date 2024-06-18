@@ -492,6 +492,52 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                       </div>
                     </div>
                     <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="12"
+                        >
+                          Test Ordered Loinc Long Name
+                        </label>
+                        <input
+                          aria-disabled="false"
+                          aria-required="false"
+                          class="usa-input"
+                          id="12"
+                          name="supportedDiseases.0.testOrderedLoincLongName"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="13"
+                        >
+                          Test Performed Loinc Long Name
+                        </label>
+                        <input
+                          aria-disabled="false"
+                          aria-required="false"
+                          class="usa-input"
+                          id="13"
+                          name="supportedDiseases.0.testPerformedLoincLongName"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
                       class="flex-align-self-end"
                     >
                       <div
