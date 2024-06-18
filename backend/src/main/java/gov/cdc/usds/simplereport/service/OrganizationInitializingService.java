@@ -151,6 +151,9 @@ public class OrganizationInitializingService {
         log.info("Creating specimen type {}", s.getName());
         specimenType = _specimenTypeRepo.save(s);
         specimenTypesByCode.put(specimenType.getTypeCode(), _specimenTypeRepo.save(s));
+      } else {
+        specimenType.setCollectionLocationCode(s.getCollectionLocationCode());
+        specimenType.setCollectionLocationName(s.getCollectionLocationName());
       }
     }
 

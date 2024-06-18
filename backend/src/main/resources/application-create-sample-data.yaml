@@ -73,8 +73,12 @@ simple-report-initialization:
       collection-location-code: "71836000"
     - name: Venous blood specimen
       type-code: "122555007"
+      collection-location-name: Blood specimen (specimen)
+      collection-location-code: "119297000"
     - name: Oral fluid specimen
       type-code: "441620008"
+      collection-location-name: Mouth region structure (body structure)
+      collection-location-code: "123851003"
   device-types:
     - name: Abbott Alinity M
       manufacturer: Abbott
