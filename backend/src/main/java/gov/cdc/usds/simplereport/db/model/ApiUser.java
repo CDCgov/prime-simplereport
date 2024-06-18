@@ -33,7 +33,7 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   private Set<ApiUserFacility> facilityAssignments = new HashSet<>();
 
   @OneToMany(cascade = ALL, mappedBy = "apiUser", orphanRemoval = true)
-  private Set<ApiUserRole> apiUserRoles = new HashSet<>();
+  private Set<ApiUserRole> roleAssignments = new HashSet<>();
 
   protected ApiUser() {
     /* for hibernate */ }
@@ -76,28 +76,23 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
 
   public void setFacilities(Set<Facility> facilities) {
     this.facilityAssignments.clear();
-    for (Facility f : facilities) {
-      ApiUserFacility auf = new ApiUserFacility();
-      auf.setApiUser(this);
-      auf.setFacility(f);
-      this.facilityAssignments.add(auf);
+    for (Facility facility : facilities) {
+      this.facilityAssignments.add(new ApiUserFacility(this, facility));
     }
   }
 
   public void setRoles(Set<OrganizationRole> newOrgRoles, Organization org) {
-    this.apiUserRoles.clear();
-    for (OrganizationRole o : newOrgRoles) {
-      if (o.equals(OrganizationRole.NO_ACCESS)) {
-        // the NO_ACCESS role is only relevant for the Okta implementation of auth and we don't want
-        // to persist it. once we migrate off of Okta for role management, we should be able to
-        // deprecate the enum value completely
+    this.roleAssignments.clear();
+    for (OrganizationRole orgRole : newOrgRoles) {
+      if (orgRole.equals(OrganizationRole.NO_ACCESS)) {
+        // the NO_ACCESS role is only relevant for the Okta implementation of authorization, and we
+        // don't need
+        // to persist it in our tables. once we migrate off of Okta for role management, we should
+        // be able to
+        // deprecate the NO_ACCESS enum value completely
         continue;
       }
-      ApiUserRole aur = new ApiUserRole();
-      aur.setApiUser(this);
-      aur.setOrganization(org);
-      aur.setRole(o);
-      this.apiUserRoles.add(aur);
+      this.roleAssignments.add(new ApiUserRole(this, org, orgRole));
     }
   }
 }
