@@ -85,11 +85,8 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     this.roleAssignments.clear();
     for (OrganizationRole orgRole : newOrgRoles) {
       if (orgRole.equals(OrganizationRole.NO_ACCESS)) {
-        // the NO_ACCESS role is only relevant for the Okta implementation of authorization, and we
-        // don't need
-        // to persist it in our tables. once we migrate off of Okta for role management, we should
-        // be able to
-        // deprecate the NO_ACCESS enum value completely
+        // the NO_ACCESS role is only relevant for the Okta implementation of authorization, and it
+        // doesn't need to be persisted in our tables
         continue;
       }
       this.roleAssignments.add(new ApiUserRole(this, org, orgRole));
