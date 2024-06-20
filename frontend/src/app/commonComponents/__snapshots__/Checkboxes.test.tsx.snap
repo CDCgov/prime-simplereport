@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Checkboxes renders correctly 1`] = `
+<div>
+  <div
+    class="usa-form-group padding-0"
+  >
+    <fieldset
+      class="usa-fieldset prime-checkboxes"
+    >
+      <legend
+        class="usa-legend"
+      >
+        Select a color
+        <abbr
+          class="usa-hint usa-hint--required"
+          title="required"
+        >
+           
+          *
+        </abbr>
+      </legend>
+      <div
+        class="grid-row checkboxes"
+      >
+        <div
+          class="tablet:grid-col"
+        >
+          <div
+            class="usa-checkbox"
+          >
+            <input
+              checked=""
+              class="usa-checkbox__input"
+              data-testid="colors-Red"
+              disabled=""
+              id="colors-Red"
+              name="colors"
+              type="checkbox"
+              value="Red"
+            />
+            <label
+              class="usa-checkbox__label"
+              for="colors-Red"
+            >
+              Red
+            </label>
+          </div>
+        </div>
+        <div
+          class="tablet:grid-col"
+        >
+          <div
+            class="usa-checkbox"
+          >
+            <input
+              class="usa-checkbox__input"
+              data-testid="colors-Blue"
+              disabled=""
+              id="colors-Blue"
+              name="colors"
+              type="checkbox"
+              value="Blue"
+            />
+            <label
+              class="usa-checkbox__label"
+              for="colors-Blue"
+            >
+              Blue
+            </label>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+</div>
+`;
