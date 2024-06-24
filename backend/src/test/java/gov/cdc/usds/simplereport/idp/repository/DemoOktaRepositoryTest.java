@@ -414,9 +414,8 @@ class DemoOktaRepositoryTest {
 
     _repo.deleteOrganization(ABC);
 
-    assertThrows(
-        IllegalGraphqlArgumentException.class,
-        () -> _repo.createFacility(getFacility(UUID.randomUUID(), ABC)));
+    Facility fakeFacility = getFacility(UUID.randomUUID(), ABC);
+    assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.createFacility(fakeFacility));
     assertThrows(
         IllegalGraphqlArgumentException.class, () -> _repo.getAllUsersForOrganization(ABC));
   }
