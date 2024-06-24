@@ -28,7 +28,7 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
   @Setter
   private String loginEmail;
 
-  @Getter @Setter @Embedded private PersonName nameInfo;
+  @Setter @Embedded private PersonName nameInfo;
 
   @Column(nullable = true)
   @Getter
@@ -47,6 +47,11 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     loginEmail = email;
     nameInfo = name;
     lastSeen = null;
+  }
+
+  @Override
+  public PersonName getNameInfo() {
+    return nameInfo;
   }
 
   public void updateLastSeen() {
