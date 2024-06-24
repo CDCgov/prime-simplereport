@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 
@@ -22,11 +24,14 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
 
   @Column(nullable = false, updatable = true, unique = true)
   @NaturalId(mutable = true)
+  @Getter
+  @Setter
   private String loginEmail;
 
-  @Embedded private PersonName nameInfo;
+  @Getter @Setter @Embedded private PersonName nameInfo;
 
   @Column(nullable = true)
+  @Getter
   private Date lastSeen;
 
   @OneToMany(cascade = ALL, mappedBy = "apiUser", orphanRemoval = true)
@@ -44,28 +49,8 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     lastSeen = null;
   }
 
-  public String getLoginEmail() {
-    return loginEmail;
-  }
-
-  public void setLoginEmail(String newEmail) {
-    loginEmail = newEmail;
-  }
-
-  public Date getLastSeen() {
-    return lastSeen;
-  }
-
   public void updateLastSeen() {
     lastSeen = new Date();
-  }
-
-  public PersonName getNameInfo() {
-    return nameInfo;
-  }
-
-  public void setNameInfo(PersonName name) {
-    nameInfo = name;
   }
 
   public Set<Facility> getFacilities() {
