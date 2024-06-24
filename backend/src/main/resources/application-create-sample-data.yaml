@@ -235,7 +235,7 @@ simple-report:
           organization-external-id: DIS_ORG
           facilities:
             - Testing Site
-          granted-roles: []
+          granted-roles: ENTRY_ONLY
       - identity:
           username: jamar@example.com
           first-name: Jamar
