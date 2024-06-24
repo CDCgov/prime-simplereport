@@ -17,7 +17,6 @@ export type SupportedDiseasesFormData = {
   equipmentUidType?: string;
   supportedDisease: string;
   testPerformedLoincCode: string;
-  ///testOrdered is marked as required on UI input
   testOrderedLoincCode?: string;
   testkitNameId?: string;
   testOrderedLoincLongName?: string;

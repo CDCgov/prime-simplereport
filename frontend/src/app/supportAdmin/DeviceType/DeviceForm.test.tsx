@@ -226,7 +226,7 @@ describe("update existing devices", () => {
   beforeEach(() => {
     saveDeviceType = jest.fn();
   });
-  ///start here
+
   it("renders the Device Form", () => {
     const { container } = renderWithUser();
     expect(container).toMatchSnapshot();
