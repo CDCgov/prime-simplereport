@@ -62,6 +62,7 @@ const Checkboxes = (props: Props) => {
     inputRef,
     hintText,
     numColumnsToDisplay = DEFAULT_COLUMN_DISPLAY_NUMBER,
+    disabled,
   } = props;
 
   const checkboxFragmentToRender = (boxes: Checkbox[]) => (
@@ -70,6 +71,7 @@ const Checkboxes = (props: Props) => {
       name={name}
       onChange={onChange}
       inputRef={inputRef}
+      disabled={disabled}
     />
   );
 
