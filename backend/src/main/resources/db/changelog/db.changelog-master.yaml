@@ -5417,3 +5417,212 @@ databaseChangeLog:
               constraints:
                 primaryKey: true
                 nullable: false
+  - changeSet:
+      id: add-audit-cols-to-facility-table
+      author: tnd8@cdc.gov
+      changes:
+        - dropTable:
+            tableName: api_user_facility
+        - createTable:
+            tableName: api_user_facility
+            remarks: creates a new table to store the relationship between api_user and facility
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                      primaryKey: true
+                      nullable: false
+              - column:
+                  name: api_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__api_user
+                    references: api_user
+              - column:
+                  name: facility_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__facility
+                    references: facility
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.api_user_facility TO ${noPhiUsername};
+      rollback:
+        - dropTable:
+            tableName: api_user_facility
+        - createTable:
+            tableName: api_user_facility
+            remarks: creates a new table to store the relationship between api_user and facility
+            columns:
+              - column:
+                  name: api_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__api_user
+                    references: api_user
+              - column:
+                  name: facility_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__facility
+                    references: facility
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.api_user_facility TO ${noPhiUsername};
+  - changeSet:
+      id: add-audit-cols-and-enum-role-to-api_user_role-table
+      author: tnd8@cdc.gov
+      changes:
+        - dropTable:
+            tableName: api_user_role
+        - dropTable:
+            tableName: role
+        - createTable:
+            tableName: api_user_role
+            remarks: creates a new table to store the relationship between api_user and role
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: api_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_facility__api_user
+                    references: api_user
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__organization
+                    references: organization
+              - column:
+                  name: role
+                  type: ${database.defaultSchemaName}.ORGANIZATION_ROLE
+                  remarks: The name of the role that is an enumerated value.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};
+      rollback:
+        - dropTable:
+            tableName: api_user_role
+        - createTable:
+            tableName: role
+            remarks: named references to a OrganizationRole enum
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: ${database.defaultSchemaName}.ORGANIZATION_ROLE
+                  remarks: The name of the role that is an enumerated value.
+                  constraints:
+                    nullable: false
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.role TO ${noPhiUsername};
+        - createTable:
+            tableName: api_user_role
+            remarks: creates a new table to store the relationship between api_user and role
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: api_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__api_user
+                    references: api_user
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__organization
+                    references: organization
+              - column:
+                  name: role_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_user_role__role
+                    references: role
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};

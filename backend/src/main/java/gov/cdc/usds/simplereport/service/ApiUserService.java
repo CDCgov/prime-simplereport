@@ -161,6 +161,7 @@ public class ApiUserService {
     apiUser.setNameInfo(name);
     apiUser.setIsDeleted(false);
     apiUser.setFacilities(facilitiesFound);
+    apiUser.setRoles(roles, org);
 
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
@@ -188,6 +189,7 @@ public class ApiUserService {
     Set<OrganizationRole> roles = getOrganizationRoles(role, accessAllFacilities);
     Set<Facility> facilitiesFound = getFacilitiesToGiveAccess(org, roles, facilities);
     apiUser.setFacilities(facilitiesFound);
+    apiUser.setRoles(roles, org);
 
     Optional<OrganizationRoleClaims> roleClaims =
         _oktaRepo.createUser(userIdentity, org, facilitiesFound, roles, active);
@@ -245,6 +247,7 @@ public class ApiUserService {
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     apiUser.setFacilities(facilitiesFound);
+    apiUser.setRoles(roles, org);
 
     createUserUpdatedAuditLog(apiUser.getInternalId(), getCurrentApiUser().getInternalId());
 
@@ -713,6 +716,7 @@ public class ApiUserService {
     Set<Facility> facilitiesToGiveAccessTo =
         getFacilitiesToGiveAccess(newOrg, roles, new HashSet<>(facilities));
     apiUser.setFacilities(facilitiesToGiveAccessTo);
+    apiUser.setRoles(roles, newOrg);
 
     _oktaRepo.updateUserPrivilegesAndGroupAccess(
         username, newOrg, facilitiesToGiveAccessTo, role.toOrganizationRole(), allFacilitiesAccess);
