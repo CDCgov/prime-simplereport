@@ -1,14 +1,17 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static jakarta.persistence.CascadeType.ALL;
+
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
@@ -21,21 +24,21 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
 
   @Column(nullable = false, updatable = true, unique = true)
   @NaturalId(mutable = true)
-  private String loginEmail;
-
-  @Embedded private PersonName nameInfo;
-
-  @Column(nullable = true)
-  private Date lastSeen;
-
-  @ManyToMany
-  @JoinTable(
-      name = "api_user_facility",
-      joinColumns = @JoinColumn(name = "api_user_id"),
-      inverseJoinColumns = @JoinColumn(name = "facility_id"))
   @Getter
   @Setter
-  private Set<Facility> facilities;
+  private String loginEmail;
+
+  @Setter @Embedded private PersonName nameInfo;
+
+  @Column(nullable = true)
+  @Getter
+  private Date lastSeen;
+
+  @OneToMany(cascade = ALL, mappedBy = "apiUser", orphanRemoval = true)
+  private Set<ApiUserFacility> facilityAssignments = new HashSet<>();
+
+  @OneToMany(cascade = ALL, mappedBy = "apiUser", orphanRemoval = true)
+  private Set<ApiUserRole> roleAssignments = new HashSet<>();
 
   protected ApiUser() {
     /* for hibernate */ }
@@ -46,27 +49,37 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     lastSeen = null;
   }
 
-  public String getLoginEmail() {
-    return loginEmail;
-  }
-
-  public void setLoginEmail(String newEmail) {
-    loginEmail = newEmail;
-  }
-
-  public Date getLastSeen() {
-    return lastSeen;
+  @Override
+  public PersonName getNameInfo() {
+    return nameInfo;
   }
 
   public void updateLastSeen() {
     lastSeen = new Date();
   }
 
-  public PersonName getNameInfo() {
-    return nameInfo;
+  public Set<Facility> getFacilities() {
+    return this.facilityAssignments.stream()
+        .map(ApiUserFacility::getFacility)
+        .collect(Collectors.toSet());
   }
 
-  public void setNameInfo(PersonName name) {
-    nameInfo = name;
+  public void setFacilities(Set<Facility> facilities) {
+    this.facilityAssignments.clear();
+    for (Facility facility : facilities) {
+      this.facilityAssignments.add(new ApiUserFacility(this, facility));
+    }
+  }
+
+  public void setRoles(Set<OrganizationRole> newOrgRoles, Organization org) {
+    this.roleAssignments.clear();
+    for (OrganizationRole orgRole : newOrgRoles) {
+      if (orgRole.equals(OrganizationRole.NO_ACCESS)) {
+        // the NO_ACCESS role is only relevant for the Okta implementation of authorization, and it
+        // doesn't need to be persisted in our tables
+        continue;
+      }
+      this.roleAssignments.add(new ApiUserRole(this, org, orgRole));
+    }
   }
 }
