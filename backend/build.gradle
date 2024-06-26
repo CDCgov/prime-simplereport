@@ -207,7 +207,7 @@ sonar {
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info,ops/services/app_functions/report_stream_batched_publisher/functions/coverage/lcov.info"
         property "sonar.gradle.skipCompile", "false"
         property "sonar.java.binaries", "backend/build/classes/java/main"
-        property "sonar.verbose", "true"
+        property "sonar.verbose", "false"
     }
 }
 
