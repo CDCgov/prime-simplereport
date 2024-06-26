@@ -3,6 +3,7 @@ import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import { User } from "../../../generated/graphql";
+import SeparatorLine from "../../supportAdmin/Components/SeparatorLine";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import DeleteUserModal from "./DeleteUserModal";
@@ -95,7 +96,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
             disabled={isUpdating || !isUserActive}
           />
         </div>
-        <div className="userinfo-divider"></div>
+        <SeparatorLine classNames={"margin-left-neg-4 margin-right-neg-2"} />
         <h3 className="user-controls-header">User controls</h3>
         <div
           className={classnames(

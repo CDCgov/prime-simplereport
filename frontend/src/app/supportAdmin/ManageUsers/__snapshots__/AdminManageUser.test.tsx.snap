@@ -302,7 +302,7 @@ exports[`Admin manage users Undelete user 1`] = `
                     </button>
                   </div>
                   <div
-                    class="userinfo-divider"
+                    class="sr-separator-line margin-left-neg-4 margin-right-neg-2"
                   />
                   <h3
                     class="user-controls-header"
@@ -685,7 +685,7 @@ exports[`Admin manage users Undelete user 2`] = `
                     </button>
                   </div>
                   <div
-                    class="userinfo-divider"
+                    class="sr-separator-line margin-left-neg-4 margin-right-neg-2"
                   />
                   <h3
                     class="user-controls-header"
@@ -1570,7 +1570,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                     </button>
                   </div>
                   <div
-                    class="userinfo-divider"
+                    class="sr-separator-line margin-left-neg-4 margin-right-neg-2"
                   />
                   <h3
                     class="user-controls-header"
