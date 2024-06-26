@@ -325,7 +325,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               </button>
             </div>
             <div
-              class="userinfo-divider"
+              class="sr-separator-line margin-left-neg-4 margin-right-neg-2"
             />
             <h3
               class="user-controls-header"

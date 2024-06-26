@@ -517,194 +517,247 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                   <legend>
                     Disease Information
                   </legend>
-                  <div
-                    class="grid-row grid-gap"
-                  >
+                  <div>
                     <div
-                      class="tablet:grid-col"
+                      class="grid-row grid-gap"
                     >
                       <div
-                        class="usa-form-group prime-dropdown  margin-top-1"
+                        class="tablet:grid-col"
                       >
-                        <label
-                          class="usa-label"
-                          for="6"
+                        <div
+                          class="usa-form-group prime-dropdown  margin-top-1"
                         >
-                          Disease
-                          <abbr
-                            class="usa-hint usa-hint--required"
-                            title="required"
+                          <label
+                            class="usa-label"
+                            for="6"
                           >
-                             
-                            *
-                          </abbr>
-                        </label>
-                        <select
-                          aria-required="true"
-                          class="usa-select"
-                          disabled=""
-                          id="6"
-                          name="supportedDiseases.0.supportedDisease"
+                            Disease
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
+                          </label>
+                          <select
+                            aria-required="true"
+                            class="usa-select"
+                            disabled=""
+                            id="6"
+                            name="supportedDiseases.0.supportedDisease"
+                          >
+                            <option
+                              value=""
+                            />
+                            <option
+                              aria-selected="false"
+                              value="294729"
+                            >
+                              COVID-19
+                            </option>
+                            <option
+                              aria-selected="false"
+                              value="123-456"
+                            >
+                              Flu A
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div
+                        class="tablet:grid-col"
+                      >
+                        <div
+                          class="usa-form-group margin-top-1"
                         >
-                          <option
+                          <label
+                            class="usa-label"
+                            for="7"
+                          >
+                            Test performed
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="true"
+                            class="usa-input"
+                            disabled=""
+                            id="7"
+                            name="supportedDiseases.0.testPerformedLoincCode"
+                            type="text"
                             value=""
                           />
-                          <option
-                            aria-selected="false"
-                            value="294729"
+                        </div>
+                      </div>
+                      <div
+                        class="tablet:grid-col"
+                      >
+                        <div
+                          class="usa-form-group margin-top-1"
+                        >
+                          <label
+                            class="usa-label"
+                            for="8"
                           >
-                            COVID-19
-                          </option>
-                          <option
-                            aria-selected="false"
-                            value="123-456"
+                            Test ordered
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="true"
+                            class="usa-input"
+                            disabled=""
+                            id="8"
+                            name="supportedDiseases.0.testOrderedLoincCode"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="tablet:grid-col"
+                      >
+                        <div
+                          class="usa-form-group margin-top-1"
+                        >
+                          <label
+                            class="usa-label"
+                            for="9"
                           >
-                            Flu A
-                          </option>
-                        </select>
+                            Testkit Name Id
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="false"
+                            class="usa-input"
+                            disabled=""
+                            id="9"
+                            name="supportedDiseases.0.testkitNameId"
+                            type="text"
+                            value=""
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div
-                      class="tablet:grid-col"
-                    >
                       <div
-                        class="usa-form-group margin-top-1"
+                        class="tablet:grid-col"
                       >
-                        <label
-                          class="usa-label"
-                          for="7"
+                        <div
+                          class="usa-form-group margin-top-1"
                         >
-                          Test performed
-                          <abbr
-                            class="usa-hint usa-hint--required"
-                            title="required"
+                          <label
+                            class="usa-label"
+                            for="10"
                           >
-                             
-                            *
-                          </abbr>
-                        </label>
-                        <input
-                          aria-disabled="true"
-                          aria-required="true"
-                          class="usa-input"
-                          disabled=""
-                          id="7"
-                          name="supportedDiseases.0.testPerformedLoincCode"
-                          type="text"
-                          value=""
-                        />
+                            Equipment Uid
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="false"
+                            class="usa-input"
+                            disabled=""
+                            id="10"
+                            name="supportedDiseases.0.equipmentUid"
+                            type="text"
+                            value=""
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div
-                      class="tablet:grid-col"
-                    >
                       <div
-                        class="usa-form-group margin-top-1"
+                        class="tablet:grid-col"
                       >
-                        <label
-                          class="usa-label"
-                          for="8"
+                        <div
+                          class="usa-form-group margin-top-1"
                         >
-                          Test ordered
-                          <abbr
-                            class="usa-hint usa-hint--required"
-                            title="required"
+                          <label
+                            class="usa-label"
+                            for="11"
                           >
-                             
-                            *
-                          </abbr>
-                        </label>
-                        <input
-                          aria-disabled="true"
-                          aria-required="true"
-                          class="usa-input"
-                          disabled=""
-                          id="8"
-                          name="supportedDiseases.0.testOrderedLoincCode"
-                          type="text"
-                          value=""
-                        />
+                            Uid Type
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="false"
+                            class="usa-input"
+                            disabled=""
+                            id="11"
+                            name="supportedDiseases.0.equipmentUidType"
+                            type="text"
+                            value=""
+                          />
+                        </div>
                       </div>
                     </div>
                     <div
-                      class="tablet:grid-col"
+                      class="grid-row grid-gap"
                     >
                       <div
-                        class="usa-form-group margin-top-1"
+                        class="tablet:grid-col"
                       >
-                        <label
-                          class="usa-label"
-                          for="9"
+                        <div
+                          class="usa-form-group margin-top-1"
                         >
-                          Testkit Name Id
-                        </label>
-                        <input
-                          aria-disabled="true"
-                          aria-required="false"
-                          class="usa-input"
-                          disabled=""
-                          id="9"
-                          name="supportedDiseases.0.testkitNameId"
-                          type="text"
-                          value=""
-                        />
+                          <label
+                            class="usa-label"
+                            for="12"
+                          >
+                            Test Ordered Loinc Long Name
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="false"
+                            class="usa-input"
+                            disabled=""
+                            id="12"
+                            name="supportedDiseases.0.testOrderedLoincLongName"
+                            type="text"
+                            value=""
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div
-                      class="tablet:grid-col"
-                    >
                       <div
-                        class="usa-form-group margin-top-1"
+                        class="tablet:grid-col"
                       >
-                        <label
-                          class="usa-label"
-                          for="10"
+                        <div
+                          class="usa-form-group margin-top-1"
                         >
-                          Equipment Uid
-                        </label>
-                        <input
-                          aria-disabled="true"
-                          aria-required="false"
-                          class="usa-input"
-                          disabled=""
-                          id="10"
-                          name="supportedDiseases.0.equipmentUid"
-                          type="text"
-                          value=""
-                        />
+                          <label
+                            class="usa-label"
+                            for="13"
+                          >
+                            Test Performed Loinc Long Name
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="false"
+                            class="usa-input"
+                            disabled=""
+                            id="13"
+                            name="supportedDiseases.0.testPerformedLoincLongName"
+                            type="text"
+                            value=""
+                          />
+                        </div>
                       </div>
                     </div>
                     <div
-                      class="tablet:grid-col"
-                    >
-                      <div
-                        class="usa-form-group margin-top-1"
-                      >
-                        <label
-                          class="usa-label"
-                          for="11"
-                        >
-                          Uid Type
-                        </label>
-                        <input
-                          aria-disabled="true"
-                          aria-required="false"
-                          class="usa-input"
-                          disabled=""
-                          id="11"
-                          name="supportedDiseases.0.equipmentUidType"
-                          type="text"
-                          value=""
-                        />
-                      </div>
-                    </div>
+                      class="grid-row"
+                    />
                     <div
-                      class="flex-align-self-end"
-                    >
-                      <div
-                        class="padding-205 height-5"
-                      />
-                    </div>
+                      class="sr-separator-line margin-top-2 margin-bottom-2"
+                    />
                   </div>
                 </fieldset>
                 <div

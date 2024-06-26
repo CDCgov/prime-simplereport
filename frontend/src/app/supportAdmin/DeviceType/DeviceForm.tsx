@@ -19,6 +19,8 @@ export type SupportedDiseasesFormData = {
   testPerformedLoincCode: string;
   testOrderedLoincCode?: string;
   testkitNameId?: string;
+  testOrderedLoincLongName?: string;
+  testPerformedLoincLongName?: string;
 };
 
 export type DeviceFormData = {
@@ -81,29 +83,33 @@ const DeviceForm = (props: Props) => {
       name: deviceData.name,
       supportedDiseaseTestPerformed: deviceData.supportedDiseases.map(
         (supportedDisease: SupportedDiseasesFormData) => {
-          const convertedSupportedDisease = {
+          const convertedSupportedDisease: SupportedDiseasesFormData = {
             supportedDisease: supportedDisease.supportedDisease,
             testPerformedLoincCode: supportedDisease.testPerformedLoincCode,
           };
           if (supportedDisease.equipmentUid) {
-            // @ts-ignore
             convertedSupportedDisease["equipmentUid"] =
               supportedDisease.equipmentUid;
           }
           if (supportedDisease.equipmentUidType) {
-            // @ts-ignore
             convertedSupportedDisease["equipmentUidType"] =
               supportedDisease.equipmentUidType;
           }
           if (supportedDisease.testkitNameId) {
-            // @ts-ignore
             convertedSupportedDisease["testkitNameId"] =
               supportedDisease.testkitNameId;
           }
           if (supportedDisease.testOrderedLoincCode) {
-            // @ts-ignore
             convertedSupportedDisease["testOrderedLoincCode"] =
               supportedDisease.testOrderedLoincCode;
+          }
+          if (supportedDisease.testOrderedLoincLongName) {
+            convertedSupportedDisease["testOrderedLoincLongName"] =
+              supportedDisease.testOrderedLoincLongName;
+          }
+          if (supportedDisease.testPerformedLoincLongName) {
+            convertedSupportedDisease["testPerformedLoincLongName"] =
+              supportedDisease.testPerformedLoincLongName;
           }
           return convertedSupportedDisease;
         }
@@ -170,6 +176,10 @@ const DeviceForm = (props: Props) => {
                 equipmentUid: diseaseTestPerformed.equipmentUid,
                 equipmentUidType: diseaseTestPerformed.equipmentUidType,
                 testOrderedLoincCode: diseaseTestPerformed.testOrderedLoincCode,
+                testPerformedLoincLongName:
+                  diseaseTestPerformed.testPerformedLoincLongName,
+                testOrderedLoincLongName:
+                  diseaseTestPerformed.testOrderedLoincLongName,
               })
             ),
         }
