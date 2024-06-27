@@ -13,15 +13,23 @@ const DiseaseSpecificUploadContainer = () => {
     <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
       <div className="usa-alert__body">
         <h2 className="usa-alert__heading">
-          New: Report flu and RSV results to California
+          New: Report flu and RSV results in select jurisdictions
         </h2>
         <div className="usa-alert__text">
           <p>
-            Organizations sending results to the California Department of Public
-            Health (CDPH) can now use the bulk results upload feature to report
-            positive flu and RSV tests. Report{" "}
+            SimpleReport allows organizations to report{" "}
             {BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT} results all from a single
-            spreadsheet.{" "}
+            spreadsheet to a growing number of jurisdictions. To check if your
+            jurisdiction is currently supported, please refer to the "Test for
+            Other Diseases" section in the{" "}
+            <a
+              href={
+                "https://www.simplereport.gov/using-simplereport/test-for-other-diseases/influenza/"
+              }
+            >
+              SimpleReport online user guide
+            </a>
+            .{" "}
             <a
               href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
               onClick={() => {
@@ -30,7 +38,7 @@ const DiseaseSpecificUploadContainer = () => {
                 });
               }}
             >
-              See more information and guidance about flu and RSV reporting
+              See more information and guidance about reporting these diseases
             </a>
             .
           </p>
