@@ -154,7 +154,7 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Sonar analysis
         if: ${{ github.actor != 'dependabot[bot]' }}
-        run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
+        run: ./gradlew sonar -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
