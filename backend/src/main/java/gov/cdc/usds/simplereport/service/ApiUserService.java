@@ -575,7 +575,9 @@ public class ApiUserService {
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     boolean isAdmin = _authService.isSiteAdmin();
     if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
-      currentUser = setRolesAndFacilities(currentOrgRoles.get(), currentUser);
+      if (currentOrgRoles.isPresent()) {
+        currentUser = setRolesAndFacilities(currentOrgRoles.get(), currentUser);
+      }
     }
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
