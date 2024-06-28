@@ -25,7 +25,7 @@ public class UserResolver {
 
   @QueryMapping
   public User whoami() {
-    return new User(_userService.getCurrentUserInfo());
+    return new User(_userService.getCurrentUserInfoForWhoAmI());
   }
 
   @QueryMapping
