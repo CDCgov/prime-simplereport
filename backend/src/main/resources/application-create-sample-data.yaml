@@ -255,7 +255,7 @@ simple-report:
           last-name: Samuels
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: ADMIN
+          granted-roles: ADMIN, ALL_FACILITIES
       - identity:
           username: megan@example.com
           first-name: Megan
@@ -263,4 +263,4 @@ simple-report:
           last-name: Mathison
         authorization:
           organization-external-id: DAT_ORG
-          granted-roles: ADMIN
+          granted-roles: ADMIN, ALL_FACILITIES
