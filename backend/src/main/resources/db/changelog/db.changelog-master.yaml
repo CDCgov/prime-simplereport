@@ -5626,3 +5626,20 @@ databaseChangeLog:
                     references: role
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};
+
+  - changeSet:
+      id: add-timer-started-at-to-test_order-table
+      author: ggs2@cdc.gov
+      changes:
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: timer_started_at
+                  type: text
+                  constraints:
+                    nullable: true
+      rollback:
+        - dropColumn:
+            tableName: test_order
+            columnName: timer_started_at
