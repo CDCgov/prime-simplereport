@@ -114,4 +114,10 @@ public class QueueMutationResolver {
       personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
     }
   }
+
+  @MutationMapping
+  public void updateTestOrderTimerStartedAt(
+      @Argument UUID testOrderId, @Argument String startedAt) {
+    testOrderService.updateTimerStartedAt(testOrderId, startedAt);
+  }
 }

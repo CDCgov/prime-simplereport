@@ -484,6 +484,16 @@ public class TestOrderService {
     _testOrderRepo.save(order);
   }
 
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
+  public void updateTimerStartedAt(UUID id, String startedAt) {
+    Optional<TestOrder> optionalTestOrder = _testOrderRepo.findById(id);
+    if (optionalTestOrder.isPresent()) {
+      TestOrder order = optionalTestOrder.get();
+      order.setTimerStartedAt(startedAt);
+      _testOrderRepo.save(order);
+    }
+  }
+
   private TestOrder retrieveTestOrder(UUID patientId) {
     Organization org = _organizationService.getCurrentOrganization();
     Person patient = _personService.getPatientNoPermissionsCheck(patientId, org);

@@ -279,6 +279,7 @@ type TestOrder {
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
+  timerStartedAt: String
 }
 
 type TestResult {
@@ -693,6 +694,10 @@ type Mutation {
     noSymptoms: Boolean
     genderOfSexualPartners: [String]
     testResultDelivery: TestResultDeliveryPreference
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
+  updateTestOrderTimerStartedAt(
+    testOrderId: ID!
+    startedAt: String
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])

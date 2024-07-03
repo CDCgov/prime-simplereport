@@ -14,6 +14,8 @@ import {
   QueriedFacility,
   QueriedTestOrder,
 } from "../TestCardForm/types";
+import { useUpdateTestOrderTimerStartedAtMutation } from "../../../generated/graphql";
+import { getAppInsights } from "../../TelemetryService";
 
 import { CloseTestCardModal } from "./CloseTestCardModal";
 
@@ -39,17 +41,44 @@ export const TestCard = ({
   const navigate = useNavigate();
   const timer = useTestTimer(
     testOrder.internalId,
-    testOrder.deviceType.testLength
+    testOrder.deviceType.testLength,
+    Number(testOrder.timerStartedAt)
   );
   const organization = useSelector<RootState, Organization>(
     (state: any) => state.organization as Organization
   );
+  const [updateTestOrderTimerStartedAt] =
+    useUpdateTestOrderTimerStartedAtMutation();
 
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
 
   const [isExpanded, setIsExpanded] = useState(true);
 
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
+
+  const appInsights = getAppInsights();
+
+  const timerContext = {
+    organizationName: organization.name,
+    facilityName: facility!.name,
+    patientId: testOrder.patient.internalId,
+    testOrderId: testOrder.internalId,
+  };
+
+  const trackTimerReset = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Test timer reset" }, timerContext);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      testOrder.timerStartedAt === null ||
+      testOrder.timerStartedAt === undefined
+    ) {
+      timer.reset(trackTimerReset);
+    }
+  }, [testOrder.timerStartedAt]);
 
   useEffect(() => {
     if (startTestPatientId === testOrder.patient.internalId) {
@@ -59,13 +88,6 @@ export const TestCard = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const timerContext = {
-    organizationName: organization.name,
-    facilityName: facility!.name,
-    patientId: testOrder.patient.internalId,
-    testOrderId: testOrder.internalId,
-  };
-
   const { patientFullName, patientDateOfBirth } =
     useTestOrderPatient(testOrder);
 
@@ -74,6 +96,22 @@ export const TestCard = ({
   const removeTestFromQueue = async () => {
     await removePatientFromQueue(testOrder.patient.internalId);
     removeTimer(testOrder.internalId);
+  };
+
+  const saveStartedAtCallback = async (startedAt: number | undefined) => {
+    const response = await updateTestOrderTimerStartedAt({
+      variables: {
+        testOrderId: testOrder.internalId,
+        startedAt: startedAt?.toString(),
+      },
+    });
+    if (!response.data) {
+      throw Error("updateTestOrderTimerStartedAt null response data");
+    }
+    if (startedAt === undefined) {
+      timer.reset(trackTimerReset);
+      testOrder.timerStartedAt = "0";
+    }
   };
 
   return (
@@ -146,7 +184,11 @@ export const TestCard = ({
             </div>
             <div className="grid-col"></div>
             <div className="grid-col-auto padding-x-0">
-              <TestTimerWidget timer={timer} context={timerContext} />
+              <TestTimerWidget
+                timer={timer}
+                context={timerContext}
+                saveStartedAtCallback={saveStartedAtCallback}
+              />
             </div>
             <div className="grid-col-auto close-button-col">
               <Button

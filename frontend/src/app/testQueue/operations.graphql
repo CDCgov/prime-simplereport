@@ -99,6 +99,7 @@ query GetFacilityQueue($facilityId: ID!) {
         dateTested
         correctionStatus
         reasonForCorrection
+        timerStartedAt
     }
     facility(id: $facilityId) {
         name
@@ -123,4 +124,14 @@ query GetFacilityQueue($facilityId: ID!) {
             }
         }
     }
+}
+
+mutation UpdateTestOrderTimerStartedAt(
+    $testOrderId: ID!
+    $startedAt: String
+) {
+    updateTestOrderTimerStartedAt(
+        testOrderId: $testOrderId
+        startedAt: $startedAt
+    )
 }

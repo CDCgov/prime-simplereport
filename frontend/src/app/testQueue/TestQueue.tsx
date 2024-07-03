@@ -211,7 +211,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
       testOrderQueue &&
       testOrderQueue.map((testOrder) => {
         if (!testOrder) return <></>;
-
         return (
           <CSSTransition
             key={testOrder.internalId}

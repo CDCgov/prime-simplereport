@@ -179,7 +179,7 @@ export const useTestTimer = (
 ) => {
   const [, setCount] = useState(0);
   const timer: Timer = findTimer(id) || addTimer(id, testLength);
-  if (startedAt !== 0) {
+  if (startedAt !== null && startedAt !== undefined && startedAt !== 0) {
     timer.setStartedAt(startedAt);
   }
   useEffect(() => {
