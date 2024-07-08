@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api.healthcheck;
 
-import static gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator.ACTIVE_LITERAL;
+import static gov.cdc.usds.simplereport.api.heathcheck.OktaHealthIndicator.ACTIVE_LITERAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
