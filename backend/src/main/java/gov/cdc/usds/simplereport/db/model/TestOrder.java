@@ -55,6 +55,11 @@ public class TestOrder extends BaseTestInfo {
   @Setter
   private Set<Result> results = new HashSet<>();
 
+  @Column(name = "timer_started_at")
+  @Getter
+  @Setter
+  private String timerStartedAt;
+
   protected TestOrder() {
     /* for hibernate */
   }
