@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -690,9 +691,7 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public String getApplicationStatusForHealthCheck() {
-    //        return Objects.requireNonNull(app.getStatus()).toString();
-    //        Demo hardcode return to test on a lower.
-    return "INACTIVE";
+    return Objects.requireNonNull(app.getStatus()).toString();
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
