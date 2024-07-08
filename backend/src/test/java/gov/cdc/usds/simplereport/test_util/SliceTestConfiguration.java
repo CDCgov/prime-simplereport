@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator;
+import gov.cdc.usds.simplereport.api.heathcheck.OktaHealthIndicator;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
@@ -105,6 +106,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   TenantDataAccessService.class,
   PatientSelfRegistrationLinkService.class,
   BackendAndDatabaseHealthIndicator.class,
+  OktaHealthIndicator.class,
   EmailService.class,
   SendGridDisabledConfiguration.class,
 })
