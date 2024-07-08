@@ -34,7 +34,7 @@ const DeploySmokeTest = (): JSX.Element => {
       .getRequest("/actuator/health")
       .then((response) => {
         const status = JSON.parse(response);
-        if (status.okta === "UP") return setOktaStatus(true);
+        if (status.components.okta.status === "UP") return setOktaStatus(true);
         setOktaStatus(false);
       })
       .catch((e) => {
