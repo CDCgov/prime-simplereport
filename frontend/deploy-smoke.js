@@ -3,7 +3,6 @@
 // endpoint which does a simple ping to a non-sensitive DB table to verify
 // all the connections are good.
 // https://github.com/CDCgov/prime-simplereport/pull/7057
-
 require("dotenv").config();
 let { Builder } = require("selenium-webdriver");
 const Chrome = require("selenium-webdriver/chrome");
@@ -33,12 +32,12 @@ driver
     return value;
   })
   .then((value) => {
-    if (value.includes("success")) {
+    if (value.includes("App status returned success")) {
       console.log(`Smoke test returned success status for ${appUrl}`);
       process.exitCode = 0;
       return;
     }
-    if (value.includes("failure")) {
+    if (value.includes("App status returned failure")) {
       console.log(`Smoke test returned failure status for ${appUrl}`);
       process.exitCode = 1;
       return;

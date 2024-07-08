@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import static gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator.ACTIVE_LITERAL;
+import static gov.cdc.usds.simplereport.api.heathcheck.OktaHealthIndicator.ACTIVE_LITERAL;
 
 import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;

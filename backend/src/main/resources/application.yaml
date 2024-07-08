@@ -78,6 +78,11 @@ management:
   endpoint.info.enabled: true
   endpoints.web.exposure.include: health, info
   endpoint.health.show-components: always
+  endpoint:
+    health:
+      status:
+        http-mapping:
+          okta_degraded: 204
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
