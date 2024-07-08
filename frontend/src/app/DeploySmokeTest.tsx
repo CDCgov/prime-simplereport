@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 
 import FetchClient from "./utils/api";
 
-const APP_STATUS_LOADING = "App status loading...";
-const APP_STATUS_SUCCESS = "App status returned success :)";
-const APP_STATUS_FAILURE = "App status returned failure :(";
+export const APP_STATUS_LOADING = "App status loading...";
+export const APP_STATUS_SUCCESS = "App status returned success :)";
+export const APP_STATUS_FAILURE = "App status returned failure :(";
 
-const OKTA_STATUS_LOADING = "Okta status loading...";
-const OKTA_STATUS_SUCCESS = "Okta status returned success :)";
-const OKTA_STATUS_FAILURE = "Okta status returned failure :(";
+export const OKTA_STATUS_LOADING = "Okta status loading...";
+export const OKTA_STATUS_SUCCESS = "Okta status returned success :)";
+export const OKTA_STATUS_FAILURE = "Okta status returned failure :(";
 
 const api = new FetchClient(undefined, { mode: "cors" });
 const DeploySmokeTest = (): JSX.Element => {
