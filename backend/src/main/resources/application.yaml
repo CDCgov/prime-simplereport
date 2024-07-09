@@ -74,10 +74,16 @@ server:
   error:
     include-stacktrace: never
 management:
-  endpoint.health.probes.enabled: true
-  endpoint.info.enabled: true
   endpoints.web.exposure.include: health, info
-  endpoint.health.show-components: always
+  endpoint:
+    info:
+      enabled: true
+    health:
+      show-components: always
+      status:
+        http-mapping:
+          okta_degraded: 204
+      probes.enabled: true
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
