@@ -80,9 +80,11 @@ management:
   endpoint.health.show-components: always
   endpoint:
     health:
+      show-components: always
       status:
         http-mapping:
           okta_degraded: 204
+      probes.enabled: true
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
