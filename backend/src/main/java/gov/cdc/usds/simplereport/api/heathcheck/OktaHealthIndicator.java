@@ -16,13 +16,19 @@ public class OktaHealthIndicator implements HealthIndicator {
 
   @Override
   public Health health() {
-    String oktaStatus = _oktaRepo.getApplicationStatusForHealthCheck();
-    if (!ACTIVE_LITERAL.equals(oktaStatus)) {
-      log.info("Okta status didn't return ACTIVE, instead returned " + oktaStatus);
+    try {
+      String oktaStatus = _oktaRepo.getApplicationStatusForHealthCheck();
+      if (!ACTIVE_LITERAL.equals(oktaStatus)) {
+        log.info("Okta status didn't return ACTIVE, instead returned " + oktaStatus);
+        Health.Builder oktaDegradedWarning = Health.status("OKTA_DEGRADED");
+        return oktaDegradedWarning.build();
+      }
+    } catch (NullPointerException e) {
+      log.info("Call to Okta repository status returned null");
       Health.Builder oktaDegradedWarning = Health.status("OKTA_DEGRADED");
-
       return oktaDegradedWarning.build();
     }
+
     return Health.up().build();
   }
 }
