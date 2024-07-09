@@ -32,16 +32,35 @@ driver
     return value;
   })
   .then((value) => {
+    let appStatusSuccess, oktaStatusSuccess;
     if (value.includes("App status returned success")) {
+      appStatusSuccess = true;
+    }
+    if (value.includes("Okta status returned success")) {
+      oktaStatusSuccess = true;
+    }
+    if (value.includes("App status returned failure")) {
+      appStatusSuccess = false;
+    }
+    if (value.includes("Okta status returned failure")) {
+      oktaStatusSuccess = false;
+    }
+
+    if (appStatusSuccess && oktaStatusSuccess) {
       console.log(`Smoke test returned success status for ${appUrl}`);
       process.exitCode = 0;
       return;
     }
-    if (value.includes("App status returned failure")) {
+
+    if (appStatusSuccess === false || oktaStatusSuccess === false) {
       console.log(`Smoke test returned failure status for ${appUrl}`);
+      console.log(
+        `App health returned ${appStatusSuccess}, okta health returned ${oktaStatusSuccess}`
+      );
       process.exitCode = 1;
       return;
     }
+
     console.log("Smoke test encountered unknown failure.");
     console.log(`Root element value was: ${value}`);
     process.exitCode = 1;
