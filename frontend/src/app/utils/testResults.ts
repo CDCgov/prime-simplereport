@@ -43,32 +43,19 @@ export function hasMultipleResults(results: MultiplexResults): boolean {
   return results?.length > 1;
 }
 
-export function hasPositiveFluResults(results: MultiplexResults): boolean {
-  return (
-    results.filter(
-      (multiplexResult: MultiplexResult) =>
-        multiplexResult.disease.name.includes("Flu") &&
-        multiplexResult.testResult === TEST_RESULTS.POSITIVE
-    ).length > 0
-  );
-}
-
-export function hasDiseaseSpecificResults(
-  results: MultiplexResults | null,
-  diseaseName: MultiplexDisease
+export function hasResultForDisease(
+  results: MultiplexResults | null | undefined,
+  diseaseName: MultiplexDisease,
+  positivesOnly: boolean = false
 ): boolean {
-  if (results) {
-    return results.map((result) => result.disease.name).includes(diseaseName);
+  if (!results) {
+    return false;
   }
-  return false;
-}
-
-export function hasPositiveRsvResults(results: MultiplexResults): boolean {
   return (
     results.filter(
       (multiplexResult: MultiplexResult) =>
-        multiplexResult.disease.name.includes("RSV") &&
-        multiplexResult.testResult === TEST_RESULTS.POSITIVE
+        multiplexResult.disease.name === diseaseName &&
+        (!positivesOnly || multiplexResult.testResult === TEST_RESULTS.POSITIVE)
     ).length > 0
   );
 }
@@ -88,9 +75,11 @@ export const getModifiedResultsForGuidance = (results: MultiplexResults) => {
 
 export const displayGuidance = (results: MultiplexResults) => {
   return (
-    hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.COVID_19) ||
-    hasPositiveFluResults(results) ||
-    hasPositiveRsvResults(results) ||
-    hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.HIV)
+    hasResultForDisease(results, MULTIPLEX_DISEASES.COVID_19, false) ||
+    hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_A, true) ||
+    hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_B, true) ||
+    hasResultForDisease(results, MULTIPLEX_DISEASES.RSV, true) ||
+    hasResultForDisease(results, MULTIPLEX_DISEASES.HIV, false) ||
+    hasResultForDisease(results, MULTIPLEX_DISEASES.SYPHILIS, true)
   );
 };

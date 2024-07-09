@@ -433,9 +433,12 @@ export const es: LanguageConfig = {
         },
       },
       syphilisNotes: {
-        h1: "Para Sífilis:",
-        all: {
-          p0: "Sífilis",
+        h1: "Para sífilis:",
+        positive: {
+          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
+          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del sífilis</0> (cdc.gov/std/treatment-guidelines/syphilis.htm).",
+          treatmentLink:
+            "https://www.cdc.gov/std/treatment-guidelines/syphilis.htm",
         },
       },
       tos: {

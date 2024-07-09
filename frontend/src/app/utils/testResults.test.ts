@@ -5,9 +5,8 @@ import {
   getModifiedResultsForGuidance,
   getResultByDiseaseName,
   getSortedResults,
-  hasDiseaseSpecificResults,
   hasMultipleResults,
-  hasPositiveFluResults,
+  hasResultForDisease,
 } from "./testResults";
 
 describe("getResultByDiseaseName", () => {
@@ -128,75 +127,103 @@ describe("hasMultipleResults", () => {
   });
 });
 
-describe("hasPositiveFluResults", () => {
+describe("hasResultForDisease", () => {
   let results: MultiplexResult[] = [];
-  it("returns true if it contains a positive flu result", () => {
-    results = [
-      {
-        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-        testResult: TEST_RESULTS.UNDETERMINED,
-      },
-      {
-        disease: { name: MULTIPLEX_DISEASES.FLU_A },
-        testResult: TEST_RESULTS.POSITIVE,
-      },
-      {
-        disease: { name: MULTIPLEX_DISEASES.FLU_B },
-        testResult: TEST_RESULTS.POSITIVE,
-      },
-    ];
-    expect(hasPositiveFluResults(results)).toEqual(true);
-  });
-  it("returns false if it does not contain a flu result", () => {
-    results = [
-      {
-        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-        testResult: TEST_RESULTS.POSITIVE,
-      },
-    ];
-    expect(hasPositiveFluResults(results)).toEqual(false);
-  });
   it("returns false if it contains no results", () => {
     results = [];
-    expect(hasPositiveFluResults(results)).toEqual(false);
-  });
-});
 
-describe("hasDiseaseSpecificResults", () => {
-  let results: MultiplexResults = [];
-  it("returns true if it contains a flu result", () => {
-    results = [
-      {
-        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-        testResult: TEST_RESULTS.UNDETERMINED,
-      },
-      {
-        disease: { name: MULTIPLEX_DISEASES.FLU_A },
-        testResult: TEST_RESULTS.POSITIVE,
-      },
-      {
-        disease: { name: MULTIPLEX_DISEASES.FLU_B },
-        testResult: TEST_RESULTS.POSITIVE,
-      },
-    ];
-    expect(
-      hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.FLU_A)
-    ).toEqual(true);
-  });
-  it("returns false if it does not contain a hiv result", () => {
-    results = [
-      {
-        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
-        testResult: TEST_RESULTS.POSITIVE,
-      },
-    ];
-    expect(hasDiseaseSpecificResults(results, MULTIPLEX_DISEASES.HIV)).toEqual(
+    expect(hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_B)).toEqual(
+      false
+    );
+    expect(hasResultForDisease(results, MULTIPLEX_DISEASES.HIV, true)).toEqual(
       false
     );
   });
-  it("returns false if it contains no results", () => {
-    results = [];
-    expect(hasPositiveFluResults(results)).toEqual(false);
+  it("returns true if it contains a matching result", () => {
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.HIV },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+    ];
+    expect(hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_A)).toEqual(
+      true
+    );
+    expect(hasResultForDisease(results, MULTIPLEX_DISEASES.COVID_19)).toEqual(
+      true
+    );
+    expect(hasResultForDisease(results, MULTIPLEX_DISEASES.HIV)).toEqual(true);
+  });
+  it("returns false if it does not contain a matching result", () => {
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.HIV },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+    ];
+    expect(hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_B)).toEqual(
+      false
+    );
+  });
+  it("returns true if it contains matching positive results", () => {
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.HIV },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+    ];
+    expect(
+      hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_A, true)
+    ).toEqual(true);
+  });
+  it("returns false if it contains no matching positive results", () => {
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.COVID_19 },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.HIV },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+    ];
+    expect(
+      hasResultForDisease(results, MULTIPLEX_DISEASES.COVID_19, true)
+    ).toEqual(false);
+    expect(hasResultForDisease(results, MULTIPLEX_DISEASES.HIV, true)).toEqual(
+      false
+    );
+    expect(hasResultForDisease(results, MULTIPLEX_DISEASES.RSV, true)).toEqual(
+      false
+    );
   });
 });
 
@@ -311,6 +338,23 @@ describe("displayGuidance", () => {
     ];
     expect(displayGuidance(results)).toEqual(true);
   });
+  it("returns true if it contains a positive Syphilis result", () => {
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+      {
+        disease: { name: MULTIPLEX_DISEASES.SYPHILIS },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+    ];
+    expect(displayGuidance(results)).toEqual(true);
+  });
   it("returns false if it contains no positive Flu or RSV result", () => {
     results = [
       {
@@ -324,6 +368,15 @@ describe("displayGuidance", () => {
       {
         disease: { name: MULTIPLEX_DISEASES.RSV },
         testResult: TEST_RESULTS.NEGATIVE,
+      },
+    ];
+    expect(displayGuidance(results)).toEqual(false);
+  });
+  it("returns false if it contains no positive Syphilis result", () => {
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.SYPHILIS },
+        testResult: TEST_RESULTS.UNDETERMINED,
       },
     ];
     expect(displayGuidance(results)).toEqual(false);

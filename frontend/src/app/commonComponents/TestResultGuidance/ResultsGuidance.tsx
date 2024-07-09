@@ -7,6 +7,7 @@ import CovidResultGuidance from "./CovidResultGuidance";
 import FluResultGuidance from "./FluResultGuidance";
 import RsvResultGuidance from "./RsvResultGuidance";
 import HivResultGuidance from "./HivResultGuidance";
+import SyphilisResultGuidance from "./SyphilisResultGuidance";
 
 interface ResultsGuidanceProps {
   results: MultiplexResult[];
@@ -35,6 +36,8 @@ const generateGuidance = (
         return <HivResultGuidance />;
       case MULTIPLEX_DISEASES.RSV:
         return <RsvResultGuidance result={result} />;
+      case MULTIPLEX_DISEASES.SYPHILIS:
+        return <SyphilisResultGuidance result={result} />;
       default:
         return <></>;
     }
