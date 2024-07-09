@@ -8,6 +8,7 @@ import DeploySmokeTest, {
   OKTA_STATUS_LOADING,
   OKTA_STATUS_SUCCESS,
 } from "./DeploySmokeTest";
+import { generateBackendApiHealthResponse } from "./deploySmokeTestTestConstants";
 
 describe("DeploySmokeTest", () => {
   beforeEach(() => {
@@ -15,9 +16,11 @@ describe("DeploySmokeTest", () => {
   });
 
   it("renders success when returned from the API endpoint", async () => {
-    (fetch as FetchMock).mockResponseOnce(JSON.stringify({ status: "UP" }));
     (fetch as FetchMock).mockResponseOnce(
-      JSON.stringify({ components: { okta: { status: "UP" } }, status: "DOWN" })
+      JSON.stringify(generateBackendApiHealthResponse("UP"))
+    );
+    (fetch as FetchMock).mockResponseOnce(
+      JSON.stringify(generateBackendApiHealthResponse("DOWN"))
     );
 
     render(<DeploySmokeTest />);
@@ -29,7 +32,7 @@ describe("DeploySmokeTest", () => {
 
   it("renders failure when returned from the API endpoint", async () => {
     (fetch as FetchMock).mockResponse(
-      JSON.stringify({ components: { okta: { status: "UP" } }, status: "DOWN" })
+      JSON.stringify(generateBackendApiHealthResponse("DOWN"))
     );
 
     render(<DeploySmokeTest />);
@@ -41,7 +44,7 @@ describe("DeploySmokeTest", () => {
 
   it("renders Okta success when returned from the API endpoint", async () => {
     (fetch as FetchMock).mockResponse(
-      JSON.stringify({ components: { okta: { status: "UP" } }, status: "UP" })
+      JSON.stringify(generateBackendApiHealthResponse())
     );
 
     render(<DeploySmokeTest />);
