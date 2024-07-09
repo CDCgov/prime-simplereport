@@ -15,13 +15,9 @@ describe("DeploySmokeTest", () => {
     (fetch as FetchMock).resetMocks();
   });
 
-  it("renders success when returned from the API endpoint", async () => {
-    (fetch as FetchMock).mockResponseOnce(
-      JSON.stringify(generateBackendApiHealthResponse("UP"))
-    );
-    (fetch as FetchMock).mockResponseOnce(
-      JSON.stringify(generateBackendApiHealthResponse("DOWN"))
-    );
+  it("renders success when returned from the backend API smoke test endpoint", async () => {
+    (fetch as FetchMock).mockResponseOnce(JSON.stringify({ status: "UP" }));
+    (fetch as FetchMock).mockResponseOnce(JSON.stringify({ status: "DOWN" }));
 
     render(<DeploySmokeTest />);
     await waitFor(() =>
@@ -30,10 +26,8 @@ describe("DeploySmokeTest", () => {
     expect(screen.getByText(APP_STATUS_SUCCESS));
   });
 
-  it("renders failure when returned from the API endpoint", async () => {
-    (fetch as FetchMock).mockResponse(
-      JSON.stringify(generateBackendApiHealthResponse("DOWN"))
-    );
+  it("renders failure when returned from the backend API smoke test endpoint", async () => {
+    (fetch as FetchMock).mockResponse(JSON.stringify({ status: "DOWN" }));
 
     render(<DeploySmokeTest />);
     await waitFor(() =>
@@ -42,7 +36,7 @@ describe("DeploySmokeTest", () => {
     expect(screen.getByText(APP_STATUS_FAILURE));
   });
 
-  it("renders Okta success when returned from the API endpoint", async () => {
+  it("renders Okta success when returned from the backend API health endpoint", async () => {
     (fetch as FetchMock).mockResponse(
       JSON.stringify(generateBackendApiHealthResponse())
     );
