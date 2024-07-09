@@ -691,9 +691,7 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public String getApplicationStatusForHealthCheck() {
-    //        return Objects.requireNonNull(app.getStatus()).toString();
-    //        Demo hardcode return to test on a lower.
-    return "INACTIVE";
+    return Objects.requireNonNull(app.getStatus()).toString();
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
