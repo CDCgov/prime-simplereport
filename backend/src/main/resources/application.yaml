@@ -74,11 +74,10 @@ server:
   error:
     include-stacktrace: never
 management:
-  endpoint.health.probes.enabled: true
-  endpoint.info.enabled: true
   endpoints.web.exposure.include: health, info
-  endpoint.health.show-components: always
   endpoint:
+    info:
+      enabled: true
     health:
       show-components: always
       status:
