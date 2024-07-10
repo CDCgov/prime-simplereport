@@ -24,36 +24,20 @@ const CovidResultInfo = ({ result, isPatientApp }: CovidResultInfoProps) => {
             <li>{t("testResult.notes.positive.guidelines.li4")}</li>
             <li>{t("testResult.notes.positive.guidelines.li5")}</li>
           </ul>
-          {isPatientApp ? (
-            <Trans
-              parent="p"
-              i18nKey="testResult.notes.positive.p2"
-              components={[
-                <a
-                  href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html"
-                  key="covid-19-symptoms-info"
-                >
-                  Watch for symptoms and learn when to seek emergency medical
-                  attention
-                </a>,
-              ]}
-            />
-          ) : (
-            <Trans
-              parent="p"
-              i18nKey="testResult.notes.positive.p2"
-              components={[
-                <a
-                  href={t("testResult.notes.positive.symptomsLink")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  key="symptoms-link"
-                >
-                  symptoms link
-                </a>,
-              ]}
-            />
-          )}
+          <Trans
+            parent="p"
+            i18nKey="testResult.notes.positive.p2"
+            components={[
+              <a
+                href={t("testResult.notes.positive.symptomsLink")}
+                target="_blank"
+                rel="noopener noreferrer"
+                key="symptoms-link"
+              >
+                symptoms link
+              </a>,
+            ]}
+          />
           <ul>
             <li>{t("testResult.notes.positive.emergency.li0")}</li>
             <li>{t("testResult.notes.positive.emergency.li1")}</li>
