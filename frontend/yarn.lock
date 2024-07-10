@@ -6106,10 +6106,10 @@
     "@types/mime" "*"
     "@types/node" "*"
 
-"@types/smartystreets-javascript-sdk@^1.6.10":
-  version "1.6.10"
-  resolved "https://registry.yarnpkg.com/@types/smartystreets-javascript-sdk/-/smartystreets-javascript-sdk-1.6.10.tgz#d22d037d582091c28caf549424ee582636311773"
-  integrity sha512-WFbVCaojrbtyD81Pr7jM+R5lPQOhr2SjnF1jIDBw+FiRnYelYE3TXuRXF51KA7eOwnLT+kZsQ/ywdQHLp0ZcPA==
+"@types/smartystreets-javascript-sdk@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@types/smartystreets-javascript-sdk/-/smartystreets-javascript-sdk-5.1.0.tgz#cc96a7bb86117d836029b7a35dd79f507d9bf9bc"
+  integrity sha512-ORZGrjsk75iHqqhB5UJUe/jmMzz0NwzeOIJ4qpE2OO1X1ay4jZty4moWE8T+ndJrRQyyXMGuz3VKMxZ705bK2Q==
   dependencies:
     "@types/express" "*"
 
@@ -7411,7 +7411,7 @@ axios-retry@4.0.0:
   dependencies:
     is-retry-allowed "^2.2.0"
 
-axios@^1.6.2:
+axios@^1.6.2, axios@^1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.7.2.tgz#b625db8a7051fbea61c35a3cbb3a1daa7b9c7621"
   integrity sha512-2A8QhOMrbomlDuiLeK9XibIBzuHeRcqqNOHp0Cyp5EoJ1IFDh+XZH3A6BkXtv0K4gFGCI0Y4BM7B1wOEi0Rmgw==
