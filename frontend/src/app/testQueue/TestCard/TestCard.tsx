@@ -71,6 +71,9 @@ export const TestCard = ({
     }
   };
 
+  // when the test order has a new timer started at value, check if we need to clear the timer
+  // this happens when another user stops a timer, so to keep it in sync
+  // we need to stop it for any other users viewing the same queue
   useEffect(() => {
     if (
       testOrder.timerStartedAt === null ||
