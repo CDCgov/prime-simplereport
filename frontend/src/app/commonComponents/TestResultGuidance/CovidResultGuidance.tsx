@@ -141,7 +141,6 @@ const CovidResultGuidance = ({
   const { t } = useTranslation();
 
   return (
-    // todo: do we need the isPatientApp prop? why don't we use it in other guidance components
     <div className={!isPatientApp ? "sr-margin-bottom-28px" : ""}>
       <p className="text-bold sr-guidance-heading">
         {t("testResult.notes.h1")}
