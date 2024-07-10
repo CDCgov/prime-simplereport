@@ -256,6 +256,7 @@
       ".stories.tsx",
       "<rootDir>/src/app/testQueue/constants.ts",
       "<rootDir>/src/patientApp/timeOfTest/constants.ts"
-    ]
+    ],
+      "transformIgnorePatterns": ["node_modules/(?!axios)/"]
   }
 }
