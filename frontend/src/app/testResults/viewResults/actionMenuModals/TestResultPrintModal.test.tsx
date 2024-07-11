@@ -148,7 +148,8 @@ describe("TestResultPrintModal with multiplex results in SimpleReport App", () =
   });
 });
 
-describe("TestResultPrintModal with multiplex results in Pxp App", () => {
+describe("TestResultPrintModal with multiplex results from Pxp App", () => {
+  // when we render the print modal from the pxp app, the shape of the result data can be slightly different, so we want to test for that case
   let multiplexPxpTestResult = cloneDeep(testResult);
 
   beforeEach(() => {

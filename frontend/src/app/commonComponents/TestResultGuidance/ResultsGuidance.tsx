@@ -43,14 +43,16 @@ const generateGuidance = (
   isPatientApp: boolean
 ) => {
   const modifiedResults = getModifiedResultsForGuidance(results);
-  const guidance = modifiedResults.map((result: MultiplexResult) => {
+  return modifiedResults.map((result: MultiplexResult) => {
     return (
-      <div className={!isPatientApp ? "sr-margin-bottom-28px" : ""}>
+      <div
+        className={!isPatientApp ? "sr-margin-bottom-28px" : ""}
+        key={result.disease.name}
+      >
         {guidanceForResult(result, isPatientApp)}
       </div>
     );
   });
-  return guidance;
 };
 
 const ResultsGuidance: React.FC<ResultsGuidanceProps> = ({
