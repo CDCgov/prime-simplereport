@@ -1600,6 +1600,53 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void aoeCorrectionsTest() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.setDefaultDeviceTypeSpecimenType(
+        _dataFactory.getGenericDevice(), _dataFactory.getGenericSpecimen());
+    Person p = _dataFactory.createFullPerson(org);
+    AskOnEntrySurvey survey =
+        new AskOnEntrySurvey("77386006", null, Map.of("fake", true), false, null, null);
+    TestOrder order = _dataFactory.createTestOrder(p, facility, survey);
+    TestEvent testEvent = _dataFactory.createTestEvent(order);
+
+    // pregnancy marked as Yes on test event
+    assertEquals("77386006", testEvent.getSurveyData().getPregnancy());
+
+    String reasonMsg = "Testing AOE correction " + LocalDateTime.now();
+    TestEvent originalEvent = _service.markAsCorrection(testEvent.getInternalId(), reasonMsg);
+    TestOrder updatedOrder = originalEvent.getTestOrder();
+
+    // now mark pregnancy as No
+    _service.updateAoeQuestions(p.getInternalId(), "60001007", null, null, null, null, null);
+    assertEquals("60001007", updatedOrder.getAskOnEntrySurvey().getSurvey().getPregnancy());
+
+    assertEquals(TestCorrectionStatus.CORRECTED, updatedOrder.getCorrectionStatus());
+    assertEquals(reasonMsg, updatedOrder.getReasonForCorrection());
+    assertEquals(testEvent.getInternalId(), updatedOrder.getTestEvent().getInternalId());
+    assertEquals(OrderStatus.PENDING, updatedOrder.getOrderStatus());
+
+    List<MultiplexResultInput> results =
+        originalEvent.getResults().stream()
+            .map(r -> new MultiplexResultInput(r.getDisease().getName(), r.getTestResult()))
+            .toList();
+
+    // submit queue item
+    AddTestResultResponse response =
+        _service.addMultiplexResult(
+            facility.getDefaultDeviceType().getInternalId(),
+            facility.getDefaultSpecimenType().getInternalId(),
+            results,
+            p.getInternalId(),
+            originalEvent.getDateTested());
+
+    // pregnancy is marked as No on test event
+    assertEquals("60001007", response.getTestOrder().getTestEvent().getSurveyData().getPregnancy());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void markAsErrorTest_backwardCompatible() {
     // GIVEN
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
