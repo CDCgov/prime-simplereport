@@ -1,10 +1,11 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.Translators.DETECTED_SNOMED_CONCEPT;
+import static gov.cdc.usds.simplereport.api.Translators.ABNORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.FEMALE;
 import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
 import static gov.cdc.usds.simplereport.api.Translators.MALE;
 import static gov.cdc.usds.simplereport.api.Translators.NON_BINARY;
+import static gov.cdc.usds.simplereport.api.Translators.NORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.OTHER;
 import static gov.cdc.usds.simplereport.api.Translators.REFUSED;
 import static gov.cdc.usds.simplereport.api.Translators.TRANS_MAN;
@@ -159,6 +160,7 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
+import org.owasp.encoder.Encode;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
@@ -753,19 +755,21 @@ public class FhirConverter {
     return observation;
   }
 
-  private Coding convertToAbnormalFlagInterpretation(String resultCode) {
+  public Coding convertToAbnormalFlagInterpretation(String resultCode) {
     Coding abnormalFlag = new Coding();
 
     abnormalFlag.setSystem(ABNORMAL_FLAGS_CODE_SYSTEM);
 
-    if (resultCode.equals(DETECTED_SNOMED_CONCEPT.code())) {
+    if (ABNORMAL_SNOMEDS.keySet().contains(resultCode)) {
       abnormalFlag.setCode(ABNORMAL_FLAG_ABNORMAL.code());
       abnormalFlag.setDisplay(ABNORMAL_FLAG_ABNORMAL.displayName());
-    } else {
+    } else if (NORMAL_SNOMEDS.keySet().contains(resultCode)) {
       abnormalFlag.setCode(ABNORMAL_FLAG_NORMAL.code());
       abnormalFlag.setDisplay(ABNORMAL_FLAG_NORMAL.displayName());
+    } else {
+      log.info("Unsupported SNOMED result code: {}", Encode.forJava(resultCode));
+      return null;
     }
-
     return abnormalFlag;
   }
 

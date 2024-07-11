@@ -441,12 +441,64 @@ public class Translators {
           Map.entry(OTHER, "Other"));
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
 
+  private static final String DETECTED_SNOMED = "260373001";
+  private static final String NOT_DETECTED_SNOMED = "260415000";
+  private static final String INVALID_SNOMED = "455371000124106";
+  public static final Map<String, SnomedConceptRecord> ABNORMAL_SNOMEDS =
+      Map.ofEntries(
+          Map.entry(
+              DETECTED_SNOMED,
+              new SnomedConceptRecord("Detected", DETECTED_SNOMED, TestResult.POSITIVE)),
+          Map.entry(
+              "720735008",
+              new SnomedConceptRecord("Presumptive positive", "720735008", TestResult.POSITIVE)),
+          Map.entry(
+              "10828004", new SnomedConceptRecord("Positive", "10828004", TestResult.POSITIVE)),
+          Map.entry(
+              "11214006", new SnomedConceptRecord("Reactive", "11214006", TestResult.POSITIVE)));
+
+  public static final Map<String, SnomedConceptRecord> NORMAL_SNOMEDS =
+      Map.ofEntries(
+          Map.entry(
+              NOT_DETECTED_SNOMED,
+              new SnomedConceptRecord("Not detected", NOT_DETECTED_SNOMED, TestResult.NEGATIVE)),
+          Map.entry(
+              "260385009", new SnomedConceptRecord("Negative", "260385009", TestResult.NEGATIVE)),
+          Map.entry(
+              "895231008",
+              new SnomedConceptRecord(
+                  "Not detected in pooled specimen", "895231008", TestResult.NEGATIVE)),
+          Map.entry(
+              "131194007",
+              new SnomedConceptRecord("Non-Reactive", "131194007", TestResult.NEGATIVE)),
+          // certain UNDETERMINED codes are also flagged as normal
+          // https://github.com/CDCgov/prime-reportstream/blob/1ffae4ca0b04cd0aa9f169e26813ecd86df71bb5/prime-router/src/main/kotlin/metadata/Mappers.kt#L768
+          Map.entry(
+              "419984006",
+              new SnomedConceptRecord("Inconclusive", "419984006", TestResult.UNDETERMINED)),
+          Map.entry(
+              "42425007",
+              new SnomedConceptRecord("Equivocal", "42425007", TestResult.UNDETERMINED)),
+          Map.entry(
+              "82334004",
+              new SnomedConceptRecord("Indeterminate", "82334004", TestResult.UNDETERMINED)),
+          Map.entry(
+              "373121007",
+              new SnomedConceptRecord("Test not done", "373121007", TestResult.UNDETERMINED)),
+          Map.entry(
+              INVALID_SNOMED,
+              new SnomedConceptRecord("Invalid result", INVALID_SNOMED, TestResult.UNDETERMINED)),
+          Map.entry(
+              "125154007",
+              new SnomedConceptRecord(
+                  "Specimen unsatisfactory for evaluation", "125154007", TestResult.UNDETERMINED)));
+
   public static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =
-      new SnomedConceptRecord("Detected", "260373001", TestResult.POSITIVE);
+      ABNORMAL_SNOMEDS.get(DETECTED_SNOMED);
   private static final SnomedConceptRecord NOT_DETECTED_SNOMED_CONCEPT =
-      new SnomedConceptRecord("Not detected", "260415000", TestResult.NEGATIVE);
+      NORMAL_SNOMEDS.get(NOT_DETECTED_SNOMED);
   private static final SnomedConceptRecord INVALID_SNOMED_CONCEPT =
-      new SnomedConceptRecord("Invalid result", "455371000124106", TestResult.UNDETERMINED);
+      NORMAL_SNOMEDS.get(INVALID_SNOMED);
   private static final List<SnomedConceptRecord> RESULTS_SNOMED_CONCEPTS =
       List.of(DETECTED_SNOMED_CONCEPT, NOT_DETECTED_SNOMED_CONCEPT, INVALID_SNOMED_CONCEPT);
 

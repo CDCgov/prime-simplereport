@@ -62,6 +62,7 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
@@ -2044,5 +2045,28 @@ class FhirConverterTest {
     assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
         .isEqualTo(DEFAULT_LOCATION_CODE);
     assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
+  }
+
+  @Test
+  void convertToAbnormalFlagInterpretation_withUnsupportedSnomed_returnsNull() {
+    String snomed = "1111";
+    Coding actual = fhirConverter.convertToAbnormalFlagInterpretation(snomed);
+    assertThat(actual).isNull();
+  }
+
+  @ParameterizedTest
+  @MethodSource("snomedArgs")
+  void convertToAbnormalFlagInterpretation_matches(
+      String snomed, String expectedCode, String expectedCodeName) {
+    Coding actual = fhirConverter.convertToAbnormalFlagInterpretation(snomed);
+    assertThat(actual.getCode()).isEqualTo(expectedCode);
+    assertThat(actual.getDisplay()).isEqualTo(expectedCodeName);
+  }
+
+  private static Stream<Arguments> snomedArgs() {
+    return Stream.of(
+        arguments("10828004", "A", "Abnormal"),
+        arguments("131194007", "N", "Normal"),
+        arguments("455371000124106", "N", "Normal"));
   }
 }
