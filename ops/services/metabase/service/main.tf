@@ -49,7 +49,7 @@ resource "azurerm_linux_web_app" "metabase" {
 
     application_stack {
       docker_image     = "metabase/metabase"
-      docker_image_tag = "v0.44.7.1"
+      docker_image_tag = "v0.50.10"
     }
   }
 
