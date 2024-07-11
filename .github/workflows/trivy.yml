@@ -1,0 +1,29 @@
+name: trivy
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trivy:
+    name: trivy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.23.0
+        with:
+          scan-type: 'fs'
+          scan-ref: 'ops/'
+          scanners: 'vuln,secret,misconfig'
+          ignore-unfixed: false
+          exit-code: '1'
+          format: 'table'
+          severity: 'CRITICAL,HIGH'
