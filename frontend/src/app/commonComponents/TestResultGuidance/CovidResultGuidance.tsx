@@ -125,12 +125,12 @@ const CovidResultGuidance = ({
   const { t } = useTranslation();
 
   return (
-    <div className={!isPatientApp ? "sr-margin-bottom-28px" : ""}>
+    <>
       <p className="text-bold sr-guidance-heading">
         {t("testResult.notes.h1")}
       </p>
       <CovidResultInfo result={result.testResult} isPatientApp={isPatientApp} />
-    </div>
+    </>
   );
 };
 export default CovidResultGuidance;
