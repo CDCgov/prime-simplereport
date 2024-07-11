@@ -56,6 +56,14 @@ export const TestCard = ({
 
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
 
+  useEffect(() => {
+    if (startTestPatientId === testOrder.patient.internalId) {
+      testCardElement.current.scrollIntoView({ behavior: "smooth" });
+    }
+    // only run on first render to prevent disruptive repeated scrolls
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const appInsights = getAppInsights();
 
   const timerContext = {
@@ -70,14 +78,6 @@ export const TestCard = ({
       appInsights.trackEvent({ name: "Test timer reset" }, timerContext);
     }
   };
-
-  useEffect(() => {
-    if (startTestPatientId === testOrder.patient.internalId) {
-      testCardElement.current.scrollIntoView({ behavior: "smooth" });
-    }
-    // only run on first render to prevent disruptive repeated scrolls
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const { patientFullName, patientDateOfBirth } =
     useTestOrderPatient(testOrder);
