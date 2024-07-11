@@ -179,7 +179,7 @@ export const useTestTimer = (
 ) => {
   const [, setCount] = useState(0);
   const existingTimer = findTimer(id);
-  if (existingTimer && startedAt == 0) {
+  if (existingTimer && startedAt === 0) {
     // if timer already exists and startedAt is 0,
     // then reset the timer
     existingTimer.reset();
