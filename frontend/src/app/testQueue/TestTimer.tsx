@@ -178,8 +178,15 @@ export const useTestTimer = (
   startedAt: number = 0
 ) => {
   const [, setCount] = useState(0);
+  const existingTimer = findTimer(id);
+  if (existingTimer && startedAt == 0) {
+    // if timer already exists and startedAt is 0,
+    // then reset the timer
+    existingTimer.reset();
+    saveTimers();
+  }
   const timer: Timer = findTimer(id) || addTimer(id, testLength);
-  if (startedAt !== null && startedAt !== undefined && startedAt !== 0) {
+  if (!!startedAt) {
     timer.setStartedAt(startedAt);
   }
   useEffect(() => {

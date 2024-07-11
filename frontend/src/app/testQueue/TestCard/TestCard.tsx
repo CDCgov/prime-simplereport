@@ -71,18 +71,6 @@ export const TestCard = ({
     }
   };
 
-  // when the test order has a new timer started at value, check if we need to clear the timer
-  // this happens when another user stops a timer, so to keep it in sync
-  // we need to stop it for any other users viewing the same queue
-  useEffect(() => {
-    if (
-      testOrder.timerStartedAt === null ||
-      testOrder.timerStartedAt === undefined
-    ) {
-      timer.reset(trackTimerReset);
-    }
-  }, [testOrder.timerStartedAt]);
-
   useEffect(() => {
     if (startTestPatientId === testOrder.patient.internalId) {
       testCardElement.current.scrollIntoView({ behavior: "smooth" });
@@ -114,6 +102,8 @@ export const TestCard = ({
     if (startedAt === undefined) {
       timer.reset(trackTimerReset);
       testOrder.timerStartedAt = "0";
+    } else {
+      testOrder.timerStartedAt = startedAt?.toString();
     }
   };
 
