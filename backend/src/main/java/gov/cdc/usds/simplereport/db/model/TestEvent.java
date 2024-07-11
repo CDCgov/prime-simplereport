@@ -116,7 +116,7 @@ public class TestEvent extends BaseTestInfo {
     this.patientData = event.getPatientData();
     this.providerData = event.getProviderData();
     this.order = order;
-    this.surveyData = event.getSurveyData();
+    this.surveyData = order.getAskOnEntrySurvey().getSurvey();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
   }
