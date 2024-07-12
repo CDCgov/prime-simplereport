@@ -72,8 +72,7 @@ export const DetachedTestResultDetailsModal = ({
 }: DetachedTestResultDetailsModalProps) => {
   const isHIVResult = hasResultForDisease(
     data?.testResult.results,
-    MULTIPLEX_DISEASES.HIV,
-    false
+    MULTIPLEX_DISEASES.HIV
   );
 
   const dateTested = data?.testResult.dateTested;

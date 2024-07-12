@@ -75,11 +75,11 @@ export const getModifiedResultsForGuidance = (results: MultiplexResults) => {
 
 export const displayGuidance = (results: MultiplexResults) => {
   return (
-    hasResultForDisease(results, MULTIPLEX_DISEASES.COVID_19, false) ||
+    hasResultForDisease(results, MULTIPLEX_DISEASES.COVID_19) ||
     hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_A, true) ||
     hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_B, true) ||
     hasResultForDisease(results, MULTIPLEX_DISEASES.RSV, true) ||
-    hasResultForDisease(results, MULTIPLEX_DISEASES.HIV, false) ||
+    hasResultForDisease(results, MULTIPLEX_DISEASES.HIV) ||
     hasResultForDisease(results, MULTIPLEX_DISEASES.SYPHILIS, true)
   );
 };
