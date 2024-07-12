@@ -745,9 +745,10 @@ public class FhirConverter {
         props.getCorrectionReason(),
         observation);
 
-    observation
-        .addInterpretation()
-        .addCoding(convertToAbnormalFlagInterpretation(props.getResultCode()));
+    Coding abnormalFlagCode = convertToAbnormalFlagInterpretation(props.getResultCode());
+    if (abnormalFlagCode != null) {
+      observation.addInterpretation().addCoding(abnormalFlagCode);
+    }
 
     observation.setIssued(props.getIssued());
     observation.getIssuedElement().setTimeZoneZulu(true);
