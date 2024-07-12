@@ -258,3 +258,29 @@ describe("TestResultPrintModal with HIV results", () => {
     expect(view).toMatchSnapshot();
   });
 });
+
+describe("TestResultPrintModal with a syphilis result", () => {
+  let syphilisResult = cloneDeep(testResult);
+
+  beforeEach(() => {
+    syphilisResult.results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.SYPHILIS },
+        testResult: TEST_RESULTS.POSITIVE,
+      },
+    ];
+
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+
+    MockDate.set("2021/01/01");
+  });
+
+  it("should render Syphilis information and guidance", () => {
+    renderComponent(syphilisResult);
+    expect(screen.getByText("Syphilis")).toBeInTheDocument();
+    expect(screen.getByText("Positive")).toBeInTheDocument();
+    expect(screen.getByText("For syphilis:")).toBeInTheDocument();
+  });
+});

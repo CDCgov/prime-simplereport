@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SyphilisResultGuidance displays guidance for a positive RSV result 1`] = `
+<div>
+  <p
+    class="text-bold sr-guidance-heading"
+  >
+    For syphilis:
+  </p>
+  <p>
+    If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.
+  </p>
+  <p>
+    <a
+      href="https://www.cdc.gov/std/treatment-guidelines/syphilis.htm"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      Visit the CDC website to learn more about a positive Syphilis result
+    </a>
+     (cdc.gov/std/treatment-guidelines/syphilis.htm).
+  </p>
+</div>
+`;
