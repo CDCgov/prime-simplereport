@@ -6,7 +6,7 @@ simple-report:
   patient-link-url: https://dev2.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://dev2.simplereport.gov/api/pxp/callback
   sendgrid:
-    enabled: true
+    enabled: false
   cors:
     allowed-origins:
       - https://simplereportdev2app.z13.web.core.windows.net
