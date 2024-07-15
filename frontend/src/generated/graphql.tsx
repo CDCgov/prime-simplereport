@@ -539,6 +539,11 @@ export type MutationUpdateSpecimenTypeArgs = {
   input: UpdateSpecimenType;
 };
 
+export type MutationUpdateTestOrderTimerStartedAtArgs = {
+  startedAt?: InputMaybe<Scalars["String"]["input"]>;
+  testOrderId: Scalars["ID"]["input"];
+};
+
 export type MutationUpdateUserArgs = {
   firstName?: InputMaybe<Scalars["String"]["input"]>;
   id: Scalars["ID"]["input"];
