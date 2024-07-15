@@ -306,7 +306,10 @@ export const TestTimerWidget = ({
     <div>
       <button
         className="timer-button timer-ready"
-        onClick={() => reset(trackTimerReset)}
+        onClick={() => {
+          reset(trackTimerReset);
+          saveStartedAtCallback(undefined);
+        }}
         data-testid="timer"
         aria-label="Reset timer"
       >
