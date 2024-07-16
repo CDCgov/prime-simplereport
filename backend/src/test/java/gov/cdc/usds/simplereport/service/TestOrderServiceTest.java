@@ -2325,6 +2325,28 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(testEventReportingService, times(2)).report(any());
   }
 
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void updateTimer_savesCorrectly() {
+    // GIVEN
+    TestOrder timerOrder = addTestToQueue();
+    TestOrder noTimerOrder = addTestToQueue();
+
+    long currentTime = System.currentTimeMillis();
+    String currentTimeString = Long.toString(currentTime);
+
+    // WHEN
+    _service.updateTimerStartedAt(timerOrder.getInternalId(), currentTimeString);
+    _service.updateTimerStartedAt(noTimerOrder.getInternalId(), null);
+
+    // THEN
+    TestOrder modifiedTimerOrder = _service.getTestOrder(timerOrder.getInternalId());
+    assertEquals(modifiedTimerOrder.getTimerStartedAt(), currentTimeString);
+
+    TestOrder modifiedNoTimerOrder = _service.getTestOrder(noTimerOrder.getInternalId());
+    assertNull(modifiedNoTimerOrder.getTimerStartedAt());
+  }
+
   private List<TestEvent> makeAdminData() {
     var org = _organizationService.createOrganization("Da Org", "airport", "da-org-airport");
     _organizationService.setIdentityVerified("da-org-airport", true);
