@@ -42,7 +42,9 @@ export const TestCard = ({
   const timer = useTestTimer(
     testOrder.internalId,
     testOrder.deviceType.testLength,
-    Number(testOrder.timerStartedAt)
+    testOrder.timerStartedAt === null
+      ? undefined
+      : Number(testOrder.timerStartedAt)
   );
   const organization = useSelector<RootState, Organization>(
     (state: any) => state.organization as Organization

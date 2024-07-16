@@ -175,11 +175,11 @@ export const removeTimer = (id: string) => {
 export const useTestTimer = (
   id: string,
   testLength: number,
-  startedAt: number = 0
+  startedAt?: number
 ) => {
   const [, setCount] = useState(0);
   const existingTimer = findTimer(id);
-  if (existingTimer && startedAt === 0) {
+  if (existingTimer && (startedAt === null || startedAt === undefined)) {
     // if timer already exists and startedAt is 0,
     // then reset the timer
     existingTimer.reset();
