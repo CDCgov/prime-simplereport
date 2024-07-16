@@ -2328,22 +2328,18 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void updateTimer_savesCorrectly() {
-    // GIVEN
     TestOrder timerOrder = addTestToQueue();
-    TestOrder noTimerOrder = addTestToQueue();
-
     long currentTime = System.currentTimeMillis();
     String currentTimeString = Long.toString(currentTime);
 
-    // WHEN
+    // saves a time value
     _service.updateTimerStartedAt(timerOrder.getInternalId(), currentTimeString);
-    _service.updateTimerStartedAt(noTimerOrder.getInternalId(), null);
-
-    // THEN
     TestOrder modifiedTimerOrder = _service.getTestOrder(timerOrder.getInternalId());
     assertEquals(modifiedTimerOrder.getTimerStartedAt(), currentTimeString);
 
-    TestOrder modifiedNoTimerOrder = _service.getTestOrder(noTimerOrder.getInternalId());
+    // saves a null time value
+    _service.updateTimerStartedAt(timerOrder.getInternalId(), null);
+    TestOrder modifiedNoTimerOrder = _service.getTestOrder(timerOrder.getInternalId());
     assertNull(modifiedNoTimerOrder.getTimerStartedAt());
   }
 
