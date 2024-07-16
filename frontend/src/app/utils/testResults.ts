@@ -1,5 +1,10 @@
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
 import { MultiplexResultInput } from "../../generated/graphql";
+import CovidResultGuidance from "../commonComponents/TestResultGuidance/CovidResultGuidance";
+import FluResultGuidance from "../commonComponents/TestResultGuidance/FluResultGuidance";
+import HivResultGuidance from "../commonComponents/TestResultGuidance/HivResultGuidance";
+import RsvResultGuidance from "../commonComponents/TestResultGuidance/RsvResultGuidance";
+import SyphilisResultGuidance from "../commonComponents/TestResultGuidance/SyphilisResultGuidance";
 
 export function getResultByDiseaseName(
   results: MultiplexResults,
@@ -43,43 +48,56 @@ export function hasMultipleResults(results: MultiplexResults): boolean {
   return results?.length > 1;
 }
 
-export function hasResultForDisease(
+export function getResultForDisease(
   results: MultiplexResults | null | undefined,
   diseaseName: MultiplexDisease,
   positivesOnly: boolean = false
-): boolean {
+): MultiplexResult | undefined {
   if (!results) {
-    return false;
+    return undefined;
   }
-  return (
-    results.filter(
-      (multiplexResult: MultiplexResult) =>
-        multiplexResult.disease.name === diseaseName &&
-        (!positivesOnly || multiplexResult.testResult === TEST_RESULTS.POSITIVE)
-    ).length > 0
+  const matches: MultiplexResult[] = results.filter(
+    (multiplexResult: MultiplexResult) =>
+      multiplexResult.disease.name === diseaseName &&
+      (!positivesOnly || multiplexResult.testResult === TEST_RESULTS.POSITIVE)
   );
+  return matches.at(0);
 }
 
-export const getModifiedResultsForGuidance = (results: MultiplexResults) => {
-  const positiveFluResults = results.filter(
-    (r) =>
-      r.disease.name.includes("Flu") && r.testResult === TEST_RESULTS.POSITIVE
-  );
-  if (positiveFluResults.length > 1) {
-    // remove one positive flu result if both are positive to avoid flu guidance duplication
-    const fluResultsSet = new Set([positiveFluResults[0]]);
-    results = results.filter((r) => !fluResultsSet.has(r));
-  }
-  return getSortedResults(results);
-};
+export const getGuidanceForResults = (
+  results: MultiplexResult[],
+  isPatientApp: boolean
+) => {
+  const guidance: JSX.Element[] = [];
 
-export const displayGuidance = (results: MultiplexResults) => {
-  return (
-    hasResultForDisease(results, MULTIPLEX_DISEASES.COVID_19) ||
-    hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_A, true) ||
-    hasResultForDisease(results, MULTIPLEX_DISEASES.FLU_B, true) ||
-    hasResultForDisease(results, MULTIPLEX_DISEASES.RSV, true) ||
-    hasResultForDisease(results, MULTIPLEX_DISEASES.HIV) ||
-    hasResultForDisease(results, MULTIPLEX_DISEASES.SYPHILIS, true)
-  );
+  let match = getResultForDisease(results, MULTIPLEX_DISEASES.COVID_19);
+  if (match) {
+    guidance.push(
+      CovidResultGuidance({ result: match, isPatientApp: isPatientApp })
+    );
+  }
+
+  match =
+    getResultForDisease(results, MULTIPLEX_DISEASES.FLU_A, true) ||
+    getResultForDisease(results, MULTIPLEX_DISEASES.FLU_B, true);
+  if (match) {
+    guidance.push(FluResultGuidance({ result: match }));
+  }
+
+  match = getResultForDisease(results, MULTIPLEX_DISEASES.HIV);
+  if (match) {
+    guidance.push(HivResultGuidance());
+  }
+
+  match = getResultForDisease(results, MULTIPLEX_DISEASES.RSV, true);
+  if (match) {
+    guidance.push(RsvResultGuidance({ result: match }));
+  }
+
+  match = getResultForDisease(results, MULTIPLEX_DISEASES.SYPHILIS, true);
+  if (match) {
+    guidance.push(SyphilisResultGuidance({ result: match }));
+  }
+
+  return guidance;
 };

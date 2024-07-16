@@ -11,7 +11,7 @@ import ResultsGuidance from "../../app/commonComponents/TestResultGuidance/Resul
 import TestResultsList from "../../app/commonComponents/TestResultsList";
 import { formatDateWithTimeOption } from "../../app/utils/date";
 import {
-  displayGuidance,
+  getGuidanceForResults,
   hasMultipleResults,
 } from "../../app/utils/testResults";
 import "./TestResult.scss";
@@ -28,6 +28,8 @@ const TestResult = () => {
   const fullName = formatFullName(testResult?.patient as any);
   const dateTested = formatDateWithTimeOption(testResult?.dateTested, true);
   const deviceType = testResult?.deviceType.name;
+  const isPatientApp = true;
+  const guidance = getGuidanceForResults(testResult.results, isPatientApp);
 
   return (
     <div className="pxp-test-results">
@@ -74,20 +76,20 @@ const TestResult = () => {
               <div className="grid-col usa-prose">
                 <TestResultsList
                   results={testResult.results}
-                  isPatientApp={true}
+                  isPatientApp={isPatientApp}
                 />
               </div>
             </div>
             <h2 className="font-heading-sm">{t("testResult.testDevice")}</h2>
             <p className="margin-top-05">{deviceType}</p>
-            {displayGuidance(testResult.results) && (
+            {guidance.length && (
               <>
                 <h2 className="font-heading-sm">
                   {t("testResult.moreInformation")}
                 </h2>
                 <ResultsGuidance
-                  results={testResult.results}
-                  isPatientApp={true}
+                  guidance={guidance}
+                  isPatientApp={isPatientApp}
                 />
               </>
             )}
