@@ -439,6 +439,45 @@ describe("TestCard", () => {
     expect(timerButton).toHaveTextContent("Start timer");
   });
 
+  it("handles a null timer started at value", async () => {
+    const currentTime = Date.now();
+    global.Date.now = jest.fn(() => new Date(currentTime).getTime());
+    const props = { ...testProps };
+    props.testOrder.timerStartedAt = null;
+    const { user } = await renderQueueItem({
+      props: props,
+      mocks: [
+        {
+          request: {
+            query: UpdateTestOrderTimerStartedAtDocument,
+            variables: {
+              testOrderId: props.testOrder.internalId,
+              startedAt: currentTime.toString(),
+            },
+          },
+          result: { data: { updateTestOrderTimerStartedAt: null } },
+        },
+        {
+          request: {
+            query: UpdateTestOrderTimerStartedAtDocument,
+            variables: { testOrderId: props.testOrder.internalId },
+          },
+          result: { data: { updateTestOrderTimerStartedAt: null } },
+        },
+      ],
+    });
+
+    const timerButton = await screen.findByTestId("timer");
+    expect(timerButton).toHaveTextContent("Start timer");
+
+    await user.click(timerButton);
+    expect(timerButton).toHaveTextContent("15:00");
+
+    await user.click(timerButton);
+    expect(timerButton).toHaveTextContent("Start timer");
+    global.Date.now = Date.now;
+  });
+
   it("renders dropdown of device types", async () => {
     const { user } = await renderQueueItem({
       mocks: [blankUpdateAoeEventMock],
