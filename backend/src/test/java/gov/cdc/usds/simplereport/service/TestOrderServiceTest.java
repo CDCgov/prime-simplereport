@@ -2343,6 +2343,21 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertNull(modifiedNoTimerOrder.getTimerStartedAt());
   }
 
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void updateTimer_testOrderNotFound_throwsException() {
+    long currentTime = System.currentTimeMillis();
+    String currentTimeString = Long.toString(currentTime);
+
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              _service.updateTimerStartedAt(UUID.randomUUID(), currentTimeString);
+            });
+    assertEquals("Cannot find TestOrder", caught.getMessage());
+  }
+
   private List<TestEvent> makeAdminData() {
     var org = _organizationService.createOrganization("Da Org", "airport", "da-org-airport");
     _organizationService.setIdentityVerified("da-org-airport", true);

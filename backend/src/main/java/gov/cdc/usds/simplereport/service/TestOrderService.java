@@ -491,6 +491,8 @@ public class TestOrderService {
       TestOrder order = optionalTestOrder.get();
       order.setTimerStartedAt(startedAt);
       _testOrderRepo.save(order);
+    } else {
+      throw new IllegalGraphqlArgumentException("Cannot find TestOrder");
     }
   }
 
