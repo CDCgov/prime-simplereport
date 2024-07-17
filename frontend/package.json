@@ -37,7 +37,7 @@
     "react": "^18.0.0",
     "react-csv": "^2.2.1",
     "react-dom": "^18.0.0",
-    "react-hook-form": "^7.45.4",
+    "react-hook-form": "^7.52.0",
     "react-i18next": "^13.2.0",
     "react-modal": "^3.16.1",
     "react-redux": "^9.1.0",
