@@ -222,6 +222,11 @@ public class ApiUserService {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(userIdentity);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
+
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && orgRoles.isPresent()) {
+      setRolesAndFacilities(orgRoles.get(), apiUser);
+    }
+
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     createUserUpdatedAuditLog(
@@ -274,6 +279,10 @@ public class ApiUserService {
 
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
+
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && orgRoles.isPresent()) {
+      setRolesAndFacilities(orgRoles.get(), apiUser);
+    }
 
     createUserUpdatedAuditLog(
         apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
