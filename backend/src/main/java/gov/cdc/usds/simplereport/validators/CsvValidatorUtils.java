@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.validators;
 
+import static gov.cdc.usds.simplereport.api.Translators.ABNORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
+import static gov.cdc.usds.simplereport.api.Translators.NORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_LITERAL;
@@ -44,6 +46,8 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SN
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Stream.concat;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
@@ -69,8 +73,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -104,12 +106,12 @@ public class CsvValidatorUtils {
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final Set<String> VALID_STATE_CODES =
-      Stream.concat(
+      concat(
               STATE_CODES.stream().map(String::toLowerCase),
               CANADIAN_STATE_CODES.stream().map(String::toLowerCase))
-          .collect(Collectors.toSet());
+          .collect(toSet());
   private static final Set<String> VALID_COUNTRY_CODES =
-      COUNTRY_CODES.stream().map(String::toLowerCase).collect(Collectors.toSet());
+      COUNTRY_CODES.stream().map(String::toLowerCase).collect(toSet());
   private static final String UNKNOWN_LITERAL = "unknown";
   private static final String UNKNOWN_CODE = "unk";
   private static final String OTHER_LITERAL = "other";
@@ -610,9 +612,16 @@ public class CsvValidatorUtils {
     if (value == null) {
       return errors;
     }
+    boolean snomedValue = value.matches(SNOMED_REGEX);
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
     if (nonSNOMEDValue) {
       return validateInSet(input, acceptableValues);
+    }
+    if (snomedValue) {
+      Set<String> acceptedSNOWMEDS =
+          concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream())
+              .collect(toSet());
+      return validateInSet(input, acceptedSNOWMEDS);
     }
     return errors;
   }
