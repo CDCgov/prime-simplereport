@@ -609,21 +609,23 @@ public class CsvValidatorUtils {
       ValueOrError input, Set<String> acceptableValues) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
+
     if (value == null) {
       return errors;
     }
-    boolean snomedValue = value.matches(SNOMED_REGEX);
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
+    boolean snowmedValue = value.matches(SNOMED_REGEX);
+
     if (nonSNOMEDValue) {
       return validateInSet(input, acceptableValues);
-    }
-    if (snomedValue) {
+    } else if (snowmedValue) {
       Set<String> acceptedSNOWMEDS =
           concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream())
               .collect(toSet());
       return validateInSet(input, acceptedSNOWMEDS);
+    } else {
+      return errors;
     }
-    return errors;
   }
 
   public static Set<String> extractSubstringsGenderOfSexualPartners(String value) {
