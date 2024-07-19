@@ -2348,12 +2348,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void updateTimer_testOrderNotFound_throwsException() {
     long currentTime = System.currentTimeMillis();
     String currentTimeString = Long.toString(currentTime);
+    UUID testOrderId = UUID.randomUUID();
 
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
             () -> {
-              _service.updateTimerStartedAt(UUID.randomUUID(), currentTimeString);
+              _service.updateTimerStartedAt(testOrderId, currentTimeString);
             });
     assertEquals("Cannot find TestOrder", caught.getMessage());
   }
