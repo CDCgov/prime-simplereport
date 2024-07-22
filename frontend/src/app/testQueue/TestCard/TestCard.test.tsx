@@ -70,6 +70,7 @@ import mockSupportedDiseaseMultiplex, {
 } from "../mocks/mockSupportedDiseaseMultiplex";
 import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
+import { UpdateTestOrderTimerStartedAtDocument } from "../../../generated/graphql";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
@@ -412,6 +413,69 @@ describe("TestCard", () => {
     await user.type(screen.getByTestId("device-type-dropdown"), "lumira");
 
     expect(await screen.findByTestId("timer")).toHaveTextContent("Start timer");
+  });
+
+  it("updates the test order timer started at value when the timer is clicked", async () => {
+    const currentTime = Date.now();
+    const props = { ...testProps };
+    props.testOrder.timerStartedAt = currentTime.toString();
+    const { user } = await renderQueueItem({
+      props: props,
+      mocks: [
+        {
+          request: {
+            query: UpdateTestOrderTimerStartedAtDocument,
+            variables: { testOrderId: props.testOrder.internalId },
+          },
+          result: { data: { updateTestOrderTimerStartedAt: null } },
+        },
+      ],
+    });
+
+    const timerButton = await screen.findByTestId("timer");
+    expect(timerButton).toHaveTextContent("15:00");
+
+    await user.click(timerButton);
+    expect(timerButton).toHaveTextContent("Start timer");
+  });
+
+  it("handles a null timer started at value", async () => {
+    const currentTime = Date.now();
+    global.Date.now = jest.fn(() => new Date(currentTime).getTime());
+    const props = { ...testProps };
+    props.testOrder.timerStartedAt = null;
+    const { user } = await renderQueueItem({
+      props: props,
+      mocks: [
+        {
+          request: {
+            query: UpdateTestOrderTimerStartedAtDocument,
+            variables: {
+              testOrderId: props.testOrder.internalId,
+              startedAt: currentTime.toString(),
+            },
+          },
+          result: { data: { updateTestOrderTimerStartedAt: null } },
+        },
+        {
+          request: {
+            query: UpdateTestOrderTimerStartedAtDocument,
+            variables: { testOrderId: props.testOrder.internalId },
+          },
+          result: { data: { updateTestOrderTimerStartedAt: null } },
+        },
+      ],
+    });
+
+    const timerButton = await screen.findByTestId("timer");
+    expect(timerButton).toHaveTextContent("Start timer");
+
+    await user.click(timerButton);
+    expect(timerButton).toHaveTextContent("15:00");
+
+    await user.click(timerButton);
+    expect(timerButton).toHaveTextContent("Start timer");
+    global.Date.now = Date.now;
   });
 
   it("renders dropdown of device types", async () => {

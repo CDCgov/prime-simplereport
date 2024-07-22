@@ -236,6 +236,7 @@ export type Mutation = {
   updatePatient?: Maybe<Patient>;
   updateRegistrationLink?: Maybe<Scalars["String"]["output"]>;
   updateSpecimenType?: Maybe<SpecimenType>;
+  updateTestOrderTimerStartedAt?: Maybe<Scalars["String"]["output"]>;
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
@@ -536,6 +537,11 @@ export type MutationUpdateRegistrationLinkArgs = {
 
 export type MutationUpdateSpecimenTypeArgs = {
   input: UpdateSpecimenType;
+};
+
+export type MutationUpdateTestOrderTimerStartedAtArgs = {
+  startedAt?: InputMaybe<Scalars["String"]["input"]>;
+  testOrderId: Scalars["ID"]["input"];
 };
 
 export type MutationUpdateUserArgs = {
@@ -998,6 +1004,7 @@ export type TestOrder = {
   symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
   symptoms?: Maybe<Scalars["String"]["output"]>;
   syphilisHistory?: Maybe<Scalars["String"]["output"]>;
+  timerStartedAt?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type TestResult = {
@@ -2276,6 +2283,7 @@ export type GetFacilityQueueQuery = {
     dateTested?: any | null;
     correctionStatus?: string | null;
     reasonForCorrection?: string | null;
+    timerStartedAt?: string | null;
     deviceType: {
       __typename?: "DeviceType";
       internalId: string;
@@ -2342,6 +2350,16 @@ export type GetFacilityQueueQuery = {
       }>;
     }>;
   } | null;
+};
+
+export type UpdateTestOrderTimerStartedAtMutationVariables = Exact<{
+  testOrderId: Scalars["ID"]["input"];
+  startedAt?: InputMaybe<Scalars["String"]["input"]>;
+}>;
+
+export type UpdateTestOrderTimerStartedAtMutation = {
+  __typename?: "Mutation";
+  updateTestOrderTimerStartedAt?: string | null;
 };
 
 export type GetTestResultForResendingEmailsQueryVariables = Exact<{
@@ -7462,6 +7480,7 @@ export const GetFacilityQueueDocument = gql`
       dateTested
       correctionStatus
       reasonForCorrection
+      timerStartedAt
     }
     facility(id: $facilityId) {
       name
@@ -7558,6 +7577,62 @@ export type GetFacilityQueueQueryResult = Apollo.QueryResult<
   GetFacilityQueueQuery,
   GetFacilityQueueQueryVariables
 >;
+export const UpdateTestOrderTimerStartedAtDocument = gql`
+  mutation UpdateTestOrderTimerStartedAt(
+    $testOrderId: ID!
+    $startedAt: String
+  ) {
+    updateTestOrderTimerStartedAt(
+      testOrderId: $testOrderId
+      startedAt: $startedAt
+    )
+  }
+`;
+export type UpdateTestOrderTimerStartedAtMutationFn = Apollo.MutationFunction<
+  UpdateTestOrderTimerStartedAtMutation,
+  UpdateTestOrderTimerStartedAtMutationVariables
+>;
+
+/**
+ * __useUpdateTestOrderTimerStartedAtMutation__
+ *
+ * To run a mutation, you first call `useUpdateTestOrderTimerStartedAtMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTestOrderTimerStartedAtMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTestOrderTimerStartedAtMutation, { data, loading, error }] = useUpdateTestOrderTimerStartedAtMutation({
+ *   variables: {
+ *      testOrderId: // value for 'testOrderId'
+ *      startedAt: // value for 'startedAt'
+ *   },
+ * });
+ */
+export function useUpdateTestOrderTimerStartedAtMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateTestOrderTimerStartedAtMutation,
+    UpdateTestOrderTimerStartedAtMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateTestOrderTimerStartedAtMutation,
+    UpdateTestOrderTimerStartedAtMutationVariables
+  >(UpdateTestOrderTimerStartedAtDocument, options);
+}
+export type UpdateTestOrderTimerStartedAtMutationHookResult = ReturnType<
+  typeof useUpdateTestOrderTimerStartedAtMutation
+>;
+export type UpdateTestOrderTimerStartedAtMutationResult =
+  Apollo.MutationResult<UpdateTestOrderTimerStartedAtMutation>;
+export type UpdateTestOrderTimerStartedAtMutationOptions =
+  Apollo.BaseMutationOptions<
+    UpdateTestOrderTimerStartedAtMutation,
+    UpdateTestOrderTimerStartedAtMutationVariables
+  >;
 export const GetTestResultForResendingEmailsDocument = gql`
   query getTestResultForResendingEmails($id: ID!) {
     testResult(id: $id) {

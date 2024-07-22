@@ -69,6 +69,15 @@ describe("TestTimer", () => {
     timer.update(10);
     testCountdown(timer.countdown, 9, 58);
   });
+  it("adjusts values when a custom start time is provided", () => {
+    let twoMinutesAgo = now - 120000;
+    let timer: Timer = new Timer(internalId, 15, twoMinutesAgo);
+    timer.setStartedAt(twoMinutesAgo);
+
+    // two seconds passed
+    timer.tick(now + 2000);
+    testCountdown(timer.countdown, 12, 58);
+  });
 });
 
 describe("TestTimerWidget", () => {
@@ -92,9 +101,15 @@ describe("TestTimerWidget", () => {
       removeTimer("internal-id");
     });
 
-    const renderWithUser = (testLength: number) => ({
+    const renderWithUser = (testLength: number, startedAt: number = 0) => ({
       user: userEvent.setup(),
-      ...render(<DummyTestTimer testLength={testLength} context={context} />),
+      ...render(
+        <DummyTestTimer
+          testLength={testLength}
+          context={context}
+          startedAt={startedAt}
+        />
+      ),
     });
 
     it("tracks a custom event when the timer is started", async () => {
@@ -147,15 +162,42 @@ describe("TestTimerWidget", () => {
         )
       );
     });
+
+    it("displays the correct value when a custom start time is provided", async () => {
+      const twoMinutesAgo = Date.now() - 2 * 60 * 1000;
+      const { user } = renderWithUser(3, twoMinutesAgo);
+      expect(screen.queryByText("Start timer")).not.toBeInTheDocument();
+
+      // some machines may run this test faster than others so just check that there is less than 1 minute remaining rather than checking for specific time
+      expect(
+        await screen.findByText("0:", { exact: false })
+      ).toBeInTheDocument();
+
+      const timerButton = await screen.findByRole("timer");
+      await user.click(timerButton);
+
+      expect(trackEventMock).toHaveBeenCalledWith(
+        { name: "Test timer reset" },
+        context
+      );
+    });
   });
 });
 
 function DummyTestTimer(props: {
   testLength: number;
   context: TimerTrackEventMetadata;
+  startedAt: number;
 }) {
-  const timer = useTestTimer("internal-id", props.testLength);
-  return <TestTimerWidget timer={timer} context={props.context} />;
+  const timer = useTestTimer("internal-id", props.testLength, props.startedAt);
+  const saveStartedAtCallback = () => {};
+  return (
+    <TestTimerWidget
+      timer={timer}
+      context={props.context}
+      saveStartedAtCallback={saveStartedAtCallback}
+    />
+  );
 }
 
 function testCountdown(actualMillis: number, mins: number, secs: number) {

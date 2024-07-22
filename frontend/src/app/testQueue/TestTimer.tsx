@@ -33,9 +33,9 @@ export class Timer {
   alarmed: boolean;
   notify?: (value: number) => any;
 
-  constructor(id: string, testLength: number) {
+  constructor(id: string, testLength: number, startedAt: number = 0) {
     this.id = id;
-    this.startedAt = 0;
+    this.startedAt = startedAt;
     this.alarmAt = 0;
     this.testLength = testLength;
     this.countdown = toMillis(testLength);
@@ -57,6 +57,12 @@ export class Timer {
   start(now: number) {
     this.startedAt = now;
     this.alarmAt = this.startedAt + toMillis(this.testLength);
+  }
+
+  setStartedAt(startedAt: number) {
+    this.startedAt = startedAt;
+    this.alarmAt = this.startedAt + toMillis(this.testLength);
+    this.elapsed = Date.now() - this.startedAt;
   }
 
   reset() {
@@ -166,9 +172,23 @@ export const removeTimer = (id: string) => {
   }
 };
 
-export const useTestTimer = (id: string, testLength: number) => {
+export const useTestTimer = (
+  id: string,
+  testLength: number,
+  startedAt?: number
+) => {
   const [, setCount] = useState(0);
+  const existingTimer = findTimer(id);
+  if (existingTimer && (startedAt === null || startedAt === undefined)) {
+    // if timer already exists and startedAt is null or undefined,
+    // then reset the timer
+    existingTimer.reset();
+    saveTimers();
+  }
   const timer: Timer = findTimer(id) || addTimer(id, testLength);
+  if (startedAt) {
+    timer.setStartedAt(startedAt);
+  }
   useEffect(() => {
     timer.notify = setCount;
     return () => {
@@ -181,6 +201,7 @@ export const useTestTimer = (id: string, testLength: number) => {
       (timer.startedAt ? timer.countdown : toMillis(timer.testLength)) / 1000
     ),
     elapsed: Math.round(timer.elapsed / 1000),
+    startedAt: timer.startedAt,
     start: (trackClickEvent: Function) => {
       const timerToStart: Timer = findTimer(id) || addTimer(id, testLength);
       timerToStart.start(Date.now());
@@ -210,9 +231,14 @@ export const mmss = (t: number) => {
 type Props = {
   timer: ReturnType<typeof useTestTimer>;
   context: TimerTrackEventMetadata;
+  saveStartedAtCallback: (startedAt: number | undefined) => void;
 };
 
-export const TestTimerWidget = ({ timer, context }: Props) => {
+export const TestTimerWidget = ({
+  timer,
+  context,
+  saveStartedAtCallback,
+}: Props) => {
   const { running, countdown, elapsed, start, reset } = timer;
   const [timerFinished, setTimerFinished] = useState(false);
 
@@ -238,7 +264,11 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
     return (
       <button
         className="timer-button timer-reset"
-        onClick={() => start(trackTimerStart)}
+        onClick={() => {
+          start(trackTimerStart);
+          const timerToReset = findTimer(context.testOrderId);
+          saveStartedAtCallback(timerToReset?.startedAt);
+        }}
         data-testid="timer"
         aria-label="Start timer"
       >
@@ -253,7 +283,10 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
     return (
       <button
         className="timer-button timer-running"
-        onClick={() => reset(trackTimerReset)}
+        onClick={() => {
+          reset(trackTimerReset);
+          saveStartedAtCallback(undefined);
+        }}
         data-testid="timer"
         aria-label="Reset timer"
       >
@@ -273,7 +306,10 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
     <div>
       <button
         className="timer-button timer-ready"
-        onClick={() => reset(trackTimerReset)}
+        onClick={() => {
+          reset(trackTimerReset);
+          saveStartedAtCallback(undefined);
+        }}
         data-testid="timer"
         aria-label="Reset timer"
       >

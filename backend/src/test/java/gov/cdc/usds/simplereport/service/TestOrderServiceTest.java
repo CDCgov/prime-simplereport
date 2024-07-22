@@ -2372,6 +2372,40 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(testEventReportingService, times(2)).report(any());
   }
 
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void updateTimer_savesCorrectly() {
+    TestOrder timerOrder = addTestToQueue();
+    long currentTime = System.currentTimeMillis();
+    String currentTimeString = Long.toString(currentTime);
+
+    // saves a time value
+    _service.updateTimerStartedAt(timerOrder.getInternalId(), currentTimeString);
+    TestOrder modifiedTimerOrder = _service.getTestOrder(timerOrder.getInternalId());
+    assertEquals(modifiedTimerOrder.getTimerStartedAt(), currentTimeString);
+
+    // saves a null time value
+    _service.updateTimerStartedAt(timerOrder.getInternalId(), null);
+    TestOrder modifiedNoTimerOrder = _service.getTestOrder(timerOrder.getInternalId());
+    assertNull(modifiedNoTimerOrder.getTimerStartedAt());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void updateTimer_testOrderNotFound_throwsException() {
+    long currentTime = System.currentTimeMillis();
+    String currentTimeString = Long.toString(currentTime);
+    UUID testOrderId = UUID.randomUUID();
+
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> {
+              _service.updateTimerStartedAt(testOrderId, currentTimeString);
+            });
+    assertEquals("Cannot find TestOrder", caught.getMessage());
+  }
+
   private List<TestEvent> makeAdminData() {
     var org = _organizationService.createOrganization("Da Org", "airport", "da-org-airport");
     _organizationService.setIdentityVerified("da-org-airport", true);
