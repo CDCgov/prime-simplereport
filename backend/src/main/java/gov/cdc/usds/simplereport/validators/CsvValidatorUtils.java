@@ -184,9 +184,11 @@ public class CsvValidatorUtils {
           "y", "yes",
           "n", "no",
           "u", UNKNOWN_CODE);
-  private static final Set<String> TEST_RESULT_VALUES =
+  private static final Set<String> ACCEPTED_LITERAL_TEST_RESULT_VALUES =
       Set.of(POSITIVE_LITERAL, "negative", "not detected", DETECTED_LITERAL, "invalid result");
 
+  private static final Set<String> ACCEPTED_TEST_RESULT_SNOMEDS =
+      concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream()).collect(toSet());
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
           HOSPITAL_SNOMED, HOSPITAL_LITERAL,
@@ -272,11 +274,9 @@ public class CsvValidatorUtils {
         + " test result.";
   }
 
-  public static Set<String> acceptedSNOWMEDS =
-      concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream()).collect(toSet());
-
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES, acceptedSNOWMEDS);
+    return validateSpecificValueOrSNOMED(
+        input, ACCEPTED_LITERAL_TEST_RESULT_VALUES, ACCEPTED_TEST_RESULT_SNOMEDS);
   }
 
   public static List<FeedbackMessage> validateTestPerformedCode(ValueOrError input) {
