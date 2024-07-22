@@ -272,8 +272,11 @@ public class CsvValidatorUtils {
         + " test result.";
   }
 
+  public static Set<String> acceptedSNOWMEDS =
+      concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream()).collect(toSet());
+
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
+    return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES, acceptedSNOWMEDS);
   }
 
   public static List<FeedbackMessage> validateTestPerformedCode(ValueOrError input) {
@@ -606,7 +609,7 @@ public class CsvValidatorUtils {
   }
 
   private static List<FeedbackMessage> validateSpecificValueOrSNOMED(
-      ValueOrError input, Set<String> acceptableValues) {
+      ValueOrError input, Set<String> acceptableStringLiterals, Set<String> acceptableSNOMEDS) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
 
@@ -614,15 +617,12 @@ public class CsvValidatorUtils {
       return errors;
     }
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
-    boolean snowmedValue = value.matches(SNOMED_REGEX);
+    boolean snomedValue = value.matches(SNOMED_REGEX);
 
     if (nonSNOMEDValue) {
-      return validateInSet(input, acceptableValues);
-    } else if (snowmedValue) {
-      Set<String> acceptedSNOWMEDS =
-          concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream())
-              .collect(toSet());
-      return validateInSet(input, acceptedSNOWMEDS);
+      return validateInSet(input, acceptableStringLiterals);
+    } else if (snomedValue) {
+      return validateInSet(input, acceptableSNOMEDS);
     } else {
       return errors;
     }
