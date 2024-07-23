@@ -184,7 +184,7 @@ export const StaticTestResultModal = ({
             <TestResultsList results={results} isPatientApp={isPatientApp} />
           </ul>
         </section>
-        {guidance.length && (
+        {guidance.length > 0 && (
           <section className="sr-result-section sr-result-next-steps">
             <h2>{t("testResult.moreInformation")}</h2>
             <ResultsGuidance guidance={guidance} isPatientApp={isPatientApp} />

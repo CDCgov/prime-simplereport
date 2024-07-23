@@ -82,7 +82,7 @@ const TestResult = () => {
             </div>
             <h2 className="font-heading-sm">{t("testResult.testDevice")}</h2>
             <p className="margin-top-05">{deviceType}</p>
-            {guidance.length && (
+            {guidance.length > 0 && (
               <>
                 <h2 className="font-heading-sm">
                   {t("testResult.moreInformation")}
