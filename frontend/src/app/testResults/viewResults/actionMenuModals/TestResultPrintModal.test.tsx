@@ -284,3 +284,35 @@ describe("TestResultPrintModal with a syphilis result", () => {
     expect(screen.getByText("For syphilis:")).toBeInTheDocument();
   });
 });
+
+describe("TestResultPrintModal with no guidance", () => {
+  let syphilisResult = cloneDeep(testResult);
+
+  beforeEach(() => {
+    syphilisResult.results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.SYPHILIS },
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+    ];
+
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+
+    MockDate.set("2021/01/01");
+  });
+
+  it("should render Syphilis information and no guidance", () => {
+    renderComponent(syphilisResult);
+    expect(screen.getByText("Syphilis")).toBeInTheDocument();
+    expect(screen.getByText("Negative")).toBeInTheDocument();
+    expect(screen.queryByText("More information")).not.toBeInTheDocument();
+    expect(screen.queryByText("For syphilis:")).not.toBeInTheDocument();
+  });
+
+  it("matches screenshot", () => {
+    let view = renderComponent(syphilisResult);
+    expect(view).toMatchSnapshot();
+  });
+});
