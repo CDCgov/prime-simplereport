@@ -15,7 +15,7 @@ import {
 jest.mock("react-i18next", () => ({
   useTranslation: () => {
     return {
-      t: (str) => str,
+      t: (str: string) => str,
     };
   },
 }));
@@ -228,6 +228,21 @@ describe("getGuidanceForResults", () => {
       fluBResult,
     ];
     const expectedGuidance = [FluResultGuidance({ result: fluBResult })];
+    expect(getGuidanceForResults(results, true)).toEqual(expectedGuidance);
+  });
+  it("returns flu element if it contains a positive Flu A & B result", () => {
+    const fluABResult = {
+      disease: { name: MULTIPLEX_DISEASES.FLU_A_AND_B },
+      testResult: TEST_RESULTS.POSITIVE,
+    };
+    results = [
+      {
+        disease: { name: MULTIPLEX_DISEASES.RSV },
+        testResult: TEST_RESULTS.UNDETERMINED,
+      },
+      fluABResult,
+    ];
+    const expectedGuidance = [FluResultGuidance({ result: fluABResult })];
     expect(getGuidanceForResults(results, true)).toEqual(expectedGuidance);
   });
   it("returns single flu element if it contains multiple positive Flu results", () => {

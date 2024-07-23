@@ -34,6 +34,10 @@ const setDiseaseResultKey = (diseaseName: MultiplexDisease, isPxp: boolean) => {
       return isPxp
         ? "constants.diseaseResultTitle.FLUB"
         : "constants.disease.FLUB";
+    case MULTIPLEX_DISEASES.FLU_A_AND_B:
+      return isPxp
+        ? "constants.diseaseResultTitle.FLUAB"
+        : "constants.disease.FLUAB";
     case MULTIPLEX_DISEASES.HIV:
       return isPxp
         ? "constants.diseaseResultTitle.HIV"

@@ -79,7 +79,8 @@ export const getGuidanceForResults = (
 
   match =
     getResultForDisease(results, MULTIPLEX_DISEASES.FLU_A, true) ||
-    getResultForDisease(results, MULTIPLEX_DISEASES.FLU_B, true);
+    getResultForDisease(results, MULTIPLEX_DISEASES.FLU_B, true) ||
+    getResultForDisease(results, MULTIPLEX_DISEASES.FLU_A_AND_B, true);
   if (match) {
     guidance.push(FluResultGuidance({ result: match }));
   }
