@@ -18,12 +18,12 @@ jobs:
 
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.23.0
+        uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: 'fs'
           scan-ref: 'ops/'
           scanners: 'vuln,secret,misconfig'
-          ignore-unfixed: false
           exit-code: '1'
+          ignore-unfixed: false
           format: 'table'
           severity: 'CRITICAL,HIGH'
