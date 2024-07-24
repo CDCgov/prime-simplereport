@@ -15,7 +15,7 @@ describe("SyphilisResultGuidance", () => {
     testResult: TEST_RESULTS.POSITIVE,
   } as MultiplexResult;
 
-  it("displays guidance for a positive RSV result", () => {
+  it("displays guidance for a positive syphilis result", () => {
     const { container } = render(
       <SyphilisResultGuidance result={mockResultTemplate} />
     );
@@ -29,12 +29,12 @@ describe("SyphilisResultGuidance", () => {
   ];
 
   test.each(nonPositiveCases)(
-    "displays no RSV guidance for %p result",
+    "displays no syphilis guidance for %p result",
     (testResult) => {
       const mockResult = cloneDeep(mockResultTemplate);
       mockResult.testResult = testResult;
       render(<SyphilisResultGuidance result={mockResult} />);
-      expect(screen.queryByText("For Syphilis")).not.toBeInTheDocument();
+      expect(screen.queryByText("For syphilis:")).not.toBeInTheDocument();
     }
   );
 });

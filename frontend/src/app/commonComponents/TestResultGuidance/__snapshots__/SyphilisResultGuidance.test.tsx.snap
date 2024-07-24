@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SyphilisResultGuidance displays guidance for a positive RSV result 1`] = `
+exports[`SyphilisResultGuidance displays guidance for a positive syphilis result 1`] = `
 <div>
   <p
     class="text-bold sr-guidance-heading"
