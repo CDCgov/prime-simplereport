@@ -189,6 +189,10 @@ public class CsvValidatorUtils {
 
   private static final Set<String> ACCEPTED_TEST_RESULT_SNOMEDS =
       concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream()).collect(toSet());
+
+  private static final Set<String> ALL_ACCEPTED_TEST_RESULT_VALUES =
+      concat(ACCEPTED_LITERAL_TEST_RESULT_VALUES.stream(), ACCEPTED_TEST_RESULT_SNOMEDS.stream())
+          .collect(toSet());
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
           HOSPITAL_SNOMED, HOSPITAL_LITERAL,
@@ -275,8 +279,7 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(
-        input, ACCEPTED_LITERAL_TEST_RESULT_VALUES, ACCEPTED_TEST_RESULT_SNOMEDS);
+    return validateSpecificValueOrSNOMED(input);
   }
 
   public static List<FeedbackMessage> validateTestPerformedCode(ValueOrError input) {
@@ -608,24 +611,15 @@ public class CsvValidatorUtils {
     return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
   }
 
-  private static List<FeedbackMessage> validateSpecificValueOrSNOMED(
-      ValueOrError input, Set<String> acceptableStringLiterals, Set<String> acceptableSNOMEDS) {
+  private static List<FeedbackMessage> validateSpecificValueOrSNOMED(ValueOrError input) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
 
     if (value == null) {
       return errors;
     }
-    boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
-    boolean snomedValue = value.matches(SNOMED_REGEX);
 
-    if (nonSNOMEDValue) {
-      return validateInSet(input, acceptableStringLiterals);
-    } else if (snomedValue) {
-      return validateInSet(input, acceptableSNOMEDS);
-    } else {
-      return errors;
-    }
+    return validateInSet(input, ALL_ACCEPTED_TEST_RESULT_VALUES);
   }
 
   public static Set<String> extractSubstringsGenderOfSexualPartners(String value) {
