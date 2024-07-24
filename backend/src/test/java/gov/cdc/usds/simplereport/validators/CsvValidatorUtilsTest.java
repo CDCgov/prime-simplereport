@@ -324,16 +324,31 @@ class CsvValidatorUtilsTest {
   }
 
   @Test
-  void validTestResultSNOMED() {
-    ValueOrError positiveTestResult = new ValueOrError("10828004", "test_result");
-    ValueOrError negativeTestResult = new ValueOrError("260385009", "test_result");
-    assertThat(validateTestResult(positiveTestResult)).hasSize(0);
-    assertThat(validateTestResult(negativeTestResult)).hasSize(0);
+  void validTestResult() {
+
+    ValueOrError positiveSNOMED = new ValueOrError("10828004", "test_result");
+    assertThat(validateTestResult(positiveSNOMED)).hasSize(0);
+
+    ValueOrError positiveLiteral = new ValueOrError("positive", "test_result");
+    assertThat(validateTestResult(positiveLiteral)).hasSize(0);
+
+    ValueOrError negativeSNOMED = new ValueOrError("260385009", "test_result");
+    assertThat(validateTestResult(negativeSNOMED)).hasSize(0);
+
+    ValueOrError negativeLiteral = new ValueOrError("negative", "test_result");
+    assertThat(validateTestResult(negativeLiteral)).hasSize(0);
   }
 
   @Test
-  void invalidTestResultSNOMED() {
-    ValueOrError invalidTestResult = new ValueOrError("404684003", "test_result");
-    assertThat(validateTestResult(invalidTestResult)).hasSize(1);
+  void invalidTestResult() {
+
+    ValueOrError invalidSNOMED = new ValueOrError("404684003", "test_result");
+    assertThat(validateTestResult(invalidSNOMED)).hasSize(1);
+
+    ValueOrError invalidLiteral = new ValueOrError("postitv", "test_result");
+    assertThat(validateTestResult(invalidLiteral)).hasSize(1);
+
+    ValueOrError randomChar = new ValueOrError("-", "test_result");
+    assertThat(validateTestResult(randomChar)).hasSize(1);
   }
 }
