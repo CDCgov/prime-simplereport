@@ -211,7 +211,7 @@ describe("getGuidanceForResults", () => {
     };
     results = [covidResult];
     const expectedGuidance = [
-      CovidResultGuidance({ result: covidResult, isPatientApp: true }),
+      <CovidResultGuidance result={covidResult} isPatientApp={true} />,
     ];
     expect(getGuidanceForResults(results, true)).toEqual(expectedGuidance);
   });
@@ -227,7 +227,7 @@ describe("getGuidanceForResults", () => {
       },
       fluBResult,
     ];
-    const expectedGuidance = [FluResultGuidance({ result: fluBResult })];
+    const expectedGuidance = [<FluResultGuidance result={fluBResult} />];
     expect(getGuidanceForResults(results, true)).toEqual(expectedGuidance);
   });
   it("returns flu element if it contains a positive Flu A & B result", () => {
@@ -242,27 +242,27 @@ describe("getGuidanceForResults", () => {
       },
       fluABResult,
     ];
-    const expectedGuidance = [FluResultGuidance({ result: fluABResult })];
+    const expectedGuidance = [<FluResultGuidance result={fluABResult} />];
     expect(getGuidanceForResults(results, true)).toEqual(expectedGuidance);
   });
   it("returns single flu element if it contains multiple positive Flu results", () => {
-    const fluBResult = {
-      disease: { name: MULTIPLEX_DISEASES.FLU_B },
+    const fluAResult = {
+      disease: { name: MULTIPLEX_DISEASES.FLU_A },
       testResult: TEST_RESULTS.POSITIVE,
     };
     results = [
-      fluBResult,
       {
-        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
         testResult: TEST_RESULTS.POSITIVE,
       },
+      fluAResult,
     ];
-    const expectedGuidance = [FluResultGuidance({ result: fluBResult })];
+    const expectedGuidance = [<FluResultGuidance result={fluAResult} />];
     expect(getGuidanceForResults(results, true)).toEqual(expectedGuidance);
   });
   it("returns multiple elements if multiple matching results", () => {
-    const fluBResult = {
-      disease: { name: MULTIPLEX_DISEASES.FLU_B },
+    const fluAResult = {
+      disease: { name: MULTIPLEX_DISEASES.FLU_A },
       testResult: TEST_RESULTS.POSITIVE,
     };
     const rsvResult = {
@@ -270,16 +270,16 @@ describe("getGuidanceForResults", () => {
       testResult: TEST_RESULTS.POSITIVE,
     };
     results = [
-      fluBResult,
+      fluAResult,
       {
-        disease: { name: MULTIPLEX_DISEASES.FLU_A },
+        disease: { name: MULTIPLEX_DISEASES.FLU_B },
         testResult: TEST_RESULTS.POSITIVE,
       },
       rsvResult,
     ];
     const expectedGuidance = [
-      FluResultGuidance({ result: fluBResult }),
-      RsvResultGuidance({ result: rsvResult }),
+      <FluResultGuidance result={fluAResult} />,
+      <RsvResultGuidance result={rsvResult} />,
     ];
     expect(getGuidanceForResults(results, true)).toEqual(expectedGuidance);
   });
@@ -299,7 +299,7 @@ describe("getGuidanceForResults", () => {
       },
       rsvResult,
     ];
-    const expectedGuidance = [RsvResultGuidance({ result: rsvResult })];
+    const expectedGuidance = [<RsvResultGuidance result={rsvResult} />];
     expect(getGuidanceForResults(results, false)).toEqual(expectedGuidance);
   });
   it("returns Syphilis element if it contains a positive Syphilis result", () => {
@@ -319,7 +319,7 @@ describe("getGuidanceForResults", () => {
       syphilisResult,
     ];
     const expectedGuidance = [
-      SyphilisResultGuidance({ result: syphilisResult }),
+      <SyphilisResultGuidance result={syphilisResult} />,
     ];
     expect(getGuidanceForResults(results, false)).toEqual(expectedGuidance);
   });
@@ -340,7 +340,7 @@ describe("getGuidanceForResults", () => {
     ];
     expect(getGuidanceForResults(results, true)).toEqual([]);
   });
-  it("returns false if it contains no positive Syphilis result", () => {
+  it("returns empty if it contains no positive Syphilis result", () => {
     results = [
       {
         disease: { name: MULTIPLEX_DISEASES.SYPHILIS },

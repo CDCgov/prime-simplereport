@@ -73,7 +73,7 @@ export const getGuidanceForResults = (
   let match = getResultForDisease(results, MULTIPLEX_DISEASES.COVID_19);
   if (match) {
     guidance.push(
-      CovidResultGuidance({ result: match, isPatientApp: isPatientApp })
+      <CovidResultGuidance result={match} isPatientApp={isPatientApp} />
     );
   }
 
@@ -82,22 +82,22 @@ export const getGuidanceForResults = (
     getResultForDisease(results, MULTIPLEX_DISEASES.FLU_B, true) ||
     getResultForDisease(results, MULTIPLEX_DISEASES.FLU_A_AND_B, true);
   if (match) {
-    guidance.push(FluResultGuidance({ result: match }));
+    guidance.push(<FluResultGuidance result={match} />);
   }
 
   match = getResultForDisease(results, MULTIPLEX_DISEASES.HIV);
   if (match) {
-    guidance.push(HivResultGuidance());
+    guidance.push(<HivResultGuidance />);
   }
 
   match = getResultForDisease(results, MULTIPLEX_DISEASES.RSV, true);
   if (match) {
-    guidance.push(RsvResultGuidance({ result: match }));
+    guidance.push(<RsvResultGuidance result={match} />);
   }
 
   match = getResultForDisease(results, MULTIPLEX_DISEASES.SYPHILIS, true);
   if (match) {
-    guidance.push(SyphilisResultGuidance({ result: match }));
+    guidance.push(<SyphilisResultGuidance result={match} />);
   }
 
   return guidance;
