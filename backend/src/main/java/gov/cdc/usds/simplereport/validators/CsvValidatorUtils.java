@@ -142,9 +142,12 @@ public class CsvValidatorUtils {
   private static final String NOT_HISPANIC_CODE = "2186-5";
   private static final String NOT_HISPANIC_DB_VALUE = "not_hispanic";
   private static final String POSITIVE_LITERAL = "positive";
+  private static final String NEGATIVE_LITERAL = "negative";
   private static final String POSITIVE_CODE = "10828004";
   private static final String DETECTED_LITERAL = "detected";
+  private static final String NOT_DETECTED_LITERAL = "not detected";
   private static final String DETECTED_CODE = "260373001";
+  private static final String INVALID_RESULT_LITERAL = "invalid result";
   private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
       Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_CODE, DETECTED_CODE);
   private static final Set<String> GENDER_VALUES =
@@ -185,7 +188,12 @@ public class CsvValidatorUtils {
           "n", "no",
           "u", UNKNOWN_CODE);
   private static final Set<String> ACCEPTED_LITERAL_TEST_RESULT_VALUES =
-      Set.of(POSITIVE_LITERAL, "negative", "not detected", DETECTED_LITERAL, "invalid result");
+      Set.of(
+          POSITIVE_LITERAL,
+          NEGATIVE_LITERAL,
+          NOT_DETECTED_LITERAL,
+          DETECTED_LITERAL,
+          INVALID_RESULT_LITERAL);
 
   private static final Set<String> ACCEPTED_TEST_RESULT_SNOMEDS =
       concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream()).collect(toSet());
