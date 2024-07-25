@@ -17,7 +17,10 @@ const ResultsGuidance: React.FC<ResultsGuidanceProps> = ({
     <>
       {guidance.map((el) => {
         return (
-          <div className={!isPatientApp ? "sr-margin-bottom-28px" : ""}>
+          <div
+            className={!isPatientApp ? "sr-margin-bottom-28px" : ""}
+            key={el.type.name}
+          >
             {el}
           </div>
         );
