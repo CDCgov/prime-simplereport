@@ -131,6 +131,8 @@ simple-report:
         authorization:
           organization-external-id: DAT_ORG
           granted-roles: NO_ACCESS, USER
+          facilities:
+            - Uptown Clinic
       - identity: # OUTSIDE_ORG_ADMIN
           username: captain@pirate.com
           first-name: Jack

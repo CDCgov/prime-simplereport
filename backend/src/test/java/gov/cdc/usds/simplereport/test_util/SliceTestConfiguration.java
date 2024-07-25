@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.api.heathcheck.OktaHealthIndicator;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.SendGridDisabledConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
@@ -109,6 +110,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   OktaHealthIndicator.class,
   EmailService.class,
   SendGridDisabledConfiguration.class,
+  FeatureFlagsConfig.class
 })
 @EnableConfigurationProperties({InitialSetupProperties.class, AuthorizationProperties.class})
 public class SliceTestConfiguration {

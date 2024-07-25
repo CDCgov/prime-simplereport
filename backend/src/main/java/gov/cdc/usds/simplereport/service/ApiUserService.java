@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
@@ -74,6 +75,8 @@ public class ApiUserService {
   @Autowired private WebhookContextHolder _webhookContextHolder;
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
+
+  @Autowired private FeatureFlagsConfig _featureFlagsConfig;
 
   private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
     log.info("User with id={} updated by user with id={}", authorId, updatedUserId);
@@ -219,6 +222,11 @@ public class ApiUserService {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(userIdentity);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
+
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && orgRoles.isPresent()) {
+      setRolesAndFacilities(orgRoles.get(), apiUser);
+    }
+
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     createUserUpdatedAuditLog(
@@ -272,6 +280,10 @@ public class ApiUserService {
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
 
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && orgRoles.isPresent()) {
+      setRolesAndFacilities(orgRoles.get(), apiUser);
+    }
+
     createUserUpdatedAuditLog(
         apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
 
@@ -289,6 +301,10 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+
+    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
+      setRolesAndFacilities(orgRoles, apiUser);
+    }
     return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
@@ -303,6 +319,9 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
+      setRolesAndFacilities(orgRoles, apiUser);
+    }
     return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
@@ -333,6 +352,9 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
+      setRolesAndFacilities(orgRoles, apiUser);
+    }
     return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
@@ -348,6 +370,9 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
+    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
+      setRolesAndFacilities(orgRoles, apiUser);
+    }
     return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
@@ -554,6 +579,16 @@ public class ApiUserService {
     return nonOktaUser.orElseGet(() -> getCurrentApiUserFromIdentity(userIdentity));
   }
 
+  public UserInfo getCurrentUserInfoForWhoAmI() {
+    ApiUser currentUser = getCurrentApiUser();
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    boolean isAdmin = _authService.isSiteAdmin();
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && currentOrgRoles.isPresent()) {
+      setRolesAndFacilities(currentOrgRoles.get(), currentUser);
+    }
+    return new UserInfo(currentUser, currentOrgRoles, isAdmin);
+  }
+
   public UserInfo getCurrentUserInfo() {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
@@ -688,7 +723,9 @@ public class ApiUserService {
 
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-
+    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
+      setRolesAndFacilities(orgRoles, apiUser);
+    }
     return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
   }
 
@@ -762,5 +799,26 @@ public class ApiUserService {
     return facilityIdsToGiveAccess.stream()
         .filter(id -> !facilityIdsFound.contains(id))
         .collect(Collectors.toSet());
+  }
+
+  /**
+   * Save a user's role and facility permissions in the DB as part of the Okta migration work
+   *
+   * @param orgRoles
+   * @param apiUser
+   * @return ApiUser
+   */
+  private ApiUser setRolesAndFacilities(OrganizationRoles orgRoles, ApiUser apiUser) {
+    Organization org = orgRoles.getOrganization();
+    Set<OrganizationRole> roles = orgRoles.getGrantedRoles();
+    List<UUID> facilitiesInternalIds =
+        orgRoles.getFacilities().stream()
+            .map(IdentifiedEntity::getInternalId)
+            .collect(Collectors.toList());
+    Set<Facility> facilitiesToGiveAccessTo =
+        getFacilitiesToGiveAccess(org, roles, new HashSet<>(facilitiesInternalIds));
+    apiUser.setFacilities(facilitiesToGiveAccessTo);
+    apiUser.setRoles(roles, org);
+    return apiUser;
   }
 }
