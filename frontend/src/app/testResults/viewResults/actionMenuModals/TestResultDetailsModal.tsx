@@ -16,7 +16,7 @@ import {
 } from "../../../../patientApp/timeOfTest/constants";
 import {
   getSortedResults,
-  hasDiseaseSpecificResults,
+  getResultForDisease,
 } from "../../../utils/testResults";
 import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
@@ -70,7 +70,7 @@ export const DetachedTestResultDetailsModal = ({
   data,
   closeModal,
 }: DetachedTestResultDetailsModalProps) => {
-  const isHIVResult = hasDiseaseSpecificResults(
+  const isHIVResult = !!getResultForDisease(
     data?.testResult.results,
     MULTIPLEX_DISEASES.HIV
   );

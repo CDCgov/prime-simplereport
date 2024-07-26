@@ -14,7 +14,7 @@ import { GetTestResultForPrintDocument } from "../../../../generated/graphql";
 import { displayFullName } from "../../../utils";
 import { formatDateWithTimeOption } from "../../../utils/date";
 import {
-  displayGuidance,
+  getGuidanceForResults,
   hasMultipleResults,
 } from "../../../utils/testResults";
 import { setLanguage } from "../../../utils/languages";
@@ -75,6 +75,7 @@ export const StaticTestResultModal = ({
     dateTested,
   } = testResult;
   const isPatientApp = false;
+  const guidance = getGuidanceForResults(results, isPatientApp);
 
   return (
     <div
@@ -183,10 +184,10 @@ export const StaticTestResultModal = ({
             <TestResultsList results={results} isPatientApp={isPatientApp} />
           </ul>
         </section>
-        {displayGuidance(results) && (
+        {guidance.length > 0 && (
           <section className="sr-result-section sr-result-next-steps">
             <h2>{t("testResult.moreInformation")}</h2>
-            <ResultsGuidance results={results} isPatientApp={isPatientApp} />
+            <ResultsGuidance guidance={guidance} isPatientApp={isPatientApp} />
           </section>
         )}
       </main>

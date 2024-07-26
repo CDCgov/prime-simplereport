@@ -197,6 +197,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </option>
                 <option
                   aria-selected="false"
+                  value="Flu A and B"
+                >
+                  Flu A and B
+                </option>
+                <option
+                  aria-selected="false"
                   value="Flu B"
                 >
                   Flu B
