@@ -144,7 +144,7 @@ Cypress.Commands.add("addDevice", (device) => {
 Cypress.Commands.add("removeOrganizationAccess", () => {
   cy.visit("/admin/tenant-data-access");
   cy.contains("Cancel access").click();
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
+
   cy.wait(5);
 });
 
