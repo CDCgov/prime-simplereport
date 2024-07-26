@@ -13,6 +13,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePar
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -320,5 +321,34 @@ class CsvValidatorUtilsTest {
             validateRequiredFieldsForPositiveResult(
                 testResult, DiseaseService.HIV_NAME, List.of(genders, pregnant)))
         .hasSize(2);
+  }
+
+  @Test
+  void validTestResult() {
+
+    ValueOrError positiveSNOMED = new ValueOrError("10828004", "test_result");
+    assertThat(validateTestResult(positiveSNOMED)).hasSize(0);
+
+    ValueOrError positiveLiteral = new ValueOrError("positive", "test_result");
+    assertThat(validateTestResult(positiveLiteral)).hasSize(0);
+
+    ValueOrError negativeSNOMED = new ValueOrError("260385009", "test_result");
+    assertThat(validateTestResult(negativeSNOMED)).hasSize(0);
+
+    ValueOrError negativeLiteral = new ValueOrError("negative", "test_result");
+    assertThat(validateTestResult(negativeLiteral)).hasSize(0);
+  }
+
+  @Test
+  void invalidTestResult() {
+
+    ValueOrError invalidSNOMED = new ValueOrError("404684003", "test_result");
+    assertThat(validateTestResult(invalidSNOMED)).hasSize(1);
+
+    ValueOrError invalidLiteral = new ValueOrError("postitv", "test_result");
+    assertThat(validateTestResult(invalidLiteral)).hasSize(1);
+
+    ValueOrError randomChar = new ValueOrError("-", "test_result");
+    assertThat(validateTestResult(randomChar)).hasSize(1);
   }
 }

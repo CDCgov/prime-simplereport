@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.validators;
 
+import static gov.cdc.usds.simplereport.api.Translators.ABNORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
+import static gov.cdc.usds.simplereport.api.Translators.NORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_LITERAL;
@@ -44,6 +46,8 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SN
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Stream.concat;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
@@ -69,8 +73,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
@@ -104,12 +106,12 @@ public class CsvValidatorUtils {
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final Set<String> VALID_STATE_CODES =
-      Stream.concat(
+      concat(
               STATE_CODES.stream().map(String::toLowerCase),
               CANADIAN_STATE_CODES.stream().map(String::toLowerCase))
-          .collect(Collectors.toSet());
+          .collect(toSet());
   private static final Set<String> VALID_COUNTRY_CODES =
-      COUNTRY_CODES.stream().map(String::toLowerCase).collect(Collectors.toSet());
+      COUNTRY_CODES.stream().map(String::toLowerCase).collect(toSet());
   private static final String UNKNOWN_LITERAL = "unknown";
   private static final String UNKNOWN_CODE = "unk";
   private static final String OTHER_LITERAL = "other";
@@ -140,9 +142,12 @@ public class CsvValidatorUtils {
   private static final String NOT_HISPANIC_CODE = "2186-5";
   private static final String NOT_HISPANIC_DB_VALUE = "not_hispanic";
   private static final String POSITIVE_LITERAL = "positive";
+  private static final String NEGATIVE_LITERAL = "negative";
   private static final String POSITIVE_CODE = "10828004";
   private static final String DETECTED_LITERAL = "detected";
+  private static final String NOT_DETECTED_LITERAL = "not detected";
   private static final String DETECTED_CODE = "260373001";
+  private static final String INVALID_RESULT_LITERAL = "invalid result";
   private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
       Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_CODE, DETECTED_CODE);
   private static final Set<String> GENDER_VALUES =
@@ -182,9 +187,20 @@ public class CsvValidatorUtils {
           "y", "yes",
           "n", "no",
           "u", UNKNOWN_CODE);
-  private static final Set<String> TEST_RESULT_VALUES =
-      Set.of(POSITIVE_LITERAL, "negative", "not detected", DETECTED_LITERAL, "invalid result");
+  private static final Set<String> ACCEPTED_LITERAL_TEST_RESULT_VALUES =
+      Set.of(
+          POSITIVE_LITERAL,
+          NEGATIVE_LITERAL,
+          NOT_DETECTED_LITERAL,
+          DETECTED_LITERAL,
+          INVALID_RESULT_LITERAL);
 
+  private static final Set<String> ACCEPTED_TEST_RESULT_SNOMEDS =
+      concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream()).collect(toSet());
+
+  private static final Set<String> ALL_ACCEPTED_TEST_RESULT_VALUES =
+      concat(ACCEPTED_LITERAL_TEST_RESULT_VALUES.stream(), ACCEPTED_TEST_RESULT_SNOMEDS.stream())
+          .collect(toSet());
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
           HOSPITAL_SNOMED, HOSPITAL_LITERAL,
@@ -271,7 +287,7 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
+    return validateSpecificValueOrSNOMED(input);
   }
 
   public static List<FeedbackMessage> validateTestPerformedCode(ValueOrError input) {
@@ -603,18 +619,15 @@ public class CsvValidatorUtils {
     return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
   }
 
-  private static List<FeedbackMessage> validateSpecificValueOrSNOMED(
-      ValueOrError input, Set<String> acceptableValues) {
+  private static List<FeedbackMessage> validateSpecificValueOrSNOMED(ValueOrError input) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
+
     if (value == null) {
       return errors;
     }
-    boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
-    if (nonSNOMEDValue) {
-      return validateInSet(input, acceptableValues);
-    }
-    return errors;
+
+    return validateInSet(input, ALL_ACCEPTED_TEST_RESULT_VALUES);
   }
 
   public static Set<String> extractSubstringsGenderOfSexualPartners(String value) {
