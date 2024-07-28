@@ -74,7 +74,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.6' // this provides additional types for JsonB and for ListArray types in Postgres
     implementation 'org.liquibase:liquibase-core:4.27.0'
-    implementation 'org.postgresql:postgresql:42.6.1'
+    implementation 'org.postgresql:postgresql:42.7.3'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.28'
