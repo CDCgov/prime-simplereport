@@ -584,7 +584,9 @@ public class ApiUserService {
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     boolean isAdmin = _authService.isSiteAdmin();
     if (!_featureFlagsConfig.isOktaMigrationEnabled() && currentOrgRoles.isPresent()) {
-      setRolesAndFacilities(currentOrgRoles.get(), currentUser);
+      if (!isAdmin) {
+        setRolesAndFacilities(currentOrgRoles.get(), currentUser);
+      }
     }
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
@@ -724,7 +726,9 @@ public class ApiUserService {
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
     if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
-      setRolesAndFacilities(orgRoles, apiUser);
+      if (!isSiteAdmin) {
+        setRolesAndFacilities(orgRoles, apiUser);
+      }
     }
     return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
   }
