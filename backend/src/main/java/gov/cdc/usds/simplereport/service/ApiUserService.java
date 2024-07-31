@@ -583,7 +583,7 @@ public class ApiUserService {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     boolean isAdmin = _authService.isSiteAdmin();
-    if (!_featureFlagsConfig.isOktaMigrationEnabled() && currentOrgRoles.isPresent()) {
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && currentOrgRoles.isPresent() && !isAdmin) {
       setRolesAndFacilities(currentOrgRoles.get(), currentUser);
     }
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
@@ -703,7 +703,7 @@ public class ApiUserService {
       ApiUser apiUser,
       Optional<OrganizationRoleClaims> optClaims,
       UserStatus userStatus,
-      Boolean isSiteAdmin) {
+      boolean isSiteAdmin) {
 
     OrganizationRoleClaims claims = optClaims.orElseThrow(UnidentifiedUserException::new);
 
@@ -723,7 +723,7 @@ public class ApiUserService {
 
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && !isSiteAdmin) {
       setRolesAndFacilities(orgRoles, apiUser);
     }
     return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
