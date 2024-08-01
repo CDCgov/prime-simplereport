@@ -174,4 +174,10 @@ public class UserMutationResolver {
         username, orgExternalId, accessAllFacilities, facilityIdsToAssign, role);
     return new User(_us.getUserByLoginEmail(username));
   }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @MutationMapping
+  public ApiUser markUserRolesAndFacilitiesAsDeleted(@Argument String username) {
+    return _us.markUserRolesAndFacilitiesAsDeleted(username);
+  }
 }

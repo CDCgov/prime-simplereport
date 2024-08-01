@@ -64,6 +64,9 @@ extend type Mutation {
     accessAllFacilities: Boolean = false,
     facilities: [ID] = [],
     role: Role!): User!
+  markUserRolesAndFacilitiesAsDeleted(
+    username: String!
+  ): ApiUser
   updateFeatureFlag(name: String!, value: Boolean!):FeatureFlag
   deleteE2EOktaOrganizations(orgExternalId: String!): Organization
   sendOrgAdminEmailCSV(type: String!, state: String!): Boolean

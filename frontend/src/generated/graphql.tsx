@@ -209,6 +209,7 @@ export type Mutation = {
   markFacilityAsDeleted?: Maybe<Scalars["String"]["output"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]["output"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]["output"]>;
+  markUserRolesAndFacilitiesAsDeleted?: Maybe<ApiUser>;
   reactivateUser?: Maybe<User>;
   reactivateUserAndResetPassword?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]["output"]>;
@@ -380,6 +381,10 @@ export type MutationMarkOrganizationAsDeletedArgs = {
 export type MutationMarkPendingOrganizationAsDeletedArgs = {
   deleted: Scalars["Boolean"]["input"];
   orgExternalId: Scalars["String"]["input"];
+};
+
+export type MutationMarkUserRolesAndFacilitiesAsDeletedArgs = {
+  username: Scalars["String"]["input"];
 };
 
 export type MutationReactivateUserArgs = {
