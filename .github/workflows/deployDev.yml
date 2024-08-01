@@ -69,6 +69,7 @@ jobs:
           terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
           terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
           okta_api_token: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
+          azure_alert_slack_webhook: ${{ secrets.AZURE_ALERT_SLACK_WEBHOOK }}
       - uses: ./.github/actions/stg-wait-for-slot-commit
         name: Wait for correct commit to be deployed in staging slot
         timeout-minutes: 5

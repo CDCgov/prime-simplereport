@@ -1,16 +1,13 @@
 locals {
   project   = "prime"
-  name      = "simple-report"
-  env       = "pentest"
   env_level = "pentest"
   management_tags = {
     prime-app      = "simple-report"
-    environment    = local.env
     resource_group = "prime-simple-report-pentest"
   }
 }
 
-
+variable "azure_alert_slack_webhook" {}
 
 # Define the Resource Group
 resource "azurerm_resource_group" "logic" {
@@ -46,7 +43,7 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
       "type": "Http",
       "inputs": {
         "method": "POST",
-        "uri": "https://hooks.slack.com/services/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",
+        "uri": "",
         "headers": {
           "Content-Type": "application/json"
         },
@@ -61,17 +58,17 @@ DEFINITION
 }
 
 # Define the Logic App Workflow Trigger
-resource "azurerm_logic_app_trigger_http_request" "example" {
+resource "azurerm_logic_app_trigger_http_request" "workflow_trigger" {
   logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
   name         = "Alert_monitor"
 }
 
 # Define the Logic App Workflow Action
-resource "azurerm_logic_app_action_http" "example" {
+resource "azurerm_logic_app_action_http" "workflow_action" {
   logic_app_id    = azurerm_logic_app_workflow.slack_workflow.id
   name            = "Post_message_to_Slack"
   method          = "POST"
-  url             = "https://hooks.slack.com/services/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"
+  url             = ""
   headers = {
     "Content-Type" = "application/json"
   }
