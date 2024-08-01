@@ -6,7 +6,7 @@ locals {
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
-    resource_group = "prime-simple-report-prod"
+    resource_group = "prime-simple-report-pentest"
   }
 }
 
@@ -14,8 +14,8 @@ locals {
 
 # Define the Resource Group
 resource "azurerm_resource_group" "logic" {
-  name     = "prime-simple-report-pentest"
-  location = "East US"
+  name     = var.rg_name
+  location = var.rg_location
 }
 
 # Define the Logic App Workflow

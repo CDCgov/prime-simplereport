@@ -9,7 +9,7 @@ variable "action_group_ids" {
 variable "rg_name" {
   description = "Name of resource group to deploy into"
   type        = string
-  default = "prime-simple-report-prod"
+  default = "prime-simple-report-pentest"
 }
 
 variable "rg_location" {
