@@ -19,7 +19,14 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
   location            = azurerm_resource_group.logic.location
   resource_group_name = azurerm_resource_group.logic.name
 
-  definition = <<DEFINITION
+
+}
+
+# Define the Logic App Workflow Trigger
+resource "azurerm_logic_app_trigger_http_request" "workflow_trigger" {
+  logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
+  name         = "Alert_monitor"
+  schema = <<SCHEMA
 {
   "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
   "contentVersion": "1.0.0.0",
@@ -52,13 +59,7 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
     }
   }
 }
-DEFINITION
-}
-
-# Define the Logic App Workflow Trigger
-resource "azurerm_logic_app_trigger_http_request" "workflow_trigger" {
-  logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
-  name         = "Alert_monitor"
+SCHEMA
 }
 
 # Define the Logic App Workflow Action
@@ -66,7 +67,7 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
   logic_app_id    = azurerm_logic_app_workflow.slack_workflow.id
   name            = "Post_message_to_Slack"
   method          = "POST"
-  url             = var.azure_alert_slack_webhook
+  uri            = var.azure_alert_slack_webhook
   headers = {
     "Content-Type" = "application/json"
   }
