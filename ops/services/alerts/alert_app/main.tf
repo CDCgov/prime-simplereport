@@ -7,8 +7,6 @@ locals {
   }
 }
 
-variable "azure_alert_slack_webhook" {}
-
 # Define the Resource Group
 resource "azurerm_resource_group" "logic" {
   name     = var.rg_name
@@ -27,7 +25,7 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
   "contentVersion": "1.0.0.0",
   "outputs": {},
   "triggers": {
-    "When_a_resource_event_occurs": {
+    "Alert_monitors": {
       "type": "Request",
       "kind": "Http",
       "inputs": {
@@ -43,7 +41,7 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
       "type": "Http",
       "inputs": {
         "method": "POST",
-        "uri": "",
+        "uri": var.azure_alert_slack_webhook,
         "headers": {
           "Content-Type": "application/json"
         },
@@ -68,7 +66,7 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
   logic_app_id    = azurerm_logic_app_workflow.slack_workflow.id
   name            = "Post_message_to_Slack"
   method          = "POST"
-  url             = ""
+  url             = var.azure_alert_slack_webhook
   headers = {
     "Content-Type" = "application/json"
   }
