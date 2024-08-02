@@ -584,7 +584,13 @@ public class ApiUserService {
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     boolean isAdmin = _authService.isSiteAdmin();
     if (!_featureFlagsConfig.isOktaMigrationEnabled() && currentOrgRoles.isPresent()) {
-      setRolesAndFacilities(currentOrgRoles.get(), currentUser);
+      try {
+        setRolesAndFacilities(currentOrgRoles.get(), currentUser);
+      } catch (PrivilegeUpdateFacilityAccessException e) {
+        log.warn(
+            "Could not migrate roles and facilities for user with id={} because facilities were invalid",
+            currentUser.getInternalId());
+      }
     }
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
@@ -724,7 +730,13 @@ public class ApiUserService {
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
     if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
-      setRolesAndFacilities(orgRoles, apiUser);
+      try {
+        setRolesAndFacilities(orgRoles, apiUser);
+      } catch (PrivilegeUpdateFacilityAccessException e) {
+        log.warn(
+            "Could not migrate roles and facilities for user with id={} because facilities were invalid",
+            apiUser.getInternalId());
+      }
     }
     return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
   }
