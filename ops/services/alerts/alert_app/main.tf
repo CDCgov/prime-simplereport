@@ -48,7 +48,7 @@ resource "azurerm_logic_app_trigger_http_request" "workflow_trigger" {
       "type": "Http",
       "inputs": {
         "method": "POST",
-        "uri": var.azure_alert_slack_webhook,
+        "uri": "${var.azure_alert_slack_webhook}",
         "headers": {
           "Content-Type": "application/json"
         },
