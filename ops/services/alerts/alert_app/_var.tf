@@ -1,6 +1,6 @@
 
 variable "action_group_ids" {
-  default = ["/subscriptions/7D1E3999-6577-4CD5-B296-F518E5C8E677/resourceGroups/prime-simple-report-prod/providers/microsoft.insights/actionGroups/On Call"]
+  default     = ["/subscriptions/7D1E3999-6577-4CD5-B296-F518E5C8E677/resourceGroups/prime-simple-report-prod/providers/microsoft.insights/actionGroups/On Call"]
   description = "The IDs of the monitor action group resources to send events to"
   type        = list(string)
 }
@@ -9,7 +9,7 @@ variable "action_group_ids" {
 variable "rg_name" {
   description = "Name of resource group to deploy into"
   type        = string
-  default = "prime-simple-report-pentest"
+  default     = "prime-simple-report-pentest"
 }
 
 variable "rg_location" {
@@ -18,7 +18,7 @@ variable "rg_location" {
   default     = "eastus"
 }
 
-variable "azure_alert_slack_webhook"{
+variable "azure_alert_slack_webhook" {
   description = "Slack webhook URL."
 
 }
