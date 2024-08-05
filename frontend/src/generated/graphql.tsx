@@ -195,6 +195,7 @@ export type Mutation = {
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
   adminUpdateOrganization?: Maybe<Scalars["String"]["output"]>;
+  clearUserRolesAndFacilities?: Maybe<ApiUser>;
   correctTestMarkAsCorrection?: Maybe<TestResult>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createApiUserNoOkta?: Maybe<ApiUser>;
@@ -301,6 +302,10 @@ export type MutationAddUserToCurrentOrgArgs = {
 export type MutationAdminUpdateOrganizationArgs = {
   name: Scalars["String"]["input"];
   type: Scalars["String"]["input"];
+};
+
+export type MutationClearUserRolesAndFacilitiesArgs = {
+  username: Scalars["String"]["input"];
 };
 
 export type MutationCorrectTestMarkAsCorrectionArgs = {

@@ -376,6 +376,21 @@ public class ApiUserService {
     return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
+  /**
+   * Clear a user's roles and facilities - intended to be used on site admin users only,
+   * non-site-admin users will be in a misconfigured state without roles and facilities
+   *
+   * @param username
+   * @return ApiUser
+   */
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public ApiUser clearUserRolesAndFacilities(String username) {
+    ApiUser foundUser =
+        _apiUserRepo.findByLoginEmail(username).orElseThrow(NonexistentUserException::new);
+    foundUser.clearRolesAndFacilities();
+    return foundUser;
+  }
+
   private ApiUser getApiUser(UUID id) {
     return getApiUser(id, false);
   }
