@@ -376,6 +376,21 @@ public class ApiUserService {
     return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
+  /**
+   * Clear a user's roles and facilities - intended to be used on site admin users only,
+   * non-site-admin users will be in a misconfigured state without roles and facilities
+   *
+   * @param username
+   * @return ApiUser
+   */
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public ApiUser clearUserRolesAndFacilities(String username) {
+    ApiUser foundUser =
+        _apiUserRepo.findByLoginEmail(username).orElseThrow(NonexistentUserException::new);
+    foundUser.clearRolesAndFacilities();
+    return foundUser;
+  }
+
   private ApiUser getApiUser(UUID id) {
     return getApiUser(id, false);
   }
@@ -583,7 +598,7 @@ public class ApiUserService {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     boolean isAdmin = _authService.isSiteAdmin();
-    if (!_featureFlagsConfig.isOktaMigrationEnabled() && currentOrgRoles.isPresent()) {
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && currentOrgRoles.isPresent() && !isAdmin) {
       try {
         setRolesAndFacilities(currentOrgRoles.get(), currentUser);
       } catch (PrivilegeUpdateFacilityAccessException e) {
@@ -709,7 +724,7 @@ public class ApiUserService {
       ApiUser apiUser,
       Optional<OrganizationRoleClaims> optClaims,
       UserStatus userStatus,
-      Boolean isSiteAdmin) {
+      boolean isSiteAdmin) {
 
     OrganizationRoleClaims claims = optClaims.orElseThrow(UnidentifiedUserException::new);
 
@@ -729,7 +744,7 @@ public class ApiUserService {
 
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && !isSiteAdmin) {
       try {
         setRolesAndFacilities(orgRoles, apiUser);
       } catch (PrivilegeUpdateFacilityAccessException e) {

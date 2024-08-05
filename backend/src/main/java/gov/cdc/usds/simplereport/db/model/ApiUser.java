@@ -71,6 +71,10 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     }
   }
 
+  public Set<OrganizationRole> getRoles() {
+    return this.roleAssignments.stream().map(ApiUserRole::getRole).collect(Collectors.toSet());
+  }
+
   public void setRoles(Set<OrganizationRole> newOrgRoles, Organization org) {
     this.roleAssignments.clear();
     for (OrganizationRole orgRole : newOrgRoles) {
@@ -81,5 +85,11 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
       }
       this.roleAssignments.add(new ApiUserRole(this, org, orgRole));
     }
+  }
+
+  public ApiUser clearRolesAndFacilities() {
+    this.roleAssignments.clear();
+    this.facilityAssignments.clear();
+    return this;
   }
 }
