@@ -569,27 +569,26 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void orgAdminUser_markUserRolesAndFacilitiesAsDeleted_error() {
+  void orgAdminUser_clearUserRolesAndFacilities_error() {
     String username = "nonexistentuser@examplemail.com";
-    assertThrows(
-        AccessDeniedException.class, () -> _service.markUserRolesAndFacilitiesAsDeleted(username));
+    assertThrows(AccessDeniedException.class, () -> _service.clearUserRolesAndFacilities(username));
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void siteAdminUser_markUserRolesAndFacilitiesAsDeleted_nonExistentUser_throws() {
+  void siteAdminUser_clearUserRolesAndFacilities_nonExistentUser_throws() {
     final String email = "nonexistentuser@examplemail.com";
 
     assertThrows(
         NonexistentUserException.class,
         () -> {
-          _service.markUserRolesAndFacilitiesAsDeleted(email);
+          _service.clearUserRolesAndFacilities(email);
         });
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void siteAdminUser_markUserRolesAndFacilitiesAsDeleted_success() {
+  void siteAdminUser_clearUserRolesAndFacilities_success() {
     initSampleData();
     final String email = TestUserIdentities.STANDARD_USER;
     ApiUser foundUser = _apiUserRepo.findByLoginEmail(email).get();
@@ -601,7 +600,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     assertEquals(1, initialOrgRoles.size());
     assertEquals("USER", initialOrgRoles.stream().findFirst().get().getName());
 
-    ApiUser updatedUser = _service.markUserRolesAndFacilitiesAsDeleted(email);
+    ApiUser updatedUser = _service.clearUserRolesAndFacilities(email);
     // check facilities and roles after deletion
     int updatedFacilitiesCount = updatedUser.getFacilities().size();
     int updatedOrgRolesCount = updatedUser.getRoles().size();

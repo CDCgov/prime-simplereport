@@ -64,7 +64,7 @@ extend type Mutation {
     accessAllFacilities: Boolean = false,
     facilities: [ID] = [],
     role: Role!): User!
-  markUserRolesAndFacilitiesAsDeleted(
+  clearUserRolesAndFacilities(
     username: String!
   ): ApiUser
   updateFeatureFlag(name: String!, value: Boolean!):FeatureFlag

@@ -58,32 +58,32 @@ class UserMutationResolverTest extends BaseServiceTest<ApiUserService> {
   }
 
   @Test
-  void markUserRolesAndFacilitiesAsDeleted_nonExistentUser_throwException() {
+  void clearUserRolesAndFacilities_nonExistentUser_throwException() {
     String username = orgUserInfo.getEmail();
 
     // GIVEN
     ApiUser foundUser = apiUserRepository.findByLoginEmail(username).get();
-    when(mockedApiUserService.markUserRolesAndFacilitiesAsDeleted(username)).thenReturn(foundUser);
+    when(mockedApiUserService.clearUserRolesAndFacilities(username)).thenReturn(foundUser);
 
     // WHEN
-    ApiUser resetUser = userMutationResolver.markUserRolesAndFacilitiesAsDeleted(username);
+    ApiUser resetUser = userMutationResolver.clearUserRolesAndFacilities(username);
 
     // THEN
     assertThat(resetUser.getLoginEmail()).isEqualTo(orgUserInfo.getEmail());
-    verify(mockedApiUserService, times(1)).markUserRolesAndFacilitiesAsDeleted(username);
+    verify(mockedApiUserService, times(1)).clearUserRolesAndFacilities(username);
   }
 
   @Test
-  void markUserRolesAndFacilitiesAsDeleted_failure() {
+  void clearUserRolesAndFacilities_failure() {
     String username = "nonexistentuser@examplemail.com";
 
-    when(mockedApiUserService.markUserRolesAndFacilitiesAsDeleted(username))
+    when(mockedApiUserService.clearUserRolesAndFacilities(username))
         .thenThrow(new NonexistentUserException());
 
     assertThrows(
         NonexistentUserException.class,
         () -> {
-          userMutationResolver.markUserRolesAndFacilitiesAsDeleted(username);
+          userMutationResolver.clearUserRolesAndFacilities(username);
         });
   }
 }

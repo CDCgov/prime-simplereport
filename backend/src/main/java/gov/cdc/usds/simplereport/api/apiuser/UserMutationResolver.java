@@ -177,7 +177,7 @@ public class UserMutationResolver {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @MutationMapping
-  public ApiUser markUserRolesAndFacilitiesAsDeleted(@Argument String username) {
-    return _us.markUserRolesAndFacilitiesAsDeleted(username);
+  public ApiUser clearUserRolesAndFacilities(@Argument String username) {
+    return _us.clearUserRolesAndFacilities(username);
   }
 }

@@ -384,7 +384,7 @@ public class ApiUserService {
    * @return ApiUser
    */
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public ApiUser markUserRolesAndFacilitiesAsDeleted(String username) {
+  public ApiUser clearUserRolesAndFacilities(String username) {
     ApiUser foundUser =
         _apiUserRepo.findByLoginEmail(username).orElseThrow(NonexistentUserException::new);
     foundUser.clearRolesAndFacilities();
