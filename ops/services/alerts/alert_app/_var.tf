@@ -18,10 +18,6 @@ variable "rg_location" {
   default     = "eastus"
 }
 
-variable "azure_alert_slack_webhook" {
-  description = "Slack webhook URL."
-}
-
 variable "global_vault" {
 
 }
