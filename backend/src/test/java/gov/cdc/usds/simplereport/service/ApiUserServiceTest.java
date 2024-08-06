@@ -36,6 +36,7 @@ import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -48,7 +49,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Autowired @SpyBean ApiUserRepository _apiUserRepo;
@@ -588,6 +591,47 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             + moveOrgExternalId
             + " weren't found. Check those facility id(s) exist in the specified organization";
     assertEquals(expectedError, caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void orgAdminUser_clearUserRolesAndFacilities_error() {
+    String username = "nonexistentuser@examplemail.com";
+    assertThrows(AccessDeniedException.class, () -> _service.clearUserRolesAndFacilities(username));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void siteAdminUser_clearUserRolesAndFacilities_nonExistentUser_throws() {
+    final String email = "nonexistentuser@examplemail.com";
+
+    assertThrows(
+        NonexistentUserException.class,
+        () -> {
+          _service.clearUserRolesAndFacilities(email);
+        });
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void siteAdminUser_clearUserRolesAndFacilities_success() {
+    initSampleData();
+    final String email = TestUserIdentities.STANDARD_USER;
+    ApiUser foundUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    // check initial facilities and roles
+    int initialFacilitiesCount = foundUser.getFacilities().size();
+    Set<OrganizationRole> initialOrgRoles = foundUser.getRoles();
+    assertEquals(1, initialFacilitiesCount);
+    assertEquals(1, initialOrgRoles.size());
+    assertEquals("USER", initialOrgRoles.stream().findFirst().get().getName());
+
+    ApiUser updatedUser = _service.clearUserRolesAndFacilities(email);
+    // check facilities and roles after deletion
+    int updatedFacilitiesCount = updatedUser.getFacilities().size();
+    int updatedOrgRolesCount = updatedUser.getRoles().size();
+    assertEquals(0, updatedFacilitiesCount);
+    assertEquals(0, updatedOrgRolesCount);
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {
