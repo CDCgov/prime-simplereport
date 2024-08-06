@@ -509,7 +509,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     // we should be able to retrieve user info for a user with invalid claims (no facility access)
     // without failing
     UserInfo result = _service.getUserByLoginEmail(email);
-    assertThat(result.getFacilities()).hasSize(0);
+    assertThat(result.getFacilities()).isEmpty();
   }
 
   @Test
