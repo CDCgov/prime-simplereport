@@ -29,6 +29,7 @@ public class TestUserIdentities {
   public static final String ENTRY_ONLY_USER = "nobody@example.com";
   public static final String ORG_ADMIN_USER = "admin@example.com";
   public static final String ALL_FACILITIES_USER = "allfacilities@example.com";
+  public static final String INVALID_FACILITIES_USER = "invalid@example.com";
 
   public static final String OTHER_ORG_USER = "intruder@pirate.com";
   public static final String OTHER_ORG_ADMIN = "captain@pirate.com";
