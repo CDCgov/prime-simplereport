@@ -225,7 +225,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  void whoami_invalidFacilityAccess_okPermissionsRolesFacilities() {
+  void whoami_invalidFacilityAccess_okRolesFacilities() {
     useInvalidFacilitiesUser();
 
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
