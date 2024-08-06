@@ -78,4 +78,8 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
 BODY
 }
 
+app_settings = {
+  AZURE_ALERT_SLACK_WEBHOOK = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.azure_alert_slack_webhook.global.id})"
+}
+
 
