@@ -75,17 +75,19 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   void getUsersInCurrentOrg_adminUser_success() {
     initSampleData();
     List<ApiUser> users = _service.getUsersInCurrentOrg();
-    assertEquals(5, users.size());
+    assertEquals(6, users.size());
     assertEquals("admin@example.com", users.get(0).getLoginEmail());
     assertEquals("Andrews", users.get(0).getNameInfo().getLastName());
     assertEquals("bobbity@example.com", users.get(1).getLoginEmail());
     assertEquals("Bobberoo", users.get(1).getNameInfo().getLastName());
-    assertEquals("nobody@example.com", users.get(2).getLoginEmail());
-    assertEquals("Nixon", users.get(2).getNameInfo().getLastName());
-    assertEquals("notruby@example.com", users.get(3).getLoginEmail());
-    assertEquals("Reynolds", users.get(3).getNameInfo().getLastName());
-    assertEquals("allfacilities@example.com", users.get(4).getLoginEmail());
-    assertEquals("Williams", users.get(4).getNameInfo().getLastName());
+    assertEquals("invalid@example.com", users.get(2).getLoginEmail());
+    assertEquals("Irwin", users.get(2).getNameInfo().getLastName());
+    assertEquals("nobody@example.com", users.get(3).getLoginEmail());
+    assertEquals("Nixon", users.get(3).getNameInfo().getLastName());
+    assertEquals("notruby@example.com", users.get(4).getLoginEmail());
+    assertEquals("Reynolds", users.get(4).getNameInfo().getLastName());
+    assertEquals("allfacilities@example.com", users.get(5).getLoginEmail());
+    assertEquals("Williams", users.get(5).getNameInfo().getLastName());
   }
 
   @Test
@@ -104,14 +106,15 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   void getUsersAndStatusInCurrentOrg_success() {
     initSampleData();
     List<ApiUserWithStatus> users = _service.getUsersAndStatusInCurrentOrg();
-    assertEquals(5, users.size());
+    assertEquals(6, users.size());
 
     checkApiUserWithStatus(users.get(0), "admin@example.com", "Andrews", UserStatus.ACTIVE);
     checkApiUserWithStatus(users.get(1), "bobbity@example.com", "Bobberoo", UserStatus.ACTIVE);
-    checkApiUserWithStatus(users.get(2), "nobody@example.com", "Nixon", UserStatus.ACTIVE);
-    checkApiUserWithStatus(users.get(3), "notruby@example.com", "Reynolds", UserStatus.ACTIVE);
+    checkApiUserWithStatus(users.get(2), "invalid@example.com", "Irwin", UserStatus.ACTIVE);
+    checkApiUserWithStatus(users.get(3), "nobody@example.com", "Nixon", UserStatus.ACTIVE);
+    checkApiUserWithStatus(users.get(4), "notruby@example.com", "Reynolds", UserStatus.ACTIVE);
     checkApiUserWithStatus(
-        users.get(4), "allfacilities@example.com", "Williams", UserStatus.ACTIVE);
+        users.get(5), "allfacilities@example.com", "Williams", UserStatus.ACTIVE);
   }
 
   @Test
