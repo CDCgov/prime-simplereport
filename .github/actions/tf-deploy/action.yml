@@ -22,8 +22,6 @@ inputs:
   okta_api_token:
     description: Okta API token
     required: true
-  azure_alert_slack_webhook:
-    description: Slack webhook used to send Azure alerts
 
 runs:
   using: composite
@@ -56,6 +54,5 @@ runs:
         ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
         ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
         OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
-        AZURE_ALERT_SLACK_WEBHOOK: ${{ inputs.azure_alert_slack_webhook }}
       shell: bash
       run: make deploy-${{ inputs.deploy_env }}
