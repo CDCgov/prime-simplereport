@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessE
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
@@ -492,6 +493,31 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
         assertThrows(
             AccessDeniedException.class, () -> _service.getUserByLoginEmail("example@email.com"));
     assertEquals("Access Denied", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_invalidClaims_success() {
+    initSampleData();
+
+    Optional<OrganizationRoleClaims> claims =
+        Optional.of(
+            new OrganizationRoleClaims(
+                "DIS_ORG", Set.of(), Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER)));
+    String email = "allfacilities@example.com";
+    PartialOktaUser oktaUser =
+        PartialOktaUser.builder()
+            .isSiteAdmin(false)
+            .status(UserStatus.ACTIVE)
+            .organizationRoleClaims(claims)
+            .build();
+
+    when(this._oktaRepo.findUser(anyString())).thenReturn(oktaUser);
+
+    // we should be able to retrieve user info for a user with invalid claims (no facility access)
+    // without failing
+    UserInfo result = _service.getUserByLoginEmail(email);
+    assertThat(result.getFacilities()).hasSize(0);
   }
 
   @Test
