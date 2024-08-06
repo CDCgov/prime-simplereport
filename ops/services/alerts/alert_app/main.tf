@@ -1,23 +1,19 @@
 locals {
   project   = "prime"
+  name      = "simple-report"
   env_level = "pentest"
   management_tags = {
     prime-app      = "simple-report"
-    resource_group = "prime-simple-report-pentest"
+    resource_group = data.azurerm_resource_group.rg.name
   }
 }
 
-# Define the Resource Group
-resource "azurerm_resource_group" "logic" {
-  name     = var.rg_name
-  location = var.rg_location
-}
 
 # Define the Logic App Workflow
 resource "azurerm_logic_app_workflow" "slack_workflow" {
   name                = "alert-logic-app"
-  location            = azurerm_resource_group.logic.location
-  resource_group_name = azurerm_resource_group.logic.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg
 
 
 }
@@ -79,4 +75,35 @@ BODY
 }
 
 
+#Define the action group
+resource "azurerm_monitor_action_group" "on_call_action_group" {
+  name                = "OnCallEngineer"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  short_name          = "OnCall"
+  logic_app_receiver {
+    name                    = "logicappaction"
+    resource_id             = azurerm_logic_app_workflow.slack_workflow.id
+    callback_url            = azurerm_logic_app_action_http.workflow_action.uri
+    use_common_alert_schema = false
+  }
+}
 
+
+# Define the Alert Rule for the action group to be notified
+resource "azurerm_monitor_activity_log_alert" "example" {
+  name                = "slack-logic-app-alert"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  scopes              = [azurerm_logic_app_workflow.slack_workflow.id]
+  description         = "Alert when the Logic App workflow is triggered."
+  enabled             = true
+
+  criteria {
+    category       = "ResourceHealth"
+    operation_name = "Microsoft.Logic/workflows/workflowRuns/write"
+  }
+
+  action {
+    action_group_id = azurerm_monitor_action_group.on_call_action_group.id
+  }
+}
