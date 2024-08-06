@@ -48,7 +48,7 @@ resource "azurerm_logic_app_trigger_http_request" "workflow_trigger" {
       "type": "Http",
       "inputs": {
         "method": "POST",
-        "uri": "${var.azure_alert_slack_webhook}",
+        "uri": "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.azure_alert_slack_webhook.id})",
         "headers": {
           "Content-Type": "application/json"
         },
@@ -67,7 +67,7 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
   logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
   name         = "Post_message_to_Slack"
   method       = "POST"
-  uri          = var.azure_alert_slack_webhook
+  uri          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.azure_alert_slack_webhook.id})"
   headers = {
     "Content-Type" = "application/json"
   }
@@ -78,8 +78,5 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
 BODY
 }
 
-app_settings = {
-  AZURE_ALERT_SLACK_WEBHOOK = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.azure_alert_slack_webhook.global.id})"
-}
 
 

@@ -20,9 +20,11 @@ variable "rg_location" {
 
 variable "azure_alert_slack_webhook" {
   description = "Slack webhook URL."
-
 }
 
+variable "global_vault" {
+
+}
 
 
 
