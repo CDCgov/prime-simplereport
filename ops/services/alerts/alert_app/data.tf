@@ -6,6 +6,7 @@ data "azurerm_key_vault_secret" "azure_alert_slack_webhook" {
 
 
 data "azurerm_subscription" "primary" {
+
 }
 
 # Resource Groups

@@ -13,7 +13,7 @@ locals {
 resource "azurerm_logic_app_workflow" "slack_workflow" {
   name                = "alert-logic-app"
   location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg
+  resource_group_name = data.azurerm_resource_group.rg.name
 
 
 }
