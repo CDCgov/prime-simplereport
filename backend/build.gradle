@@ -78,7 +78,7 @@ dependencies {
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.28'
-    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.14.1'
+    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.17.5'
 
     // UI layer dependencies
     implementation 'org.json:json:20231013'
