@@ -22,7 +22,7 @@
     "lint:write": "eslint --fix . && prettier . --write"
   },
   "dependencies": {
-    "axe-core": "^4.9.1",
+    "axe-core": "^4.10.0",
     "cypress-axe": "^1.5.0"
   }
 }
