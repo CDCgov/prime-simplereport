@@ -8,7 +8,7 @@ on:
 
 env:
   DEPLOY_ENV: demo
-  NODE_VERSION: 20
+  NODE_VERSION: 22
 
 concurrency:
   group: demo-deploy

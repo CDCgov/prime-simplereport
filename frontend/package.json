@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
@@ -189,7 +189,7 @@
     "@types/classnames": "^2.2.11",
     "@types/jest": "^29.5.12",
     "@types/jest-axe": "^3.5.9",
-    "@types/node": "^20.12.11",
+    "@types/node": "^22.0.0",
     "@types/react": "^18.0.27",
     "@types/react-csv": "^1.1.10",
     "@types/react-dom": "^18.2.17",
