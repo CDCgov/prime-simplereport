@@ -1,9 +1,9 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
-ca.uhn.hapi.fhir:hapi-fhir-base:6.10.4=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-caching-api:6.10.4=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.10.4=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-base:7.2.2=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-caching-api:7.2.2=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.2.2=compileClasspath,runtimeClasspath
 ca.uhn.hapi.fhir:org.hl7.fhir.r4:6.1.2.2=compileClasspath,runtimeClasspath
 ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.1.2.2=compileClasspath,runtimeClasspath
 ch.qos.logback:logback-classic:1.4.14=compileClasspath,runtimeClasspath
@@ -110,6 +110,9 @@ io.netty:netty-transport-native-epoll:4.1.104.Final=compileClasspath,runtimeClas
 io.netty:netty-transport-native-kqueue:4.1.104.Final=compileClasspath,runtimeClasspath
 io.netty:netty-transport-native-unix-common:4.1.104.Final=compileClasspath,runtimeClasspath
 io.netty:netty-transport:4.1.104.Final=compileClasspath,runtimeClasspath
+io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:1.32.0=compileClasspath,runtimeClasspath
+io.opentelemetry:opentelemetry-api:1.25.0=compileClasspath,runtimeClasspath
+io.opentelemetry:opentelemetry-context:1.25.0=compileClasspath,runtimeClasspath
 io.projectreactor.addons:reactor-extra:3.5.1=compileClasspath,runtimeClasspath
 io.projectreactor.netty:reactor-netty-core:1.1.14=compileClasspath,runtimeClasspath
 io.projectreactor.netty:reactor-netty-http:1.1.14=compileClasspath,runtimeClasspath
@@ -127,7 +130,7 @@ jakarta.xml.bind:jakarta.xml.bind-api:4.0.1=compileClasspath,runtimeClasspath
 javax.activation:javax.activation-api:1.2.0=compileClasspath,runtimeClasspath
 javax.annotation:javax.annotation-api:1.3.2=compileClasspath,runtimeClasspath
 javax.xml.bind:jaxb-api:2.3.1=compileClasspath,runtimeClasspath
-net.bytebuddy:byte-buddy:1.14.10=runtimeClasspath
+net.bytebuddy:byte-buddy:1.14.10=compileClasspath,runtimeClasspath
 net.javacrumbs.shedlock:shedlock-core:4.42.0=compileClasspath,runtimeClasspath
 net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.12.0=compileClasspath,runtimeClasspath
 net.javacrumbs.shedlock:shedlock-spring:5.12.0=compileClasspath,runtimeClasspath
@@ -149,6 +152,7 @@ org.apache.tomcat.embed:tomcat-embed-el:10.1.17=compileClasspath,runtimeClasspat
 org.apache.tomcat.embed:tomcat-embed-websocket:10.1.19=compileClasspath,runtimeClasspath
 org.apache.tomcat:tomcat-annotations-api:10.1.17=compileClasspath,runtimeClasspath
 org.aspectj:aspectjweaver:1.9.21=compileClasspath,runtimeClasspath
+org.assertj:assertj-core:3.24.2=compileClasspath,runtimeClasspath
 org.attoparser:attoparser:2.0.7.RELEASE=compileClasspath,runtimeClasspath
 org.bouncycastle:bcpkix-jdk18on:1.73=compileClasspath
 org.bouncycastle:bcpkix-jdk18on:1.75=runtimeClasspath

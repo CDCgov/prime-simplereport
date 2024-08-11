@@ -143,7 +143,7 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.35.0"
 
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.10.4'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.2.2'
 
     implementation 'commons-validator:commons-validator:1.9.0'
 
