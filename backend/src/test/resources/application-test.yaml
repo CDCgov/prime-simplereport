@@ -123,6 +123,13 @@ simple-report:
         authorization: # USER_ALL_FACILITIES_ORG_ROLES
           organization-external-id: DIS_ORG
           granted-roles: NO_ACCESS, ADMIN
+      - identity: #standard user with invalid no facility access
+          username: invalid@example.com
+          first-name: Igor
+          last-name: Irwin
+        authorization:
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, USER
       - identity: # OUTSIDE_ORG_USER
           username: intruder@pirate.com
           first-name: Bootstrap

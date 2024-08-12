@@ -224,6 +224,16 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertUserHasNoOrg(who);
   }
 
+  @Test
+  void whoami_invalidFacilityAccess_okRolesFacilities() {
+    useInvalidFacilitiesUser();
+
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertFalse(who.get("isAdmin").asBoolean());
+    assertEquals(who.get("role").asText(), Role.USER.name());
+    assertTrue(extractFacilitiesFromUser(who).isEmpty());
+  }
+
   @ParameterizedTest
   @ValueSource(strings = {"addUserOp", "addUserLegacy"})
   void addUser_superUser_success(String operation) {
