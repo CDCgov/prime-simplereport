@@ -1,4 +1,4 @@
-FROM node:20-alpine as build
+FROM node:22-alpine as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 # Add bash and git
@@ -49,7 +49,7 @@ RUN echo "REACT_APP_CONTENT_SECURITY_POLICY_SCRIPT_SRC=''" >> .env.production.lo
 RUN yarn run build
 
 # production environment
-FROM node:20-alpine
+FROM node:22-alpine
 RUN npm install -g serve
 WORKDIR /app/frontend
 COPY --from=build /app/frontend/build /app/frontend/build
