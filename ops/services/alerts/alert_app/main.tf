@@ -83,7 +83,7 @@ resource "azurerm_monitor_action_group" "on_call_action_group" {
   logic_app_receiver {
     name                    = "logicappaction"
     resource_id             = azurerm_logic_app_workflow.slack_workflow.id
-    callback_url            = azurerm_logic_app_action_http.workflow_action.uri
+    callback_url            = azurerm_logic_app_action_http.workflow_action.body
     use_common_alert_schema = false
   }
 }
