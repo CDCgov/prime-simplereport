@@ -75,7 +75,7 @@ BODY
 }
 
 
-#Define the action group
+#Define the action group, call it as local variable
 resource "azurerm_monitor_action_group" "on_call_action_group" {
   name                = "OnCallEngineer"
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -83,7 +83,7 @@ resource "azurerm_monitor_action_group" "on_call_action_group" {
   logic_app_receiver {
     name                    = "logicappaction"
     resource_id             = azurerm_logic_app_workflow.slack_workflow.id
-    callback_url            = azurerm_logic_app_action_http.workflow_action.body
+    callback_url            = data.azurerm_key_vault_secret.azure_alert_slack_webhook.value
     use_common_alert_schema = false
   }
 }

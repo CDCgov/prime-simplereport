@@ -19,3 +19,4 @@ data "azurerm_resource_group" "rg_global" {
   name = "${local.project}-${local.name}-management"
 }
 
+
