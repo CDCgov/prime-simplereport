@@ -90,7 +90,7 @@ resource "azurerm_monitor_action_group" "on_call_action_group" {
 
 
 # Define the Alert Rule for the action group to be notified
-resource "azurerm_monitor_activity_log_alert" "example" {
+resource "azurerm_monitor_activity_log_alert" "log_alert" {
   name                = "slack-logic-app-alert"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
