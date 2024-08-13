@@ -30,9 +30,9 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
   name         = "Http"
   method       = "POST"
   #How to get this uri programmtically
-  uri = "https://management.azure.com/subscriptions/${data.azurerm_subscription.primary.id}/resourceGroups/${data.azurerm_resource_group.rg.name}/providers/Microsoft.Logic/workflows/${azurerm_logic_app_action_http.workflow_action.name}/listCallbackUrl?api-version=2016-06-01"
+  uri = data.azurerm_key_vault_secret.azure_alert_slack_webhook.value
   body = jsonencode({
-    longUrl = "@{triggerBody()['context']['portalLink']}"
+    "text" : "Hi from postman"
   })
   headers = {
     Content-Type = "application/json"
@@ -115,7 +115,7 @@ resource "azurerm_api_connection" "res-6" {
 
 
 
-#Define the action group, call it as local variable
+
 resource "azurerm_monitor_action_group" "on_call_action_group" {
   name                = "OnCallEngineer"
   resource_group_name = data.azurerm_resource_group.rg.name
