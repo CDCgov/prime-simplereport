@@ -95,19 +95,23 @@ resource "azurerm_logic_app_trigger_http_request" "res-4" {
 
 }
 
+
+
 data "azurerm_managed_api" "data_api" {
   name     = "managed-api-1"
   location = data.azurerm_resource_group.rg.location
 }
 
+
+
 resource "azurerm_api_connection" "api_connection_1" {
-  managed_api_id      = data.azurerm_managed_api.data_api
+  managed_api_id      = data.azurerm_managed_api.data_api.id
   name                = "SlackConnection"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
 resource "azurerm_api_connection" "res-6" {
-  managed_api_id      = data.azurerm_managed_api.data_api
+  managed_api_id      = data.azurerm_managed_api.data_api.id
   name                = "slack-1"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
