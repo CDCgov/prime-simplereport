@@ -4,6 +4,8 @@ import static gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacility
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
@@ -21,6 +23,7 @@ import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
 import gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -46,6 +49,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
@@ -57,6 +61,8 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @Autowired @SpyBean OktaRepository _oktaRepo;
   @Autowired OrganizationService _organizationService;
   @Autowired FacilityRepository facilityRepository;
+  @Autowired @SpyBean DbOrgRoleClaimsService _dbOrgRoleClaimsService;
+  @MockBean FeatureFlagsConfig _featureFlagsConfig;
   @Autowired private TestDataFactory _dataFactory;
 
   Set<UUID> emptySet = Collections.emptySet();
@@ -118,7 +124,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void getUser_adminUser_success() {
+  void getUser_withAdminUser_withOktaMigrationDisabled_success() {
     initSampleData();
 
     final String email = "allfacilities@example.com"; // member of DIS_ORG
@@ -126,6 +132,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo userInfo = _service.getUser(apiUser.getInternalId());
 
+    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
     assertEquals(email, userInfo.getEmail());
     roleCheck(
         userInfo,
@@ -135,7 +142,69 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void getUser_adminUserWrongOrg_error() {
+  void getUser_withAdminUser_withOktaMigrationEnabled_success() {
+    initSampleData();
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.getUser(apiUser.getInternalId());
+
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+    assertEquals(email, userInfo.getEmail());
+    roleCheck(userInfo, EnumSet.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUser_withSuperUser_withOktaMigrationDisabled_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.getUser(apiUser.getInternalId());
+
+    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
+    assertEquals(email, userInfo.getEmail());
+    roleCheck(
+        userInfo,
+        EnumSet.of(
+            OrganizationRole.NO_ACCESS, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
+
+    // check roles and facilities for site admin were not created
+    String currentUsername = _service.getCurrentUserInfo().getEmail();
+    assertEquals(TestUserIdentities.SITE_ADMIN_USER, currentUsername);
+    ApiUser siteAdminUser = _apiUserRepo.findByLoginEmail(currentUsername).get();
+    assertTrue(siteAdminUser.getRoles().isEmpty());
+    assertTrue(siteAdminUser.getFacilities().isEmpty());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUser_withSuperUser_withOktaMigrationEnabled_success() {
+    initSampleData();
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.getUser(apiUser.getInternalId());
+
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+    assertEquals(email, userInfo.getEmail());
+    roleCheck(userInfo, EnumSet.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
+
+    // check roles and facilities for site admin were not created
+    String currentUsername = _service.getCurrentUserInfo().getEmail();
+    ApiUser siteAdminUser = _apiUserRepo.findByLoginEmail(currentUsername).get();
+    assertTrue(siteAdminUser.getRoles().isEmpty());
+    assertTrue(siteAdminUser.getFacilities().isEmpty());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getUser_withAdminUserInDifferentOrg_error() {
     initSampleData();
 
     // captain@pirate.com is a member of DAT_ORG, but requester is admin of DIS_ORG
@@ -144,24 +213,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
-  void getUser_superUser_success() {
-    initSampleData();
-
-    final String email = "allfacilities@example.com"; // member of DIS_ORG
-    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
-
-    UserInfo userInfo = _service.getUser(apiUser.getInternalId());
-
-    assertEquals(email, userInfo.getEmail());
-    roleCheck(
-        userInfo,
-        EnumSet.of(
-            OrganizationRole.NO_ACCESS, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
-  }
-
-  @Test
-  void getUser_standardUser_error() {
+  void getUser_withStandardUser_error() {
     initSampleData();
 
     ApiUser apiUser = _apiUserRepo.findByLoginEmail("allfacilities@example.com").get();
@@ -170,9 +222,9 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void createUserInCurrentOrg_orgAdmin_success() {
+  void createUserInCurrentOrg_withOrgAdmin_withOktaMigrationDisabled_success() {
     initSampleData();
-    var facilityIdSet =
+    Set<UUID> facilityIdSet =
         facilityRepository
             .findAllByOrganization(_organizationService.getCurrentOrganization())
             .stream()
@@ -185,6 +237,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             Role.USER,
             false,
             facilityIdSet);
+    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
 
     assertEquals("newuser@example.com", newUserInfo.getEmail());
 
@@ -204,7 +257,36 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void createUserInCurrentOrg_reprovisionDeletedUser_success() {
+  void createUserInCurrentOrg_withOrgAdmin_withOktaMigrationEnabled_success() {
+    initSampleData();
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    Set<UUID> facilityIdSet =
+        facilityRepository
+            .findAllByOrganization(_organizationService.getCurrentOrganization())
+            .stream()
+            .map(IdentifiedEntity::getInternalId)
+            .collect(Collectors.toSet());
+    UserInfo newUserInfo =
+        _service.createUserInCurrentOrg(
+            "newuser@example.com",
+            new PersonName("First", "Middle", "Last", "Jr"),
+            Role.USER,
+            false,
+            facilityIdSet);
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+
+    assertEquals("newuser@example.com", newUserInfo.getEmail());
+    assertThat(facilityIdSet)
+        .hasSameElementsAs(
+            newUserInfo.getFacilities().stream()
+                .map(IdentifiedEntity::getInternalId)
+                .collect(Collectors.toSet()));
+    assertThat(newUserInfo.getRoles()).hasSameElementsAs(List.of(OrganizationRole.USER));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void createUserInCurrentOrg_reprovisionDeletedUser_withOktaMigrationDisabled_success() {
     initSampleData();
     // disable a user from this organization
     ApiUser orgUser = _apiUserRepo.findByLoginEmail("nobody@example.com").get();
@@ -219,6 +301,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             Role.USER,
             true,
             Set.of());
+    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
 
     // the user will be re-enabled and updated
     assertEquals("nobody@example.com", reprovisionedUserInfo.getEmail());
@@ -245,6 +328,45 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
                 OrganizationRole.NO_ACCESS,
                 OrganizationRole.USER,
                 OrganizationRole.ALL_FACILITIES));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void createUserInCurrentOrg_reprovisionDeletedUser_withOktaMigrationEnabled_success() {
+    initSampleData();
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+
+    // disable a user from this organization
+    ApiUser orgUser = _apiUserRepo.findByLoginEmail("nobody@example.com").get();
+    orgUser.setIsDeleted(true);
+    _apiUserRepo.save(orgUser);
+    _oktaRepo.setUserIsActive(orgUser.getLoginEmail(), false);
+
+    UserInfo reprovisionedUserInfo =
+        _service.createUserInCurrentOrg(
+            "nobody@example.com",
+            new PersonName("First", "Middle", "Last", "Jr"),
+            Role.USER,
+            true,
+            Set.of());
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+
+    // the user will be re-enabled and updated
+    assertEquals("nobody@example.com", reprovisionedUserInfo.getEmail());
+
+    var facilities =
+        facilityRepository
+            .findAllByOrganization(_organizationService.getCurrentOrganization())
+            .stream()
+            .map(IdentifiedEntity::getInternalId)
+            .toList();
+    assertThat(
+            reprovisionedUserInfo.getFacilities().stream()
+                .map(IdentifiedEntity::getInternalId)
+                .toList())
+        .hasSameElementsAs(facilities);
+    assertThat(reprovisionedUserInfo.getRoles())
+        .hasSameElementsAs(List.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
   }
 
   @Test
@@ -356,8 +478,8 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   }
 
   @Test
-  @WithSimpleReportOrgAdminUser
-  void resetUserPassword_orgAdmin_success() {
+  @WithSimpleReportSiteAdminUser
+  void resetUserPassword_withSiteAdmin_withOktaMigrationDisabled_success() {
     initSampleData();
 
     final String email = "allfacilities@example.com"; // member of DIS_ORG
@@ -365,6 +487,45 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo userInfo = _service.resetUserPassword(apiUser.getInternalId());
     verify(_oktaRepo, times(1)).resetUserPassword(email);
+    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+
+    // check roles and facilities for site admin were not created
+    String currentUsername = _service.getCurrentUserInfo().getEmail();
+    assertEquals(TestUserIdentities.SITE_ADMIN_USER, currentUsername);
+    ApiUser siteAdminUser = _apiUserRepo.findByLoginEmail(currentUsername).get();
+    assertTrue(siteAdminUser.getRoles().isEmpty());
+    assertTrue(siteAdminUser.getFacilities().isEmpty());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void resetUserPassword_withOrgAdmin_withOktaMigrationDisabled_success() {
+    initSampleData();
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.resetUserPassword(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).resetUserPassword(email);
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void resetUserPassword_withOrgAdmin_withOktaMigrationEnabled_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.resetUserPassword(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).resetUserPassword(email);
+    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
 
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
   }
@@ -412,12 +573,33 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getUserByLoginEmail_success() {
+  void getUserByLoginEmail_withOktaMigrationDisabled_success() {
     initSampleData();
 
     String email = "allfacilities@example.com";
     ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
     UserInfo userInfo = _service.getUserByLoginEmail(email);
+
+    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+    assertEquals(email, userInfo.getEmail());
+    assertEquals(UserStatus.ACTIVE, userInfo.getUserStatus());
+    assertEquals(false, userInfo.getIsAdmin());
+    assertThat(userInfo.getFacilities()).hasSize(2);
+    assertThat(userInfo.getPermissions()).hasSize(10);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_withOktaMigrationEnabled_success() {
+    initSampleData();
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+
+    String email = "allfacilities@example.com";
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+    UserInfo userInfo = _service.getUserByLoginEmail(email);
+
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
 
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
     assertEquals(email, userInfo.getEmail());
@@ -425,6 +607,13 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     assertEquals(false, userInfo.getIsAdmin());
     assertThat(userInfo.getFacilities()).hasSize(2);
     assertThat(userInfo.getPermissions()).hasSize(10);
+
+    // check roles and facilities for site admin were not created
+    String currentUsername = _service.getCurrentUserInfo().getEmail();
+    assertEquals(TestUserIdentities.SITE_ADMIN_USER, currentUsername);
+    ApiUser siteAdminUser = _apiUserRepo.findByLoginEmail(currentUsername).get();
+    assertTrue(siteAdminUser.getRoles().isEmpty());
+    assertTrue(siteAdminUser.getFacilities().isEmpty());
   }
 
   @Test
@@ -502,14 +691,31 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getUserByLoginEmail_invalidClaims_success() {
+  void getUserByLoginEmail_invalidClaims_withOktaMigrationDisabled_success() {
     initSampleData();
     String email = "invalid@example.com";
 
     // we should be able to retrieve user info for a user with invalid claims (no facility access)
     // without failing
     UserInfo result = _service.getUserByLoginEmail(email);
+    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
     assertThat(result.getFacilities()).isEmpty();
+    assertEquals(List.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER), result.getRoles());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_invalidClaims_withOktaMigrationEnabled_success() {
+    initSampleData();
+    String email = "invalid@example.com";
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+
+    // we should be able to retrieve user info for a user with invalid claims (no facility access)
+    // without failing
+    UserInfo result = _service.getUserByLoginEmail(email);
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+    assertThat(result.getFacilities()).isEmpty();
+    assertEquals(List.of(OrganizationRole.USER), result.getRoles());
   }
 
   @Test

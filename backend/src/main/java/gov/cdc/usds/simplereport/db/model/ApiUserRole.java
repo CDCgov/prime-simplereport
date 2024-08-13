@@ -20,6 +20,7 @@ public class ApiUserRole extends AuditedEntity {
 
   @ManyToOne
   @JoinColumn(name = "organization_id", nullable = false)
+  @Getter
   private Organization organization;
 
   @Column(nullable = false, columnDefinition = "organization_role")

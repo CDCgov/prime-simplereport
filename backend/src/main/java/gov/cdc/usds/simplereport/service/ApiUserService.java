@@ -76,6 +76,8 @@ public class ApiUserService {
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
+  @Autowired private DbOrgRoleClaimsService _dbOrgRoleClaimsService;
+
   @Autowired private FeatureFlagsConfig _featureFlagsConfig;
 
   private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
@@ -158,15 +160,19 @@ public class ApiUserService {
 
     Set<OrganizationRole> roles = getOrganizationRoles(role, accessAllFacilities);
     Set<Facility> facilitiesFound = getFacilitiesToGiveAccess(org, roles, facilities);
-    Optional<OrganizationRoleClaims> roleClaims =
+    Optional<OrganizationRoleClaims> oktaClaims =
         _oktaRepo.updateUserPrivileges(apiUser.getLoginEmail(), org, facilitiesFound, roles);
+    Optional<OrganizationRoles> orgRoles = oktaClaims.map(c -> _orgService.getOrganizationRoles(c));
 
     apiUser.setNameInfo(name);
     apiUser.setIsDeleted(false);
     apiUser.setFacilities(facilitiesFound);
     apiUser.setRoles(roles, org);
 
-    Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
+    if (_featureFlagsConfig.isOktaMigrationEnabled()) {
+      orgRoles = Optional.ofNullable(getOrgRolesFromDB(apiUser));
+    }
+
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     log.info(
@@ -194,9 +200,14 @@ public class ApiUserService {
     apiUser.setFacilities(facilitiesFound);
     apiUser.setRoles(roles, org);
 
-    Optional<OrganizationRoleClaims> roleClaims =
+    Optional<OrganizationRoleClaims> oktaClaims =
         _oktaRepo.createUser(userIdentity, org, facilitiesFound, roles, active);
-    Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
+    Optional<OrganizationRoles> orgRoles = oktaClaims.map(c -> _orgService.getOrganizationRoles(c));
+
+    if (_featureFlagsConfig.isOktaMigrationEnabled()) {
+      orgRoles = Optional.ofNullable(getOrgRolesFromDB(apiUser));
+    }
+
     UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     log.info(
@@ -220,14 +231,10 @@ public class ApiUserService {
     apiUser = _apiUserRepo.save(apiUser);
 
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(userIdentity);
-    Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
 
-    if (!_featureFlagsConfig.isOktaMigrationEnabled() && orgRoles.isPresent()) {
-      setRolesAndFacilities(orgRoles.get(), apiUser);
-    }
+    Optional<OrganizationRoleClaims> oktaRoleClaims = _oktaRepo.updateUser(userIdentity);
 
-    UserInfo user = new UserInfo(apiUser, orgRoles, false);
+    UserInfo user = consolidateNonSiteAdminUser(apiUser, oktaRoleClaims);
 
     createUserUpdatedAuditLog(
         apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
@@ -277,17 +284,13 @@ public class ApiUserService {
     apiUser.setLoginEmail(email);
     apiUser = _apiUserRepo.save(apiUser);
 
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
-    Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
-
-    if (!_featureFlagsConfig.isOktaMigrationEnabled() && orgRoles.isPresent()) {
-      setRolesAndFacilities(orgRoles.get(), apiUser);
-    }
+    Optional<OrganizationRoleClaims> oktaRoleClaims =
+        _oktaRepo.updateUserEmail(userIdentity, email);
 
     createUserUpdatedAuditLog(
         apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
 
-    return new UserInfo(apiUser, orgRoles, false);
+    return consolidateNonSiteAdminUser(apiUser, oktaRoleClaims);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
@@ -295,17 +298,12 @@ public class ApiUserService {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     _oktaRepo.resetUserPassword(username);
-    OrganizationRoleClaims orgClaims =
+    OrganizationRoleClaims oktaClaims =
         _oktaRepo
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
-    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
 
-    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
-      setRolesAndFacilities(orgRoles, apiUser);
-    }
-    return new UserInfo(apiUser, Optional.of(orgRoles), false);
+    return consolidateNonSiteAdminUser(apiUser, Optional.ofNullable(oktaClaims));
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
@@ -313,16 +311,11 @@ public class ApiUserService {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     _oktaRepo.resetUserMfa(username);
-    OrganizationRoleClaims orgClaims =
+    OrganizationRoleClaims oktaClaims =
         _oktaRepo
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
-    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
-      setRolesAndFacilities(orgRoles, apiUser);
-    }
-    return new UserInfo(apiUser, Optional.of(orgRoles), false);
+    return consolidateNonSiteAdminUser(apiUser, Optional.ofNullable(oktaClaims));
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
@@ -346,16 +339,11 @@ public class ApiUserService {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     _oktaRepo.reactivateUser(username);
-    OrganizationRoleClaims orgClaims =
+    OrganizationRoleClaims oktaClaims =
         _oktaRepo
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
-    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
-      setRolesAndFacilities(orgRoles, apiUser);
-    }
-    return new UserInfo(apiUser, Optional.of(orgRoles), false);
+    return consolidateNonSiteAdminUser(apiUser, Optional.ofNullable(oktaClaims));
   }
 
   // This method is to re-send the invitation email to join SimpleReport
@@ -364,16 +352,11 @@ public class ApiUserService {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     _oktaRepo.resendActivationEmail(username);
-    OrganizationRoleClaims orgClaims =
+    OrganizationRoleClaims oktaClaims =
         _oktaRepo
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
-    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    if (!_featureFlagsConfig.isOktaMigrationEnabled()) {
-      setRolesAndFacilities(orgRoles, apiUser);
-    }
-    return new UserInfo(apiUser, Optional.of(orgRoles), false);
+    return consolidateNonSiteAdminUser(apiUser, Optional.ofNullable(oktaClaims));
   }
 
   /**
@@ -598,14 +581,8 @@ public class ApiUserService {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     boolean isAdmin = _authService.isSiteAdmin();
-    if (!_featureFlagsConfig.isOktaMigrationEnabled() && currentOrgRoles.isPresent() && !isAdmin) {
-      try {
-        setRolesAndFacilities(currentOrgRoles.get(), currentUser);
-      } catch (PrivilegeUpdateFacilityAccessException e) {
-        log.warn(
-            "Could not migrate roles and facilities for user with id={} because facilities were invalid",
-            currentUser.getInternalId());
-      }
+    if (!_featureFlagsConfig.isOktaMigrationEnabled() && !isAdmin) {
+      setRolesAndFacilities(currentOrgRoles, currentUser);
     }
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
@@ -644,11 +621,7 @@ public class ApiUserService {
     final ApiUser apiUser = optApiUser.get();
 
     PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail());
-    return consolidateUser(
-        apiUser,
-        oktaUser.getOrganizationRoleClaims(),
-        oktaUser.getStatus(),
-        oktaUser.isSiteAdmin());
+    return consolidateUser(apiUser, oktaUser);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -710,50 +683,43 @@ public class ApiUserService {
         throw new RestrictedAccessUserException();
       }
 
-      return consolidateUser(
-          apiUser,
-          oktaUser.getOrganizationRoleClaims(),
-          oktaUser.getStatus(),
-          oktaUser.isSiteAdmin());
+      return consolidateUser(apiUser, oktaUser);
     } catch (IllegalGraphqlArgumentException | UnidentifiedUserException e) {
       throw new OktaAccountUserException();
     }
   }
 
-  private UserInfo consolidateUser(
-      ApiUser apiUser,
-      Optional<OrganizationRoleClaims> optClaims,
-      UserStatus userStatus,
-      boolean isSiteAdmin) {
+  private UserInfo consolidateUser(ApiUser apiUser, PartialOktaUser oktaUser) {
+    boolean isSiteAdmin = oktaUser.isSiteAdmin();
+    UserStatus userStatus = oktaUser.getStatus();
+    OrganizationRoleClaims oktaClaims =
+        oktaUser.getOrganizationRoleClaims().orElseThrow(UnidentifiedUserException::new);
+    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(oktaClaims);
 
-    OrganizationRoleClaims claims = optClaims.orElseThrow(UnidentifiedUserException::new);
-
-    // use the target user's org so response is built correctly even if site admin is the requester
-    Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());
-
-    List<Facility> facilities = _orgService.getFacilities(org);
-    Set<Facility> facilitiesSet = new HashSet<>(facilities);
-
-    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
-    Set<Facility> accessibleFacilities =
-        allFacilityAccess
-            ? facilitiesSet
-            : facilities.stream()
-                .filter(f -> claims.getFacilities().contains(f.getInternalId()))
-                .collect(Collectors.toSet());
-
-    OrganizationRoles orgRoles =
-        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    if (!_featureFlagsConfig.isOktaMigrationEnabled() && !isSiteAdmin) {
-      try {
-        setRolesAndFacilities(orgRoles, apiUser);
-      } catch (PrivilegeUpdateFacilityAccessException e) {
-        log.warn(
-            "Could not migrate roles and facilities for user with id={} because facilities were invalid",
-            apiUser.getInternalId());
+    if (!isSiteAdmin) {
+      if (_featureFlagsConfig.isOktaMigrationEnabled()) {
+        orgRoles = getOrgRolesFromDB(apiUser);
+      } else {
+        setRolesAndFacilities(Optional.ofNullable(orgRoles), apiUser);
       }
     }
+
     return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
+  }
+
+  private UserInfo consolidateNonSiteAdminUser(
+      ApiUser apiUser, Optional<OrganizationRoleClaims> oktaClaims) {
+    OrganizationRoles orgRoles = null;
+    if (oktaClaims.isPresent()) {
+      orgRoles = _orgService.getOrganizationRoles(oktaClaims.get());
+    }
+
+    if (_featureFlagsConfig.isOktaMigrationEnabled()) {
+      orgRoles = getOrgRolesFromDB(apiUser);
+    } else {
+      setRolesAndFacilities(Optional.ofNullable(orgRoles), apiUser);
+    }
+    return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -835,17 +801,31 @@ public class ApiUserService {
    * @param apiUser
    * @return ApiUser
    */
-  private ApiUser setRolesAndFacilities(OrganizationRoles orgRoles, ApiUser apiUser) {
-    Organization org = orgRoles.getOrganization();
-    Set<OrganizationRole> roles = orgRoles.getGrantedRoles();
-    List<UUID> facilitiesInternalIds =
-        orgRoles.getFacilities().stream()
-            .map(IdentifiedEntity::getInternalId)
-            .collect(Collectors.toList());
-    Set<Facility> facilitiesToGiveAccessTo =
-        getFacilitiesToGiveAccess(org, roles, new HashSet<>(facilitiesInternalIds));
-    apiUser.setFacilities(facilitiesToGiveAccessTo);
-    apiUser.setRoles(roles, org);
+  private ApiUser setRolesAndFacilities(Optional<OrganizationRoles> orgRoles, ApiUser apiUser) {
+    try {
+      if (orgRoles.isEmpty()) {
+        throw new MisconfiguredUserException();
+      }
+      Organization org = orgRoles.get().getOrganization();
+      Set<OrganizationRole> roles = orgRoles.get().getGrantedRoles();
+      List<UUID> facilitiesInternalIds =
+          orgRoles.get().getFacilities().stream()
+              .map(IdentifiedEntity::getInternalId)
+              .collect(Collectors.toList());
+      Set<Facility> facilitiesToGiveAccessTo =
+          getFacilitiesToGiveAccess(org, roles, new HashSet<>(facilitiesInternalIds));
+      apiUser.setFacilities(facilitiesToGiveAccessTo);
+      apiUser.setRoles(roles, org);
+    } catch (MisconfiguredUserException | PrivilegeUpdateFacilityAccessException e) {
+      log.warn(
+          "Could not migrate roles and facilities for user with id={}", apiUser.getInternalId());
+    }
     return apiUser;
+  }
+
+  private OrganizationRoles getOrgRolesFromDB(ApiUser apiUser) {
+    OrganizationRoleClaims orgRoleClaims =
+        _dbOrgRoleClaimsService.getOrganizationRoleClaims(apiUser);
+    return _orgService.getOrganizationRoles(orgRoleClaims);
   }
 }
