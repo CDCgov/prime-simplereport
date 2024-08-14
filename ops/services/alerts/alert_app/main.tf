@@ -109,10 +109,10 @@ resource "azurerm_logic_app_trigger_http_request" "res-4" {
 
 
 resource "azapi_resource" "createApiConnectionslack" {
-  type      = "Microsoft.Web/connections@2015-08-01-preview"
-  name      = var.connection_name
-  parent_id = data.azurerm_resource_group.rg.id
-  location  = data.azurerm_resource_group.rg.location
+  type                      = "Microsoft.Web/connections@2015-08-01-preview"
+  name                      = var.connection_name
+  parent_id                 = data.azurerm_resource_group.rg.id
+  location                  = data.azurerm_resource_group.rg.location
   schema_validation_enabled = false
 
 
@@ -125,7 +125,7 @@ resource "azapi_resource" "createApiConnectionslack" {
         description = "Slack is a team communication tool, that brings together all of your team communications in one place, instantly searchable and available wherever you go."
         iconUri     = "https://connectoricons-prod.azureedge.net/releases/v1.0.1669/1.0.1669.3522/slack/icon.png"
         brandColor  = "#78D4B6"
-        id          = "/subscriptions/${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
+        id          = "${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
         type        = "Microsoft.Web/locations/managedApis"
       }
     }
