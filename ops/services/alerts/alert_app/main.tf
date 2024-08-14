@@ -109,7 +109,7 @@ resource "azurerm_logic_app_trigger_http_request" "res-4" {
 
 
 resource "azapi_resource" "createApiConnectionslack" {
-  type      = "Microsoft.Web/connections@2018-06-07-01"
+  type      = "Microsoft.Web/connections@2015-08-01-preview"
   name      = var.connection_name
   parent_id = data.azurerm_resource_group.rg.id
   location  = data.azurerm_resource_group.rg.location
