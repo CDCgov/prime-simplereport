@@ -135,7 +135,7 @@ resource "azapi_resource" "createApiConnectionslack" {
 
 
 resource "azurerm_api_connection" "api_connection_1" {
-  managed_api_id      = azapi_resource.createApiConnectionslack.id
+  managed_api_id      = "${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
   name                = "SlackConnection"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
