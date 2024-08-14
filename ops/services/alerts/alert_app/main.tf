@@ -17,7 +17,9 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
   name     = var.logicAppName
   location = data.azurerm_resource_group.rg.location
   parameters = {
-    connections = local.slack_api_id
+    connections = jsonencode({
+      name = local.slack_api_id
+    })
   }
   resource_group_name = data.azurerm_resource_group.rg.name
   workflow_parameters = {
