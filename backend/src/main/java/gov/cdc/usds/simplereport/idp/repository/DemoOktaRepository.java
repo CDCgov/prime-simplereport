@@ -285,6 +285,12 @@ public class DemoOktaRepository implements OktaRepository {
     inactiveUsernames.removeAll(orgUsernamesMap.get(org.getExternalId()));
   }
 
+  @Override
+  public String activateUser(String username) {
+    inactiveUsernames.remove(username);
+    return "activationToken";
+  }
+
   // this method means nothing in a demo env
   public String activateOrganizationWithSingleUser(Organization org) {
     activateOrganization(org);

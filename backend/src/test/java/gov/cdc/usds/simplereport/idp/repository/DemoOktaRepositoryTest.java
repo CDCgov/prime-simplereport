@@ -383,6 +383,14 @@ class DemoOktaRepositoryTest {
   }
 
   @Test
+  void activateUser() {
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), false);
+    String activatedUserResponse = _repo.activateUser(AMOS.getUsername());
+    assertEquals(UserStatus.ACTIVE, _repo.getUserStatus(AMOS.getUsername()));
+    assertEquals("activationToken", activatedUserResponse);
+  }
+
+  @Test
   void deactivateUser() {
     _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
     _repo.createUser(

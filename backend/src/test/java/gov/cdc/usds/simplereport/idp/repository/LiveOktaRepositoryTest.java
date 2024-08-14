@@ -28,6 +28,7 @@ import com.okta.sdk.resource.model.GroupProfile;
 import com.okta.sdk.resource.model.GroupType;
 import com.okta.sdk.resource.model.UpdateUserRequest;
 import com.okta.sdk.resource.model.User;
+import com.okta.sdk.resource.model.UserActivationToken;
 import com.okta.sdk.resource.model.UserProfile;
 import com.okta.sdk.resource.model.UserStatus;
 import com.okta.sdk.resource.user.UserBuilder;
@@ -952,6 +953,51 @@ class LiveOktaRepositoryTest {
         assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.getUserStatus(username));
     assertEquals(
         "Cannot retrieve Okta user's status with unrecognized username", caught.getMessage());
+  }
+
+  @Test
+  void activateUser_provisioned_success() {
+    String username = "fraud@example.com";
+    String mockId = "1234";
+    String mockToken = "MOCK TOKEN";
+    User mockUser = mock(User.class);
+    UserActivationToken mockUserActivationToken = mock(UserActivationToken.class);
+
+    when(userApi.getUser(username)).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.PROVISIONED);
+    when(mockUser.getId()).thenReturn(mockId);
+    when(userApi.reactivateUser(mockId, true)).thenReturn(mockUserActivationToken);
+    when(mockUserActivationToken.getActivationToken()).thenReturn(mockToken);
+
+    String activateUserResponse = _repo.activateUser(username);
+    assertEquals(activateUserResponse, mockToken);
+  }
+
+  @Test
+  void activateUser_staged_success() {
+    String username = "fraud@example.com";
+    String mockId = "1234";
+    String mockToken = "MOCK TOKEN";
+    User mockUser = mock(User.class);
+    UserActivationToken mockUserActivationToken = mock(UserActivationToken.class);
+
+    when(userApi.getUser(username)).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.STAGED);
+    when(mockUser.getId()).thenReturn(mockId);
+    when(userApi.activateUser(mockId, true)).thenReturn(mockUserActivationToken);
+    when(mockUserActivationToken.getActivationToken()).thenReturn(mockToken);
+
+    String activateUserResponse = _repo.activateUser(username);
+    assertEquals(activateUserResponse, mockToken);
+  }
+
+  @Test
+  void activateUser_noUserFound_throwsException() {
+    String username = "fraud@example.com";
+
+    when(userApi.getUser(username)).thenThrow(new ApiException());
+
+    assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.activateUser(username));
   }
 
   @Test
