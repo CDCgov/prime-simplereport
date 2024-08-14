@@ -15,7 +15,7 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
   location = data.azurerm_resource_group.rg.location
   #Create below api_connection
   parameters = {
-    connections = azurerm_api_connection.res-6.id
+    connections = azurerm_api_connection.api_connection_1.id
   }
   resource_group_name = data.azurerm_resource_group.rg.name
   workflow_parameters = {
@@ -95,17 +95,17 @@ resource "azurerm_logic_app_trigger_http_request" "res-4" {
 
 }
 
-resource "azurerm_logic_app_api_connection" "slack" {
-  name                = var.slackConnectionName
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
-
-  api {
-    id = "/subscriptions/${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
-  }
-
-  display_name = "slack"
-}
+# resource "azurerm_logic_app_api_connection" "slack" {
+#   name                = var.slackConnectionName
+#   location            = data.azurerm_resource_group.rg.location
+#   resource_group_name = data.azurerm_resource_group.rg.name
+#
+#   api {
+#     id = "/subscriptions/${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
+#   }
+#
+#   display_name = "slack"
+# }
 
 
 resource "azapi_resource" "createApiConnectionslack" {
