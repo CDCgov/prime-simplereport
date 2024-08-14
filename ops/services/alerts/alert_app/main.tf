@@ -45,7 +45,7 @@ resource "azurerm_logic_app_action_custom" "res-3" {
     inputs = {
       host = {
         connection = {
-          name = azurerm_api_connection.res-6.connection
+          name = azurerm_api_connection.api_connection_1.connection
         }
       }
       method = "post"
@@ -138,12 +138,12 @@ resource "azurerm_api_connection" "api_connection_1" {
   name                = "SlackConnection"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
-
-resource "azurerm_api_connection" "res-6" {
-  managed_api_id      = azapi_resource.createApiConnectionslack.id
-  name                = "slack-1"
-  resource_group_name = data.azurerm_resource_group.rg.name
-}
+#
+# resource "azurerm_api_connection" "res-6" {
+#   managed_api_id      = azapi_resource.createApiConnectionslack.id
+#   name                = "slack-1"
+#   resource_group_name = data.azurerm_resource_group.rg.name
+# }
 
 
 
