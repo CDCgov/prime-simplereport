@@ -113,6 +113,7 @@ resource "azapi_resource" "createApiConnectionslack" {
   name      = var.connection_name
   parent_id = data.azurerm_resource_group.rg.id
   location  = data.azurerm_resource_group.rg.location
+  schema_validation_enabled = false
 
 
   body = jsonencode({
