@@ -11,7 +11,7 @@ locals {
 
 # Define the Logic App Workflow
 resource "azurerm_logic_app_workflow" "slack_workflow" {
-  name     = "alert-logic-app"
+  name     = var.logicAppName
   location = data.azurerm_resource_group.rg.location
   #Create below api_connection
   parameters = {
@@ -45,7 +45,7 @@ resource "azurerm_logic_app_action_custom" "res-3" {
     inputs = {
       host = {
         connection = {
-          name = azurerm_api_connection.res-6.id
+          name = azurerm_api_connection.res-6.connection
         }
       }
       method = "post"
@@ -69,49 +69,78 @@ resource "azurerm_logic_app_trigger_http_request" "res-4" {
   name         = "manual"
   schema = jsonencode({
     "$schema" = "http://json-schema.org/draft-04/schema#"
-    properties = {
-      context = {
-        properties = {
-          name = {
+    schemaId = {
+      data = {
+        essentials = {
+          alertId = {
             type = "string"
           }
-          portalLink = {
+          alertRule = {
             type = "string"
           }
-          resourceName = {
+          severity = {
             type = "string"
           }
         }
-        required = ["name", "portalLink", "resourceName"]
+        required = ["alertId", "alertRule", "severity"]
         type     = "object"
       }
       status = {
         type = "string"
       }
     }
-    required = ["status", "context"]
+    required = ["status", "data"]
     type     = "object"
   })
 
 }
 
+resource "azurerm_logic_app_api_connection" "slack" {
+  name                = var.slackConnectionName
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
+
+  api {
+    id = "/subscriptions/${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
+  }
+
+  display_name = "slack"
+}
 
 
-data "azurerm_managed_api" "data_api" {
-  name     = "managed-api-1"
-  location = data.azurerm_resource_group.rg.location
+resource "azapi_resource" "createApiConnectionslack" {
+  type      = "Microsoft.Web/connections@2018-06-07-01"
+  name      = var.connection_name
+  parent_id = data.azurerm_resource_group.rg.id
+  location  = data.azurerm_resource_group.rg.location
+
+
+  body = jsonencode({
+    properties = {
+
+      api = {
+        name        = var.connection_name
+        displayName = "slack"
+        description = "Slack is a team communication tool, that brings together all of your team communications in one place, instantly searchable and available wherever you go."
+        iconUri     = "https://connectoricons-prod.azureedge.net/releases/v1.0.1669/1.0.1669.3522/slack/icon.png"
+        brandColor  = "#78D4B6"
+        id          = "/subscriptions/${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
+        type        = "Microsoft.Web/locations/managedApis"
+      }
+    }
+  })
 }
 
 
 
 resource "azurerm_api_connection" "api_connection_1" {
-  managed_api_id      = data.azurerm_managed_api.data_api.id
+  managed_api_id      = azapi_resource.createApiConnectionslack.id
   name                = "SlackConnection"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
 resource "azurerm_api_connection" "res-6" {
-  managed_api_id      = data.azurerm_managed_api.data_api.id
+  managed_api_id      = azapi_resource.createApiConnectionslack.id
   name                = "slack-1"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
