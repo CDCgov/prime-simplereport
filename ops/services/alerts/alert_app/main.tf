@@ -6,6 +6,9 @@ locals {
     prime-app      = "simple-report"
     resource_group = data.azurerm_resource_group.rg.name
   }
+  slack_api_id        = "${data.azurerm_subscription.primary.id}/resourceGroups/${data.azurerm_resource_group.rg.name}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/slack"
+  slack_connection_id = "${data.azurerm_subscription.primary.id}/resourceGroups/${data.azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${var.slackConnectionName}"
+
 }
 
 
@@ -13,13 +16,14 @@ locals {
 resource "azurerm_logic_app_workflow" "slack_workflow" {
   name     = var.logicAppName
   location = data.azurerm_resource_group.rg.location
-  #Create below api_connection
   parameters = {
-    connections = azurerm_api_connection.api_connection_1.id
+    connections = local.slack_api_id
   }
   resource_group_name = data.azurerm_resource_group.rg.name
   workflow_parameters = {
-    connection = "{\"defaultValue\":{},\"type\":\"Object\"}"
+    connection = jsonencode({
+      name = local.slack_connection_id
+    })
   }
 }
 
@@ -44,9 +48,9 @@ resource "azurerm_logic_app_action_custom" "res-3" {
   body = jsonencode({
     inputs = {
       host = {
-        connection = {
-          name = azurerm_api_connection.api_connection_1.name
-        }
+        connection = jsonencode({
+          name = local.slack_connection_id
+        })
       }
       method = "post"
       path   = "/chat.postMessage"
@@ -95,17 +99,7 @@ resource "azurerm_logic_app_trigger_http_request" "res-4" {
 
 }
 
-# resource "azurerm_logic_app_api_connection" "slack" {
-#   name                = var.slackConnectionName
-#   location            = data.azurerm_resource_group.rg.location
-#   resource_group_name = data.azurerm_resource_group.rg.name
-#
-#   api {
-#     id = "/subscriptions/${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
-#   }
-#
-#   display_name = "slack"
-# }
+
 
 
 resource "azapi_resource" "createApiConnectionslack" {
@@ -139,12 +133,7 @@ resource "azurerm_api_connection" "api_connection_1" {
   name                = "SlackConnection"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
-#
-# resource "azurerm_api_connection" "res-6" {
-#   managed_api_id      = azapi_resource.createApiConnectionslack.id
-#   name                = "slack-1"
-#   resource_group_name = data.azurerm_resource_group.rg.name
-# }
+
 
 
 
