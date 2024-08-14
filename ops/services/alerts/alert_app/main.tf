@@ -45,7 +45,7 @@ resource "azurerm_logic_app_action_custom" "res-3" {
     inputs = {
       host = {
         connection = {
-          name = azurerm_api_connection.api_connection_1.connection
+          name = azurerm_api_connection.api_connection_1.name
         }
       }
       method = "post"
