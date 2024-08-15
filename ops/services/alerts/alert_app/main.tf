@@ -17,15 +17,11 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
   name     = var.logicAppName
   location = data.azurerm_resource_group.rg.location
   parameters = {
-    connections = jsonencode({
-      name = local.slack_api_id
-    })
+    "$connections" = "{\"slack\":{\"connectionId\":\"/${data.azurerm_subscription.primary.id}/resourceGroups/${data.azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/slack\",\"connectionName\":\"slack\",\"id\":\"/${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/eastus/managedApis/slack\"}}"
   }
   resource_group_name = data.azurerm_resource_group.rg.name
   workflow_parameters = {
-    connection = jsonencode({
-      name = local.slack_connection_id
-    })
+    "$connections" = "{\"defaultValue\":{},\"type\":\"Object\"}"
   }
 }
 
@@ -38,67 +34,187 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
   #How to get this uri programmtically
   uri = data.azurerm_key_vault_secret.azure_alert_slack_webhook.value
   body = jsonencode({
-    "text" : "Hi from postman"
+    "text" : "@{triggerBody()?['data']?['essentials']?['alertId']}"
   })
   headers = {
     Content-Type = "application/json"
   }
 }
 
-
-resource "azurerm_logic_app_action_custom" "res-3" {
-  body = jsonencode({
-    inputs = {
-      host = {
-        connection = jsonencode({
-          name = local.slack_connection_id
-        })
-      }
-      method = "post"
-      path   = "/chat.postMessage"
-      queries = {
-        channel = var.channel
-        text    = "Azure Alert - '@{triggerBody()['context']['name']}' @{triggerBody()['status']} on '@{triggerBody()['context']['resourceName']}'.  Details: @{body('Http')['id']}"
-      }
-    }
-    runAfter = {
-      Http = ["Succeeded"]
-    }
-    type = "ApiConnection"
-  })
-  logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
-  name         = "Post_Message"
-}
+#
+# resource "azurerm_logic_app_action_custom" "res-3" {
+#   body = jsonencode({
+#     inputs = {
+#       host = {
+#         connection = {
+#           name = "@parameters('$connections')['slack']['connectionId']"
+#         }
+#
+#       }
+#       method = "post"
+#       path   = "/chat.postMessage"
+#       queries = {
+#         channel = var.channel
+#         text    = "Azure Alert - '@{triggerBody()['context']['name']}' @{triggerBody()['status']} on '@{triggerBody()['context']['resourceName']}'.  Details: @{body('Http')['id']}"
+#       }
+#     }
+#     runAfter = {
+#       Http = ["Succeeded"]
+#     }
+#     type = "ApiConnection"
+#   })
+#   logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
+#   name         = "Post_Message"
+# }
 
 resource "azurerm_logic_app_trigger_http_request" "res-4" {
   logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
-  name         = "manual"
-  schema = jsonencode({
-    "$schema" = "http://json-schema.org/draft-04/schema#"
-    schemaId = {
-      data = {
-        essentials = {
-          alertId = {
-            type = "string"
-          }
-          alertRule = {
-            type = "string"
-          }
-          severity = {
-            type = "string"
+  name         = "When a HTTP request is received"
+  schema       = <<SCHEMA
+{
+  "type": "Request",
+  "kind": "Http",
+  "inputs": {
+    "schema": {
+      "type": "object",
+      "properties": {
+        "schemaId": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "essentials": {
+              "type": "object",
+              "properties": {
+                "alertId": {
+                  "type": "string"
+                },
+                "alertRule": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string"
+                },
+                "signalType": {
+                  "type": "string"
+                },
+                "monitorCondition": {
+                  "type": "string"
+                },
+                "monitoringService": {
+                  "type": "string"
+                },
+                "alertTargetIDs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "configurationItems": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "originAlertId": {
+                  "type": "string"
+                },
+                "firedDateTime": {
+                  "type": "string"
+                },
+                "resolvedDateTime": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "essentialsVersion": {
+                  "type": "string"
+                },
+                "alertContextVersion": {
+                  "type": "string"
+                }
+              }
+            },
+            "alertContext": {
+              "type": "object",
+              "properties": {
+                "properties": {},
+                "conditionType": {
+                  "type": "string"
+                },
+                "condition": {
+                  "type": "object",
+                  "properties": {
+                    "windowSize": {
+                      "type": "string"
+                    },
+                    "allOf": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "metricName": {
+                            "type": "string"
+                          },
+                          "metricNamespace": {
+                            "type": "string"
+                          },
+                          "operator": {
+                            "type": "string"
+                          },
+                          "threshold": {
+                            "type": "string"
+                          },
+                          "timeAggregation": {
+                            "type": "string"
+                          },
+                          "dimensions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "name": {
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "name",
+                                "value"
+                              ]
+                            }
+                          },
+                          "metricValue": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "metricName",
+                          "metricNamespace",
+                          "operator",
+                          "threshold",
+                          "timeAggregation",
+                          "dimensions",
+                          "metricValue"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
-        required = ["alertId", "alertRule", "severity"]
-        type     = "object"
-      }
-      status = {
-        type = "string"
       }
     }
-    required = ["status", "data"]
-    type     = "object"
-  })
+  }
+}
 
+SCHEMA
 }
 
 
