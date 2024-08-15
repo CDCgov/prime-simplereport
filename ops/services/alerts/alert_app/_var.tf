@@ -19,15 +19,10 @@ variable "channel" {
   description = "The Slack channel to post to."
 }
 
-variable "slackConnectionName" {
-  type        = string
-  default     = "SlackConnection"
-  description = "The name for the Slack connection."
-}
 
 variable "connection_name" {
   type        = string
-  description = "This connection must be manually activated in the Azure Console after deployment"
+  description = "This connection must be manually activated in the Azure Console after deployment to test other will have to wait for Alert Group to trigger it"
   default     = "slack"
 }
 

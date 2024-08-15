@@ -6,9 +6,6 @@ locals {
     prime-app      = "simple-report"
     resource_group = data.azurerm_resource_group.rg.name
   }
-  slack_api_id        = "${data.azurerm_subscription.primary.id}/resourceGroups/${data.azurerm_resource_group.rg.name}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/slack"
-  slack_connection_id = "${data.azurerm_subscription.primary.id}/resourceGroups/${data.azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/${var.slackConnectionName}"
-
 }
 
 
@@ -41,31 +38,7 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
   }
 }
 
-#
-# resource "azurerm_logic_app_action_custom" "res-3" {
-#   body = jsonencode({
-#     inputs = {
-#       host = {
-#         connection = {
-#           name = "@parameters('$connections')['slack']['connectionId']"
-#         }
-#
-#       }
-#       method = "post"
-#       path   = "/chat.postMessage"
-#       queries = {
-#         channel = var.channel
-#         text    = "Azure Alert - '@{triggerBody()['context']['name']}' @{triggerBody()['status']} on '@{triggerBody()['context']['resourceName']}'.  Details: @{body('Http')['id']}"
-#       }
-#     }
-#     runAfter = {
-#       Http = ["Succeeded"]
-#     }
-#     type = "ApiConnection"
-#   })
-#   logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
-#   name         = "Post_Message"
-# }
+
 
 resource "azurerm_logic_app_trigger_http_request" "res-4" {
   logic_app_id = azurerm_logic_app_workflow.slack_workflow.id
@@ -246,25 +219,15 @@ resource "azapi_resource" "createApiConnectionslack" {
 
 
 
-resource "azurerm_api_connection" "api_connection_1" {
-  managed_api_id      = "${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/${data.azurerm_resource_group.rg_global.location}/managedApis/${var.connection_name}"
-  name                = "SlackConnection"
-  resource_group_name = data.azurerm_resource_group.rg.name
-}
-
-
-
-
-
 
 resource "azurerm_monitor_action_group" "on_call_action_group" {
   name                = "OnCallEngineer"
   resource_group_name = data.azurerm_resource_group.rg.name
   short_name          = "OnCall"
-  webhook_receiver {
-    name                    = "logicappaction"
-    service_uri             = data.azurerm_key_vault_secret.azure_alert_slack_webhook.value
+  logic_app_receiver {
+    name                    = var.logicAppName
+    resource_id             = azurerm_logic_app_workflow.slack_workflow.id
+    callback_url            = azurerm_logic_app_workflow.slack_workflow.access_endpoint
     use_common_alert_schema = false
   }
 }
-
