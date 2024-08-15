@@ -72,8 +72,8 @@ dependencies {
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.6'
     // this provides additional types for JsonB and for ListArray types in Postgres
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.6'
     implementation 'org.liquibase:liquibase-core:4.27.0'
     implementation 'org.postgresql:postgresql:42.7.3'
 
@@ -146,6 +146,8 @@ dependencies {
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.2.2'
     implementation('com.fasterxml.jackson.core:jackson-core') {
+        // workaround for a sibling dependency version bug in the v7 upgrade to the HAPI library
+        // that was causing a serialization issue
         version {
             strictly '2.16.1'
         }
