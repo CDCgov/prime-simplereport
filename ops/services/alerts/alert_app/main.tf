@@ -17,7 +17,7 @@ resource "azurerm_logic_app_workflow" "slack_workflow" {
   name     = var.logicAppName
   location = data.azurerm_resource_group.rg.location
   parameters = {
-    "$connections" = "{\"slack\":{\"connectionId\":\"/${data.azurerm_subscription.primary.id}/resourceGroups/${data.azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/slack\",\"connectionName\":\"slack\",\"id\":\"/${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/eastus/managedApis/slack\"}}"
+    "$connections" = "{\"slack\":{\"connectionId\":\"${data.azurerm_subscription.primary.id}/resourceGroups/${data.azurerm_resource_group.rg.name}/providers/Microsoft.Web/connections/slack\",\"connectionName\":\"slack\",\"id\":\"${data.azurerm_subscription.primary.id}/providers/Microsoft.Web/locations/eastus/managedApis/slack\"}}"
   }
   resource_group_name = data.azurerm_resource_group.rg.name
   workflow_parameters = {
