@@ -31,7 +31,7 @@ resource "azurerm_logic_app_action_http" "workflow_action" {
   #How to get this uri programmtically
   uri = data.azurerm_key_vault_secret.azure_alert_slack_webhook.value
   body = jsonencode({
-    "text" : "@{triggerBody()?['data']?['essentials']?['alertId']}"
+    "text" : "@{triggerBody()?['data']?['essentials']}"
   })
   headers = {
     Content-Type = "application/json"

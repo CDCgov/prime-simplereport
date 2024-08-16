@@ -15,8 +15,8 @@ variable "global_vault" {
 }
 
 variable "channel" {
-  default     = "Shanice Musiitwa (ATL, she/her)"
-  description = "The Slack channel to post to."
+  default     = "project-sr-on-call-alerts"
+  description = "The Slack channel that the alerts are sent to."
 }
 
 
