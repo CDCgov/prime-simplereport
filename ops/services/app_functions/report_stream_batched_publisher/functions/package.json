@@ -2,6 +2,9 @@
   "name": "report-stream-batched-publisher",
   "version": "1.0.0",
   "description": "",
+  "engines": {
+    "node": "^20.0.0"
+  },
   "scripts": {
     "func": "func",
     "coverage": "jest --coverage",
