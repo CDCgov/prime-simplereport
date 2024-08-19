@@ -71,10 +71,6 @@ public class ResultsUploaderDeviceService {
               .toList();
     }
 
-    // can extend this to check for other diseases / feature flags in the future
-    if (supportedDiseaseNamesToCheck.contains("HIV")) {
-      return featureFlagsConfig.isHivBulkUploadEnabled();
-    }
     return true;
   }
 }

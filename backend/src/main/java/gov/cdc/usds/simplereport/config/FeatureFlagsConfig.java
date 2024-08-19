@@ -26,7 +26,6 @@ public class FeatureFlagsConfig {
 
   private boolean oktaMigrationEnabled;
   private boolean syphilisEnabled;
-  private boolean hivBulkUploadEnabled;
   private boolean hivEnabled;
   private boolean agnosticEnabled;
   private boolean agnosticBulkUploadEnabled;
@@ -41,7 +40,6 @@ public class FeatureFlagsConfig {
     switch (flagName) {
       case "oktaMigrationEnabled" -> setOktaMigrationEnabled(flagValue);
       case "syphilisEnabled" -> setSyphilisEnabled(flagValue);
-      case "hivBulkUploadEnabled" -> setHivBulkUploadEnabled(flagValue);
       case "hivEnabled" -> setHivEnabled(flagValue);
       case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
       case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);

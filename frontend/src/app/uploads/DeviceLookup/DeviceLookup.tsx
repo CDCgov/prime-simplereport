@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./DeviceLookup.scss";
 import { uniq } from "lodash";
-import { useFeature } from "flagged";
 
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
@@ -46,19 +45,7 @@ export const searchDevices = (
 };
 
 const DeviceLookup = (props: Props) => {
-  const hivBulkUploadEnabled = useFeature("hivBulkUploadEnabled") as boolean;
-
   let deviceDisplayOptions = props.deviceOptions;
-  if (!hivBulkUploadEnabled) {
-    deviceDisplayOptions = deviceDisplayOptions.filter(
-      (d) =>
-        !d.supportedDiseaseTestPerformed
-          .map((s) => s.supportedDisease)
-          .map((sup) => sup.name)
-          .includes("HIV")
-    );
-  }
-
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,

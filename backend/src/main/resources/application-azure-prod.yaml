@@ -23,7 +23,6 @@ twilio:
 features:
   oktaMigrationEnabled: false
   syphilisEnabled: false
-  hivBulkUploadEnabled: true
   hivEnabled: true
   agnosticEnabled: false
   agnosticBulkUploadEnabled: false

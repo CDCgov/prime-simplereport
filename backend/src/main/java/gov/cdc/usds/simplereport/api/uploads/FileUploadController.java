@@ -51,7 +51,6 @@ public class FileUploadController {
   }
 
   @PostMapping(HIV_RESULT_UPLOAD)
-  @PreAuthorize("@featureFlagsConfig.isHivBulkUploadEnabled()")
   public TestResultUpload handleHIVResultsUpload(@RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);
     try (InputStream resultsUpload = file.getInputStream()) {

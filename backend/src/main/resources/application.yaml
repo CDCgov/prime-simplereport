@@ -176,7 +176,6 @@ datahub:
 features:
   oktaMigrationEnabled: false
   syphilisEnabled: true
-  hivBulkUploadEnabled: true
   hivEnabled: true
   agnosticEnabled: true
   agnosticBulkUploadEnabled: true

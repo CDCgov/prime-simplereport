@@ -1,4 +1,3 @@
-import { useFeature } from "flagged";
 
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
@@ -35,7 +34,6 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
 
 const SupportAdmin = () => {
   useDocumentTitle("Support admin");
-  const hivBulkUploadEnabled = useFeature("hivBulkUploadEnabled") as boolean;
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -99,15 +97,6 @@ const SupportAdmin = () => {
                     </LinkWithQuery>
                   </li>
                 </CategoryMenu>
-                {hivBulkUploadEnabled && (
-                  <CategoryMenu heading="Beta">
-                    <li>
-                      <LinkWithQuery to="/admin/hiv-csv-upload">
-                        Beta - HIV CSV Upload
-                      </LinkWithQuery>
-                    </li>
-                  </CategoryMenu>
-                )}
               </div>
             </div>
           </div>

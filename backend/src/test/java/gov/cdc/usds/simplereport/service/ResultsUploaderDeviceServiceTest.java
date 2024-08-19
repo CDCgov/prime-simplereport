@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
@@ -85,7 +84,6 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
   @Test
   void validateOnlyIncludeActiveDiseases_returnsFalseWhenHIVIsOff() {
     // GIVEN
-    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(false);
     createDeviceType("hiv device", List.of("97088-0"), diseaseService.hiv().getInternalId());
 
     // WHEN
@@ -99,7 +97,6 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
   @Test
   void validateOnlyIncludeActiveDiseases_returnsTrueWhenHIVIsOn() {
     // GIVEN
-    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(true);
     createDeviceType("hiv device", List.of("97088-0"), diseaseService.hiv().getInternalId());
 
     // WHEN
