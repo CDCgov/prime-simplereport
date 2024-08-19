@@ -234,7 +234,7 @@ public class ApiUserService {
 
     Optional<OrganizationRoleClaims> oktaRoleClaims = _oktaRepo.updateUser(userIdentity);
 
-    UserInfo user = consolidateNonSiteAdminUser(apiUser, oktaRoleClaims);
+    UserInfo user = consolidateUser(apiUser, oktaRoleClaims);
 
     createUserUpdatedAuditLog(
         apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
@@ -290,7 +290,7 @@ public class ApiUserService {
     createUserUpdatedAuditLog(
         apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
 
-    return consolidateNonSiteAdminUser(apiUser, oktaRoleClaims);
+    return consolidateUser(apiUser, oktaRoleClaims);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
@@ -303,7 +303,7 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
 
-    return consolidateNonSiteAdminUser(apiUser, Optional.ofNullable(oktaClaims));
+    return consolidateUser(apiUser, Optional.ofNullable(oktaClaims));
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
@@ -315,7 +315,7 @@ public class ApiUserService {
         _oktaRepo
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
-    return consolidateNonSiteAdminUser(apiUser, Optional.ofNullable(oktaClaims));
+    return consolidateUser(apiUser, Optional.ofNullable(oktaClaims));
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
@@ -343,7 +343,7 @@ public class ApiUserService {
         _oktaRepo
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
-    return consolidateNonSiteAdminUser(apiUser, Optional.ofNullable(oktaClaims));
+    return consolidateUser(apiUser, Optional.ofNullable(oktaClaims));
   }
 
   // This method is to re-send the invitation email to join SimpleReport
@@ -356,7 +356,7 @@ public class ApiUserService {
         _oktaRepo
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
-    return consolidateNonSiteAdminUser(apiUser, Optional.ofNullable(oktaClaims));
+    return consolidateUser(apiUser, Optional.ofNullable(oktaClaims));
   }
 
   /**
@@ -689,36 +689,31 @@ public class ApiUserService {
     }
   }
 
-  private UserInfo consolidateUser(ApiUser apiUser, PartialOktaUser oktaUser) {
-    boolean isSiteAdmin = oktaUser.isSiteAdmin();
-    UserStatus userStatus = oktaUser.getStatus();
-    OrganizationRoleClaims oktaClaims =
-        oktaUser.getOrganizationRoleClaims().orElseThrow(UnidentifiedUserException::new);
-    OrganizationRoles orgRoles = _orgService.getOrganizationRoles(oktaClaims);
-
-    if (!isSiteAdmin) {
-      if (_featureFlagsConfig.isOktaMigrationEnabled()) {
-        orgRoles = getOrgRolesFromDB(apiUser);
-      } else {
-        setRolesAndFacilities(Optional.ofNullable(orgRoles), apiUser);
-      }
-    }
-
-    return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
-  }
-
-  private UserInfo consolidateNonSiteAdminUser(
-      ApiUser apiUser, Optional<OrganizationRoleClaims> oktaClaims) {
+  private OrganizationRoles getOrgRoles(
+      Optional<OrganizationRoleClaims> oktaClaims, ApiUser apiUser) {
     OrganizationRoles orgRoles = null;
     if (oktaClaims.isPresent()) {
       orgRoles = _orgService.getOrganizationRoles(oktaClaims.get());
     }
-
     if (_featureFlagsConfig.isOktaMigrationEnabled()) {
       orgRoles = getOrgRolesFromDB(apiUser);
     } else {
       setRolesAndFacilities(Optional.ofNullable(orgRoles), apiUser);
     }
+    return orgRoles;
+  }
+
+  private UserInfo consolidateUser(ApiUser apiUser, PartialOktaUser oktaUser) {
+    OrganizationRoleClaims orgRoleClaims =
+        oktaUser.getOrganizationRoleClaims().orElseThrow(UnidentifiedUserException::new);
+    UserStatus userStatus = oktaUser.getStatus();
+    boolean isSiteAdmin = oktaUser.isSiteAdmin();
+    OrganizationRoles orgRoles = getOrgRoles(Optional.of(orgRoleClaims), apiUser);
+    return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
+  }
+
+  private UserInfo consolidateUser(ApiUser apiUser, Optional<OrganizationRoleClaims> oktaClaims) {
+    OrganizationRoles orgRoles = getOrgRoles(oktaClaims, apiUser);
     return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
