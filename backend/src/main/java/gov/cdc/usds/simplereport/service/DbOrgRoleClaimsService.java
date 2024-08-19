@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -109,14 +108,12 @@ public class DbOrgRoleClaimsService {
     return oktaClaims.stream()
         .map(
             oktaClaim -> {
-              Set<OrganizationRole> copiedOktaOrgRoles = new HashSet<>();
-              Set<OrganizationRole> oktaOrgRoles = oktaClaim.getGrantedRoles();
-              copiedOktaOrgRoles.addAll(oktaOrgRoles);
-              copiedOktaOrgRoles.remove(OrganizationRole.NO_ACCESS);
+              Set<OrganizationRole> orgRoles =
+                  oktaClaim.getGrantedRoles().stream()
+                      .filter(c -> c != OrganizationRole.NO_ACCESS)
+                      .collect(Collectors.toSet());
               return new OrganizationRoleClaims(
-                  oktaClaim.getOrganizationExternalId(),
-                  oktaClaim.getFacilities(),
-                  copiedOktaOrgRoles);
+                  oktaClaim.getOrganizationExternalId(), oktaClaim.getFacilities(), orgRoles);
             })
         .collect(Collectors.toList());
   }
