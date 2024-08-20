@@ -181,12 +181,10 @@ public class DemoAuthenticationConfiguration {
           _oktaRepo.getOrganizationRoleClaimsForUser(username);
       List<OrganizationRoleClaims> oktaOrgRoleClaims =
           claims.isEmpty() ? List.of() : List.of(claims.get());
-      if (!isSiteAdmin()) {
-        if (_featureFlagsConfig.isOktaMigrationEnabled()) {
-          List<OrganizationRoleClaims> dbOrgRoleClaims =
-              _dbOrgRoleClaimsService.getOrganizationRoleClaims(username);
-          return dbOrgRoleClaims;
-        }
+      if (!isSiteAdmin() && _featureFlagsConfig.isOktaMigrationEnabled()) {
+        List<OrganizationRoleClaims> dbOrgRoleClaims =
+            _dbOrgRoleClaimsService.getOrganizationRoleClaims(username);
+        return dbOrgRoleClaims;
       }
       return oktaOrgRoleClaims;
     }
