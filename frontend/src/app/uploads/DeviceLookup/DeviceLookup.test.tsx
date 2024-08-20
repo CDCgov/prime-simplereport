@@ -7,10 +7,8 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import * as flaggedMock from "flagged";
 
 import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
-import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 
 import DeviceLookup from "./DeviceLookup";
 
@@ -51,15 +49,6 @@ const devices = [
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "nose-code" }],
     supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
-  },
-  {
-    internalId: "abc2",
-    name: "Acme HIV Device (RT-PCR)",
-    model: "Model A",
-    manufacturer: "Celoxitin",
-    testLength: 15,
-    swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
-    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedHIV,
   },
 ];
 
@@ -128,26 +117,6 @@ describe("Device lookup", () => {
     const specimenType = screen.getByLabelText("Specimen type");
     expect(within(specimenType).getByText("nose")).toBeInTheDocument();
     expect(within(specimenType).getByText("n123")).toBeInTheDocument();
-  });
-
-  it("hiv devices are filtered out if feature flag is off", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(false);
-
-    const { user } = renderWithUser();
-    await user.type(screen.getByLabelText("Select device"), "HIV");
-    await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    expect(
-      screen.getByText("No device found matching", { exact: false })
-    ).toBeInTheDocument();
-  });
-
-  it("hiv devices show up if feature flag is on", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
-
-    const { user } = renderWithUser();
-    await user.type(screen.getByLabelText("Select device"), "HIV");
-    await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    expect(screen.getByText("Model A")).toBeInTheDocument();
   });
 
   it("copy button displays when device selected", async () => {
