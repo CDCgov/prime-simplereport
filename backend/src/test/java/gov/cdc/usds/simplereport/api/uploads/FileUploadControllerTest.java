@@ -26,13 +26,13 @@ class FileUploadControllerTest {
   // https://github.com/CDCgov/prime-simplereport/issues/7240
 
   @Test
-  void handleHIVResultsUpload_handlesIoException() throws IOException {
+  void handleResultsUpload_handlesIoException() throws IOException {
     var file = mock(MultipartFile.class);
     when(featureFlagsConfig.isHivEnabled()).thenReturn(true);
     when(file.getContentType()).thenReturn("text/csv");
     when(file.getInputStream()).thenThrow(IOException.class);
 
     assertThrows(
-        CsvProcessingException.class, () -> fileUploadController.handleHIVResultsUpload(file));
+        CsvProcessingException.class, () -> fileUploadController.handleResultsUpload(file));
   }
 }
