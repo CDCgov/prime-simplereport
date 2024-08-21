@@ -140,33 +140,6 @@ export type AllSymptomsCode = keyof RespiratorySymptoms &
   keyof SyphilisSymptoms;
 export type AllSymptomsName = RespiratorySymptomName & SyphilisSymptomName;
 export const allSymptomsMap = {
-  "724386005": "Genital sore/lesion",
-  // Anal skin tag (195469007); Anal tag (195469007); Fibrous polyp of anus (195469007)
-  "195469007": "Anal sore/lesion",
-  // 	Ulcer of mouth (26284000); Oral ulcer (26284000); Mouth ulceration (26284000); Ulceration of oral mucosa (26284000); Mouth ulcer (26284000)
-  "26284000": "Sore(s) in mouth/lips",
-  "266128007": "Body Rash",
-  "56940005": "Palmar (hand)/plantar (foot) rash",
-  "91554004": "Flat white warts",
-  "15188001": "Hearing loss",
-  "46636008": "Blurred vision",
-  "68225006": "Patchy hair loss",
-  "426000000": "Fever over 100.4F",
-  "103001002": "Feeling feverish",
-  "43724002": "Chills",
-  "49727002": "Cough",
-  "267036007": "Shortness of breath",
-  "230145002": "Difficulty breathing",
-  "84229001": "Fatigue",
-  "68962001": "Muscle or body aches",
-  "25064002": "Headache",
-  "36955009": "New loss of taste",
-  "44169009": "New loss of smell",
-  "162397003": "Sore throat",
-  "68235000": "Nasal congestion",
-  "64531003": "Runny nose",
-  "422587007": "Nausea",
-  "422400008": "Vomiting",
-  "62315008": "Diarrhea",
-  "261665006": OTHER_SYMPTOM_NOT_LISTED_LITERAL,
-} as const;
+  ...syphilisSymptomsMap,
+  ...respiratorySymptomsMap,
+};
