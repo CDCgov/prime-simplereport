@@ -116,7 +116,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   private static final PersonName JANNELLE = new PersonName("Jannelle", "Martha", "Cromack", null);
   private static final PersonName KACEY = new PersonName("Kacey", "L", "Mathie", null);
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
-  private static final PersonName MICHAEL = new PersonName("Michael", null, "Lorem", null);
   private Facility _site;
 
   @BeforeEach
