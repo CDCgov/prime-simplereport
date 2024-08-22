@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -94,6 +95,7 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
+      SupportedDisease disease,
       Date startDate,
       Date endDate,
       UUID orgId) {
@@ -137,6 +139,14 @@ public class TestOrderService {
       if (role != null) {
         p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(Person_.role), role));
       }
+      if (disease != null) {
+        p =
+            cb.and(
+                p,
+                cb.equal(
+                    resultJoin.get(Result_.disease).get(IdentifiedEntity_.internalId),
+                    disease.getInternalId()));
+      }
       if (startDate != null) {
         p =
             cb.and(
@@ -173,6 +183,7 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
+      SupportedDisease disease,
       Date startDate,
       Date endDate,
       int pageOffset,
@@ -182,7 +193,8 @@ public class TestOrderService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return _testEventRepo.findAll(
-        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate, null),
+        buildTestEventSearchFilter(
+            facilityId, patientId, result, role, disease, startDate, endDate, null),
         pageRequest);
   }
 
@@ -192,6 +204,7 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
+      SupportedDisease disease,
       Date startDate,
       Date endDate,
       int pageOffset,
@@ -201,7 +214,8 @@ public class TestOrderService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return _testEventRepo.findAll(
-        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate, null),
+        buildTestEventSearchFilter(
+            null, patientId, result, role, disease, startDate, endDate, null),
         pageRequest);
   }
 
@@ -211,13 +225,14 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
+      SupportedDisease disease,
       Date startDate,
       Date endDate,
       UUID orgId) {
     return (int)
         _testEventRepo.count(
             buildTestEventSearchFilter(
-                facilityId, patientId, result, role, startDate, endDate, orgId));
+                facilityId, patientId, result, role, disease, startDate, endDate, orgId));
   }
 
   @Transactional(readOnly = true)
