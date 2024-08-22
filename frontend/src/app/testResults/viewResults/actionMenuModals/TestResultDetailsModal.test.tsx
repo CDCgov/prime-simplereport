@@ -70,6 +70,17 @@ hivTestResult.results = [
 hivTestResult.genderOfSexualPartners = ["female", "male", "other"];
 hivTestResult.pregnancy = "77386006";
 
+const syphilisTestResult = JSON.parse(JSON.stringify(nonMultiplexTestResult));
+syphilisTestResult.results = [
+  {
+    disease: { name: "Syphilis" as MultiplexDisease },
+    testResult: "POSITIVE" as TestResult,
+    __typename: "MultiplexResult",
+  },
+];
+syphilisTestResult.pregnancy = "77386006";
+syphilisTestResult.symptoms = '{"266128007":"true"}';
+
 const renderComponent = (testResult: TestResult) =>
   render(
     <DetachedTestResultDetailsModal
@@ -149,6 +160,28 @@ describe("HIV TestResultDetailsModal", () => {
 
   it("matches screenshot", () => {
     let view = renderComponent(hivTestResult);
+    expect(view).toMatchSnapshot();
+  });
+});
+
+describe("Syphilis TestResultDetailsModal", () => {
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+  });
+
+  it("should have Syphilis specific symptoms", () => {
+    renderComponent(syphilisTestResult);
+    expect(screen.getByText("Syphilis result")).toBeInTheDocument();
+    expect(screen.getByText("Symptoms")).toBeInTheDocument();
+    expect(screen.getByText("Symptom onset")).toBeInTheDocument();
+    expect(screen.getByText("Body Rash")).toBeInTheDocument();
+    expect(screen.getByText("Pregnant?")).toBeInTheDocument();
+  });
+
+  it("matches screenshot", () => {
+    let view = renderComponent(syphilisTestResult);
     expect(view).toMatchSnapshot();
   });
 });
