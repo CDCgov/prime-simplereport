@@ -875,6 +875,7 @@ export type QueryTestResultsCountArgs = {
 };
 
 export type QueryTestResultsPageArgs = {
+  disease?: InputMaybe<Scalars["String"]["input"]>;
   endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   facilityId?: InputMaybe<Scalars["ID"]["input"]>;
   pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
@@ -2401,6 +2402,7 @@ export type GetFacilityResultsForCsvWithCountQueryVariables = Exact<{
   patientId?: InputMaybe<Scalars["ID"]["input"]>;
   result?: InputMaybe<Scalars["String"]["input"]>;
   role?: InputMaybe<Scalars["String"]["input"]>;
+  disease?: InputMaybe<Scalars["String"]["input"]>;
   startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
@@ -7779,6 +7781,7 @@ export const GetFacilityResultsForCsvWithCountDocument = gql`
     $patientId: ID
     $result: String
     $role: String
+    $disease: String
     $startDate: DateTime
     $endDate: DateTime
     $pageNumber: Int
@@ -7789,6 +7792,7 @@ export const GetFacilityResultsForCsvWithCountDocument = gql`
       patientId: $patientId
       result: $result
       role: $role
+      disease: $disease
       startDate: $startDate
       endDate: $endDate
       pageNumber: $pageNumber
@@ -7874,6 +7878,7 @@ export const GetFacilityResultsForCsvWithCountDocument = gql`
  *      patientId: // value for 'patientId'
  *      result: // value for 'result'
  *      role: // value for 'role'
+ *      disease: // value for 'disease'
  *      startDate: // value for 'startDate'
  *      endDate: // value for 'endDate'
  *      pageNumber: // value for 'pageNumber'

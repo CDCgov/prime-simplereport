@@ -20,6 +20,7 @@ query GetFacilityResultsForCsvWithCount(
   $patientId: ID
   $result: String
   $role: String
+  $disease: String
   $startDate: DateTime
   $endDate: DateTime
   $pageNumber: Int
@@ -30,6 +31,7 @@ query GetFacilityResultsForCsvWithCount(
     patientId: $patientId
     result: $result
     role: $role
+    disease: $disease
     startDate: $startDate
     endDate: $endDate
     pageNumber: $pageNumber
