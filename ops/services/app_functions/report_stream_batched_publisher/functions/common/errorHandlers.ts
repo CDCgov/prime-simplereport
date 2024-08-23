@@ -8,7 +8,7 @@ export const trackFailures = (
       properties: {
         count: testEventBatch.parseFailureCount,
         parseFailures: Object.keys(testEventBatch.parseFailure),
-        operationId
+        operationId,
       },
     });
   }
