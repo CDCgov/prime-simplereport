@@ -73,7 +73,8 @@ export type ResultCsvRow =
 
 export function parseDataForCSV(
   data: QueriedTestResult[],
-  excludedDiseases: MULTIPLEX_DISEASES[] = []
+  excludedDiseases: MULTIPLEX_DISEASES[] = [],
+  filterParams?: FilterParams
 ): ResultCsvRow[] {
   let csvRows: ResultCsvRow[] = [];
   data.sort(byDateTested).forEach((r: QueriedTestResult) => {
@@ -146,7 +147,10 @@ export function parseDataForCSV(
       if (
         excludedDiseases.some(
           (d) => d.toLowerCase() === result?.disease.name.toLowerCase()
-        )
+        ) ||
+        (filterParams?.disease &&
+          result?.disease.name.toLowerCase() !==
+            filterParams.disease.toLowerCase())
       ) {
         return;
       }

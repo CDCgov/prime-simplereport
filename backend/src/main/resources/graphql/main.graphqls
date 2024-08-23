@@ -491,6 +491,7 @@ type Query {
     patientId: ID
     result: String
     role: String
+    disease: String
     startDate: DateTime
     endDate: DateTime
     pageNumber: Int = 0

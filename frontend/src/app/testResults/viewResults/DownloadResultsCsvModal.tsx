@@ -72,7 +72,8 @@ export const DownloadResultsCsvModal = ({
       try {
         const csvResults = parseDataForCSV(
           data.testResultsPage.content,
-          disabledFeatureDiseaseList
+          disabledFeatureDiseaseList,
+          filterParams
         );
         setResults(csvResults);
       } catch (e) {
