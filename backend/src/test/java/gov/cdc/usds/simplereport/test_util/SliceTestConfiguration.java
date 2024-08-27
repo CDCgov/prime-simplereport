@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import static org.mockito.Mockito.mock;
+
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
@@ -22,6 +24,7 @@ import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
+import gov.cdc.usds.simplereport.service.DbOrgRoleClaimsService;
 import gov.cdc.usds.simplereport.service.DiseaseCacheService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
@@ -154,8 +157,13 @@ public class SliceTestConfiguration {
 
   @Bean
   public AuthorizationService realAuthorizationService(OrganizationExtractor extractor) {
+    FeatureFlagsConfig mockFeatureFlags = mock(FeatureFlagsConfig.class);
+    DbOrgRoleClaimsService mockDbOrgRoleClaimsService = mock(DbOrgRoleClaimsService.class);
     return new LoggedInAuthorizationService(
-        extractor, new AuthorizationProperties(null, "UNITTEST"));
+        extractor,
+        new AuthorizationProperties(null, "UNITTEST"),
+        mockDbOrgRoleClaimsService,
+        mockFeatureFlags);
   }
 
   @Retention(RetentionPolicy.RUNTIME)

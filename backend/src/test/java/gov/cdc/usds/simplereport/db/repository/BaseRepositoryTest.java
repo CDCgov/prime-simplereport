@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.repository;
 
 import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
+import gov.cdc.usds.simplereport.service.DbOrgRoleClaimsService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -25,6 +26,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Import({
   SliceTestConfiguration.class,
+  DbOrgRoleClaimsService.class,
   DbTruncator.class,
   DataSourceConfiguration.class,
   SpringTemplateEngine.class

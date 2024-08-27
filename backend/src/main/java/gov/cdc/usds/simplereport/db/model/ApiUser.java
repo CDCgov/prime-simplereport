@@ -87,6 +87,12 @@ public class ApiUser extends EternalSystemManagedEntity implements PersonEntity 
     }
   }
 
+  public Set<Organization> getOrganizations() {
+    return this.roleAssignments.stream()
+        .map(ApiUserRole::getOrganization)
+        .collect(Collectors.toSet());
+  }
+
   public ApiUser clearRolesAndFacilities() {
     this.roleAssignments.clear();
     this.facilityAssignments.clear();
