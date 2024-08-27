@@ -103,6 +103,7 @@ export const syphilisSymptomsMap = {
 
 export type SyphilisSymptoms = typeof syphilisSymptomsMap;
 export type SyphilisSymptomCode = keyof SyphilisSymptoms;
+export type SyphilisSymptomName = SyphilisSymptoms[SyphilisSymptomCode];
 
 const syphilisSymptomOrder: SyphilisSymptomCode[] =
   alphabetizeSymptomKeysFromMapValues(syphilisSymptomsMap);
@@ -134,3 +135,11 @@ export const syphilisSymptomDefinitions: SymptomDefinitionMap[] =
 export const SYMPTOM_SUBQUESTION_ERROR =
   "This question is required if the patient has symptoms.";
 export const ONSET_DATE_LABEL = "When did the patient's symptoms start?";
+
+export type AllSymptomsCode = keyof RespiratorySymptoms &
+  keyof SyphilisSymptoms;
+export type AllSymptomsName = RespiratorySymptomName & SyphilisSymptomName;
+export const allSymptomsMap = {
+  ...syphilisSymptomsMap,
+  ...respiratorySymptomsMap,
+};

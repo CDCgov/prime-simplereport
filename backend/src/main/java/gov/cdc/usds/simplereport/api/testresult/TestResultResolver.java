@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
@@ -25,6 +26,7 @@ public class TestResultResolver {
 
   private final TestOrderService tos;
   private final TestResultUploadService testResultUploadService;
+  private final DiseaseService diseaseService;
 
   @QueryMapping
   public Page<TestEvent> testResultsPage(
@@ -32,6 +34,7 @@ public class TestResultResolver {
       @Argument UUID patientId,
       @Argument String result,
       @Argument String role,
+      @Argument String disease,
       @Argument Date startDate,
       @Argument Date endDate,
       @Argument int pageNumber,
@@ -48,6 +51,7 @@ public class TestResultResolver {
           patientId,
           Translators.parseTestResult(result),
           Translators.parsePersonRole(role, true),
+          diseaseService.getDiseaseByName(disease),
           startDate,
           endDate,
           pageNumber,
@@ -58,6 +62,7 @@ public class TestResultResolver {
         patientId,
         Translators.parseTestResult(result),
         Translators.parsePersonRole(role, true),
+        diseaseService.getDiseaseByName(disease),
         startDate,
         endDate,
         pageNumber,
@@ -70,6 +75,7 @@ public class TestResultResolver {
       @Argument UUID patientId,
       @Argument String result,
       @Argument String role,
+      @Argument String disease,
       @Argument Date startDate,
       @Argument Date endDate,
       @Argument UUID orgId) {
@@ -78,6 +84,7 @@ public class TestResultResolver {
         patientId,
         Translators.parseTestResult(result),
         Translators.parsePersonRole(role, true),
+        diseaseService.getDiseaseByName(disease),
         startDate,
         endDate,
         orgId);
