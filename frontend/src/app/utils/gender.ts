@@ -1,5 +1,5 @@
 export const UNKNOWN = "Unknown";
-export const GenderIdentityDisplay: { [K in GenderIdentity]: string } = {
+export const GenderIdentityDisplay: { [_K in GenderIdentity]: string } = {
   female: "Female",
   male: "Male",
   transwoman: "Transwoman",

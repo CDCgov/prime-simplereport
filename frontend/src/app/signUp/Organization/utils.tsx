@@ -7,7 +7,7 @@ import Alert from "../../commonComponents/Alert";
 
 import { OrganizationCreateRequest } from "./OrganizationForm";
 
-export const OrganizationTypeEnum: { [key in OrganizationType]: string } = {
+export const OrganizationTypeEnum: { [_key in OrganizationType]: string } = {
   airport: "Airport/Transit station",
   assisted_living: "Assisted living facility",
   camp: "Camp",

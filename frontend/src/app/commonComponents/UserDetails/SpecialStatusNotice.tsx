@@ -12,8 +12,8 @@ import UndeleteUserModal from "./UndeleteUserModal";
 export const SpecialStatusNotice: React.FC<{
   user: SettingsUser | User;
   isUpdating: boolean;
-  onResendUserActivationEmail: (userId: string) => void;
-  onReactivateUser: (userId: string) => void;
+  onResendUserActivationEmail: (_userId: string) => void;
+  onReactivateUser: (_userId: string) => void;
   onUndeleteUser: () => void;
 }> = ({
   user,

@@ -97,7 +97,13 @@
       "jest-dom"
     ],
     "rules": {
-      "@typescript-eslint/no-unused-vars": ["error"],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_",
+          "varsIgnorePattern": "^_"
+        }
+      ],
       "import/no-unresolved": 0,
       "import/first": 1,
       "import/order": [
