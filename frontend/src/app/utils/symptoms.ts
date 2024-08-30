@@ -7,7 +7,7 @@ import {
 export const symptomsStringToArray = (
   symptomString: string
 ): AllSymptomsName[] => {
-  const parsed: { [k in AllSymptomsCode]: "true" | "false" } =
+  const parsed: { [_k in AllSymptomsCode]: "true" | "false" } =
     JSON.parse(symptomString);
   return Object.entries(parsed).reduce((acc, [code, symptomatic]) => {
     if (symptomatic === "true") {

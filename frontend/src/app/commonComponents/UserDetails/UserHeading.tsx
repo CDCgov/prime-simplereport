@@ -69,8 +69,8 @@ const UserHeading: React.FC<{
   user: SettingsUser | User;
   isUserSelf?: boolean;
   isUpdating: boolean;
-  onResendUserActivationEmail: (userId: string) => void;
-  onReactivateUser: (userId: string) => void;
+  onResendUserActivationEmail: (_userId: string) => void;
+  onReactivateUser: (_userId: string) => void;
   onUndeleteUser: () => void;
 }> = ({
   user,

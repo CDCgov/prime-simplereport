@@ -62,10 +62,13 @@ const resultCSVHeadersBoolean = [
 
 export type ResultCsvRow =
   | {
-      [K in (typeof resultCSVHeadersString)[number]]: string | null | undefined;
+      [_K in (typeof resultCSVHeadersString)[number]]:
+        | string
+        | null
+        | undefined;
     }
   | {
-      [K in (typeof resultCSVHeadersBoolean)[number]]:
+      [_K in (typeof resultCSVHeadersBoolean)[number]]:
         | boolean
         | null
         | undefined;

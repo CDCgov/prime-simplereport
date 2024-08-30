@@ -241,7 +241,7 @@ export const AoeValidationErrorMessages = {
 } as const;
 
 export const REQUIRED_AOE_QUESTIONS_BY_DISEASE: {
-  [key in AOEFormOption]: Array<keyof AoeQuestionResponses>;
+  [_key in AOEFormOption]: Array<keyof AoeQuestionResponses>;
 } = {
   // AOE responses for COVID not required, but include in completion validation
   // to show "are you sure" modal if not filled
@@ -287,10 +287,10 @@ export function areAoeQuestionsAnswered(
 ) {
   const aoeQuestionsToCheck = REQUIRED_AOE_QUESTIONS_BY_DISEASE[whichAOE];
   const nonSymptomAoeStatusMap: {
-    [key in keyof AoeQuestionResponses]: boolean;
+    [_key in keyof AoeQuestionResponses]: boolean;
   } = {};
   const symptomAoeStatusMap: {
-    [key in keyof AoeQuestionResponses]: boolean;
+    [_key in keyof AoeQuestionResponses]: boolean;
   } = {};
   aoeQuestionsToCheck.forEach((aoeQuestionKey) => {
     if (aoeQuestionKey === "noSymptoms") {
