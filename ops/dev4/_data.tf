@@ -196,7 +196,6 @@ data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"
   resource_group_name = data.azurerm_resource_group.rg_global.name
-  retention_in_days = 7
 }
 
 data "azurerm_application_insights" "app_insights" {
