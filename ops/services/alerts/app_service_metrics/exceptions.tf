@@ -6,18 +6,10 @@ resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
 
   enabled_log {
     category = "AppServiceConsoleLogs"
-    retention_policy {
-      days    = 7
-      enabled = true
-    }
   }
   metric {
     category = "AllMetrics"
     enabled  = false
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
   }
 }
 
