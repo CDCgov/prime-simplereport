@@ -32,11 +32,22 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @Column @Getter @Setter private String cliaNumber;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "ordering_provider_id", nullable = false)
+  // should both the principalProvider and orderingProviders use "ordering_provider_id" as their
+  // col?
+  @ManyToOne(optional = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "ordering_provider_id")
+  @Getter
+  // principal or default?
+  private Provider principalProvider;
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "facility_providers",
+      joinColumns = @JoinColumn(name = "facility_id"),
+      inverseJoinColumns = @JoinColumn(name = "ordering_provider_id"))
   @Getter
   @Setter
-  private Provider orderingProvider;
+  private Set<Provider> orderingProviders = new HashSet<>();
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_type_id")
@@ -65,12 +76,14 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.address = facilityBuilder.facilityAddress;
     this.telephone = facilityBuilder.phone;
     this.email = facilityBuilder.email;
-    this.orderingProvider = facilityBuilder.orderingProvider;
+    this.principalProvider = facilityBuilder.principalProvider;
+    this.orderingProviders.addAll(facilityBuilder.orderingProviders);
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
   }
 
+  // Do I need to replicate all of these functions for multiple providers? (I would imagine yes)
   public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {
     if (deviceType != null) {
       configuredDeviceTypes.add(deviceType);
