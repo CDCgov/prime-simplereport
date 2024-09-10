@@ -34,7 +34,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   // should both the principalProvider and orderingProviders use "ordering_provider_id" as their
   // col or should I make a "principal_ordering_provider_id" attribute on the class?
-  @ManyToOne(optional = true, fetch = FetchType.EAGER)
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn(name = "ordering_provider_id")
   @Getter
   // principal or default?
