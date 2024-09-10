@@ -33,7 +33,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @Column @Getter @Setter private String cliaNumber;
 
   // should both the principalProvider and orderingProviders use "ordering_provider_id" as their
-  // col?
+  // col or should I make a "principal_ordering_provider_id" attribute on the class?
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "ordering_provider_id")
   @Getter
@@ -41,10 +41,11 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   private Provider principalProvider;
 
   @ManyToMany(fetch = FetchType.EAGER)
+  // right config of join vs inverse join?
   @JoinTable(
       name = "facility_providers",
-      joinColumns = @JoinColumn(name = "facility_id"),
-      inverseJoinColumns = @JoinColumn(name = "ordering_provider_id"))
+      joinColumns = @JoinColumn(name = "ordering_provider_id"),
+      inverseJoinColumns = @JoinColumn(name = "facility_id"))
   @Getter
   @Setter
   private Set<Provider> orderingProviders = new HashSet<>();
