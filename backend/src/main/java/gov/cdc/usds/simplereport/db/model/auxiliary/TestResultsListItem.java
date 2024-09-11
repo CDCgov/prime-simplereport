@@ -23,6 +23,7 @@ public class TestResultsListItem {
   private final TestCorrectionStatus correctionStatus;
   private final String reasonForCorrection;
   private final ApiUser createdBy;
+  private final AskOnEntrySurvey surveyData;
 
   public TestResultsListItem(Result result) {
     this.id = result.getTestEvent().getInternalId();
@@ -37,5 +38,6 @@ public class TestResultsListItem {
     this.correctionStatus = result.getTestEvent().getCorrectionStatus();
     this.reasonForCorrection = result.getTestEvent().getReasonForCorrection();
     this.createdBy = result.getTestEvent().getCreatedBy();
+    this.surveyData = result.getTestEvent().getSurveyData();
   }
 }
