@@ -99,6 +99,16 @@ export enum ArchivedStatus {
   Unarchived = "UNARCHIVED",
 }
 
+export type AskOnEntrySurvey = {
+  __typename?: "AskOnEntrySurvey";
+  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
+  pregnancy?: Maybe<Scalars["String"]["output"]>;
+  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
+  symptoms?: Maybe<Scalars["String"]["output"]>;
+  syphilisHistory?: Maybe<Scalars["String"]["output"]>;
+};
+
 export type CreateDeviceType = {
   manufacturer: Scalars["String"]["input"];
   model: Scalars["String"]["input"];
@@ -922,6 +932,7 @@ export type Result = {
   id: Scalars["ID"]["output"];
   patient: Patient;
   reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
+  surveyData?: Maybe<AskOnEntrySurvey>;
   testResult: Scalars["String"]["output"];
 };
 
@@ -2542,6 +2553,100 @@ export type GetResultsMultiplexWithCountQuery = {
           middleName?: string | null;
           lastName: string;
         } | null;
+      } | null;
+    } | null> | null;
+  } | null;
+};
+
+export type GetResultsForDownloadQueryVariables = Exact<{
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  patientId?: InputMaybe<Scalars["ID"]["input"]>;
+  result?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  disease?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+}>;
+
+export type GetResultsForDownloadQuery = {
+  __typename?: "Query";
+  resultsPage?: {
+    __typename?: "ResultsPage";
+    totalElements?: number | null;
+    content?: Array<{
+      __typename?: "Result";
+      id: string;
+      dateAdded: string;
+      dateUpdated?: any | null;
+      dateTested: any;
+      disease: string;
+      testResult: string;
+      correctionStatus?: string | null;
+      reasonForCorrection?: string | null;
+      facility: {
+        __typename?: "Facility";
+        name: string;
+        isDeleted?: boolean | null;
+      };
+      deviceType: {
+        __typename?: "DeviceType";
+        name: string;
+        manufacturer: string;
+        model: string;
+        swabTypes: Array<{
+          __typename?: "SpecimenType";
+          internalId: string;
+          name: string;
+        }>;
+      };
+      patient: {
+        __typename?: "Patient";
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName?: string | null;
+        birthDate?: any | null;
+        gender?: string | null;
+        race?: string | null;
+        ethnicity?: string | null;
+        tribalAffiliation?: Array<string | null> | null;
+        role?: string | null;
+        lookupId?: string | null;
+        street?: string | null;
+        streetTwo?: string | null;
+        city?: string | null;
+        county?: string | null;
+        state?: string | null;
+        zipCode?: string | null;
+        country?: string | null;
+        email?: string | null;
+        residentCongregateSetting?: boolean | null;
+        employedInHealthcare?: boolean | null;
+        preferredLanguage?: string | null;
+        phoneNumbers?: Array<{
+          __typename?: "PhoneNumber";
+          type?: PhoneType | null;
+          number?: string | null;
+        } | null> | null;
+      };
+      createdBy?: {
+        __typename?: "ApiUser";
+        nameInfo?: {
+          __typename?: "NameInfo";
+          firstName?: string | null;
+          middleName?: string | null;
+          lastName: string;
+        } | null;
+      } | null;
+      surveyData?: {
+        __typename?: "AskOnEntrySurvey";
+        pregnancy?: string | null;
+        syphilisHistory?: string | null;
+        symptoms?: string | null;
+        symptomOnset?: any | null;
+        noSymptoms?: boolean | null;
+        genderOfSexualPartners?: Array<string | null> | null;
       } | null;
     } | null> | null;
   } | null;
@@ -8072,6 +8177,172 @@ export type GetResultsMultiplexWithCountSuspenseQueryHookResult = ReturnType<
 export type GetResultsMultiplexWithCountQueryResult = Apollo.QueryResult<
   GetResultsMultiplexWithCountQuery,
   GetResultsMultiplexWithCountQueryVariables
+>;
+export const GetResultsForDownloadDocument = gql`
+  query GetResultsForDownload(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $disease: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    resultsPage(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      disease: $disease
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      content {
+        id
+        dateAdded
+        dateUpdated
+        dateTested
+        disease
+        testResult
+        correctionStatus
+        reasonForCorrection
+        facility {
+          name
+          isDeleted
+        }
+        deviceType {
+          name
+          manufacturer
+          model
+          swabTypes {
+            internalId
+            name
+          }
+        }
+        patient {
+          firstName
+          middleName
+          lastName
+          birthDate
+          gender
+          race
+          ethnicity
+          tribalAffiliation
+          role
+          lookupId
+          street
+          streetTwo
+          city
+          county
+          state
+          zipCode
+          country
+          email
+          phoneNumbers {
+            type
+            number
+          }
+          residentCongregateSetting
+          employedInHealthcare
+          preferredLanguage
+        }
+        createdBy {
+          nameInfo {
+            firstName
+            middleName
+            lastName
+          }
+        }
+        surveyData {
+          pregnancy
+          syphilisHistory
+          symptoms
+          symptomOnset
+          noSymptoms
+          genderOfSexualPartners
+        }
+      }
+      totalElements
+    }
+  }
+`;
+
+/**
+ * __useGetResultsForDownloadQuery__
+ *
+ * To run a query within a React component, call `useGetResultsForDownloadQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetResultsForDownloadQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetResultsForDownloadQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      disease: // value for 'disease'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetResultsForDownloadQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetResultsForDownloadQuery,
+    GetResultsForDownloadQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetResultsForDownloadQuery,
+    GetResultsForDownloadQueryVariables
+  >(GetResultsForDownloadDocument, options);
+}
+export function useGetResultsForDownloadLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetResultsForDownloadQuery,
+    GetResultsForDownloadQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetResultsForDownloadQuery,
+    GetResultsForDownloadQueryVariables
+  >(GetResultsForDownloadDocument, options);
+}
+export function useGetResultsForDownloadSuspenseQuery(
+  baseOptions?: Apollo.SuspenseQueryHookOptions<
+    GetResultsForDownloadQuery,
+    GetResultsForDownloadQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<
+    GetResultsForDownloadQuery,
+    GetResultsForDownloadQueryVariables
+  >(GetResultsForDownloadDocument, options);
+}
+export type GetResultsForDownloadQueryHookResult = ReturnType<
+  typeof useGetResultsForDownloadQuery
+>;
+export type GetResultsForDownloadLazyQueryHookResult = ReturnType<
+  typeof useGetResultsForDownloadLazyQuery
+>;
+export type GetResultsForDownloadSuspenseQueryHookResult = ReturnType<
+  typeof useGetResultsForDownloadSuspenseQuery
+>;
+export type GetResultsForDownloadQueryResult = Apollo.QueryResult<
+  GetResultsForDownloadQuery,
+  GetResultsForDownloadQueryVariables
 >;
 export const GetAllFacilitiesDocument = gql`
   query GetAllFacilities($showArchived: Boolean) {

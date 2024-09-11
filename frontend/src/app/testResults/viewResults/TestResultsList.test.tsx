@@ -11,8 +11,12 @@ import {
   mocksWithMultiplex,
   mockWithFacilityAndPositiveResult,
 } from "../mocks/queries.mock";
-import { GetAllFacilitiesDocument } from "../../../generated/graphql";
+import {
+  GetAllFacilitiesDocument,
+  GetResultsForDownloadDocument,
+} from "../../../generated/graphql";
 import { facilities } from "../mocks/facilities.mock";
+import testResultsMultiplex from "../mocks/resultsMultiplex.mock";
 
 import TestResultsList, { ALL_FACILITIES_ID } from "./TestResultsList";
 import * as UtilsMock from "./utils";
@@ -236,12 +240,12 @@ describe("TestResultsList", () => {
   });
 
   describe("with mocks", () => {
-    const renderWithUser = () => ({
+    const renderWithUser = (localMocks?: any[]) => ({
       user: userEvent.setup(),
       ...render(
         <WithRouter>
           <Provider store={store}>
-            <MockedProvider mocks={mocks}>
+            <MockedProvider mocks={localMocks ?? mocks}>
               <TestResultsList />
             </MockedProvider>
           </Provider>
@@ -549,7 +553,25 @@ describe("TestResultsList", () => {
     });
 
     it("closes the download test results modal after downloading", async () => {
-      const { user } = renderWithUser();
+      const localMocks = mocks.slice(1, 3).concat([
+        {
+          request: {
+            query: GetResultsForDownloadDocument,
+            variables: {
+              facilityId: "1",
+              pageNumber: 0,
+              pageSize: 3,
+            },
+          },
+          result: {
+            data: {
+              resultsPage: testResultsMultiplex,
+            },
+          },
+        },
+      ]);
+
+      const { user } = renderWithUser(localMocks);
       // source of "navigation not implemented" error
       expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
       expect(

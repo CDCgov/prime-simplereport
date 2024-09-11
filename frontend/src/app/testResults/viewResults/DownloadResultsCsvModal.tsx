@@ -8,11 +8,10 @@ import { ApolloError } from "@apollo/client";
 import { showError } from "../../utils/srToast";
 import Button from "../../commonComponents/Button/Button";
 import {
-  useGetFacilityResultsForCsvWithCountLazyQuery,
-  GetFacilityResultsForCsvWithCountQuery,
+  GetResultsForDownloadQuery,
+  useGetResultsForDownloadLazyQuery,
 } from "../../../generated/graphql";
 import { parseDataForCSV, ResultCsvRow } from "../../utils/testResultCSV";
-import { useDisabledFeatureDiseaseList } from "../../utils/disease";
 
 import { ALL_FACILITIES_ID, ResultsQueryVariables } from "./TestResultsList";
 
@@ -38,7 +37,6 @@ export const DownloadResultsCsvModal = ({
   >(null);
   // Disable downloads because backend will hang on over 20k results (#3953)
   const disableDownload = totalEntries > rowsMaxLimit;
-  const disabledFeatureDiseaseList = useDisabledFeatureDiseaseList();
 
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
     // active facility in the facility filter is the default
@@ -59,22 +57,17 @@ export const DownloadResultsCsvModal = ({
   };
 
   const [downloadTestResultsQuery, { loading }] =
-    useGetFacilityResultsForCsvWithCountLazyQuery({
+    useGetResultsForDownloadLazyQuery({
       variables,
       fetchPolicy: "no-cache",
-      onCompleted: (data: GetFacilityResultsForCsvWithCountQuery) =>
-        handleComplete(data),
+      onCompleted: (data: GetResultsForDownloadQuery) => handleComplete(data),
       onError: (error: ApolloError) => handleError(error),
     });
 
-  const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
-    if (data?.testResultsPage?.content) {
+  const handleComplete = (data: GetResultsForDownloadQuery) => {
+    if (data?.resultsPage?.content) {
       try {
-        const csvResults = parseDataForCSV(
-          data.testResultsPage.content,
-          disabledFeatureDiseaseList,
-          filterParams
-        );
+        const csvResults = parseDataForCSV(data.resultsPage.content);
         setResults(csvResults);
       } catch (e) {
         showError("Error creating results file to download");

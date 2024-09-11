@@ -308,6 +308,15 @@ type TestResultsPage {
   content: [TestResult]
 }
 
+type AskOnEntrySurvey {
+  pregnancy: String
+  syphilisHistory: String
+  symptoms: String
+  symptomOnset: LocalDate
+  noSymptoms: Boolean
+  genderOfSexualPartners: [String]
+}
+
 type Result {
   id: ID!
   facility: Facility!
@@ -321,6 +330,7 @@ type Result {
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser
+  surveyData: AskOnEntrySurvey
 }
 
 type ResultsPage {

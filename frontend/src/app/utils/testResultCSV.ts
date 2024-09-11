@@ -1,17 +1,14 @@
 import moment from "moment";
 
 import { byDateTested } from "../testResults/viewResults/TestResultsList";
-import { MULTIPLEX_DISEASES } from "../testResults/constants";
-import { GetFacilityResultsForCsvWithCountQuery } from "../../generated/graphql";
+import { GetResultsForDownloadQuery } from "../../generated/graphql";
 
 import { hasSymptomsForView, symptomsStringToArray } from "./symptoms";
 
 import { displayFullName, facilityDisplayName } from "./index";
 
 export type QueriedTestResult = NonNullable<
-  NonNullable<
-    GetFacilityResultsForCsvWithCountQuery["testResultsPage"]
-  >["content"]
+  NonNullable<GetResultsForDownloadQuery["resultsPage"]>["content"]
 >[number];
 
 const resultCSVHeadersString = [
@@ -74,18 +71,16 @@ export type ResultCsvRow =
         | undefined;
     };
 
-export function parseDataForCSV(
-  data: QueriedTestResult[],
-  excludedDiseases: MULTIPLEX_DISEASES[] = [],
-  filterParams?: FilterParams
-): ResultCsvRow[] {
+export function parseDataForCSV(data: QueriedTestResult[]): ResultCsvRow[] {
   let csvRows: ResultCsvRow[] = [];
   data.sort(byDateTested).forEach((r: QueriedTestResult) => {
-    const symptomList = r?.symptoms ? symptomsStringToArray(r.symptoms) : [];
+    const symptomList = r?.surveyData?.symptoms
+      ? symptomsStringToArray(r.surveyData.symptoms)
+      : [];
 
     const swabTypes = r?.deviceType?.swabTypes ?? [];
 
-    const csvOrderedColumns1: Partial<ResultCsvRow> = {
+    const resultRow: ResultCsvRow = {
       "Patient first name": r?.patient?.firstName,
       "Patient middle name": r?.patient?.middleName,
       "Patient last name": r?.patient?.lastName,
@@ -98,8 +93,8 @@ export function parseDataForCSV(
         "MM/DD/YYYY"
       ),
       "Test date": moment(r?.dateTested).format("MM/DD/YYYY h:mma"),
-    };
-    const csvOrderedColumns2: Partial<ResultCsvRow> = {
+      Condition: r?.disease,
+      Result: r?.testResult,
       "Result reported date": moment(r?.dateUpdated).format("MM/DD/YYYY h:mma"),
       "Test correction status": r?.correctionStatus,
       "Test correction reason": r?.reasonForCorrection,
@@ -108,12 +103,12 @@ export function parseDataForCSV(
       "Device model": r?.deviceType?.model,
       "Device swab type": swabTypes.length > 0 ? swabTypes[0].name : "",
       "Has symptoms": hasSymptomsForView(
-        r?.noSymptoms ?? false,
-        r?.symptoms ?? "{}"
+        r?.surveyData?.noSymptoms ?? false,
+        r?.surveyData?.symptoms ?? "{}"
       ),
       "Symptoms present":
         symptomList.length > 0 ? symptomList.join(", ") : "No symptoms",
-      "Symptom onset": moment(r?.symptomOnset).format("MM/DD/YYYY"),
+      "Symptom onset": moment(r?.surveyData?.symptomOnset).format("MM/DD/YYYY"),
       "Facility name": facilityDisplayName(
         r?.facility?.name ?? "",
         r?.facility?.isDeleted ?? false
@@ -126,7 +121,7 @@ export function parseDataForCSV(
       "Patient role": r?.patient?.role,
       "Patient ID (Student ID, Employee ID, etc.)": r?.patient?.lookupId,
       "Patient preferred language": r?.patient?.preferredLanguage,
-      "Patient phone number": r?.patient?.telephone,
+      "Patient phone number": r?.patient?.phoneNumbers?.at(0)?.number ?? "",
       "Patient email": r?.patient?.email,
       "Patient street address": r?.patient?.street,
       "Patient street address 2": r?.patient?.streetTwo,
@@ -144,29 +139,7 @@ export function parseDataForCSV(
         r?.patient?.residentCongregateSetting,
       "Patient is employed in healthcare": r?.patient?.employedInHealthcare,
     };
-
-    // individual rows for each result on a single test event
-    r?.results?.forEach((result) => {
-      if (
-        excludedDiseases.some(
-          (d) => d.toLowerCase() === result?.disease.name.toLowerCase()
-        ) ||
-        (filterParams?.disease &&
-          result?.disease.name.toLowerCase() !==
-            filterParams.disease.toLowerCase())
-      ) {
-        return;
-      }
-      const csvConditionData = {
-        Condition: result?.disease.name,
-        Result: result?.testResult ?? "Unknown",
-      };
-      csvRows.push({
-        ...csvOrderedColumns1,
-        ...csvConditionData,
-        ...csvOrderedColumns2,
-      } as ResultCsvRow);
-    });
+    csvRows.push(resultRow);
   });
   return csvRows;
 }

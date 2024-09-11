@@ -3,9 +3,51 @@ import { MockedProvider } from "@apollo/client/testing";
 import ReactDOM from "react-dom";
 import userEvent from "@testing-library/user-event";
 
-import { GetFacilityResultsForCsvWithCountDocument } from "../../../generated/graphql";
+import { GetResultsForDownloadDocument } from "../../../generated/graphql";
+import { QueriedTestResult } from "../../utils/testResultCSV";
 
 import { DownloadResultsCsvModal } from "./DownloadResultsCsvModal";
+
+const mockedQueriedTestResults: QueriedTestResult[] = [
+  {
+    id: "1259eb00-1ec6-4611-83ee-d6a988687c5f",
+    dateAdded: "2023-02-28T14:35:13.975Z",
+    patient: {},
+    createdBy: {
+      nameInfo: {
+        firstName: "",
+        middleName: "",
+        lastName: "",
+      },
+    },
+    facility: {
+      name: "1677594642-Russel - Mann",
+      isDeleted: null,
+      __typename: "Facility",
+    },
+    dateTested: "2023-02-28T14:35:13.975Z",
+    dateUpdated: "2023-02-28T14:35:13.975Z",
+    testResult: "UNDETERMINED",
+    disease: "COVID-19",
+    correctionStatus: "ORIGINAL",
+    reasonForCorrection: null,
+    surveyData: {
+      noSymptoms: false,
+      symptoms: '{"64531003":"false"}',
+    },
+    deviceType: {
+      name: "Abbott IDNow",
+      manufacturer: "Abbott",
+      model: "ID Now",
+      swabTypes: [
+        {
+          internalId: "445297001",
+          name: "445297001",
+        },
+      ],
+    },
+  },
+];
 
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
 const graphqlMocks = [
@@ -16,43 +58,13 @@ const graphqlMocks = [
         pageNumber: 0,
         pageSize: 1,
       },
-      query: GetFacilityResultsForCsvWithCountDocument,
+      query: GetResultsForDownloadDocument,
       fetchPolicy: "no-cache",
     },
     result: {
       data: {
-        testResultsPage: {
-          content: [
-            {
-              patient: {},
-              createdBy: { nameInfo: {} },
-              noSymptoms: false,
-              symptoms: '{"64531003":"false"}',
-              facility: {
-                name: "1677594642-Russel - Mann",
-                isDeleted: null,
-                __typename: "Facility",
-              },
-              dateTested: "2023-02-28T14:35:13.975Z",
-              dateUpdated: "2023-02-28T14:35:13.975Z",
-              results: [
-                {
-                  disease: { name: "COVID-19", __typename: "SupportedDisease" },
-                  testResult: "UNDETERMINED",
-                  __typename: "MultiplexResult",
-                },
-              ],
-              correctionStatus: "ORIGINAL",
-              reasonForCorrection: null,
-              deviceType: {
-                name: "Abbott IDNow",
-                manufacturer: "Abbott",
-                model: "ID Now",
-                swabType: "445297001",
-                __typename: "DeviceType",
-              },
-            },
-          ],
+        resultsPage: {
+          content: mockedQueriedTestResults,
           totalElements: 1,
         },
       },
