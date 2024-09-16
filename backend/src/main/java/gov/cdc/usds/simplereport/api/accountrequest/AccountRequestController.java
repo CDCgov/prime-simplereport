@@ -51,13 +51,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class AccountRequestController {
-  private final OrganizationService _os;
-  private final OrganizationQueueService _oqs;
-  private final ApiUserService _aus;
-  private final DbAuthorizationService _das;
-  private final EmailService _es;
-  private final FeatureFlagsConfig _ffc;
-  private final SendGridProperties sendGridProperties;
+  private final OrganizationService _orgService;
+  private final OrganizationQueueService _orgQueueService;
+  private final ApiUserService _apiUserService;
+  private final DbAuthorizationService _dbAuthService;
+  private final EmailService _emailService;
+  private final FeatureFlagsConfig _featureFlagsConfig;
+  private final SendGridProperties _sendGridProperties;
   private final ObjectMapper objectMapper = new ObjectMapper();
   private final OktaRepository _oktaRepo;
 
@@ -86,7 +86,7 @@ public class AccountRequestController {
       log.info("Waitlist request submitted: {}", sanitizedLog);
     }
     String subject = "New waitlist request";
-    _es.send(sendGridProperties.getWaitlistRecipient(), subject, request);
+    _emailService.send(_sendGridProperties.getWaitlistRecipient(), subject, request);
   }
 
   @SuppressWarnings("checkstyle:illegalcatch")
@@ -104,13 +104,13 @@ public class AccountRequestController {
           OrganizationUtils.generateOrgExternalId(organizationName, parsedStateCode);
 
       String requestEmail = Translators.parseEmail(request.getEmail());
-      boolean userExists = _aus.userExists(requestEmail);
+      boolean userExists = _apiUserService.userExists(requestEmail);
       if (userExists) {
         throw new BadRequestException(
             "This email address is already associated with a SimpleReport user.");
       }
 
-      OrganizationQueueItem item = _oqs.queueNewRequest(organizationName, orgExternalId, request);
+      OrganizationQueueItem item = _orgQueueService.queueNewRequest(organizationName, orgExternalId, request);
 
       return new AccountResponse(item.getExternalId());
     } catch (BadRequestException e) {
@@ -131,7 +131,7 @@ public class AccountRequestController {
     }
     organizationName = organizationName.replaceAll("\\s{2,}", " ");
 
-    List<Organization> potentialDuplicates = _os.getOrganizationsByName(organizationName);
+    List<Organization> potentialDuplicates = _orgService.getOrganizationsByName(organizationName);
     // Not a duplicate org, can be safely created
     if (potentialDuplicates.isEmpty()) {
       return organizationName;
@@ -165,9 +165,8 @@ public class AccountRequestController {
 
   private List<String> getOrgAdminUserEmails(Organization org) {
     List<String> adminUserEmails;
-    if (_ffc.isOktaMigrationEnabled()) {
-      adminUserEmails =
-          _das.getOrgAdminUsers(org).stream()
+    if (_featureFlagsConfig.isOktaMigrationEnabled()) {
+      adminUserEmails = _dbAuthService.getOrgAdminUsers(org).stream()
               .map(ApiUser::getLoginEmail)
               .collect(Collectors.toList());
     } else {

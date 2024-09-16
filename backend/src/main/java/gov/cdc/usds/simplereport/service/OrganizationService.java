@@ -491,15 +491,15 @@ public class OrganizationService {
         this.getFacilityById(facilityId)
             .orElseThrow(() -> new IllegalGraphqlArgumentException("Facility not found."));
 
-    Integer userWithSingleFacilityAccess;
+    Integer usersWithSingleFacilityAccess;
     if (featureFlagsConfig.isOktaMigrationEnabled()) {
-      userWithSingleFacilityAccess =
-          dbAuthorizationService.getUserWithSingleFacilityAccessCount(facility);
+      usersWithSingleFacilityAccess =
+          dbAuthorizationService.getUsersWithSingleFacilityAccessCount(facility);
     } else {
-      userWithSingleFacilityAccess = this.oktaRepository.getUsersInSingleFacility(facility);
+      usersWithSingleFacilityAccess = this.oktaRepository.getUsersInSingleFacility(facility);
     }
     return FacilityStats.builder()
-        .usersSingleAccessCount(userWithSingleFacilityAccess)
+        .usersSingleAccessCount(usersWithSingleFacilityAccess)
         .patientsSingleAccessCount(
             this.personRepository.countByFacilityAndIsDeleted(facility, false))
         .build();

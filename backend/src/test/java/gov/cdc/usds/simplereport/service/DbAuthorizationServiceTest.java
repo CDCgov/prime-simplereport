@@ -66,7 +66,7 @@ class DbAuthorizationServiceTest extends BaseServiceTest<DbAuthorizationService>
 
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
-  void getUserWithSingleFacilityAccessCount_success() {
+  void getUsersWithSingleFacilityAccessCount_success() {
     Organization org = _dataFactory.saveOrganization("ABC org", "k12", "ABC_ORG", true);
     Facility fac1 = _dataFactory.createValidFacility(org, "BCD Facility");
     Facility fac2 = _dataFactory.createValidFacility(org, "CDE Facility");
@@ -79,17 +79,17 @@ class DbAuthorizationServiceTest extends BaseServiceTest<DbAuthorizationService>
         _dataFactory.createValidApiUser("user5@example.com", org, Role.USER, Set.of(fac1));
 
     // ADMIN not counted
-    Integer firstCount = _service.getUserWithSingleFacilityAccessCount(fac1);
+    Integer firstCount = _service.getUsersWithSingleFacilityAccessCount(fac1);
     assertEquals(3, firstCount);
 
     // DELETED user not counted
     _userService.setIsDeleted(user4.getInternalId(), true);
-    Integer secondCount = _service.getUserWithSingleFacilityAccessCount(fac1);
+    Integer secondCount = _service.getUsersWithSingleFacilityAccessCount(fac1);
     assertEquals(2, secondCount);
 
     // ALL_FACILITIES user not counted
     _userService.updateUserPrivileges(user5.getInternalId(), true, Set.of(), Role.USER);
-    Integer thirdCount = _service.getUserWithSingleFacilityAccessCount(fac1);
+    Integer thirdCount = _service.getUsersWithSingleFacilityAccessCount(fac1);
     assertEquals(1, thirdCount);
   }
 }

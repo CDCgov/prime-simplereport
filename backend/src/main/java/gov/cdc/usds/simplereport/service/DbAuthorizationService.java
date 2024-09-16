@@ -48,7 +48,7 @@ public class DbAuthorizationService {
    * @param facility - Facility to get count for
    * @return Integer - count of ApiUsers
    */
-  public Integer getUserWithSingleFacilityAccessCount(Facility facility) {
+  public Integer getUsersWithSingleFacilityAccessCount(Facility facility) {
     List<ApiUser> users = _userRepo.findAllBySingleFacilityAccess(facility);
     return users.stream()
         .filter(user -> user.getFacilities().size() <= 1)
