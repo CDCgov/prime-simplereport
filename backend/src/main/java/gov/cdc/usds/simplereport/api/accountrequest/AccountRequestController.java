@@ -110,7 +110,8 @@ public class AccountRequestController {
             "This email address is already associated with a SimpleReport user.");
       }
 
-      OrganizationQueueItem item = _orgQueueService.queueNewRequest(organizationName, orgExternalId, request);
+      OrganizationQueueItem item =
+          _orgQueueService.queueNewRequest(organizationName, orgExternalId, request);
 
       return new AccountResponse(item.getExternalId());
     } catch (BadRequestException e) {
@@ -166,7 +167,8 @@ public class AccountRequestController {
   private List<String> getOrgAdminUserEmails(Organization org) {
     List<String> adminUserEmails;
     if (_featureFlagsConfig.isOktaMigrationEnabled()) {
-      adminUserEmails = _dbAuthService.getOrgAdminUsers(org).stream()
+      adminUserEmails =
+          _dbAuthService.getOrgAdminUsers(org).stream()
               .map(ApiUser::getLoginEmail)
               .collect(Collectors.toList());
     } else {
