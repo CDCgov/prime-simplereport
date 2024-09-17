@@ -5643,3 +5643,26 @@ databaseChangeLog:
         - dropColumn:
             tableName: test_order
             columnName: timer_started_at
+
+  - changeSet:
+      id: create-facility_providers-table
+      author: bobby@skylight.digital
+      changes:
+        - createTable:
+            tableName: facility_providers
+            remarks: Many-to-many table for multiple providers configuration at a facility.
+            columns:
+              - column:
+                  name: facility_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_providers__facility
+                    references: facility
+              - column:
+                  name: provider_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_providers__provider
+                    references: provider
