@@ -5666,3 +5666,6 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__facility_providers__provider
                     references: provider
+      rollback:
+        - dropTable:
+            tableName: facility_providers
