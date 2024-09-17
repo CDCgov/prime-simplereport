@@ -5648,6 +5648,8 @@ databaseChangeLog:
       id: create-facility_providers-table
       author: bobby@skylight.digital
       changes:
+        - tagDatabase:
+            tag: add-facility-providers-table
         - createTable:
             tableName: facility_providers
             remarks: Many-to-many table for multiple providers configuration at a facility.
