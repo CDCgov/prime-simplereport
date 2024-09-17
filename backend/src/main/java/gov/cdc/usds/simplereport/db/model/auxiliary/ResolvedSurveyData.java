@@ -13,7 +13,7 @@ public class ResolvedSurveyData {
   private String syphilisHistory;
   private String symptoms;
   private Boolean noSymptoms;
-  private LocalDate symptomOnsetDate;
+  private LocalDate symptomOnset;
   private List<String> genderOfSexualPartners;
 
   public ResolvedSurveyData(AskOnEntrySurvey surveyData) {
@@ -21,7 +21,7 @@ public class ResolvedSurveyData {
     this.syphilisHistory = surveyData.getSyphilisHistory();
     this.symptoms = surveyData.getSymptomsJSON();
     this.noSymptoms = surveyData.getNoSymptoms();
-    this.symptomOnsetDate = surveyData.getSymptomOnsetDate();
+    this.symptomOnset = surveyData.getSymptomOnsetDate();
     this.genderOfSexualPartners = surveyData.getGenderOfSexualPartners();
   }
 }
