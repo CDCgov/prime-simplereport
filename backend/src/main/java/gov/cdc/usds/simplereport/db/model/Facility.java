@@ -130,7 +130,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.setDefaultOrderingProvider(null);
   }
 
-  public void addDeviceType(Provider provider) {
+  public void addOrderingProvider(Provider provider) {
     configuredOrderingProviders.add(provider);
   }
 
@@ -140,10 +140,10 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
         .collect(Collectors.toList());
   }
 
-  public void removeProvider(Provider deletedProvider) {
+  public void removeOrderingProvider(Provider deletedProvider) {
     this.configuredOrderingProviders.remove(deletedProvider);
 
-    // If the corresponding device to a facility's default device swab type is removed,
+    // If the corresponding provider to a facility's default provider is removed,
     // set default to null
     if (this.getDefaultOrderingProvider() != null
         && this.getDefaultOrderingProvider()
