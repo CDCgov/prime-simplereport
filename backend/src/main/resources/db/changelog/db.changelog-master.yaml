@@ -5671,3 +5671,19 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: facility_providers
+
+  - changeSet:
+      id: add-facility-relationships
+      author: bwarfield@cdc.gov
+      comment: Add relationships and otherwise modify other tables in the schema to reflect the existence of facilities.
+      changes:
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_ordering_provider
+                  remarks: The default ordering provider (if any) for tests at this facility.
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk__facility__default_ordering_provider
+                    references: provider
