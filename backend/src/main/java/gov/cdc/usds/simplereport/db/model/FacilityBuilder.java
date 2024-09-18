@@ -19,5 +19,5 @@ public class FacilityBuilder {
   DeviceType defaultDeviceType;
   SpecimenType defaultSpecimenType;
   List<DeviceType> configuredDevices;
-  List<Provider> configuredProviders;
+  List<Provider> configuredOrderingProviders;
 }
