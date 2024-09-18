@@ -44,7 +44,7 @@ const Consent = () => {
             To create a SimpleReport account, you’ll need to agree to identity
             verification. The identity verification service we use is done by{" "}
             <a
-              href="https://www.experian.com/decision-analytics/identity-proofing"
+              href="https://www.experian.com/business/solutions/identity-solutions/identity-proofing"
               target="_blank"
               rel="noopener noreferrer"
             >
