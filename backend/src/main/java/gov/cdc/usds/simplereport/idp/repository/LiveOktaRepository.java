@@ -576,6 +576,13 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   @Override
+  public String activateUser(String username) {
+    User oktaUser =
+        getUserOrThrowError(username, "Cannot activate Okta user with unrecognized username");
+    return activateUser(oktaUser);
+  }
+
+  @Override
   public void activateOrganization(Organization org) {
     var users = getOrgAdminUsers(org);
     for (User u : users) {

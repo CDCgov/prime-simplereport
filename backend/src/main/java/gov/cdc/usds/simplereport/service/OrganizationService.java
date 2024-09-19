@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -53,14 +54,16 @@ public class OrganizationService {
   private final OrganizationRepository organizationRepository;
   private final FacilityRepository facilityRepository;
   private final ProviderRepository providerRepository;
-  private final AuthorizationService authorizationService;
   private final PersonRepository personRepository;
   private final OktaRepository oktaRepository;
   private final CurrentOrganizationRolesContextHolder organizationRolesContext;
   private final OrderingProviderRequiredValidator orderingProviderValidator;
+  private final AuthorizationService authorizationService;
+  private final DbAuthorizationService dbAuthorizationService;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
   private final EmailService emailService;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   public void resetOrganizationRolesContext() {
     organizationRolesContext.reset();
@@ -346,7 +349,14 @@ public class OrganizationService {
     org.setIdentityVerified(verified);
     boolean newStatus = organizationRepository.save(org).getIdentityVerified();
     if (oldStatus == false && newStatus == true) {
-      oktaRepository.activateOrganization(org);
+      if (featureFlagsConfig.isOktaMigrationEnabled()) {
+        List<ApiUser> orgAdmins = dbAuthorizationService.getOrgAdminUsers(org);
+        for (ApiUser orgAdmin : orgAdmins) {
+          oktaRepository.activateUser(orgAdmin.getLoginEmail());
+        }
+      } else {
+        oktaRepository.activateOrganization(org);
+      }
     }
     return newStatus;
   }
@@ -364,7 +374,19 @@ public class OrganizationService {
     }
     org.setIdentityVerified(true);
     organizationRepository.save(org);
-    return oktaRepository.activateOrganizationWithSingleUser(org);
+    if (featureFlagsConfig.isOktaMigrationEnabled()) {
+      Optional<ApiUser> orgAdmin =
+          dbAuthorizationService.getOrgAdminUsers(org).stream().findFirst();
+
+      if (orgAdmin.isPresent()) {
+        String orgAdminEmail = orgAdmin.get().getLoginEmail();
+        return oktaRepository.activateUser(orgAdminEmail);
+      } else {
+        throw new IllegalStateException("Organization does not have any org admins.");
+      }
+    } else {
+      return oktaRepository.activateOrganizationWithSingleUser(org);
+    }
   }
 
   private Facility createFacilityNoPermissions(
@@ -469,8 +491,15 @@ public class OrganizationService {
         this.getFacilityById(facilityId)
             .orElseThrow(() -> new IllegalGraphqlArgumentException("Facility not found."));
 
+    Integer usersWithSingleFacilityAccess;
+    if (featureFlagsConfig.isOktaMigrationEnabled()) {
+      usersWithSingleFacilityAccess =
+          dbAuthorizationService.getUsersWithSingleFacilityAccessCount(facility);
+    } else {
+      usersWithSingleFacilityAccess = this.oktaRepository.getUsersInSingleFacility(facility);
+    }
     return FacilityStats.builder()
-        .usersSingleAccessCount(this.oktaRepository.getUsersInSingleFacility(facility))
+        .usersSingleAccessCount(usersWithSingleFacilityAccess)
         .patientsSingleAccessCount(
             this.personRepository.countByFacilityAndIsDeleted(facility, false))
         .build();
@@ -487,21 +516,30 @@ public class OrganizationService {
       log.warn(String.format("Organization with internal id %s not found", orgId));
       return List.of();
     }
-    List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
-    return adminUserEmails.stream()
-        .map(
-            adminUserEmail -> {
-              Optional<ApiUser> foundUser = apiUserRepository.findByLoginEmail(adminUserEmail);
-              if (foundUser.isEmpty()) {
-                log.warn(
-                    "Query for admin users in organization "
-                        + org.getInternalId()
-                        + " found a user in Okta but not in the database. Skipping...");
-              }
-              return foundUser.orElse(null);
-            })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
+    List<ApiUser> adminUsers;
+
+    if (featureFlagsConfig.isOktaMigrationEnabled()) {
+      adminUsers = dbAuthorizationService.getOrgAdminUsers(org);
+    } else {
+      List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
+      adminUsers =
+          adminUserEmails.stream()
+              .map(
+                  adminUserEmail -> {
+                    Optional<ApiUser> foundUser =
+                        apiUserRepository.findByLoginEmail(adminUserEmail);
+                    if (foundUser.isEmpty()) {
+                      log.warn(
+                          "Query for admin users in organization "
+                              + org.getInternalId()
+                              + " found a user in Okta but not in the database. Skipping...");
+                    }
+                    return foundUser.orElse(null);
+                  })
+              .filter(Objects::nonNull)
+              .collect(Collectors.toList());
+    }
+    return adminUsers;
   }
 
   private List<String> getOrgAdminUserEmails(UUID orgId) {

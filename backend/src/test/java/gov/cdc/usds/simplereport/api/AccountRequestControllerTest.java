@@ -19,10 +19,13 @@ import com.jayway.jsonpath.JsonPath;
 import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.DbAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
@@ -57,6 +60,8 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   @MockBean private DemoOktaRepository _oktaRepo;
   @MockBean private OrganizationService _orgService;
   @MockBean private OrganizationQueueService _orgQueueService;
+  @MockBean private DbAuthorizationService _dbAuthService;
+  @MockBean private FeatureFlagsConfig _featureFlagsConfig;
 
   @Captor private ArgumentCaptor<TemplateVariablesProvider> contentCaptor;
   @Captor private ArgumentCaptor<Mail> mail;
@@ -370,8 +375,10 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  @DisplayName("Duplicate org with admin re-signing up fails")
-  void submitOrganizationAccountRequestAddToQueue_duplicateOrgWithAdmin_failure() throws Exception {
+  @DisplayName("OktaMigrationEnabled false - Duplicate org with admin re-signing up fails")
+  void
+      submitOrganizationAccountRequestAddToQueue_duplicateOrgWithAdmin_withOktaMigrationDisabled_failure()
+          throws Exception {
     // given
     mockVerifiedOrganization("Central Schools", "AZ", "mlopez@mailinator.com");
 
@@ -396,6 +403,44 @@ class AccountRequestControllerTest extends BaseFullStackTest {
 
     // then
     MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
+    verify(_dbAuthService, times(0)).getOrgAdminUsers(any());
+    assertThat(result.getResponse().getStatus()).isEqualTo(400);
+    assertThat(result.getResponse().getContentAsString())
+        .contains(
+            "Duplicate organization with admin user who has completed identity verification.");
+  }
+
+  @Test
+  @DisplayName("OktaMigrationEnabled true - Duplicate org with admin re-signing up fails")
+  void
+      submitOrganizationAccountRequestAddToQueue_duplicateOrgWithAdmin_withOktaMigrationEnabled_failure()
+          throws Exception {
+    // given
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    mockVerifiedOrganization("Central Schools", "AZ", "mlopez@mailinator.com");
+
+    // when
+    String duplicateRequestBody =
+        createAccountRequest(
+            "Central Schools",
+            "AZ",
+            "k12",
+            "Mary",
+            "",
+            "Lopez",
+            "mlopez@mailinator.com",
+            "+1 (969) 768-2863");
+
+    MockHttpServletRequestBuilder duplicateBuilder =
+        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(duplicateRequestBody);
+
+    // then
+    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
+    verify(_dbAuthService, times(1)).getOrgAdminUsers(any());
     assertThat(result.getResponse().getStatus()).isEqualTo(400);
     assertThat(result.getResponse().getContentAsString())
         .contains(
@@ -459,12 +504,15 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     String generatedExternalId =
         String.format("%s-%s-%s", state, orgNameNoSpaces, UUID.randomUUID());
     Organization org = mock(Organization.class);
+    ApiUser user = mock(ApiUser.class);
+    when(user.getLoginEmail()).thenReturn(email);
     when(org.getExternalId()).thenReturn(generatedExternalId);
     when(org.getIdentityVerified()).thenReturn(true);
 
     when(_orgService.getOrganizationsByName(argThat(equalToIgnoringCase(orgName))))
         .thenReturn(List.of(org));
     when(_oktaRepo.fetchAdminUserEmail(org)).thenReturn(List.of(email));
+    when(_dbAuthService.getOrgAdminUsers(org)).thenReturn(List.of(user));
   }
 
   private void mockVerifiedDefaultOrganization() throws Exception {

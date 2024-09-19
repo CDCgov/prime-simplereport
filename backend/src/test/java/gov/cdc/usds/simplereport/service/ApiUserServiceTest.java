@@ -77,7 +77,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   // no-security and no-okta-mgmt profiles
   @Test
   @WithSimpleReportOrgAdminUser
-  void getUsersInCurrentOrg_adminUser_success() {
+  void getUsersInCurrentOrg_withAdminUser_withOktaMigrationDisabled_success() {
     initSampleData();
     List<ApiUser> users = _service.getUsersInCurrentOrg();
     assertEquals(6, users.size());
@@ -93,6 +93,33 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     assertEquals("Reynolds", users.get(4).getNameInfo().getLastName());
     assertEquals("allfacilities@example.com", users.get(5).getLoginEmail());
     assertEquals("Williams", users.get(5).getNameInfo().getLastName());
+
+    Organization currentOrg = _organizationService.getCurrentOrganization();
+    verify(_oktaRepo, times(1)).getAllUsersForOrganization(currentOrg);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getUsersInCurrentOrg_withAdminUser_withOktaMigrationEnabled_success() {
+    initSampleData();
+    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+
+    List<ApiUser> users = _service.getUsersInCurrentOrg();
+    assertEquals(6, users.size());
+    assertEquals("admin@example.com", users.get(0).getLoginEmail());
+    assertEquals("Andrews", users.get(0).getNameInfo().getLastName());
+    assertEquals("bobbity@example.com", users.get(1).getLoginEmail());
+    assertEquals("Bobberoo", users.get(1).getNameInfo().getLastName());
+    assertEquals("invalid@example.com", users.get(2).getLoginEmail());
+    assertEquals("Irwin", users.get(2).getNameInfo().getLastName());
+    assertEquals("nobody@example.com", users.get(3).getLoginEmail());
+    assertEquals("Nixon", users.get(3).getNameInfo().getLastName());
+    assertEquals("notruby@example.com", users.get(4).getLoginEmail());
+    assertEquals("Reynolds", users.get(4).getNameInfo().getLastName());
+    assertEquals("allfacilities@example.com", users.get(5).getLoginEmail());
+    assertEquals("Williams", users.get(5).getNameInfo().getLastName());
+
+    verify(_oktaRepo, times(0)).getAllUsersForOrganization(any());
   }
 
   @Test

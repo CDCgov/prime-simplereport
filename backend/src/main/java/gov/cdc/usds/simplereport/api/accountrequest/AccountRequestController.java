@@ -12,11 +12,14 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountReq
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.DbAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -27,6 +30,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.owasp.encoder.Encode;
@@ -47,11 +51,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class AccountRequestController {
-  private final OrganizationService _os;
-  private final OrganizationQueueService _oqs;
-  private final ApiUserService _aus;
-  private final EmailService _es;
-  private final SendGridProperties sendGridProperties;
+  private final OrganizationService _orgService;
+  private final OrganizationQueueService _orgQueueService;
+  private final ApiUserService _apiUserService;
+  private final DbAuthorizationService _dbAuthService;
+  private final EmailService _emailService;
+  private final FeatureFlagsConfig _featureFlagsConfig;
+  private final SendGridProperties _sendGridProperties;
   private final ObjectMapper objectMapper = new ObjectMapper();
   private final OktaRepository _oktaRepo;
 
@@ -80,7 +86,7 @@ public class AccountRequestController {
       log.info("Waitlist request submitted: {}", sanitizedLog);
     }
     String subject = "New waitlist request";
-    _es.send(sendGridProperties.getWaitlistRecipient(), subject, request);
+    _emailService.send(_sendGridProperties.getWaitlistRecipient(), subject, request);
   }
 
   @SuppressWarnings("checkstyle:illegalcatch")
@@ -98,13 +104,14 @@ public class AccountRequestController {
           OrganizationUtils.generateOrgExternalId(organizationName, parsedStateCode);
 
       String requestEmail = Translators.parseEmail(request.getEmail());
-      boolean userExists = _aus.userExists(requestEmail);
+      boolean userExists = _apiUserService.userExists(requestEmail);
       if (userExists) {
         throw new BadRequestException(
             "This email address is already associated with a SimpleReport user.");
       }
 
-      OrganizationQueueItem item = _oqs.queueNewRequest(organizationName, orgExternalId, request);
+      OrganizationQueueItem item =
+          _orgQueueService.queueNewRequest(organizationName, orgExternalId, request);
 
       return new AccountResponse(item.getExternalId());
     } catch (BadRequestException e) {
@@ -125,7 +132,7 @@ public class AccountRequestController {
     }
     organizationName = organizationName.replaceAll("\\s{2,}", " ");
 
-    List<Organization> potentialDuplicates = _os.getOrganizationsByName(organizationName);
+    List<Organization> potentialDuplicates = _orgService.getOrganizationsByName(organizationName);
     // Not a duplicate org, can be safely created
     if (potentialDuplicates.isEmpty()) {
       return organizationName;
@@ -136,8 +143,9 @@ public class AccountRequestController {
       Optional<Organization> duplicateOrg =
           potentialDuplicates.stream().filter(o -> o.getExternalId().startsWith(state)).findFirst();
       if (duplicateOrg.isPresent()) {
-        if (_oktaRepo.fetchAdminUserEmail(duplicateOrg.get()).stream()
-            .anyMatch(Predicate.isEqual(email))) {
+        List<String> adminUserEmails = getOrgAdminUserEmails(duplicateOrg.get());
+
+        if (adminUserEmails.stream().anyMatch(Predicate.isEqual(email))) {
           // Special toasts are shown to admin users trying to re-register their org.
           String message =
               duplicateOrg.get().getIdentityVerified()
@@ -154,6 +162,19 @@ public class AccountRequestController {
     // Org can be created because it's not in the same state, but it gets a special org name to
     // distinguish it
     return String.join("-", organizationName, state);
+  }
+
+  private List<String> getOrgAdminUserEmails(Organization org) {
+    List<String> adminUserEmails;
+    if (_featureFlagsConfig.isOktaMigrationEnabled()) {
+      adminUserEmails =
+          _dbAuthService.getOrgAdminUsers(org).stream()
+              .map(ApiUser::getLoginEmail)
+              .collect(Collectors.toList());
+    } else {
+      adminUserEmails = _oktaRepo.fetchAdminUserEmail(org);
+    }
+    return adminUserEmails;
   }
 
   private void logOrganizationAccountRequest(@RequestBody @Valid OrganizationAccountRequest request)

@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -52,6 +53,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.AccessDeniedException;
@@ -70,6 +72,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Autowired ApiUserRepository _apiUserRepo;
   @Autowired private DemoUserConfiguration userConfiguration;
   @Autowired @SpyBean private EmailService emailService;
+  @Autowired @SpyBean private DbAuthorizationService dbAuthorizationService;
+  @Autowired @MockBean private FeatureFlagsConfig featureFlagsConfig;
 
   @BeforeEach
   void setupData() {
@@ -328,9 +332,43 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  void verifyOrganizationNoPermissions_noUser_success() {
+  void verifyOrganizationNoPermissions_noUser_withOktaMigrationDisabled_success() {
     Organization org = testDataFactory.saveUnverifiedOrganization();
     _service.verifyOrganizationNoPermissions(org.getExternalId());
+
+    org = _service.getOrganization(org.getExternalId());
+
+    verify(dbAuthorizationService, times(0)).getOrgAdminUsers(org);
+    verify(oktaRepository, times(1)).activateOrganizationWithSingleUser(org);
+    assertTrue(org.getIdentityVerified());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void verifyOrganizationNoPermissions_noUser_withOktaMigrationEnabled_throws() {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    Organization org = testDataFactory.saveUnverifiedOrganization();
+    String orgExternalId = org.getExternalId();
+
+    IllegalStateException e =
+        assertThrows(
+            IllegalStateException.class,
+            () -> _service.verifyOrganizationNoPermissions(orgExternalId));
+    assertEquals("Organization does not have any org admins.", e.getMessage());
+    verify(dbAuthorizationService, times(1)).getOrgAdminUsers(org);
+    verify(oktaRepository, times(0)).activateOrganizationWithSingleUser(org);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void verifyOrganizationNoPermissions_withUsers_withOktaMigrationEnabled_success() {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    Organization org = testDataFactory.saveUnverifiedOrganizationWithUser("fake@example.com");
+
+    _service.verifyOrganizationNoPermissions(org.getExternalId());
+    verify(dbAuthorizationService, times(1)).getOrgAdminUsers(org);
+    verify(oktaRepository, times(1)).activateUser("fake@example.com");
+    verify(oktaRepository, times(0)).activateOrganizationWithSingleUser(org);
 
     org = _service.getOrganization(org.getExternalId());
     assertTrue(org.getIdentityVerified());
@@ -346,6 +384,31 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             () -> _service.verifyOrganizationNoPermissions(orgExternalId));
 
     assertEquals("Organization is already verified.", e.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void setIdentityVerified_withOktaMigrationDisabled_success() {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
+    Organization unverifiedOrg = testDataFactory.saveUnverifiedOrganization();
+
+    boolean status = _service.setIdentityVerified(unverifiedOrg.getExternalId(), true);
+    verify(dbAuthorizationService, times(0)).getOrgAdminUsers(unverifiedOrg);
+    verify(oktaRepository, times(1)).activateOrganization(unverifiedOrg);
+    assertTrue(status);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void setIdentityVerified_withOktaMigrationEnabled_success() {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    Organization unverifiedOrg =
+        testDataFactory.saveUnverifiedOrganizationWithUser("fake@example.com");
+
+    boolean status = _service.setIdentityVerified(unverifiedOrg.getExternalId(), true);
+    verify(dbAuthorizationService, times(1)).getOrgAdminUsers(unverifiedOrg);
+    verify(oktaRepository, times(0)).activateOrganization(unverifiedOrg);
+    assertTrue(status);
   }
 
   @Test
@@ -393,15 +456,33 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getFacilityStats_success() {
+  void getFacilityStats_withOktaMigrationDisabled_success() {
     UUID facilityId = UUID.randomUUID();
     Facility mockFacility = mock(Facility.class);
     doReturn(Optional.of(mockFacility)).when(this.facilityRepository).findById(facilityId);
     doReturn(2).when(oktaRepository).getUsersInSingleFacility(mockFacility);
     doReturn(1).when(personRepository).countByFacilityAndIsDeleted(mockFacility, false);
     FacilityStats stats = _service.getFacilityStats(facilityId);
+
+    verify(dbAuthorizationService, times(0)).getUsersWithSingleFacilityAccessCount(mockFacility);
     assertEquals(2, stats.getUsersSingleAccessCount());
     assertEquals(1, stats.getPatientsSingleAccessCount());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilityStats_withOktaMigrationEnabled_success() {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    UUID facilityId = UUID.randomUUID();
+    Facility mockFacility = mock(Facility.class);
+    doReturn(Optional.of(mockFacility)).when(this.facilityRepository).findById(facilityId);
+    doReturn(4).when(dbAuthorizationService).getUsersWithSingleFacilityAccessCount(mockFacility);
+    doReturn(2).when(personRepository).countByFacilityAndIsDeleted(mockFacility, false);
+    FacilityStats stats = _service.getFacilityStats(facilityId);
+
+    verify(oktaRepository, times(0)).getUsersInSingleFacility(mockFacility);
+    assertEquals(4, stats.getUsersSingleAccessCount());
+    assertEquals(2, stats.getPatientsSingleAccessCount());
   }
 
   @Nested
@@ -512,9 +593,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertThat(adminIds).isEqualTo(expectedIds);
   }
 
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSVAsync_success() throws ExecutionException, InterruptedException {
+  private void sendOrgAdminEmailCSVAsyncTest() throws ExecutionException, InterruptedException {
     setupDataByFacility();
     String type = "facilities";
     reset(emailService);
@@ -543,6 +622,22 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     verify(emailService, times(1)).sendWithCSVAttachment(nonExistentOrgEmails, "PA", type);
     assertThat(nonExistentOrgEmails).isEmpty();
     reset(emailService);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void sendOrgAdminEmailCSVAsync_withOktaMigrationDisabled_success()
+      throws ExecutionException, InterruptedException {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
+    sendOrgAdminEmailCSVAsyncTest();
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void sendOrgAdminEmailCSVAsync_withOktaMigrationEnabled_success()
+      throws ExecutionException, InterruptedException {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    sendOrgAdminEmailCSVAsyncTest();
   }
 
   @Test

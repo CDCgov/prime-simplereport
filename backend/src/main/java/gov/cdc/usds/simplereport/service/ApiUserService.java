@@ -76,6 +76,8 @@ public class ApiUserService {
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
+  @Autowired private DbAuthorizationService _dbAuthService;
+
   @Autowired private DbOrgRoleClaimsService _dbOrgRoleClaimsService;
 
   @Autowired private FeatureFlagsConfig _featureFlagsConfig;
@@ -146,11 +148,9 @@ public class ApiUserService {
       throw new ConflictingUserException();
     }
 
-    OrganizationRoleClaims claims =
-        _oktaRepo
-            .getOrganizationRoleClaimsForUser(apiUser.getLoginEmail())
-            .orElseThrow(MisconfiguredUserException::new);
-    if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
+    String currentOrgExternalId = getOrgExternalId(apiUser);
+
+    if (!org.getExternalId().equals(currentOrgExternalId)) {
       throw new ConflictingUserException();
     }
 
@@ -160,20 +160,22 @@ public class ApiUserService {
 
     Set<OrganizationRole> roles = getOrganizationRoles(role, accessAllFacilities);
     Set<Facility> facilitiesFound = getFacilitiesToGiveAccess(org, roles, facilities);
-    Optional<OrganizationRoleClaims> oktaClaims =
-        _oktaRepo.updateUserPrivileges(apiUser.getLoginEmail(), org, facilitiesFound, roles);
-    Optional<OrganizationRoles> orgRoles = oktaClaims.map(c -> _orgService.getOrganizationRoles(c));
+    Optional<OrganizationRoles> updatedOrgRoles;
 
     apiUser.setNameInfo(name);
     apiUser.setIsDeleted(false);
     apiUser.setFacilities(facilitiesFound);
     apiUser.setRoles(roles, org);
 
+    Optional<OrganizationRoleClaims> oktaClaims =
+        _oktaRepo.updateUserPrivileges(apiUser.getLoginEmail(), org, facilitiesFound, roles);
+    updatedOrgRoles = oktaClaims.map(c -> _orgService.getOrganizationRoles(c));
+
     if (_featureFlagsConfig.isOktaMigrationEnabled()) {
-      orgRoles = Optional.ofNullable(getOrgRolesFromDB(apiUser));
+      updatedOrgRoles = Optional.ofNullable(getOrgRolesFromDB(apiUser));
     }
 
-    UserInfo user = new UserInfo(apiUser, orgRoles, false);
+    UserInfo user = new UserInfo(apiUser, updatedOrgRoles, false);
 
     log.info(
         "User with id={} re-provisioned by user with id={}",
@@ -247,14 +249,11 @@ public class ApiUserService {
       UUID userId, boolean accessAllFacilities, Set<UUID> facilities, Role role) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
-    OrganizationRoleClaims orgClaims =
-        _oktaRepo
-            .getOrganizationRoleClaimsForUser(username)
-            .orElseThrow(MisconfiguredUserException::new);
-    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+
+    String orgExternalId = getOrgExternalId(apiUser);
+    Organization org = _orgService.getOrganization(orgExternalId);
     Set<OrganizationRole> roles = getOrganizationRoles(role, accessAllFacilities);
     Set<Facility> facilitiesFound = getFacilitiesToGiveAccess(org, roles, facilities);
-
     Optional<OrganizationRoleClaims> newOrgClaims =
         _oktaRepo.updateUserPrivileges(username, org, facilitiesFound, roles);
     Optional<OrganizationRoles> orgRoles =
@@ -597,10 +596,17 @@ public class ApiUserService {
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<ApiUser> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-    final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
-    return _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+    List<ApiUser> usersInOrg;
+    if (_featureFlagsConfig.isOktaMigrationEnabled()) {
+      usersInOrg = _dbAuthService.getUsersInOrganization(org);
+    } else {
+      final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
+      usersInOrg = _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
+    }
+    return usersInOrg;
   }
 
+  // To be addressed in #8108
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<ApiUserWithStatus> getUsersAndStatusInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
@@ -828,5 +834,24 @@ public class ApiUserService {
     OrganizationRoleClaims orgRoleClaims =
         _dbOrgRoleClaimsService.getOrganizationRoleClaims(apiUser);
     return _orgService.getOrganizationRoles(orgRoleClaims);
+  }
+
+  private String getOrgExternalId(ApiUser apiUser) {
+    String orgExternalId;
+    if (_featureFlagsConfig.isOktaMigrationEnabled()) {
+      Optional<Organization> org = apiUser.getOrganizations().stream().findFirst();
+      if (org.isPresent()) {
+        orgExternalId = org.get().getExternalId();
+      } else {
+        throw new MisconfiguredUserException();
+      }
+    } else {
+      OrganizationRoleClaims claims =
+          _oktaRepo
+              .getOrganizationRoleClaimsForUser(apiUser.getLoginEmail())
+              .orElseThrow(MisconfiguredUserException::new);
+      orgExternalId = claims.getOrganizationExternalId();
+    }
+    return orgExternalId;
   }
 }

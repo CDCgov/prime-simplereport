@@ -152,6 +152,13 @@ public class TestDataFactory {
     return saveOrganization(TestDataBuilder.createUnverifiedOrganization());
   }
 
+  public Organization saveUnverifiedOrganizationWithUser(String adminUsername) {
+    Organization org = saveOrganization(TestDataBuilder.createUnverifiedOrganization());
+    createValidFacility(org);
+    createValidApiUser(adminUsername, org, Role.ADMIN);
+    return org;
+  }
+
   public UserInfo createValidApiUser(String username, Organization org) {
     return createValidApiUser(username, org, Role.USER);
   }

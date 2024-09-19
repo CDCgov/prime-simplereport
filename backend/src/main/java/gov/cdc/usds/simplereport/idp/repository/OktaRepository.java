@@ -71,6 +71,8 @@ public interface OktaRepository {
 
   void activateOrganization(Organization org);
 
+  String activateUser(String username);
+
   String activateOrganizationWithSingleUser(Organization org);
 
   List<String> fetchAdminUserEmail(Organization org);
