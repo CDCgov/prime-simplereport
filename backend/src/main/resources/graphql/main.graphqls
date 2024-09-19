@@ -331,6 +331,7 @@ type Result {
   reasonForCorrection: String
   createdBy: ApiUser
   surveyData: AskOnEntrySurvey
+  patientLink: PatientLink
 }
 
 type ResultsPage {
