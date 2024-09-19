@@ -931,6 +931,7 @@ export type Result = {
   facility: Facility;
   id: Scalars["ID"]["output"];
   patient: Patient;
+  patientLink?: Maybe<PatientLink>;
   reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
   surveyData?: Maybe<AskOnEntrySurvey>;
   testResult: Scalars["String"]["output"];
