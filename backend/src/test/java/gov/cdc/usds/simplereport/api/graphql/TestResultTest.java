@@ -177,18 +177,19 @@ class TestResultTest extends BaseGraphqlTest {
 
     assertTrue(testResults.has(0), "Has at least one submitted test result=");
     assertEquals(dateTested, testResults.get(0).get("dateTested").asText());
-    assertEquals("{\"25064002\":\"true\"}", testResults.get(0).get("symptoms").asText());
-    assertEquals("false", testResults.get(0).get("noSymptoms").asText());
-    assertEquals("77386006", testResults.get(0).get("pregnancy").asText());
-    assertEquals("2020-09-15", testResults.get(0).get("symptomOnset").asText());
-    assertEquals("[\"male\"]", testResults.get(0).get("genderOfSexualPartners").toString());
+    assertEquals(
+        "{\"25064002\":\"true\"}", testResults.get(0).get("surveyData").get("symptoms").asText());
+    assertEquals("false", testResults.get(0).get("surveyData").get("noSymptoms").asText());
+    assertEquals("77386006", testResults.get(0).get("surveyData").get("pregnancy").asText());
+    assertEquals("2020-09-15", testResults.get(0).get("surveyData").get("symptomOnset").asText());
+    assertEquals(
+        "[\"male\"]",
+        testResults.get(0).get("surveyData").get("genderOfSexualPartners").toString());
     testResults
-        .get(0)
-        .get("results")
         .elements()
         .forEachRemaining(
             r -> {
-              switch (r.get("disease").get("name").asText()) {
+              switch (r.get("disease").asText()) {
                 case "COVID-19":
                   assertEquals(TestResult.NEGATIVE.toString(), r.get("testResult").asText());
                   break;
@@ -199,7 +200,7 @@ class TestResultTest extends BaseGraphqlTest {
                   assertEquals(TestResult.UNDETERMINED.toString(), r.get("testResult").asText());
                   break;
                 default:
-                  fail("Unexpected disease=" + r.get("disease").get("name").asText());
+                  fail("Unexpected disease=" + r.get("disease").asText());
               }
             });
   }
@@ -279,8 +280,8 @@ class TestResultTest extends BaseGraphqlTest {
     updateSelfPrivileges(Role.USER, true, Set.of());
     ArrayNode testResults = fetchTestResults(fetchVariables);
     assertEquals(2, testResults.size());
-    UUID t1Id = UUID.fromString(testResults.get(0).get("internalId").asText());
-    UUID t2Id = UUID.fromString(testResults.get(1).get("internalId").asText());
+    UUID t1Id = UUID.fromString(testResults.get(0).get("id").asText());
+    UUID t2Id = UUID.fromString(testResults.get(1).get("id").asText());
 
     updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
 
@@ -506,13 +507,13 @@ class TestResultTest extends BaseGraphqlTest {
 
   private ArrayNode fetchTestResults(Map<String, Object> variables) {
     return (ArrayNode)
-        runQuery("test-results-with-count-query", variables).get("testResultsPage").get("content");
+        runQuery("test-results-with-count-query", variables).get("resultsPage").get("content");
   }
 
   private ArrayNode fetchTestResultsMultiplex(Map<String, Object> variables) {
     return (ArrayNode)
         runQuery("test-results-with-count-multiplex-query", variables)
-            .get("testResultsPage")
+            .get("resultsPage")
             .get("content");
   }
 
