@@ -63,9 +63,9 @@ jobs:
         if: ${{ matrix.env == 'prod' || matrix.env == 'stg' || matrix.env == 'training' }}
         run: |
           echo "OKTA_API_TOKEN=${{ secrets.OKTA_API_TOKEN }}" >> "$GITHUB_ENV"
-      - uses: hashicorp/setup-terraform@v3.1.1
+      - uses: hashicorp/setup-terraform@v3.1.2
         with:
-          terraform_version: 1.9.5
+          terraform_version: 1.9.6
       - name: Terraform Init
         run: make init-${{ matrix.env }}
       - name: Build ReportStream function app

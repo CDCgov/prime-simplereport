@@ -29,9 +29,9 @@ runs:
     - uses: azure/login@v1
       with:
         creds: ${{ inputs.azure_creds }}
-    - uses: hashicorp/setup-terraform@v3.1.1
+    - uses: hashicorp/setup-terraform@v3.1.2
       with:
-        terraform_version: 1.9.5
+        terraform_version: 1.9.6
     - name: Build ReportStream function app
       uses: ./.github/actions/build-reportstream-functions
       with:
