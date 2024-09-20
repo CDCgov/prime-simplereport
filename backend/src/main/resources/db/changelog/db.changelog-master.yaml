@@ -5702,3 +5702,17 @@ databaseChangeLog:
                 internal_id,
                 ordering_provider_id
               FROM ${database.defaultSchemaName}.facility;
+
+  - changeSet:
+      id: populate-default-provider-column
+      author: bobby@skylight.digital
+      changes:
+        - sql:
+            comment: Populate the default provider column with current provider
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.facility (
+                default_ordering_provider_id
+              )
+              SELECT
+                ordering_provider_id
+              FROM ${database.defaultSchemaName}.facility;
