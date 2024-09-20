@@ -208,7 +208,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   />
                 </div>
                 <div
-                  class="grid-container"
+                  class="grid-container sr-test-card-form-container"
                 >
                   <div
                     class="grid-row grid-gap"
@@ -602,7 +602,7 @@ exports[`TestQueue should render the test queue 1`] = `
                               <legend
                                 class="usa-legend"
                               >
-                                Is the patient currently experiencing any symptoms?
+                                Is the patient currently experiencing or showing signs of symptoms?
                               </legend>
                               <div
                                 class=""
@@ -1228,7 +1228,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   />
                 </div>
                 <div
-                  class="grid-container"
+                  class="grid-container sr-test-card-form-container"
                 >
                   <div
                     class="grid-row grid-gap"
@@ -1622,7 +1622,7 @@ exports[`TestQueue should render the test queue 1`] = `
                               <legend
                                 class="usa-legend"
                               >
-                                Is the patient currently experiencing any symptoms?
+                                Is the patient currently experiencing or showing signs of symptoms?
                               </legend>
                               <div
                                 class=""

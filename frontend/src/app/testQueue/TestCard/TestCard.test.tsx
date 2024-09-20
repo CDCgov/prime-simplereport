@@ -1147,7 +1147,7 @@ describe("TestCard", () => {
       ).toBeInTheDocument();
       expect(
         screen.queryByText(
-          "Is the patient currently experiencing any symptoms?"
+          "Is the patient currently experiencing or showing signs of symptoms?"
         )
       ).not.toBeInTheDocument();
     });
@@ -1227,7 +1227,9 @@ describe("TestCard", () => {
 
       expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
       expect(
-        screen.getByText("Is the patient currently experiencing any symptoms?")
+        screen.getByText(
+          "Is the patient currently experiencing or showing signs of symptoms?"
+        )
       ).toBeInTheDocument();
       expect(
         screen.getByText("What is the gender of their sexual partners?")
@@ -1258,7 +1260,7 @@ describe("TestCard", () => {
       ).not.toBeInTheDocument();
       expect(
         screen.queryByText(
-          "Is the patient currently experiencing any symptoms?"
+          "Is the patient currently experiencing or showing signs of symptoms?"
         )
       ).not.toBeInTheDocument();
       expect(
@@ -1280,7 +1282,7 @@ describe("TestCard", () => {
       ).not.toBeInTheDocument();
       expect(
         screen.queryByText(
-          "Is the patient currently experiencing any symptoms?"
+          "Is the patient currently experiencing or showing signs of symptoms?"
         )
       ).not.toBeInTheDocument();
       expect(

@@ -21,7 +21,7 @@ Object {
         />
       </div>
       <div
-        class="grid-container"
+        class="grid-container sr-test-card-form-container"
       >
         <div
           class="grid-row grid-gap"
@@ -416,7 +416,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Is the patient currently experiencing any symptoms?
+                      Is the patient currently experiencing or showing signs of symptoms?
                     </legend>
                     <div
                       class=""
@@ -539,7 +539,7 @@ Object {
       />
     </div>
     <div
-      class="grid-container"
+      class="grid-container sr-test-card-form-container"
     >
       <div
         class="grid-row grid-gap"
@@ -934,7 +934,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Is the patient currently experiencing any symptoms?
+                    Is the patient currently experiencing or showing signs of symptoms?
                   </legend>
                   <div
                     class=""
@@ -1124,7 +1124,7 @@ exports[`TestCardForm initial state matches snapshot for flu device 1`] = `
     />
   </div>
   <div
-    class="grid-container"
+    class="grid-container sr-test-card-form-container"
   >
     <div
       class="grid-row grid-gap"
@@ -1556,7 +1556,7 @@ Object {
         />
       </div>
       <div
-        class="grid-container"
+        class="grid-container sr-test-card-form-container"
       >
         <div
           class="grid-row grid-gap"
@@ -1831,7 +1831,7 @@ Object {
       />
     </div>
     <div
-      class="grid-container"
+      class="grid-container sr-test-card-form-container"
     >
       <div
         class="grid-row grid-gap"
@@ -2176,7 +2176,7 @@ Object {
         />
       </div>
       <div
-        class="grid-container"
+        class="grid-container sr-test-card-form-container"
       >
         <div
           class="grid-row grid-gap"
@@ -2726,7 +2726,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Is the patient currently experiencing any symptoms?
+                      Is the patient currently experiencing or showing signs of symptoms?
                     </legend>
                     <div
                       class=""
@@ -2849,7 +2849,7 @@ Object {
       />
     </div>
     <div
-      class="grid-container"
+      class="grid-container sr-test-card-form-container"
     >
       <div
         class="grid-row grid-gap"
@@ -3399,7 +3399,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Is the patient currently experiencing any symptoms?
+                    Is the patient currently experiencing or showing signs of symptoms?
                   </legend>
                   <div
                     class=""
@@ -3592,7 +3592,7 @@ Object {
         />
       </div>
       <div
-        class="grid-container"
+        class="grid-container sr-test-card-form-container"
       >
         <div
           class="grid-row grid-gap"
@@ -3803,105 +3803,18 @@ Object {
             id="syphillis-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
           >
             <div
-              class="grid-col-auto"
-            >
-              <div
-                class="usa-form-group"
-              >
-                <fieldset
-                  class="usa-fieldset prime-radios"
-                  data-testid="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                  id="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                >
-                  <legend
-                    class="usa-legend"
-                  >
-                    Has the patient been told they have syphilis before?
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
-                    >
-                       
-                      *
-                    </abbr>
-                  </legend>
-                  <div
-                    class=""
-                  >
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="21-val-1087151000119108"
-                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="1087151000119108"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-1087151000119108"
-                        for="21-val-1087151000119108"
-                      >
-                        Yes
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="21-val-14732006"
-                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="14732006"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-14732006"
-                        for="21-val-14732006"
-                      >
-                        No
-                      </label>
-                    </div>
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="true"
-                        id="21-val-261665006"
-                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                        type="radio"
-                        value="261665006"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
-                        for="21-val-261665006"
-                      >
-                        Prefer not to answer
-                      </label>
-                    </div>
-                  </div>
-                </fieldset>
-              </div>
-            </div>
-            <div
               class="grid-row"
             >
               <div
-                class="tablet:grid-col-6"
+                class="grid-col-12 desktop:grid-col-6"
               >
                 <div
                   class="usa-form-group"
                 >
                   <label
                     class="usa-label"
-                    for="22"
-                    id="label-for-22"
+                    for="21"
+                    id="label-for-21"
                   >
                     What is the gender of their sexual partners?
                      
@@ -3952,13 +3865,13 @@ Object {
                   <div
                     class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                     data-testid="multi-select"
-                    id="22"
+                    id="21"
                   >
                     <input
                       aria-controls="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
                       aria-expanded="false"
                       aria-invalid="false"
-                      aria-labelledby="label-for-22"
+                      aria-labelledby="label-for-21"
                       aria-owns="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
                       aria-required="true"
                       autocapitalize="off"
@@ -4107,6 +4020,93 @@ Object {
               </div>
             </div>
             <div
+              class="grid-col-auto"
+            >
+              <div
+                class="usa-form-group"
+              >
+                <fieldset
+                  class="usa-fieldset prime-radios"
+                  data-testid="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                >
+                  <legend
+                    class="usa-legend"
+                  >
+                    Has the patient been told they have syphilis before?
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </legend>
+                  <div
+                    class=""
+                  >
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="22-val-1087151000119108"
+                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="1087151000119108"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-1087151000119108"
+                        for="22-val-1087151000119108"
+                      >
+                        Yes
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="22-val-14732006"
+                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="14732006"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-14732006"
+                        for="22-val-14732006"
+                      >
+                        No
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="22-val-261665006"
+                        name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="261665006"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
+                        for="22-val-261665006"
+                      >
+                        Prefer not to answer
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+            <div
               class="grid-row"
             >
               <div
@@ -4201,7 +4201,7 @@ Object {
               class="grid-row"
             >
               <div
-                class="grid-col-auto"
+                class="grid-col-12"
               >
                 <div
                   class="usa-form-group"
@@ -4214,7 +4214,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Is the patient currently experiencing any symptoms?
+                      Is the patient currently experiencing or showing signs of symptoms?
                       <abbr
                         class="usa-hint usa-hint--required"
                         title="required"
@@ -4347,7 +4347,7 @@ Object {
       />
     </div>
     <div
-      class="grid-container"
+      class="grid-container sr-test-card-form-container"
     >
       <div
         class="grid-row grid-gap"
@@ -4558,105 +4558,18 @@ Object {
           id="syphillis-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
         >
           <div
-            class="grid-col-auto"
-          >
-            <div
-              class="usa-form-group"
-            >
-              <fieldset
-                class="usa-fieldset prime-radios"
-                data-testid="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                id="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-              >
-                <legend
-                  class="usa-legend"
-                >
-                  Has the patient been told they have syphilis before?
-                  <abbr
-                    class="usa-hint usa-hint--required"
-                    title="required"
-                  >
-                     
-                    *
-                  </abbr>
-                </legend>
-                <div
-                  class=""
-                >
-                  <div
-                    class="usa-radio"
-                  >
-                    <input
-                      class="usa-radio__input"
-                      data-required="true"
-                      id="21-val-1087151000119108"
-                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                      type="radio"
-                      value="1087151000119108"
-                    />
-                    <label
-                      class="usa-radio__label"
-                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-1087151000119108"
-                      for="21-val-1087151000119108"
-                    >
-                      Yes
-                    </label>
-                  </div>
-                  <div
-                    class="usa-radio"
-                  >
-                    <input
-                      class="usa-radio__input"
-                      data-required="true"
-                      id="21-val-14732006"
-                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                      type="radio"
-                      value="14732006"
-                    />
-                    <label
-                      class="usa-radio__label"
-                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-14732006"
-                      for="21-val-14732006"
-                    >
-                      No
-                    </label>
-                  </div>
-                  <div
-                    class="usa-radio"
-                  >
-                    <input
-                      class="usa-radio__input"
-                      data-required="true"
-                      id="21-val-261665006"
-                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
-                      type="radio"
-                      value="261665006"
-                    />
-                    <label
-                      class="usa-radio__label"
-                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
-                      for="21-val-261665006"
-                    >
-                      Prefer not to answer
-                    </label>
-                  </div>
-                </div>
-              </fieldset>
-            </div>
-          </div>
-          <div
             class="grid-row"
           >
             <div
-              class="tablet:grid-col-6"
+              class="grid-col-12 desktop:grid-col-6"
             >
               <div
                 class="usa-form-group"
               >
                 <label
                   class="usa-label"
-                  for="22"
-                  id="label-for-22"
+                  for="21"
+                  id="label-for-21"
                 >
                   What is the gender of their sexual partners?
                    
@@ -4707,13 +4620,13 @@ Object {
                 <div
                   class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                   data-testid="multi-select"
-                  id="22"
+                  id="21"
                 >
                   <input
                     aria-controls="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
                     aria-expanded="false"
                     aria-invalid="false"
-                    aria-labelledby="label-for-22"
+                    aria-labelledby="label-for-21"
                     aria-owns="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list"
                     aria-required="true"
                     autocapitalize="off"
@@ -4862,6 +4775,93 @@ Object {
             </div>
           </div>
           <div
+            class="grid-col-auto"
+          >
+            <div
+              class="usa-form-group"
+            >
+              <fieldset
+                class="usa-fieldset prime-radios"
+                data-testid="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                id="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+              >
+                <legend
+                  class="usa-legend"
+                >
+                  Has the patient been told they have syphilis before?
+                  <abbr
+                    class="usa-hint usa-hint--required"
+                    title="required"
+                  >
+                     
+                    *
+                  </abbr>
+                </legend>
+                <div
+                  class=""
+                >
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="true"
+                      id="22-val-1087151000119108"
+                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="1087151000119108"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-1087151000119108"
+                      for="22-val-1087151000119108"
+                    >
+                      Yes
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="true"
+                      id="22-val-14732006"
+                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="14732006"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-14732006"
+                      for="22-val-14732006"
+                    >
+                      No
+                    </label>
+                  </div>
+                  <div
+                    class="usa-radio"
+                  >
+                    <input
+                      class="usa-radio__input"
+                      data-required="true"
+                      id="22-val-261665006"
+                      name="syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                      type="radio"
+                      value="261665006"
+                    />
+                    <label
+                      class="usa-radio__label"
+                      data-cy="radio-group-option-syphilisHistory-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
+                      for="22-val-261665006"
+                    >
+                      Prefer not to answer
+                    </label>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+          <div
             class="grid-row"
           >
             <div
@@ -4956,7 +4956,7 @@ Object {
             class="grid-row"
           >
             <div
-              class="grid-col-auto"
+              class="grid-col-12"
             >
               <div
                 class="usa-form-group"
@@ -4969,7 +4969,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Is the patient currently experiencing any symptoms?
+                    Is the patient currently experiencing or showing signs of symptoms?
                     <abbr
                       class="usa-hint usa-hint--required"
                       title="required"

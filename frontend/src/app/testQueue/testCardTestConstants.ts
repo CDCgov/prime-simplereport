@@ -83,7 +83,7 @@ const GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE = {
 };
 const BLURRED_VISION_OVERRIDE = {
   symptoms:
-    '{"15188001":false,"26284000":false,"46636008":true,"56940005":false,"68225006":false,"91554004":false,"195469007":false,"266128007":false,"724386005":false}',
+    '{"15188001":false,"26284000":false,"56317004":false,"56940005":false,"91554004":false,"195469007":false,"246636008":true,"266128007":false,"724386005":false}',
 };
 
 const FIRST_CARD_SYMPTOM_OVERRIDE = {

@@ -2,3 +2,10 @@
   border-left-width: 0 !important;
   padding-left: 0 !important;
 }
+
+.sr-test-card-form-container {
+  .usa-label,
+  .usa-legend {
+    max-width: none;
+  }
+}
