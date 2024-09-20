@@ -1,3 +1,5 @@
+import { MULTIPLEX_DISEASES } from "../testResults/constants";
+
 import { parseDataForCSV, QueriedTestResult } from "./testResultCSV";
 
 const genericTestResult: Partial<QueriedTestResult> = {
@@ -148,7 +150,7 @@ const covidResultRow = {
   Result: "NEGATIVE",
 };
 
-const csvResultRows = [
+const csvResultRowsNoSTD = [
   {
     ...covidResultRow,
   },
@@ -167,6 +169,10 @@ const csvResultRows = [
     Condition: "RSV",
     Result: "UNDETERMINED",
   },
+];
+
+const csvResultRowsAllDiseases = [
+  ...csvResultRowsNoSTD,
   {
     ...csvRowWithoutResult,
     Condition: "HIV",
@@ -181,7 +187,7 @@ const csvResultRows = [
 
 describe("parseDataForCSV", () => {
   it("parses multiplex data", () => {
-    expect(parseDataForCSV(data)).toEqual(csvResultRows);
+    expect(parseDataForCSV(data)).toEqual(csvResultRowsAllDiseases);
   });
   it("parse data does not fail if tribalAffiliation is null", () => {
     expect(
@@ -192,5 +198,13 @@ describe("parseDataForCSV", () => {
         },
       ])
     ).toEqual([covidResultRow]);
+  });
+  it("doesn't include disabled data if feature flags are false", () => {
+    expect(
+      parseDataForCSV(data, [
+        MULTIPLEX_DISEASES.HIV,
+        MULTIPLEX_DISEASES.SYPHILIS,
+      ])
+    ).toEqual(csvResultRowsNoSTD);
   });
 });

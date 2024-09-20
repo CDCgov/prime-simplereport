@@ -12,6 +12,7 @@ import {
   useGetResultsForDownloadLazyQuery,
 } from "../../../generated/graphql";
 import { parseDataForCSV, ResultCsvRow } from "../../utils/testResultCSV";
+import { useDisabledFeatureDiseaseList } from "../../utils/disease";
 
 import { ALL_FACILITIES_ID, ResultsQueryVariables } from "./TestResultsList";
 
@@ -37,6 +38,7 @@ export const DownloadResultsCsvModal = ({
   >(null);
   // Disable downloads because backend will hang on over 20k results (#3953)
   const disableDownload = totalEntries > rowsMaxLimit;
+  const disabledFeatureDiseaseList = useDisabledFeatureDiseaseList();
 
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
     // active facility in the facility filter is the default
@@ -67,7 +69,10 @@ export const DownloadResultsCsvModal = ({
   const handleComplete = (data: GetResultsForDownloadQuery) => {
     if (data?.resultsPage?.content) {
       try {
-        const csvResults = parseDataForCSV(data.resultsPage.content);
+        const csvResults = parseDataForCSV(
+          data.resultsPage.content,
+          disabledFeatureDiseaseList
+        );
         setResults(csvResults);
       } catch (e) {
         showError("Error creating results file to download");
