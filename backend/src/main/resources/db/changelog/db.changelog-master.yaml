@@ -5671,3 +5671,34 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: facility_providers
+
+  - changeSet:
+      id: add-default-provider
+      author: bobby@skylight.digital
+      changes:
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_ordering_provider_id
+                  remarks: The default ordering provider (if any) for tests at this facility.
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk__facility__default_ordering_provider
+                    references: provider(internal_id)
+
+  - changeSet:
+      id: populate-facility-providers-table
+      author: bobby@skylight.digital
+      changes:
+        - sql:
+            comment: Populate the facilities table from the organization table
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.facility_providers (
+                facility_id,
+                provider_id
+              )
+              SELECT
+                internal_id,
+                ordering_provider_id
+              FROM ${database.defaultSchemaName}.facility;
