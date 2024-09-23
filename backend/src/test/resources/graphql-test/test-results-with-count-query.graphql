@@ -1,15 +1,18 @@
 query GetFacilityResultsWithCount($facilityId: ID) {
-  testResultsPage(facilityId: $facilityId) {
+  resultsPage(
+    facilityId: $facilityId
+  ) {
     content {
-      internalId
+      id
+      dateAdded
       dateTested
-      results {
-        disease {
-          internalId
-          name
-          loinc
-        }
-        testResult
+      disease
+      testResult
+      correctionStatus
+      reasonForCorrection
+      facility {
+        name
+        isDeleted
       }
       deviceType {
         internalId
@@ -20,15 +23,25 @@ query GetFacilityResultsWithCount($facilityId: ID) {
         firstName
         middleName
         lastName
-        lookupId
+        birthDate
+        gender
+        role
+        email
+        phoneNumbers {
+          type
+          number
+        }
       }
       patientLink {
         internalId
       }
-      symptoms
-      noSymptoms
-      pregnancy
-      symptomOnset
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
+      }
     }
     totalElements
   }

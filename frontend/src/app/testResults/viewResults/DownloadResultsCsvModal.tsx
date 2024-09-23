@@ -8,8 +8,8 @@ import { ApolloError } from "@apollo/client";
 import { showError } from "../../utils/srToast";
 import Button from "../../commonComponents/Button/Button";
 import {
-  useGetFacilityResultsForCsvWithCountLazyQuery,
-  GetFacilityResultsForCsvWithCountQuery,
+  GetResultsForDownloadQuery,
+  useGetResultsForDownloadLazyQuery,
 } from "../../../generated/graphql";
 import { parseDataForCSV, ResultCsvRow } from "../../utils/testResultCSV";
 import { useDisabledFeatureDiseaseList } from "../../utils/disease";
@@ -59,21 +59,19 @@ export const DownloadResultsCsvModal = ({
   };
 
   const [downloadTestResultsQuery, { loading }] =
-    useGetFacilityResultsForCsvWithCountLazyQuery({
+    useGetResultsForDownloadLazyQuery({
       variables,
       fetchPolicy: "no-cache",
-      onCompleted: (data: GetFacilityResultsForCsvWithCountQuery) =>
-        handleComplete(data),
+      onCompleted: (data: GetResultsForDownloadQuery) => handleComplete(data),
       onError: (error: ApolloError) => handleError(error),
     });
 
-  const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
-    if (data?.testResultsPage?.content) {
+  const handleComplete = (data: GetResultsForDownloadQuery) => {
+    if (data?.resultsPage?.content) {
       try {
         const csvResults = parseDataForCSV(
-          data.testResultsPage.content,
-          disabledFeatureDiseaseList,
-          filterParams
+          data.resultsPage.content,
+          disabledFeatureDiseaseList
         );
         setResults(csvResults);
       } catch (e) {
