@@ -480,3 +480,43 @@ and duration >= 180000
     ]
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "unequal_okta_db_org_role_claims_alert" {
+  name                = "${var.env}-unequal-okta-db-org-role-claims-alert"
+  description         = "${local.env_title} User Okta and DB org claims are unequal"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 1440
+  time_window         = 1440
+  enabled             = contains(var.disabled_alerts, "unequal_okta_db_org_role_claims_alert") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+traces
+${local.skip_on_weekends}
+| where severityLevel == "3"
+| where timestamp > ago(1d)
+| where message has "Okta OrganizationRoleClaims do not match database OrganizationRoleClaims for User ID: "
+| parse message with * "Okta OrganizationRoleClaims do not match database OrganizationRoleClaims for User ID: " loggedUserId
+| extend UserId = split(loggedUserId, ":")
+| mv-expand UserId to typeof(string)
+| summarize occurrences=count() by UserId
+QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+
+  action {
+    action_group           = var.action_group_ids
+    custom_webhook_payload = var.wiki_docs_text
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
+}
