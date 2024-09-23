@@ -721,6 +721,10 @@ public class ApiUserService {
     OrganizationRoles orgRoles =
         getOrganizationRoles(Optional.ofNullable(oktaClaims), apiUser, isSiteAdmin);
 
+    _dbOrgRoleClaimsService.checkOrgRoleClaimsEquality(
+        List.of(oktaClaims),
+        List.of(_dbOrgRoleClaimsService.getOrganizationRoleClaims(apiUser)),
+        apiUser.getLoginEmail());
     return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
   }
 

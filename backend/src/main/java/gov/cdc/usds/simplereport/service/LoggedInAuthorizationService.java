@@ -60,6 +60,8 @@ public class LoggedInAuthorizationService implements AuthorizationService {
       String username = currentAuth.getName();
       List<OrganizationRoleClaims> dbOrgRoleClaims =
           _dbOrgRoleClaimsService.getOrganizationRoleClaims(username);
+      _dbOrgRoleClaimsService.checkOrgRoleClaimsEquality(
+          oktaOrgRoleClaims, dbOrgRoleClaims, username);
       if (_featureFlagsConfig.isOktaMigrationEnabled()) {
         return dbOrgRoleClaims;
       }
