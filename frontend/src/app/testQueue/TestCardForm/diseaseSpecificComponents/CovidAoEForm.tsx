@@ -71,7 +71,7 @@ const CovidAoEForm = ({
         <div className="grid-col-auto">
           <YesNoRadioGroup
             name={`has-any-symptoms-${testOrder.internalId}`}
-            legend="Is the patient currently experiencing any symptoms?"
+            legend="Is the patient currently experiencing or showing signs of symptoms?"
             value={hasSymptoms}
             onChange={onHasAnySymptomsChange}
           />

@@ -74,22 +74,8 @@ export const SyphilisAoEForm = ({
       className="grid-col"
       id={`syphillis-aoe-form-${testOrder.patient.internalId}`}
     >
-      <div className="grid-col-auto">
-        <RadioGroup
-          legend="Has the patient been told they have syphilis before?"
-          name={`syphilisHistory-${testOrder.internalId}`}
-          onChange={onSyphilisHistoryChange}
-          buttons={syphilisHistoryResponses}
-          required
-          selectedRadio={responses.syphilisHistory}
-          validationStatus={showSyphilisHistoryError ? "error" : undefined}
-          errorMessage={
-            showSyphilisHistoryError && "Please answer this required question."
-          }
-        />
-      </div>
       <div className="grid-row">
-        <div className="tablet:grid-col-6">
+        <div className="grid-col-12 desktop:grid-col-6">
           <MultiSelect
             name={`sexual-partner-gender-${testOrder.internalId}`}
             options={GENDER_IDENTITY_VALUES}
@@ -116,6 +102,20 @@ export const SyphilisAoEForm = ({
           ></MultiSelect>
         </div>
       </div>
+      <div className="grid-col-auto">
+        <RadioGroup
+          legend="Has the patient been told they have syphilis before?"
+          name={`syphilisHistory-${testOrder.internalId}`}
+          onChange={onSyphilisHistoryChange}
+          buttons={syphilisHistoryResponses}
+          required
+          selectedRadio={responses.syphilisHistory}
+          validationStatus={showSyphilisHistoryError ? "error" : undefined}
+          errorMessage={
+            showSyphilisHistoryError && "Please answer this required question."
+          }
+        />
+      </div>
       <div className="grid-row">
         <div className="grid-col-auto">
           <RadioGroup
@@ -133,10 +133,10 @@ export const SyphilisAoEForm = ({
         </div>
       </div>
       <div className="grid-row">
-        <div className="grid-col-auto">
+        <div className="grid-col-12">
           <YesNoRadioGroup
             name={`has-any-symptoms-${testOrder.internalId}`}
-            legend="Is the patient currently experiencing any symptoms?"
+            legend="Is the patient currently experiencing or showing signs of symptoms?"
             value={hasSymptoms}
             required
             onChange={onHasAnySymptomsChange}
@@ -148,8 +148,8 @@ export const SyphilisAoEForm = ({
         </div>
       </div>
       {hasSymptoms === "YES" && (
-        <div className={"grid-row grid-gap width-full flex-start"}>
-          <div className={`flex-${CHECKBOX_COLS_TO_DISPLAY - 1}`}>
+        <div className={"grid-row grid-gap width-full"}>
+          <div className={"grid-col-12 desktop:grid-col-9 padding-right-0"}>
             <Checkboxes
               boxes={syphilisSymptomDefinitions.map(({ label, value }) => ({
                 label,
@@ -176,6 +176,7 @@ export const SyphilisAoEForm = ({
             required
             label="Date of symptom onset"
             aria-label="Symptom onset date"
+            className={""}
             min={formatDate(new Date("Jan 1, 2020"))}
             max={formatDate(moment().toDate())}
             value={

@@ -59,7 +59,7 @@ export const HIVAoEForm = ({
         </div>
       </div>
       <div className="grid-row">
-        <div className="tablet:grid-col-12">
+        <div className="grid-col-12 desktop:grid-col-6">
           <MultiSelect
             name={`sexual-partner-gender-${testOrder.internalId}`}
             options={GENDER_IDENTITY_VALUES}
@@ -73,7 +73,6 @@ export const HIVAoEForm = ({
                 </span>
               </>
             }
-            dropdownClassName={"width-mobile-lg"}
             labelClassName={"multi-select-dropdown"}
             required={true}
             validationStatus={

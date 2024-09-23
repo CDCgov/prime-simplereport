@@ -97,8 +97,8 @@ export const syphilisSymptomsMap = {
   "56940005": "Palmar (hand)/plantar (foot) rash",
   "91554004": "Flat white warts",
   "15188001": "Hearing loss",
-  "46636008": "Blurred vision",
-  "68225006": "Patchy hair loss",
+  "246636008": "Blurred vision",
+  "56317004": "Alopecia",
 } as const;
 
 export type SyphilisSymptoms = typeof syphilisSymptomsMap;

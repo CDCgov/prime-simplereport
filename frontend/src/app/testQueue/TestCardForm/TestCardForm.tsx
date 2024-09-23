@@ -381,7 +381,7 @@ const TestCardForm = ({
         showModal={isSubmitModalOpen}
         onClose={() => setIsSubmitModalOpen(false)}
       />
-      <div className="grid-container">
+      <div className="grid-container sr-test-card-form-container">
         {/* error and warning alerts */}
         {showCorrectionWarning && (
           <Alert type="warning" headingLevel="h4" className="margin-top-2">

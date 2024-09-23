@@ -151,7 +151,7 @@ Object {
               />
             </div>
             <div
-              class="grid-container"
+              class="grid-container sr-test-card-form-container"
             >
               <div
                 class="grid-row grid-gap"
@@ -557,7 +557,7 @@ Object {
                           <legend
                             class="usa-legend"
                           >
-                            Is the patient currently experiencing any symptoms?
+                            Is the patient currently experiencing or showing signs of symptoms?
                           </legend>
                           <div
                             class=""
