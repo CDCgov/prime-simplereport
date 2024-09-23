@@ -3,13 +3,21 @@ resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
   name                       = "${local.env_title} API App Service console logs"
   target_resource_id         = var.app_service_id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.global.id
-
   enabled_log {
     category = "AppServiceConsoleLogs"
+    retention_policy {
+      days    = 7
+      enabled = true
+    }
+
   }
   metric {
     category = "AllMetrics"
     enabled  = false
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
   }
 }
 

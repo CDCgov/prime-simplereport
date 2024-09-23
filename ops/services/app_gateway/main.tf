@@ -487,6 +487,9 @@ resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
     ]
     content {
       category = enabled_log.value
+      retention_policy {
+        enabled = false
+      }
     }
   }
 
@@ -496,6 +499,9 @@ resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
     ]
     content {
       category = metric.value
+      retention_policy {
+        enabled = false
+      }
     }
   }
 }
