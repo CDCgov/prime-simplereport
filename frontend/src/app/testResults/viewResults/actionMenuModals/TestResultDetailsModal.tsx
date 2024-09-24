@@ -8,11 +8,14 @@ import { formatFullName } from "../../../utils/user";
 import { symptomsStringToArray } from "../../../utils/symptoms";
 import {
   GetTestResultDetailsDocument,
+  GetTestResultDetailsQuery,
   Result as ResponseResult,
 } from "../../../../generated/graphql";
 import {
-  PregnancyCode,
+  Pregnancy,
   pregnancyMap,
+  SyphilisHistory,
+  syphillisHistoryMap,
 } from "../../../../patientApp/timeOfTest/constants";
 import {
   getSortedResults,
@@ -24,33 +27,6 @@ import "./TestResultPrintModal.scss";
 import { MULTIPLEX_DISEASES } from "../../constants";
 import { formatGenderOfSexualPartnersForDisplay } from "../../../utils/gender";
 
-type Result = {
-  dateTested: string;
-  results: MultiplexResult[];
-  correctionStatus: TestCorrectionStatus;
-  noSymptoms: boolean;
-  symptoms: string;
-  symptomOnset: string;
-  pregnancy: PregnancyCode;
-  genderOfSexualPartners?: string[];
-  deviceType: {
-    name: string;
-  };
-  patient: {
-    firstName: string;
-    middleName: string;
-    lastName: string;
-    birthDate: string;
-  };
-  createdBy: {
-    name: {
-      firstName: string;
-      middleName: string;
-      lastName: string;
-    };
-  };
-};
-
 const labelClasses = "text-bold text-no-strike text-ink";
 const containerClasses =
   "width-full font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1";
@@ -61,8 +37,11 @@ interface TestResultDetailsModalProps {
   testResult: ResponseResult | undefined;
   closeModal: () => void;
 }
+
+type QueriedTestResult = NonNullable<GetTestResultDetailsQuery>["testResult"];
+
 interface DetachedTestResultDetailsModalProps {
-  data: { testResult: Nullable<Result> };
+  data: { testResult: NonNullable<QueriedTestResult> };
   closeModal: () => void;
 }
 
@@ -74,15 +53,21 @@ export const DetachedTestResultDetailsModal = ({
     data?.testResult.results,
     MULTIPLEX_DISEASES.HIV
   );
+  const isSyphilisResult = !!getResultForDisease(
+    data?.testResult.results,
+    MULTIPLEX_DISEASES.SYPHILIS
+  );
 
   const dateTested = data?.testResult.dateTested;
 
   const results = data?.testResult.results;
   const correctionStatus = data?.testResult.correctionStatus;
-  const symptoms = data?.testResult.symptoms;
-  const symptomOnset = data?.testResult.symptomOnset;
-  const pregnancy = data?.testResult.pregnancy;
-  const genderOfSexualPartners = data?.testResult.genderOfSexualPartners ?? [];
+  const symptoms = data?.testResult.surveyData?.symptoms;
+  const symptomOnset = data?.testResult.surveyData?.symptomOnset;
+  const pregnancy = data?.testResult.surveyData?.pregnancy;
+  const genderOfSexualPartners =
+    data?.testResult.surveyData?.genderOfSexualPartners ?? [];
+  const syphilisHistory = data?.testResult.surveyData?.syphilisHistory;
   const deviceType = data?.testResult.deviceType;
   const patient = data?.testResult.patient;
   const createdBy = data?.testResult.createdBy;
@@ -199,16 +184,27 @@ export const DetachedTestResultDetailsModal = ({
           )}
           <DetailsRow
             label="Pregnant?"
-            value={pregnancy && pregnancyMap[pregnancy]}
+            value={pregnancy && pregnancyMap[pregnancy as keyof Pregnancy]}
             removed={removed}
             aria-describedby="result-detail-title"
           />
-          {isHIVResult && (
+          {(isHIVResult || isSyphilisResult) && (
             <DetailsRow
               label="Gender of sexual partners"
               value={formatGenderOfSexualPartnersForDisplay(
                 genderOfSexualPartners
               )}
+              removed={removed}
+              aria-describedby="result-detail-title"
+            />
+          )}
+          {isSyphilisResult && (
+            <DetailsRow
+              label="Previously told they have syphilis?"
+              value={
+                syphilisHistory &&
+                syphillisHistoryMap[syphilisHistory as keyof SyphilisHistory]
+              }
               removed={removed}
               aria-describedby="result-detail-title"
             />

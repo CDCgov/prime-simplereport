@@ -101,7 +101,7 @@ export enum ArchivedStatus {
 
 export type AskOnEntrySurvey = {
   __typename?: "AskOnEntrySurvey";
-  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  genderOfSexualPartners?: Maybe<Array<Scalars["String"]["output"]>>;
   noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
   pregnancy?: Maybe<Scalars["String"]["output"]>;
   symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
@@ -1041,7 +1041,8 @@ export type TestResult = {
   patientLink?: Maybe<PatientLink>;
   pregnancy?: Maybe<Scalars["String"]["output"]>;
   reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
-  results?: Maybe<Array<Maybe<MultiplexResult>>>;
+  results?: Maybe<Array<MultiplexResult>>;
+  surveyData?: Maybe<AskOnEntrySurvey>;
   symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
   symptoms?: Maybe<Scalars["String"]["output"]>;
   syphilisHistory?: Maybe<Scalars["String"]["output"]>;
@@ -2444,7 +2445,7 @@ export type GetFacilityResultsForCsvWithCountQuery = {
         __typename?: "MultiplexResult";
         testResult: string;
         disease: { __typename?: "SupportedDisease"; name: string };
-      } | null> | null;
+      }> | null;
       deviceType?: {
         __typename?: "DeviceType";
         name: string;
@@ -2647,7 +2648,7 @@ export type GetResultsForDownloadQuery = {
         symptoms?: string | null;
         symptomOnset?: any | null;
         noSymptoms?: boolean | null;
-        genderOfSexualPartners?: Array<string | null> | null;
+        genderOfSexualPartners?: Array<string> | null;
       } | null;
     } | null> | null;
   } | null;
@@ -2695,7 +2696,7 @@ export type GetTestResultForPrintQuery = {
       __typename?: "MultiplexResult";
       testResult: string;
       disease: { __typename?: "SupportedDisease"; name: string };
-    } | null> | null;
+    }> | null;
     deviceType?: {
       __typename?: "DeviceType";
       name: string;
@@ -2801,7 +2802,7 @@ export type GetTestResultForCorrectionQuery = {
       __typename?: "MultiplexResult";
       testResult: string;
       disease: { __typename?: "SupportedDisease"; name: string };
-    } | null> | null;
+    }> | null;
     deviceType?: { __typename?: "DeviceType"; name: string } | null;
     patient?: {
       __typename?: "Patient";
@@ -2890,7 +2891,16 @@ export type GetTestResultDetailsQuery = {
       __typename?: "MultiplexResult";
       testResult: string;
       disease: { __typename?: "SupportedDisease"; name: string };
-    } | null> | null;
+    }> | null;
+    surveyData?: {
+      __typename?: "AskOnEntrySurvey";
+      pregnancy?: string | null;
+      syphilisHistory?: string | null;
+      symptoms?: string | null;
+      symptomOnset?: any | null;
+      noSymptoms?: boolean | null;
+      genderOfSexualPartners?: Array<string> | null;
+    } | null;
     deviceType?: { __typename?: "DeviceType"; name: string } | null;
     patient?: {
       __typename?: "Patient";
@@ -9151,6 +9161,14 @@ export const GetTestResultDetailsDocument = gql`
       symptomOnset
       pregnancy
       genderOfSexualPartners
+      surveyData {
+        pregnancy
+        syphilisHistory
+        symptoms
+        symptomOnset
+        noSymptoms
+        genderOfSexualPartners
+      }
       deviceType {
         name
       }

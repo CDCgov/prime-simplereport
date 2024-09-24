@@ -12,6 +12,14 @@ query GetTestResultDetails($id: ID!) {
     symptomOnset
     pregnancy
     genderOfSexualPartners
+    surveyData {
+      pregnancy
+      syphilisHistory
+      symptoms
+      symptomOnset
+      noSymptoms
+      genderOfSexualPartners
+    }
     deviceType {
       name
     }

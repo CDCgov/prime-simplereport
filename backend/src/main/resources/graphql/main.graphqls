@@ -295,12 +295,13 @@ type TestResult {
   symptomOnset: LocalDate
   genderOfSexualPartners: [String]
   deviceType: DeviceType
-  results: [MultiplexResult]
+  results: [MultiplexResult!]
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser
   patientLink: PatientLink
+  surveyData: AskOnEntrySurvey
 }
 
 type TestResultsPage {
@@ -314,7 +315,7 @@ type AskOnEntrySurvey {
   symptoms: String
   symptomOnset: LocalDate
   noSymptoms: Boolean
-  genderOfSexualPartners: [String]
+  genderOfSexualPartners: [String!]
 }
 
 type Result {
