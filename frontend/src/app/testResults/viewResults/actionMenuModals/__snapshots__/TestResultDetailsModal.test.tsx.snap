@@ -474,7 +474,7 @@ Object {
             <td
               class="padding-y-3 border-bottom-1px border-base-lighter"
             >
-              Body Rash
+              Blurred vision, Palmar (hand)/plantar (foot) rash, Body Rash
             </td>
           </tr>
           <tr>
@@ -486,7 +486,7 @@ Object {
             <td
               class="padding-y-3 border-bottom-1px border-base-lighter"
             >
-              Invalid date
+              09/24/2024
             </td>
           </tr>
           <tr>
@@ -494,6 +494,30 @@ Object {
               class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
             >
               Pregnant?
+            </th>
+            <td
+              class="padding-y-3 border-bottom-1px border-base-lighter"
+            >
+              Yes
+            </td>
+          </tr>
+          <tr>
+            <th
+              class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
+            >
+              Gender of sexual partners
+            </th>
+            <td
+              class="padding-y-3 border-bottom-1px border-base-lighter"
+            >
+              Female, Male, Other
+            </td>
+          </tr>
+          <tr>
+            <th
+              class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
+            >
+              Previously told they have syphilis?
             </th>
             <td
               class="padding-y-3 border-bottom-1px border-base-lighter"
@@ -634,7 +658,7 @@ Object {
           <td
             class="padding-y-3 border-bottom-1px border-base-lighter"
           >
-            Body Rash
+            Blurred vision, Palmar (hand)/plantar (foot) rash, Body Rash
           </td>
         </tr>
         <tr>
@@ -646,7 +670,7 @@ Object {
           <td
             class="padding-y-3 border-bottom-1px border-base-lighter"
           >
-            Invalid date
+            09/24/2024
           </td>
         </tr>
         <tr>
@@ -654,6 +678,30 @@ Object {
             class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
           >
             Pregnant?
+          </th>
+          <td
+            class="padding-y-3 border-bottom-1px border-base-lighter"
+          >
+            Yes
+          </td>
+        </tr>
+        <tr>
+          <th
+            class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
+          >
+            Gender of sexual partners
+          </th>
+          <td
+            class="padding-y-3 border-bottom-1px border-base-lighter"
+          >
+            Female, Male, Other
+          </td>
+        </tr>
+        <tr>
+          <th
+            class="text-bold text-no-strike text-ink padding-y-3 border-bottom-1px border-base-lighter width-card-lg text-left"
+          >
+            Previously told they have syphilis?
           </th>
           <td
             class="padding-y-3 border-bottom-1px border-base-lighter"
