@@ -89,7 +89,7 @@ syphilisTestResult.results = [
 syphilisTestResult.surveyData.pregnancy = "77386006";
 syphilisTestResult.surveyData.syphilisHistory = "1087151000119108";
 syphilisTestResult.surveyData.symptoms =
-  '{"91554004":"false","15188001":"false","724386005":"false","56940005":"true","266128007":"true","246636008":"true","68225006":"false","195469007":"false","26284000":"false"}';
+  '{"724386005":"false","195469007":"false","26284000":"false","266128007":"true","56940005":"true","91554004":"false","15188001":"false","246636008":"true","56317004":"false"}';
 syphilisTestResult.surveyData.symptomOnset = "2024-09-24";
 syphilisTestResult.surveyData.noSymptoms = false;
 syphilisTestResult.surveyData.genderOfSexualPartners = [
