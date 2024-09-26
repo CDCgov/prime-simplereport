@@ -77,14 +77,22 @@ public class BulkUploadResultsToFhirTest {
     when(resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(
             Map.of(
-                "Nasal swab".toLowerCase(), "445297001",
-                "Anterior nares swab".toLowerCase(), "697989009"));
+                "Nasal swab".toLowerCase(),
+                "445297001",
+                "Anterior nares swab".toLowerCase(),
+                "697989009",
+                "Venous blood specimen".toLowerCase(),
+                "122555007"));
 
     when(resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap())
         .thenReturn(
             Map.of(
-                "445297001", "Nasal swab",
-                "697989009", "Anterior nares swab"));
+                "445297001",
+                "Nasal swab",
+                "697989009",
+                "Anterior nares swab",
+                "122555007",
+                "Venous blood specimen"));
 
     when(resultsUploaderCachingService.getZoneIdByAddress(any()))
         .thenReturn(ZoneId.of("US/Central"));
@@ -649,5 +657,30 @@ public class BulkUploadResultsToFhirTest {
 
     assertThat(gendersOfSexualPartnersObservations).hasSize(5);
     assertThat(codeableConceptValues).containsExactlyInAnyOrderElementsOf(expectedGenders);
+  }
+
+  @Test
+  void convertExistingCsv_validSyphilisPositive_withAOEdataColumns() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-syphilis-only.csv");
+
+    FHIRBundleRecord bundleRecord = sut.convertToFhirBundles(input, UUID.randomUUID());
+    List<String> serializedBundles = bundleRecord.serializedBundle();
+    String first = serializedBundles.get(0);
+    Bundle deserializedBundle = (Bundle) parser.parseResource(first);
+
+    List<Observation> syphilisHistoryObservations =
+        deserializedBundle.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/"))
+            .map(x -> (Observation) x.getResource())
+            .filter(x -> Objects.equals(x.getCode().getText(), "History of syphilis"))
+            .collect(Collectors.toList());
+
+    List<String> codeableConceptValues =
+        syphilisHistoryObservations.stream()
+            .map(x -> x.getValueCodeableConcept().getCoding().get(0).getDisplay())
+            .collect(Collectors.toList());
+
+    assertThat(syphilisHistoryObservations).hasSize(1);
+    assertThat(codeableConceptValues).isEqualTo(List.of("unknown"));
   }
 }

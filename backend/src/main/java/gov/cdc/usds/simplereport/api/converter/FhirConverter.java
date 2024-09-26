@@ -66,6 +66,8 @@ import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATI
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.NO_SYPHILIS_HISTORY_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.YES_SYPHILIS_HISTORY_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentityDisplaySet;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.genderIdentitySnomedSet;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
@@ -865,6 +867,20 @@ public class FhirConverter {
         pregnancyStatusValueCode);
   }
 
+  public Observation convertToAOESyphilisHistoryObservation(String syphilisHistory) {
+    CodeableConcept observationCode =
+        createSNOMEDConcept(
+            YES_SYPHILIS_HISTORY_SNOMED, "History of syphilis", "History of syphilis");
+    Boolean hasHistory = null;
+    if (syphilisHistory.equalsIgnoreCase(YES_SYPHILIS_HISTORY_SNOMED)) {
+      hasHistory = true;
+    } else if (syphilisHistory.equalsIgnoreCase(NO_SYPHILIS_HISTORY_SNOMED)) {
+      hasHistory = false;
+    }
+    return createAOEObservation(
+        uuidGenerator.randomUUID().toString(), observationCode, createYesNoUnkConcept(hasHistory));
+  }
+
   public Observation convertToAOEYesNoUnkObservation(
       Boolean isObserved, String observationLoinc, String observationDisplayText) {
     CodeableConcept observationCode =
@@ -991,6 +1007,10 @@ public class FhirConverter {
       observations.addAll(convertToAOEGenderOfSexualPartnersObservation(sexualPartners));
     }
 
+    if (surveyData.getSyphilisHistory() != null) {
+      observations.add(convertToAOESyphilisHistoryObservation(surveyData.getSyphilisHistory()));
+    }
+
     return observations;
   }
 
@@ -1050,7 +1070,17 @@ public class FhirConverter {
   }
 
   private CodeableConcept createSNOMEDConcept(String resultCode, String resultDisplay) {
+    return createSNOMEDConcept(resultCode, resultDisplay, null);
+  }
+
+  private CodeableConcept createSNOMEDConcept(
+      String resultCode, String resultDisplay, String resultText) {
     CodeableConcept concept = new CodeableConcept();
+
+    if (StringUtils.isNotBlank(resultText)) {
+      concept.setText(resultText);
+    }
+
     Coding coding = concept.addCoding();
     coding.setSystem(SNOMED_CODE_SYSTEM);
     coding.setCode(resultCode);

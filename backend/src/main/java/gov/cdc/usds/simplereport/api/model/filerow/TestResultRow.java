@@ -618,6 +618,7 @@ public class TestResultRow implements FileRow {
               testResult, DiseaseService.HIV_NAME, List.of(gendersOfSexualPartners, pregnant)));
     }
 
+    errors.addAll(validateYesNoAnswer(syphilisHistory));
     if (isSyphilisResult()) {
       errors.addAll(
           validateRequiredFieldsForPositiveResult(

@@ -5,7 +5,9 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SY
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.NO_SYPHILIS_HISTORY_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.PREGNANT_UNKNOWN_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.YES_SYPHILIS_HISTORY_SNOMED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -1239,21 +1241,52 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToAoeObservation_allAOE_matchesJson() throws IOException {
+  void convertToAoeObservation_syphilisHistory_matchesJson() throws IOException {
     AskOnEntrySurvey answers =
         AskOnEntrySurvey.builder()
-            .pregnancy(PREGNANT_UNKNOWN_SNOMED)
-            .syphilisHistory(null)
-            .symptoms(Map.of("fake", true))
-            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
+            .pregnancy(null)
+            .syphilisHistory(YES_SYPHILIS_HISTORY_SNOMED)
+            .symptoms(null)
             .genderOfSexualPartners(null)
+            .symptomOnsetDate(null)
             .noSymptoms(false)
             .build();
 
     String testId = "fakeId";
 
-    var birthDate = LocalDate.of(2022, 12, 13);
-    var person =
+    Set<Observation> actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    String expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationSyphilisHistory.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_allAOE_matchesJson() throws IOException {
+    List<String> sexualPartners = List.of("male", "female");
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy(PREGNANT_UNKNOWN_SNOMED)
+            .syphilisHistory(NO_SYPHILIS_HISTORY_SNOMED)
+            .symptoms(Map.of("fake", true))
+            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
+            .genderOfSexualPartners(sexualPartners)
+            .noSymptoms(false)
+            .build();
+
+    String testId = "fakeId";
+
+    LocalDate birthDate = LocalDate.of(2022, 12, 13);
+    Person person =
         new Person(
             null,
             null,
@@ -1277,11 +1310,11 @@ class FhirConverterTest {
             "English",
             null);
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers, person);
+    Set<Observation> actual = fhirConverter.convertToAOEObservations(testId, answers, person);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
-    var expectedSerialized =
+    String expectedSerialized =
         IOUtils.toString(
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/observationAllAoe.json")),

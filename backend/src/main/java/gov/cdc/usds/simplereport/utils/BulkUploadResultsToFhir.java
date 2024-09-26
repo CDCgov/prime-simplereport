@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_IC
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.syphilisHistorySnomedMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.ResultUtils.mapTestResultStatusToSRValue;
@@ -475,6 +476,13 @@ public class BulkUploadResultsToFhir {
               AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
     }
 
+    String syphilisHistory = row.getSyphilisHistory().getValue();
+    if (StringUtils.isNotBlank(syphilisHistory)) {
+      String syphilisHistorySnomed = getSyphilisHistorySnomed(syphilisHistory);
+      aoeObservations.add(
+          fhirConverter.convertToAOESyphilisHistoryObservation(syphilisHistorySnomed));
+    }
+
     String hospitalizedValue = row.getHospitalized().getValue();
     if (StringUtils.isNotBlank(hospitalizedValue)) {
       Boolean hospitalized = yesNoToBooleanMap.get(hospitalizedValue.toLowerCase());
@@ -597,6 +605,13 @@ public class BulkUploadResultsToFhir {
   private String getPregnancyStatusSnomed(String input) {
     if (input != null && input.matches(ALPHABET_REGEX)) {
       return PersonUtils.pregnancyStatusSnomedMap.get(input.toLowerCase());
+    }
+    return null;
+  }
+
+  private String getSyphilisHistorySnomed(String input) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
+      return syphilisHistorySnomedMap.get(input.toLowerCase());
     }
     return null;
   }
