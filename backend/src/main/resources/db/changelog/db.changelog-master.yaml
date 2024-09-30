@@ -5676,6 +5676,8 @@ databaseChangeLog:
       id: add-default-provider
       author: bobby@skylight.digital
       changes:
+        - tagDatabase:
+            tag: add-default-provider-col
         - addColumn:
             tableName: facility
             columns:
@@ -5691,6 +5693,8 @@ databaseChangeLog:
       id: populate-facility-providers-table
       author: bobby@skylight.digital
       changes:
+        - tagDatabase:
+            tag: populate-facility-providers-table
         - sql:
             comment: Populate the facilities table from the organization table
             sql: |
@@ -5702,11 +5706,16 @@ databaseChangeLog:
                 internal_id,
                 ordering_provider_id
               FROM ${database.defaultSchemaName}.facility;
+      rollback:
+        sql: |
+          TRUNCATE TABLE ${database.defaultSchemaName}.facility_providers CASCADE;              
 
   - changeSet:
       id: populate-default-provider-column
       author: bobby@skylight.digital
       changes:
+        - tagDatabase:
+            tag: populate-default-provider-col
             sql: |
               UPDATE ${database.defaultSchemaName}.facility
               SET
