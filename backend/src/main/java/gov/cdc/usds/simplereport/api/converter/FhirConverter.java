@@ -77,7 +77,9 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusDisplayMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusSnomedMap;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.parser.IParser;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
@@ -183,6 +185,9 @@ public class FhirConverter {
   private final DateGenerator dateGenerator;
 
   private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
+
+  final FhirContext ctx = FhirContext.forR4();
+  final IParser parser = ctx.newJsonParser();
 
   public HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(
@@ -854,7 +859,10 @@ public class FhirConverter {
           String symptomName = getSymptomName(symptom);
           if (symptomName != null && !symptomName.isBlank()) {
             CodeableConcept symptomValueCode = createSNOMEDConcept(symptom, symptomName, null);
-            observations.add(createSymptomObservation(symptomStatusCode, symptomValueCode));
+            Observation obs = createSymptomObservation(symptomStatusCode, symptomValueCode);
+            String msg = parser.encodeResourceToString(obs);
+            log.info("ZIPZAP symptom: ${}", msg);
+            observations.add(obs);
           }
         });
     return observations;
