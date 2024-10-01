@@ -335,23 +335,44 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
           </p>
           <h4>Include data for all required fields</h4>
           <p>
-            The data template has three field types: required, requested, and
-            optional. SimpleReport won’t accept files with missing or incorrect
-            headers and values in required fields. Requested fields are not
-            required by HHS, but the data is helpful to jurisdictions. The tags
-            next to data element names listed below show field type:
+            The data template has three field types: Required, Required for
+            Positives, and Optional. SimpleReport won’t accept files with
+            missing or incorrect headers and values in required fields. You'll
+            find these tags throughout the template to guide you through data
+            requirements:
           </p>
-          <p>
-            <span className="text-normal bg-white border-1px border-secondary font-body-1xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
-              Required
-            </span>
-            <span className="text-normal bg-white border-1px border-base font-body-1xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
-              Requested
-            </span>
-            <span className="text-normal bg-white border-1px border-base font-body-1xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
-              Optional
-            </span>
-          </p>
+          <div className="grid-row margin-bottom-1">
+            <div className="grid-col-4 text-base">
+              <span className="text-normal bg-white border-1px border-secondary font-body-1xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
+                Required
+              </span>
+            </div>
+            <div className="grid-col-auto">
+              "Required" fields are legally required by HHS.
+            </div>
+          </div>
+          <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+            <div className="grid-col-4 text-base">
+              <span className="text-normal bg-white border-1px border-secondary font-body-1xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
+                Required for Positives
+              </span>
+            </div>
+            <div className="grid-col-8">
+              "Required for Positives" fields are legally required by HHS for
+              positive test results.
+            </div>
+          </div>
+          <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
+            <div className="grid-col-4 text-base">
+              <span className="text-normal bg-white border-1px border-base font-body-1xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
+                Optional
+              </span>
+            </div>
+            <div className="grid-col-8">
+              "Optional" fields are not legally required by HHS, but the data is
+              helpful to jurisdictions.
+            </div>
+          </div>
         </section>
 
         <section className="margin-top-5">
