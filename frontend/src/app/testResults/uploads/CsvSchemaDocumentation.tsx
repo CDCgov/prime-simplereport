@@ -52,12 +52,6 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           </span>
         )}
 
-        {item.requiredStatusTag === RequiredStatusTag.REQUESTED && (
-          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
-            Requested
-          </span>
-        )}
-
         {item.requiredStatusTag === RequiredStatusTag.OPTIONAL && (
           <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
             Optional

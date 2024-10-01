@@ -22,7 +22,6 @@ export interface Section {
 export enum RequiredStatusTag {
   REQUIRED = "Required",
   REQUIRED_FOR_POSITIVES = "Required for Positives",
-  REQUESTED = "Requested",
   OPTIONAL = "Optional",
 }
 
@@ -30,7 +29,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   pregnant: {
     name: "Pregnant",
     colHeader: "pregnant",
-    requiredStatusTag: RequiredStatusTag.REQUESTED,
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -41,7 +40,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   employed_in_healthcare: {
     name: "Employed in healthcare",
     colHeader: "employed_in_healthcare",
-    requiredStatusTag: RequiredStatusTag.REQUESTED,
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -52,7 +51,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   symptomatic_for_disease: {
     name: "Symptomatic for disease",
     colHeader: "symptomatic_for_disease",
-    requiredStatusTag: RequiredStatusTag.REQUESTED,
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -63,7 +62,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   illness_onset_date: {
     name: "Illness onset date",
     colHeader: "illness_onset_date",
-    requiredStatusTag: RequiredStatusTag.REQUESTED,
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
     format: "M/D/YYYY",
     examples: ["9/2/2022", "10/13/2021"],
     description: ["Date"],
@@ -71,7 +70,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   resident_congregate_setting: {
     name: "Resident congregate setting",
     colHeader: "resident_congregate_setting",
-    requiredStatusTag: RequiredStatusTag.REQUESTED,
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -112,7 +111,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   hospitalized: {
     name: "Hospitalized",
     colHeader: "hospitalized",
-    requiredStatusTag: RequiredStatusTag.REQUESTED,
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -124,7 +123,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   icu: {
     name: "Intensive care unit",
     colHeader: "icu",
-    requiredStatusTag: RequiredStatusTag.REQUESTED,
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -151,7 +150,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient ID",
                 colHeader: "patient_id",
-                requiredStatusTag: RequiredStatusTag.REQUESTED,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 examples: ["1234", "P2300"],
                 description: [
                   "Enter unique patient identifier. This is typically the Medical Record Number. <strong><em>Do not send a Social Security Number</em></strong>.",
