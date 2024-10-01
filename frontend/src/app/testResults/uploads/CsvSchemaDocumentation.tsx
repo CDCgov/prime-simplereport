@@ -408,6 +408,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                               className={`usa-nav__secondary-item ${
                                 isTabSelected ? "usa-current" : ""
                               }`}
+                              key={`${section.slug}-${tabSection.slug}-tablist-item`}
                             >
                               <a
                                 id={`${section.slug}-${tabSection.slug}-tab`}
