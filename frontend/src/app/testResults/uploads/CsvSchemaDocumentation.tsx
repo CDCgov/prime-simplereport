@@ -425,11 +425,11 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                               }`}
                               key={`${section.slug}-${tabSection.slug}-tablist-item`}
                             >
-                              <a
+                              <button
                                 id={`${section.slug}-${tabSection.slug}-tab`}
                                 role="tab"
-                                className={`usa-button--unstyled text-ink text-no-underline ${
-                                  isTabSelected ? "active" : ""
+                                className={`usa-button--unstyled text-ink text-no-underline tab-button ${
+                                  isTabSelected ? "tab-selected" : ""
                                 }`}
                                 onClick={() =>
                                   setTabSectionState((prevState) => {
@@ -442,7 +442,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                                 aria-selected={isTabSelected}
                               >
                                 {tabSection.title}
-                              </a>
+                              </button>
                             </li>
                           );
                         })}
