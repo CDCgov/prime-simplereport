@@ -66,25 +66,12 @@ describe("CsvSchemaDocumentation tests", () => {
       expect(screen.getByText("Optional")).toBeInTheDocument();
     });
 
-    it("renders a requested schema item", () => {
-      const item = {
-        ...baseItem,
-        requiredStatusTag: RequiredStatusTag.REQUESTED,
-      };
-      render(<CsvSchemaDocumentationItem item={item} />);
-      expect(screen.queryByText("Required")).not.toBeInTheDocument();
-      expect(screen.queryByText("Optional")).not.toBeInTheDocument();
-      const header = screen.getByTestId("header");
-      expect(within(header).getByText("Requested")).toBeInTheDocument();
-    });
-
     it("renders a required when positive schema item", () => {
       const item = {
         ...baseItem,
         requiredStatusTag: RequiredStatusTag.REQUIRED_FOR_POSITIVES,
       };
       render(<CsvSchemaDocumentationItem item={item} />);
-      expect(screen.queryByText("Requested")).not.toBeInTheDocument();
       expect(screen.queryByText("Optional")).not.toBeInTheDocument();
       const header = screen.getByTestId("header");
       expect(
@@ -194,9 +181,7 @@ describe("CsvSchemaDocumentation tests", () => {
       );
       const user = userEvent.setup();
 
-      expect(
-        screen.queryByText("Required for Positives")
-      ).not.toBeInTheDocument();
+      expect(screen.getAllByText("Required for Positives")).toHaveLength(1);
 
       const hivAoeTab = screen.getByRole("tab", {
         name: "HIV",
@@ -204,7 +189,7 @@ describe("CsvSchemaDocumentation tests", () => {
 
       await user.click(hivAoeTab);
 
-      expect(screen.getByText("Required for Positives")).toBeInTheDocument();
+      expect(screen.getAllByText("Required for Positives")).toHaveLength(2);
     });
     it("logs to App Insights on template download", async () => {
       const mockTrackEvent = jest.fn();
