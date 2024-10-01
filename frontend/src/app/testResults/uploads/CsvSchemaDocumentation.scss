@@ -41,6 +41,18 @@
   }
 }
 
-.csv-section-tablist li:first-child {
-  padding-left: 0;
+.csv-section-tablist {
+  li:first-child {
+    padding-left: 0;
+  }
+
+  .tab-button {
+    display: inline-block;
+  }
+
+  .tab-selected,
+  .tab-button:hover {
+    border-bottom: 0.25rem solid #005ea2;
+    padding-bottom: 0.5rem;
+  }
 }
