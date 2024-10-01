@@ -405,25 +405,29 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                 let sectionToRender = section;
                 let tabHeading;
                 if (section.tabs && section.tabs.length > 0) {
+                  let tabIds = "";
+                  section.tabs.forEach((tabSection) => {
+                    tabIds.concat(`${section.slug}-${tabSection.slug}-tab `);
+                  });
                   tabHeading = (
                     <nav
                       className="prime-secondary-nav"
                       aria-label={`Tab navigation for ${section.title}`}
                     >
-                      <ul
+                      <div
                         role="tablist"
-                        aria-owns={`${section.slug}-tab`}
+                        aria-owns={tabIds}
                         className="usa-nav__secondary-links prime-nav csv-section-tablist"
                       >
                         {section.tabs.map((tabSection) => {
                           const isTabSelected =
                             tabSectionState[section.slug] === tabSection.title;
                           return (
-                            <li
-                              className={`usa-nav__secondary-item ${
+                            <div
+                              className={`usa-nav__secondary-item padding-right-1 ${
                                 isTabSelected ? "usa-current" : ""
                               }`}
-                              key={`${section.slug}-${tabSection.slug}-tablist-item`}
+                              key={`${section.slug}-${tabSection.slug}-tabpanel-item`}
                             >
                               <button
                                 id={`${section.slug}-${tabSection.slug}-tab`}
@@ -443,10 +447,10 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                               >
                                 {tabSection.title}
                               </button>
-                            </li>
+                            </div>
                           );
                         })}
-                      </ul>
+                      </div>
                     </nav>
                   );
                   sectionToRender = section.tabs.filter(
