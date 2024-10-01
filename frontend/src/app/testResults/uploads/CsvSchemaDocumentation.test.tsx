@@ -176,6 +176,36 @@ describe("CsvSchemaDocumentation tests", () => {
       );
       expect(container).toMatchSnapshot();
     });
+    it("has working tabs for navigation", async () => {
+      render(
+        <MemoryRouter initialEntries={["/results/upload/submit/guide"]}>
+          <Routes>
+            <Route
+              path={"/results/upload/submit/guide"}
+              element={
+                <CsvSchemaDocumentation
+                  schemaBuilder={specificSchemaBuilder}
+                  returnUrl={"/results/upload/submit"}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+      const user = userEvent.setup();
+
+      expect(
+        screen.queryByText("Required for Positives")
+      ).not.toBeInTheDocument();
+
+      const hivAoeTab = screen.getByRole("tab", {
+        name: "HIV",
+      });
+
+      await user.click(hivAoeTab);
+
+      expect(screen.getByText("Required for Positives")).toBeInTheDocument();
+    });
     it("logs to App Insights on template download", async () => {
       const mockTrackEvent = jest.fn();
       (getAppInsights as jest.Mock).mockImplementation(() => {
