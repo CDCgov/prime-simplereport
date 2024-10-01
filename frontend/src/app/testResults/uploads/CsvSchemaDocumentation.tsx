@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
@@ -9,7 +9,7 @@ import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { getFacilityIdFromUrl } from "../../utils/url";
 import { BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT } from "../../../config/constants";
 
-import { CsvSchema } from "./specificSchemaBuilder";
+import { CsvSchema, RequiredStatusTag } from "./specificSchemaBuilder";
 
 export type CsvSchemaItem = {
   name: string;
@@ -21,6 +21,7 @@ export type CsvSchemaItem = {
   subHeader?: string[];
   format?: string;
   examples?: string[];
+  requiredStatusTag?: RequiredStatusTag;
 };
 
 type CsvSchemaItemProps = {
@@ -46,17 +47,30 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           </span>
         )}
 
-        {!item.required && item.requested && (
-          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
-            Requested
+        {item.requiredStatusTag ===
+          RequiredStatusTag.REQUIRED_FOR_POSITIVES && (
+          <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-bottom">
+            Required for Positives
           </span>
         )}
 
-        {!item.required && !item.requested && (
-          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
-            Optional
-          </span>
-        )}
+        {!item.required &&
+          item.requested &&
+          item.requiredStatusTag !==
+            RequiredStatusTag.REQUIRED_FOR_POSITIVES && (
+            <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
+              Requested
+            </span>
+          )}
+
+        {!item.required &&
+          !item.requested &&
+          item.requiredStatusTag !==
+            RequiredStatusTag.REQUIRED_FOR_POSITIVES && (
+            <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
+              Optional
+            </span>
+          )}
       </h5>
       <div data-testid="subheader" className="margin-bottom-3">
         {item.subHeader?.map((subHeader) => (
@@ -158,6 +172,19 @@ interface CsvSchemaDocumentationProps {
   returnUrl: string;
 }
 
+const buildDefaultTabSectionState = (schema: CsvSchema) => {
+  let tabSectionState: Record<string, string> = {};
+  schema.fields.forEach((field) =>
+    field.sections.forEach((section) => {
+      // only set a default if there isn't a value for this key
+      if (section.tabs && !tabSectionState[section.slug]) {
+        tabSectionState[section.slug] = section.tabs[0].title;
+      }
+    })
+  );
+  return tabSectionState;
+};
+
 const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
   schemaBuilder,
   returnUrl,
@@ -173,6 +200,9 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
   const appInsights = getAppInsights();
   const activeFacilityId = getFacilityIdFromUrl(location);
   const schema = schemaBuilder(activeFacilityId);
+  const [tabSectionState, setTabSectionState] = useState(
+    buildDefaultTabSectionState(schema)
+  );
 
   return (
     <div className="prime-container card-container csv-guide-container">
@@ -365,6 +395,57 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
               className="margin-bottom-5"
             >
               {field.sections?.map((section) => {
+                let sectionToRender = section;
+                let tabHeading;
+                if (section.tabs && section.tabs.length > 0) {
+                  tabHeading = (
+                    <nav
+                      className="prime-secondary-nav"
+                      aria-label={`Tab navigation for ${section.title}`}
+                    >
+                      <ul
+                        role="tablist"
+                        aria-owns={`${section.slug}-tab`}
+                        className="usa-nav__secondary-links prime-nav csv-section-tablist"
+                      >
+                        {section.tabs.map((tabSection) => {
+                          const isTabSelected =
+                            tabSectionState[section.slug] === tabSection.title;
+                          return (
+                            <li
+                              className={`usa-nav__secondary-item ${
+                                isTabSelected ? "usa-current" : ""
+                              }`}
+                            >
+                              <a
+                                id={`${section.slug}-${tabSection.slug}-tab`}
+                                role="tab"
+                                className={`usa-button--unstyled text-ink text-no-underline ${
+                                  isTabSelected ? "active" : ""
+                                }`}
+                                onClick={() =>
+                                  setTabSectionState((prevState) => {
+                                    return {
+                                      ...prevState,
+                                      [section.slug]: tabSection.title,
+                                    };
+                                  })
+                                }
+                                aria-selected={isTabSelected}
+                              >
+                                {tabSection.title}
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </nav>
+                  );
+                  sectionToRender = section.tabs.filter(
+                    (tabSection) =>
+                      tabSectionState[section.slug] === tabSection.title
+                  )[0];
+                }
                 return (
                   <div
                     key={`sectionTiles-section-${section.title}`}
@@ -372,7 +453,9 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                   >
                     <h4 id={`${section.slug}`}>{section.title}</h4>
 
-                    {section.items?.map((item) => {
+                    {tabHeading}
+
+                    {sectionToRender.items?.map((item) => {
                       return (
                         <CsvSchemaDocumentationItem
                           item={item}
