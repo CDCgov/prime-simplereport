@@ -14,8 +14,6 @@ import { CsvSchema, RequiredStatusTag } from "./specificSchemaBuilder";
 export type CsvSchemaItem = {
   name: string;
   colHeader: string;
-  required: boolean;
-  requested: boolean;
   acceptedValues?: string[];
   description?: string[];
   subHeader?: string[];
@@ -41,7 +39,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         data-testid="header"
       >
         {item.name}
-        {item.required && (
+        {item.requiredStatusTag === RequiredStatusTag.REQUIRED && (
           <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-bottom">
             Required
           </span>
@@ -54,23 +52,17 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           </span>
         )}
 
-        {!item.required &&
-          item.requested &&
-          item.requiredStatusTag !==
-            RequiredStatusTag.REQUIRED_FOR_POSITIVES && (
-            <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
-              Requested
-            </span>
-          )}
+        {item.requiredStatusTag === RequiredStatusTag.REQUESTED && (
+          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
+            Requested
+          </span>
+        )}
 
-        {!item.required &&
-          !item.requested &&
-          item.requiredStatusTag !==
-            RequiredStatusTag.REQUIRED_FOR_POSITIVES && (
-            <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
-              Optional
-            </span>
-          )}
+        {item.requiredStatusTag === RequiredStatusTag.OPTIONAL && (
+          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
+            Optional
+          </span>
+        )}
       </h5>
       <div data-testid="subheader" className="margin-bottom-3">
         {item.subHeader?.map((subHeader) => (

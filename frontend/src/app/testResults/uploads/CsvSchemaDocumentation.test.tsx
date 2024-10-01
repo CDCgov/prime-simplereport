@@ -10,7 +10,10 @@ import CsvSchemaDocumentation, {
   CsvSchemaItem,
   getPageTitle,
 } from "./CsvSchemaDocumentation";
-import { specificSchemaBuilder } from "./specificSchemaBuilder";
+import {
+  RequiredStatusTag,
+  specificSchemaBuilder,
+} from "./specificSchemaBuilder";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -21,8 +24,7 @@ window.scrollTo = jest.fn();
 const baseItem: CsvSchemaItem = {
   name: "Sample Item",
   colHeader: "sample_item",
-  required: false,
-  requested: false,
+  requiredStatusTag: RequiredStatusTag.OPTIONAL,
   acceptedValues: [],
   description: [],
   subHeader: [],
@@ -50,7 +52,7 @@ describe("CsvSchemaDocumentation tests", () => {
     it("renders a required schema item", () => {
       const item = {
         ...baseItem,
-        required: true,
+        requiredStatusTag: RequiredStatusTag.REQUIRED,
       };
       render(<CsvSchemaDocumentationItem item={item} />);
       expect(screen.getByText("Required")).toBeInTheDocument();
@@ -59,7 +61,6 @@ describe("CsvSchemaDocumentation tests", () => {
     it("renders a optional schema item", () => {
       const item = {
         ...baseItem,
-        required: false,
       };
       render(<CsvSchemaDocumentationItem item={item} />);
       expect(screen.getByText("Optional")).toBeInTheDocument();
@@ -68,13 +69,27 @@ describe("CsvSchemaDocumentation tests", () => {
     it("renders a requested schema item", () => {
       const item = {
         ...baseItem,
-        requested: true,
+        requiredStatusTag: RequiredStatusTag.REQUESTED,
       };
       render(<CsvSchemaDocumentationItem item={item} />);
       expect(screen.queryByText("Required")).not.toBeInTheDocument();
       expect(screen.queryByText("Optional")).not.toBeInTheDocument();
       const header = screen.getByTestId("header");
       expect(within(header).getByText("Requested")).toBeInTheDocument();
+    });
+
+    it("renders a required when positive schema item", () => {
+      const item = {
+        ...baseItem,
+        requiredStatusTag: RequiredStatusTag.REQUIRED_FOR_POSITIVES,
+      };
+      render(<CsvSchemaDocumentationItem item={item} />);
+      expect(screen.queryByText("Requested")).not.toBeInTheDocument();
+      expect(screen.queryByText("Optional")).not.toBeInTheDocument();
+      const header = screen.getByTestId("header");
+      expect(
+        within(header).getByText("Required for Positives")
+      ).toBeInTheDocument();
     });
 
     it("renders a schema item with description", () => {
