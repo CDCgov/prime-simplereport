@@ -1,5 +1,9 @@
 import { validate } from "uuid";
 
+import { MULTIPLEX_DISEASES } from "../constants";
+
+import { CsvSchemaItem } from "./CsvSchemaDocumentation";
+
 export interface CsvSchema {
   fields: Field[];
 }
@@ -11,21 +15,142 @@ export interface Field {
 export interface Section {
   title: string;
   slug: string;
-  items: Item[];
+  items: CsvSchemaItem[];
+  tabs?: Section[];
 }
 
-export interface Item {
-  name: string;
-  colHeader: string;
-  required: boolean;
-  requested: boolean;
-  examples?: string[];
-  description?: string[];
-  acceptedValues?: string[];
-  format?: string;
+export enum RequiredStatusTag {
+  REQUIRED = "Required",
+  REQUIRED_FOR_POSITIVES = "Required for Positives",
+  REQUESTED = "Requested",
+  OPTIONAL = "Optional",
 }
 
-export const specificSchemaBuilder = (facilityId: string | null) => {
+const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
+  pregnant: {
+    name: "Pregnant",
+    colHeader: "pregnant",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    required: false,
+    requested: true,
+    acceptedValues: [
+      "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+      "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+      "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
+    ],
+    format: "Use one of the accepted values listed below",
+  },
+  employed_in_healthcare: {
+    name: "Employed in healthcare",
+    colHeader: "employed_in_healthcare",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    required: false,
+    requested: true,
+    acceptedValues: [
+      "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+      "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+      "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
+    ],
+    format: "Use one of the accepted values listed below",
+  },
+  symptomatic_for_disease: {
+    name: "Symptomatic for disease",
+    colHeader: "symptomatic_for_disease",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    required: false,
+    requested: true,
+    acceptedValues: [
+      "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+      "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+      "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
+    ],
+    format: "Use one of the accepted values listed below.",
+  },
+  illness_onset_date: {
+    name: "Illness onset date",
+    colHeader: "illness_onset_date",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    required: false,
+    requested: true,
+    format: "M/D/YYYY",
+    examples: ["9/2/2022", "10/13/2021"],
+    description: ["Date"],
+  },
+  resident_congregate_setting: {
+    name: "Resident congregate setting",
+    colHeader: "resident_congregate_setting",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    required: false,
+    requested: true,
+    acceptedValues: [
+      "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+      "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+      "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
+    ],
+    format:
+      "If the patient lives in a setting with shared group spaces, such as assisted living or a prison.<br/>Use one of the accepted values listed below.",
+  },
+  residence_type: {
+    name: "Residence type",
+    colHeader: "residence_type",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    required: false,
+    requested: false,
+    format: "Use one of the accepted values listed below",
+    acceptedValues: [
+      "<mark><code>Hospital</code></mark> or <mark><code>22232009</code></mark>",
+      "<mark><code>Hospital Ship</code></mark> or <mark><code>2081004</code></mark>",
+      "<mark><code>Long Term Care Hospital</code></mark> or <mark><code>32074000</code></mark>",
+      "<mark><code>Secure Hospital</code></mark> or <mark><code>224929004</code></mark>",
+      "<mark><code>Nursing Home</code></mark> or <mark><code>42665001</code></mark>",
+      "<mark><code>Retirement Home</code></mark> or <mark><code>30629002</code></mark>",
+      "<mark><code>Orphanage</code></mark> or <mark><code>74056004</code></mark>",
+      "<mark><code>Prison-based Care Site</code></mark> or <mark><code>722173008</code></mark>",
+      "<mark><code>Substance Abuse Treatment Center</code></mark> or <mark><code>20078004</code></mark>",
+      "<mark><code>Boarding House</code></mark> or <mark><code>257573002</code></mark>",
+      "<mark><code>Military Accommodation</code></mark> or <mark><code>224683003</code></mark>",
+      "<mark><code>Hospice</code></mark> or <mark><code>284546000</code></mark>",
+      "<mark><code>Hostel</code></mark> or <mark><code>257628001</code></mark>",
+      "<mark><code>Sheltered Housing</code></mark> or <mark><code>310207003</code></mark>",
+      "<mark><code>Penal Institution</code></mark> or <mark><code>57656006</code></mark>",
+      "<mark><code>Religious Institutional Residence</code></mark> or <mark><code>285113009</code></mark>",
+      "<mark><code>Work (environment)</code></mark> or <mark><code>285141008</code></mark>",
+      "<mark><code>Homeless</code></mark> or <mark><code>32911000</code></mark>",
+    ],
+    description: [
+      "If the resident congregate setting is “Y” or “Yes,” then provide residence type",
+    ],
+  },
+  hospitalized: {
+    name: "Hospitalized",
+    colHeader: "hospitalized",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    required: false,
+    requested: true,
+    acceptedValues: [
+      "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+      "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+      "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
+    ],
+    format:
+      "If the patient tested was admitted to a hospital for treatment.<br/>Use one of the accepted values listed below.",
+  },
+  icu: {
+    name: "Intensive care unit",
+    colHeader: "icu",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    required: false,
+    requested: true,
+    acceptedValues: [
+      "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
+      "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
+      "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
+    ],
+    format: "Use one of the accepted values listed below",
+  },
+};
+
+export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
   const validUuid = facilityId && validate(facilityId) ? facilityId : "";
   const deviceCodeLookupLink = `<a href="${process.env.PUBLIC_URL}/results/upload/submit/code-lookup?facility=${validUuid}" class="usa-link" target="_blank" rel="noreferrer noopener">device code lookup tool</a>`;
   const livdSpreadsheetLink =
@@ -584,121 +709,40 @@ export const specificSchemaBuilder = (facilityId: string | null) => {
           {
             title: "Ask on entry (AOE)",
             slug: "ask-on-entry",
-            items: [
+            tabs: [
               {
-                name: "Pregnant",
-                colHeader: "pregnant",
-                required: false,
-                requested: true,
-                acceptedValues: [
-                  "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
-                  "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
-                  "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
-                ],
-                format: "Use one of the accepted values listed below",
-              },
-              {
-                name: "Employed in healthcare",
-                colHeader: "employed_in_healthcare",
-                required: false,
-                requested: true,
-                acceptedValues: [
-                  "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
-                  "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
-                  "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
-                ],
-                format: "Use one of the accepted values listed below",
-              },
-              {
-                name: "Symptomatic for disease",
-                colHeader: "symptomatic_for_disease",
-                required: false,
-                requested: true,
-                acceptedValues: [
-                  "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
-                  "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
-                  "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
-                ],
-                format: "Use one of the accepted values listed below.",
-              },
-              {
-                name: "Illness onset date",
-                colHeader: "illness_onset_date",
-                required: false,
-                requested: true,
-                format: "M/D/YYYY",
-                examples: ["9/2/2022", "10/13/2021"],
-                description: ["Date"],
-              },
-              {
-                name: "Resident congregate setting",
-                colHeader: "resident_congregate_setting",
-                required: false,
-                requested: true,
-                acceptedValues: [
-                  "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
-                  "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
-                  "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
-                ],
-                format:
-                  "If the patient lives in a setting with shared group spaces, such as assisted living or a prison.<br/>Use one of the accepted values listed below.",
-              },
-              {
-                name: "Residence type",
-                colHeader: "residence_type",
-                required: false,
-                requested: false,
-                format: "Use one of the accepted values listed below",
-                acceptedValues: [
-                  "<mark><code>Hospital</code></mark> or <mark><code>22232009</code></mark>",
-                  "<mark><code>Hospital Ship</code></mark> or <mark><code>2081004</code></mark>",
-                  "<mark><code>Long Term Care Hospital</code></mark> or <mark><code>32074000</code></mark>",
-                  "<mark><code>Secure Hospital</code></mark> or <mark><code>224929004</code></mark>",
-                  "<mark><code>Nursing Home</code></mark> or <mark><code>42665001</code></mark>",
-                  "<mark><code>Retirement Home</code></mark> or <mark><code>30629002</code></mark>",
-                  "<mark><code>Orphanage</code></mark> or <mark><code>74056004</code></mark>",
-                  "<mark><code>Prison-based Care Site</code></mark> or <mark><code>722173008</code></mark>",
-                  "<mark><code>Substance Abuse Treatment Center</code></mark> or <mark><code>20078004</code></mark>",
-                  "<mark><code>Boarding House</code></mark> or <mark><code>257573002</code></mark>",
-                  "<mark><code>Military Accommodation</code></mark> or <mark><code>224683003</code></mark>",
-                  "<mark><code>Hospice</code></mark> or <mark><code>284546000</code></mark>",
-                  "<mark><code>Hostel</code></mark> or <mark><code>257628001</code></mark>",
-                  "<mark><code>Sheltered Housing</code></mark> or <mark><code>310207003</code></mark>",
-                  "<mark><code>Penal Institution</code></mark> or <mark><code>57656006</code></mark>",
-                  "<mark><code>Religious Institutional Residence</code></mark> or <mark><code>285113009</code></mark>",
-                  "<mark><code>Work (environment)</code></mark> or <mark><code>285141008</code></mark>",
-                  "<mark><code>Homeless</code></mark> or <mark><code>32911000</code></mark>",
-                ],
-                description: [
-                  "If the resident congregate setting is “Y” or “Yes,” then provide residence type",
+                title: MULTIPLEX_DISEASES.COVID_19,
+                slug: MULTIPLEX_DISEASES.COVID_19,
+                items: [
+                  aoeDocumententationItems.pregnant,
+                  aoeDocumententationItems.employed_in_healthcare,
+                  aoeDocumententationItems.symptomatic_for_disease,
+                  aoeDocumententationItems.illness_onset_date,
+                  aoeDocumententationItems.resident_congregate_setting,
+                  aoeDocumententationItems.residence_type,
+                  aoeDocumententationItems.hospitalized,
+                  aoeDocumententationItems.icu,
                 ],
               },
               {
-                name: "Hospitalized",
-                colHeader: "hospitalized",
-                required: false,
-                requested: true,
-                acceptedValues: [
-                  "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
-                  "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
-                  "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
+                title: MULTIPLEX_DISEASES.HIV,
+                slug: MULTIPLEX_DISEASES.HIV,
+                items: [
+                  {
+                    ...aoeDocumententationItems.pregnant,
+                    requiredStatusTag: RequiredStatusTag.REQUIRED_FOR_POSITIVES,
+                  },
+                  aoeDocumententationItems.employed_in_healthcare,
+                  aoeDocumententationItems.symptomatic_for_disease,
+                  aoeDocumententationItems.illness_onset_date,
+                  aoeDocumententationItems.resident_congregate_setting,
+                  aoeDocumententationItems.residence_type,
+                  aoeDocumententationItems.hospitalized,
+                  aoeDocumententationItems.icu,
                 ],
-                format:
-                  "If the patient tested was admitted to a hospital for treatment.<br/>Use one of the accepted values listed below.",
-              },
-              {
-                name: "Intensive care unit",
-                colHeader: "icu",
-                required: false,
-                requested: true,
-                acceptedValues: [
-                  "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
-                  "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
-                  "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
-                ],
-                format: "Use one of the accepted values listed below",
               },
             ],
+            items: [],
           },
           {
             title: "Ordering facility",
