@@ -30,9 +30,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   pregnant: {
     name: "Pregnant",
     colHeader: "pregnant",
-    requiredStatusTag: RequiredStatusTag.OPTIONAL,
-    required: false,
-    requested: true,
+    requiredStatusTag: RequiredStatusTag.REQUESTED,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -43,9 +41,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   employed_in_healthcare: {
     name: "Employed in healthcare",
     colHeader: "employed_in_healthcare",
-    requiredStatusTag: RequiredStatusTag.OPTIONAL,
-    required: false,
-    requested: true,
+    requiredStatusTag: RequiredStatusTag.REQUESTED,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -56,9 +52,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   symptomatic_for_disease: {
     name: "Symptomatic for disease",
     colHeader: "symptomatic_for_disease",
-    requiredStatusTag: RequiredStatusTag.OPTIONAL,
-    required: false,
-    requested: true,
+    requiredStatusTag: RequiredStatusTag.REQUESTED,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -69,9 +63,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   illness_onset_date: {
     name: "Illness onset date",
     colHeader: "illness_onset_date",
-    requiredStatusTag: RequiredStatusTag.OPTIONAL,
-    required: false,
-    requested: true,
+    requiredStatusTag: RequiredStatusTag.REQUESTED,
     format: "M/D/YYYY",
     examples: ["9/2/2022", "10/13/2021"],
     description: ["Date"],
@@ -79,9 +71,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   resident_congregate_setting: {
     name: "Resident congregate setting",
     colHeader: "resident_congregate_setting",
-    requiredStatusTag: RequiredStatusTag.OPTIONAL,
-    required: false,
-    requested: true,
+    requiredStatusTag: RequiredStatusTag.REQUESTED,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -94,8 +84,6 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
     name: "Residence type",
     colHeader: "residence_type",
     requiredStatusTag: RequiredStatusTag.OPTIONAL,
-    required: false,
-    requested: false,
     format: "Use one of the accepted values listed below",
     acceptedValues: [
       "<mark><code>Hospital</code></mark> or <mark><code>22232009</code></mark>",
@@ -124,9 +112,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   hospitalized: {
     name: "Hospitalized",
     colHeader: "hospitalized",
-    requiredStatusTag: RequiredStatusTag.OPTIONAL,
-    required: false,
-    requested: true,
+    requiredStatusTag: RequiredStatusTag.REQUESTED,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -138,9 +124,7 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
   icu: {
     name: "Intensive care unit",
     colHeader: "icu",
-    requiredStatusTag: RequiredStatusTag.OPTIONAL,
-    required: false,
-    requested: true,
+    requiredStatusTag: RequiredStatusTag.REQUESTED,
     acceptedValues: [
       "<mark><code>Y</code></mark> or <mark><code>YES</code></mark>",
       "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
@@ -167,8 +151,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient ID",
                 colHeader: "patient_id",
-                required: false,
-                requested: true,
+                requiredStatusTag: RequiredStatusTag.REQUESTED,
                 examples: ["1234", "P2300"],
                 description: [
                   "Enter unique patient identifier. This is typically the Medical Record Number. <strong><em>Do not send a Social Security Number</em></strong>.",
@@ -178,29 +161,25 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient last name",
                 colHeader: "patient_last_name",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 description: ["Last name, separated from first name"],
               },
               {
                 name: "Patient first name",
                 colHeader: "patient_first_name",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 description: ["First name, separated from last name"],
               },
               {
                 name: "Patient middle name",
                 colHeader: "patient_middle_name",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 description: ["Middle name, if known"],
               },
               {
                 name: "Patient street address",
                 colHeader: "patient_street",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 acceptedValues: [
                   "Example: <em>1234 America Ln</em>",
                   "<mark><code>** Unknown / Not Given **</code></mark>",
@@ -213,15 +192,13 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient street address line 2",
                 colHeader: "patient_street2",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 examples: ["<em>Apartment 4C</em>"],
               },
               {
                 name: "Patient city",
                 colHeader: "patient_city",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: ["Los Angeles", "Madison"],
                 description: [
                   'If a patient’s city is unknown or they’re experiencing homelessness, use <a href="#ordering_facility_city" class="usa-link">ordering facility city</a>',
@@ -230,24 +207,21 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient state",
                 colHeader: "patient_state",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "Two-character state abbreviation",
                 examples: ["TX", "CA"],
               },
               {
                 name: "Patient county",
                 colHeader: "patient_county",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: ["Kings County", "Allen Parish"],
                 description: ["County or parish name"],
               },
               {
                 name: "Patient zip code",
                 colHeader: "patient_zip_code",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "5 or 9 digit zip code",
                 examples: ["12345", "12345-6789"],
                 description: [
@@ -257,8 +231,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient phone number",
                 colHeader: "patient_phone_number",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "000-000-0000",
                 examples: ["123-456-7890"],
                 description: [
@@ -268,16 +241,14 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient date of birth",
                 colHeader: "patient_dob",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "M/D/YYYY",
                 examples: ["3/30/1972", "12/8/2002"],
               },
               {
                 name: "Patient gender",
                 colHeader: "patient_gender",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 acceptedValues: [
                   "<mark><code>M</code></mark> or <mark><code>Male</code></mark>",
                   "<mark><code>F</code></mark> or <mark><code>Female</code></mark>",
@@ -293,8 +264,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient race",
                 colHeader: "patient_race",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 acceptedValues: [
                   "<mark><code>American Indian or Alaska Native</code></mark> or <mark><code>1002-5</code></mark>",
                   "<mark><code>Asian</code></mark> or <mark><code>2028-9</code></mark>",
@@ -312,8 +282,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient ethnicity",
                 colHeader: "patient_ethnicity",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 acceptedValues: [
                   "<mark><code>2135-2</code></mark> or <mark><code>Hispanic or Latino</code></mark>",
                   "<mark><code>2186-5</code></mark> or <mark><code>Not Hispanic or Latino</code></mark>",
@@ -326,8 +295,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient preferred language ",
                 colHeader: "patient_preferred_language",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 examples: [
                   'eng <span class="normal-style">or</span> English',
                   'spa <span class="normal-style">or</span> Spanish',
@@ -339,8 +307,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Patient email",
                 colHeader: "patient_email",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format: "Email address",
                 examples: ["janedoe@person.com"],
               },
@@ -353,8 +320,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Accession number",
                 colHeader: "accession_number ",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: ["ID12345-6789"],
                 description: [
                   "A unique ID that identifies a single result, which allows public health departments to refer back to a test event.",
@@ -363,8 +329,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Equipment model name",
                 colHeader: "equipment_model_name",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: [
                   "ID NOW",
                   "BD Veritor System for Rapid Detection of SARS-CoV-2*",
@@ -379,8 +344,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Test kit name ID",
                 colHeader: "test_kit_name_id",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
 
                 examples: [
                   "CareStart COVID-19 IgM/IgG_Access Bio, Inc.",
@@ -396,8 +360,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Equipment model ID",
                 colHeader: "equipment_model_id",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
 
                 examples: [
                   "No Equipment",
@@ -413,8 +376,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Test performed LOINC code",
                 colHeader: "test_performed_code",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "00000-0",
                 examples: [
                   "94534-5",
@@ -430,8 +392,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Test ordered LOINC code",
                 colHeader: "test_ordered_code",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format: "00000-0",
                 examples: [
                   "94534-5",
@@ -445,8 +406,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Test result",
                 colHeader: "test_result",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 acceptedValues: [
                   "<mark><code>Positive</code></mark>",
                   "<mark><code>Negative</code></mark>",
@@ -462,8 +422,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Order test date",
                 colHeader: "order_test_date",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format:
                   "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are acceptable",
                 examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
@@ -475,8 +434,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Specimen collection date",
                 colHeader: "specimen_collection_date",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format:
                   "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are also acceptable",
                 examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
@@ -489,8 +447,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Testing lab specimen received date",
                 colHeader: "testing_lab_specimen_received_date",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format:
                   "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are also acceptable",
                 examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
@@ -503,8 +460,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Test result date",
                 colHeader: "test_result_date",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format:
                   "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are also acceptable",
                 examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
@@ -516,8 +472,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Date result released",
                 colHeader: "date_result_released",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format:
                   "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are also acceptable",
                 examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
@@ -536,8 +491,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Specimen type",
                 colHeader: "specimen_type",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: [
                   "<em>258607008</em>",
                   "<em>258500001</em>",
@@ -558,8 +512,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Ordering provider ID",
                 colHeader: "ordering_provider_id",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format:
                   '<a href="https://npiregistry.cms.hhs.gov/" class="usa-link" target="_blank" rel="noreferrer noopener">NPI number</a> or local code',
                 examples: [
@@ -573,66 +526,57 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Ordering provider last name",
                 colHeader: "ordering_provider_last_name",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 description: ["Last name, separated from first name"],
               },
               {
                 name: "Ordering provider first name",
                 colHeader: "ordering_provider_first_name",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 description: ["First name, separated from last name"],
               },
               {
                 name: "Ordering provider middle name",
                 colHeader: "ordering_provider_middle_name",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 description: ["Middle name, if known"],
               },
               {
                 name: "Ordering provider street address",
                 colHeader: "ordering_provider_street",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: ["1234 America Ln"],
               },
               {
                 name: "Ordering provider street address line 2",
                 colHeader: "ordering_provider_street2",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 examples: ["Suite 5C"],
               },
               {
                 name: "Ordering provider city",
                 colHeader: "ordering_provider_city",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: ["Los Angeles", "Madison"],
               },
               {
                 name: "Ordering provider state",
                 colHeader: "ordering_provider_state",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "Two-character state abbreviation",
                 examples: ["TX", "CA"],
               },
               {
                 name: "Ordering provider zip code",
                 colHeader: "ordering_provider_zip_code",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "5 or 9 digit zip code",
                 examples: ["12345", "12345-6789"],
               },
               {
                 name: "Ordering provider phone number",
                 colHeader: "ordering_provider_phone_number",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "000-000-0000",
                 examples: ["123-456-7890"],
               },
@@ -645,8 +589,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Testing lab CLIA number",
                 colHeader: "testing_lab_clia",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: ["<em>11D2030855</em>"],
                 description: [
                   'CLIA number from the <a href="https://www.cdc.gov/clia/LabSearch.html" class="usa-link" target="_blank" rel="noreferrer noopener">CDC Laboratory Search</a>',
@@ -655,52 +598,45 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Testing lab name",
                 colHeader: "testing_lab_name",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 description: ["Name of facility that processed test results"],
               },
               {
                 name: "Testing lab street address",
                 colHeader: "testing_lab_street",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: ["1234 America St"],
               },
               {
                 name: "Testing lab street address line 2",
                 colHeader: "testing_lab_street2",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 examples: ["Unit 4"],
               },
               {
                 name: "Testing lab city",
                 colHeader: "testing_lab_city",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 examples: ["Dallas", "Madison"],
               },
               {
                 name: "Testing lab state",
                 colHeader: "testing_lab_state",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "Two-character state abbreviation",
                 examples: ["FL", "CA"],
               },
               {
                 name: "Testing lab zip code",
                 colHeader: "testing_lab_zip_code",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "5 or 9 digit zip code",
                 examples: ["54321", "12345-6789"],
               },
               {
                 name: "Testing lab phone number",
                 colHeader: "testing_lab_phone_number",
-                required: true,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.REQUIRED,
                 format: "000-000-0000",
                 examples: ["123-654-7890"],
               },
@@ -751,8 +687,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Ordering facility name",
                 colHeader: "ordering_facility_name",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 description: [
                   'You can leave this field blank if it’s the same as <a href="#testing_lab_name" class="usa-link">testing_lab_name</a>',
                 ],
@@ -760,8 +695,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Ordering facility street address",
                 colHeader: "ordering_facility_street",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 description: [
                   'You can leave this field blank if it’s the same as <a href="#testing_lab_street" class="usa-link">testing_lab_street</a>',
                 ],
@@ -769,15 +703,13 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Ordering facility street address line 2",
                 colHeader: "ordering_facility_street2",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 description: ["Address, continued"],
               },
               {
                 name: "Ordering facility city",
                 colHeader: "ordering_facility_city",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 description: [
                   'You can leave this field blank if it’s the same as <a href="#testing_lab_city" class="usa-link">testing_lab_city</a>',
                 ],
@@ -785,8 +717,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Ordering facility state",
                 colHeader: "ordering_facility_state",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format: "Two-character state abbreviation",
                 description: [
                   'You can leave this field blank if it’s the same as <a href="#testing_lab_state" class="usa-link">testing_lab_state</a>',
@@ -796,8 +727,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Ordering facility zip code",
                 colHeader: "ordering_facility_zip_code",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format: "5 or 9 digit zip code",
                 examples: ["12345", "12345-6789"],
                 description: [
@@ -807,8 +737,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Ordering facility phone number",
                 colHeader: "ordering_facility_phone_number",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 examples: ["123-456-7890"],
                 format: "000-000-0000",
                 description: [
@@ -824,8 +753,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Comment",
                 colHeader: "comment",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format: "Do not include commas (,) in any comments",
                 description: [
                   "If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field isn't meant for characteristics of the condition tested or statements about false positive or negative results.",
@@ -834,8 +762,7 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
               {
                 name: "Test result status",
                 colHeader: "test_result_status ",
-                required: false,
-                requested: false,
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
                 format: "Use one of the accepted values below",
                 acceptedValues: [
                   "<mark><code>F</code></mark> = Final result",

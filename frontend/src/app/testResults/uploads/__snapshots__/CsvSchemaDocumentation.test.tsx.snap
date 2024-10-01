@@ -4791,6 +4791,41 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
           >
             Ask on entry (AOE)
           </h4>
+          <nav
+            aria-label="Tab navigation for Ask on entry (AOE)"
+            class="prime-secondary-nav"
+          >
+            <ul
+              aria-owns="ask-on-entry-tab"
+              class="usa-nav__secondary-links prime-nav csv-section-tablist"
+              role="tablist"
+            >
+              <li
+                class="usa-nav__secondary-item usa-current"
+              >
+                <a
+                  aria-selected="true"
+                  class="usa-button--unstyled text-ink text-no-underline active"
+                  id="ask-on-entry-COVID-19-tab"
+                  role="tab"
+                >
+                  COVID-19
+                </a>
+              </li>
+              <li
+                class="usa-nav__secondary-item "
+              >
+                <a
+                  aria-selected="false"
+                  class="usa-button--unstyled text-ink text-no-underline "
+                  id="ask-on-entry-HIV-tab"
+                  role="tab"
+                >
+                  HIV
+                </a>
+              </li>
+            </ul>
+          </nav>
           <div
             class="rs-documentation__values margin-top-6"
           >
