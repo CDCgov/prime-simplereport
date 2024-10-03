@@ -178,6 +178,7 @@ interface SectionTabButtonProps {
   setTabSectionState: React.Dispatch<
     React.SetStateAction<Record<string, string>>
   >;
+  index: number;
 }
 
 const SectionTabButton = ({
@@ -185,12 +186,13 @@ const SectionTabButton = ({
   parentSection,
   tabSection,
   setTabSectionState,
+  index,
 }: SectionTabButtonProps) => {
   return (
     <div
       className={`usa-nav__secondary-item padding-right-1 ${
         selected ? "usa-current" : ""
-      }`}
+      } ${index === 0 ? "padding-left-0" : ""}`}
       key={`${parentSection.slug}-${tabSection.slug}-tabpanel-item`}
     >
       <button
@@ -463,7 +465,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                         aria-owns={tabIds}
                         className="usa-nav__secondary-links prime-nav csv-section-tablist"
                       >
-                        {section.tabs.map((tabSection) => {
+                        {section.tabs.map((tabSection, index) => {
                           return (
                             <SectionTabButton
                               selected={
@@ -473,6 +475,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                               parentSection={section}
                               tabSection={tabSection}
                               setTabSectionState={setTabSectionState}
+                              index={index}
                             />
                           );
                         })}

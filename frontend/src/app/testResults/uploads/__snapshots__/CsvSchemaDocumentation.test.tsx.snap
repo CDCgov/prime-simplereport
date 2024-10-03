@@ -4838,7 +4838,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               role="tablist"
             >
               <div
-                class="usa-nav__secondary-item padding-right-1 usa-current"
+                class="usa-nav__secondary-item padding-right-1 usa-current padding-left-0"
               >
                 <button
                   aria-selected="true"
@@ -4850,7 +4850,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 </button>
               </div>
               <div
-                class="usa-nav__secondary-item padding-right-1 "
+                class="usa-nav__secondary-item padding-right-1  "
               >
                 <button
                   aria-selected="false"
