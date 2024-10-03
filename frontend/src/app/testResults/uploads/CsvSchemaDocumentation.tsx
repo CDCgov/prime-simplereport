@@ -9,7 +9,7 @@ import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { getFacilityIdFromUrl } from "../../utils/url";
 import { BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT } from "../../../config/constants";
 
-import { CsvSchema, RequiredStatusTag } from "./specificSchemaBuilder";
+import { CsvSchema, RequiredStatusTag, Section } from "./specificSchemaBuilder";
 
 export type CsvSchemaItem = {
   name: string;
@@ -169,6 +169,50 @@ const buildDefaultTabSectionState = (schema: CsvSchema) => {
     })
   );
   return tabSectionState;
+};
+
+interface SectionTabButtonProps {
+  selected: boolean;
+  parentSection: Section;
+  tabSection: Section;
+  setTabSectionState: React.Dispatch<
+    React.SetStateAction<Record<string, string>>
+  >;
+}
+
+const SectionTabButton = ({
+  selected,
+  parentSection,
+  tabSection,
+  setTabSectionState,
+}: SectionTabButtonProps) => {
+  return (
+    <div
+      className={`usa-nav__secondary-item padding-right-1 ${
+        selected ? "usa-current" : ""
+      }`}
+      key={`${parentSection.slug}-${tabSection.slug}-tabpanel-item`}
+    >
+      <button
+        id={`${parentSection.slug}-${tabSection.slug}-tab`}
+        role="tab"
+        className={`usa-button--unstyled text-ink text-no-underline tab-button ${
+          selected ? "tab-selected" : ""
+        }`}
+        onClick={() =>
+          setTabSectionState((prevState) => {
+            return {
+              ...prevState,
+              [parentSection.slug]: tabSection.title,
+            };
+          })
+        }
+        aria-selected={selected}
+      >
+        {tabSection.title}
+      </button>
+    </div>
+  );
 };
 
 const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
@@ -420,34 +464,16 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                         className="usa-nav__secondary-links prime-nav csv-section-tablist"
                       >
                         {section.tabs.map((tabSection) => {
-                          const isTabSelected =
-                            tabSectionState[section.slug] === tabSection.title;
                           return (
-                            <div
-                              className={`usa-nav__secondary-item padding-right-1 ${
-                                isTabSelected ? "usa-current" : ""
-                              }`}
-                              key={`${section.slug}-${tabSection.slug}-tabpanel-item`}
-                            >
-                              <button
-                                id={`${section.slug}-${tabSection.slug}-tab`}
-                                role="tab"
-                                className={`usa-button--unstyled text-ink text-no-underline tab-button ${
-                                  isTabSelected ? "tab-selected" : ""
-                                }`}
-                                onClick={() =>
-                                  setTabSectionState((prevState) => {
-                                    return {
-                                      ...prevState,
-                                      [section.slug]: tabSection.title,
-                                    };
-                                  })
-                                }
-                                aria-selected={isTabSelected}
-                              >
-                                {tabSection.title}
-                              </button>
-                            </div>
+                            <SectionTabButton
+                              selected={
+                                tabSectionState[section.slug] ===
+                                tabSection.title
+                              }
+                              parentSection={section}
+                              tabSection={tabSection}
+                              setTabSectionState={setTabSectionState}
+                            />
                           );
                         })}
                       </div>
