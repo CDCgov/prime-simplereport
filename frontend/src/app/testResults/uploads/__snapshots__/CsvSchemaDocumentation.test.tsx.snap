@@ -4833,7 +4833,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
             class="prime-secondary-nav"
           >
             <div
-              aria-owns=""
+              aria-owns="ask-on-entry-COVID-19-tab ask-on-entry-HIV-tab "
               class="usa-nav__secondary-links prime-nav csv-section-tablist"
               role="tablist"
             >
