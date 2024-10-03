@@ -855,4 +855,13 @@ public class PersonUtils {
 
     return genderMap;
   }
+
+  public static final Map<String, String> syphilisHistorySnomedMap =
+      Map.of(
+          "YES".toLowerCase(), YES_SYPHILIS_HISTORY_SNOMED,
+          "Y".toLowerCase(), YES_SYPHILIS_HISTORY_SNOMED,
+          "NO".toLowerCase(), NO_SYPHILIS_HISTORY_SNOMED,
+          "N".toLowerCase(), NO_SYPHILIS_HISTORY_SNOMED,
+          "UNK".toLowerCase(), UNKNOWN_SYPHILIS_HISTORY_SNOMED,
+          "U".toLowerCase(), UNKNOWN_SYPHILIS_HISTORY_SNOMED);
 }
