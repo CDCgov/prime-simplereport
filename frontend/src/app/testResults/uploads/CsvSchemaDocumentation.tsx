@@ -407,7 +407,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                 if (section.tabs && section.tabs.length > 0) {
                   let tabIds = "";
                   section.tabs.forEach((tabSection) => {
-                    tabIds.concat(`${section.slug}-${tabSection.slug}-tab `);
+                    tabIds = tabIds + `${section.slug}-${tabSection.slug}-tab `;
                   });
                   tabHeading = (
                     <nav
