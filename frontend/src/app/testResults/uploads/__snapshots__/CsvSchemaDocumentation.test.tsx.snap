@@ -4832,36 +4832,36 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
             aria-label="Tab navigation for Ask on entry (AOE)"
             class="prime-secondary-nav"
           >
-            <ul
-              aria-owns="ask-on-entry-tab"
+            <div
+              aria-owns=""
               class="usa-nav__secondary-links prime-nav csv-section-tablist"
               role="tablist"
             >
-              <li
-                class="usa-nav__secondary-item usa-current"
+              <div
+                class="usa-nav__secondary-item padding-right-1 usa-current"
               >
-                <a
+                <button
                   aria-selected="true"
-                  class="usa-button--unstyled text-ink text-no-underline active"
+                  class="usa-button--unstyled text-ink text-no-underline tab-button tab-selected"
                   id="ask-on-entry-COVID-19-tab"
                   role="tab"
                 >
                   COVID-19
-                </a>
-              </li>
-              <li
-                class="usa-nav__secondary-item "
+                </button>
+              </div>
+              <div
+                class="usa-nav__secondary-item padding-right-1 "
               >
-                <a
+                <button
                   aria-selected="false"
-                  class="usa-button--unstyled text-ink text-no-underline "
+                  class="usa-button--unstyled text-ink text-no-underline tab-button "
                   id="ask-on-entry-HIV-tab"
                   role="tab"
                 >
                   HIV
-                </a>
-              </li>
-            </ul>
+                </button>
+              </div>
+            </div>
           </nav>
           <div
             class="rs-documentation__values margin-top-6"
