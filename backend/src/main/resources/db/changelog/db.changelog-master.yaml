@@ -5710,3 +5710,21 @@ databaseChangeLog:
       rollback:
         sql: |
           TRUNCATE TABLE ${database.defaultSchemaName}.facility_providers;
+
+  - changeSet:
+      id: populate-default-provider-column
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-default-provider-column
+        - sql: |
+            UPDATE ${database.defaultSchemaName}.facility
+            SET
+              default_ordering_provider_id = facility.ordering_provider_id
+            WHERE facility.default_ordering_provider_id is NULL;
+      rollback:
+        sql: |
+          UPDATE ${database.defaultSchemaName}.facility
+          SET
+            default_ordering_provider_id = NULL
+          WHERE facility.default_ordering_provider_id is NOT NULL;
