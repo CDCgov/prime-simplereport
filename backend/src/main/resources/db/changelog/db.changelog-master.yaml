@@ -5671,3 +5671,23 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: facility_providers
+
+  - changeSet:
+      id: add-default-provider
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-default-provider-col
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_ordering_provider_id
+                  remarks: The default ordering provider for tests at this facility.
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk__facility__default_ordering_provider
+                    references: provider(internal_id)
+      rollback:
+        sql: |
+          ALTER TABLE ${database.defaultSchemaName}.facility DROP COLUMN  default_ordering_provider_id;
