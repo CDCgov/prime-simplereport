@@ -5691,3 +5691,22 @@ databaseChangeLog:
       rollback:
         sql: |
           ALTER TABLE ${database.defaultSchemaName}.facility DROP COLUMN  default_ordering_provider_id;
+
+  - changeSet:
+      id: populate-facility-providers-table
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-facility-providers-table
+        - sql: |
+            INSERT INTO ${database.defaultSchemaName}.facility_providers (
+              facility_id,
+              provider_id
+            )
+            SELECT
+              internal_id,
+              ordering_provider_id
+            FROM ${database.defaultSchemaName}.facility;
+      rollback:
+        sql: |
+          TRUNCATE TABLE ${database.defaultSchemaName}.facility_providers;
