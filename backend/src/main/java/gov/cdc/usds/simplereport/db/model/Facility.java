@@ -38,6 +38,12 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @Setter
   private Provider orderingProvider;
 
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "default_ordering_provider_id", nullable = false)
+  @Getter
+  @Setter
+  private Provider defaultOrderingProvider;
+
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_type_id")
   @Getter
@@ -55,6 +61,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       inverseJoinColumns = @JoinColumn(name = "device_type_id"))
   private Set<DeviceType> configuredDeviceTypes = new HashSet<>();
 
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "facility_provider",
+      joinColumns = @JoinColumn(name = "facility_id"),
+      inverseJoinColumns = @JoinColumn(name = "ordering_provider_id"))
+  private Set<Provider> configuredOrderingProviders = new HashSet<Provider>();
+
   protected Facility() {
     /* for hibernate */ }
 
@@ -67,6 +80,8 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.email = facilityBuilder.email;
     this.orderingProvider = facilityBuilder.orderingProvider;
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
+    this.configuredOrderingProviders.addAll(facilityBuilder.configuredOrderingProviders);
+    this.setDefaultOrderingProvider(facilityBuilder.defaultOrderingProvider);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
   }
@@ -100,6 +115,41 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     if (this.getDefaultDeviceType() != null
         && this.getDefaultDeviceType().getInternalId().equals(deletedDevice.getInternalId())) {
       this.removeDefaultDeviceTypeSpecimenType();
+    }
+  }
+
+  public void setDefaultOrderingProvider(Provider defaultProvider) {
+    if (defaultProvider != null) {
+      configuredOrderingProviders.add(defaultProvider);
+    }
+
+    this.defaultOrderingProvider = defaultProvider;
+  }
+
+  public void removeDefaultOrderingProvider() {
+    this.setDefaultOrderingProvider(null);
+  }
+
+  public void addOrderingProvider(Provider provider) {
+    configuredOrderingProviders.add(provider);
+  }
+
+  public List<Provider> getOrderingProviders() {
+    return configuredOrderingProviders.stream()
+        .filter(e -> !e.isDeleted())
+        .collect(Collectors.toList());
+  }
+
+  public void removeOrderingProvider(Provider deletedProvider) {
+    this.configuredOrderingProviders.remove(deletedProvider);
+
+    // If the corresponding provider to a facility's default provider is removed,
+    // set default to null
+    if (this.getDefaultOrderingProvider() != null
+        && this.getDefaultOrderingProvider()
+            .getInternalId()
+            .equals(deletedProvider.getInternalId())) {
+      this.removeDefaultOrderingProvider();
     }
   }
 }
