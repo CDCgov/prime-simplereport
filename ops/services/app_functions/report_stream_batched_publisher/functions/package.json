@@ -25,7 +25,7 @@
   "dependencies": {
     "@azure/functions": "^4.5.1",
     "@azure/storage-queue": "^12.16.0",
-    "applicationinsights": "^3.2.1",
+    "applicationinsights": "^3.3.0",
     "csv-stringify": "^6.5.1",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^2.7.0"
