@@ -38,10 +38,9 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @Setter
   private Provider orderingProvider;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "default_ordering_provider_id", nullable = false)
+  @ManyToOne(optional = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "default_ordering_provider_id")
   @Getter
-  @Setter
   private Provider defaultOrderingProvider;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
@@ -63,9 +62,9 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "facility_provider",
+      name = "facility_providers",
       joinColumns = @JoinColumn(name = "facility_id"),
-      inverseJoinColumns = @JoinColumn(name = "ordering_provider_id"))
+      inverseJoinColumns = @JoinColumn(name = "provider_id"))
   private Set<Provider> configuredOrderingProviders = new HashSet<Provider>();
 
   protected Facility() {
