@@ -85,9 +85,9 @@ runs:
       run: ./build_and_push.sh
     
     - name: Terraform setup
-      uses: hashicorp/setup-terraform@v2.0.3
+      uses: hashicorp/setup-terraform@v3.1.2
       with:
-        terraform_version: 1.3.3
+        terraform_version: 1.9.6
     
     - name: Terraform init
       shell: bash

@@ -5,7 +5,6 @@ resource "azurerm_monitor_diagnostic_setting" "postgres" {
 
   enabled_log {
     category = "PostgreSQLLogs"
-
     retention_policy {
       enabled = false
     }
@@ -14,7 +13,6 @@ resource "azurerm_monitor_diagnostic_setting" "postgres" {
   metric {
     category = "AllMetrics"
     enabled  = true
-
     retention_policy {
       enabled = false
     }
