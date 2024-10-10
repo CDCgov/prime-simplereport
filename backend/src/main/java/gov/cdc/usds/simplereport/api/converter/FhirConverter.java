@@ -1202,11 +1202,11 @@ public class FhirConverter {
         break;
       case CORRECTED:
         status = (DiagnosticReportStatus.CORRECTED);
-        id = testEvent.getTestOrder().getTestEvent().getInternalId().toString();
+        id = testEvent.getPriorCorrectedTestEventId().toString();
         break;
       case REMOVED:
         status = (DiagnosticReportStatus.ENTEREDINERROR);
-        id = testEvent.getTestOrder().getTestEvent().getInternalId().toString();
+        id = testEvent.getPriorCorrectedTestEventId().toString();
         break;
     }
 
