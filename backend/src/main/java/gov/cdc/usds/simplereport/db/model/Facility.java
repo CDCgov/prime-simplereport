@@ -79,7 +79,9 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.email = facilityBuilder.email;
     this.orderingProvider = facilityBuilder.orderingProvider;
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
-    this.configuredOrderingProviders.addAll(facilityBuilder.configuredOrderingProviders);
+    if (!this.configuredOrderingProviders.isEmpty()) {
+      this.configuredOrderingProviders.addAll(facilityBuilder.configuredOrderingProviders);
+    }
     this.setDefaultOrderingProvider(facilityBuilder.defaultOrderingProvider);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
