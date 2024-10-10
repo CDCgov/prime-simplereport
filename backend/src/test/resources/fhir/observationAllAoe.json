@@ -1,6 +1,44 @@
 [
   {
     "resourceType": "Observation",
+    "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
+    "identifier": [
+      {
+        "use": "official",
+        "type": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "99582-9",
+              "display": "Symptom and timing panel"
+            }
+          ]
+        }
+      }
+    ],
+    "status": "final",
+    "code": {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "75325-1",
+          "display": "Symptom"
+        }
+      ],
+      "text": "Symptom"
+    },
+    "valueCodeableConcept": {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "36955009",
+          "display": "New loss of taste"
+        }
+      ]
+    }
+  },
+  {
+    "resourceType": "Observation",
     "id": "8526bd3b-42e4-3a6f-88ff-3fc43b69dc20",
     "identifier": [
       {
