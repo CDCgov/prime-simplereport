@@ -1026,7 +1026,7 @@ class FhirConverterTest {
         AskOnEntrySurvey.builder()
             .pregnancy(null)
             .syphilisHistory(null)
-            .symptoms(Map.of("fake", false))
+            .symptoms(Map.of("195469007", true))
             .noSymptoms(true)
             .symptomOnsetDate(null)
             .genderOfSexualPartners(null)
@@ -1271,13 +1271,42 @@ class FhirConverterTest {
   }
 
   @Test
+  void convertToAoeObservation_symptoms_matchesJson() throws IOException {
+    AskOnEntrySurvey answers =
+        AskOnEntrySurvey.builder()
+            .pregnancy(null)
+            .syphilisHistory(null)
+            .symptoms(
+                Map.of("36955009", true, "261665006", false, "68962001", true, "195469007", true))
+            .genderOfSexualPartners(null)
+            .symptomOnsetDate(null)
+            .noSymptoms(false)
+            .build();
+
+    String testId = "fakeId";
+
+    Set<Observation> actual =
+        fhirConverter.convertToAOEObservations(
+            testId, answers, new Person("first", "last", "middle", "suffix", null));
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    String expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationSymptom.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
   void convertToAoeObservation_allAOE_matchesJson() throws IOException {
     List<String> sexualPartners = List.of("male", "female");
     AskOnEntrySurvey answers =
         AskOnEntrySurvey.builder()
             .pregnancy(PREGNANT_UNKNOWN_SNOMED)
             .syphilisHistory(NO_SYPHILIS_HISTORY_SNOMED)
-            .symptoms(Map.of("fake", true))
+            .symptoms(Map.of("36955009", true))
             .symptomOnsetDate(LocalDate.of(2023, 3, 4))
             .genderOfSexualPartners(sexualPartners)
             .noSymptoms(false)

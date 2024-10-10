@@ -458,7 +458,8 @@ public class BulkUploadResultsToFhir {
     }
 
     aoeObservations.addAll(
-        fhirConverter.convertToAOESymptomObservation(testEventId, symptomatic, symptomOnsetDate));
+        fhirConverter.convertToAOESymptomaticObservation(
+            testEventId, symptomatic, symptomOnsetDate));
 
     String pregnancyValue = row.getPregnant().getValue();
     if (StringUtils.isNotBlank(pregnancyValue)) {
