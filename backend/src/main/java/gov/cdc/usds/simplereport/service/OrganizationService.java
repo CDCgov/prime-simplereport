@@ -216,6 +216,7 @@ public class OrganizationService {
         .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
   }
 
+  // clean up? 0 uses and logic seems to be mimicked in getFacilityById on 229
   public Organization getOrganizationByFacilityId(UUID facilityId) {
     Facility facility = facilityRepository.findById(facilityId).orElse(null);
 
@@ -240,6 +241,8 @@ public class OrganizationService {
             });
   }
 
+  /// Update here
+  // contract slightly different than factory builder in facility.java, explore why
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequirePermissionEditFacility
   public Facility updateFacility(
@@ -262,6 +265,7 @@ public class OrganizationService {
     facility.setEmail(email);
     facility.setAddress(facilityAddress);
 
+    // definitely update here
     Provider p = facility.getOrderingProvider();
     p.getNameInfo().setFirstName(orderingProviderName.getFirstName());
     p.getNameInfo().setMiddleName(orderingProviderName.getMiddleName());
@@ -274,8 +278,10 @@ public class OrganizationService {
     orderingProviderValidator.assertValidity(
         p.getNameInfo(), p.getProviderId(), p.getTelephone(), facility.getAddress().getState());
 
+    // Why wipe facility of all devices?
     facility.getDeviceTypes().forEach(facility::removeDeviceType);
 
+    // pattern to follow for MOP
     deviceIds.stream()
         .map(deviceTypeRepository::findById)
         .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(facility::addDeviceType));
@@ -283,6 +289,7 @@ public class OrganizationService {
     return facilityRepository.save(facility);
   }
 
+  // update here
   @Transactional(readOnly = false)
   public Organization createOrganizationAndFacility(
       String name,
@@ -389,6 +396,7 @@ public class OrganizationService {
     }
   }
 
+  // update
   private Facility createFacilityNoPermissions(
       Organization organization,
       String testingFacilityName,
@@ -430,6 +438,7 @@ public class OrganizationService {
     return facility;
   }
 
+  // update
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequirePermissionEditFacility
   public Facility createFacility(
@@ -481,6 +490,7 @@ public class OrganizationService {
     return organizationRepository.save(organization);
   }
 
+  // Maybe update?
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public FacilityStats getFacilityStats(@Argument UUID facilityId) {
     if (facilityId == null) {
