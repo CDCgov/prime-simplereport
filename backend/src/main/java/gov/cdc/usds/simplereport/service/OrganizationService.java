@@ -256,6 +256,7 @@ public class OrganizationService {
       StreetAddress orderingProviderAddress,
       String orderingProviderNPI,
       String orderingProviderTelephone,
+      List<UUID> orderingProviderIds,
       List<UUID> deviceIds) {
 
     Facility facility = this.getFacilityInCurrentOrg(facilityId);
@@ -265,7 +266,6 @@ public class OrganizationService {
     facility.setEmail(email);
     facility.setAddress(facilityAddress);
 
-    // definitely update here
     Provider p = facility.getOrderingProvider();
     p.getNameInfo().setFirstName(orderingProviderName.getFirstName());
     p.getNameInfo().setMiddleName(orderingProviderName.getMiddleName());
@@ -285,6 +285,12 @@ public class OrganizationService {
     deviceIds.stream()
         .map(deviceTypeRepository::findById)
         .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(facility::addDeviceType));
+
+    facility.getOrderingProviders().forEach(facility::removeOrderingProvider);
+
+    orderingProviderIds.stream()
+        .map(providerRepository::findById)
+        .forEach(providerOptional -> providerOptional.ifPresent(facility::addOrderingProvider));
 
     return facilityRepository.save(facility);
   }
@@ -451,7 +457,11 @@ public class OrganizationService {
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
-      String providerNPI) {
+      String providerNPI,
+      PersonName primaryProviderName,
+      StreetAddress primaryProviderAddress,
+      String primaryProviderTelephone,
+      String primaryProviderNPI) {
     return createFacilityNoPermissions(
         getCurrentOrganization(),
         testingFacilityName,
