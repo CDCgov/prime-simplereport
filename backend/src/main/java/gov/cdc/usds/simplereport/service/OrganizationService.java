@@ -307,6 +307,7 @@ public class OrganizationService {
       String phone,
       String email,
       List<UUID> deviceTypeIds,
+      List<UUID> providerIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -321,6 +322,7 @@ public class OrganizationService {
         phone,
         email,
         deviceTypeIds,
+        providerIds,
         providerName,
         providerAddress,
         providerTelephone,
@@ -411,6 +413,7 @@ public class OrganizationService {
       String phone,
       String email,
       List<UUID> deviceIds,
+      List<UUID> providerIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -426,6 +429,11 @@ public class OrganizationService {
         .map(deviceTypeRepository::findById)
         .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(configuredDevices::add));
 
+    List<Provider> orderingProviders = new ArrayList<>();
+    providerIds.stream()
+        .map(providerRepository::findById)
+        .forEach(providerOptional -> providerOptional.ifPresent(orderingProviders::add));
+
     Facility facility =
         new Facility(
             FacilityBuilder.builder()
@@ -436,7 +444,9 @@ public class OrganizationService {
                 .phone(phone)
                 .email(email)
                 .orderingProvider(orderingProvider)
+                .defaultOrderingProvider(orderingProvider)
                 .configuredDevices(configuredDevices)
+                .configuredOrderingProviders(orderingProviders)
                 .build());
     facility = facilityRepository.save(facility);
     patientSelfRegistrationLinkService.createRegistrationLink(facility);
@@ -454,14 +464,11 @@ public class OrganizationService {
       String phone,
       String email,
       List<UUID> deviceIds,
+      List<UUID> providerIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
-      String providerNPI,
-      PersonName primaryProviderName,
-      StreetAddress primaryProviderAddress,
-      String primaryProviderTelephone,
-      String primaryProviderNPI) {
+      String providerNPI) {
     return createFacilityNoPermissions(
         getCurrentOrganization(),
         testingFacilityName,
@@ -470,6 +477,7 @@ public class OrganizationService {
         phone,
         email,
         deviceIds,
+        providerIds,
         providerName,
         providerAddress,
         providerTelephone,
