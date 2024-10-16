@@ -79,6 +79,7 @@ public class OrganizationMutationResolver {
             parsePhoneNumber(facilityInfo.getPhone()),
             parseEmail(facilityInfo.getEmail()),
             facilityInfo.getDeviceIds(),
+            facilityInfo.getProviderIds(),
             providerName,
             providerAddress,
             parsePhoneNumber(facilityInfo.getOrderingProvider().getPhone()),
@@ -125,7 +126,8 @@ public class OrganizationMutationResolver {
             providerAddress,
             facilityInfo.getOrderingProvider().getNpi(),
             parsePhoneNumber(facilityInfo.getOrderingProvider().getPhone()),
-            facilityInfo.getDeviceIds());
+            facilityInfo.getDeviceIds(),
+            facilityInfo.getProviderIds());
     return new ApiFacility(facility);
   }
 

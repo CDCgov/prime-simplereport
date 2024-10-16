@@ -15,4 +15,5 @@ public class AddFacilityInput {
   private String email;
   private ProviderInput orderingProvider;
   private List<UUID> deviceIds;
+  private List<UUID> providerIds;
 }
