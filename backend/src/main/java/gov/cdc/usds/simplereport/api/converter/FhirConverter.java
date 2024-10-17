@@ -1195,15 +1195,18 @@ public class FhirConverter {
    */
   public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent, Date currentDate) {
     DiagnosticReportStatus status = null;
+    String id = Objects.toString(testEvent.getInternalId(), "");
     switch (testEvent.getCorrectionStatus()) {
       case ORIGINAL:
         status = (DiagnosticReportStatus.FINAL);
         break;
       case CORRECTED:
         status = (DiagnosticReportStatus.CORRECTED);
+        id = testEvent.getPriorCorrectedTestEventId().toString();
         break;
       case REMOVED:
         status = (DiagnosticReportStatus.ENTEREDINERROR);
+        id = testEvent.getPriorCorrectedTestEventId().toString();
         break;
     }
 
@@ -1241,12 +1244,7 @@ public class FhirConverter {
       dateIssued = ZonedDateTime.ofInstant(currentDate.toInstant(), ZoneOffset.UTC);
 
     return convertToDiagnosticReport(
-        status,
-        testOrderLoinc,
-        testOrderLoincLongName,
-        Objects.toString(testEvent.getInternalId(), ""),
-        dateTested,
-        dateIssued);
+        status, testOrderLoinc, testOrderLoincLongName, id, dateTested, dateIssued);
   }
 
   /**
