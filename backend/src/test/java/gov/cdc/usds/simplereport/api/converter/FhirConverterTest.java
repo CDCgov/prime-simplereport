@@ -1373,12 +1373,16 @@ class FhirConverterTest {
         new TestEvent(invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo");
 
     String priorCorrectedTestEventId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    ReflectionTestUtils.setField(correctedTestEvent, "priorCorrectedTestEventId", UUID.fromString(priorCorrectedTestEventId));
+    ReflectionTestUtils.setField(
+        correctedTestEvent,
+        "priorCorrectedTestEventId",
+        UUID.fromString(priorCorrectedTestEventId));
 
     var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.CORRECTED);
-    assertThat(actual.getId()).isEqualTo(correctedTestEvent.getPriorCorrectedTestEventId().toString());
+    assertThat(actual.getId())
+        .isEqualTo(correctedTestEvent.getPriorCorrectedTestEventId().toString());
   }
 
   @Test
@@ -1388,12 +1392,16 @@ class FhirConverterTest {
         new TestEvent(invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person");
 
     String priorCorrectedTestEventId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    ReflectionTestUtils.setField(correctedTestEvent, "priorCorrectedTestEventId", UUID.fromString(priorCorrectedTestEventId));
+    ReflectionTestUtils.setField(
+        correctedTestEvent,
+        "priorCorrectedTestEventId",
+        UUID.fromString(priorCorrectedTestEventId));
 
     var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.ENTEREDINERROR);
-    assertThat(actual.getId()).isEqualTo(correctedTestEvent.getPriorCorrectedTestEventId().toString());
+    assertThat(actual.getId())
+        .isEqualTo(correctedTestEvent.getPriorCorrectedTestEventId().toString());
   }
 
   @Test
