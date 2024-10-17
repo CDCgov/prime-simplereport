@@ -1560,7 +1560,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getOrderingProvider().getAddress(),
         facility.getOrderingProvider().getProviderId(),
         facility.getOrderingProvider().getTelephone(),
-        facility.getDeviceTypes().stream().map(IdentifiedEntity::getInternalId).toList());
+        facility.getDeviceTypes().stream().map(IdentifiedEntity::getInternalId).toList(),
+        facility.getOrderingProviders().stream().map(IdentifiedEntity::getInternalId).toList());
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
     TestEvent deletedTest = _service.markAsError(testEvent.getInternalId(), reasonMsg);

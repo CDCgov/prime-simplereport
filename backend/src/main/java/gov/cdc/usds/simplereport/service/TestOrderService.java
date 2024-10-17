@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
+import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -33,6 +34,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
+import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import jakarta.persistence.criteria.Join;
@@ -69,6 +71,7 @@ public class TestOrderService {
   private final OrganizationService _organizationService;
   private final PersonService _personService;
   private final DeviceTypeService _deviceTypeService;
+  private final ProviderRepository _providerRepo;
   private final TestOrderRepository _testOrderRepo;
   private final PatientAnswersRepository _patientAnswersRepo;
   private final TestEventRepository _testEventRepo;
@@ -273,6 +276,7 @@ public class TestOrderService {
       UUID testOrderId,
       UUID deviceTypeId,
       UUID specimenTypeId,
+      UUID orderingProviderId,
       List<MultiplexResultInput> results,
       Date dateTested) {
     try {
@@ -286,6 +290,11 @@ public class TestOrderService {
                       new IllegalGraphqlArgumentException(
                           "invalid device type and specimen type combination"));
 
+      Provider orderingProver =
+          _providerRepo
+              .findById(orderingProviderId)
+              .orElseThrow(
+                  () -> new IllegalGraphqlArgumentException("invalid ordering provider ID"));
       lockOrder(testOrderId);
       TestOrder order = this.getTestOrder(testOrderId);
 
@@ -293,6 +302,7 @@ public class TestOrderService {
       // Set the most-recently configured device specimen for a facility's
       // test as facility default
       order.getFacility().setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
+      order.getFacility().setDefaultOrderingProvider(orderingProver);
 
       editMultiplexResult(order, results);
 
