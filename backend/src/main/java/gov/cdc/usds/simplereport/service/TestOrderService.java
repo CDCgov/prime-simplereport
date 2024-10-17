@@ -462,6 +462,9 @@ public class TestOrderService {
           testFacility.getDeviceTypes().get(0),
           testFacility.getDeviceTypes().get(0).getSwabTypes().get(0));
     }
+    if (testFacility.getDefaultOrderingProvider() == null) {
+      testFacility.setDefaultOrderingProvider(testFacility.getOrderingProviders().get(0));
+    }
 
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
