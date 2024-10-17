@@ -25,6 +25,7 @@ public class FeatureFlagsConfig {
   private final FeatureFlagRepository _repo;
 
   private boolean oktaMigrationEnabled;
+  private boolean hepatitisCEnabled;
   private boolean syphilisEnabled;
   private boolean hivBulkUploadEnabled;
   private boolean hivEnabled;
@@ -40,6 +41,7 @@ public class FeatureFlagsConfig {
   private void flagMapping(String flagName, Boolean flagValue) {
     switch (flagName) {
       case "oktaMigrationEnabled" -> setOktaMigrationEnabled(flagValue);
+      case "hepatitisCEnabled" -> setHepatitisCEnabled(flagValue);
       case "syphilisEnabled" -> setSyphilisEnabled(flagValue);
       case "hivBulkUploadEnabled" -> setHivBulkUploadEnabled(flagValue);
       case "hivEnabled" -> setHivEnabled(flagValue);
