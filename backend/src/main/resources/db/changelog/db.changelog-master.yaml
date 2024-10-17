@@ -5634,7 +5634,7 @@ databaseChangeLog:
         - addColumn:
             tableName: test_order
             columns:
-              - column:
+            - column:
                   name: timer_started_at
                   type: text
                   constraints:
@@ -5643,3 +5643,22 @@ databaseChangeLog:
         - dropColumn:
             tableName: test_order
             columnName: timer_started_at
+
+  - changeSet:
+      id: add-hepatitis-c-to-supported_disease-table
+      author: ggs2@cdc.gov
+      comment: Add Hepatitis-C to the supported_disease table.
+      changes:
+        - tagDatabase:
+            tag: add-hepatitis-c-to-supported_disease-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'Hepatitis-C', 'LP14400-3')
+      rollback:
+        - sql:
+            sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Hepatitis-C';
