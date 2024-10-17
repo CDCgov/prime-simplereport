@@ -44,11 +44,12 @@ public class QueueMutationResolver {
       @Argument UUID id,
       @Argument UUID deviceTypeId,
       @Argument UUID specimenTypeId,
+      @Argument UUID orderingProviderId,
       @Argument List<MultiplexResultInput> results,
       @Argument Date dateTested) {
     return new ApiTestOrder(
         testOrderService.editQueueItemMultiplexResult(
-            id, deviceTypeId, specimenTypeId, results, dateTested));
+            id, deviceTypeId, specimenTypeId, orderingProviderId, results, dateTested));
   }
 
   @MutationMapping
