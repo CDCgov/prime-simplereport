@@ -52,6 +52,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private ApiUserRepository _apiUserRepository;
   @Captor private ArgumentCaptor<List<UUID>> deviceIdTypeCaptor;
+  @Captor private ArgumentCaptor<List<UUID>> orderingProviderIdsCaptor;
 
   @Mock AddressValidationService mockedAddressValidationService;
   @Mock ApiUserService mockedApiUserService;
@@ -66,6 +67,8 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
   private OrganizationQueueItem pendingOrg;
   private final UUID deviceId = UUID.randomUUID();
+
+  private final UUID providerId = UUID.randomUUID();
   private UserInfo orgUserInfo;
 
   @BeforeEach
@@ -124,6 +127,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
                     .phone(facility.getOrderingProvider().getTelephone())
                     .build())
             .deviceIds(List.of(deviceId))
+            .providerIds(List.of(providerId))
             .build());
 
     // THEN
@@ -135,6 +139,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             eq("(555) 867-5309"),
             eq("facility@test.com"),
             deviceIdTypeCaptor.capture(),
+            orderingProviderIdsCaptor.capture(),
             eq(facility.getOrderingProvider().getNameInfo()),
             eq(facility.getOrderingProvider().getAddress()),
             eq("(800) 555-1212"),
@@ -142,6 +147,9 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
     List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
     assertThat(deviceIds).hasSize(1).contains(deviceId);
+
+    List<UUID> providerIds = orderingProviderIdsCaptor.getValue();
+    assertThat(providerIds).hasSize(1).contains(providerId);
   }
 
   @Test
@@ -187,6 +195,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
                     .phone(facility.getOrderingProvider().getTelephone())
                     .build())
             .deviceIds(List.of(deviceId))
+            .providerIds(List.of(providerId))
             .build());
 
     // THEN
@@ -202,10 +211,14 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             eq(facility.getOrderingProvider().getAddress()),
             eq("DOOOOOOM"),
             eq("(800) 555-1212"),
+            orderingProviderIdsCaptor.capture(),
             deviceIdTypeCaptor.capture());
 
     List<UUID> deviceIds = deviceIdTypeCaptor.getValue();
     assertThat(deviceIds).hasSize(1).contains(deviceId);
+
+    List<UUID> providerIds = orderingProviderIdsCaptor.getValue();
+    assertThat(providerIds).hasSize(1).contains(providerId);
   }
 
   @Test
