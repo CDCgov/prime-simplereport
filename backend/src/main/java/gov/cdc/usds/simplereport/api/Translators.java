@@ -378,6 +378,51 @@ public class Translators {
     throw IllegalGraphqlArgumentException.invalidInput(s, "state");
   }
 
+  private static final Map<String, String> RESPIRATORY_SYMPTOMS =
+      Map.ofEntries(
+          Map.entry("426000000", "Fever over 100.4F"),
+          Map.entry("103001002", "Feeling feverish"),
+          Map.entry("43724002", "Chills"),
+          Map.entry("49727002", "Cough"),
+          Map.entry("267036007", "Shortness of breath"),
+          Map.entry("230145002", "Difficulty breathing"),
+          Map.entry("84229001", "Fatigue"),
+          Map.entry("68962001", "Muscle or body aches"),
+          Map.entry("25064002", "Headache"),
+          Map.entry("36955009", "New loss of taste"),
+          Map.entry("44169009", "New loss of smell"),
+          Map.entry("162397003", "Sore throat"),
+          Map.entry("68235000", "Nasal congestion"),
+          Map.entry("64531003", "Runny nose"),
+          Map.entry("422587007", "Nausea"),
+          Map.entry("422400008", "Vomiting"),
+          Map.entry("62315008", "Diarrhea"),
+          Map.entry("261665006", "Other symptom not listed"));
+
+  private static final Map<String, String> SYPHILIS_SYMPTOMS =
+      Map.ofEntries(
+          Map.entry("724386005", "Genital sore/lesion"),
+          Map.entry("195469007", "Anal sore/lesion"),
+          Map.entry("26284000", "Sore(s) in mouth/lips"),
+          Map.entry("266128007", "Body Rash"),
+          Map.entry("56940005", "Palmar (hand)/plantar (foot) rash"),
+          Map.entry("91554004", "Flat white warts"),
+          Map.entry("15188001", "Hearing loss"),
+          Map.entry("246636008", "Blurred vision"),
+          Map.entry("56317004", "Alopecia"));
+
+  private static Map<String, String> getSupportedSymptoms() {
+    Map<String, String> supportedSymptoms = new HashMap<>();
+    supportedSymptoms.putAll(RESPIRATORY_SYMPTOMS);
+    supportedSymptoms.putAll(SYPHILIS_SYMPTOMS);
+    return supportedSymptoms;
+  }
+
+  public static String getSymptomName(String snomedCode) {
+    Map<String, String> supportedSymptoms = getSupportedSymptoms();
+    return supportedSymptoms.get(snomedCode);
+  }
+
   public static Map<String, Boolean> parseSymptoms(String symptoms) {
     if (symptoms == null) {
       return Collections.emptyMap();
