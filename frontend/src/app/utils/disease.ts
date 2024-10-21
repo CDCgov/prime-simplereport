@@ -12,6 +12,12 @@ export const useSupportedDiseaseList = () => {
   if (!syphilisEnabled) {
     allDiseases = allDiseases.filter((d) => d !== MULTIPLEX_DISEASES.SYPHILIS);
   }
+  const hepatitisCEnabled = Boolean(useFeature("hepatitisCEnabled"));
+  if (!hepatitisCEnabled) {
+    allDiseases = allDiseases.filter(
+      (d) => d !== MULTIPLEX_DISEASES.HEPATITIS_C
+    );
+  }
   return allDiseases;
 };
 
