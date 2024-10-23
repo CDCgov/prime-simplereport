@@ -159,7 +159,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo userInfo = _service.getUser(apiUser.getInternalId());
 
-    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
     assertEquals(email, userInfo.getEmail());
     roleCheck(
         userInfo,
@@ -177,7 +177,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo userInfo = _service.getUser(apiUser.getInternalId());
 
-    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+    verify(_dbOrgRoleClaimsService, times(2)).getOrganizationRoleClaims((ApiUser) any());
     assertEquals(email, userInfo.getEmail());
     roleCheck(userInfo, EnumSet.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
   }
@@ -192,7 +192,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo userInfo = _service.getUser(apiUser.getInternalId());
 
-    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
     assertEquals(email, userInfo.getEmail());
     roleCheck(
         userInfo,
@@ -218,7 +218,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo userInfo = _service.getUser(apiUser.getInternalId());
 
-    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+    verify(_dbOrgRoleClaimsService, times(2)).getOrganizationRoleClaims((ApiUser) any());
     assertEquals(email, userInfo.getEmail());
     roleCheck(userInfo, EnumSet.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
 
@@ -607,7 +607,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
     UserInfo userInfo = _service.getUserByLoginEmail(email);
 
-    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
     assertEquals(email, userInfo.getEmail());
     assertEquals(UserStatus.ACTIVE, userInfo.getUserStatus());
@@ -626,7 +626,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
     UserInfo userInfo = _service.getUserByLoginEmail(email);
 
-    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+    verify(_dbOrgRoleClaimsService, times(2)).getOrganizationRoleClaims((ApiUser) any());
 
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
     assertEquals(email, userInfo.getEmail());
@@ -725,7 +725,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     // we should be able to retrieve user info for a user with invalid claims (no facility access)
     // without failing
     UserInfo result = _service.getUserByLoginEmail(email);
-    verify(_dbOrgRoleClaimsService, times(0)).getOrganizationRoleClaims((ApiUser) any());
+    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
     assertThat(result.getFacilities()).isEmpty();
     assertEquals(List.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER), result.getRoles());
   }
@@ -740,7 +740,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     // we should be able to retrieve user info for a user with invalid claims (no facility access)
     // without failing
     UserInfo result = _service.getUserByLoginEmail(email);
-    verify(_dbOrgRoleClaimsService, times(1)).getOrganizationRoleClaims((ApiUser) any());
+    verify(_dbOrgRoleClaimsService, times(2)).getOrganizationRoleClaims((ApiUser) any());
     assertThat(result.getFacilities()).isEmpty();
     assertEquals(List.of(OrganizationRole.USER), result.getRoles());
   }

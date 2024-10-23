@@ -67,7 +67,9 @@ public class DbOrgRoleClaimsService {
    * @return boolean
    */
   public boolean checkOrgRoleClaimsEquality(
-      List<OrganizationRoleClaims> oktaClaims, List<OrganizationRoleClaims> dbClaims) {
+      List<OrganizationRoleClaims> oktaClaims,
+      List<OrganizationRoleClaims> dbClaims,
+      String username) {
     boolean hasEqualRoleClaims = false;
     if (oktaClaims.size() == dbClaims.size()) {
       List<OrganizationRoleClaims> sanitizedOktaClaims = sanitizeOktaOrgRoleClaims(oktaClaims);
@@ -79,17 +81,18 @@ public class DbOrgRoleClaimsService {
                           .anyMatch(dbClaim -> equalOrgRoleClaim(sanitizedOktaClaim, dbClaim)));
     }
     if (!hasEqualRoleClaims) {
-      logUnequalClaims();
+      logUnequalClaims(username);
     }
 
     return hasEqualRoleClaims;
   }
 
-  /** Logs a message saying OrganizationRoleClaims are unequal with the affected User ID */
-  private void logUnequalClaims() {
-    // WIP: Currently assumes check is for the current user
-    // This may change based on where checkOrgRoleClaimsEquality is called
-    String username = _getCurrentUser.get().getUsername();
+  /**
+   * Logs a message saying OrganizationRoleClaims are unequal with the affected User ID *
+   *
+   * @param username - String user login email
+   */
+  private void logUnequalClaims(String username) {
     ApiUser user = _userRepo.findByLoginEmail(username).orElseThrow(NonexistentUserException::new);
     log.error(
         "Okta OrganizationRoleClaims do not match database OrganizationRoleClaims for User ID: {}",

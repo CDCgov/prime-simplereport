@@ -125,9 +125,14 @@ class DbOrgRoleClaimsServiceTest extends BaseServiceTest<DbOrgRoleClaimsService>
             OrganizationRoleClaimsTestUtils.DB_ORG_EXTERNAL_ID,
             Set.of(OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
 
+    String username = "fakeuser@example.com";
+    ApiUser mockApiUser = mock(ApiUser.class);
+    when(_apiUserRepoSpy.findByLoginEmail(username)).thenReturn(Optional.of(mockApiUser));
     assertTrue(
         _service.checkOrgRoleClaimsEquality(
-            List.of(secondOktaClaim, firstOktaClaim), List.of(firstDbClaim, secondDbClaim)));
+            List.of(secondOktaClaim, firstOktaClaim),
+            List.of(firstDbClaim, secondDbClaim),
+            "fakeuser@example.com"));
   }
 
   @Test
@@ -146,7 +151,10 @@ class DbOrgRoleClaimsServiceTest extends BaseServiceTest<DbOrgRoleClaimsService>
             OrganizationRoleClaimsTestUtils.OKTA_ORG_EXTERNAL_ID,
             Set.of(OrganizationRole.ALL_FACILITIES, OrganizationRole.USER));
 
-    assertTrue(_service.checkOrgRoleClaimsEquality(List.of(oktaClaim), List.of(dbClaim)));
+    String username = "fakeuser@example.com";
+    ApiUser mockApiUser = mock(ApiUser.class);
+    when(_apiUserRepoSpy.findByLoginEmail(username)).thenReturn(Optional.of(mockApiUser));
+    assertTrue(_service.checkOrgRoleClaimsEquality(List.of(oktaClaim), List.of(dbClaim), username));
   }
 
   @Test
@@ -164,7 +172,11 @@ class DbOrgRoleClaimsServiceTest extends BaseServiceTest<DbOrgRoleClaimsService>
 
     Mockito.reset(_apiUserRepoSpy);
 
-    assertFalse(_service.checkOrgRoleClaimsEquality(List.of(oktaClaim), List.of(dbClaim)));
+    String username = "fakeuser@example.com";
+    ApiUser mockApiUser = mock(ApiUser.class);
+    when(_apiUserRepoSpy.findByLoginEmail(username)).thenReturn(Optional.of(mockApiUser));
+    assertFalse(
+        _service.checkOrgRoleClaimsEquality(List.of(oktaClaim), List.of(dbClaim), username));
     verify(_apiUserRepoSpy, times(1)).findByLoginEmail(any());
   }
 
@@ -176,7 +188,10 @@ class DbOrgRoleClaimsServiceTest extends BaseServiceTest<DbOrgRoleClaimsService>
             OrganizationRoleClaimsTestUtils.OKTA_FACILITY_NAMES,
             Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
 
-    assertFalse(_service.checkOrgRoleClaimsEquality(List.of(oktaClaim), List.of()));
+    String username = "fakeuser@example.com";
+    ApiUser mockApiUser = mock(ApiUser.class);
+    when(_apiUserRepoSpy.findByLoginEmail(username)).thenReturn(Optional.of(mockApiUser));
+    assertFalse(_service.checkOrgRoleClaimsEquality(List.of(oktaClaim), List.of(), username));
   }
 
   private OrganizationRoleClaims createClaimsForCreatedOrg(
