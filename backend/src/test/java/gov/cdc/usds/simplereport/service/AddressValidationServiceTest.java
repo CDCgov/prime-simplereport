@@ -77,7 +77,7 @@ class AddressValidationServiceTest {
 
     ZoneId zoneId = s.getZoneIdByLookup(lookup);
 
-    assertEquals(zoneId, ZoneId.of("US/Central"));
+    assertEquals(zoneId, ZoneId.of("-05:00"));
   }
 
   @Test
