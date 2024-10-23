@@ -1005,8 +1005,8 @@ public class FhirConverter {
     } else if (surveyData.getSymptoms() != null
         && surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
       symptomatic = true;
-      List<String> trueSymptoms = getFilteredTrueSymptoms(surveyData.getSymptoms());
-      observations.addAll(convertToSymptomsObservations(trueSymptoms));
+      List<String> symptomsPresent = getFilteredSymptomsPresent(surveyData.getSymptoms());
+      observations.addAll(convertToSymptomsObservations(symptomsPresent));
     } // implied else: AoE form was not completed. Symptomatic set to null
 
     var symptomOnsetDate = surveyData.getSymptomOnsetDate();
@@ -1651,7 +1651,7 @@ public class FhirConverter {
     return patient;
   }
 
-  private List<String> getFilteredTrueSymptoms(Map<String, Boolean> symptomsMap) {
+  private List<String> getFilteredSymptomsPresent(Map<String, Boolean> symptomsMap) {
     return symptomsMap.entrySet().stream()
         .filter(symptom -> Boolean.TRUE.equals(symptom.getValue()))
         .map(Entry::getKey)
