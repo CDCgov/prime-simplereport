@@ -4768,7 +4768,7 @@ Object {
               class="grid-row"
             >
               <div
-                class="grid-col-12 desktop:grid-col-6"
+                class="grid-col-auto"
               >
                 <div
                   class="usa-form-group"
@@ -5523,7 +5523,7 @@ Object {
             class="grid-row"
           >
             <div
-              class="grid-col-12 desktop:grid-col-6"
+              class="grid-col-auto"
             >
               <div
                 class="usa-form-group"

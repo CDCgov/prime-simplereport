@@ -51,7 +51,7 @@ export const HepatitisCAoeForm = ({
       id={`hepatitis-c-aoe-form-${testOrder.patient.internalId}`}
     >
       <div className="grid-row">
-        <div className="grid-col-12 desktop:grid-col-6">
+        <div className="grid-col-auto">
           <GenderOfSexualPartnersAoe
             testOrderId={testOrder.internalId}
             responses={responses}
@@ -73,7 +73,7 @@ export const HepatitisCAoeForm = ({
         </div>
       </div>
       <div className="grid-row">
-        <div className="grid-col-12">
+        <div className="grid-col-auto">
           <YesNoRadioGroup
             name={`has-any-symptoms-${testOrder.internalId}`}
             legend="Is the patient currently experiencing or showing signs of symptoms?"
@@ -89,7 +89,7 @@ export const HepatitisCAoeForm = ({
       </div>
       {hasSymptoms === "YES" && (
         <div className={"grid-row grid-gap width-full"}>
-          <div className={"grid-col-12 desktop:grid-col-9 padding-right-0"}>
+          <div className={"grid-col-auto"}>
             <Checkboxes
               boxes={hepatitisCSymptomDefinitions.map(({ label, value }) => ({
                 label,
@@ -108,31 +108,32 @@ export const HepatitisCAoeForm = ({
               }
             />
           </div>
-
-          <TextInput
-            data-testid="symptom-date"
-            name={`symptom-date-${testOrder.internalId}`}
-            type="date"
-            label="Date of symptom onset"
-            aria-label="Symptom onset date"
-            className={""}
-            min={formatDate(new Date("Jan 1, 2020"))}
-            max={formatDate(moment().toDate())}
-            required
-            value={
-              responses.symptomOnset
-                ? formatDate(
-                    moment(responses.symptomOnset).format("YYYY-MM-DD")
-                  )
-                : ""
-            }
-            onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
-            validationStatus={showSymptomOnsetDateError ? "error" : undefined}
-            errorMessage={
-              showSymptomOnsetDateError &&
-              "Please answer this required question."
-            }
-          ></TextInput>
+          <div className="grid-col-auto">
+            <TextInput
+              data-testid="symptom-date"
+              name={`symptom-date-${testOrder.internalId}`}
+              type="date"
+              label="Date of symptom onset"
+              aria-label="Symptom onset date"
+              className={""}
+              min={formatDate(new Date("Jan 1, 2020"))}
+              max={formatDate(moment().toDate())}
+              required
+              value={
+                responses.symptomOnset
+                  ? formatDate(
+                      moment(responses.symptomOnset).format("YYYY-MM-DD")
+                    )
+                  : ""
+              }
+              onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
+              validationStatus={showSymptomOnsetDateError ? "error" : undefined}
+              errorMessage={
+                showSymptomOnsetDateError &&
+                "Please answer this required question."
+              }
+            ></TextInput>
+          </div>
         </div>
       )}
     </div>
