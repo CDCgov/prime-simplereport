@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
 import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import java.io.IOException;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +145,7 @@ public class AddressValidationService {
       return null;
     }
 
-    return ZoneId.of("US/" + timezoneInfo.timezoneCommonName);
+    ZoneOffset zoneOffset = ZoneOffset.of(String.valueOf(timezoneInfo.utcOffset));
+    return ZoneId.of(zoneOffset.getId());
   }
 }

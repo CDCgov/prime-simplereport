@@ -37,6 +37,7 @@ public class DateTimeUtils {
   private static final ZoneId hawaiiTimeZoneId = ZoneId.of("US/Hawaii");
   private static final ZoneId aleutianTimeZoneId = ZoneId.of("US/Aleutian");
   private static final ZoneId samoaTimeZoneId = ZoneId.of("US/Samoa");
+  private static final ZoneId puertoRicoTimeZoneId = ZoneId.of("America/Puerto_Rico");
 
   public static final Map<String, ZoneId> validTimeZoneIdMap =
       Map.ofEntries(
@@ -62,9 +63,9 @@ public class DateTimeUtils {
           Map.entry("HI", hawaiiTimeZoneId),
           Map.entry("HST", hawaiiTimeZoneId),
           Map.entry("HDT", aleutianTimeZoneId),
-          Map.entry("AS", samoaTimeZoneId),
-          Map.entry("ASM", samoaTimeZoneId),
-          Map.entry("SST", samoaTimeZoneId));
+          Map.entry("SST", samoaTimeZoneId),
+          Map.entry("ADT", puertoRicoTimeZoneId),
+          Map.entry("AST", puertoRicoTimeZoneId));
 
   public static ZonedDateTime convertToZonedDateTime(
       String dateString,
