@@ -10,6 +10,7 @@ import static gov.cdc.usds.simplereport.api.Translators.OTHER;
 import static gov.cdc.usds.simplereport.api.Translators.REFUSED;
 import static gov.cdc.usds.simplereport.api.Translators.TRANS_MAN;
 import static gov.cdc.usds.simplereport.api.Translators.TRANS_WOMAN;
+import static gov.cdc.usds.simplereport.api.Translators.getSymptomName;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAGS_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_ABNORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
@@ -34,6 +35,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SY
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_GENDER_IDENTITY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_SYMPTOM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_SYMPTOM_TIMING_PANEL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_EXTENSION_URL;
@@ -114,12 +117,15 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -802,7 +808,7 @@ public class FhirConverter {
     }
   }
 
-  public Set<Observation> convertToAOESymptomObservation(
+  public Set<Observation> convertToAOESymptomaticObservation(
       String eventId, Boolean symptomatic, LocalDate symptomOnsetDate) {
     var observations = new LinkedHashSet<Observation>();
     var symptomaticCode =
@@ -824,6 +830,33 @@ public class FhirConverter {
                   "Illness or injury onset date and time"),
               new DateTimeType(symptomOnsetDate.toString())));
     }
+    return observations;
+  }
+
+  public Observation createSymptomObservation(CodeableConcept code, Type value) {
+    Observation observation =
+        new Observation().setStatus(ObservationStatus.FINAL).setCode(code).setValue(value);
+    observation.setId(uuidGenerator.randomUUID().toString());
+    observation
+        .addIdentifier()
+        .setUse(IdentifierUse.OFFICIAL)
+        .setType(createLoincConcept(LOINC_SYMPTOM_TIMING_PANEL, "Symptom and timing panel", null));
+    return observation;
+  }
+
+  public Set<Observation> convertToSymptomsObservations(List<String> symptoms) {
+    HashSet<Observation> observations = new HashSet<>();
+
+    CodeableConcept symptomStatusCode = createLoincConcept(LOINC_SYMPTOM, "Symptom", "Symptom");
+
+    symptoms.forEach(
+        symptom -> {
+          String symptomName = getSymptomName(symptom);
+          if (symptomName != null && !symptomName.isBlank()) {
+            CodeableConcept symptomValueCode = createSNOMEDConcept(symptom, symptomName, null);
+            observations.add(createSymptomObservation(symptomStatusCode, symptomValueCode));
+          }
+        });
     return observations;
   }
 
@@ -972,10 +1005,12 @@ public class FhirConverter {
     } else if (surveyData.getSymptoms() != null
         && surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
       symptomatic = true;
+      List<String> symptomsPresent = getFilteredSymptomsPresent(surveyData.getSymptoms());
+      observations.addAll(convertToSymptomsObservations(symptomsPresent));
     } // implied else: AoE form was not completed. Symptomatic set to null
 
     var symptomOnsetDate = surveyData.getSymptomOnsetDate();
-    observations.addAll(convertToAOESymptomObservation(eventId, symptomatic, symptomOnsetDate));
+    observations.addAll(convertToAOESymptomaticObservation(eventId, symptomatic, symptomOnsetDate));
 
     String pregnancyStatus = surveyData.getPregnancy();
     if (pregnancyStatus != null && pregnancyStatusSnomedMap.values().contains(pregnancyStatus)) {
@@ -1612,6 +1647,13 @@ public class FhirConverter {
                   .setValue(new CodeableConcept().addCoding().setCode(absentReason)));
     }
     return patient;
+  }
+
+  private List<String> getFilteredSymptomsPresent(Map<String, Boolean> symptomsMap) {
+    return symptomsMap.entrySet().stream()
+        .filter(symptom -> Boolean.TRUE.equals(symptom.getValue()))
+        .map(Entry::getKey)
+        .collect(Collectors.toList());
   }
 
   public Bundle createFhirBundle(ConditionAgnosticCreateFhirBundleProps props) {

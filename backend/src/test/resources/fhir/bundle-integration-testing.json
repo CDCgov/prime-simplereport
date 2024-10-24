@@ -381,6 +381,9 @@
           },
           {
             "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          },
+          {
+            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
           }
         ],
         "note": [
@@ -885,6 +888,50 @@
               "system": "http://snomed.info/sct",
               "code": "446151000124109",
               "display": "Male gender identity"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "99582-9",
+                  "display": "Symptom and timing panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "75325-1",
+              "display": "Symptom"
+            }
+          ],
+          "text": "Symptom"
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "84229001",
+              "display": "Fatigue"
             }
           ]
         }
