@@ -4,6 +4,8 @@ import _ from "lodash";
 
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import {
+  hepatitisCSymptomDefinitions,
+  hepatitisCSymptomsMap,
   PregnancyCode,
   respiratorySymptomDefinitions,
   respiratorySymptomsMap,
@@ -13,6 +15,14 @@ import {
   syphilisSymptomsMap,
 } from "../../../../patientApp/timeOfTest/constants";
 import { AOEFormOption } from "../TestCardForm.utils";
+
+export interface AoeQuestionProps {
+  testOrderId: string;
+  responses: AoeQuestionResponses;
+  onResponseChange: (responses: AoeQuestionResponses) => void;
+  hasAttemptedSubmit: boolean;
+  required?: boolean;
+}
 
 export function generateAoeListenerHooks(
   onResponseChange: (responses: AoeQuestionResponses) => void,
@@ -167,6 +177,11 @@ export function stringifySymptomJsonForAoeUpdate(
       mapSymptomBoolLiteralsToBool(symptomJson, syphilisSymptomDefinitions)
     );
   }
+  if (_.isEqual(symptomKeys, Object.keys(hepatitisCSymptomsMap))) {
+    symptomPayload = JSON.stringify(
+      mapSymptomBoolLiteralsToBool(symptomJson, hepatitisCSymptomDefinitions)
+    );
+  }
   return symptomPayload;
 }
 
@@ -180,6 +195,9 @@ export function mapSpecifiedSymptomBoolLiteralsToBool(
   }
   if (disease === AOEFormOption.SYPHILIS) {
     symptomDefinitionToParse = syphilisSymptomDefinitions;
+  }
+  if (disease === AOEFormOption.HEPATITIS_C) {
+    symptomDefinitionToParse = hepatitisCSymptomDefinitions;
   }
   // there are no symptoms for that test card, so return true
   if (!symptomDefinitionToParse) return { shouldReturn: true };

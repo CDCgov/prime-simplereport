@@ -682,7 +682,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         data-testid="symptom-selection-abc"
                       >
                         <div
-                          class="usa-form-group padding-0"
+                          class="usa-form-group"
                         >
                           <fieldset
                             class="usa-fieldset prime-checkboxes padding-left-0"
@@ -1702,7 +1702,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         data-testid="symptom-selection-def"
                       >
                         <div
-                          class="usa-form-group padding-0"
+                          class="usa-form-group"
                         >
                           <fieldset
                             class="usa-fieldset prime-checkboxes padding-left-0"

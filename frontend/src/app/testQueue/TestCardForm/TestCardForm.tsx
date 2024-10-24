@@ -58,6 +58,7 @@ import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 import { stringifySymptomJsonForAoeUpdate } from "./diseaseSpecificComponents/aoeUtils";
 import { SyphilisAoEForm } from "./diseaseSpecificComponents/SyphilisAoEForm";
 import { WhereResultsAreSentModal } from "./WhereResultsAreSentModal";
+import { HepatitisCAoeForm } from "./diseaseSpecificComponents/HepatitisCAoeForm";
 
 const DEBOUNCE_TIME = 300;
 
@@ -595,6 +596,21 @@ const TestCardForm = ({
               hasAttemptedSubmit={hasAttemptedSubmit}
               onResponseChange={(responses) => {
                 setHasAttemptedSubmit(false);
+                dispatch({
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+            />
+          </div>
+        )}
+        {whichAoeFormOption === AOEFormOption.HEPATITIS_C && (
+          <div className="grid-row grid-gap">
+            <HepatitisCAoeForm
+              testOrder={testOrder}
+              responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
+              onResponseChange={(responses) => {
                 dispatch({
                   type: TestFormActionCase.UPDATE_AOE_RESPONSES,
                   payload: responses,
