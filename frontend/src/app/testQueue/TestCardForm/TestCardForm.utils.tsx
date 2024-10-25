@@ -64,6 +64,7 @@ const filterDiseaseFromAllDevices = (
 export function useFilteredDeviceTypes(facility: QueriedFacility) {
   const hivEnabled = useFeature("hivEnabled");
   const syphilisEnabled = useFeature("syphilisEnabled");
+  const hepatitisCEnabled = useFeature("hepatitisCEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
 
@@ -78,6 +79,12 @@ export function useFilteredDeviceTypes(facility: QueriedFacility) {
     deviceTypes = filterDiseaseFromAllDevices(
       deviceTypes,
       MULTIPLEX_DISEASES.SYPHILIS
+    );
+  }
+  if (!hepatitisCEnabled) {
+    deviceTypes = filterDiseaseFromAllDevices(
+      deviceTypes,
+      MULTIPLEX_DISEASES.HEPATITIS_C
     );
   }
   return deviceTypes;

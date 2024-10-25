@@ -63,6 +63,8 @@ import {
   specimen3Name,
   specimen3Id,
   device8Id,
+  device9Name,
+  device9Id,
 } from "../testCardTestConstants";
 import { QueriedFacility } from "../TestCardForm/types";
 import mockSupportedDiseaseMultiplex, {
@@ -71,6 +73,7 @@ import mockSupportedDiseaseMultiplex, {
 import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
 import { UpdateTestOrderTimerStartedAtDocument } from "../../../generated/graphql";
+import mockSupportedDiseaseTestPerformedHepatitisC from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHepatitisC";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
@@ -78,10 +81,17 @@ jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
 
-const mockDiseaseEnabledFlag = (diseaseName: string) =>
+const mockDiseaseEnabledFlag = (
+  diseaseName: string,
+  skipLowercase: boolean = false
+) =>
   jest
     .spyOn(flaggedMock, "useFeature")
     .mockImplementation((flagName: string) => {
+      // to handle casing of Hepatitis-C as hepatitisC
+      if (skipLowercase) {
+        return flagName === `${diseaseName}Enabled`;
+      }
       return flagName === `${diseaseName.toLowerCase()}Enabled`;
     });
 
@@ -246,6 +256,21 @@ const facilityInfo: QueriedFacility = {
       testLength: 15,
       supportedDiseaseTestPerformed: [
         ...mockSupportedDiseaseTestPerformedSyphilis,
+      ],
+      swabTypes: [
+        {
+          name: specimen3Name,
+          internalId: specimen3Id,
+          typeCode: "122555007",
+        },
+      ],
+    },
+    {
+      internalId: device9Id,
+      name: device9Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseTestPerformedHepatitisC,
       ],
       swabTypes: [
         {
@@ -1292,6 +1317,109 @@ describe("TestCard", () => {
         screen.queryByText(
           "Has the patient been told they have syphilis before?"
         )
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows radio buttons for Hepatitis C when a hepatitis c device is chosen", async function () {
+      mockDiseaseEnabledFlag("hepatitisC", true);
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.HEPATITIS_C,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      expect(screen.queryByText("Hepatitis-C result")).not.toBeInTheDocument();
+
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device9Name);
+      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+    });
+
+    it("shows required Hepatitis-C AOE questions when a positive Hepatitis-C result is present", async function () {
+      mockDiseaseEnabledFlag("hepatitisC", true);
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.HEPATITIS_C,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH + 1
+      );
+
+      await user.selectOptions(deviceDropdown, device9Name);
+      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+
+      expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Is the patient currently experiencing or showing signs of symptoms?"
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("What is the gender of their sexual partners?")
+      ).toBeInTheDocument();
+    });
+
+    it("hides AOE questions when there is no positive Hepatitis-C result", async function () {
+      mockDiseaseEnabledFlag("hepatitisC", true);
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.HEPATITIS_C,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device9Name);
+      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing or showing signs of symptoms?"
+        )
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing or showing signs of symptoms?"
+        )
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
       ).not.toBeInTheDocument();
     });
 

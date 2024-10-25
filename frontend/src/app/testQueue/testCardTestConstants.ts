@@ -44,6 +44,7 @@ export const device5Name = "MultiplexAndCovidOnly";
 export const device6Name = "FluOnly";
 export const device7Name = "HIV device";
 export const device8Name = "Syphilis device";
+export const device9Name = "Hepatitis-C device";
 
 export const device1Id = "DEVICE-1-ID";
 export const device2Id = "DEVICE-2-ID";
@@ -53,6 +54,7 @@ export const device5Id = "DEVICE-5-ID";
 export const device6Id = "DEVICE-6-ID";
 export const device7Id = "DEVICE-7-ID";
 export const device8Id = "DEVICE-8-ID";
+export const device9Id = "DEVICE-9-ID";
 
 export const deletedDeviceId = "DELETED-DEVICE-ID";
 export const deletedDeviceName = "Deleted";
