@@ -3012,12 +3012,14 @@ export function useWhoAmILazyQuery(
   );
 }
 export function useWhoAmISuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    WhoAmIQuery,
-    WhoAmIQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<WhoAmIQuery, WhoAmIQueryVariables>
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<WhoAmIQuery, WhoAmIQueryVariables>(
     WhoAmIDocument,
     options
@@ -3086,12 +3088,17 @@ export function useGetManagedFacilitiesLazyQuery(
   >(GetManagedFacilitiesDocument, options);
 }
 export function useGetManagedFacilitiesSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetManagedFacilitiesQuery,
-    GetManagedFacilitiesQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetManagedFacilitiesQuery,
+        GetManagedFacilitiesQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetManagedFacilitiesQuery,
     GetManagedFacilitiesQueryVariables
@@ -3200,12 +3207,17 @@ export function useGetFacilitiesLazyQuery(
   );
 }
 export function useGetFacilitiesSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetFacilitiesQuery,
-    GetFacilitiesQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetFacilitiesQuery,
+        GetFacilitiesQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetFacilitiesQuery,
     GetFacilitiesQueryVariables
@@ -3521,12 +3533,17 @@ export function useAllSelfRegistrationLinksLazyQuery(
   >(AllSelfRegistrationLinksDocument, options);
 }
 export function useAllSelfRegistrationLinksSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    AllSelfRegistrationLinksQuery,
-    AllSelfRegistrationLinksQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        AllSelfRegistrationLinksQuery,
+        AllSelfRegistrationLinksQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     AllSelfRegistrationLinksQuery,
     AllSelfRegistrationLinksQueryVariables
@@ -3603,12 +3620,14 @@ export function useGetUserLazyQuery(
   );
 }
 export function useGetUserSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetUserQuery,
-    GetUserQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<GetUserQuery, GetUserQueryVariables>
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<GetUserQuery, GetUserQueryVariables>(
     GetUserDocument,
     options
@@ -3676,12 +3695,17 @@ export function useGetUsersAndStatusLazyQuery(
   >(GetUsersAndStatusDocument, options);
 }
 export function useGetUsersAndStatusSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetUsersAndStatusQuery,
-    GetUsersAndStatusQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetUsersAndStatusQuery,
+        GetUsersAndStatusQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetUsersAndStatusQuery,
     GetUsersAndStatusQueryVariables
@@ -4310,12 +4334,17 @@ export function useGetCurrentOrganizationLazyQuery(
   >(GetCurrentOrganizationDocument, options);
 }
 export function useGetCurrentOrganizationSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetCurrentOrganizationQuery,
-    GetCurrentOrganizationQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetCurrentOrganizationQuery,
+        GetCurrentOrganizationQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetCurrentOrganizationQuery,
     GetCurrentOrganizationQueryVariables
@@ -4494,12 +4523,17 @@ export function useGetTopLevelDashboardMetricsNewLazyQuery(
   >(GetTopLevelDashboardMetricsNewDocument, options);
 }
 export function useGetTopLevelDashboardMetricsNewSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetTopLevelDashboardMetricsNewQuery,
-    GetTopLevelDashboardMetricsNewQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetTopLevelDashboardMetricsNewQuery,
+        GetTopLevelDashboardMetricsNewQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetTopLevelDashboardMetricsNewQuery,
     GetTopLevelDashboardMetricsNewQueryVariables
@@ -4582,12 +4616,17 @@ export function usePatientExistsLazyQuery(
   );
 }
 export function usePatientExistsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    PatientExistsQuery,
-    PatientExistsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        PatientExistsQuery,
+        PatientExistsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     PatientExistsQuery,
     PatientExistsQueryVariables
@@ -4874,12 +4913,17 @@ export function useGetPatientDetailsLazyQuery(
   >(GetPatientDetailsDocument, options);
 }
 export function useGetPatientDetailsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetPatientDetailsQuery,
-    GetPatientDetailsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetPatientDetailsQuery,
+        GetPatientDetailsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetPatientDetailsQuery,
     GetPatientDetailsQueryVariables
@@ -5094,12 +5138,17 @@ export function useGetPatientsCountByFacilityLazyQuery(
   >(GetPatientsCountByFacilityDocument, options);
 }
 export function useGetPatientsCountByFacilitySuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetPatientsCountByFacilityQuery,
-    GetPatientsCountByFacilityQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetPatientsCountByFacilityQuery,
+        GetPatientsCountByFacilityQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetPatientsCountByFacilityQuery,
     GetPatientsCountByFacilityQueryVariables
@@ -5196,12 +5245,17 @@ export function useGetPatientsByFacilityLazyQuery(
   >(GetPatientsByFacilityDocument, options);
 }
 export function useGetPatientsByFacilitySuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetPatientsByFacilityQuery,
-    GetPatientsByFacilityQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetPatientsByFacilityQuery,
+        GetPatientsByFacilityQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetPatientsByFacilityQuery,
     GetPatientsByFacilityQueryVariables
@@ -5508,12 +5562,17 @@ export function useGetDeviceTypeListLazyQuery(
   >(GetDeviceTypeListDocument, options);
 }
 export function useGetDeviceTypeListSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetDeviceTypeListQuery,
-    GetDeviceTypeListQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetDeviceTypeListQuery,
+        GetDeviceTypeListQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetDeviceTypeListQuery,
     GetDeviceTypeListQueryVariables
@@ -5582,12 +5641,17 @@ export function useGetSpecimenTypesLazyQuery(
   >(GetSpecimenTypesDocument, options);
 }
 export function useGetSpecimenTypesSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetSpecimenTypesQuery,
-    GetSpecimenTypesQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetSpecimenTypesQuery,
+        GetSpecimenTypesQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetSpecimenTypesQuery,
     GetSpecimenTypesQueryVariables
@@ -5655,12 +5719,17 @@ export function useGetSupportedDiseasesLazyQuery(
   >(GetSupportedDiseasesDocument, options);
 }
 export function useGetSupportedDiseasesSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetSupportedDiseasesQuery,
-    GetSupportedDiseasesQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetSupportedDiseasesQuery,
+        GetSupportedDiseasesQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetSupportedDiseasesQuery,
     GetSupportedDiseasesQueryVariables
@@ -5728,12 +5797,17 @@ export function useGetAllOrganizationsLazyQuery(
   >(GetAllOrganizationsDocument, options);
 }
 export function useGetAllOrganizationsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetAllOrganizationsQuery,
-    GetAllOrganizationsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetAllOrganizationsQuery,
+        GetAllOrganizationsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetAllOrganizationsQuery,
     GetAllOrganizationsQueryVariables
@@ -5815,12 +5889,17 @@ export function useGetFacilitiesByOrgIdLazyQuery(
   >(GetFacilitiesByOrgIdDocument, options);
 }
 export function useGetFacilitiesByOrgIdSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetFacilitiesByOrgIdQuery,
-    GetFacilitiesByOrgIdQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetFacilitiesByOrgIdQuery,
+        GetFacilitiesByOrgIdQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetFacilitiesByOrgIdQuery,
     GetFacilitiesByOrgIdQueryVariables
@@ -5893,12 +5972,17 @@ export function useGetFacilityStatsLazyQuery(
   >(GetFacilityStatsDocument, options);
 }
 export function useGetFacilityStatsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetFacilityStatsQuery,
-    GetFacilityStatsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetFacilityStatsQuery,
+        GetFacilityStatsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetFacilityStatsQuery,
     GetFacilityStatsQueryVariables
@@ -6035,12 +6119,17 @@ export function useFindUserByEmailLazyQuery(
   >(FindUserByEmailDocument, options);
 }
 export function useFindUserByEmailSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    FindUserByEmailQuery,
-    FindUserByEmailQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        FindUserByEmailQuery,
+        FindUserByEmailQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     FindUserByEmailQuery,
     FindUserByEmailQueryVariables
@@ -6230,12 +6319,17 @@ export function useGetTestResultCountByOrgLazyQuery(
   >(GetTestResultCountByOrgDocument, options);
 }
 export function useGetTestResultCountByOrgSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetTestResultCountByOrgQuery,
-    GetTestResultCountByOrgQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetTestResultCountByOrgQuery,
+        GetTestResultCountByOrgQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetTestResultCountByOrgQuery,
     GetTestResultCountByOrgQueryVariables
@@ -6308,12 +6402,17 @@ export function useGetPendingOrganizationsLazyQuery(
   >(GetPendingOrganizationsDocument, options);
 }
 export function useGetPendingOrganizationsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetPendingOrganizationsQuery,
-    GetPendingOrganizationsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetPendingOrganizationsQuery,
+        GetPendingOrganizationsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetPendingOrganizationsQuery,
     GetPendingOrganizationsQueryVariables
@@ -6559,12 +6658,17 @@ export function useGetOrganizationsLazyQuery(
   >(GetOrganizationsDocument, options);
 }
 export function useGetOrganizationsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetOrganizationsQuery,
-    GetOrganizationsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetOrganizationsQuery,
+        GetOrganizationsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetOrganizationsQuery,
     GetOrganizationsQueryVariables
@@ -6710,12 +6814,17 @@ export function useGetOrganizationWithFacilitiesLazyQuery(
   >(GetOrganizationWithFacilitiesDocument, options);
 }
 export function useGetOrganizationWithFacilitiesSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetOrganizationWithFacilitiesQuery,
-    GetOrganizationWithFacilitiesQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetOrganizationWithFacilitiesQuery,
+        GetOrganizationWithFacilitiesQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetOrganizationWithFacilitiesQuery,
     GetOrganizationWithFacilitiesQueryVariables
@@ -6815,12 +6924,17 @@ export function useGetPatientsByFacilityWithOrgLazyQuery(
   >(GetPatientsByFacilityWithOrgDocument, options);
 }
 export function useGetPatientsByFacilityWithOrgSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetPatientsByFacilityWithOrgQuery,
-    GetPatientsByFacilityWithOrgQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetPatientsByFacilityWithOrgQuery,
+        GetPatientsByFacilityWithOrgQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetPatientsByFacilityWithOrgQuery,
     GetPatientsByFacilityWithOrgQueryVariables
@@ -6903,12 +7017,17 @@ export function useGetPatientsCountByFacilityWithOrgLazyQuery(
   >(GetPatientsCountByFacilityWithOrgDocument, options);
 }
 export function useGetPatientsCountByFacilityWithOrgSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetPatientsCountByFacilityWithOrgQuery,
-    GetPatientsCountByFacilityWithOrgQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetPatientsCountByFacilityWithOrgQuery,
+        GetPatientsCountByFacilityWithOrgQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetPatientsCountByFacilityWithOrgQuery,
     GetPatientsCountByFacilityWithOrgQueryVariables
@@ -7093,12 +7212,14 @@ export function useGetPatientLazyQuery(
   );
 }
 export function useGetPatientSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetPatientQuery,
-    GetPatientQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<GetPatientQuery, GetPatientQueryVariables>
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<GetPatientQuery, GetPatientQueryVariables>(
     GetPatientDocument,
     options
@@ -7192,12 +7313,17 @@ export function useGetPatientsByFacilityForQueueLazyQuery(
   >(GetPatientsByFacilityForQueueDocument, options);
 }
 export function useGetPatientsByFacilityForQueueSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetPatientsByFacilityForQueueQuery,
-    GetPatientsByFacilityForQueueQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetPatientsByFacilityForQueueQuery,
+        GetPatientsByFacilityForQueueQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetPatientsByFacilityForQueueQuery,
     GetPatientsByFacilityForQueueQueryVariables
@@ -7676,12 +7802,17 @@ export function useGetFacilityQueueLazyQuery(
   >(GetFacilityQueueDocument, options);
 }
 export function useGetFacilityQueueSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetFacilityQueueQuery,
-    GetFacilityQueueQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetFacilityQueueQuery,
+        GetFacilityQueueQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetFacilityQueueQuery,
     GetFacilityQueueQueryVariables
@@ -7819,12 +7950,17 @@ export function useGetTestResultForResendingEmailsLazyQuery(
   >(GetTestResultForResendingEmailsDocument, options);
 }
 export function useGetTestResultForResendingEmailsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetTestResultForResendingEmailsQuery,
-    GetTestResultForResendingEmailsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetTestResultForResendingEmailsQuery,
+        GetTestResultForResendingEmailsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetTestResultForResendingEmailsQuery,
     GetTestResultForResendingEmailsQueryVariables
@@ -8027,12 +8163,17 @@ export function useGetFacilityResultsForCsvWithCountLazyQuery(
   >(GetFacilityResultsForCsvWithCountDocument, options);
 }
 export function useGetFacilityResultsForCsvWithCountSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetFacilityResultsForCsvWithCountQuery,
-    GetFacilityResultsForCsvWithCountQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetFacilityResultsForCsvWithCountQuery,
+        GetFacilityResultsForCsvWithCountQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetFacilityResultsForCsvWithCountQuery,
     GetFacilityResultsForCsvWithCountQueryVariables
@@ -8165,12 +8306,17 @@ export function useGetResultsMultiplexWithCountLazyQuery(
   >(GetResultsMultiplexWithCountDocument, options);
 }
 export function useGetResultsMultiplexWithCountSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetResultsMultiplexWithCountQuery,
-    GetResultsMultiplexWithCountQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetResultsMultiplexWithCountQuery,
+        GetResultsMultiplexWithCountQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetResultsMultiplexWithCountQuery,
     GetResultsMultiplexWithCountQueryVariables
@@ -8331,12 +8477,17 @@ export function useGetResultsForDownloadLazyQuery(
   >(GetResultsForDownloadDocument, options);
 }
 export function useGetResultsForDownloadSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetResultsForDownloadQuery,
-    GetResultsForDownloadQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetResultsForDownloadQuery,
+        GetResultsForDownloadQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetResultsForDownloadQuery,
     GetResultsForDownloadQueryVariables
@@ -8406,12 +8557,17 @@ export function useGetAllFacilitiesLazyQuery(
   >(GetAllFacilitiesDocument, options);
 }
 export function useGetAllFacilitiesSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetAllFacilitiesQuery,
-    GetAllFacilitiesQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetAllFacilitiesQuery,
+        GetAllFacilitiesQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetAllFacilitiesQuery,
     GetAllFacilitiesQueryVariables
@@ -8496,12 +8652,17 @@ export function useGetResultsCountByFacilityLazyQuery(
   >(GetResultsCountByFacilityDocument, options);
 }
 export function useGetResultsCountByFacilitySuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetResultsCountByFacilityQuery,
+        GetResultsCountByFacilityQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetResultsCountByFacilityQuery,
     GetResultsCountByFacilityQueryVariables
@@ -8606,12 +8767,17 @@ export function useGetTestResultForPrintLazyQuery(
   >(GetTestResultForPrintDocument, options);
 }
 export function useGetTestResultForPrintSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetTestResultForPrintQuery,
+        GetTestResultForPrintQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetTestResultForPrintQuery,
     GetTestResultForPrintQueryVariables
@@ -8694,12 +8860,17 @@ export function useGetUploadSubmissionLazyQuery(
   >(GetUploadSubmissionDocument, options);
 }
 export function useGetUploadSubmissionSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetUploadSubmissionQuery,
+        GetUploadSubmissionQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetUploadSubmissionQuery,
     GetUploadSubmissionQueryVariables
@@ -8795,12 +8966,17 @@ export function useGetUploadSubmissionsLazyQuery(
   >(GetUploadSubmissionsDocument, options);
 }
 export function useGetUploadSubmissionsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetUploadSubmissionsQuery,
-    GetUploadSubmissionsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetUploadSubmissionsQuery,
+        GetUploadSubmissionsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetUploadSubmissionsQuery,
     GetUploadSubmissionsQueryVariables
@@ -8888,12 +9064,17 @@ export function useGetTestResultForCorrectionLazyQuery(
   >(GetTestResultForCorrectionDocument, options);
 }
 export function useGetTestResultForCorrectionSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetTestResultForCorrectionQuery,
-    GetTestResultForCorrectionQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetTestResultForCorrectionQuery,
+        GetTestResultForCorrectionQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetTestResultForCorrectionQuery,
     GetTestResultForCorrectionQueryVariables
@@ -9077,12 +9258,17 @@ export function useGetTestResultForTextLazyQuery(
   >(GetTestResultForTextDocument, options);
 }
 export function useGetTestResultForTextSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetTestResultForTextQuery,
-    GetTestResultForTextQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetTestResultForTextQuery,
+        GetTestResultForTextQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetTestResultForTextQuery,
     GetTestResultForTextQueryVariables
@@ -9234,12 +9420,17 @@ export function useGetTestResultDetailsLazyQuery(
   >(GetTestResultDetailsDocument, options);
 }
 export function useGetTestResultDetailsSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetTestResultDetailsQuery,
+        GetTestResultDetailsQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetTestResultDetailsQuery,
     GetTestResultDetailsQueryVariables
@@ -9331,12 +9522,17 @@ export function useGetDeviceTypesForLookupLazyQuery(
   >(GetDeviceTypesForLookupDocument, options);
 }
 export function useGetDeviceTypesForLookupSuspenseQuery(
-  baseOptions?: Apollo.SuspenseQueryHookOptions<
-    GetDeviceTypesForLookupQuery,
-    GetDeviceTypesForLookupQueryVariables
-  >
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetDeviceTypesForLookupQuery,
+        GetDeviceTypesForLookupQueryVariables
+      >
 ) {
-  const options = { ...defaultOptions, ...baseOptions };
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
     GetDeviceTypesForLookupQuery,
     GetDeviceTypesForLookupQueryVariables
