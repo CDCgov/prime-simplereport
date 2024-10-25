@@ -148,7 +148,7 @@ export type HepatitisCSymptoms = typeof hepatitisCSymptomsMap;
 export type HepatitisCSymptomCode = keyof HepatitisCSymptoms;
 export type HepatitisCSymptomName = HepatitisCSymptoms[HepatitisCSymptomCode];
 
-const hepatitisCSymptomOrder: HepatitisCSymptomCode[] =
+export const hepatitisCSymptomOrder: HepatitisCSymptomCode[] =
   alphabetizeSymptomKeysFromMapValues(hepatitisCSymptomsMap);
 
 export const hepatitisCSymptomDefinitions: SymptomDefinitionMap[] =
