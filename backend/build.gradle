@@ -100,7 +100,7 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:3.4.19'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.6.1'
 
     // Twilio for SMS
     implementation 'com.twilio.sdk:twilio:10.1.0'
