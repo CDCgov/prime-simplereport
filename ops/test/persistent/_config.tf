@@ -12,7 +12,7 @@ terraform {
     }
     okta = {
       source  = "okta/okta"
-      version = "~> 4.3.0"
+      version = "~> 4.11.1"
     }
     random = {
       version = "~> 3.5"
