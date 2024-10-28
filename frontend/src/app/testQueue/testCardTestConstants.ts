@@ -497,7 +497,7 @@ export const updateAoeMocks = [
 ];
 
 // Syphilis card
-const baseSyphilisAoeUpdateMock = (
+export const baseStiAoeUpdateMock = (
   variableOverrides?: Partial<UpdateAoeMutationVariables>
 ) => {
   return {
@@ -509,13 +509,13 @@ const baseSyphilisAoeUpdateMock = (
   };
 };
 const yesSyphilisHistoryMock = {
-  ...baseSyphilisAoeUpdateMock({
+  ...baseStiAoeUpdateMock({
     ...SYPHILIS_HISTORY_OVERRIDE,
   }),
 };
 
 const yesSyphilisHistoryPregnancyMock = {
-  ...baseSyphilisAoeUpdateMock({
+  ...baseStiAoeUpdateMock({
     ...SYPHILIS_HISTORY_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
   }),
@@ -523,7 +523,7 @@ const yesSyphilisHistoryPregnancyMock = {
 };
 
 const yesSyphilisHistoryPregnancyFemaleSexPartnerMock = {
-  ...baseSyphilisAoeUpdateMock({
+  ...baseStiAoeUpdateMock({
     ...SYPHILIS_HISTORY_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
     ...GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE,
@@ -532,7 +532,7 @@ const yesSyphilisHistoryPregnancyFemaleSexPartnerMock = {
 };
 
 const falseNoSymptomOnsetDateBlankSymptomsAndYesSyphilisAoeMock = {
-  ...baseSyphilisAoeUpdateMock({
+  ...baseStiAoeUpdateMock({
     ...NO_SYMPTOMS_FALSE_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
     ...SYPHILIS_HISTORY_OVERRIDE,
@@ -542,7 +542,7 @@ const falseNoSymptomOnsetDateBlankSymptomsAndYesSyphilisAoeMock = {
 };
 
 const falseNoSymptomBlurredVisionMockAndYesSyphilisAoeMock = {
-  ...baseSyphilisAoeUpdateMock({
+  ...baseStiAoeUpdateMock({
     ...NO_SYMPTOMS_FALSE_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
     ...SYPHILIS_HISTORY_OVERRIDE,
@@ -553,7 +553,7 @@ const falseNoSymptomBlurredVisionMockAndYesSyphilisAoeMock = {
 };
 
 const falseNoSymptomBlurredVisionOnsetDateAndYesSyphilisAoeMock = {
-  ...baseSyphilisAoeUpdateMock({
+  ...baseStiAoeUpdateMock({
     ...NO_SYMPTOMS_FALSE_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
     ...SYPHILIS_HISTORY_OVERRIDE,
@@ -565,7 +565,7 @@ const falseNoSymptomBlurredVisionOnsetDateAndYesSyphilisAoeMock = {
 };
 
 const noSymptomsTrueSymptomsBlankSyphilisHistory = {
-  ...baseSyphilisAoeUpdateMock({
+  ...baseStiAoeUpdateMock({
     ...NO_SYMPTOMS_TRUE_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
     ...SYPHILIS_HISTORY_OVERRIDE,
@@ -574,7 +574,7 @@ const noSymptomsTrueSymptomsBlankSyphilisHistory = {
 };
 
 const noSymptomsTrueSymptomsBlankSyphilisFemaleHistory = {
-  ...baseSyphilisAoeUpdateMock({
+  ...baseStiAoeUpdateMock({
     ...NO_SYMPTOMS_TRUE_OVERRIDE,
     ...PREGNANCY_OVERRIDE,
     ...SYPHILIS_HISTORY_OVERRIDE,
@@ -609,6 +609,49 @@ export const updateSyphilisAoeMocks = [
   falseNoSymptomOnsetDateBlankSymptomsAndYesSyphilisAoeMock,
   noSymptomsTrueSymptomsBlankSyphilisHistory,
   noSymptomsTrueSymptomsBlankSyphilisFemaleHistory,
+];
+
+export const updateHepCAoeMocks = [
+  blankUpdateAoeEventMock,
+  generateEditQueueMock(MULTIPLEX_DISEASES.HEPATITIS_C, TEST_RESULTS.POSITIVE, {
+    device: {
+      deviceId: "DEVICE-9-ID",
+    },
+    specimen: {
+      specimenId: "SPECIMEN-3-ID",
+    },
+  }),
+  generateSubmitQueueMock(
+    MULTIPLEX_DISEASES.HEPATITIS_C,
+    TEST_RESULTS.POSITIVE,
+    {
+      device: {
+        deviceId: "DEVICE-9-ID",
+      },
+      specimen: {
+        specimenId: "SPECIMEN-3-ID",
+      },
+    }
+  ),
+  {
+    ...baseStiAoeUpdateMock({ ...PREGNANCY_OVERRIDE }),
+    ...mutationResponse,
+  },
+  {
+    ...baseStiAoeUpdateMock({
+      ...NO_SYMPTOMS_TRUE_OVERRIDE,
+      ...PREGNANCY_OVERRIDE,
+    }),
+    ...mutationResponse,
+  },
+  {
+    ...baseStiAoeUpdateMock({
+      ...GENDER_SEXUAL_PARTNERS_FEMALE_OVERRIDE,
+      ...NO_SYMPTOMS_TRUE_OVERRIDE,
+      ...PREGNANCY_OVERRIDE,
+    }),
+    ...mutationResponse,
+  },
 ];
 
 type EditQueueMockParams = {

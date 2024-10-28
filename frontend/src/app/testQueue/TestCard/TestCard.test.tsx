@@ -65,6 +65,10 @@ import {
   device8Id,
   device9Name,
   device9Id,
+  NO_SYMPTOMS_FALSE_OVERRIDE,
+  mutationResponse,
+  updateHepCAoeMocks,
+  baseStiAoeUpdateMock,
 } from "../testCardTestConstants";
 import { QueriedFacility } from "../TestCardForm/types";
 import mockSupportedDiseaseMultiplex, {
@@ -1349,6 +1353,12 @@ describe("TestCard", () => {
           TEST_RESULTS.POSITIVE
         ),
         blankUpdateAoeEventMock,
+        {
+          ...baseStiAoeUpdateMock({
+            ...NO_SYMPTOMS_FALSE_OVERRIDE,
+          }),
+          ...mutationResponse,
+        },
       ];
 
       const { user } = await renderQueueItem({ mocks });
@@ -1374,6 +1384,15 @@ describe("TestCard", () => {
       ).toBeInTheDocument();
       expect(
         screen.getByText("What is the gender of their sexual partners?")
+      ).toBeInTheDocument();
+
+      const symptomFieldSet = screen.getByTestId(
+        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(symptomFieldSet).getByLabelText("Yes"));
+
+      expect(
+        screen.getByText("Select any symptoms the patient is experiencing")
       ).toBeInTheDocument();
     });
 
@@ -1421,6 +1440,57 @@ describe("TestCard", () => {
       expect(
         screen.queryByText("What is the gender of their sexual partners?")
       ).not.toBeInTheDocument();
+    });
+
+    it("checks that Hep C submission only works if AOE questions are valid", async function () {
+      mockDiseaseEnabledFlag("hepatitisC", true);
+
+      const { user } = await renderQueueItem({ mocks: updateHepCAoeMocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device9Name);
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+      const AOE_ERROR_TEXT = "Please answer this required question.";
+
+      const requiredQuestions = screen.getAllByText(AOE_ERROR_TEXT);
+      expect(requiredQuestions.length).toEqual(
+        REQUIRED_AOE_QUESTIONS_BY_DISEASE.HEPATITIS_C.length
+      );
+
+      const pregnancyFieldSet = screen.getByTestId(
+        `pregnancy-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(pregnancyFieldSet).getByLabelText("Yes"));
+
+      const symptomFieldSet = screen.getByTestId(
+        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(symptomFieldSet).getByLabelText("No"));
+
+      const genderSexualPartnersFieldSet = screen.getByTestId(
+        `multi-select-option-list`
+      );
+      await user.click(
+        within(genderSexualPartnersFieldSet).getByTestId(
+          "multi-select-option-female"
+        )
+      );
+
+      await user.click(
+        screen.getByText("Submit results", {
+          exact: false,
+        })
+      );
+      expect(screen.queryByText(AOE_ERROR_TEXT)).not.toBeInTheDocument();
     });
 
     it("checks that submission only works if AOE questions are valid", async function () {
