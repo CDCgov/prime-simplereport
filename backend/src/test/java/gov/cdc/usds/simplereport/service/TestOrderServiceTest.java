@@ -1070,6 +1070,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             order.getInternalId(),
             _dataFactory.getGenericDevice().getInternalId(),
             _dataFactory.getGenericSpecimen().getInternalId(),
+            // place holder
+            _dataFactory.getGenericDevice().getInternalId(),
             List.of(covidResult),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1086,6 +1088,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             order.getInternalId(),
             _dataFactory.getGenericDevice().getInternalId(),
             _dataFactory.getGenericSpecimen().getInternalId(),
+            // place holder
+            _dataFactory.getGenericDevice().getInternalId(),
             makeMultiplexTestResult(TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1102,6 +1106,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             order.getInternalId(),
             _dataFactory.getGenericDevice().getInternalId(),
             _dataFactory.getGenericSpecimen().getInternalId(),
+            // place holder
+            _dataFactory.getGenericDevice().getInternalId(),
             List.of(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1121,6 +1127,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         order.getInternalId(),
         _dataFactory.getGenericDevice().getInternalId(),
         _dataFactory.getGenericSpecimen().getInternalId(),
+        // place holder
+        _dataFactory.getGenericDevice().getInternalId(),
         List.of(covidResult, fluAResult, fluBResult),
         convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1131,6 +1139,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             order.getInternalId(),
             _dataFactory.getGenericDevice().getInternalId(),
             _dataFactory.getGenericSpecimen().getInternalId(),
+            // place holder
+            _dataFactory.getGenericDevice().getInternalId(),
             List.of(updatedCovidResult, fluAResult, fluBResult),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
@@ -1830,7 +1840,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getOrderingProvider().getAddress(),
         facility.getOrderingProvider().getProviderId(),
         facility.getOrderingProvider().getTelephone(),
-        facility.getDeviceTypes().stream().map(IdentifiedEntity::getInternalId).toList());
+        facility.getDeviceTypes().stream().map(IdentifiedEntity::getInternalId).toList(),
+        facility.getOrderingProviders().stream().map(IdentifiedEntity::getInternalId).toList());
 
     // Re-open the original test as a correction
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();

@@ -132,6 +132,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "123-456-7890",
             "test@foo.com",
             List.of(getDeviceConfig().getInternalId()),
+            List.of(getProviderConfig().getInternalId()),
             orderingProviderName,
             getAddress(),
             "123-456-7890",
@@ -170,7 +171,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     PersonName orderProviderName = new PersonName("Bill", "Foo", "Nye", "");
     StreetAddress mockAddress = getAddress();
     List<UUID> deviceTypeIds = List.of(getDeviceConfig().getInternalId());
-    List<UUID> providerIds = List.of(getProviderConfig().getProviderId());
+    List<UUID> providerIds = List.of(UUID.fromString(getProviderConfig().getProviderId()));
 
     // THEN
     assertThrows(
@@ -186,6 +187,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
                 "123-456-7890",
                 "test@foo.com",
                 deviceTypeIds,
+                providerIds,
                 orderProviderName,
                 mockAddress,
                 null,
