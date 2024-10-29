@@ -216,6 +216,7 @@ public class OrganizationService {
         .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
   }
 
+  // clean up? 0 uses and logic seems to be mimicked in getFacilityById on 229
   public Organization getOrganizationByFacilityId(UUID facilityId) {
     Facility facility = facilityRepository.findById(facilityId).orElse(null);
 
@@ -240,6 +241,8 @@ public class OrganizationService {
             });
   }
 
+  /// Update here
+  // contract slightly different than factory builder in facility.java, explore why
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequirePermissionEditFacility
   public Facility updateFacility(
@@ -253,6 +256,7 @@ public class OrganizationService {
       StreetAddress orderingProviderAddress,
       String orderingProviderNPI,
       String orderingProviderTelephone,
+      List<UUID> orderingProviderIds,
       List<UUID> deviceIds) {
 
     Facility facility = this.getFacilityInCurrentOrg(facilityId);
@@ -274,15 +278,24 @@ public class OrganizationService {
     orderingProviderValidator.assertValidity(
         p.getNameInfo(), p.getProviderId(), p.getTelephone(), facility.getAddress().getState());
 
+    // Why wipe facility of all devices?
     facility.getDeviceTypes().forEach(facility::removeDeviceType);
 
+    // pattern to follow for MOP
     deviceIds.stream()
         .map(deviceTypeRepository::findById)
         .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(facility::addDeviceType));
 
+    facility.getOrderingProviders().forEach(facility::removeOrderingProvider);
+
+    orderingProviderIds.stream()
+        .map(providerRepository::findById)
+        .forEach(providerOptional -> providerOptional.ifPresent(facility::addOrderingProvider));
+
     return facilityRepository.save(facility);
   }
 
+  // update here
   @Transactional(readOnly = false)
   public Organization createOrganizationAndFacility(
       String name,
@@ -294,6 +307,7 @@ public class OrganizationService {
       String phone,
       String email,
       List<UUID> deviceTypeIds,
+      List<UUID> providerIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -308,6 +322,7 @@ public class OrganizationService {
         phone,
         email,
         deviceTypeIds,
+        providerIds,
         providerName,
         providerAddress,
         providerTelephone,
@@ -389,6 +404,7 @@ public class OrganizationService {
     }
   }
 
+  // update
   private Facility createFacilityNoPermissions(
       Organization organization,
       String testingFacilityName,
@@ -397,6 +413,7 @@ public class OrganizationService {
       String phone,
       String email,
       List<UUID> deviceIds,
+      List<UUID> providerIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -412,6 +429,11 @@ public class OrganizationService {
         .map(deviceTypeRepository::findById)
         .forEach(deviceTypeOptional -> deviceTypeOptional.ifPresent(configuredDevices::add));
 
+    List<Provider> orderingProviders = new ArrayList<>();
+    providerIds.stream()
+        .map(providerRepository::findById)
+        .forEach(providerOptional -> providerOptional.ifPresent(orderingProviders::add));
+
     Facility facility =
         new Facility(
             FacilityBuilder.builder()
@@ -422,7 +444,9 @@ public class OrganizationService {
                 .phone(phone)
                 .email(email)
                 .orderingProvider(orderingProvider)
+                .defaultOrderingProvider(orderingProvider)
                 .configuredDevices(configuredDevices)
+                .configuredOrderingProviders(orderingProviders)
                 .build());
     facility = facilityRepository.save(facility);
     patientSelfRegistrationLinkService.createRegistrationLink(facility);
@@ -430,6 +454,7 @@ public class OrganizationService {
     return facility;
   }
 
+  // update
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequirePermissionEditFacility
   public Facility createFacility(
@@ -439,6 +464,7 @@ public class OrganizationService {
       String phone,
       String email,
       List<UUID> deviceIds,
+      List<UUID> providerIds,
       PersonName providerName,
       StreetAddress providerAddress,
       String providerTelephone,
@@ -451,6 +477,7 @@ public class OrganizationService {
         phone,
         email,
         deviceIds,
+        providerIds,
         providerName,
         providerAddress,
         providerTelephone,
@@ -481,6 +508,7 @@ public class OrganizationService {
     return organizationRepository.save(organization);
   }
 
+  // Maybe update?
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public FacilityStats getFacilityStats(@Argument UUID facilityId) {
     if (facilityId == null) {

@@ -26,6 +26,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -131,6 +132,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "123-456-7890",
             "test@foo.com",
             List.of(getDeviceConfig().getInternalId()),
+            List.of(getProviderConfig().getInternalId()),
             orderingProviderName,
             getAddress(),
             "123-456-7890",
@@ -159,12 +161,17 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     return testDataFactory.createDeviceType("Abbott ID Now", "Abbott", "1");
   }
 
+  private Provider getProviderConfig() {
+    return new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212");
+  }
+
   @Test
   void createOrganizationAndFacility_orderingProviderRequired_failure() {
     // GIVEN
     PersonName orderProviderName = new PersonName("Bill", "Foo", "Nye", "");
     StreetAddress mockAddress = getAddress();
     List<UUID> deviceTypeIds = List.of(getDeviceConfig().getInternalId());
+    List<UUID> providerIds = List.of(UUID.fromString(getProviderConfig().getProviderId()));
 
     // THEN
     assertThrows(
@@ -180,6 +187,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
                 "123-456-7890",
                 "test@foo.com",
                 deviceTypeIds,
+                providerIds,
                 orderProviderName,
                 mockAddress,
                 null,
@@ -503,6 +511,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
           facilityRepository.findByOrganizationAndFacilityName(disOrg, "Injection Site").get();
       assertThat(facility).isNotNull();
       List<DeviceType> devices = deviceTypeRepository.findAll();
+      List<Provider> providers = providerRepository.findAll();
 
       newFacilityAddress = new StreetAddress("0", "1", "2", "3", "4", "5");
       newOrderingProviderAddress = new StreetAddress("6", "7", "8", "9", "10", "11");
@@ -520,7 +529,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
           newOrderingProviderAddress,
           "npi",
           "817-555-7777",
-          List.of(devices.get(0).getInternalId(), devices.get(1).getInternalId()));
+          List.of(devices.get(0).getInternalId(), devices.get(1).getInternalId()),
+          List.of(providers.get(0).getInternalId(), providers.get(1).getInternalId()));
     }
 
     @Test

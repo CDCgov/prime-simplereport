@@ -5662,3 +5662,88 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Hepatitis-C';
+            
+  - changeSet:
+      id: create-facility_providers-table
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-facility-providers-table
+        - createTable:
+            tableName: facility_providers
+            remarks: Many-to-many table for multiple providers configuration at a facility.
+            columns:
+              - column:
+                  name: facility_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_providers__facility
+                    references: facility
+              - column:
+                  name: provider_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_providers__provider
+                    references: provider
+      rollback:
+        - dropTable:
+            tableName: facility_providers
+
+  - changeSet:
+      id: add-default-provider
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-default-provider-col
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_ordering_provider_id
+                  remarks: The default ordering provider for tests at this facility.
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk__facility__default_ordering_provider
+                    references: provider(internal_id)
+      rollback:
+        sql: |
+          ALTER TABLE ${database.defaultSchemaName}.facility DROP COLUMN  default_ordering_provider_id;
+
+  - changeSet:
+      id: populate-facility-providers-table
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-facility-providers-table
+        - sql: |
+            INSERT INTO ${database.defaultSchemaName}.facility_providers (
+              facility_id,
+              provider_id
+            )
+            SELECT
+              internal_id,
+              ordering_provider_id
+            FROM ${database.defaultSchemaName}.facility;
+      rollback:
+        sql: |
+          TRUNCATE TABLE ${database.defaultSchemaName}.facility_providers;
+
+  - changeSet:
+      id: populate-default-provider-column
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-default-provider-column
+        - sql: |
+            UPDATE ${database.defaultSchemaName}.facility
+            SET
+              default_ordering_provider_id = facility.ordering_provider_id
+            WHERE facility.default_ordering_provider_id is NULL;
+      rollback:
+        sql: |
+          UPDATE ${database.defaultSchemaName}.facility
+          SET
+            default_ordering_provider_id = NULL
+          WHERE facility.default_ordering_provider_id is NOT NULL;
