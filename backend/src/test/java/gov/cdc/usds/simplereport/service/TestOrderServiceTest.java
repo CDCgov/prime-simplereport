@@ -165,6 +165,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     UUID defaultDeviceType = facility.getDefaultDeviceType().getInternalId();
     UUID defaultSpecimenType = facility.getDefaultSpecimenType().getInternalId();
+    UUID defualtOrderingProvider = facility.getDefaultOrderingProvider().getInternalId();
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());

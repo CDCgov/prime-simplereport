@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -258,8 +259,10 @@ class QueueManagementTest extends BaseGraphqlTest {
     UUID orderId = o.getInternalId();
     DeviceType d = _dataFactory.getGenericDevice();
     SpecimenType specimen = _dataFactory.getGenericSpecimen();
+    Provider doc = _dataFactory.getGenericProvider();
     String deviceId = d.getInternalId().toString();
     String specimenId = specimen.getInternalId().toString();
+    String providerId = doc.getProviderId();
     String dateTested = "2020-12-31T14:30:30Z";
     List<MultiplexResultInput> results = new ArrayList<>();
     results.add(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
@@ -270,6 +273,7 @@ class QueueManagementTest extends BaseGraphqlTest {
             "id", orderId.toString(),
             "deviceId", deviceId,
             "specimenId", specimenId,
+            "providerId", providerId,
             "results", results,
             "dateTested", dateTested);
 

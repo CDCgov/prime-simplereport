@@ -744,4 +744,16 @@ public class TestDataFactory {
   public static List<PhoneNumberInput> getListOfOnePhoneNumberInput() {
     return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
   }
+
+  public Provider getGenericProvider() {
+    return providerRepository.save(
+        new Provider(
+            "Doctor",
+            "",
+            "Doom",
+            "",
+            "fbd90d7a-a753-4e93-95c2-3986739356fa",
+            getAddress(),
+            "800-555-1212"));
+  }
 }

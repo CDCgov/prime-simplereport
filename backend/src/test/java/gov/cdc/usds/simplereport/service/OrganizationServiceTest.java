@@ -132,7 +132,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "123-456-7890",
             "test@foo.com",
             List.of(getDeviceConfig().getInternalId()),
-            List.of(getProviderConfig().getInternalId()),
+            List.of(UUID.fromString(getProviderConfig().getProviderId())),
             orderingProviderName,
             getAddress(),
             "123-456-7890",
@@ -162,7 +162,14 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   private Provider getProviderConfig() {
-    return new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212");
+    return new Provider(
+        "Doctor",
+        "",
+        "Doom",
+        "",
+        "fbd90d7a-a753-4e93-95c2-3986739356fa",
+        getAddress(),
+        "800-555-1212");
   }
 
   @Test
