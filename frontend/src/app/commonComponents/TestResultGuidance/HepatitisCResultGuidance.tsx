@@ -1,11 +1,7 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 
-import { TEST_RESULTS } from "../../testResults/constants";
-
-import { ResultGuidanceProps } from "./ResultsGuidance";
-
-const PositiveHepatitisCResultInfo = () => {
+const HepatitisCResultGuidance = () => {
   const { t } = useTranslation();
 
   return (
@@ -30,12 +26,6 @@ const PositiveHepatitisCResultInfo = () => {
       />
     </>
   );
-};
-
-const HepatitisCResultGuidance = ({ result }: ResultGuidanceProps) => {
-  const hasPositiveHepatitisCResult =
-    result.testResult === TEST_RESULTS.POSITIVE;
-  return <>{hasPositiveHepatitisCResult && <PositiveHepatitisCResultInfo />}</>;
 };
 
 export default HepatitisCResultGuidance;

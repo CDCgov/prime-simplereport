@@ -103,7 +103,7 @@ export const getGuidanceForResults = (
 
   match = getResultForDisease(results, MULTIPLEX_DISEASES.HEPATITIS_C);
   if (match) {
-    guidance.push(<HepatitisCResultGuidance result={match} />);
+    guidance.push(<HepatitisCResultGuidance />);
   }
 
   return guidance;

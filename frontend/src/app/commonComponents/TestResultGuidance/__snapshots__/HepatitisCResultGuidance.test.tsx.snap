@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`HepatitisCResultGuidance displays guidance for a positive Hepatitis-C result 1`] = `
+exports[`HepatitisCResultGuidance displays guidance for a Hepatitis-C result 1`] = `
 <div>
   <p
     class="text-bold sr-guidance-heading"
