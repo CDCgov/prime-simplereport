@@ -79,7 +79,12 @@ const CovidAoEForm = ({
       </div>
       {hasSymptoms === "YES" && (
         <>
-          <div className="grid-row grid-gap" data-testid="symptom-date">
+          <div
+            className={`grid-row grid-gap ${
+              showSymptomOnsetDateError ? "margin-left-0" : ""
+            }`}
+            data-testid="symptom-date"
+          >
             <TextInput
               name={`symptom-date-${testOrder.internalId}`}
               type="date"
@@ -101,11 +106,12 @@ const CovidAoEForm = ({
                   ? SYMPTOM_SUBQUESTION_ERROR
                   : undefined
               }
-              className={showSymptomOnsetDateError ? "margin-left-0" : ""}
             ></TextInput>
           </div>
           <div
-            className="grid-row grid-gap margin-left-0 "
+            className={`grid-row grid-gap ${
+              showSymptomSelectionError ? "margin-left-0" : ""
+            }`}
             data-testid={`symptom-selection-${testOrder.internalId}`}
           >
             <Checkboxes
@@ -123,7 +129,6 @@ const CovidAoEForm = ({
                   ? SYMPTOM_SUBQUESTION_ERROR
                   : undefined
               }
-              className={"padding-left-0"}
             />
           </div>
         </>

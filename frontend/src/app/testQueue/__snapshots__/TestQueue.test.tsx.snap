@@ -652,7 +652,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         </div>
                       </div>
                       <div
-                        class="grid-row grid-gap"
+                        class="grid-row grid-gap "
                         data-testid="symptom-date"
                       >
                         <div
@@ -678,14 +678,14 @@ exports[`TestQueue should render the test queue 1`] = `
                         </div>
                       </div>
                       <div
-                        class="grid-row grid-gap margin-left-0 "
+                        class="grid-row grid-gap "
                         data-testid="symptom-selection-abc"
                       >
                         <div
                           class="usa-form-group"
                         >
                           <fieldset
-                            class="usa-fieldset prime-checkboxes padding-left-0"
+                            class="usa-fieldset prime-checkboxes"
                           >
                             <legend
                               class="usa-legend"
@@ -1672,7 +1672,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         </div>
                       </div>
                       <div
-                        class="grid-row grid-gap"
+                        class="grid-row grid-gap "
                         data-testid="symptom-date"
                       >
                         <div
@@ -1698,14 +1698,14 @@ exports[`TestQueue should render the test queue 1`] = `
                         </div>
                       </div>
                       <div
-                        class="grid-row grid-gap margin-left-0 "
+                        class="grid-row grid-gap "
                         data-testid="symptom-selection-def"
                       >
                         <div
                           class="usa-form-group"
                         >
                           <fieldset
-                            class="usa-fieldset prime-checkboxes padding-left-0"
+                            class="usa-fieldset prime-checkboxes"
                           >
                             <legend
                               class="usa-legend"
