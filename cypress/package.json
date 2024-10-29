@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "@faker-js/faker": "^9.0.3",
+    "@faker-js/faker": "^9.1.0",
     "cypress": "^13.6.6",
     "cypress-localstorage-commands": "^2.2.6",
     "dayjs": "^1.11.13",
