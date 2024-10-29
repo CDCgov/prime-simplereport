@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -596,7 +595,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   private void sendOrgAdminEmailCSVAsyncTest() throws ExecutionException, InterruptedException {
     setupDataByFacility();
     String type = "facilities";
-    reset(emailService);
     when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
     when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
 
@@ -607,7 +605,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         List.of("mn-orgBadmin1@example.com", "mn-orgBadmin2@example.com");
     verify(emailService, times(1)).sendWithCSVAttachment(expectedMnEmails, "MN", type);
     assertThat(mnEmails).isEqualTo(expectedMnEmails);
-    reset(emailService);
 
     String njExternalId = "d6b3951b-6698-4ee7-9d63-aaadee85bac0";
     UUID njId = organizationRepository.findByExternalId(njExternalId).get().getInternalId();
@@ -615,13 +612,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     List<String> expectedNjEmails = List.of("nj-orgAadmin1@example.com");
     verify(emailService, times(1)).sendWithCSVAttachment(expectedNjEmails, "NJ", type);
     assertThat(njEmails).isEqualTo(expectedNjEmails);
-    reset(emailService);
 
     List<String> nonExistentOrgEmails =
         _service.sendOrgAdminEmailCSVAsync(List.of(), type, "PA").get();
     verify(emailService, times(1)).sendWithCSVAttachment(nonExistentOrgEmails, "PA", type);
     assertThat(nonExistentOrgEmails).isEmpty();
-    reset(emailService);
   }
 
   @Test
