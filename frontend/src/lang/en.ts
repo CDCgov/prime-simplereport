@@ -40,6 +40,7 @@ export const en = {
         RSV: "RSV",
         HIV: "HIV",
         SYPHILIS: "Syphilis",
+        HEPATITIS_C: "Hepatitis-C",
       },
       diseaseResultTitle: {
         COVID19: "COVID-19 result",
@@ -49,6 +50,7 @@ export const en = {
         RSV: "RSV result",
         HIV: "HIV result",
         SYPHILIS: "Syphilis result",
+        HEPATITIS_C: "Hepatitis-C result",
       },
       role: {
         STAFF: "Staff",
@@ -418,6 +420,15 @@ export const en = {
           p1: "<0>Visit the CDC website to learn more about a positive Syphilis result</0> (cdc.gov/std/treatment-guidelines/syphilis.htm).",
           treatmentLink:
             "https://www.cdc.gov/std/treatment-guidelines/syphilis.htm",
+        },
+      },
+      hepatitisCNotes: {
+        h1: "For Hepatitis-C:",
+        positive: {
+          p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
+          p1: "<0>Visit the CDC website to learn more about a positive Hepatitis-C result.</0> (cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results).",
+          treatmentLink:
+            "https://www.cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results",
         },
       },
       tos: {

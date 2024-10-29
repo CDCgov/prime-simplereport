@@ -50,6 +50,10 @@ const setDiseaseResultKey = (diseaseName: MultiplexDisease, isPxp: boolean) => {
       return isPxp
         ? "constants.diseaseResultTitle.SYPHILIS"
         : "constants.disease.SYPHILIS";
+    case MULTIPLEX_DISEASES.HEPATITIS_C:
+      return isPxp
+        ? "constants.diseaseResultTitle.HEPATITIS_C"
+        : "constants.disease.HEPATITIS_C";
     default:
       return null;
   }
