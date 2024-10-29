@@ -39,7 +39,31 @@ public class DateTimeUtils {
   private static final ZoneId samoaTimeZoneId = ZoneId.of("US/Samoa");
   private static final ZoneId puertoRicoTimeZoneId = ZoneId.of("America/Puerto_Rico");
 
-  public static final Map<String, ZoneId> validTimeZoneIdMap =
+  /**
+   * Map of common name `time_zone` values returned from SmartyStreets and their corresponding
+   * ZoneId https://www.smarty.com/docs/cloud/us-street-api
+   */
+  public static final Map<String, ZoneId> commonNameZoneIdMap =
+      Map.ofEntries(
+          Map.entry("Alaska".toLowerCase(), alaskaTimeZoneId),
+          Map.entry("Atlantic".toLowerCase(), puertoRicoTimeZoneId),
+          Map.entry("Central".toLowerCase(), centralTimeZoneId),
+          Map.entry("Eastern".toLowerCase(), easternTimeZoneId),
+          Map.entry("Hawaii".toLowerCase(), hawaiiTimeZoneId),
+          Map.entry("Mountain".toLowerCase(), mountainTimeZoneId),
+          Map.entry("None".toLowerCase(), FALLBACK_TIMEZONE_ID),
+          Map.entry("Pacific".toLowerCase(), pacificTimeZoneId),
+          Map.entry("Samoa".toLowerCase(), samoaTimeZoneId),
+          Map.entry("UTC+9".toLowerCase(), ZoneId.of("+9")),
+          Map.entry("UTC+10".toLowerCase(), ZoneId.of("+10")),
+          Map.entry("UTC+11".toLowerCase(), ZoneId.of("+11")),
+          Map.entry("UTC+12".toLowerCase(), ZoneId.of("+12")));
+
+  /**
+   * Map of abbreviated timezones and their corresponding ZoneId Used for bulk upload timestamp
+   * validations and when converting user-supplied timezones to a ZoneId
+   */
+  public static final Map<String, ZoneId> timezoneAbbreviationZoneIdMap =
       Map.ofEntries(
           Map.entry("UTC", ZoneOffset.UTC),
           Map.entry("UT", ZoneOffset.UTC),
@@ -63,6 +87,8 @@ public class DateTimeUtils {
           Map.entry("HI", hawaiiTimeZoneId),
           Map.entry("HST", hawaiiTimeZoneId),
           Map.entry("HDT", aleutianTimeZoneId),
+          Map.entry("AS", samoaTimeZoneId),
+          Map.entry("ASM", samoaTimeZoneId),
           Map.entry("SST", samoaTimeZoneId),
           Map.entry("ADT", puertoRicoTimeZoneId),
           Map.entry("AST", puertoRicoTimeZoneId));
@@ -112,8 +138,8 @@ public class DateTimeUtils {
   }
 
   public static ZoneId parseZoneId(String timezoneCode) {
-    if (validTimeZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
-      return validTimeZoneIdMap.get(timezoneCode.toUpperCase());
+    if (timezoneAbbreviationZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
+      return timezoneAbbreviationZoneIdMap.get(timezoneCode.toUpperCase());
     }
     return ZoneId.of(timezoneCode);
   }

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.commonNameZoneIdMap;
 
 import com.smartystreets.api.ClientBuilder;
 import com.smartystreets.api.exceptions.SmartyException;
@@ -16,7 +17,6 @@ import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
 import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import java.io.IOException;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,7 +145,12 @@ public class AddressValidationService {
       return null;
     }
 
-    ZoneOffset zoneOffset = ZoneOffset.of(String.valueOf(timezoneInfo.utcOffset));
-    return ZoneId.of(zoneOffset.getId());
+    String timezoneCommonName = timezoneInfo.timezoneCommonName.toLowerCase();
+    if (commonNameZoneIdMap.containsKey(timezoneCommonName)) {
+      return commonNameZoneIdMap.get(timezoneCommonName);
+    } else {
+      log.error("Unsupported timezone common name: {}", timezoneCommonName);
+      return null;
+    }
   }
 }
