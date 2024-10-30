@@ -8,55 +8,41 @@ interface TestResultsListProps {
   results: MultiplexResults;
   isPatientApp: boolean;
 }
+
 const setDiseaseResultTitle = (
-  diseaseName: MultiplexDisease,
+  diseaseName: MULTIPLEX_DISEASES,
   t: translateFn,
   isPxp: boolean
 ) => {
-  const translationKey = setDiseaseResultKey(diseaseName, isPxp);
+  const translationKey = isPxp
+    ? diseaseResultTitlePxpMap[diseaseName]
+    : diseaseResultReportingAppMap[diseaseName];
   if (translationKey) {
     return t(translationKey);
   }
   return "";
 };
 
-const setDiseaseResultKey = (diseaseName: MultiplexDisease, isPxp: boolean) => {
-  switch (diseaseName) {
-    case MULTIPLEX_DISEASES.COVID_19:
-      return isPxp
-        ? "constants.diseaseResultTitle.COVID19"
-        : "constants.disease.COVID19";
-    case MULTIPLEX_DISEASES.FLU_A:
-      return isPxp
-        ? "constants.diseaseResultTitle.FLUA"
-        : "constants.disease.FLUA";
-    case MULTIPLEX_DISEASES.FLU_B:
-      return isPxp
-        ? "constants.diseaseResultTitle.FLUB"
-        : "constants.disease.FLUB";
-    case MULTIPLEX_DISEASES.FLU_A_AND_B:
-      return isPxp
-        ? "constants.diseaseResultTitle.FLUAB"
-        : "constants.disease.FLUAB";
-    case MULTIPLEX_DISEASES.HIV:
-      return isPxp
-        ? "constants.diseaseResultTitle.HIV"
-        : "constants.disease.HIV";
-    case MULTIPLEX_DISEASES.RSV:
-      return isPxp
-        ? "constants.diseaseResultTitle.RSV"
-        : "constants.disease.RSV";
-    case MULTIPLEX_DISEASES.SYPHILIS:
-      return isPxp
-        ? "constants.diseaseResultTitle.SYPHILIS"
-        : "constants.disease.SYPHILIS";
-    case MULTIPLEX_DISEASES.HEPATITIS_C:
-      return isPxp
-        ? "constants.diseaseResultTitle.HEPATITIS_C"
-        : "constants.disease.HEPATITIS_C";
-    default:
-      return null;
-  }
+const diseaseResultTitlePxpMap: Record<MULTIPLEX_DISEASES, string> = {
+  [MULTIPLEX_DISEASES.COVID_19]: "constants.diseaseResultTitle.COVID19",
+  [MULTIPLEX_DISEASES.FLU_A]: "constants.diseaseResultTitle.FLUA",
+  [MULTIPLEX_DISEASES.FLU_B]: "constants.diseaseResultTitle.FLUB",
+  [MULTIPLEX_DISEASES.FLU_A_AND_B]: "constants.diseaseResultTitle.FLUAB",
+  [MULTIPLEX_DISEASES.HIV]: "constants.diseaseResultTitle.HIV",
+  [MULTIPLEX_DISEASES.RSV]: "constants.diseaseResultTitle.RSV",
+  [MULTIPLEX_DISEASES.SYPHILIS]: "constants.diseaseResultTitle.SYPHILIS",
+  [MULTIPLEX_DISEASES.HEPATITIS_C]: "constants.diseaseResultTitle.HEPATITIS_C",
+};
+
+const diseaseResultReportingAppMap: Record<MULTIPLEX_DISEASES, string> = {
+  [MULTIPLEX_DISEASES.COVID_19]: "constants.disease.COVID19",
+  [MULTIPLEX_DISEASES.FLU_A]: "constants.disease.FLUA",
+  [MULTIPLEX_DISEASES.FLU_B]: "constants.disease.FLUB",
+  [MULTIPLEX_DISEASES.FLU_A_AND_B]: "constants.disease.FLUAB",
+  [MULTIPLEX_DISEASES.HIV]: "constants.disease.HIV",
+  [MULTIPLEX_DISEASES.RSV]: "constants.disease.RSV",
+  [MULTIPLEX_DISEASES.SYPHILIS]: "constants.disease.SYPHILIS",
+  [MULTIPLEX_DISEASES.HEPATITIS_C]: "constants.disease.HEPATITIS_C",
 };
 
 const setResult = (result: string, t: translateFn) => {
@@ -82,7 +68,7 @@ const setResultSymbol = (result: string, t: translateFn) => {
 };
 
 const reportingAppResultListItem = (
-  diseaseName: MultiplexDisease,
+  diseaseName: MULTIPLEX_DISEASES,
   result: TestResult,
   t: translateFn
 ) => {
@@ -103,7 +89,7 @@ const reportingAppResultListItem = (
 };
 
 const pxpAppResultListItem = (
-  diseaseName: MultiplexDisease,
+  diseaseName: MULTIPLEX_DISEASES,
   result: TestResult,
   t: translateFn
 ) => {
