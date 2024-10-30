@@ -1,9 +1,4 @@
-import {
-  usStreet,
-  usZipcode,
-  // Remove this ts-ignore once @types/smartystreets-javascript-sdk is updated
-  // @ts-ignore
-} from "../../../node_modules/smartystreets-javascript-sdk/dist/esm/index.mjs";
+import { usStreet, usZipcode } from "smartystreets-javascript-sdk";
 
 import { getZipCodeClient, getClient } from "./smartyStreetsClients";
 import { toLowerStripWhitespace } from "./text";

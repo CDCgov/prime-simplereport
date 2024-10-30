@@ -1,6 +1,4 @@
-// Remove this ts-ignore once @types/smartystreets-javascript-sdk is updated
-// @ts-ignore
-import core from "../../../node_modules/smartystreets-javascript-sdk/dist/esm/index.mjs";
+import { core } from "smartystreets-javascript-sdk";
 
 export class SmartyStreetsError extends Error {
   constructor(message: string) {
