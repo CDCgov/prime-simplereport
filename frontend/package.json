@@ -254,6 +254,11 @@
     ]
   },
   "jest": {
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest",
+      "\\.mjs?$": "babel-jest"
+    },
+    "transformIgnorePatterns": [],
     "moduleNameMapper": {
       "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
     },
