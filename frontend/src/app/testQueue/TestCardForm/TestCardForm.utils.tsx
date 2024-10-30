@@ -26,6 +26,7 @@ export enum AOEFormOption {
   COVID = "COVID",
   HIV = "HIV",
   SYPHILIS = "SYPHILIS",
+  HEPATITIS_C = "HEPATITIS_C",
   NONE = "NONE",
 }
 
@@ -63,6 +64,7 @@ const filterDiseaseFromAllDevices = (
 export function useFilteredDeviceTypes(facility: QueriedFacility) {
   const hivEnabled = useFeature("hivEnabled");
   const syphilisEnabled = useFeature("syphilisEnabled");
+  const hepatitisCEnabled = useFeature("hepatitisCEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
 
@@ -77,6 +79,12 @@ export function useFilteredDeviceTypes(facility: QueriedFacility) {
     deviceTypes = filterDiseaseFromAllDevices(
       deviceTypes,
       MULTIPLEX_DISEASES.SYPHILIS
+    );
+  }
+  if (!hepatitisCEnabled) {
+    deviceTypes = filterDiseaseFromAllDevices(
+      deviceTypes,
+      MULTIPLEX_DISEASES.HEPATITIS_C
     );
   }
   return deviceTypes;
@@ -200,6 +208,15 @@ export const useAOEFormOption = (
     devicesMap
       .get(testFormState.deviceId)
       ?.supportedDiseaseTestPerformed.filter(
+        (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.HEPATITIS_C
+      ).length === 1
+  ) {
+    return resultHasPositive ? AOEFormOption.HEPATITIS_C : AOEFormOption.NONE;
+  }
+  if (
+    devicesMap
+      .get(testFormState.deviceId)
+      ?.supportedDiseaseTestPerformed.filter(
         (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.HIV
       ).length === 1
   ) {
@@ -240,18 +257,36 @@ export const AoeValidationErrorMessages = {
   UNKNOWN: "UNKNOWN",
 } as const;
 
+export enum AoeQuestionName {
+  PREGNANCY = "pregnancy",
+  NO_SYMPTOMS = "noSymptoms",
+  GENDER_OF_SEXUAL_PARTNERS = "genderOfSexualPartners",
+  SYPHILIS_HISTORY = "syphilisHistory",
+}
+
 export const REQUIRED_AOE_QUESTIONS_BY_DISEASE: {
   [_key in AOEFormOption]: Array<keyof AoeQuestionResponses>;
 } = {
   // AOE responses for COVID not required, but include in completion validation
   // to show "are you sure" modal if not filled
-  [AOEFormOption.COVID]: ["pregnancy", "noSymptoms"],
-  [AOEFormOption.HIV]: ["pregnancy", "genderOfSexualPartners"],
+  [AOEFormOption.COVID]: [
+    AoeQuestionName.PREGNANCY,
+    AoeQuestionName.NO_SYMPTOMS,
+  ],
+  [AOEFormOption.HIV]: [
+    AoeQuestionName.PREGNANCY,
+    AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
+  ],
   [AOEFormOption.SYPHILIS]: [
-    "pregnancy",
-    "syphilisHistory",
-    "genderOfSexualPartners",
-    "noSymptoms",
+    AoeQuestionName.PREGNANCY,
+    AoeQuestionName.SYPHILIS_HISTORY,
+    AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
+    AoeQuestionName.NO_SYMPTOMS,
+  ],
+  [AOEFormOption.HEPATITIS_C]: [
+    AoeQuestionName.PREGNANCY,
+    AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
+    AoeQuestionName.NO_SYMPTOMS,
   ],
   [AOEFormOption.NONE]: [],
 };

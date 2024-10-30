@@ -12,6 +12,8 @@ import {
   fluDeviceId,
   fluDeviceName,
   generateSubmitQueueMock,
+  hepatitisCDeviceId,
+  hepatitisCDeviceName,
   hivDeviceId,
   hivDeviceName,
   multiplexDeviceId,
@@ -176,6 +178,26 @@ describe("TestCardForm", () => {
             internalId: syphilisDeviceId,
             name: syphilisDeviceName,
             model: syphilisDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      expect(await renderTestCardForm({ props })).toMatchSnapshot();
+    });
+
+    it("matches snapshot for hepatitis c device", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [
+            { testResult: "POSITIVE", disease: { name: "HEPATITIS-C" } },
+          ],
+          deviceType: {
+            internalId: hepatitisCDeviceId,
+            name: hepatitisCDeviceName,
+            model: hepatitisCDeviceName,
             testLength: 15,
           },
         },

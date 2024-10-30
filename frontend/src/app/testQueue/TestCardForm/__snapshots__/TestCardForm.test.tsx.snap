@@ -1535,6 +1535,968 @@ exports[`TestCardForm initial state matches snapshot for flu device 1`] = `
 </div>
 `;
 
+exports[`TestCardForm initial state matches snapshot for hepatitis c device 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        aria-hidden="true"
+        class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
+      >
+        <h4>
+          Submitting test data for 
+          Dixon, Althea Hedda Mclaughlin
+          ...
+        </h4>
+        <img
+          alt="submitting"
+          class="square-5"
+          src="loader.svg"
+        />
+      </div>
+      <div
+        class="grid-container sr-test-card-form-container"
+      >
+        <div
+          class="grid-row grid-gap"
+        >
+          <div
+            class="grid-col-auto"
+          >
+            <label
+              class="usa-label margin-top-3"
+              data-testid="label"
+              for="current-date-time"
+            >
+              Test date and time
+               
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                *
+              </abbr>
+            </label>
+            <div
+              class="usa-checkbox"
+              data-testid="checkbox"
+            >
+              <input
+                checked=""
+                class="usa-checkbox__input"
+                id="current-date-time-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+                name="current-date-time"
+                type="checkbox"
+              />
+              <label
+                class="usa-checkbox__label"
+                for="current-date-time-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+              >
+                Current date and time
+              </label>
+            </div>
+          </div>
+        </div>
+        <div
+          class="grid-row grid-gap"
+          data-testid="device-type-dropdown-container"
+        >
+          <div
+            class="grid-col-auto"
+          >
+            <div
+              class="usa-form-group prime-dropdown  usa-form-group--error card-dropdown"
+            >
+              <label
+                class="usa-label usa-label--error"
+                for="25"
+              >
+                <span
+                  class="usa-tooltip usa-text-with-tooltip"
+                  data-testid="tooltipWrapper"
+                >
+                  <button
+                    aria-describedby="tooltip-1000000"
+                    aria-label=""
+                    class="usa-button usa-button--unstyled usa-tooltip__trigger"
+                    data-testid="triggerElement"
+                    position="right"
+                    tabindex="0"
+                    title=""
+                    wrapperclasses="usa-text-with-tooltip"
+                  >
+                    Test device
+                    <svg
+                      alt-text="info"
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-circle-info info-circle-icon"
+                      data-icon="circle-info"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                  <span
+                    aria-hidden="true"
+                    class="usa-tooltip__body"
+                    data-testid="tooltipBody"
+                    id="tooltip-1000000"
+                    role="tooltip"
+                    title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                  >
+                    Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
+                  </span>
+                </span>
+                <abbr
+                  class="usa-hint usa-hint--required"
+                  title="required"
+                >
+                   
+                  *
+                </abbr>
+              </label>
+              <div
+                class="usa-error-message"
+                id="error_25"
+                role="alert"
+              >
+                <span
+                  class="usa-sr-only"
+                >
+                  Error: 
+                </span>
+                Please select a device.
+              </div>
+              <select
+                aria-describedby="error_25"
+                aria-invalid="true"
+                aria-label="Test device"
+                aria-required="true"
+                class="usa-select usa-input--error"
+                data-testid="device-type-dropdown"
+                id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+                name="testDevice"
+              >
+                <option
+                  aria-selected="false"
+                  value=""
+                />
+                <option
+                  aria-selected="false"
+                  value="FLU-DEVICE-ID"
+                >
+                  FLU
+                </option>
+                <option
+                  aria-selected="false"
+                  value="COVID-DEVICE-ID"
+                >
+                  LumiraDX
+                </option>
+                <option
+                  aria-selected="false"
+                  value="MULTIPLEX-DEVICE-ID"
+                >
+                  Multiplex
+                </option>
+                <option
+                  aria-selected="false"
+                  value="MULTIPLEX-COVID-DEVICE-ID"
+                >
+                  MultiplexAndCovidOnly
+                </option>
+              </select>
+            </div>
+          </div>
+          <div
+            class="grid-col-auto"
+            data-testid="specimen-type-dropdown-container"
+          >
+            <div
+              class="usa-form-group prime-dropdown  card-dropdown"
+            >
+              <label
+                class="usa-label"
+                for="26"
+              >
+                Specimen type
+                <abbr
+                  class="usa-hint usa-hint--required"
+                  title="required"
+                >
+                   
+                  *
+                </abbr>
+              </label>
+              <select
+                aria-label="Specimen type"
+                aria-required="true"
+                class="usa-select"
+                data-testid="specimen-type-dropdown"
+                disabled=""
+                id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+                name="specimenType"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="grid-row grid-gap"
+        >
+          <div
+            class="usa-form-group"
+            data-testid="formGroup"
+          >
+            <div
+              class="usa-alert usa-alert--error"
+              data-testid="alert"
+            >
+              <div
+                class="usa-alert__body"
+              >
+                <p
+                  class="usa-alert__text"
+                >
+                  This device doesn't have any supported disease tests configured. Please ask your organization admin to add the correct test.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="grid-row grid-gap"
+        >
+          <div
+            class="grid-col-auto"
+            id="covid-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+          >
+            <div
+              class="grid-row"
+            >
+              <div
+                class="grid-col-auto"
+              >
+                <div
+                  class="usa-form-group"
+                >
+                  <fieldset
+                    class="usa-fieldset prime-radios"
+                    data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  >
+                    <legend
+                      class="usa-legend"
+                    >
+                      Is the patient pregnant?
+                    </legend>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="27-val-77386006"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="77386006"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
+                          for="27-val-77386006"
+                        >
+                          Yes
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="27-val-60001007"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="60001007"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
+                          for="27-val-60001007"
+                        >
+                          No
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="27-val-261665006"
+                          name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="261665006"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
+                          for="27-val-261665006"
+                        >
+                          Prefer not to answer
+                        </label>
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row"
+            >
+              <div
+                class="grid-col-auto"
+              >
+                <div
+                  class="usa-form-group"
+                >
+                  <fieldset
+                    class="usa-fieldset prime-radios"
+                    data-testid="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                    id="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  >
+                    <legend
+                      class="usa-legend"
+                    >
+                      Is the patient currently experiencing or showing signs of symptoms?
+                    </legend>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="28-val-YES"
+                          name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="YES"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
+                          for="28-val-YES"
+                        >
+                          Yes
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          checked=""
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="28-val-NO"
+                          name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                          type="radio"
+                          value="NO"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
+                          for="28-val-NO"
+                        >
+                          No
+                        </label>
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="grid-row margin-top-4"
+        >
+          <div
+            class="grid-col-auto"
+          >
+            <button
+              class="usa-button"
+              data-testid="button"
+              type="button"
+            >
+              Submit results
+            </button>
+          </div>
+        </div>
+        <div
+          class="grid-row margin-top-1"
+        >
+          <button
+            class="usa-button usa-button--unstyled margin-top-05em"
+            data-testid="button"
+            type="button"
+          >
+            <svg
+              alt-text="info"
+              aria-hidden="true"
+              class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+              data-icon="circle-info"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                fill="currentColor"
+              />
+            </svg>
+            <strong
+              class="font-body-2xs"
+            >
+              Where results are sent
+            </strong>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal--basic"
+    />
+    <div
+      class="modal--basic"
+    />
+  </body>,
+  "container": <div>
+    <div
+      aria-hidden="true"
+      class="sr-queue-item-submit-loader z-top position-absolute height-full width-full text-center test-card-submit-loader"
+    >
+      <h4>
+        Submitting test data for 
+        Dixon, Althea Hedda Mclaughlin
+        ...
+      </h4>
+      <img
+        alt="submitting"
+        class="square-5"
+        src="loader.svg"
+      />
+    </div>
+    <div
+      class="grid-container sr-test-card-form-container"
+    >
+      <div
+        class="grid-row grid-gap"
+      >
+        <div
+          class="grid-col-auto"
+        >
+          <label
+            class="usa-label margin-top-3"
+            data-testid="label"
+            for="current-date-time"
+          >
+            Test date and time
+             
+            <abbr
+              class="usa-hint usa-hint--required"
+              title="required"
+            >
+              *
+            </abbr>
+          </label>
+          <div
+            class="usa-checkbox"
+            data-testid="checkbox"
+          >
+            <input
+              checked=""
+              class="usa-checkbox__input"
+              id="current-date-time-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+              name="current-date-time"
+              type="checkbox"
+            />
+            <label
+              class="usa-checkbox__label"
+              for="current-date-time-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+            >
+              Current date and time
+            </label>
+          </div>
+        </div>
+      </div>
+      <div
+        class="grid-row grid-gap"
+        data-testid="device-type-dropdown-container"
+      >
+        <div
+          class="grid-col-auto"
+        >
+          <div
+            class="usa-form-group prime-dropdown  usa-form-group--error card-dropdown"
+          >
+            <label
+              class="usa-label usa-label--error"
+              for="25"
+            >
+              <span
+                class="usa-tooltip usa-text-with-tooltip"
+                data-testid="tooltipWrapper"
+              >
+                <button
+                  aria-describedby="tooltip-1000000"
+                  aria-label=""
+                  class="usa-button usa-button--unstyled usa-tooltip__trigger"
+                  data-testid="triggerElement"
+                  position="right"
+                  tabindex="0"
+                  title=""
+                  wrapperclasses="usa-text-with-tooltip"
+                >
+                  Test device
+                  <svg
+                    alt-text="info"
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-circle-info info-circle-icon"
+                    data-icon="circle-info"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
+                <span
+                  aria-hidden="true"
+                  class="usa-tooltip__body"
+                  data-testid="tooltipBody"
+                  id="tooltip-1000000"
+                  role="tooltip"
+                  title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                >
+                  Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here.
+                </span>
+              </span>
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </label>
+            <div
+              class="usa-error-message"
+              id="error_25"
+              role="alert"
+            >
+              <span
+                class="usa-sr-only"
+              >
+                Error: 
+              </span>
+              Please select a device.
+            </div>
+            <select
+              aria-describedby="error_25"
+              aria-invalid="true"
+              aria-label="Test device"
+              aria-required="true"
+              class="usa-select usa-input--error"
+              data-testid="device-type-dropdown"
+              id="test-device-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+              name="testDevice"
+            >
+              <option
+                aria-selected="false"
+                value=""
+              />
+              <option
+                aria-selected="false"
+                value="FLU-DEVICE-ID"
+              >
+                FLU
+              </option>
+              <option
+                aria-selected="false"
+                value="COVID-DEVICE-ID"
+              >
+                LumiraDX
+              </option>
+              <option
+                aria-selected="false"
+                value="MULTIPLEX-DEVICE-ID"
+              >
+                Multiplex
+              </option>
+              <option
+                aria-selected="false"
+                value="MULTIPLEX-COVID-DEVICE-ID"
+              >
+                MultiplexAndCovidOnly
+              </option>
+            </select>
+          </div>
+        </div>
+        <div
+          class="grid-col-auto"
+          data-testid="specimen-type-dropdown-container"
+        >
+          <div
+            class="usa-form-group prime-dropdown  card-dropdown"
+          >
+            <label
+              class="usa-label"
+              for="26"
+            >
+              Specimen type
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </label>
+            <select
+              aria-label="Specimen type"
+              aria-required="true"
+              class="usa-select"
+              data-testid="specimen-type-dropdown"
+              disabled=""
+              id="specimen-type-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+              name="specimenType"
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        class="grid-row grid-gap"
+      >
+        <div
+          class="usa-form-group"
+          data-testid="formGroup"
+        >
+          <div
+            class="usa-alert usa-alert--error"
+            data-testid="alert"
+          >
+            <div
+              class="usa-alert__body"
+            >
+              <p
+                class="usa-alert__text"
+              >
+                This device doesn't have any supported disease tests configured. Please ask your organization admin to add the correct test.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="grid-row grid-gap"
+      >
+        <div
+          class="grid-col-auto"
+          id="covid-aoe-form-72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0"
+        >
+          <div
+            class="grid-row"
+          >
+            <div
+              class="grid-col-auto"
+            >
+              <div
+                class="usa-form-group"
+              >
+                <fieldset
+                  class="usa-fieldset prime-radios"
+                  data-testid="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                >
+                  <legend
+                    class="usa-legend"
+                  >
+                    Is the patient pregnant?
+                  </legend>
+                  <div
+                    class=""
+                  >
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="27-val-77386006"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="77386006"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-77386006"
+                        for="27-val-77386006"
+                      >
+                        Yes
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="27-val-60001007"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="60001007"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-60001007"
+                        for="27-val-60001007"
+                      >
+                        No
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="27-val-261665006"
+                        name="pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="261665006"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-pregnancy-1b02363b-ce71-4f30-a2d6-d82b56a91b39-261665006"
+                        for="27-val-261665006"
+                      >
+                        Prefer not to answer
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+          </div>
+          <div
+            class="grid-row"
+          >
+            <div
+              class="grid-col-auto"
+            >
+              <div
+                class="usa-form-group"
+              >
+                <fieldset
+                  class="usa-fieldset prime-radios"
+                  data-testid="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                  id="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                >
+                  <legend
+                    class="usa-legend"
+                  >
+                    Is the patient currently experiencing or showing signs of symptoms?
+                  </legend>
+                  <div
+                    class=""
+                  >
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="28-val-YES"
+                        name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="YES"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-YES"
+                        for="28-val-YES"
+                      >
+                        Yes
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        checked=""
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="28-val-NO"
+                        name="has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+                        type="radio"
+                        value="NO"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        data-cy="radio-group-option-has-any-symptoms-1b02363b-ce71-4f30-a2d6-d82b56a91b39-NO"
+                        for="28-val-NO"
+                      >
+                        No
+                      </label>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="grid-row margin-top-4"
+      >
+        <div
+          class="grid-col-auto"
+        >
+          <button
+            class="usa-button"
+            data-testid="button"
+            type="button"
+          >
+            Submit results
+          </button>
+        </div>
+      </div>
+      <div
+        class="grid-row margin-top-1"
+      >
+        <button
+          class="usa-button usa-button--unstyled margin-top-05em"
+          data-testid="button"
+          type="button"
+        >
+          <svg
+            alt-text="info"
+            aria-hidden="true"
+            class="svg-inline--fa fa-circle-info info-circle-icon margin-right-05em"
+            data-icon="circle-info"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+              fill="currentColor"
+            />
+          </svg>
+          <strong
+            class="font-body-2xs"
+          >
+            Where results are sent
+          </strong>
+        </button>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+  "user": Object {
+    "clear": [Function],
+    "click": [Function],
+    "copy": [Function],
+    "cut": [Function],
+    "dblClick": [Function],
+    "deselectOptions": [Function],
+    "hover": [Function],
+    "keyboard": [Function],
+    "paste": [Function],
+    "pointer": [Function],
+    "selectOptions": [Function],
+    "setup": [Function],
+    "tab": [Function],
+    "tripleClick": [Function],
+    "type": [Function],
+    "unhover": [Function],
+    "upload": [Function],
+  },
+}
+`;
+
 exports[`TestCardForm initial state matches snapshot for hiv device 1`] = `
 Object {
   "asFragment": [Function],
@@ -3806,7 +4768,7 @@ Object {
               class="grid-row"
             >
               <div
-                class="grid-col-12 desktop:grid-col-6"
+                class="grid-col-auto"
               >
                 <div
                   class="usa-form-group"
@@ -4561,7 +5523,7 @@ Object {
             class="grid-row"
           >
             <div
-              class="grid-col-12 desktop:grid-col-6"
+              class="grid-col-auto"
             >
               <div
                 class="usa-form-group"

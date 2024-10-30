@@ -1,4 +1,6 @@
 import {
+  hepatitisCSymptomDefinitions,
+  hepatitisCSymptomOrder,
   respiratorySymptomDefinitions,
   respiratorySymptomOrder,
 } from "../../../../patientApp/timeOfTest/constants";
@@ -14,6 +16,17 @@ describe("mapSymptomBoolLiteralsToBool", () => {
       respiratorySymptomDefinitions
     );
     respiratorySymptomOrder.forEach((symptomKey) => {
+      expect(parsedPayload[symptomKey]).toEqual(false);
+    });
+  });
+  it("takes a JSON payload of {'Hepatitis C symptom SNOMEDS' : boolean strings} and parses the strings into booleans", () => {
+    const hepatitisCSymptomPayload =
+      '{"225549006":false,"110292000":false,"249497008":false,"271681002":false,"386661006":false,"39575007":false,"271863002":false,"57676002":false,"224960004":false}\n';
+    const parsedPayload = mapSymptomBoolLiteralsToBool(
+      hepatitisCSymptomPayload,
+      hepatitisCSymptomDefinitions
+    );
+    hepatitisCSymptomOrder.forEach((symptomKey) => {
       expect(parsedPayload[symptomKey]).toEqual(false);
     });
   });
