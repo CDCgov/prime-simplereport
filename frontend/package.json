@@ -49,7 +49,7 @@
     "react-transition-group": "^4.4.5",
     "react-uid": "^2.3.3",
     "redux": "^5.0.1",
-    "smartystreets-javascript-sdk": "^3.2.0",
+    "smartystreets-javascript-sdk": "^6.1.0",
     "uuid": "^9.0.1",
     "yup": "^1.3.3"
   },
@@ -254,6 +254,11 @@
     ]
   },
   "jest": {
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest",
+      "\\.mjs?$": "babel-jest"
+    },
+    "transformIgnorePatterns": [],
     "moduleNameMapper": {
       "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
     },
