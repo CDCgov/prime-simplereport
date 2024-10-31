@@ -45,7 +45,7 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LI
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.timezoneAbbreviationZoneIdMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
 
@@ -462,7 +462,7 @@ public class CsvValidatorUtils {
     String value = input.getValue();
     String timezoneCode = value.substring(value.lastIndexOf(' ')).trim();
     if (!ZoneId.getAvailableZoneIds().contains(timezoneCode)
-        && !validTimeZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
+        && !timezoneAbbreviationZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
       errors.add(
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)

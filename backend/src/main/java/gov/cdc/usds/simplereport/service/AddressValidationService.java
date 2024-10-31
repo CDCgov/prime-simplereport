@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.commonNameZoneIdMap;
 
 import com.smartystreets.api.ClientBuilder;
 import com.smartystreets.api.exceptions.SmartyException;
@@ -144,6 +145,12 @@ public class AddressValidationService {
       return null;
     }
 
-    return ZoneId.of("US/" + timezoneInfo.timezoneCommonName);
+    String timezoneCommonName = timezoneInfo.timezoneCommonName.toLowerCase();
+    if (commonNameZoneIdMap.containsKey(timezoneCommonName)) {
+      return commonNameZoneIdMap.get(timezoneCommonName);
+    } else {
+      log.error("Unsupported timezone common name: {}", timezoneCommonName);
+      return null;
+    }
   }
 }
