@@ -15,11 +15,12 @@ import YesNoRadioGroup from "../../../commonComponents/YesNoRadioGroup";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import TextInput from "../../../commonComponents/TextInput";
 import { formatDate } from "../../../utils/date";
+import { AoeQuestionName } from "../TestCardForm.utils";
 
 import {
   generateAoeListenerHooks,
-  generateSymptomAoeConstants,
   generateSexualActivityAoeConstants,
+  generateSymptomAoeConstants,
 } from "./aoeUtils";
 import { SensitiveTopicsTooltipModal } from "./SensitiveTopicsTooltipModal";
 
@@ -90,7 +91,15 @@ export const SyphilisAoEForm = ({
               </>
             }
             required
-            hintText={<SensitiveTopicsTooltipModal showSyphilis={true} />}
+            hintText={
+              <SensitiveTopicsTooltipModal
+                aoeQuestionTopics={[
+                  AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
+                  AoeQuestionName.SYPHILIS_HISTORY,
+                  AoeQuestionName.PREGNANCY,
+                ]}
+              />
+            }
             hintTextClassName={""}
             validationStatus={
               showGenderOfSexualPartnersError ? "error" : undefined
