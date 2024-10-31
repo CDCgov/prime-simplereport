@@ -20,7 +20,7 @@ const HepatitisCResultGuidance = () => {
             rel="noopener noreferrer"
             key="hepatitis-c-treatment-link"
           >
-            hepatitis-c treatment link
+            hepatitis c treatment link
           </a>,
         ]}
       />

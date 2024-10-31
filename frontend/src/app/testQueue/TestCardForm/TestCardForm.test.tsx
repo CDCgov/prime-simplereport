@@ -192,7 +192,7 @@ describe("TestCardForm", () => {
         testOrder: {
           ...testProps.testOrder,
           results: [
-            { testResult: "POSITIVE", disease: { name: "HEPATITIS-C" } },
+            { testResult: "POSITIVE", disease: { name: "HEPATITIS C" } },
           ],
           deviceType: {
             internalId: hepatitisCDeviceId,

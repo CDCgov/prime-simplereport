@@ -30,8 +30,8 @@ export const hivDeviceId = "HIV-DEVICE-ID";
 export const FACILITY_INFO_TEST_ID = "f02cfff5-1921-4293-beff-e2a5d03e1fda";
 export const syphilisDeviceName = "SYPHILIS";
 export const syphilisDeviceId = "SYPHILIS-DEVICE-ID";
-export const hepatitisCDeviceName = "HEPATITIS-C";
-export const hepatitisCDeviceId = "HEPATITIS-C-DEVICE-ID";
+export const hepatitisCDeviceName = "HEPATITIS C";
+export const hepatitisCDeviceId = "HEPATITIS C-DEVICE-ID";
 
 // 6 instead of 7 because HIV devices are filtered out when HIV feature flag is disabled
 export const DEFAULT_DEVICE_OPTIONS_LENGTH = 6;
@@ -44,7 +44,7 @@ export const device5Name = "MultiplexAndCovidOnly";
 export const device6Name = "FluOnly";
 export const device7Name = "HIV device";
 export const device8Name = "Syphilis device";
-export const device9Name = "Hepatitis-C device";
+export const device9Name = "Hepatitis C device";
 
 export const device1Id = "DEVICE-1-ID";
 export const device2Id = "DEVICE-2-ID";
