@@ -273,7 +273,6 @@ class QueueManagementTest extends BaseGraphqlTest {
             "id", orderId.toString(),
             "deviceId", deviceId,
             "specimenId", specimenId,
-            "providerId", providerId,
             "results", results,
             "dateTested", dateTested);
 
