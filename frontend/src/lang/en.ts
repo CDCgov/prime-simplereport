@@ -426,7 +426,7 @@ export const en = {
         h1: "For Hepatitis-C:",
         positive: {
           p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
-          p1: "<0>Visit the CDC website to learn more about a positive Hepatitis-C result.</0> (cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results).",
+          p1: "<0>Visit the CDC website to learn more about a positive Hepatitis-C result</0> (cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results).",
           treatmentLink:
             "https://www.cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results",
         },
