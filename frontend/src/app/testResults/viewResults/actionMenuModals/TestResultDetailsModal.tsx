@@ -57,6 +57,12 @@ export const DetachedTestResultDetailsModal = ({
     data?.testResult.results,
     MULTIPLEX_DISEASES.SYPHILIS
   );
+  const isHepatitisCResult = !!getResultForDisease(
+    data?.testResult.results,
+    MULTIPLEX_DISEASES.HEPATITIS_C
+  );
+  const showGenderOfSexualPartners =
+    isHIVResult || isSyphilisResult || isHepatitisCResult;
 
   const dateTested = data?.testResult.dateTested;
 
@@ -188,7 +194,7 @@ export const DetachedTestResultDetailsModal = ({
             removed={removed}
             aria-describedby="result-detail-title"
           />
-          {(isHIVResult || isSyphilisResult) && (
+          {showGenderOfSexualPartners && (
             <DetailsRow
               label="Gender of sexual partners"
               value={formatGenderOfSexualPartnersForDisplay(

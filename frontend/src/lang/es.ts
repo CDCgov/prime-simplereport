@@ -43,6 +43,7 @@ export const es: LanguageConfig = {
         RSV: "VRS",
         HIV: "VIH",
         SYPHILIS: "Sífilis",
+        HEPATITIS_C: "Hepatitis C",
       },
       diseaseResultTitle: {
         COVID19: "COVID-19 resultado",
@@ -52,6 +53,7 @@ export const es: LanguageConfig = {
         RSV: "RSV resultado",
         HIV: "Resultado de la prueba del VIH",
         SYPHILIS: "Sífilis resultado",
+        HEPATITIS_C: "Hepatitis-C resultado",
       },
       role: {
         STAFF: "Personal",
@@ -441,6 +443,15 @@ export const es: LanguageConfig = {
           p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del sífilis</0> (cdc.gov/std/treatment-guidelines/syphilis.htm).",
           treatmentLink:
             "https://www.cdc.gov/std/treatment-guidelines/syphilis.htm",
+        },
+      },
+      hepatitisCNotes: {
+        h1: "Para Hepatitis-C:",
+        positive: {
+          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
+          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del hepatitis C.</0> (cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results).",
+          treatmentLink:
+            "https://www.cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results",
         },
       },
       tos: {
