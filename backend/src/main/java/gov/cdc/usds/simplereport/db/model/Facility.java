@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,10 +34,9 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @Column @Getter @Setter private String cliaNumber;
 
   @ManyToOne(optional = false)
-  @JoinColumn(name = "ordering_provider_id", nullable = false)
+  @JoinColumn(name = "default_ordering_provider_id", nullable = false)
   @Getter
-  @Setter
-  private Provider orderingProvider;
+  private Provider defaultOrderingProvider;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_type_id")
@@ -55,6 +55,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       inverseJoinColumns = @JoinColumn(name = "device_type_id"))
   private Set<DeviceType> configuredDeviceTypes = new HashSet<>();
 
+  @OneToMany
+  @JoinTable(
+      name = "facility_providers",
+      joinColumns = @JoinColumn(name = "facility_id"),
+      inverseJoinColumns = @JoinColumn(name = "provider_id"))
+  private Set<Provider> orderingProviders = new HashSet<>();
+
   protected Facility() {
     /* for hibernate */ }
 
@@ -65,7 +72,8 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.address = facilityBuilder.facilityAddress;
     this.telephone = facilityBuilder.phone;
     this.email = facilityBuilder.email;
-    this.orderingProvider = facilityBuilder.orderingProvider;
+    this.defaultOrderingProvider = facilityBuilder.defaultOrderingProvider;
+    this.orderingProviders.add(facilityBuilder.defaultOrderingProvider);
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);

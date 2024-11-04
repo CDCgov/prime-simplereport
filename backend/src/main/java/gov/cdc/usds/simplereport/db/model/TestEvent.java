@@ -80,7 +80,7 @@ public class TestEvent extends BaseTestInfo {
     Hibernate.initialize(getPatient().getPhoneNumbers());
 
     this.patientData = getPatient();
-    this.providerData = getFacility().getOrderingProvider();
+    this.providerData = getFacility().getDefaultOrderingProvider();
     this.order = order;
     this.patientHasPriorTests = hasPriorTests;
     setDateTestedBackdate(order.getDateTestedBackdate());

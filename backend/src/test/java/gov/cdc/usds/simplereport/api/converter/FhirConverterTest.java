@@ -1933,7 +1933,7 @@ class FhirConverterTest {
                 .facilityAddress(address)
                 .phone("7735551234")
                 .email("school@example.com")
-                .orderingProvider(provider)
+                .defaultOrderingProvider(provider)
                 .defaultDeviceType(deviceType)
                 .defaultSpecimenType(specimenType)
                 .configuredDevices(Collections.emptyList())

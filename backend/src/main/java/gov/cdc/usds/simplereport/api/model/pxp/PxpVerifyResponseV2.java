@@ -70,12 +70,24 @@ public class PxpVerifyResponseV2 {
             .orderingProvider(
                 Facility.OrderingProvider.builder()
                     .firstName(
-                        testEvent.getFacility().getOrderingProvider().getNameInfo().getFirstName())
+                        testEvent
+                            .getFacility()
+                            .getDefaultOrderingProvider()
+                            .getNameInfo()
+                            .getFirstName())
                     .middleName(
-                        testEvent.getFacility().getOrderingProvider().getNameInfo().getMiddleName())
+                        testEvent
+                            .getFacility()
+                            .getDefaultOrderingProvider()
+                            .getNameInfo()
+                            .getMiddleName())
                     .lastName(
-                        testEvent.getFacility().getOrderingProvider().getNameInfo().getLastName())
-                    .npi(testEvent.getFacility().getOrderingProvider().getProviderId())
+                        testEvent
+                            .getFacility()
+                            .getDefaultOrderingProvider()
+                            .getNameInfo()
+                            .getLastName())
+                    .npi(testEvent.getFacility().getDefaultOrderingProvider().getProviderId())
                     .build())
             .build();
   }

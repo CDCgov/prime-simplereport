@@ -262,7 +262,7 @@ public class OrganizationService {
     facility.setEmail(email);
     facility.setAddress(facilityAddress);
 
-    Provider p = facility.getOrderingProvider();
+    Provider p = facility.getDefaultOrderingProvider();
     p.getNameInfo().setFirstName(orderingProviderName.getFirstName());
     p.getNameInfo().setMiddleName(orderingProviderName.getMiddleName());
     p.getNameInfo().setLastName(orderingProviderName.getLastName());
@@ -421,7 +421,7 @@ public class OrganizationService {
                 .facilityAddress(facilityAddress)
                 .phone(phone)
                 .email(email)
-                .orderingProvider(orderingProvider)
+                .defaultOrderingProvider(orderingProvider)
                 .configuredDevices(configuredDevices)
                 .build());
     facility = facilityRepository.save(facility);

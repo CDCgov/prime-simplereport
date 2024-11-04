@@ -228,7 +228,7 @@ public class TestDataFactory {
                 .facilityAddress(facilityStreetAddress)
                 .phone("555-867-5309")
                 .email("facility@test.com")
-                .orderingProvider(doc)
+                .defaultOrderingProvider(doc)
                 .defaultDeviceType(defaultDevice)
                 .defaultSpecimenType(defaultSpecimen)
                 .configuredDevices(configuredDevices)

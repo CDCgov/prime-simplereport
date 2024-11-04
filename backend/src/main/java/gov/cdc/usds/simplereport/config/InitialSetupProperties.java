@@ -97,7 +97,7 @@ public class InitialSetupProperties {
               .facilityAddress(getAddress())
               .phone(getTelephone())
               .email(getEmail())
-              .orderingProvider(provider)
+              .defaultOrderingProvider(provider)
               .defaultDeviceType(defaultDeviceType)
               .defaultSpecimenType(defaultSpecimenType)
               .configuredDevices(configured)
