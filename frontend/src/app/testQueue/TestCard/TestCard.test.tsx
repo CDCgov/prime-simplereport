@@ -1329,15 +1329,15 @@ describe("TestCard", () => {
       ];
 
       const { user } = await renderQueueItem({ mocks });
-      expect(screen.queryByText("Hepatitis-C result")).not.toBeInTheDocument();
+      expect(screen.queryByText("Hepatitis C result")).not.toBeInTheDocument();
 
       const deviceDropdown = await getDeviceTypeDropdown();
 
       await user.selectOptions(deviceDropdown, device9Name);
-      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+      expect(screen.getByText("Hepatitis C result")).toBeInTheDocument();
     });
 
-    it("shows required Hepatitis-C AOE questions when a positive Hepatitis-C result is present", async function () {
+    it("shows required Hepatitis C AOE questions when a positive Hepatitis C result is present", async function () {
       mockDiseaseEnabledFlag("hepatitisC");
 
       const mocks = [
@@ -1361,7 +1361,7 @@ describe("TestCard", () => {
       );
 
       await user.selectOptions(deviceDropdown, device9Name);
-      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+      expect(screen.getByText("Hepatitis C result")).toBeInTheDocument();
 
       await user.click(
         screen.getByLabelText("Positive", {
@@ -1389,7 +1389,7 @@ describe("TestCard", () => {
       ).toBeInTheDocument();
     });
 
-    it("hides AOE questions when there is no positive Hepatitis-C result", async function () {
+    it("hides AOE questions when there is no positive Hepatitis C result", async function () {
       mockDiseaseEnabledFlag("hepatitisC");
 
       const mocks = [
@@ -1404,7 +1404,7 @@ describe("TestCard", () => {
       const deviceDropdown = await getDeviceTypeDropdown();
 
       await user.selectOptions(deviceDropdown, device9Name);
-      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+      expect(screen.getByText("Hepatitis C result")).toBeInTheDocument();
       expect(
         screen.queryByText("Is the patient pregnant?")
       ).not.toBeInTheDocument();
