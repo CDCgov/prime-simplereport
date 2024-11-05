@@ -502,6 +502,18 @@ public class TestResultRow implements FileRow {
                 equipmentModelName.getValue(), testPerformedCode.getValue()));
   }
 
+  private boolean isHepatitisCResult() {
+    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
+      return false;
+    }
+
+    return resultsUploaderCachingService
+        .getHepatitisCEquipmentModelAndTestPerformedCodeSet()
+        .contains(
+            ResultsUploaderCachingService.getKey(
+                equipmentModelName.getValue(), testPerformedCode.getValue()));
+  }
+
   private List<FeedbackMessage> generateInvalidDataErrorMessages() {
     String errorMessage =
         "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
@@ -625,6 +637,14 @@ public class TestResultRow implements FileRow {
               testResult,
               DiseaseService.SYPHILIS_NAME,
               List.of(gendersOfSexualPartners, pregnant, syphilisHistory, symptomaticForDisease)));
+    }
+
+    if (isHepatitisCResult()) {
+      errors.addAll(
+          validateRequiredFieldsForPositiveResult(
+              testResult,
+              DiseaseService.HEPATITIS_C_NAME,
+              List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
     }
 
     return errors;
