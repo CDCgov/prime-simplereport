@@ -576,12 +576,21 @@ public class ApiUserService {
     return nonOktaUser.orElseGet(() -> getCurrentApiUserFromIdentity(userIdentity));
   }
 
+  /*
+   `getCurrentUserInfoForWhoAmI()` can be removed and replaced with `getCurrentUserInfo()` as part of #7602 or whenever we stop migrating users over from Okta
+  */
   public UserInfo getCurrentUserInfoForWhoAmI() {
     ApiUser currentUser = getCurrentApiUser();
+
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     boolean isAdmin = _authService.isSiteAdmin();
-    if (!_featureFlagsConfig.isOktaMigrationEnabled() && !isAdmin) {
-      setRolesAndFacilities(currentOrgRoles, currentUser);
+    if (!isAdmin) {
+      if (currentOrgRoles.isPresent()) {
+        PartialOktaUser oktaUser = _oktaRepo.findUser(currentUser.getLoginEmail());
+        return consolidateUser(currentUser, oktaUser);
+      } else {
+        log.info("No org roles for User ID: {}", currentUser.getInternalId());
+      }
     }
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
