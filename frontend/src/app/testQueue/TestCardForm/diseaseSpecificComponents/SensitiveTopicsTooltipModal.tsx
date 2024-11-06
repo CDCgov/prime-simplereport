@@ -3,17 +3,18 @@ import { Button } from "@trussworks/react-uswds";
 
 import { TextWithTooltipButton } from "../../../commonComponents/TextWithTooltipButton";
 import Modal from "../../../commonComponents/Modal";
+import { AoeQuestionName } from "../TestCardForm.utils";
 
 interface Props {
   tooltipText?: string;
   modalTitle?: string;
-  showSyphilis?: boolean;
+  aoeQuestionTopics: AoeQuestionName[];
 }
 
 export const SensitiveTopicsTooltipModal = ({
   tooltipText = "Why SimpleReport asks about sensitive topics like this",
   modalTitle = "Why we ask for gender of sexual partners and other sensitive topics",
-  showSyphilis = false,
+  aoeQuestionTopics,
 }: Props): React.ReactElement => {
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
 
@@ -32,21 +33,33 @@ export const SensitiveTopicsTooltipModal = ({
         <Modal.Header styleClassNames={"font-sans-lg line-height-sans-3"}>
           {modalTitle}
         </Modal.Header>
-        <h2 className={"font-sans-md margin-bottom-05em"}>
-          Gender of sexual partners
-        </h2>
-        <p className={"margin-top-05em"}>
-          This helps public health departments understand which types of sexual
-          connections are leading to STI spread and understand which populations
-          to focus their support on.
-        </p>
-        <h2 className={"font-sans-md margin-bottom-05em"}>Patient pregnancy</h2>
-        <p className={"margin-top-05em"}>
-          If a patient is pregnant, this increases the public health
-          department's prioritization of the patient's care as STIs can pass
-          onto the child.
-        </p>
-        {showSyphilis && (
+        {aoeQuestionTopics.includes(
+          AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS
+        ) && (
+          <>
+            <h2 className={"font-sans-md margin-bottom-05em"}>
+              Gender of sexual partners
+            </h2>
+            <p className={"margin-top-05em"}>
+              This helps public health departments understand which types of
+              sexual connections are leading to STI spread and understand which
+              populations to focus their support on.
+            </p>
+          </>
+        )}
+        {aoeQuestionTopics.includes(AoeQuestionName.PREGNANCY) && (
+          <>
+            <h2 className={"font-sans-md margin-bottom-05em"}>
+              Patient pregnancy
+            </h2>
+            <p className={"margin-top-05em"}>
+              If a patient is pregnant, this increases the public health
+              department's prioritization of the patient's care as STIs can pass
+              onto the child.
+            </p>
+          </>
+        )}
+        {aoeQuestionTopics.includes(AoeQuestionName.SYPHILIS_HISTORY) && (
           <>
             <h2 className={"font-sans-md margin-bottom-05em"}>
               Syphilis symptoms

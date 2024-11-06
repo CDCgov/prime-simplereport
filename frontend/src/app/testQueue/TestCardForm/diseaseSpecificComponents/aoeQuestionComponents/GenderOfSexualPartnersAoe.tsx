@@ -1,6 +1,5 @@
 import React from "react";
 
-import { SensitiveTopicsTooltipModal } from "../SensitiveTopicsTooltipModal";
 import MultiSelect from "../../../../commonComponents/MultiSelect/MultiSelect";
 import { GENDER_IDENTITY_VALUES } from "../../../../constants";
 import { AoeQuestionProps } from "../aoeUtils";
@@ -11,6 +10,7 @@ export const GenderOfSexualPartnersAoe = ({
   hasAttemptedSubmit,
   onResponseChange,
   required = false,
+  sensitiveTopicsTooltipModal,
 }: AoeQuestionProps) => {
   const onSexualPartnerGenderChange = (selectedItems: string[]) => {
     onResponseChange({
@@ -43,7 +43,7 @@ export const GenderOfSexualPartnersAoe = ({
         </>
       }
       required={required}
-      hintText={<SensitiveTopicsTooltipModal showSyphilis={false} />}
+      hintText={sensitiveTopicsTooltipModal}
       hintTextClassName={""}
       validationStatus={showGenderOfSexualPartnersError ? "error" : undefined}
       errorMessage={

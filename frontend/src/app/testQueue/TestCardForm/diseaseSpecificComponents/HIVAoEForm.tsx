@@ -6,6 +6,7 @@ import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
 import { useTranslatedConstants } from "../../../constants";
+import { AoeQuestionName } from "../TestCardForm.utils";
 
 import {
   generateAoeListenerHooks,
@@ -78,7 +79,14 @@ export const HIVAoEForm = ({
             validationStatus={
               showGenderOfSexualPartnersError ? "error" : undefined
             }
-            hintText={<SensitiveTopicsTooltipModal />}
+            hintText={
+              <SensitiveTopicsTooltipModal
+                aoeQuestionTopics={[
+                  AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
+                  AoeQuestionName.PREGNANCY,
+                ]}
+              />
+            }
             hintTextClassName={""}
             errorMessage={
               showGenderOfSexualPartnersError &&
