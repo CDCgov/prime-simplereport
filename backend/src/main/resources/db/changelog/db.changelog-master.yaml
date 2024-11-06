@@ -5661,6 +5661,24 @@ databaseChangeLog:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Hepatitis-C';
   - changeSet:
+      id: update-hepatitis-c-naming-in-supported-disease-table
+      author: ggs2@cdc.gov
+      comment: Changes Hepatitis-C to Hepatitis C without a dash
+      changes:
+        - tagDatabase:
+            tag: update-hepatitis-c-naming-in-supported-disease-table
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.supported_disease
+              SET name = 'Hepatitis C'
+              WHERE name = 'Hepatitis-C' AND loinc = 'LP14400-3'
+      rollback:
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.supported_disease
+              SET name = 'Hepatitis-C'
+              WHERE name = 'Hepatitis C' AND loinc = 'LP14400-3'
+  - changeSet:
       id: create-facility_providers-table
       author: bobby@skylight.digital
       changes:

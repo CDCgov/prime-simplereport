@@ -8,6 +8,7 @@ import YesNoRadioGroup from "../../../commonComponents/YesNoRadioGroup";
 import Checkboxes from "../../../commonComponents/Checkboxes";
 import TextInput from "../../../commonComponents/TextInput";
 import { formatDate } from "../../../utils/date";
+import { AoeQuestionName } from "../TestCardForm.utils";
 
 import {
   generateAoeListenerHooks,
@@ -15,6 +16,7 @@ import {
 } from "./aoeUtils";
 import { PregnancyAoe } from "./aoeQuestionComponents/PregnancyAoe";
 import { GenderOfSexualPartnersAoe } from "./aoeQuestionComponents/GenderOfSexualPartnersAoe";
+import { SensitiveTopicsTooltipModal } from "./SensitiveTopicsTooltipModal";
 
 interface HepatitisCAoeFormProps {
   testOrder: QueriedTestOrder;
@@ -58,6 +60,14 @@ export const HepatitisCAoeForm = ({
             hasAttemptedSubmit={hasAttemptedSubmit}
             onResponseChange={onResponseChange}
             required
+            sensitiveTopicsTooltipModal={
+              <SensitiveTopicsTooltipModal
+                aoeQuestionTopics={[
+                  AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
+                  AoeQuestionName.PREGNANCY,
+                ]}
+              />
+            }
           />
         </div>
       </div>

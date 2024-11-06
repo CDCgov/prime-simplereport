@@ -56,15 +56,9 @@ public class LoggedInAuthorizationService implements AuthorizationService {
     List<OrganizationRoleClaims> oktaOrgRoleClaims =
         _extractor.convert(currentAuth.getAuthorities());
 
-    if (!isSiteAdmin()) {
+    if (!isSiteAdmin() && _featureFlagsConfig.isOktaMigrationEnabled()) {
       String username = currentAuth.getName();
-      List<OrganizationRoleClaims> dbOrgRoleClaims =
-          _dbOrgRoleClaimsService.getOrganizationRoleClaims(username);
-      _dbOrgRoleClaimsService.checkOrgRoleClaimsEquality(
-          oktaOrgRoleClaims, dbOrgRoleClaims, username);
-      if (_featureFlagsConfig.isOktaMigrationEnabled()) {
-        return dbOrgRoleClaims;
-      }
+      return _dbOrgRoleClaimsService.getOrganizationRoleClaims(username);
     }
     return oktaOrgRoleClaims;
   }

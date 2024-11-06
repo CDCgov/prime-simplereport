@@ -85,18 +85,11 @@ jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
 
-const mockDiseaseEnabledFlag = (
-  diseaseName: string,
-  skipLowercase: boolean = false
-) =>
+const mockDiseaseEnabledFlag = (diseaseName: string) =>
   jest
     .spyOn(flaggedMock, "useFeature")
     .mockImplementation((flagName: string) => {
-      // to handle casing of Hepatitis-C as hepatitisC
-      if (skipLowercase) {
-        return flagName === `${diseaseName}Enabled`;
-      }
-      return flagName === `${diseaseName.toLowerCase()}Enabled`;
+      return flagName === `${diseaseName}Enabled`;
     });
 
 const mockNavigate = jest.fn();
@@ -1132,7 +1125,7 @@ describe("TestCard", () => {
     });
 
     it("shows radio buttons for HIV when an HIV device is chosen", async function () {
-      mockDiseaseEnabledFlag("HIV");
+      mockDiseaseEnabledFlag("hiv");
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.POSITIVE),
@@ -1152,7 +1145,7 @@ describe("TestCard", () => {
     });
 
     it("shows required HIV AOE questions when a positive HIV result is present", async function () {
-      mockDiseaseEnabledFlag("HIV");
+      mockDiseaseEnabledFlag("hiv");
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.POSITIVE),
@@ -1182,7 +1175,7 @@ describe("TestCard", () => {
     });
 
     it("hides AOE questions when there is no positive HIV result", async function () {
-      mockDiseaseEnabledFlag("HIV");
+      mockDiseaseEnabledFlag("hiv");
 
       const mocks = [
         generateEditQueueMock(MULTIPLEX_DISEASES.HIV, TEST_RESULTS.UNKNOWN),
@@ -1209,7 +1202,7 @@ describe("TestCard", () => {
     });
 
     it("shows radio buttons for Syphilis when a syphilis device is chosen", async function () {
-      mockDiseaseEnabledFlag("Syphilis");
+      mockDiseaseEnabledFlag("syphilis");
 
       const mocks = [
         generateEditQueueMock(
@@ -1229,7 +1222,7 @@ describe("TestCard", () => {
     });
 
     it("shows required syphilis AOE questions when a positive syphilis result is present", async function () {
-      mockDiseaseEnabledFlag("Syphilis");
+      mockDiseaseEnabledFlag("syphilis");
 
       const mocks = [
         generateEditQueueMock(
@@ -1269,7 +1262,7 @@ describe("TestCard", () => {
     });
 
     it("hides AOE questions when there is no positive syphilis result", async function () {
-      mockDiseaseEnabledFlag("Syphilis");
+      mockDiseaseEnabledFlag("syphilis");
 
       const mocks = [
         generateEditQueueMock(
@@ -1325,7 +1318,7 @@ describe("TestCard", () => {
     });
 
     it("shows radio buttons for Hepatitis C when a hepatitis c device is chosen", async function () {
-      mockDiseaseEnabledFlag("hepatitisC", true);
+      mockDiseaseEnabledFlag("hepatitisC");
 
       const mocks = [
         generateEditQueueMock(
@@ -1336,16 +1329,16 @@ describe("TestCard", () => {
       ];
 
       const { user } = await renderQueueItem({ mocks });
-      expect(screen.queryByText("Hepatitis-C result")).not.toBeInTheDocument();
+      expect(screen.queryByText("Hepatitis C result")).not.toBeInTheDocument();
 
       const deviceDropdown = await getDeviceTypeDropdown();
 
       await user.selectOptions(deviceDropdown, device9Name);
-      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+      expect(screen.getByText("Hepatitis C result")).toBeInTheDocument();
     });
 
-    it("shows required Hepatitis-C AOE questions when a positive Hepatitis-C result is present", async function () {
-      mockDiseaseEnabledFlag("hepatitisC", true);
+    it("shows required Hepatitis C AOE questions when a positive Hepatitis C result is present", async function () {
+      mockDiseaseEnabledFlag("hepatitisC");
 
       const mocks = [
         generateEditQueueMock(
@@ -1368,7 +1361,7 @@ describe("TestCard", () => {
       );
 
       await user.selectOptions(deviceDropdown, device9Name);
-      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+      expect(screen.getByText("Hepatitis C result")).toBeInTheDocument();
 
       await user.click(
         screen.getByLabelText("Positive", {
@@ -1396,8 +1389,8 @@ describe("TestCard", () => {
       ).toBeInTheDocument();
     });
 
-    it("hides AOE questions when there is no positive Hepatitis-C result", async function () {
-      mockDiseaseEnabledFlag("hepatitisC", true);
+    it("hides AOE questions when there is no positive Hepatitis C result", async function () {
+      mockDiseaseEnabledFlag("hepatitisC");
 
       const mocks = [
         generateEditQueueMock(
@@ -1411,7 +1404,7 @@ describe("TestCard", () => {
       const deviceDropdown = await getDeviceTypeDropdown();
 
       await user.selectOptions(deviceDropdown, device9Name);
-      expect(screen.getByText("Hepatitis-C result")).toBeInTheDocument();
+      expect(screen.getByText("Hepatitis C result")).toBeInTheDocument();
       expect(
         screen.queryByText("Is the patient pregnant?")
       ).not.toBeInTheDocument();
@@ -1443,7 +1436,7 @@ describe("TestCard", () => {
     });
 
     it("checks that Hep C submission only works if AOE questions are valid", async function () {
-      mockDiseaseEnabledFlag("hepatitisC", true);
+      mockDiseaseEnabledFlag("hepatitisC");
 
       const { user } = await renderQueueItem({ mocks: updateHepCAoeMocks });
       const deviceDropdown = await getDeviceTypeDropdown();
@@ -1494,7 +1487,7 @@ describe("TestCard", () => {
     });
 
     it("checks that submission only works if AOE questions are valid", async function () {
-      mockDiseaseEnabledFlag("Syphilis");
+      mockDiseaseEnabledFlag("syphilis");
 
       const { user } = await renderQueueItem({ mocks: updateSyphilisAoeMocks });
       const deviceDropdown = await getDeviceTypeDropdown();
@@ -1556,7 +1549,7 @@ describe("TestCard", () => {
     });
 
     it("checks that checking has symptom requires onset date and selection", async () => {
-      mockDiseaseEnabledFlag("Syphilis");
+      mockDiseaseEnabledFlag("syphilis");
       const mocks = [...updateSyphilisAoeMocks];
 
       const { user } = await renderQueueItem({ mocks });
