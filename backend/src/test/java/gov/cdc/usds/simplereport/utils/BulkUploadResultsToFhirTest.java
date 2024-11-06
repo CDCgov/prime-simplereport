@@ -214,7 +214,7 @@ public class BulkUploadResultsToFhirTest {
             .filter(
                 observation -> observation.getResource().getNamedProperty("identifier").hasValues())
             .toList();
-    assertThat(asymptomaticNotCongregateAOE).hasSize(11);
+    assertThat(asymptomaticNotCongregateAOE).hasSize(12);
 
     var symptomaticCongregateSettingEntry = serializedBundles.get(1);
     var deserializedSymptomaticCongregateEntry =
@@ -227,7 +227,7 @@ public class BulkUploadResultsToFhirTest {
         symptomaticCongregateObservations.stream()
             .filter(obs -> obs.getResource().getNamedProperty("identifier").hasValues())
             .toList();
-    assertThat(symptomaticCongregateAOE).hasSize(10);
+    assertThat(symptomaticCongregateAOE).hasSize(11);
   }
 
   private InputStream loadCsv(String csvFile) {
