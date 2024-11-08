@@ -5703,6 +5703,17 @@ databaseChangeLog:
                     foreignKeyName: fk__facility_providers__provider
                     references: provider
   - changeSet:
+      id: grant-facility_providers-access-to-metabase-user
+      author: tnd8@cdc.gov
+      changes:
+        - sql:
+            sql: |
+              GRANT SELECT ON ${database.defaultSchemaName}.facility_providers TO ${noPhiUsername};
+      rollback:
+        - sql:
+            sql: |
+              REVOKE SELECT ON TABLE ${database.defaultSchemaName}.facility_providers FROM ${noPhiUsername};
+  - changeSet:
       id: populate-facility-providers-table
       author: bobby@skylight.digital
       changes:
