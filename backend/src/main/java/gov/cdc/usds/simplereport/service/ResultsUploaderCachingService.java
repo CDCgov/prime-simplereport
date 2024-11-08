@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SNOMED_TO_SPECIMEN_NAME_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_TO_SNOMED_MAP;
@@ -163,6 +164,12 @@ public class ResultsUploaderCachingService {
     return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.COVID19_NAME);
   }
 
+  @Cacheable(HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  public Set<String> getHepatitisCEquipmentModelAndTestPerformedCodeSet() {
+    log.info("generating hepatitisCEquipmentModelAndTestPerformedCodeSet cache");
+    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.HEPATITIS_C_NAME);
+  }
+
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
   @Caching(
       evict = {
@@ -181,6 +188,18 @@ public class ResultsUploaderCachingService {
   public void cacheHivEquipmentModelAndTestPerformedCodeSet() {
     log.info("clear and generate hivEquipmentModelAndTestPerformedCodeSet cache");
     getHivEquipmentModelAndTestPerformedCodeSet();
+  }
+
+  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
+  @Caching(
+      evict = {
+        @CacheEvict(
+            value = HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
+            allEntries = true)
+      })
+  public void cacheHepatitisCEquipmentModelAndTestPerformedCodeSet() {
+    log.info("clear and generate hepatitisCEquipmentModelAndTestPerformedCodeSet cache");
+    getHepatitisCEquipmentModelAndTestPerformedCodeSet();
   }
 
   @Cacheable(SNOMED_TO_SPECIMEN_NAME_MAP)
