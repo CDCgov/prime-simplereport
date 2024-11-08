@@ -843,6 +843,7 @@ public class PersonUtils {
     genderMap.put("M", MALE);
     genderMap.put("MALE", MALE);
     genderMap.put("NB", NON_BINARY);
+    genderMap.put("NON BINARY", NON_BINARY);
     genderMap.put("NONBINARY", NON_BINARY);
     genderMap.put("TM", TRANS_MAN);
     genderMap.put("TRANS MAN", TRANS_MAN);
