@@ -22,6 +22,7 @@ export interface AoeQuestionProps {
   onResponseChange: (responses: AoeQuestionResponses) => void;
   hasAttemptedSubmit: boolean;
   required?: boolean;
+  sensitiveTopicsTooltipModal?: React.ReactNode;
 }
 
 export function generateAoeListenerHooks(

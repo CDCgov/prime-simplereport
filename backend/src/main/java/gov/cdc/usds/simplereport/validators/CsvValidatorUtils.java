@@ -660,6 +660,26 @@ public class CsvValidatorUtils {
     return errors;
   }
 
+  public static List<FeedbackMessage> validatePatientGenderIdentity(ValueOrError input) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+    if (value == null) {
+      return errors;
+    }
+    if (!getGenderIdentityAbbreviationMap().containsKey(value.toUpperCase())) {
+      errors.add(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
+              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(ResultUploadErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
+    }
+    return errors;
+  }
+
   public static List<FeedbackMessage> validateRequiredFieldsForPositiveResult(
       ValueOrError testResult, String diseaseName, List<ValueOrError> fields) {
     List<FeedbackMessage> errors = new ArrayList<>();

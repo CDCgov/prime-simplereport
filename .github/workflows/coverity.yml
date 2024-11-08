@@ -17,7 +17,7 @@ on:
 env:
   JAVA_VERSION: 17
   JAVA_DISTRIBUTION: 'zulu'
-  NODE_VERSION: 22
+  NODE_VERSION: 23
 
 defaults:
   run:

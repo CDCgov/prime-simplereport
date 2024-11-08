@@ -14,6 +14,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDat
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePatientGenderIdentity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
@@ -54,7 +55,17 @@ public class TestResultRow implements FileRow {
   final ValueOrError patientCounty;
   final ValueOrError patientPhoneNumber;
   final ValueOrError patientDob;
+
+  /**
+   * This field "patient_gender" refers to the patient's sex assigned at birth. <br>
+   *
+   * <p>When "patient_gender_identity" was added as a field in 2024, the team decided to keep this
+   * current column name of "patient_gender" instead of changing the header to something like
+   * "patient_sex_assigned_at_birth". This decision was made to maintain compatibility for existing
+   * bulk upload users.
+   */
   final ValueOrError patientGender;
+
   final ValueOrError patientRace;
   final ValueOrError patientEthnicity;
   final ValueOrError patientPreferredLanguage;
@@ -107,6 +118,7 @@ public class TestResultRow implements FileRow {
   final ValueOrError testOrderedCode;
   final ValueOrError gendersOfSexualPartners;
   final ValueOrError syphilisHistory;
+  final ValueOrError patientGenderIdentity;
 
   static final String PATIENT_LAST_NAME = "patient_last_name";
   static final String PATIENT_FIRST_NAME = "patient_first_name";
@@ -152,6 +164,7 @@ public class TestResultRow implements FileRow {
   public static final String ORDERING_FACILITY_PHONE_NUMBER = "ordering_facility_phone_number";
   public static final String GENDERS_OF_SEXUAL_PARTNERS = "genders_of_sexual_partners";
   public static final String SYPHILIS_HISTORY = "syphilis_history";
+  public static final String PATIENT_GENDER_IDENTITY = "patient_gender_identity";
 
   public static final ImmutableMap<String, String> diseaseSpecificLoincMap =
       new ImmutableMap.Builder<String, String>()
@@ -456,6 +469,8 @@ public class TestResultRow implements FileRow {
     gendersOfSexualPartners =
         getValue(rawRow, GENDERS_OF_SEXUAL_PARTNERS, isRequired(GENDERS_OF_SEXUAL_PARTNERS));
     syphilisHistory = getValue(rawRow, SYPHILIS_HISTORY, isRequired(SYPHILIS_HISTORY));
+    patientGenderIdentity =
+        getValue(rawRow, PATIENT_GENDER_IDENTITY, isRequired(PATIENT_GENDER_IDENTITY));
   }
 
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
@@ -497,6 +512,18 @@ public class TestResultRow implements FileRow {
     }
     return resultsUploaderCachingService
         .getSyphilisEquipmentModelAndTestPerformedCodeSet()
+        .contains(
+            ResultsUploaderCachingService.getKey(
+                equipmentModelName.getValue(), testPerformedCode.getValue()));
+  }
+
+  private boolean isHepatitisCResult() {
+    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
+      return false;
+    }
+
+    return resultsUploaderCachingService
+        .getHepatitisCEquipmentModelAndTestPerformedCodeSet()
         .contains(
             ResultsUploaderCachingService.getKey(
                 equipmentModelName.getValue(), testPerformedCode.getValue()));
@@ -612,6 +639,8 @@ public class TestResultRow implements FileRow {
 
     errors.addAll(validateGendersOfSexualPartners(gendersOfSexualPartners));
 
+    errors.addAll(validatePatientGenderIdentity(patientGenderIdentity));
+
     if (isHivResult()) {
       errors.addAll(
           validateRequiredFieldsForPositiveResult(
@@ -625,6 +654,14 @@ public class TestResultRow implements FileRow {
               testResult,
               DiseaseService.SYPHILIS_NAME,
               List.of(gendersOfSexualPartners, pregnant, syphilisHistory, symptomaticForDisease)));
+    }
+
+    if (isHepatitisCResult()) {
+      errors.addAll(
+          validateRequiredFieldsForPositiveResult(
+              testResult,
+              DiseaseService.HEPATITIS_C_NAME,
+              List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
     }
 
     return errors;
