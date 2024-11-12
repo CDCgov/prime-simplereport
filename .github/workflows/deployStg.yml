@@ -7,7 +7,7 @@ on:
 
 env:
   DEPLOY_ENV: stg
-  NODE_VERSION: 23
+  NODE_VERSION: 23.1
 
 concurrency:
   group: stg-deploy
