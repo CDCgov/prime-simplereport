@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import gov.cdc.usds.simplereport.api.devicetype.PublicDeviceType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -19,19 +21,40 @@ import lombok.NoArgsConstructor;
 public class DeviceTypeDisease extends IdentifiedEntity {
 
   @Column(name = "device_type_id")
+  @JsonView(PublicDeviceType.class)
   private UUID deviceTypeId;
 
   @ManyToOne
   @JoinColumn(name = "supported_disease_id")
   private SupportedDisease supportedDisease;
 
-  @Column private String testPerformedLoincCode;
-  @Column private String testPerformedLoincLongName;
-  @Column private String equipmentUid;
-  @Column private String equipmentUidType;
-  @Column private String testkitNameId;
-  @Column private String testOrderedLoincCode;
-  @Column private String testOrderedLoincLongName;
+  @Column
+  @JsonView(PublicDeviceType.class)
+  private String testPerformedLoincCode;
+
+  @Column
+  @JsonView(PublicDeviceType.class)
+  private String testPerformedLoincLongName;
+
+  @Column
+  @JsonView(PublicDeviceType.class)
+  private String equipmentUid;
+
+  @Column
+  @JsonView(PublicDeviceType.class)
+  private String equipmentUidType;
+
+  @Column
+  @JsonView(PublicDeviceType.class)
+  private String testkitNameId;
+
+  @Column
+  @JsonView(PublicDeviceType.class)
+  private String testOrderedLoincCode;
+
+  @Column
+  @JsonView(PublicDeviceType.class)
+  private String testOrderedLoincLongName;
 
   @Override
   public boolean equals(Object o) {

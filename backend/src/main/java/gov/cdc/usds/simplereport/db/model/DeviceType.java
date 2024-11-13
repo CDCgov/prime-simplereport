@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import gov.cdc.usds.simplereport.api.devicetype.PublicDeviceType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,12 +24,15 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding;
 public class DeviceType extends EternalAuditedEntity {
 
   @Column(nullable = false)
+  @JsonView(PublicDeviceType.class)
   private String name;
 
   @Column(nullable = false)
+  @JsonView(PublicDeviceType.class)
   private String manufacturer;
 
   @Column(nullable = false)
+  @JsonView(PublicDeviceType.class)
   private String model;
 
   @JoinTable(
@@ -36,13 +40,16 @@ public class DeviceType extends EternalAuditedEntity {
       joinColumns = @JoinColumn(name = "device_type_id"),
       inverseJoinColumns = @JoinColumn(name = "specimen_type_id"))
   @OneToMany(fetch = FetchType.LAZY)
+  @JsonView(PublicDeviceType.class)
   private List<SpecimenType> swabTypes;
 
   @Column(nullable = false)
+  @JsonView(PublicDeviceType.class)
   private int testLength;
 
-  @JsonIgnore
+  //  @JsonIgnore
   @OneToMany(mappedBy = "deviceTypeId", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonView(PublicDeviceType.class)
   List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
 
   protected DeviceType() {
