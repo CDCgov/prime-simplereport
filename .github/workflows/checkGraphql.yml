@@ -13,7 +13,7 @@ on:
       - main
 
 env:
-  NODE_VERSION: 23
+  NODE_VERSION: 23.1
 
 defaults:
   run:

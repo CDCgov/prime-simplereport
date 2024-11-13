@@ -14,7 +14,7 @@ on:
       - "frontend/**"
 
 env:
-  NODE_VERSION: 23
+  NODE_VERSION: 23.1
 
 jobs:
   chromatic-deployment:

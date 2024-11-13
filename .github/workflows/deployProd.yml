@@ -8,7 +8,7 @@ on:
 
 env:
   DEPLOY_ENV: prod
-  NODE_VERSION: 23
+  NODE_VERSION: 23.1
 
 concurrency:
   group: prod-deploy
