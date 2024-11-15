@@ -44,6 +44,7 @@ public class AuditService {
       boolean isAdmin,
       Organization organization) {
     createEventAuditLog(state.getRequestId());
+    long startTime = System.nanoTime();
     auditLoggerService.logEvent(
         new ConsoleApiAuditEvent(
             state.getRequestId(),
@@ -54,6 +55,9 @@ public class AuditService {
             permissions,
             isAdmin,
             organization));
+    long endTime = System.nanoTime();
+    long duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
+    log.info("graphql - logging event duration (ms): {}", duration);
   }
 
   @Transactional(readOnly = false)
@@ -66,8 +70,12 @@ public class AuditService {
     createEventAuditLog(requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
+    long startTime = System.nanoTime();
     auditLoggerService.logEvent(
         new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));
+    long endTime = System.nanoTime();
+    long duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
+    log.info("rest - logging event duration (ms): {}", duration);
   }
 
   @Transactional(readOnly = false)
@@ -81,8 +89,12 @@ public class AuditService {
             ? null
             : JsonNodeFactory.instance.objectNode().put(FIELD_USER_ID, userIdObj.toString());
     ApiUser anonymousUser = _userService.getAnonymousApiUser();
+    long startTime = System.nanoTime();
     auditLoggerService.logEvent(
         new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userId, anonymousUser));
+    long endTime = System.nanoTime();
+    long duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
+    log.info("anonymous rest - logging event duration (ms): {}", duration);
   }
 
   @Transactional(readOnly = false)
@@ -95,7 +107,11 @@ public class AuditService {
             ? null
             : JsonNodeFactory.instance.objectNode().put(FIELD_USER_ID, userIdObj.toString());
     ApiUser webhookUser = _userService.getWebhookApiUser();
+    long startTime = System.nanoTime();
     auditLoggerService.logEvent(
         new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userId, webhookUser));
+    long endTime = System.nanoTime();
+    long duration = ((endTime - startTime)/1000000);  //divide by 1000000 to get milliseconds.
+    log.info("webhook - logging event duration (ms): {}", duration);
   }
 }
