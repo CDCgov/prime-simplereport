@@ -21,7 +21,7 @@ on:
         default: "prod"
 
 env:
-  NODE_VERSION: 23
+  NODE_VERSION: 23.1
 
 jobs:
   pushMaintenanceBlob:

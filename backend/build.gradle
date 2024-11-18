@@ -1,6 +1,12 @@
+buildscript {
+    dependencies {
+        classpath 'org.liquibase:liquibase-core:4.29.1'
+    }
+}
+
 plugins {
     id 'org.springframework.boot' version '3.3.5'
-    id 'org.liquibase.gradle' version '2.2.2'
+    id 'org.liquibase.gradle' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'java'
     id 'checkstyle'
@@ -101,7 +107,7 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:3.4.19'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.6.1'
 
     // Twilio for SMS
     implementation 'com.twilio.sdk:twilio:10.1.0'
@@ -160,7 +166,8 @@ dependencies {
     implementation 'commons-validator:commons-validator:1.9.0'
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.79'
 
-    // Needed for Liquibase Gradle Plugin 2.2.0
+    // Needed for Liquibase Gradle Plugin
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.29.1'
     liquibaseRuntime 'info.picocli:picocli:4.7.5'
 }
 
@@ -213,7 +220,7 @@ liquibase {
             defaultSchemaName defaultSchema
             classpath "src/main/resources"
             // this shadows application.yaml: should probably be in a shared properties file
-            changeLogParameters([noPhiUsername: "simple_report_no_phi", noPhiPassword: noPhiPassword])
+            changelogParameters([noPhiUsername: "simple_report_no_phi", noPhiPassword: noPhiPassword])
         }
     }
 }
