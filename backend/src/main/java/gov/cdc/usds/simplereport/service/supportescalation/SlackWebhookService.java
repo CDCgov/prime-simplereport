@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class SlackWebhookService implements SupportEscalationService {
   private SlackConfigService slackConfigService;
 
+  @Override
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public boolean sendEscalationMessage() {
     return slackConfigService.makeEscalationRequest();
