@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.config.scalars.datetime;
 
+import graphql.GraphQLContext;
+import graphql.execution.CoercedVariables;
 import graphql.language.StringValue;
+import graphql.language.Value;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;
@@ -13,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -65,7 +69,8 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
   }
 
   @Override
-  public Object serialize(Object dataFetcherResult) throws CoercingSerializeException {
+  public Object serialize(Object dataFetcherResult, GraphQLContext graphQLContext, Locale locale)
+      throws CoercingSerializeException {
     if (dataFetcherResult == null) {
       throw new CoercingSerializeException("Unable to serialize null value");
     } else if (dataFetcherResult instanceof Date) {
@@ -83,8 +88,9 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
   }
 
   @Override
-  public Date parseValue(Object input) throws CoercingParseValueException {
-    if (((String) input).length() == 0) {
+  public Date parseValue(Object input, GraphQLContext graphQLContext, Locale locale)
+      throws CoercingParseValueException {
+    if (((String) input).isEmpty()) {
       return null;
     }
     Date result = convertImpl(input);
@@ -95,7 +101,12 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
   }
 
   @Override
-  public Date parseLiteral(Object input) throws CoercingParseLiteralException {
+  public Date parseLiteral(
+      Value<?> input,
+      CoercedVariables coercedVariables,
+      GraphQLContext graphQLContext,
+      Locale locale)
+      throws CoercingParseLiteralException {
     String value = ((StringValue) input).getValue();
     Date result = convertImpl(value);
     if (result == null) {
