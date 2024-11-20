@@ -25,6 +25,7 @@ public class DiseaseService {
   public static final String RSV_NAME = "RSV";
   public static final String HIV_NAME = "HIV";
   public static final String SYPHILIS_NAME = "Syphilis";
+  public static final String GONORRHEA_NAME = "Gonorrhea";
 
   private final DiseaseCacheService diseaseCacheService;
 
@@ -63,6 +64,10 @@ public class DiseaseService {
 
   public SupportedDisease hepatitisC() {
     return getDiseaseByName(HEPATITIS_C_NAME);
+  }
+
+  public SupportedDisease gonorrhea() {
+    return getDiseaseByName(GONORRHEA_NAME);
   }
 
   public SupportedDisease rsv() {

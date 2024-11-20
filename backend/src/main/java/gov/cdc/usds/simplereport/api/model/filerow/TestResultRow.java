@@ -529,6 +529,18 @@ public class TestResultRow implements FileRow {
                 equipmentModelName.getValue(), testPerformedCode.getValue()));
   }
 
+  private boolean isGonorrheaResult() {
+    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
+      return false;
+    }
+
+    return resultsUploaderCachingService
+        .getGonorrheaEquipmentModelAndTestPerformedCodeSet()
+        .contains(
+            ResultsUploaderCachingService.getKey(
+                equipmentModelName.getValue(), testPerformedCode.getValue()));
+  }
+
   private List<FeedbackMessage> generateInvalidDataErrorMessages() {
     String errorMessage =
         "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
@@ -661,6 +673,14 @@ public class TestResultRow implements FileRow {
           validateRequiredFieldsForPositiveResult(
               testResult,
               DiseaseService.HEPATITIS_C_NAME,
+              List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
+    }
+
+    if (isGonorrheaResult()) {
+      errors.addAll(
+          validateRequiredFieldsForPositiveResult(
+              testResult,
+              DiseaseService.GONORRHEA_NAME,
               List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
     }
 
