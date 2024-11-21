@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '3.2.11'
+    id 'org.springframework.boot' version '3.3.0'
     id 'org.liquibase.gradle' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'java'
@@ -37,6 +37,7 @@ jar {
 
 dependencies {
     // core infrastructure
+//    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.0'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.2.11'
 
     implementation 'org.springframework.boot:spring-boot-starter-cache'
@@ -70,10 +71,12 @@ dependencies {
      */
     implementation 'com.squareup.okio:okio:3.9.1'
     implementation 'org.springframework:spring-core:6.1.14'
-    implementation 'org.springframework.security:spring-security-core:6.2.7'
+    implementation 'org.springframework.security:spring-security-core:6.3.0'
+//    implementation 'org.springframework.security:spring-security-core:6.2.7'
     implementation 'org.springframework.security:spring-security-oauth2-client:6.3.1'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.31'
     implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.31'
+//    implementation 'org.springframework.security:spring-security-web:6.3.0'
     implementation 'org.springframework.security:spring-security-web:6.2.7'
 
     // non-pinned security dependencies
@@ -159,7 +162,7 @@ dependencies {
         // workaround for a sibling dependency version bug in the v7 upgrade to the HAPI library
         // that was causing a serialization issue
         version {
-            strictly '2.16.1' //change to 2.17? https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.3-Release-Notes#dependency-upgrades
+            strictly '2.17.1' //change to 2.17? https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.3-Release-Notes#dependency-upgrades
         }
     }
 
