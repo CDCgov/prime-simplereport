@@ -539,7 +539,7 @@ class TestResultRowTest {
         mock(ResultsUploaderCachingService.class);
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("gonorrhea model|5028-6", TestDataBuilder.createDeviceType()));
-    when(resultsUploaderCachingService.getHepatitisCEquipmentModelAndTestPerformedCodeSet())
+    when(resultsUploaderCachingService.getGonorrheaEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of("gonorrhea model|5028-6"));
 
     TestResultRow testResultRow =
