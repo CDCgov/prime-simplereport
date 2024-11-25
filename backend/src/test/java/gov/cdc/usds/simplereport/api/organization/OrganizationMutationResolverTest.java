@@ -110,18 +110,18 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             .email(facility.getEmail())
             .orderingProvider(
                 ProviderInput.builder()
-                    .firstName(facility.getOrderingProvider().getNameInfo().getFirstName())
-                    .middleName(facility.getOrderingProvider().getNameInfo().getMiddleName())
-                    .lastName(facility.getOrderingProvider().getNameInfo().getLastName())
-                    .suffix(facility.getOrderingProvider().getNameInfo().getSuffix())
-                    .npi(facility.getOrderingProvider().getProviderId())
-                    .street(facility.getOrderingProvider().getAddress().getStreetOne())
-                    .streetTwo(facility.getOrderingProvider().getAddress().getStreetTwo())
-                    .city(facility.getOrderingProvider().getAddress().getCity())
-                    .county(facility.getOrderingProvider().getAddress().getCounty())
-                    .state(facility.getOrderingProvider().getAddress().getState())
-                    .zipCode(facility.getOrderingProvider().getAddress().getPostalCode())
-                    .phone(facility.getOrderingProvider().getTelephone())
+                    .firstName(facility.getDefaultOrderingProvider().getNameInfo().getFirstName())
+                    .middleName(facility.getDefaultOrderingProvider().getNameInfo().getMiddleName())
+                    .lastName(facility.getDefaultOrderingProvider().getNameInfo().getLastName())
+                    .suffix(facility.getDefaultOrderingProvider().getNameInfo().getSuffix())
+                    .npi(facility.getDefaultOrderingProvider().getProviderId())
+                    .street(facility.getDefaultOrderingProvider().getAddress().getStreetOne())
+                    .streetTwo(facility.getDefaultOrderingProvider().getAddress().getStreetTwo())
+                    .city(facility.getDefaultOrderingProvider().getAddress().getCity())
+                    .county(facility.getDefaultOrderingProvider().getAddress().getCounty())
+                    .state(facility.getDefaultOrderingProvider().getAddress().getState())
+                    .zipCode(facility.getDefaultOrderingProvider().getAddress().getPostalCode())
+                    .phone(facility.getDefaultOrderingProvider().getTelephone())
                     .build())
             .deviceIds(List.of(deviceId))
             .build());
@@ -135,8 +135,8 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             eq("(555) 867-5309"),
             eq("facility@test.com"),
             deviceIdTypeCaptor.capture(),
-            eq(facility.getOrderingProvider().getNameInfo()),
-            eq(facility.getOrderingProvider().getAddress()),
+            eq(facility.getDefaultOrderingProvider().getNameInfo()),
+            eq(facility.getDefaultOrderingProvider().getAddress()),
             eq("(800) 555-1212"),
             eq("DOOOOOOM"));
 
@@ -173,18 +173,18 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             .email(facility.getEmail())
             .orderingProvider(
                 ProviderInput.builder()
-                    .firstName(facility.getOrderingProvider().getNameInfo().getFirstName())
-                    .middleName(facility.getOrderingProvider().getNameInfo().getMiddleName())
-                    .lastName(facility.getOrderingProvider().getNameInfo().getLastName())
-                    .suffix(facility.getOrderingProvider().getNameInfo().getSuffix())
-                    .npi(facility.getOrderingProvider().getProviderId())
-                    .street(facility.getOrderingProvider().getAddress().getStreetOne())
-                    .streetTwo(facility.getOrderingProvider().getAddress().getStreetTwo())
-                    .city(facility.getOrderingProvider().getAddress().getCity())
-                    .county(facility.getOrderingProvider().getAddress().getCounty())
-                    .state(facility.getOrderingProvider().getAddress().getState())
-                    .zipCode(facility.getOrderingProvider().getAddress().getPostalCode())
-                    .phone(facility.getOrderingProvider().getTelephone())
+                    .firstName(facility.getDefaultOrderingProvider().getNameInfo().getFirstName())
+                    .middleName(facility.getDefaultOrderingProvider().getNameInfo().getMiddleName())
+                    .lastName(facility.getDefaultOrderingProvider().getNameInfo().getLastName())
+                    .suffix(facility.getDefaultOrderingProvider().getNameInfo().getSuffix())
+                    .npi(facility.getDefaultOrderingProvider().getProviderId())
+                    .street(facility.getDefaultOrderingProvider().getAddress().getStreetOne())
+                    .streetTwo(facility.getDefaultOrderingProvider().getAddress().getStreetTwo())
+                    .city(facility.getDefaultOrderingProvider().getAddress().getCity())
+                    .county(facility.getDefaultOrderingProvider().getAddress().getCounty())
+                    .state(facility.getDefaultOrderingProvider().getAddress().getState())
+                    .zipCode(facility.getDefaultOrderingProvider().getAddress().getPostalCode())
+                    .phone(facility.getDefaultOrderingProvider().getTelephone())
                     .build())
             .deviceIds(List.of(deviceId))
             .build());
@@ -198,8 +198,8 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             eq(facility.getAddress()),
             eq("(555) 867-5309"),
             eq("facility@test.com"),
-            eq(facility.getOrderingProvider().getNameInfo()),
-            eq(facility.getOrderingProvider().getAddress()),
+            eq(facility.getDefaultOrderingProvider().getNameInfo()),
+            eq(facility.getDefaultOrderingProvider().getAddress()),
             eq("DOOOOOOM"),
             eq("(800) 555-1212"),
             deviceIdTypeCaptor.capture());

@@ -1556,10 +1556,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getAddress(),
         facility.getTelephone(),
         facility.getEmail(),
-        facility.getOrderingProvider().getNameInfo(),
-        facility.getOrderingProvider().getAddress(),
-        facility.getOrderingProvider().getProviderId(),
-        facility.getOrderingProvider().getTelephone(),
+        facility.getDefaultOrderingProvider().getNameInfo(),
+        facility.getDefaultOrderingProvider().getAddress(),
+        facility.getDefaultOrderingProvider().getProviderId(),
+        facility.getDefaultOrderingProvider().getTelephone(),
         facility.getDeviceTypes().stream().map(IdentifiedEntity::getInternalId).toList());
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
@@ -1825,10 +1825,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getAddress(),
         facility.getTelephone(),
         facility.getEmail(),
-        facility.getOrderingProvider().getNameInfo(),
-        facility.getOrderingProvider().getAddress(),
-        facility.getOrderingProvider().getProviderId(),
-        facility.getOrderingProvider().getTelephone(),
+        facility.getDefaultOrderingProvider().getNameInfo(),
+        facility.getDefaultOrderingProvider().getAddress(),
+        facility.getDefaultOrderingProvider().getProviderId(),
+        facility.getDefaultOrderingProvider().getTelephone(),
         facility.getDeviceTypes().stream().map(IdentifiedEntity::getInternalId).toList());
 
     // Re-open the original test as a correction

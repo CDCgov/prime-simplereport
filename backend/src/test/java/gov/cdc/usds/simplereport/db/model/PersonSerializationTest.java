@@ -90,7 +90,7 @@ class PersonSerializationTest extends BaseNonSpringBootTestConfiguration {
                 .facilityAddress(addy)
                 .phone("555-867-5309")
                 .email("facility@test.com")
-                .orderingProvider(mccoy)
+                .defaultOrderingProvider(mccoy)
                 .defaultDeviceType(device)
                 .defaultSpecimenType(specimenType)
                 .configuredDevices(List.of(device))
