@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 
-import { hepatitisCSymptomDefinitions } from "../../../../patientApp/timeOfTest/constants";
+import { SymptomDefinitionMap } from "../../../../patientApp/timeOfTest/constants";
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import { QueriedTestOrder } from "../types";
 import YesNoRadioGroup from "../../../commonComponents/YesNoRadioGroup";
@@ -18,19 +18,26 @@ import { PregnancyAoe } from "./aoeQuestionComponents/PregnancyAoe";
 import { GenderOfSexualPartnersAoe } from "./aoeQuestionComponents/GenderOfSexualPartnersAoe";
 import { SensitiveTopicsTooltipModal } from "./SensitiveTopicsTooltipModal";
 
-interface HepatitisCAoeFormProps {
+interface STIGenericAoeFormProps {
   testOrder: QueriedTestOrder;
   responses: AoeQuestionResponses;
   hasAttemptedSubmit: boolean;
   onResponseChange: (responses: AoeQuestionResponses) => void;
+  diseaseSymptomDefinitions: SymptomDefinitionMap[];
+  /**
+   * This is used for div ids
+   */
+  diseaseNameForFormIds: string;
 }
 
-export const HepatitisCAoeForm = ({
+export const STIGenericAOEForm = ({
   testOrder,
   responses,
   hasAttemptedSubmit,
   onResponseChange,
-}: HepatitisCAoeFormProps) => {
+  diseaseSymptomDefinitions,
+  diseaseNameForFormIds,
+}: STIGenericAoeFormProps) => {
   const { onHasAnySymptomsChange, onSymptomOnsetDateChange, onSymptomsChange } =
     generateAoeListenerHooks(onResponseChange, responses);
 
@@ -43,14 +50,14 @@ export const HepatitisCAoeForm = ({
   } = generateSymptomAoeConstants(
     responses,
     hasAttemptedSubmit,
-    hepatitisCSymptomDefinitions
+    diseaseSymptomDefinitions
   );
 
   const CHECKBOX_COLS_TO_DISPLAY = 3;
   return (
     <div
       className="grid-col"
-      id={`hepatitis-c-aoe-form-${testOrder.patient.internalId}`}
+      id={`${diseaseNameForFormIds}-aoe-form-${testOrder.patient.internalId}`}
     >
       <div className="grid-row">
         <div className="grid-col-auto">
@@ -101,7 +108,7 @@ export const HepatitisCAoeForm = ({
         <div className={"grid-row grid-gap width-full"}>
           <div className={"grid-col-auto"}>
             <Checkboxes
-              boxes={hepatitisCSymptomDefinitions.map(({ label, value }) => ({
+              boxes={diseaseSymptomDefinitions.map(({ label, value }) => ({
                 label,
                 value,
                 checked: symptoms[value],

@@ -4,6 +4,8 @@ import _ from "lodash";
 
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import {
+  gonorrheaSymptomDefinitions,
+  gonorrheaSymptomsMap,
   hepatitisCSymptomDefinitions,
   hepatitisCSymptomsMap,
   PregnancyCode,
@@ -183,6 +185,11 @@ export function stringifySymptomJsonForAoeUpdate(
       mapSymptomBoolLiteralsToBool(symptomJson, hepatitisCSymptomDefinitions)
     );
   }
+  if (_.isEqual(symptomKeys, Object.keys(gonorrheaSymptomsMap))) {
+    symptomPayload = JSON.stringify(
+      mapSymptomBoolLiteralsToBool(symptomJson, gonorrheaSymptomDefinitions)
+    );
+  }
   return symptomPayload;
 }
 
@@ -199,6 +206,9 @@ export function mapSpecifiedSymptomBoolLiteralsToBool(
   }
   if (disease === AOEFormOption.HEPATITIS_C) {
     symptomDefinitionToParse = hepatitisCSymptomDefinitions;
+  }
+  if (disease === AOEFormOption.GONORRHEA) {
+    symptomDefinitionToParse = gonorrheaSymptomDefinitions;
   }
   // there are no symptoms for that test card, so return true
   if (!symptomDefinitionToParse) return { shouldReturn: true };

@@ -69,6 +69,8 @@ import {
   mutationResponse,
   updateHepCAoeMocks,
   baseStiAoeUpdateMock,
+  device10Id,
+  device10Name,
 } from "../testCardTestConstants";
 import { QueriedFacility } from "../TestCardForm/types";
 import mockSupportedDiseaseMultiplex, {
@@ -78,6 +80,7 @@ import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/
 import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
 import { UpdateTestOrderTimerStartedAtDocument } from "../../../generated/graphql";
 import mockSupportedDiseaseTestPerformedHepatitisC from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHepatitisC";
+import mockSupportedDiseaseTestPerformedGonorrhea from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedGonorrhea";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
@@ -268,6 +271,21 @@ const facilityInfo: QueriedFacility = {
       testLength: 15,
       supportedDiseaseTestPerformed: [
         ...mockSupportedDiseaseTestPerformedHepatitisC,
+      ],
+      swabTypes: [
+        {
+          name: specimen3Name,
+          internalId: specimen3Id,
+          typeCode: "122555007",
+        },
+      ],
+    },
+    {
+      internalId: device10Id,
+      name: device10Name,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseTestPerformedGonorrhea,
       ],
       swabTypes: [
         {
@@ -1484,6 +1502,124 @@ describe("TestCard", () => {
         })
       );
       expect(screen.queryByText(AOE_ERROR_TEXT)).not.toBeInTheDocument();
+    });
+
+    it("shows radio buttons for Gonorrhea when a Gonorrhea device is chosen", async function () {
+      mockDiseaseEnabledFlag("gonorrhea");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.GONORRHEA,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      expect(screen.queryByText("Gonorrhea result")).not.toBeInTheDocument();
+
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device10Name);
+      expect(screen.getByText("Gonorrhea result")).toBeInTheDocument();
+    });
+
+    it("shows required Gonorrhea AOE questions when a positive Gonorrhea result is present", async function () {
+      mockDiseaseEnabledFlag("gonorrhea");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.GONORRHEA,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+        {
+          ...baseStiAoeUpdateMock({
+            ...NO_SYMPTOMS_FALSE_OVERRIDE,
+          }),
+          ...mutationResponse,
+        },
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH + 1
+      );
+
+      await user.selectOptions(deviceDropdown, device10Name);
+      expect(screen.getByText("Gonorrhea result")).toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Positive", {
+          exact: false,
+        })
+      );
+
+      expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Is the patient currently experiencing or showing signs of symptoms?"
+        )
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("What is the gender of their sexual partners?")
+      ).toBeInTheDocument();
+
+      const symptomFieldSet = screen.getByTestId(
+        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
+      );
+      await user.click(within(symptomFieldSet).getByLabelText("Yes"));
+
+      expect(
+        screen.getByText("Select any symptoms the patient is experiencing")
+      ).toBeInTheDocument();
+    });
+
+    it("hides AOE questions when there is no positive Gonorrhea result", async function () {
+      mockDiseaseEnabledFlag("gonorrhea");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.GONORRHEA,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, device10Name);
+      expect(screen.getByText("Gonorrhea result")).toBeInTheDocument();
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing or showing signs of symptoms?"
+        )
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
+
+      await user.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
+      expect(
+        screen.queryByText("Is the patient pregnant?")
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          "Is the patient currently experiencing or showing signs of symptoms?"
+        )
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("What is the gender of their sexual partners?")
+      ).not.toBeInTheDocument();
     });
 
     it("checks that submission only works if AOE questions are valid", async function () {
