@@ -248,3 +248,13 @@ data "azurerm_key_vault_secret" "slack_hook_token" {
   name         = "slack-hook-token-prod"
   key_vault_id = data.azurerm_key_vault.global.id
 }
+
+data "azurerm_key_vault_secret" "simple_report_prod_backend_url" {
+  name         = "simple-report-prod-backend-url"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "simple_report_prod_devices_token" {
+  name         = "simple-report-prod-devices-token"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
