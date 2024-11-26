@@ -157,6 +157,8 @@ simple-report:
       - POST
   batch-size: 1000
   fhir-reporting-enabled: true
+  support-escalation:
+    enabled: false
 twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:
@@ -175,6 +177,7 @@ datahub:
   csv-upload-api-fhir-client: "simple_report.fullelr"
 features:
   oktaMigrationEnabled: false
+  gonorrheaEnabled: true
   hepatitisCEnabled: true
   syphilisEnabled: true
   hivBulkUploadEnabled: true

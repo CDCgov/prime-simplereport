@@ -5681,3 +5681,23 @@ databaseChangeLog:
               UPDATE ${database.defaultSchemaName}.supported_disease
               SET name = 'Hepatitis-C'
               WHERE name = 'Hepatitis C' AND loinc = 'LP14400-3'
+
+  - changeSet:
+        id: add-gonorrhea-to-supported_disease-table
+        author: ggs2@cdc.gov
+        comment: Add Gonorrhea to the supported_disease table.
+        changes:
+          - tagDatabase:
+              tag: add-gonorrhea-to-supported_disease-table
+          - sql:
+              sql: |
+                INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                     internal_id,
+                     name,
+                     loinc)
+                VALUES
+                     (gen_random_uuid(), 'Gonorrhea', 'LP14316-1')
+        rollback:
+          - sql:
+              sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Gonorrhea';
+

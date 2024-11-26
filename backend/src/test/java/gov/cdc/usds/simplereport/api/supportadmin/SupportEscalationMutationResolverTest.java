@@ -7,33 +7,28 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.api.supportescalation.SupportEscalationMutationResolver;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
-import gov.cdc.usds.simplereport.service.supportescalation.SlackWebhookService;
+import gov.cdc.usds.simplereport.service.supportescalation.SupportEscalationService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
-import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-class SlackEscalationMutationResolverTest extends BaseServiceTest<SlackWebhookService> {
-  @Mock SlackWebhookService service;
+class SupportEscalationMutationResolverTest extends BaseServiceTest<SupportEscalationService> {
+  @Mock SupportEscalationService service;
 
   @InjectMocks SupportEscalationMutationResolver resolver;
 
   @Test
-  void escalation_success() throws IOException {
-    when(service.sendSlackEscalationMessage()).thenReturn(true);
+  void escalation_success() {
+    when(service.sendEscalationMessage()).thenReturn(true);
     boolean escalationCompleted = resolver.sendSupportEscalation();
     assertThat(escalationCompleted).isTrue();
   }
 
   @Test
-  void escalation_throws_if_fails() throws IOException {
-    when(service.sendSlackEscalationMessage()).thenReturn(false);
-    assertThrows(
-        GenericGraphqlException.class,
-        () -> {
-          resolver.sendSupportEscalation();
-        });
+  void escalation_throws_if_fails() {
+    when(service.sendEscalationMessage()).thenReturn(false);
+    assertThrows(GenericGraphqlException.class, () -> resolver.sendSupportEscalation());
   }
 }
