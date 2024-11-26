@@ -122,5 +122,28 @@ describe("TestCardForm.utils", () => {
         )
       ).toEqual(AoeValidationErrorMessages.COMPLETE);
     });
+
+    it("should return false if Gonorrhea questions are unanswered", () => {
+      const positive: TestFormState = {
+        ...incompleteState,
+      };
+      expect(
+        generateAoeValidationState(positive, AOEFormOption.GONORRHEA)
+      ).toEqual(AoeValidationErrorMessages.INCOMPLETE);
+    });
+
+    it("should return true when Gonorrhea positive is selected and questions are answered", () => {
+      const positiveGonorrheaStateCompleteAOE: TestFormState = {
+        ...completeStateWithSymptoms,
+      };
+      positiveGonorrheaStateCompleteAOE.aoeResponses.symptoms =
+        '{"49650001":true,"289560001":false,"399131003":false,"249661007":false,"90446007":false,"71393004":false,"131148009":false,"225595004":false}';
+      expect(
+        generateAoeValidationState(
+          positiveGonorrheaStateCompleteAOE,
+          AOEFormOption.GONORRHEA
+        )
+      ).toEqual(AoeValidationErrorMessages.COMPLETE);
+    });
   });
 });
