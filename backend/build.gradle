@@ -37,21 +37,19 @@ jar {
 
 dependencies {
     // core infrastructure
-//    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.0'
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.2.11'
-
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.4'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-actuator'
     implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
     // graphql
-    implementation 'org.springframework.boot:spring-boot-starter-graphql:3.2.11'
+    implementation 'org.springframework.boot:spring-boot-starter-graphql:3.3.0'
     implementation 'org.springframework:spring-web:6.1.14'
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
-    implementation 'com.graphql-java:graphql-java:21.3'
+    implementation 'com.graphql-java:graphql-java:22.1'
     // graphql-java-extended-validation schema directives
-    implementation 'com.graphql-java:graphql-java-extended-validation:21.0'
+    implementation 'com.graphql-java:graphql-java-extended-validation:22.0'
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 
@@ -72,12 +70,10 @@ dependencies {
     implementation 'com.squareup.okio:okio:3.9.1'
     implementation 'org.springframework:spring-core:6.1.14'
     implementation 'org.springframework.security:spring-security-core:6.3.0'
-//    implementation 'org.springframework.security:spring-security-core:6.2.7'
     implementation 'org.springframework.security:spring-security-oauth2-client:6.3.1'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.31'
     implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.31'
-//    implementation 'org.springframework.security:spring-security-web:6.3.0'
-    implementation 'org.springframework.security:spring-security-web:6.2.7'
+    implementation 'org.springframework.security:spring-security-web:6.3.0'
 
     // non-pinned security dependencies
     implementation 'org.owasp.encoder:encoder:1.2'
@@ -162,7 +158,7 @@ dependencies {
         // workaround for a sibling dependency version bug in the v7 upgrade to the HAPI library
         // that was causing a serialization issue
         version {
-            strictly '2.17.1' //change to 2.17? https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.3-Release-Notes#dependency-upgrades
+            strictly '2.16.1' //eventually change to 2.17 when HAPI gets fixed: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.3-Release-Notes#dependency-upgrades
         }
     }
 
@@ -287,12 +283,4 @@ tasks.named('test') {
         finalizedBy testDbStop
     }
     maxHeapSize = "1024m"
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs.add("-parameters") //possbily not needed? Also might have to add to intellij build: tasks.withType<JavaCompile>() {
-}
-
-tasks.withType(GroovyCompile).configureEach {
-    groovyOptions.parameters = true
 }

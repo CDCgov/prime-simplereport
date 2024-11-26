@@ -21,6 +21,10 @@ public abstract class EternalAuditedEntity extends AuditedEntity implements Eter
     return isDeleted;
   }
 
+  public boolean getIsDeleted() {
+    return isDeleted;
+  }
+
   @Override
   public void setIsDeleted(boolean deleted) {
     this.isDeleted = deleted;
