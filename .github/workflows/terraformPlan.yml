@@ -56,7 +56,7 @@ jobs:
         working-directory: ./ops
     steps:
       - uses: actions/checkout@v4
-      - uses: azure/login@v2
+      - uses: azure/login@v2.2.0
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Use prod Okta token if required

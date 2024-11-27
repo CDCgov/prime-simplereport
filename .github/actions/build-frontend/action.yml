@@ -40,7 +40,7 @@ runs:
         path: |
           ./frontend/node_modules
         key: npm-${{ env.NODE_VERSION }}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
-    - uses: azure/login@v2
+    - uses: azure/login@v2.2.0
       with:
         creds: ${{ inputs.azure_creds }}
     - name: Install dependencies
