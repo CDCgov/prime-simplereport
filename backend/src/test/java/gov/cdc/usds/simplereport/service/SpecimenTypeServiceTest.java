@@ -65,9 +65,7 @@ class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService> {
             .build();
     Exception exception =
         assertThrows(
-            TransactionSystemException
-                .class, // might need to change this once other upgrade issues are resolved per
-            // https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-6.1-Release-Notes#data-access-and-transactions
+            TransactionSystemException.class,
             () -> {
               _service.createSpecimenType(createSpecimenTypeData);
             });
