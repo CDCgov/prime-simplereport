@@ -10,6 +10,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,8 +34,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @Column @Getter @Setter private String cliaNumber;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "default_ordering_provider_id", nullable = false)
+  @ManyToOne
+  @JoinColumn(name = "ordering_provider_id", nullable = false)
+  @Getter
+  private Provider orderingProvider;
+
+  @ManyToOne
+  @JoinColumn(name = "default_ordering_provider_id")
   @Getter
   private Provider defaultOrderingProvider;
 
@@ -60,6 +66,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       name = "facility_providers",
       joinColumns = @JoinColumn(name = "facility_id"),
       inverseJoinColumns = @JoinColumn(name = "provider_id"))
+  @NotEmpty(message = "Minimum 1 ordering provider is required")
   private Set<Provider> orderingProviders = new HashSet<>();
 
   protected Facility() {
@@ -72,6 +79,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.address = facilityBuilder.facilityAddress;
     this.telephone = facilityBuilder.phone;
     this.email = facilityBuilder.email;
+    this.orderingProvider = facilityBuilder.defaultOrderingProvider;
     this.defaultOrderingProvider = facilityBuilder.defaultOrderingProvider;
     this.orderingProviders.add(facilityBuilder.defaultOrderingProvider);
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);

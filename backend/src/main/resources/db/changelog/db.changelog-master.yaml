@@ -5714,6 +5714,22 @@ databaseChangeLog:
             sql: |
               REVOKE SELECT ON TABLE ${database.defaultSchemaName}.facility_providers FROM ${noPhiUsername};
   - changeSet:
+      id: add-default-provider
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-default-provider-col
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_ordering_provider_id
+                  remarks: The default ordering provider for tests at this facility.
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk__facility__default_ordering_provider
+                    references: provider(internal_id)
+  - changeSet:
       id: populate-facility-providers-table
       author: bobby@skylight.digital
       changes:
@@ -5734,13 +5750,21 @@ databaseChangeLog:
             sql: |
               TRUNCATE TABLE ${database.defaultSchemaName}.facility_providers;
   - changeSet:
-      id: rename-facility-provider-column
-      author: merethe@skylight.digital
+      id: populate-default-provider-column
+      author: bobby@skylight.digital
       changes:
         - tagDatabase:
-            tag: rename-facility-provider-column
-        - renameColumn:
-            tableName: facility
-            oldColumnName: ordering_provider_id
-            newColumnName: default_ordering_provider_id
-            remarks: The default healthcare provider for tests ordered at this facility.
+            tag: populate-default-provider-column
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.facility
+              SET
+                default_ordering_provider_id = facility.ordering_provider_id
+              WHERE facility.default_ordering_provider_id is NULL;
+      rollback:
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.facility
+              SET
+                default_ordering_provider_id = NULL
+              WHERE facility.default_ordering_provider_id is NOT NULL;
