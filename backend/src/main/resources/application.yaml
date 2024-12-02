@@ -174,7 +174,7 @@ datahub:
   jwt-scope: "simple_report.*.report"
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
   csv-upload-api-client: "simple_report.csvuploader"
-  csv-upload-api-fhir-client: "simple_report.fullelr"
+  csv-upload-api-fhir-client: "simple_report.fullelr-bulkuploader"
 features:
   oktaMigrationEnabled: false
   gonorrheaEnabled: true
