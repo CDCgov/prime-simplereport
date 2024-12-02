@@ -27,6 +27,8 @@ import {
   TestCorrectionReasons,
 } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
 import {
+  gonorrheaSymptomDefinitions,
+  hepatitisCSymptomDefinitions,
   PregnancyCode,
   SyphilisHistoryCode,
 } from "../../../patientApp/timeOfTest/constants";
@@ -58,7 +60,7 @@ import { HIVAoEForm } from "./diseaseSpecificComponents/HIVAoEForm";
 import { stringifySymptomJsonForAoeUpdate } from "./diseaseSpecificComponents/aoeUtils";
 import { SyphilisAoEForm } from "./diseaseSpecificComponents/SyphilisAoEForm";
 import { WhereResultsAreSentModal } from "./WhereResultsAreSentModal";
-import { HepatitisCAoeForm } from "./diseaseSpecificComponents/HepatitisCAoeForm";
+import { STIGenericAOEForm } from "./diseaseSpecificComponents/STIGenericAOEForm";
 
 const DEBOUNCE_TIME = 300;
 
@@ -606,7 +608,7 @@ const TestCardForm = ({
         )}
         {whichAoeFormOption === AOEFormOption.HEPATITIS_C && (
           <div className="grid-row grid-gap">
-            <HepatitisCAoeForm
+            <STIGenericAOEForm
               testOrder={testOrder}
               responses={state.aoeResponses}
               hasAttemptedSubmit={hasAttemptedSubmit}
@@ -616,6 +618,25 @@ const TestCardForm = ({
                   payload: responses,
                 });
               }}
+              diseaseSymptomDefinitions={hepatitisCSymptomDefinitions}
+              diseaseNameForFormIds={"hepatitis-c"}
+            />
+          </div>
+        )}
+        {whichAoeFormOption === AOEFormOption.GONORRHEA && (
+          <div className="grid-row grid-gap">
+            <STIGenericAOEForm
+              testOrder={testOrder}
+              responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
+              onResponseChange={(responses) => {
+                dispatch({
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+              diseaseSymptomDefinitions={gonorrheaSymptomDefinitions}
+              diseaseNameForFormIds={"gonorrhea"}
             />
           </div>
         )}

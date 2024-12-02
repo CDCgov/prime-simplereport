@@ -157,18 +157,45 @@ export const hepatitisCSymptomDefinitions: SymptomDefinitionMap[] =
     label: hepatitisCSymptomsMap[value],
   }));
 
+export const gonorrheaSymptomsMap = {
+  "49650001": "Painful or burning sensation when peeing",
+  "289560001": "Increased vaginal discharge",
+  "399131003": "Vaginal bleeding between periods",
+  "249661007": "Discharge from anus",
+  "90446007": "Anal itching",
+  "71393004": "Soreness",
+  "131148009": "Anal bleeding",
+  "225595004": "Painful bowel movements",
+} as const;
+
+export type GonorrheaSymptoms = typeof gonorrheaSymptomsMap;
+export type GonorrheaSymptomCode = keyof GonorrheaSymptoms;
+export type GonorrheaSymptomName = GonorrheaSymptoms[GonorrheaSymptomCode];
+
+export const gonorrheaSymptomOrder: GonorrheaSymptomCode[] =
+  alphabetizeSymptomKeysFromMapValues(gonorrheaSymptomsMap);
+
+export const gonorrheaSymptomDefinitions: SymptomDefinitionMap[] =
+  gonorrheaSymptomOrder.map((value) => ({
+    value,
+    label: gonorrheaSymptomsMap[value],
+  }));
+
 export const SYMPTOM_SUBQUESTION_ERROR =
   "This question is required if the patient has symptoms.";
 export const ONSET_DATE_LABEL = "When did the patient's symptoms start?";
 
 export type AllSymptomsCode = keyof RespiratorySymptoms &
   keyof SyphilisSymptoms &
-  keyof HepatitisCSymptoms;
+  keyof HepatitisCSymptoms &
+  keyof GonorrheaSymptoms;
 export type AllSymptomsName = RespiratorySymptomName &
   SyphilisSymptomName &
-  HepatitisCSymptomName;
+  HepatitisCSymptomName &
+  GonorrheaSymptomName;
 export const allSymptomsMap = {
   ...syphilisSymptomsMap,
   ...respiratorySymptomsMap,
   ...hepatitisCSymptomsMap,
+  ...gonorrheaSymptomsMap,
 };

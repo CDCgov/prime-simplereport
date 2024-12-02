@@ -12,6 +12,8 @@ import {
   fluDeviceId,
   fluDeviceName,
   generateSubmitQueueMock,
+  gonorrheaDeviceId,
+  gonorrheaDeviceName,
   hepatitisCDeviceId,
   hepatitisCDeviceName,
   hivDeviceId,
@@ -198,6 +200,24 @@ describe("TestCardForm", () => {
             internalId: hepatitisCDeviceId,
             name: hepatitisCDeviceName,
             model: hepatitisCDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      expect(await renderTestCardForm({ props })).toMatchSnapshot();
+    });
+
+    it("matches snapshot for gonorrhea device", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "GONORRHEA" } }],
+          deviceType: {
+            internalId: gonorrheaDeviceId,
+            name: gonorrheaDeviceName,
+            model: gonorrheaDeviceName,
             testLength: 15,
           },
         },
