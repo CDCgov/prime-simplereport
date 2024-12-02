@@ -14,6 +14,9 @@ public class CachingConfig {
       "covidEquipmentModelAndTestPerformedCodeSet";
   public static final String HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
       "hepatitisCEquipmentModelAndTestPerformedCodeSet";
+
+  public static final String GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
+      "gonorrheaEquipmentModelAndTestPerformedCodeSet";
   public static final String HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
       "hivEquipmentModelAndTestPerformedCodeSet";
   public static final String SYPHILIS_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
@@ -30,6 +33,7 @@ public class CachingConfig {
     return new ConcurrentMapCacheManager(
         COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
+        GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         SYPHILIS_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP,

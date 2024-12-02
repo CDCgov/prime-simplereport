@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SNOMED_TO_SPECIMEN_NAME_MAP;
@@ -170,6 +171,12 @@ public class ResultsUploaderCachingService {
     return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.HEPATITIS_C_NAME);
   }
 
+  @Cacheable(GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  public Set<String> getGonorrheaEquipmentModelAndTestPerformedCodeSet() {
+    log.info("generating gonorrheaEquipmentModelAndTestPerformedCodeSet cache");
+    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.GONORRHEA_NAME);
+  }
+
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
   @Caching(
       evict = {
@@ -200,6 +207,18 @@ public class ResultsUploaderCachingService {
   public void cacheHepatitisCEquipmentModelAndTestPerformedCodeSet() {
     log.info("clear and generate hepatitisCEquipmentModelAndTestPerformedCodeSet cache");
     getHepatitisCEquipmentModelAndTestPerformedCodeSet();
+  }
+
+  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
+  @Caching(
+      evict = {
+        @CacheEvict(
+            value = GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
+            allEntries = true)
+      })
+  public void cacheGonorrheaEquipmentModelAndTestPerformedCodeSet() {
+    log.info("clear and generate gonorrheaEquipmentModelAndTestPerformedCodeSet cache");
+    getGonorrheaEquipmentModelAndTestPerformedCodeSet();
   }
 
   @Cacheable(SNOMED_TO_SPECIMEN_NAME_MAP)
