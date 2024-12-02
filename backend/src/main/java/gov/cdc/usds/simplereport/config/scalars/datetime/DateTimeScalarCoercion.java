@@ -19,9 +19,10 @@ import java.util.List;
 import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 @Slf4j
-class DateTimeScalarCoercion implements Coercing<Date, Object> {
+public class DateTimeScalarCoercion implements Coercing<Date, Object> {
 
   public static final DateTimeFormatter ISO_LOCAL_DATE =
       DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneOffset.UTC);
@@ -30,7 +31,7 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
           DateTimeFormatter.ISO_INSTANT.withZone(ZoneOffset.UTC),
           DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC));
 
-  private Date convertImpl(Object input) {
+  public Date convertImpl(Object input) {
     if (input == null) return null;
     else if (input instanceof String) {
       if (StringUtils.isBlank((String) input)) {
@@ -69,7 +70,10 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
   }
 
   @Override
-  public Object serialize(Object dataFetcherResult, GraphQLContext graphQLContext, Locale locale)
+  public Object serialize(
+      @NotNull Object dataFetcherResult,
+      @NotNull GraphQLContext graphQLContext,
+      @NotNull Locale locale)
       throws CoercingSerializeException {
     if (dataFetcherResult == null) {
       throw new CoercingSerializeException("Unable to serialize null value");
@@ -88,7 +92,8 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
   }
 
   @Override
-  public Date parseValue(Object input, GraphQLContext graphQLContext, Locale locale)
+  public Date parseValue(
+      @NotNull Object input, @NotNull GraphQLContext graphQLContext, @NotNull Locale locale)
       throws CoercingParseValueException {
     if (((String) input).isEmpty()) {
       return null;
@@ -102,10 +107,10 @@ class DateTimeScalarCoercion implements Coercing<Date, Object> {
 
   @Override
   public Date parseLiteral(
-      Value<?> input,
-      CoercedVariables coercedVariables,
-      GraphQLContext graphQLContext,
-      Locale locale)
+      @NotNull Value<?> input,
+      @NotNull CoercedVariables coercedVariables,
+      @NotNull GraphQLContext graphQLContext,
+      @NotNull Locale locale)
       throws CoercingParseLiteralException {
     String value = ((StringValue) input).getValue();
     Date result = convertImpl(value);
