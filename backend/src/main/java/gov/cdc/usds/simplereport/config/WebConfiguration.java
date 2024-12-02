@@ -24,6 +24,8 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String PATIENT_UPLOAD = "/upload/patients";
   public static final String RESULT_UPLOAD = "/upload/results";
   public static final String CONDITION_AGNOSTIC_RESULT_UPLOAD = "/upload/condition-agnostic";
+
+  public static final String DEVICES = "/devices";
   public static final String GRAPH_QL = "/graphql";
 
   @Autowired private RestLoggingInterceptor _loggingInterceptor;

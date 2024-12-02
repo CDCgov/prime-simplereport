@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 public class DeviceTypeDisease extends IdentifiedEntity {
 
   @Column(name = "device_type_id")
-  @JsonView(PublicDeviceType.class)
   private UUID deviceTypeId;
 
   @ManyToOne
