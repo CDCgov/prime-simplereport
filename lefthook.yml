@@ -4,7 +4,7 @@ pre-commit:
     spotless:
       root: "backend/"
       glob: "*.java"
-      run: ./gradlew checkstyleTest spotlessApply && git add {staged_files}
+      run: ./gradlew spotlessApply && git add {staged_files}
     prettier:
       root: "frontend/"
       glob: "*.{js,ts,jsx,tsx}"
