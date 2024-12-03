@@ -209,6 +209,9 @@ export const useAOEFormOption = (
   // some devices don't have any supported disease tests saved because historically they only supported COVID
   // this is often seen in some of the dev environments
   if (!hasAnySupportedDiseaseTests(testFormState.deviceId, devicesMap)) {
+    console.warn(
+      "This device has no supported disease tests configured. Defaulting to COVID AOE for compatibility with legacy COVID device data."
+    );
     return AOEFormOption.COVID;
   }
   if (
