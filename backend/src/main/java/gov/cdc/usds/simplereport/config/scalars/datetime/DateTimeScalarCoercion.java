@@ -75,9 +75,7 @@ public class DateTimeScalarCoercion implements Coercing<Date, Object> {
       @NotNull GraphQLContext graphQLContext,
       @NotNull Locale locale)
       throws CoercingSerializeException {
-    if (dataFetcherResult == null) {
-      throw new CoercingSerializeException("Unable to serialize null value");
-    } else if (dataFetcherResult instanceof Date) {
+    if (dataFetcherResult instanceof Date) {
       return getISOString(getLocalDateTime((Date) dataFetcherResult));
     } else if (dataFetcherResult instanceof String) {
       LocalDateTime localDateTime = getLocalDateTime((String) dataFetcherResult);
