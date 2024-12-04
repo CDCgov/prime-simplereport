@@ -21,6 +21,9 @@ public abstract class EternalAuditedEntity extends AuditedEntity implements Eter
     return isDeleted;
   }
 
+  // This getter was created in response to a startup failure where
+  // Spring graphql was failing to map the schema without this getter.
+  // The app will fail to start without this getter.
   public boolean getIsDeleted() {
     return isDeleted;
   }
