@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '3.1.7'
+    id 'org.springframework.boot' version '3.3.6'
     id 'org.liquibase.gradle' version '3.0.1'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'java'
@@ -23,9 +23,9 @@ java {
 }
 
 ext {
-    set('springCloudVersion', "2022.0.4")
+    set('springCloudVersion', "2023.0.1")
     set('oktaVersion', "13.0.2")
-    set('hibernate.version', '6.3.1.Final') // temporary until update to spring 3.2+
+    set('hibernate.version', '6.6.2.Final')
 }
 repositories {
     mavenCentral()
@@ -37,19 +37,19 @@ jar {
 
 dependencies {
     // core infrastructure
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.4'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.6'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-actuator'
     implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
     // graphql
-    implementation 'org.springframework.boot:spring-boot-starter-graphql:3.1.10'
-    implementation 'org.springframework:spring-web:6.0.18'
+    implementation 'org.springframework.boot:spring-boot-starter-graphql:3.3.6'
+    implementation 'org.springframework:spring-web:6.1.15'
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
-    implementation 'com.graphql-java:graphql-java:20.9'
+    implementation 'com.graphql-java:graphql-java:22.3'
     // graphql-java-extended-validation schema directives
-    implementation 'com.graphql-java:graphql-java-extended-validation:21.0'
+    implementation 'com.graphql-java:graphql-java-extended-validation:22.0'
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 
@@ -68,12 +68,12 @@ dependencies {
      * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 10 July 2024.
      */
     implementation 'com.squareup.okio:okio:3.9.1'
-    implementation 'org.springframework:spring-core:6.0.16'
-    implementation 'org.springframework.security:spring-security-core:6.1.8'
-    implementation 'org.springframework.security:spring-security-oauth2-client:6.3.1'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.30'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.19'
-    implementation 'org.springframework.security:spring-security-web:6.1.7'
+    implementation 'org.springframework:spring-core:6.1.15'
+    implementation 'org.springframework.security:spring-security-core:6.3.5'
+    implementation 'org.springframework.security:spring-security-oauth2-client:6.3.5'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.33'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:10.1.33'
+    implementation 'org.springframework.security:spring-security-web:6.3.5'
 
     // non-pinned security dependencies
     implementation 'org.owasp.encoder:encoder:1.2'
@@ -84,7 +84,7 @@ dependencies {
     // this provides additional types for JsonB and for ListArray types in Postgres
     implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.6'
     implementation 'org.liquibase:liquibase-core:4.29.1'
-    implementation 'org.postgresql:postgresql:42.7.3'
+    implementation 'org.postgresql:postgresql:42.7.4'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.28'
@@ -154,15 +154,10 @@ dependencies {
     testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.35.0"
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.4.4'
-    implementation('com.fasterxml.jackson.core:jackson-core') {
-        // workaround for a sibling dependency version bug in the v7 upgrade to the HAPI library
-        // that was causing a serialization issue
-        version {
-            strictly '2.16.1'
-        }
-    }
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.17.3'
 
     implementation 'commons-validator:commons-validator:1.9.0'
+    implementation 'org.bouncycastle:bcpkix-jdk18on:1.79'
 
     // Needed for Liquibase Gradle Plugin
     liquibaseRuntime 'org.liquibase:liquibase-core:4.29.1'

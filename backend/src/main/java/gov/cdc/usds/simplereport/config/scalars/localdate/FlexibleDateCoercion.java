@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.config.scalars.localdate;
 
+import graphql.GraphQLContext;
+import graphql.execution.CoercedVariables;
 import graphql.language.StringValue;
+import graphql.language.Value;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;
@@ -8,6 +11,8 @@ import graphql.schema.CoercingSerializeException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+import org.jetbrains.annotations.NotNull;
 
 public class FlexibleDateCoercion implements Coercing<Object, Object> {
   private static final DateTimeFormatter US_DASHDATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -36,7 +41,10 @@ public class FlexibleDateCoercion implements Coercing<Object, Object> {
   }
 
   @Override
-  public Object serialize(Object dataFetcherResult) {
+  public Object serialize(
+      @NotNull Object dataFetcherResult,
+      @NotNull GraphQLContext graphQLContext,
+      @NotNull Locale locale) {
     LocalDate result = convertImpl(dataFetcherResult);
     if (result == null) {
       throw new CoercingSerializeException("Unable to serialize null value");
@@ -45,7 +53,8 @@ public class FlexibleDateCoercion implements Coercing<Object, Object> {
   }
 
   @Override
-  public Object parseValue(Object input) {
+  public Object parseValue(
+      @NotNull Object input, @NotNull GraphQLContext graphQLContext, @NotNull Locale locale) {
     if (((String) input).length() == 0) {
       return null;
     }
@@ -57,7 +66,11 @@ public class FlexibleDateCoercion implements Coercing<Object, Object> {
   }
 
   @Override
-  public Object parseLiteral(Object input) {
+  public Object parseLiteral(
+      @NotNull Value<?> input,
+      @NotNull CoercedVariables coercedVariables,
+      @NotNull GraphQLContext graphQLContext,
+      @NotNull Locale locale) {
     String value = ((StringValue) input).getValue();
     LocalDate result = convertImpl(value);
     if (result == null) {

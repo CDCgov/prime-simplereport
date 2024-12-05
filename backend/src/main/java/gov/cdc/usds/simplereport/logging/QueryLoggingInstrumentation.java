@@ -7,7 +7,8 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import graphql.ExecutionResult;
 import graphql.execution.instrumentation.InstrumentationContext;
-import graphql.execution.instrumentation.SimpleInstrumentation;
+import graphql.execution.instrumentation.InstrumentationState;
+import graphql.execution.instrumentation.SimplePerformantInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationValidationParameters;
 import graphql.language.Field;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Component;
 /** Created by nickrobison on 11/27/20 */
 @Component
 @Slf4j
-public class QueryLoggingInstrumentation extends SimpleInstrumentation {
+public class QueryLoggingInstrumentation extends SimplePerformantInstrumentation {
 
   private final TelemetryClient client;
   private final boolean isDebugEnabled;
@@ -37,7 +38,7 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
 
   @Override
   public InstrumentationContext<List<ValidationError>> beginValidation(
-      InstrumentationValidationParameters parameters) {
+      InstrumentationValidationParameters parameters, InstrumentationState state) {
     if (isDebugEnabled) {
       // Descend through the GraphQL query and pull out the field names and variables from the
       // operation definitions
@@ -52,12 +53,12 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
               .collect(Collectors.toSet());
       log.debug("Selecting fields: {}", fieldSet);
     }
-    return super.beginValidation(parameters);
+    return super.beginValidation(parameters, state);
   }
 
   @Override
   public InstrumentationContext<ExecutionResult> beginExecution(
-      InstrumentationExecutionParameters parameters) {
+      InstrumentationExecutionParameters parameters, InstrumentationState state) {
     final long queryStart = System.currentTimeMillis();
     final String executionId = parameters.getExecutionInput().getExecutionId().toString();
     // Add the execution ID to the sfl4j MDC and the response headers

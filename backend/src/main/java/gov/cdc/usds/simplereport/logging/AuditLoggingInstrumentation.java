@@ -15,8 +15,9 @@ import graphql.ExecutionResult;
 import graphql.GraphQLContext;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
-import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
+import graphql.execution.instrumentation.SimplePerformantInstrumentation;
+import graphql.execution.instrumentation.parameters.InstrumentationCreateStateParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -31,11 +32,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class AuditLoggingInstrumentation extends SimpleInstrumentation {
+public class AuditLoggingInstrumentation extends SimplePerformantInstrumentation {
   private final AuditService _auditService;
 
   @Override
-  public InstrumentationState createState() {
+  public InstrumentationState createState(InstrumentationCreateStateParameters parameters) {
     GraphqlQueryState state = new GraphqlQueryState();
     log.trace("Creating state={} for audit", state);
     return state;
@@ -44,13 +45,13 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
   @Override
   @SuppressWarnings("checkstyle:IllegalCatch")
   public InstrumentationContext<ExecutionResult> beginExecution(
-      InstrumentationExecutionParameters parameters) {
+      InstrumentationExecutionParameters parameters, InstrumentationState instrumentationState) {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
     log.trace("Instrumenting query executionId={} for audit", executionId);
     try {
       GraphQLContext graphQLContext = parameters.getGraphQLContext();
       Subject subject = graphQLContext.get(SUBJECT_KEY);
-      GraphqlQueryState state = parameters.getInstrumentationState();
+      GraphqlQueryState state = (GraphqlQueryState) instrumentationState;
       state.setRequestId(executionId);
 
       HttpServletRequest httpServletRequest = graphQLContext.get(HTTP_SERVLET_REQUEST_KEY);
