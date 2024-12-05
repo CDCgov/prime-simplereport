@@ -1,0 +1,9 @@
+@use "../../scss/settings";
+
+.maintenance-alert-background {
+  background-color: #9c3d10;
+}
+
+.maintenance-alert-body {
+  max-width: settings.$site-max-width !important;
+}
