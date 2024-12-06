@@ -80,7 +80,7 @@ class PersonRepositoryTest extends BaseRepositoryTest {
     createdPerson.setIsDeleted(true);
     Optional<Person> deletedPerson = _repo.findByIdAndOrganization(personId, org, true);
     assertTrue(deletedPerson.isPresent());
-    assertTrue(deletedPerson.get().isDeleted());
+    assertTrue(deletedPerson.get().getIsDeleted());
 
     found =
         _repo.findAll(

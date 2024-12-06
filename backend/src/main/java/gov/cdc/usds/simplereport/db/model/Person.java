@@ -300,12 +300,12 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
         && birthDate.equals(person.birthDate)
         && Objects.equals(facility, person.facility)
         && Objects.equals(getOrganization(), person.getOrganization())
-        && (isDeleted() == person.isDeleted());
+        && (getIsDeleted() == person.getIsDeleted());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(nameInfo, birthDate, facility, getOrganization(), isDeleted());
+    return Objects.hash(nameInfo, birthDate, facility, getOrganization(), getIsDeleted());
   }
 
   public void updatePatient(

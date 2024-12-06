@@ -100,6 +100,6 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
   }
 
   public boolean getIsDeleted() {
-    return wrapped.isDeleted();
+    return wrapped.getIsDeleted();
   }
 }
