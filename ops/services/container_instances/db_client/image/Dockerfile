@@ -1,4 +1,4 @@
-FROM alpine:3.20
+FROM alpine:3.21
 RUN apk --no-cache add postgresql14-client
 RUN apk add --no-cache bash
 ARG UID=10001
