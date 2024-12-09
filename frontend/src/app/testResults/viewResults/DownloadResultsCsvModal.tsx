@@ -74,7 +74,7 @@ export const DownloadResultsCsvModal = ({
           disabledFeatureDiseaseList
         );
         setResults(csvResults);
-      } catch (e) {
+      } catch {
         showError("Error creating results file to download");
       }
     } else {

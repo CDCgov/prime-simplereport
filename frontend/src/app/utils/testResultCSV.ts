@@ -12,7 +12,7 @@ export type QueriedTestResult = NonNullable<
   NonNullable<GetResultsForDownloadQuery["resultsPage"]>["content"]
 >[number];
 
-const resultCSVHeadersString = [
+const _resultCSVHeadersString = [
   "Patient first name",
   "Patient middle name",
   "Patient first name",
@@ -53,20 +53,20 @@ const resultCSVHeadersString = [
   "Patient tribal affiliation",
 ] as const;
 
-const resultCSVHeadersBoolean = [
+const _resultCSVHeadersBoolean = [
   "Patient is a resident in a congregate setting",
   "Patient is employed in healthcare",
 ] as const;
 
 export type ResultCsvRow =
   | {
-      [_K in (typeof resultCSVHeadersString)[number]]:
+      [_K in (typeof _resultCSVHeadersString)[number]]:
         | string
         | null
         | undefined;
     }
   | {
-      [_K in (typeof resultCSVHeadersBoolean)[number]]:
+      [_K in (typeof _resultCSVHeadersBoolean)[number]]:
         | boolean
         | null
         | undefined;

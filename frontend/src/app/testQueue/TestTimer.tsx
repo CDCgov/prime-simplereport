@@ -139,7 +139,7 @@ const saveTimers = () => {
     const storage = localStorage.getItem("timers") || "[]";
     const cutoff = Date.now() - toMillis(60);
     oldTimers = JSON.parse(storage).filter((t: any) => t.alarmAt > cutoff);
-  } catch (e: any) {}
+  } catch {}
   oldTimers.forEach((t) => {
     timers.push(timerFromJSON(t));
   });
