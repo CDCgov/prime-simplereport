@@ -17,7 +17,7 @@ public abstract class EternalSystemManagedEntity extends SystemManagedEntity imp
   @JsonIgnore // this is an artifact of serializing the data at test time, but also seems...
   // correct?
   @Override
-  public boolean isDeleted() {
+  public boolean getIsDeleted() {
     return isDeleted;
   }
 

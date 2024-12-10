@@ -27,7 +27,7 @@ public class ReportStreamCallbackConfig {
   }
 
   @Bean(name = "reportStreamCallbackService")
-  @ConditionalOnMissingBean
+  @ConditionalOnMissingBean(ReportStreamCallbackService.class)
   ReportStreamCallbackService noopService() {
     return new ReportStreamCallbackService() {
       @Override

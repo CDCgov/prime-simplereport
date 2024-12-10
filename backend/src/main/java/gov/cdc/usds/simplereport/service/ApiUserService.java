@@ -143,7 +143,7 @@ public class ApiUserService {
       Role role,
       boolean accessAllFacilities,
       Set<UUID> facilities) {
-    if (!apiUser.isDeleted()) {
+    if (!apiUser.getIsDeleted()) {
       // an enabled user with this email address exists (in some org)
       throw new ConflictingUserException();
     }

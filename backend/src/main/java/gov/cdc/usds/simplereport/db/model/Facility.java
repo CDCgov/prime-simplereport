@@ -89,7 +89,9 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public List<DeviceType> getDeviceTypes() {
-    return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+    return configuredDeviceTypes.stream()
+        .filter(e -> !e.getIsDeleted())
+        .collect(Collectors.toList());
   }
 
   public void removeDeviceType(DeviceType deletedDevice) {

@@ -556,7 +556,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             .size());
     Person deletedPerson = _service.setIsDeleted(p.getInternalId(), true, null);
 
-    assertTrue(deletedPerson.isDeleted());
+    assertTrue(deletedPerson.getIsDeleted());
     assertEquals(
         0,
         _service
@@ -586,7 +586,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _service.getPatients(
             null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, ArchivedStatus.ALL, null, false, "");
     assertEquals(1, result.size());
-    assertTrue(result.get(0).isDeleted());
+    assertTrue(result.get(0).getIsDeleted());
     assertEquals(
         1,
         _service
