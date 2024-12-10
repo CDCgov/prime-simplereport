@@ -54,13 +54,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @Getter
   private SpecimenType defaultSpecimenType;
 
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(
-      name = "facility_device_type",
-      joinColumns = @JoinColumn(name = "facility_id"),
-      inverseJoinColumns = @JoinColumn(name = "device_type_id"))
-  private Set<DeviceType> configuredDeviceTypes = new HashSet<>();
-
   @OneToMany
   @JoinTable(
       name = "facility_providers",
@@ -68,6 +61,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       inverseJoinColumns = @JoinColumn(name = "provider_id"))
   @NotEmpty(message = "Minimum 1 ordering provider is required")
   private Set<Provider> orderingProviders = new HashSet<>();
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "facility_device_type",
+      joinColumns = @JoinColumn(name = "facility_id"),
+      inverseJoinColumns = @JoinColumn(name = "device_type_id"))
+  private Set<DeviceType> configuredDeviceTypes = new HashSet<>();
 
   protected Facility() {
     /* for hibernate */ }
@@ -79,9 +79,9 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.address = facilityBuilder.facilityAddress;
     this.telephone = facilityBuilder.phone;
     this.email = facilityBuilder.email;
-    this.orderingProvider = facilityBuilder.defaultOrderingProvider;
-    this.defaultOrderingProvider = facilityBuilder.defaultOrderingProvider;
-    this.orderingProviders.add(facilityBuilder.defaultOrderingProvider);
+    this.orderingProvider = facilityBuilder.orderingProvider;
+    this.defaultOrderingProvider = facilityBuilder.orderingProvider;
+    this.orderingProviders.add(facilityBuilder.orderingProvider);
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);

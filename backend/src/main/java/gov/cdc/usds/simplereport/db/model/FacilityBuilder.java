@@ -14,7 +14,7 @@ public class FacilityBuilder {
   StreetAddress facilityAddress;
   String phone;
   String email;
-  Provider defaultOrderingProvider;
+  Provider orderingProvider;
   DeviceType defaultDeviceType;
   SpecimenType defaultSpecimenType;
   List<DeviceType> configuredDevices;

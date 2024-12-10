@@ -223,7 +223,7 @@ public class TestDataBuilder {
             .facilityAddress(getAddress())
             .phone("555-867-5309")
             .email("facility@test.com")
-            .defaultOrderingProvider(doc)
+            .orderingProvider(doc)
             .defaultDeviceType(deviceType)
             .defaultSpecimenType(specimenType)
             .configuredDevices(List.of(deviceType))

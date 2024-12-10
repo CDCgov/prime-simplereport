@@ -46,7 +46,7 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
                     .facilityAddress(getAddress())
                     .phone("555-867-5309")
                     .email("facility@test.com")
-                    .defaultOrderingProvider(mccoy)
+                    .orderingProvider(mccoy)
                     .defaultDeviceType(bill)
                     .defaultSpecimenType(spec)
                     .configuredDevices(configuredDevices)

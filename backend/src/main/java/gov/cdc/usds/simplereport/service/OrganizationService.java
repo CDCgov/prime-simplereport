@@ -421,7 +421,7 @@ public class OrganizationService {
                 .facilityAddress(facilityAddress)
                 .phone(phone)
                 .email(email)
-                .defaultOrderingProvider(orderingProvider)
+                .orderingProvider(orderingProvider)
                 .configuredDevices(configuredDevices)
                 .build());
     facility = facilityRepository.save(facility);
