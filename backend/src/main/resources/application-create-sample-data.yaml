@@ -20,8 +20,8 @@ simple-report-initialization:
     #   address:
     #     street-1: 2797 N Cerrada de Beto
     #   organization-external-id: DIS_ORG
-    - name: Testing Sites
-      clia-number: "12D1234568"
+    - name: Testing Site
+      clia-number: "12D1234567"
       address:
         street-1: 1001 Rodeo Dr
         city: Los Angeles
