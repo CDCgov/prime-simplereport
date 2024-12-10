@@ -1,4 +1,6 @@
 import {
+  gonorrheaSymptomDefinitions,
+  gonorrheaSymptomOrder,
   hepatitisCSymptomDefinitions,
   hepatitisCSymptomOrder,
   respiratorySymptomDefinitions,
@@ -27,6 +29,17 @@ describe("mapSymptomBoolLiteralsToBool", () => {
       hepatitisCSymptomDefinitions
     );
     hepatitisCSymptomOrder.forEach((symptomKey) => {
+      expect(parsedPayload[symptomKey]).toEqual(false);
+    });
+  });
+  it("takes a JSON payload of {'Gonorrhea symptom SNOMEDS' : boolean strings} and parses the strings into booleans", () => {
+    const gonorrheaSymptomPayload =
+      '{"49650001":false,"289560001":false,"399131003":false,"249661007":false,"90446007":false,"71393004":false,"131148009":false,"225595004":false}\n';
+    const parsedPayload = mapSymptomBoolLiteralsToBool(
+      gonorrheaSymptomPayload,
+      gonorrheaSymptomDefinitions
+    );
+    gonorrheaSymptomOrder.forEach((symptomKey) => {
       expect(parsedPayload[symptomKey]).toEqual(false);
     });
   });

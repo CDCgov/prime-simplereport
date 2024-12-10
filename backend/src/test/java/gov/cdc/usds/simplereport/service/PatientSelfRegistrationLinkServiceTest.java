@@ -106,9 +106,9 @@ class PatientSelfRegistrationLinkServiceTest
     // soft-delete links
     _psrlService.updateRegistrationLink("some-new-facility-link", true);
     assertEquals(
-        true, _psrlService.getPatientRegistrationLink("some-new-facility-link").isDeleted());
+        true, _psrlService.getPatientRegistrationLink("some-new-facility-link").getIsDeleted());
     _psrlService.updateRegistrationLink("some-new-org-link", true);
-    assertEquals(true, _psrlService.getPatientRegistrationLink("some-new-org-link").isDeleted());
+    assertEquals(true, _psrlService.getPatientRegistrationLink("some-new-org-link").getIsDeleted());
   }
 
   @Test

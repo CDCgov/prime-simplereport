@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Alert from "./Alert";
+import "./MaintenanceBanner.scss";
 
 interface MaintenanceMode {
   active: boolean;
@@ -33,8 +34,13 @@ export const MaintenanceBanner: React.FC = () => {
   return (
     <>
       {maintenanceMode.active ? (
-        <div className="usa-site-alert usa-site-alert--emergency usa-site-alert--no-heading border-top border-base-lighter">
-          <Alert type="emergency" role="alert">
+        <div className="maintenance-alert-background border-top border-base-lighter">
+          <Alert
+            type="emergency"
+            role="alert"
+            className={"margin-left-auto margin-right-auto"}
+            bodyClassName={"maintenance-alert-body"}
+          >
             <strong>{maintenanceMode.header || "SimpleReport alert:"}</strong>{" "}
             {maintenanceMode.message}
           </Alert>

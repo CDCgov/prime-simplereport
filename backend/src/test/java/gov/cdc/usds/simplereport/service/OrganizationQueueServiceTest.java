@@ -176,17 +176,17 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     OrganizationQueueItem deletedQueueItem =
         _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), true);
 
-    assertThat(deletedQueueItem.isDeleted()).isTrue();
+    assertThat(deletedQueueItem.getIsDeleted()).isTrue();
   }
 
   @Test
   void undeletionQueuedOrg_sucessful() {
     OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
     createdQueueItem.setIsDeleted(true);
-    assertThat(createdQueueItem.isDeleted()).isTrue();
+    assertThat(createdQueueItem.getIsDeleted()).isTrue();
     OrganizationQueueItem undeletedItem =
         _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), false);
-    assertThat(undeletedItem.isDeleted()).isFalse();
+    assertThat(undeletedItem.getIsDeleted()).isFalse();
   }
 
   @Test

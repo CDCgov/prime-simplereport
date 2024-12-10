@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.properties.SupportEscalationProperties;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
@@ -35,6 +36,7 @@ import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.TenantDataAccessService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
+import gov.cdc.usds.simplereport.service.supportescalation.NoOpSupportEscalationService;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -113,9 +115,14 @@ import org.springframework.security.test.context.support.WithMockUser;
   OktaHealthIndicator.class,
   EmailService.class,
   SendGridDisabledConfiguration.class,
-  FeatureFlagsConfig.class
+  FeatureFlagsConfig.class,
+  NoOpSupportEscalationService.class
 })
-@EnableConfigurationProperties({InitialSetupProperties.class, AuthorizationProperties.class})
+@EnableConfigurationProperties({
+  InitialSetupProperties.class,
+  AuthorizationProperties.class,
+  SupportEscalationProperties.class
+})
 public class SliceTestConfiguration {
 
   private static final String DEFAULT_ROLE_PREFIX =

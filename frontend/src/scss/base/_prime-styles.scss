@@ -1148,12 +1148,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   box-shadow: inset 0 0 0 2px #c9c9c9 !important;
 }
 
-.usa-site-alert {
-  .usa-alert--emergency {
-    max-width: $site-max-width;
-  }
-}
-
 abbr.usa-hint.usa-hint--required {
   text-decoration: none;
 }

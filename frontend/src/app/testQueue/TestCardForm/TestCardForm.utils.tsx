@@ -27,6 +27,7 @@ export enum AOEFormOption {
   HIV = "HIV",
   SYPHILIS = "SYPHILIS",
   HEPATITIS_C = "HEPATITIS_C",
+  GONORRHEA = "GONORRHEA",
   NONE = "NONE",
 }
 
@@ -65,6 +66,7 @@ export function useFilteredDeviceTypes(facility: QueriedFacility) {
   const hivEnabled = useFeature("hivEnabled");
   const syphilisEnabled = useFeature("syphilisEnabled");
   const hepatitisCEnabled = useFeature("hepatitisCEnabled");
+  const gonorrheaEnabled = useFeature("gonorrheaEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
 
@@ -74,7 +76,6 @@ export function useFilteredDeviceTypes(facility: QueriedFacility) {
       MULTIPLEX_DISEASES.HIV
     );
   }
-
   if (!syphilisEnabled) {
     deviceTypes = filterDiseaseFromAllDevices(
       deviceTypes,
@@ -85,6 +86,12 @@ export function useFilteredDeviceTypes(facility: QueriedFacility) {
     deviceTypes = filterDiseaseFromAllDevices(
       deviceTypes,
       MULTIPLEX_DISEASES.HEPATITIS_C
+    );
+  }
+  if (!gonorrheaEnabled) {
+    deviceTypes = filterDiseaseFromAllDevices(
+      deviceTypes,
+      MULTIPLEX_DISEASES.GONORRHEA
     );
   }
   return deviceTypes;
@@ -208,6 +215,15 @@ export const useAOEFormOption = (
     devicesMap
       .get(testFormState.deviceId)
       ?.supportedDiseaseTestPerformed.filter(
+        (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.GONORRHEA
+      ).length === 1
+  ) {
+    return resultHasPositive ? AOEFormOption.GONORRHEA : AOEFormOption.NONE;
+  }
+  if (
+    devicesMap
+      .get(testFormState.deviceId)
+      ?.supportedDiseaseTestPerformed.filter(
         (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.HEPATITIS_C
       ).length === 1
   ) {
@@ -284,6 +300,11 @@ export const REQUIRED_AOE_QUESTIONS_BY_DISEASE: {
     AoeQuestionName.NO_SYMPTOMS,
   ],
   [AOEFormOption.HEPATITIS_C]: [
+    AoeQuestionName.PREGNANCY,
+    AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
+    AoeQuestionName.NO_SYMPTOMS,
+  ],
+  [AOEFormOption.GONORRHEA]: [
     AoeQuestionName.PREGNANCY,
     AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
     AoeQuestionName.NO_SYMPTOMS,

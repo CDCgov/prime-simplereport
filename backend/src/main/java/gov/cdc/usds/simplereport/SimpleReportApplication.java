@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.properties.ExperianProperties;
 import gov.cdc.usds.simplereport.properties.OrderingProviderProperties;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
+import gov.cdc.usds.simplereport.properties.SupportEscalationProperties;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,8 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
   SendGridProperties.class,
   OrderingProviderProperties.class,
   CorsProperties.class,
-  AzureStorageQueueReportingProperties.class
+  AzureStorageQueueReportingProperties.class,
+  SupportEscalationProperties.class
 })
 @EnableAsync
 @EnableScheduling

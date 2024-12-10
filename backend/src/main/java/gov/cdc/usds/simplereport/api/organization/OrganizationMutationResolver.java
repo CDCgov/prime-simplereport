@@ -193,7 +193,7 @@ public class OrganizationMutationResolver {
     // Only set user to be deleted if they are an active, without check mutation will fail.
     usersInOrgToBeUpdated.forEach(
         user -> {
-          if (!user.isDeleted()) {
+          if (!user.getIsDeleted()) {
             apiUserService.setIsDeleted(user.getInternalId(), deleted);
           }
         });

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
 /*
@@ -406,7 +406,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     CompletableFuture<Set<Person>> futurePatients =
         this._service.savePatients(content, secondFacilityId);
     ExecutionException caught = assertThrows(ExecutionException.class, futurePatients::get);
-    assertThat(caught.getCause().getClass()).isEqualTo(AccessDeniedException.class);
+    assertThat(caught.getCause().getClass()).isEqualTo(AuthorizationDeniedException.class);
   }
 
   private InputStream loadCsv(String csvFile) {

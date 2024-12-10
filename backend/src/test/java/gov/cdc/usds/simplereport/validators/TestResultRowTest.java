@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,7 +97,8 @@ class TestResultRowTest {
           "test_result_status",
           "specimen_type",
           "testing_lab_clia",
-          "genders_of_sexual_partners");
+          "genders_of_sexual_partners",
+          "patient_gender_identity");
 
   @BeforeEach
   public void init() {
@@ -164,6 +166,7 @@ class TestResultRowTest {
     validRowMap.put("comment", "Test Comment");
     validRowMap.put("test_result_status", "");
     validRowMap.put("genders_of_sexual_partners", "M, F, TM, TW");
+    validRowMap.put("patient_gender_identity", "F");
   }
 
   @Test
@@ -358,7 +361,10 @@ class TestResultRowTest {
             from(TestResultRow::getTestResultStatus).andThen(ValueOrError::getValue))
         .returns(
             validRowMap.get("genders_of_sexual_partners"),
-            from(TestResultRow::getGendersOfSexualPartners).andThen(ValueOrError::getValue));
+            from(TestResultRow::getGendersOfSexualPartners).andThen(ValueOrError::getValue))
+        .returns(
+            validRowMap.get("patient_gender_identity"),
+            from(TestResultRow::getPatientGenderIdentity).andThen(ValueOrError::getValue));
   }
 
   @Test
@@ -412,6 +418,7 @@ class TestResultRowTest {
     invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
     invalidIndividualFields.put("genders_of_sexual_partners", "ma, f");
+    invalidIndividualFields.put("patient_gender_identity", "fe");
     var testResultRow =
         new TestResultRow(
             invalidIndividualFields,
@@ -432,11 +439,8 @@ class TestResultRowTest {
 
   @Test
   void validatePositiveHivRequiredAoeFields() {
-    var missingHivRequiredAoeFields = validRowMap;
-    missingHivRequiredAoeFields.put("equipment_model_name", "HIV model");
-    missingHivRequiredAoeFields.put("test_performed_code", "80387-4");
-    missingHivRequiredAoeFields.put("specimen_type", "123456789");
-    missingHivRequiredAoeFields.put("test_result", "Detected");
+    Map<String, String> missingHivRequiredAoeFields =
+        getPositiveResultRowMap("HIV model", "80387-4");
     missingHivRequiredAoeFields.put("pregnant", "");
     missingHivRequiredAoeFields.put("genders_of_sexual_partners", "");
 
@@ -463,11 +467,8 @@ class TestResultRowTest {
 
   @Test
   void validatePositiveSyphilisRequiredAoeFields() {
-    var missingSyphilisRequiredAoeFields = validRowMap;
-    missingSyphilisRequiredAoeFields.put("equipment_model_name", "Syphilis model");
-    missingSyphilisRequiredAoeFields.put("test_performed_code", "80387-4");
-    missingSyphilisRequiredAoeFields.put("specimen_type", "123456789");
-    missingSyphilisRequiredAoeFields.put("test_result", "Detected");
+    Map<String, String> missingSyphilisRequiredAoeFields =
+        getPositiveResultRowMap("Syphilis model", "80387-4");
     missingSyphilisRequiredAoeFields.put("pregnant", "");
     missingSyphilisRequiredAoeFields.put("genders_of_sexual_partners", "");
     missingSyphilisRequiredAoeFields.put("previous_syphilis_diagnosis", "");
@@ -493,6 +494,79 @@ class TestResultRowTest {
             assertThat(message.getMessage())
                 .contains(
                     "This is required because the row contains a positive Syphilis test result."));
+  }
+
+  @Test
+  void validatePositiveHepatitisCRequiredAoeFields() {
+    Map<String, String> missingHepCRequiredAoeFields =
+        getPositiveResultRowMap("Hepatitis C Model", "40726-2");
+    missingHepCRequiredAoeFields.put("pregnant", "");
+    missingHepCRequiredAoeFields.put("genders_of_sexual_partners", "");
+    missingHepCRequiredAoeFields.put("symptomatic_for_disease", "");
+
+    ResultsUploaderCachingService resultsUploaderCachingService =
+        mock(ResultsUploaderCachingService.class);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("hepatitis c model|40726-2", TestDataBuilder.createDeviceType()));
+    when(resultsUploaderCachingService.getHepatitisCEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of("hepatitis c model|40726-2"));
+
+    TestResultRow testResultRow =
+        new TestResultRow(
+            missingHepCRequiredAoeFields,
+            resultsUploaderCachingService,
+            mock(FeatureFlagsConfig.class));
+
+    List<FeedbackMessage> actual = testResultRow.validateIndividualValues();
+
+    assertThat(actual).hasSize(3);
+    actual.forEach(
+        message ->
+            assertThat(message.getMessage())
+                .contains(
+                    "This is required because the row contains a positive Hepatitis C test result."));
+  }
+
+  @Test
+  void validatePositiveGonorrheaRequiredAoeFields() {
+    Map<String, String> missingGonorrheaRequiredAoeFields =
+        getPositiveResultRowMap("Gonorrhea Model", "5028-6");
+    missingGonorrheaRequiredAoeFields.put("pregnant", "");
+    missingGonorrheaRequiredAoeFields.put("genders_of_sexual_partners", "");
+    missingGonorrheaRequiredAoeFields.put("symptomatic_for_disease", "");
+
+    ResultsUploaderCachingService resultsUploaderCachingService =
+        mock(ResultsUploaderCachingService.class);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("gonorrhea model|5028-6", TestDataBuilder.createDeviceType()));
+    when(resultsUploaderCachingService.getGonorrheaEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of("gonorrhea model|5028-6"));
+
+    TestResultRow testResultRow =
+        new TestResultRow(
+            missingGonorrheaRequiredAoeFields,
+            resultsUploaderCachingService,
+            mock(FeatureFlagsConfig.class));
+
+    List<FeedbackMessage> actual = testResultRow.validateIndividualValues();
+
+    assertThat(actual).hasSize(3);
+    actual.forEach(
+        message ->
+            assertThat(message.getMessage())
+                .contains(
+                    "This is required because the row contains a positive Gonorrhea test result."));
+  }
+
+  @NotNull
+  private Map<String, String> getPositiveResultRowMap(
+      String deviceModelName, String testPerformedCode) {
+    Map<String, String> positiveResultRowMap = validRowMap;
+    positiveResultRowMap.put("equipment_model_name", deviceModelName);
+    positiveResultRowMap.put("test_performed_code", testPerformedCode);
+    positiveResultRowMap.put("specimen_type", "123456789");
+    positiveResultRowMap.put("test_result", "Detected");
+    return positiveResultRowMap;
   }
 
   private ResultsUploaderCachingService mockResultsUploaderCachingService() {

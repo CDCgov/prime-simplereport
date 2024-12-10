@@ -10,6 +10,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEth
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePartialUnkAddress;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePatientGenderIdentity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
@@ -288,6 +289,61 @@ class CsvValidatorUtilsTest {
   void invalidGendersOfSexualPartners() {
     ValueOrError genders = new ValueOrError("m, f, t, n", "genders_of_sexual_partners");
     assertThat(validateGendersOfSexualPartners(genders)).hasSize(1);
+  }
+
+  @Test
+  void validPatientGenderIdentity() {
+    assertThat(validatePatientGenderIdentity(new ValueOrError("f", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("m", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("nb", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("tm", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("tw", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("o", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("r", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("female", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("male", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(
+            validatePatientGenderIdentity(
+                new ValueOrError("non binary", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(
+            validatePatientGenderIdentity(new ValueOrError("nonbinary", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(
+            validatePatientGenderIdentity(new ValueOrError("trans man", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(
+            validatePatientGenderIdentity(
+                new ValueOrError("trans woman", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(validatePatientGenderIdentity(new ValueOrError("other", "patient_gender_identity")))
+        .isEmpty();
+    assertThat(
+            validatePatientGenderIdentity(new ValueOrError("refused", "patient_gender_identity")))
+        .isEmpty();
+  }
+
+  @Test
+  void invalidPatientGenderIdentity() {
+    assertThat(validatePatientGenderIdentity(new ValueOrError("t", "patient_gender_identity")))
+        .hasSize(1);
+    assertThat(validatePatientGenderIdentity(new ValueOrError("n", "patient_gender_identity")))
+        .hasSize(1);
+    assertThat(validatePatientGenderIdentity(new ValueOrError("ma", "patient_gender_identity")))
+        .hasSize(1);
+    assertThat(validatePatientGenderIdentity(new ValueOrError("fe", "patient_gender_identity")))
+        .hasSize(1);
+    assertThat(validatePatientGenderIdentity(new ValueOrError(" ", "patient_gender_identity")))
+        .hasSize(1);
   }
 
   @Test

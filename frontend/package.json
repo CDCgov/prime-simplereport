@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "22"
+    "node": "23"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
@@ -176,8 +176,8 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@faker-js/faker": "^8.1.0",
     "@graphql-codegen/cli": "^5.0.3",
-    "@graphql-codegen/typescript": "^4.1.0",
-    "@graphql-codegen/typescript-operations": "^4.3.0",
+    "@graphql-codegen/typescript": "^4.1.2",
+    "@graphql-codegen/typescript-operations": "^4.4.0",
     "@graphql-codegen/typescript-react-apollo": "^4.3.2",
     "@storybook/addon-a11y": "^8.3.6",
     "@storybook/addon-actions": "^8.3.6",
