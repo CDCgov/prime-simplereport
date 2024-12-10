@@ -34,7 +34,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @Column @Getter @Setter private String cliaNumber;
 
-  @ManyToOne
+  @ManyToOne(optional = false)
   @JoinColumn(name = "ordering_provider_id", nullable = false)
   @Getter
   private Provider orderingProvider;
