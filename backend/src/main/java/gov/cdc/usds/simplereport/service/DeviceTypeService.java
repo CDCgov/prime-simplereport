@@ -91,7 +91,7 @@ public class DeviceTypeService {
 
       updatedSpecimenTypes.forEach(
           specimenType -> {
-            if (specimenType.isDeleted()) {
+            if (specimenType.getIsDeleted()) {
               throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
             }
           });
@@ -141,7 +141,7 @@ public class DeviceTypeService {
 
     specimenTypes.forEach(
         specimenType -> {
-          if (specimenType.isDeleted()) {
+          if (specimenType.getIsDeleted()) {
             throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
           }
         });

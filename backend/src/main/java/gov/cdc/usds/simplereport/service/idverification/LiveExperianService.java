@@ -118,7 +118,7 @@ public class LiveExperianService
         // retry.
         // For more details:
         // https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response#prod-alert-when-an-experianauthexception-is-seen
-        if (e.getRawStatusCode() == RETRY_SERVER_ERROR_CODE) {
+        if (e.getStatusCode().value() == RETRY_SERVER_ERROR_CODE) {
           log.error("EXPERIAN TOKEN FETCH RETURNED 500 ERROR", e);
 
           if (retryOn500AuthCounter >= MAX_REFETCH_TRIES) {

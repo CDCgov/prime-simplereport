@@ -17,7 +17,7 @@ public abstract class EternalAuditedEntity extends AuditedEntity implements Eter
   @JsonIgnore // this is an artifact of serializing the data at test time, but also seems...
   // correct?
   @Override
-  public boolean isDeleted() {
+  public boolean getIsDeleted() {
     return isDeleted;
   }
 

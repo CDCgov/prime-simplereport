@@ -157,6 +157,11 @@ simple-report:
       - POST
   batch-size: 1000
   fhir-reporting-enabled: true
+  support-escalation:
+    enabled: false
+  production:
+    backend-url: ${SR_PROD_BACKEND_URL:http://localhost:8080}
+    devices-token: ${SR_PROD_DEVICES_TOKEN:sr-prod-devices-fake-token}
 twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:
@@ -172,9 +177,10 @@ datahub:
   jwt-scope: "simple_report.*.report"
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
   csv-upload-api-client: "simple_report.csvuploader"
-  csv-upload-api-fhir-client: "simple_report.fullelr"
+  csv-upload-api-fhir-client: "simple_report.fullelr-bulkuploader"
 features:
   oktaMigrationEnabled: false
+  gonorrheaEnabled: true
   hepatitisCEnabled: true
   syphilisEnabled: true
   hivBulkUploadEnabled: true

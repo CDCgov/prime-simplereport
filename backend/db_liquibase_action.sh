@@ -22,7 +22,7 @@ case "${action}" in
     
   rollback)
     echo "Rolling back to tag: ${rollback_tag}"
-    gradle liquibaseRollback -PliquibaseCommandValue="${rollback_tag}"
+    gradle liquibaseRollback -PliquibaseTag="${rollback_tag}"
     ;;
     
   *) # default condition

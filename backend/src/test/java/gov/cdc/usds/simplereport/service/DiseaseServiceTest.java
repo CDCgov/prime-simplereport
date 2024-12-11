@@ -59,6 +59,20 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
   }
 
   @Test
+  void getHepatitisC_successful() {
+    SupportedDisease hepC = _service.hepatitisC();
+    assertNotNull(hepC);
+    assertEquals(DiseaseService.HEPATITIS_C_NAME, hepC.getName());
+  }
+
+  @Test
+  void getGonorrhea_successful() {
+    SupportedDisease gonorrhea = _service.gonorrhea();
+    assertNotNull(gonorrhea);
+    assertEquals(DiseaseService.GONORRHEA_NAME, gonorrhea.getName());
+  }
+
+  @Test
   void getByName_successful() {
     SupportedDisease covidByName = _service.getDiseaseByName(COVID19_NAME);
     SupportedDisease covidFromRepo = repo.findByName(COVID19_NAME).orElse(null);
@@ -77,7 +91,10 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
         .containsEntry(_service.covid().getInternalId(), _service.covid())
         .containsEntry(_service.fluA().getInternalId(), _service.fluA())
         .containsEntry(_service.fluB().getInternalId(), _service.fluB())
-        .containsEntry(_service.rsv().getInternalId(), _service.rsv());
+        .containsEntry(_service.rsv().getInternalId(), _service.rsv())
+        .containsEntry(_service.hiv().getInternalId(), _service.hiv())
+        .containsEntry(_service.hepatitisC().getInternalId(), _service.hepatitisC())
+        .containsEntry(_service.gonorrhea().getInternalId(), _service.gonorrhea());
   }
 
   @Test
@@ -90,6 +107,9 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
         .contains(_service.covid())
         .contains(_service.fluA())
         .contains(_service.fluB())
-        .contains(_service.rsv());
+        .contains(_service.rsv())
+        .contains(_service.hiv())
+        .contains(_service.gonorrhea())
+        .contains(_service.hepatitisC());
   }
 }

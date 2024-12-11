@@ -18,6 +18,10 @@ export const useSupportedDiseaseList = () => {
       (d) => d !== MULTIPLEX_DISEASES.HEPATITIS_C
     );
   }
+  const gonorrheaEnabled = Boolean(useFeature("gonorrheaEnabled"));
+  if (!gonorrheaEnabled) {
+    allDiseases = allDiseases.filter((d) => d !== MULTIPLEX_DISEASES.GONORRHEA);
+  }
   return allDiseases;
 };
 

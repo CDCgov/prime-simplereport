@@ -59,6 +59,8 @@ module "simple_report_api" {
     DATAHUB_API_KEY                               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     DATAHUB_FHIR_KEY                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
     DATAHUB_SIGNING_KEY                           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_signing_key.id})"
+    SR_PROD_BACKEND_URL                           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_prod_backend_url.id})"
+    SR_PROD_DEVICES_TOKEN                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_prod_devices_token.id})"
     # true by default: can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows (and overrides) an identical declaration in application.yaml

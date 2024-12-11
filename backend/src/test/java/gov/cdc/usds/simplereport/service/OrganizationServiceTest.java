@@ -281,7 +281,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     Facility deletedFacility =
         _service.markFacilityAsDeleted(mistakeFacility.getInternalId(), true);
     // THEN
-    assertThat(deletedFacility.isDeleted()).isTrue();
+    assertThat(deletedFacility.getIsDeleted()).isTrue();
   }
 
   @Test
@@ -307,7 +307,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     Organization deletedOrganization =
         _service.markOrganizationAsDeleted(verifiedOrg.getInternalId(), true);
     // THEN
-    assertThat(deletedOrganization.isDeleted()).isTrue();
+    assertThat(deletedOrganization.getIsDeleted()).isTrue();
   }
 
   @Test

@@ -528,6 +528,16 @@ public class BulkUploadResultsToFhir {
           fhirConverter.convertToAOEGenderOfSexualPartnersObservation(abbrConvertedGenders));
     }
 
+    String patientGenderIdentity = row.getPatientGenderIdentity().getValue();
+    if (StringUtils.isNotBlank(patientGenderIdentity)) {
+      Map<String, String> genderAbbreviationMap = getGenderIdentityAbbreviationMap();
+      String abbrConvertedGenderIdentity =
+          genderAbbreviationMap.get(patientGenderIdentity.toUpperCase());
+      aoeObservations.addAll(
+          fhirConverter.convertToAOEGenderIdentityObservation(
+              testEventId, abbrConvertedGenderIdentity));
+    }
+
     var serviceRequest =
         fhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,

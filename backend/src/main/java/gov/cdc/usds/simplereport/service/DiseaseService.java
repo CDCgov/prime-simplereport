@@ -21,9 +21,11 @@ public class DiseaseService {
   public static final String FLU_B_NAME = "Flu B";
   public static final String FLU_A_AND_B_NAME = "Flu A and B";
   public static final String FLU_RNA_NAME = "Flu RNA";
+  public static final String HEPATITIS_C_NAME = "Hepatitis C";
   public static final String RSV_NAME = "RSV";
   public static final String HIV_NAME = "HIV";
   public static final String SYPHILIS_NAME = "Syphilis";
+  public static final String GONORRHEA_NAME = "Gonorrhea";
 
   private final DiseaseCacheService diseaseCacheService;
 
@@ -58,6 +60,14 @@ public class DiseaseService {
 
   public SupportedDisease fluB() {
     return getDiseaseByName(FLU_B_NAME);
+  }
+
+  public SupportedDisease hepatitisC() {
+    return getDiseaseByName(HEPATITIS_C_NAME);
+  }
+
+  public SupportedDisease gonorrhea() {
+    return getDiseaseByName(GONORRHEA_NAME);
   }
 
   public SupportedDisease rsv() {
