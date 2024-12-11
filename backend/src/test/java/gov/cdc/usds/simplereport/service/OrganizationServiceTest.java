@@ -536,16 +536,15 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
       assertThat(updatedFacility.getEmail()).isEqualTo("facility@dis.org");
       assertThat(updatedFacility.getAddress()).isEqualTo(newFacilityAddress);
 
-      assertThat(updatedFacility.getDefaultOrderingProvider().getNameInfo().getFirstName())
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getFirstName())
           .isEqualTo("Bill");
-      assertThat(updatedFacility.getDefaultOrderingProvider().getNameInfo().getMiddleName())
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getMiddleName())
           .isEqualTo("Foo");
-      assertThat(updatedFacility.getDefaultOrderingProvider().getNameInfo().getLastName())
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getLastName())
           .isEqualTo("Nye");
-      assertThat(updatedFacility.getDefaultOrderingProvider().getNameInfo().getSuffix())
-          .isEqualTo("Jr.");
-      assertThat(updatedFacility.getDefaultOrderingProvider().getProviderId()).isEqualTo("npi");
-      assertThat(updatedFacility.getDefaultOrderingProvider().getAddress())
+      assertThat(updatedFacility.getOrderingProvider().getNameInfo().getSuffix()).isEqualTo("Jr.");
+      assertThat(updatedFacility.getOrderingProvider().getProviderId()).isEqualTo("npi");
+      assertThat(updatedFacility.getOrderingProvider().getAddress())
           .isEqualTo(newOrderingProviderAddress);
 
       assertThat(updatedFacility.getDeviceTypes()).hasSize(2);

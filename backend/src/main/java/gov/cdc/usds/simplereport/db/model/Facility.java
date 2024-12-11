@@ -34,14 +34,8 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @Column @Getter @Setter private String cliaNumber;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "ordering_provider_id", nullable = false)
-  @Getter
-  private Provider orderingProvider;
-
   @ManyToOne
   @JoinColumn(name = "default_ordering_provider_id")
-  @Getter
   private Provider defaultOrderingProvider;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
@@ -79,12 +73,18 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.address = facilityBuilder.facilityAddress;
     this.telephone = facilityBuilder.phone;
     this.email = facilityBuilder.email;
-    this.orderingProvider = facilityBuilder.orderingProvider;
     this.defaultOrderingProvider = facilityBuilder.orderingProvider;
     this.orderingProviders.add(facilityBuilder.orderingProvider);
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
+  }
+
+  public Provider getOrderingProvider() {
+    if (defaultOrderingProvider != null) {
+      return defaultOrderingProvider;
+    }
+    return orderingProviders.stream().findAny().orElseThrow(IllegalStateException::new);
   }
 
   public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {

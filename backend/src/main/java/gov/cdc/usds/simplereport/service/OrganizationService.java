@@ -262,7 +262,7 @@ public class OrganizationService {
     facility.setEmail(email);
     facility.setAddress(facilityAddress);
 
-    Provider p = facility.getDefaultOrderingProvider();
+    Provider p = facility.getOrderingProvider();
     p.getNameInfo().setFirstName(orderingProviderName.getFirstName());
     p.getNameInfo().setMiddleName(orderingProviderName.getMiddleName());
     p.getNameInfo().setLastName(orderingProviderName.getLastName());

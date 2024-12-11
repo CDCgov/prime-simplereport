@@ -38,7 +38,7 @@ public class ApiFacility extends WrappedEntity<Facility> implements LocatedWrapp
   }
 
   public ApiProvider getOrderingProvider() {
-    return Optional.ofNullable(getWrapped().getDefaultOrderingProvider())
+    return Optional.ofNullable(getWrapped().getOrderingProvider())
         .map(ApiProvider::new)
         .orElse(null);
   }
