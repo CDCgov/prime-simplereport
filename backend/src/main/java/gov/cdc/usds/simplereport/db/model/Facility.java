@@ -89,7 +89,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     if (defaultOrderingProvider != null) {
       return defaultOrderingProvider;
     }
-    return orderingProviders.stream().findAny().orElseThrow(IllegalStateException::new);
+    return orderingProviders.iterator().next();
   }
 
   public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {
