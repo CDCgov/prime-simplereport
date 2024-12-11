@@ -298,7 +298,7 @@ const UnarchivePatient = () => {
         await fetchAndSetPatients(orgExternalId, currentPage);
         await fetchAndSetPatientsCount(orgExternalId);
         showSuccess("", "Patient successfully unarchived");
-      } catch (e) {
+      } catch {
         showError(
           "Please escalate this issue to the SimpleReport team.",
           "Error unarchiving patient"

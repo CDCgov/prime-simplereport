@@ -57,7 +57,7 @@ export class VersionService {
       localStorage.setItem(key, key);
       localStorage.removeItem(key);
       return true;
-    } catch (e: any) {
+    } catch {
       return false;
     }
   }
