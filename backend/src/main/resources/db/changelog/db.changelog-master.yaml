@@ -5697,6 +5697,24 @@ databaseChangeLog:
           - sql:
               sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Gonorrhea';
   - changeSet:
+      id: add-chlamydia-to-supported_disease-table
+      author: bobby@skyliight.digital
+      comment: Add chlamydia to the supported_disease table.
+      changes:
+        - tagDatabase:
+            tag: add-chlamydia-to-supported_disease-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'Chlamydia', 'LP14298-1')
+      rollback:
+        - sql:
+            sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Chlamydia';
+  - changeSet:
       id: create-facility_providers-table
       author: bobby@skylight.digital
       changes:
