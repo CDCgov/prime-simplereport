@@ -47,7 +47,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
       await onSave(updatedOrganization);
       // update default values so the isDirty check applies to current updated data
       reset({ ...orgData });
-    } catch (e) {
+    } catch {
       /* do nothing as the container component already displays error toast */
     }
   };

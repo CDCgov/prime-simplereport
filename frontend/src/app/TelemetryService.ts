@@ -70,7 +70,7 @@ export function isStaticFileToSkip(envelope: ITelemetryItem) {
     ) {
       return true; // file should be skipped
     }
-  } catch (e) {
+  } catch {
     /* do nothing and don't disrupt logging*/
   }
 }
@@ -118,7 +118,7 @@ export function sanitizeOktaToken(envelope: ITelemetryItem): void {
         envelope.ext.trace.name
       );
     }
-  } catch (e) {
+  } catch {
     /* do nothing and don't disrupt logging*/
   }
   return;
