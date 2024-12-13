@@ -1,6 +1,7 @@
 buildscript {
     dependencies {
         classpath 'org.liquibase:liquibase-core:4.29.1'
+        classpath "org.liquibase:liquibase-gradle-plugin:3.0.1"
     }
 }
 
