@@ -5626,7 +5626,6 @@ databaseChangeLog:
                     references: role
         - sql: |
             GRANT SELECT ON ${database.defaultSchemaName}.api_user_role TO ${noPhiUsername};
-
   - changeSet:
       id: add-timer-started-at-to-test_order-table
       author: ggs2@cdc.gov
@@ -5643,7 +5642,6 @@ databaseChangeLog:
         - dropColumn:
             tableName: test_order
             columnName: timer_started_at
-
   - changeSet:
       id: add-hepatitis-c-to-supported_disease-table
       author: ggs2@cdc.gov
@@ -5662,7 +5660,6 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Hepatitis-C';
-
   - changeSet:
       id: update-hepatitis-c-naming-in-supported-disease-table
       author: ggs2@cdc.gov
@@ -5681,7 +5678,6 @@ databaseChangeLog:
               UPDATE ${database.defaultSchemaName}.supported_disease
               SET name = 'Hepatitis-C'
               WHERE name = 'Hepatitis C' AND loinc = 'LP14400-3'
-
   - changeSet:
         id: add-gonorrhea-to-supported_disease-table
         author: ggs2@cdc.gov
@@ -5700,7 +5696,6 @@ databaseChangeLog:
         rollback:
           - sql:
               sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Gonorrhea';
-
   - changeSet:
       id: add-chlamydia-to-supported_disease-table
       author: bobby@skyliight.digital
@@ -5719,3 +5714,93 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'Chlamydia';
+  - changeSet:
+      id: create-facility_providers-table
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-facility-providers-table
+        - createTable:
+            tableName: facility_providers
+            remarks: Join table for mapping multiple providers to a facility.
+            columns:
+              - column:
+                  name: facility_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_providers__facility
+                    references: facility
+              - column:
+                  name: provider_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_providers__provider
+                    references: provider
+  - changeSet:
+      id: grant-facility_providers-access-to-metabase-user
+      author: tnd8@cdc.gov
+      changes:
+        - sql:
+            sql: |
+              GRANT SELECT ON ${database.defaultSchemaName}.facility_providers TO ${noPhiUsername};
+      rollback:
+        - sql:
+            sql: |
+              REVOKE SELECT ON TABLE ${database.defaultSchemaName}.facility_providers FROM ${noPhiUsername};
+  - changeSet:
+      id: add-default-provider
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-default-provider-col
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_ordering_provider_id
+                  remarks: The default ordering provider for tests at this facility.
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk__facility__default_ordering_provider
+                    references: provider(internal_id)
+  - changeSet:
+      id: populate-facility-providers-table
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-facility-providers-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.facility_providers (
+                facility_id,
+                provider_id
+              )
+              SELECT
+                internal_id,
+                ordering_provider_id
+              FROM ${database.defaultSchemaName}.facility;
+      rollback:
+        - sql:
+            sql: |
+              TRUNCATE TABLE ${database.defaultSchemaName}.facility_providers;
+  - changeSet:
+      id: populate-default-provider-column
+      author: bobby@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: populate-default-provider-column
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.facility
+              SET
+                default_ordering_provider_id = facility.ordering_provider_id
+              WHERE facility.default_ordering_provider_id is NULL;
+      rollback:
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.facility
+              SET
+                default_ordering_provider_id = NULL
+              WHERE facility.default_ordering_provider_id is NOT NULL;
