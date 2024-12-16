@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.CHLAMYDIA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
@@ -177,6 +178,12 @@ public class ResultsUploaderCachingService {
     return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.GONORRHEA_NAME);
   }
 
+  @Cacheable(CHLAMYDIA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  public Set<String> getChlamydiaEquipmentModelAndTestPerformedCodeSet() {
+    log.info("generating chlamydiaEquipmentModelAndTestPerformedCodeSet cache");
+    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.CHLAMYDIA_NAME);
+  }
+
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
   @Caching(
       evict = {
@@ -219,6 +226,18 @@ public class ResultsUploaderCachingService {
   public void cacheGonorrheaEquipmentModelAndTestPerformedCodeSet() {
     log.info("clear and generate gonorrheaEquipmentModelAndTestPerformedCodeSet cache");
     getGonorrheaEquipmentModelAndTestPerformedCodeSet();
+  }
+
+  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
+  @Caching(
+      evict = {
+        @CacheEvict(
+            value = CHLAMYDIA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
+            allEntries = true)
+      })
+  public void cacheChlamydiaEquipmentModelAndTestPerformedCodeSet() {
+    log.info("clear and generate chlamydiaEquipmentModelAndTestPerformedCodeSet cache");
+    getChlamydiaEquipmentModelAndTestPerformedCodeSet();
   }
 
   @Cacheable(SNOMED_TO_SPECIMEN_NAME_MAP)
