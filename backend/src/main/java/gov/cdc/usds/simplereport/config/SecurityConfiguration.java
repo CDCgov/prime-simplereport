@@ -84,6 +84,9 @@ public class SecurityConfiguration {
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
                     .permitAll()
+                    // Devices endpoint authorization is handled at the service or controller level
+                    .requestMatchers(HttpMethod.GET, WebConfiguration.DEVICES + "/**")
+                    .permitAll()
                     // Anything else goes through Okta
                     .anyRequest()
                     .authenticated())
