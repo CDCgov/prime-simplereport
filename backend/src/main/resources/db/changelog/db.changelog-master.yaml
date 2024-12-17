@@ -5804,3 +5804,36 @@ databaseChangeLog:
               SET
                 default_ordering_provider_id = NULL
               WHERE facility.default_ordering_provider_id is NOT NULL;
+  - changeSet:
+      id: drop-ordering-provider-column
+      author: tnd8@cdc.gov
+      changes:
+        - dropColumn:
+            columnName: ordering_provider_id
+            tableName: facility
+      rollback:
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: ordering_provider_id
+                  type: uuid
+                  remarks: The healthcare provider who orders tests at this facility.
+                  constraints:
+                    foreignKeyName: fk__facility__ordering_provider
+                    referencedTableName: provider
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.facility
+              SET ordering_provider_id = COALESCE(
+                  default_ordering_provider_id, 
+                  (
+                    SELECT provider_id
+                    FROM ${database.defaultSchemaName}.facility_providers
+                    WHERE facility_providers.facility_id = facility.internal_id
+                    LIMIT 1
+                  )
+                );
+        - addNotNullConstraint:
+            tableName: facility
+            columnName: ordering_provider_id
