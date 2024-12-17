@@ -182,7 +182,7 @@ public class UserAuthorizationVerifier {
         Optional<Facility> fac =
             _facilityRepo.findByOrganizationAndInternalIdAllowDeleted(
                 orgRoles.getOrganization(), facilityId);
-        return fac.isPresent() && fac.get().isDeleted();
+        return fac.isPresent() && fac.get().getIsDeleted();
       }
     }
     return false;

@@ -127,7 +127,7 @@ const PendingOrganizations = ({
         },
       });
       updatedOrg = mutationResponse as EditOrgMutationResponse;
-    } catch (e: any) {
+    } catch {
       return Promise.reject();
     }
     refetch();
@@ -157,7 +157,7 @@ const PendingOrganizations = ({
         externalIdToVerify = updatedOrgExternalId;
       }
       await submitIdentityVerified(externalIdToVerify, externalNameToVerify);
-    } catch (e: any) {
+    } catch {
       return Promise.reject();
     }
     refetch();
@@ -183,7 +183,7 @@ const PendingOrganizations = ({
   const handleDeletionOrg = async (o: PendingOrganization) => {
     try {
       await submitDeletion(o.externalId, true, o.name);
-    } catch (e) {
+    } catch {
       updateLocalState(() => initialState);
       return Promise.reject();
     }

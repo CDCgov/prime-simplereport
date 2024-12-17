@@ -235,7 +235,7 @@ const ManageUsers: React.FC<Props> = ({
       updateShowAddUserModal(false);
 
       setIsUpdating(false);
-    } catch (e: any) {
+    } catch {
       setIsUpdating(false);
     }
   };
@@ -276,7 +276,7 @@ const ManageUsers: React.FC<Props> = ({
       });
       showSuccess("", `User email address changed to ${emailAddress}`);
       await refetchUser();
-    } catch (e: any) {}
+    } catch {}
   };
 
   const handleResetUserPassword = async (userId: string) => {

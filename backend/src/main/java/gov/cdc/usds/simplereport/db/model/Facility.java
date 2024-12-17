@@ -9,6 +9,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,9 +36,11 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "ordering_provider_id", nullable = false)
-  @Getter
-  @Setter
   private Provider orderingProvider;
+
+  @ManyToOne
+  @JoinColumn(name = "default_ordering_provider_id")
+  private Provider defaultOrderingProvider;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_type_id")
@@ -47,6 +51,14 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @JoinColumn(name = "default_specimen_type_id")
   @Getter
   private SpecimenType defaultSpecimenType;
+
+  @OneToMany
+  @JoinTable(
+      name = "facility_providers",
+      joinColumns = @JoinColumn(name = "facility_id"),
+      inverseJoinColumns = @JoinColumn(name = "provider_id"))
+  @NotEmpty(message = "Minimum 1 ordering provider is required")
+  private Set<Provider> orderingProviders = new HashSet<>();
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
@@ -66,9 +78,18 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.telephone = facilityBuilder.phone;
     this.email = facilityBuilder.email;
     this.orderingProvider = facilityBuilder.orderingProvider;
+    this.defaultOrderingProvider = facilityBuilder.orderingProvider;
+    this.orderingProviders.add(facilityBuilder.orderingProvider);
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
+  }
+
+  public Provider getOrderingProvider() {
+    if (defaultOrderingProvider != null) {
+      return defaultOrderingProvider;
+    }
+    return orderingProviders.iterator().next();
   }
 
   public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {
@@ -89,7 +110,9 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public List<DeviceType> getDeviceTypes() {
-    return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+    return configuredDeviceTypes.stream()
+        .filter(e -> !e.getIsDeleted())
+        .collect(Collectors.toList());
   }
 
   public void removeDeviceType(DeviceType deletedDevice) {
