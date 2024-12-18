@@ -67,6 +67,15 @@ public interface OktaRepository {
 
   Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org);
 
+  /**
+   * @param org Organization being queried
+   * @param pageNumber Starts at page number 0
+   * @param pageSize Number of results per page
+   * @return Map of usernames to the user status in Okta
+   */
+  Map<String, UserStatus> getPagedUsersWithStatusForOrganization(
+      Organization org, int pageNumber, int pageSize);
+
   void createOrganization(Organization org);
 
   void activateOrganization(Organization org);
@@ -84,6 +93,8 @@ public interface OktaRepository {
   Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 
   Integer getUsersInSingleFacility(Facility facility);
+
+  Integer getUsersInOrganization(Organization org);
 
   PartialOktaUser findUser(String username);
 
