@@ -29,6 +29,24 @@ query GetUsersAndStatus {
   }
 }
 
+query GetUsersAndStatusPage(
+  $pageNumber: Int
+) {
+  usersWithStatusPage(
+    pageNumber: $pageNumber
+  ) {
+    content {
+      id
+      firstName
+      middleName
+      lastName
+      email
+      status
+    }
+    totalElements
+  }
+}
+
 mutation ResendActivationEmail($id: ID!) {
   resendActivationEmail(id: $id) {
     id
