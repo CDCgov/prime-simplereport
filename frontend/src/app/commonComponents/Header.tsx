@@ -203,7 +203,7 @@ const Header: React.FC<{}> = () => {
       mobileDisplay: false,
     },
     {
-      url: "/settings",
+      url: "/settings/users/1",
       displayPermissions: true,
       onClick: () => setMenuVisible(false),
       className: getNavItemClassName,
