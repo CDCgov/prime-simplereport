@@ -660,6 +660,39 @@ class LiveOktaRepositoryTest {
   }
 
   @Test
+  void getPagedUsersWithStatusForOrganization() {
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId() + ":NO_ACCESS";
+
+    var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
+    var mockGroupProfile = mock(GroupProfile.class);
+    var mockUser = mock(User.class);
+    PagedList<User> mockUserList = new PagedList<>(List.of(mockUser), "", "", null);
+    var mockUserProfile = mock(UserProfile.class);
+    when(groupApi.listGroups(
+            eq(groupProfilePrefix),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull()))
+        .thenReturn(mockGroupList);
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
+    when(mockGroup.getId()).thenReturn("1234");
+    when(groupApi.listGroupUsers(eq("1234"), any(), any())).thenReturn(mockUserList);
+    when(mockUser.getProfile()).thenReturn(mockUserProfile);
+    when(mockUserProfile.getLogin()).thenReturn("email@example.com");
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+
+    var actual = _repo.getPagedUsersWithStatusForOrganization(org, 0, 10);
+    assertEquals(Map.of("email@example.com", UserStatus.ACTIVE), actual);
+  }
+
+  @Test
   void updateUserPrivileges() {
     var username = "fraud@example.com";
     var org = new Organization("orgName", "orgType", "1", true);
