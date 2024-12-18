@@ -5808,6 +5808,8 @@ databaseChangeLog:
       id: drop-ordering-provider-column
       author: tnd8@cdc.gov
       changes:
+        - tagDatabase:
+            tag: facility-supports-multiple-providers
         - dropColumn:
             columnName: ordering_provider_id
             tableName: facility
