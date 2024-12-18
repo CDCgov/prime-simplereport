@@ -29,7 +29,7 @@ const Settings = () => {
             path={"self-registration"}
             element={<ManageSelfRegistrationLinksContainer />}
           />
-          <Route path="/" element={<ManageUsersContainer />} />
+          <Route path="/:pageNumber" element={<ManageUsersContainer />} />
         </Routes>
       </div>
     </div>

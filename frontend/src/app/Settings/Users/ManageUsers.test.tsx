@@ -362,6 +362,9 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={updateUserName}
             updateUserEmail={updateUserEmail}
+            currentPage={1}
+            entriesPerPage={10}
+            totalEntries={3}
           />
         </TestContainer>
       );
@@ -773,6 +776,9 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
+            totalEntries={0}
+            entriesPerPage={10}
+            currentPage={1}
           />
         </TestContainer>
       );
@@ -835,6 +841,9 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
+            totalEntries={2}
+            entriesPerPage={10}
+            currentPage={1}
           />
         </TestContainer>
       );
@@ -875,6 +884,9 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
+            totalEntries={2}
+            entriesPerPage={10}
+            currentPage={1}
           />
         </TestContainer>
       );
@@ -916,6 +928,9 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
+            totalEntries={2}
+            entriesPerPage={10}
+            currentPage={1}
           />
         </TestContainer>
       );
@@ -1013,6 +1028,9 @@ describe("ManageUsers", () => {
         resendUserActivationEmail={resendUserActivationEmail}
         updateUserName={() => Promise.resolve()}
         updateUserEmail={() => Promise.resolve()}
+        totalEntries={3}
+        entriesPerPage={10}
+        currentPage={1}
       />
     );
     render(

@@ -15,7 +15,7 @@ import { cloneDeep } from "lodash";
 
 import {
   GetUserDocument,
-  GetUsersAndStatusDocument,
+  GetUsersAndStatusPageDocument,
 } from "../../../generated/graphql";
 import {
   ORG_ADMIN_REACTIVATE_COPY,
@@ -101,13 +101,18 @@ describe("ManageUsersContainer", () => {
   const mocks: MockedResponse[] = [
     {
       request: {
-        operationName: "GetUsersAndStatus",
-        query: GetUsersAndStatusDocument,
-        variables: {},
+        operationName: "GetUsersAndStatusPage",
+        query: GetUsersAndStatusPageDocument,
+        variables: {
+          pageNumber: 0,
+        },
       },
       result: {
         data: {
-          usersWithStatus: mockedUsersWithStatus,
+          usersWithStatusPage: {
+            totalElements: 6,
+            content: mockedUsersWithStatus,
+          },
         },
       },
     },
@@ -149,13 +154,18 @@ describe("ManageUsersContainer", () => {
   const supendedUserMocks: MockedResponse[] = [
     {
       request: {
-        operationName: "GetUsersAndStatus",
-        query: GetUsersAndStatusDocument,
-        variables: {},
+        operationName: "GetUsersAndStatusPage",
+        query: GetUsersAndStatusPageDocument,
+        variables: {
+          pageNumber: 0,
+        },
       },
       result: {
         data: {
-          usersWithStatus: mockedUsersWithStatus,
+          usersWithStatusPage: {
+            totalElements: 6,
+            content: mockedUsersWithStatus,
+          },
         },
       },
     },

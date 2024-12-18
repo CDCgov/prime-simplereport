@@ -408,6 +408,29 @@ exports[`ManageUsersContainer loads the component and displays users successfull
           </div>
         </div>
       </div>
+      <div
+        class="grid-row"
+      >
+        <nav
+          aria-label="Pagination"
+          class="usa-pagination"
+          role="navigation"
+        >
+          <ol>
+            <li>
+              <a
+                aria-label="Page 1"
+                class="is-active"
+                href="/settings/1"
+              >
+                <span>
+                  1
+                </span>
+              </a>
+            </li>
+          </ol>
+        </nav>
+      </div>
     </div>
   </div>
 </div>
