@@ -23,7 +23,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
     steps:
       - uses: actions/checkout@v4
-      - uses: azure/login@v2.2.0
+      - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Slot swap to previous release

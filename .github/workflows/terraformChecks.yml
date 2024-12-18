@@ -68,7 +68,7 @@ jobs:
         if: ${{ github.actor == 'dependabot[bot]' }}
         run: |
           true
-      - uses: azure/login@v2.2.0
+      - uses: azure/login@v2
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
