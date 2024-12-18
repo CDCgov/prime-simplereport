@@ -11,6 +11,7 @@ import {
   UserPermission,
 } from "../../../generated/graphql";
 import UserHeading from "../../commonComponents/UserDetails/UserHeading";
+import Pagination from "../../commonComponents/Pagination";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
@@ -39,6 +40,9 @@ interface Props {
   reactivateUser: (variables: any) => Promise<any>;
   resendUserActivationEmail: (variables: any) => Promise<any>;
   getUsers: () => Promise<ApolloQueryResult<GetUsersAndStatusQuery>>;
+  currentPage: number;
+  totalEntries: number;
+  entriesPerPage: number;
 }
 
 export type LimitedUsers = { [id: string]: LimitedUser };
@@ -92,6 +96,9 @@ const ManageUsers: React.FC<Props> = ({
   reactivateUser,
   resendUserActivationEmail,
   getUsers,
+  currentPage,
+  totalEntries,
+  entriesPerPage,
 }) => {
   const [userWithPermissions, updateUserWithPermissions] =
     useState<SettingsUser | null>();
@@ -500,6 +507,14 @@ const ManageUsers: React.FC<Props> = ({
                 onContinue={() => handleContinueChangeActiveUser()}
               />
             )}
+          </div>
+          <div className="grid-row">
+            <Pagination
+              baseRoute={"/settings"}
+              totalEntries={totalEntries}
+              entriesPerPage={entriesPerPage}
+              currentPage={currentPage}
+            ></Pagination>
           </div>
         </div>
       )}
