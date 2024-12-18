@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
+import static gov.cdc.usds.simplereport.service.ApiUserService.DEFAULT_OKTA_USER_PAGE_SIZE;
+
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -9,6 +11,7 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
@@ -36,6 +39,14 @@ public class UserResolver {
   @QueryMapping
   public List<ApiUserWithStatus> usersWithStatus() {
     return _userService.getUsersAndStatusInCurrentOrg();
+  }
+
+  @QueryMapping
+  public Page<ApiUserWithStatus> usersWithStatusPage(@Argument int pageNumber) {
+    if (pageNumber < 0) {
+      pageNumber = ApiUserService.DEFAULT_OKTA_USER_PAGE_OFFSET;
+    }
+    return _userService.getPagedUsersAndStatusInCurrentOrg(pageNumber, DEFAULT_OKTA_USER_PAGE_SIZE);
   }
 
   @QueryMapping

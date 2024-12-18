@@ -46,6 +46,9 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,6 +84,8 @@ public class ApiUserService {
   @Autowired private DbOrgRoleClaimsService _dbOrgRoleClaimsService;
 
   @Autowired private FeatureFlagsConfig _featureFlagsConfig;
+  public static final int DEFAULT_OKTA_USER_PAGE_SIZE = 10;
+  public static final int DEFAULT_OKTA_USER_PAGE_OFFSET = 0;
 
   private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
     log.info("User with id={} updated by user with id={}", authorId, updatedUserId);
@@ -613,6 +618,24 @@ public class ApiUserService {
       usersInOrg = _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
     }
     return usersInOrg;
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public Page<ApiUserWithStatus> getPagedUsersAndStatusInCurrentOrg(int pageNumber, int pageSize) {
+    Organization org = _orgService.getCurrentOrganization();
+
+    final Map<String, UserStatus> emailsToStatus =
+        _oktaRepo.getPagedUsersWithStatusForOrganization(org, pageNumber, pageSize);
+    List<ApiUser> users = _apiUserRepo.findAllByLoginEmailInOrderByName(emailsToStatus.keySet());
+    List<ApiUserWithStatus> userWithStatusList =
+        users.stream()
+            .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
+            .toList();
+
+    Integer userCountInOrg = _oktaRepo.getUsersInOrganization(org);
+    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+
+    return new PageImpl<>(userWithStatusList, pageRequest, userCountInOrg);
   }
 
   // To be addressed in #8108

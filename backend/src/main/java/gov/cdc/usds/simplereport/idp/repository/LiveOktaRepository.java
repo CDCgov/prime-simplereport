@@ -226,6 +226,19 @@ public class LiveOktaRepository implements OktaRepository {
         .collect(Collectors.toMap(u -> u.getProfile().getLogin(), User::getStatus));
   }
 
+  @Override
+  public Map<String, UserStatus> getPagedUsersWithStatusForOrganization(
+      Organization org, int pageNumber, int pageSize) {
+    Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
+    int afterIndex = pageNumber * pageSize;
+    List<User> groupUsers =
+        groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), String.valueOf(afterIndex), pageSize);
+    return groupUsers.stream()
+        .collect(
+            Collectors.toMap(
+                u -> Objects.requireNonNull(u.getProfile()).getLogin(), User::getStatus));
+  }
+
   private List<User> getAllUsersForOrg(Organization org) {
     PagedList<User> pagedUserList = new PagedList<>();
     List<User> allUsers = new ArrayList<>();
@@ -658,25 +671,35 @@ public class LiveOktaRepository implements OktaRepository {
         getUserOrThrowError(username, "Cannot get org external ID for nonexistent user"));
   }
 
-  public Integer getUsersInSingleFacility(Facility facility) {
-    String facilityAccessGroupName =
-        generateFacilityGroupName(
-            facility.getOrganization().getExternalId(), facility.getInternalId());
+  private Integer getUsersCountInOktaGroup(String groupName) {
+    List<Group> groupList =
+        groupApi.listGroups(groupName, null, null, 1, "stats", null, null, null);
 
-    List<Group> facilityAccessGroup =
-        groupApi.listGroups(facilityAccessGroupName, null, null, 1, "stats", null, null, null);
-
-    if (facilityAccessGroup.isEmpty()) {
+    if (groupList.isEmpty()) {
       return 0;
     }
 
     try {
       LinkedHashMap<String, Object> stats =
-          (LinkedHashMap) facilityAccessGroup.get(0).getEmbedded().get("stats");
+          (LinkedHashMap) groupList.get(0).getEmbedded().get("stats");
       return ((Integer) stats.get("usersCount"));
     } catch (NullPointerException e) {
       throw new BadRequestException("Unable to retrieve okta group stats", e);
     }
+  }
+
+  public Integer getUsersInSingleFacility(Facility facility) {
+    String facilityAccessGroupName =
+        generateFacilityGroupName(
+            facility.getOrganization().getExternalId(), facility.getInternalId());
+
+    return getUsersCountInOktaGroup(facilityAccessGroupName);
+  }
+
+  public Integer getUsersInOrganization(Organization org) {
+    String orgDefaultGroupName =
+        generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
+    return getUsersCountInOktaGroup(orgDefaultGroupName);
   }
 
   public PartialOktaUser findUser(String username) {
