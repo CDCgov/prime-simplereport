@@ -17,6 +17,9 @@ public class CachingConfig {
 
   public static final String GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
       "gonorrheaEquipmentModelAndTestPerformedCodeSet";
+
+  public static final String CHLAMYDIA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
+      "chlamydiaEquipmentModelAndTestPerformedCodeSet";
   public static final String HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
       "hivEquipmentModelAndTestPerformedCodeSet";
   public static final String SYPHILIS_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
@@ -36,6 +39,7 @@ public class CachingConfig {
         GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         SYPHILIS_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
+        CHLAMYDIA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP,
         SPECIMEN_NAME_TO_SNOMED_MAP,
         SNOMED_TO_SPECIMEN_NAME_MAP,
