@@ -116,7 +116,10 @@ describe("Conducting a COVID test from:", () => {
         cy.contains("label", "Yes").click();
       });
 
-    cy.contains("legend", "Is the patient currently experiencing or showing signs of symptoms?")
+    cy.contains(
+      "legend",
+      "Is the patient currently experiencing or showing signs of symptoms?",
+    )
       .next("div")
       .within(() => {
         cy.contains("label", "No").click();
@@ -126,7 +129,10 @@ describe("Conducting a COVID test from:", () => {
       "not.exist",
     );
 
-    cy.contains("legend", "Is the patient currently experiencing or showing signs of symptoms?")
+    cy.contains(
+      "legend",
+      "Is the patient currently experiencing or showing signs of symptoms?",
+    )
       .next("div")
       .within(() => {
         cy.contains("label", "Yes").click();
@@ -187,7 +193,10 @@ describe("Conducting a COVID test from:", () => {
         cy.contains("label", "No").click();
       });
 
-    cy.contains("legend", "Is the patient currently experiencing or showing signs of symptoms?")
+    cy.contains(
+      "legend",
+      "Is the patient currently experiencing or showing signs of symptoms?",
+    )
       .next("div")
       .within(() => {
         cy.contains("label", "No").click();
@@ -253,7 +262,10 @@ describe("Conducting a COVID test from:", () => {
         cy.contains("label", "No").click();
       });
 
-    cy.contains("legend", "Is the patient currently experiencing or showing signs of symptoms?")
+    cy.contains(
+      "legend",
+      "Is the patient currently experiencing or showing signs of symptoms?",
+    )
       .next("div")
       .within(() => {
         cy.contains("label", "No").click();
