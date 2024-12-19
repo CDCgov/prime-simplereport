@@ -47,7 +47,10 @@ public class DbOrgRoleClaimsService {
   public OrganizationRoleClaims getOrganizationRoleClaims(ApiUser user) {
     Set<Organization> orgs = user.getOrganizations();
     if (orgs.size() != 1) {
-      log.error("Misconfigured organizations in DB for User ID: {}", user.getInternalId());
+      log.error(
+          "Misconfigured organizations in DB for User ID: {}. Number of organizations for user was: {}",
+          user.getInternalId(),
+          orgs.size());
       throw new MisconfiguredUserException();
     }
     Set<OrganizationRole> roles = user.getRoles();
