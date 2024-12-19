@@ -1,5 +1,5 @@
 FROM alpine:3.21
-RUN apk --no-cache add postgresql14-client
+RUN apk --no-cache add postgresql15-client
 RUN apk add --no-cache bash
 ARG UID=10001
 RUN adduser \
