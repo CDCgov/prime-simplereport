@@ -14,7 +14,7 @@ exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Us
       >
         <a
           class=""
-          href="/settings/1"
+          href="/settings/users/1"
         >
           Manage users
         </a>
