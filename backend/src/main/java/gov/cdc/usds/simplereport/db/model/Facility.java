@@ -34,10 +34,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @Column @Getter @Setter private String cliaNumber;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "ordering_provider_id", nullable = false)
-  private Provider orderingProvider;
-
   @ManyToOne
   @JoinColumn(name = "default_ordering_provider_id")
   private Provider defaultOrderingProvider;
@@ -77,7 +73,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.address = facilityBuilder.facilityAddress;
     this.telephone = facilityBuilder.phone;
     this.email = facilityBuilder.email;
-    this.orderingProvider = facilityBuilder.orderingProvider;
     this.defaultOrderingProvider = facilityBuilder.orderingProvider;
     this.orderingProviders.add(facilityBuilder.orderingProvider);
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
