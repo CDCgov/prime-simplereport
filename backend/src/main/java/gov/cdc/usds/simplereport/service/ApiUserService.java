@@ -638,6 +638,33 @@ public class ApiUserService {
     return new PageImpl<>(userWithStatusList, pageRequest, userCountInOrg);
   }
 
+  public Page<ApiUserWithStatus> searchUsersAndStatusInCurrentOrgPaged(
+      int pageNumber, int pageSize, String searchQuery) {
+    List<ApiUserWithStatus> allUsers = getUsersAndStatusInCurrentOrg();
+
+    List<ApiUserWithStatus> filteredUsersList =
+        allUsers.stream()
+            .filter(
+                u -> {
+                  String firstName =
+                      u.getFirstName() == null ? "" : String.format("%s ", u.getFirstName());
+                  String middleName =
+                      u.getMiddleName() == null ? "" : String.format("%s ", u.getMiddleName());
+                  String fullName = firstName + middleName + u.getLastName();
+                  return fullName.toLowerCase().contains(searchQuery.toLowerCase());
+                })
+            .toList();
+
+    int totalResults = filteredUsersList.size();
+    int startIndex = pageNumber * pageSize;
+    int endIndex = Math.min((startIndex + pageSize), filteredUsersList.size());
+
+    List<ApiUserWithStatus> pageContent = filteredUsersList.subList(startIndex, endIndex);
+    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+
+    return new PageImpl<>(pageContent, pageRequest, totalResults);
+  }
+
   // To be addressed in #8108
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<ApiUserWithStatus> getUsersAndStatusInCurrentOrg() {
