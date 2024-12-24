@@ -92,6 +92,9 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_ACCESS_FACILITY =
       "@" + AUTHORIZER_BEAN + ".userCanAccessFacility(#facilityId)";
 
+  private static final String SPEL_CAN_ACCESS_PROVIDER =
+      "@" + AUTHORIZER_BEAN + ".userCanAccessProvider(#providerInternalId)";
+
   private static final String SPEL_CAN_VIEW_PATIENT =
       "@" + AUTHORIZER_BEAN + ".userCanViewPatient(#patient)";
 
@@ -282,6 +285,22 @@ public class AuthorizationConfiguration {
   @Target(METHOD)
   @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_EDIT_FACILITY)
   public @interface RequirePermissionEditFacility {}
+
+  /**
+   * Require the current user to have the {@link UserPermission#EDIT_FACILITY} permission and have
+   * access to the provider with UUID {@code providerInternalId}.
+   *
+   * <p>NOTE: any method with this annotation must have a parameter {@code providerInternalId}.
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_EDIT_FACILITY
+          + " && "
+          + SPEL_CAN_ACCESS_PROVIDER)
+  public @interface RequirePermissionEditProvider {}
 
   /** Require the current user to have the {@link UserPermission#EDIT_ORGANIZATION} permission. */
   @Retention(RUNTIME)

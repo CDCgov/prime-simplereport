@@ -7,6 +7,11 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 @Entity
@@ -19,6 +24,15 @@ public class Provider extends EternalAuditedEntity implements PersonEntity, Loca
 
   @Embedded private StreetAddress address;
   @Column private String telephone;
+
+  @Setter
+  @Getter
+  @ManyToOne
+  @JoinTable(
+      name = "facility_providers",
+      joinColumns = @JoinColumn(name = "provider_id"),
+      inverseJoinColumns = @JoinColumn(name = "facility_id"))
+  private Facility facility;
 
   protected Provider() {
     /* for hibernate */

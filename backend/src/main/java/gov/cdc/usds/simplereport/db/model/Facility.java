@@ -10,7 +10,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotEmpty;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,12 +47,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   @Getter
   private SpecimenType defaultSpecimenType;
 
-  @OneToMany
-  @JoinTable(
-      name = "facility_providers",
-      joinColumns = @JoinColumn(name = "facility_id"),
-      inverseJoinColumns = @JoinColumn(name = "provider_id"))
-  @NotEmpty(message = "Minimum 1 ordering provider is required")
+  @OneToMany(mappedBy = "facility")
   private Set<Provider> orderingProviders = new HashSet<>();
 
   @ManyToMany(fetch = FetchType.EAGER)
@@ -74,17 +68,30 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.telephone = facilityBuilder.phone;
     this.email = facilityBuilder.email;
     this.defaultOrderingProvider = facilityBuilder.orderingProvider;
-    this.orderingProviders.add(facilityBuilder.orderingProvider);
+    if (facilityBuilder.orderingProvider != null) {
+      this.orderingProviders.add(facilityBuilder.orderingProvider);
+    }
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
   }
 
+  // todo: make sure callers can handle null
   public Provider getOrderingProvider() {
     if (defaultOrderingProvider != null) {
       return defaultOrderingProvider;
     }
-    return orderingProviders.iterator().next();
+
+    return orderingProviders.stream().findAny().orElseGet(() -> null);
+  }
+
+  public Set<Provider> getOrderingProviders() {
+    return orderingProviders.stream().filter(p -> !p.getIsDeleted()).collect(Collectors.toSet());
+  }
+
+  public void addProvider(Provider provider) {
+    orderingProviders.add(provider);
+    provider.setFacility(this);
   }
 
   public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {

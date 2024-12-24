@@ -11,8 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.AddFacilityInput;
+import gov.cdc.usds.simplereport.api.model.AddProviderInput;
 import gov.cdc.usds.simplereport.api.model.AddressInput;
-import gov.cdc.usds.simplereport.api.model.ProviderInput;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.UpdateFacilityInput;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -109,7 +109,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             .phone(facility.getTelephone())
             .email(facility.getEmail())
             .orderingProvider(
-                ProviderInput.builder()
+                AddProviderInput.builder()
                     .firstName(facility.getOrderingProvider().getNameInfo().getFirstName())
                     .middleName(facility.getOrderingProvider().getNameInfo().getMiddleName())
                     .lastName(facility.getOrderingProvider().getNameInfo().getLastName())
@@ -172,7 +172,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             .phone(facility.getTelephone())
             .email(facility.getEmail())
             .orderingProvider(
-                ProviderInput.builder()
+                AddProviderInput.builder()
                     .firstName(facility.getOrderingProvider().getNameInfo().getFirstName())
                     .middleName(facility.getOrderingProvider().getNameInfo().getMiddleName())
                     .lastName(facility.getOrderingProvider().getNameInfo().getLastName())

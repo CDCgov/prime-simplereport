@@ -13,6 +13,6 @@ public class AddFacilityInput {
   private AddressInput address;
   private String phone;
   private String email;
-  private ProviderInput orderingProvider;
+  private AddProviderInput orderingProvider;
   private List<UUID> deviceIds;
 }

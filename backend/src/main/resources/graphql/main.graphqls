@@ -731,4 +731,12 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  addProvider(
+    providerData: AddProviderInput!
+    facilityId: ID
+  ): Boolean @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  updateProvider(providerData: UpdateProviderInput!): Boolean
+    @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  deleteProvider(providerId: ID!): Boolean
+    @requiredPermissions(allOf: ["EDIT_FACILITY"])
 }

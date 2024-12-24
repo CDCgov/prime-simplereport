@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ProviderInput {
+public class AddProviderInput {
   private String firstName;
   private String middleName;
   private String lastName;

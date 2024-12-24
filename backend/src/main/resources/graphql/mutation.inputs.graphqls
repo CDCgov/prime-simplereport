@@ -1,5 +1,21 @@
 # Contains input definitions for mutations
-input ProviderInput {
+input AddProviderInput {
+    firstName: String
+    middleName: String
+    lastName: String
+    suffix: String
+    npi: String
+    street:String
+    streetTwo:String
+    city: String
+    county: String
+    state: String
+    zipCode: String
+    phone: String
+}
+
+input UpdateProviderInput {
+    providerId: ID!
     firstName: String
     middleName: String
     lastName: String
@@ -29,7 +45,7 @@ input UpdateFacilityInput {
     address: FacilityAddressInput!
     phone: String
     email: String
-    orderingProvider: ProviderInput
+    orderingProvider: AddProviderInput
     deviceIds: [ID]!
 }
 
@@ -39,6 +55,6 @@ input AddFacilityInput {
     address: FacilityAddressInput!
     phone: String
     email: String
-    orderingProvider: ProviderInput
+    orderingProvider: AddProviderInput
     deviceIds: [ID]!
 }

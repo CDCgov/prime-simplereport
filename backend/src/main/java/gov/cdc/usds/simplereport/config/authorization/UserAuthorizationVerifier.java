@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ArchivedStatus;
@@ -18,6 +19,7 @@ import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -52,6 +54,7 @@ public class UserAuthorizationVerifier {
   private final ApiUserRepository _userRepo;
   private final PersonRepository _personRepo;
   private final FacilityRepository _facilityRepo;
+  private final ProviderRepository _providerRepo;
   private final TestEventRepository _testEventRepo;
   private final TestOrderRepository _testOrderRepo;
   private final PatientLinkRepository _patientLinkRepo;
@@ -184,6 +187,32 @@ public class UserAuthorizationVerifier {
                 orgRoles.getOrganization(), facilityId);
         return fac.isPresent() && fac.get().getIsDeleted();
       }
+    }
+    return false;
+  }
+
+  public boolean userCanAccessProvider(UUID providerInternalId) {
+    if (providerInternalId == null) {
+      return true;
+    }
+
+    Optional<Provider> p = _providerRepo.findById(providerInternalId);
+    if (p.isPresent()) {
+      Facility f = p.get().getFacility();
+      if (f != null) {
+        return userCanAccessFacility(f.getInternalId());
+      }
+
+      // if provider is not linked to a facility, only person who can access it is the creator
+      IdentityAttributes id = _supplier.get();
+      if (id == null) {
+        throw new UnidentifiedUserException();
+      }
+      Optional<ApiUser> found = _userRepo.findByLoginEmail(id.getUsername());
+      if (found.isEmpty()) {
+        throw new NonexistentUserException();
+      }
+      return p.get().getCreatedBy().equals(found.get());
     }
     return false;
   }
