@@ -20,6 +20,8 @@ import {
   useGetUsersAndStatusPageQuery,
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
+import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
+import { SEARCH_DEBOUNCE_TIME } from "../../testQueue/constants";
 
 import ManageUsers from "./ManageUsers";
 
@@ -93,6 +95,11 @@ const ManageUsersContainer = () => {
   const [resetMfa] = useResetUserMfaMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
+  const [queryString, debouncedQueryString, setDebouncedQueryString] =
+    useDebounce("", {
+      debounceTime: SEARCH_DEBOUNCE_TIME,
+    });
+
   const { pageNumber } = useParams();
   const currentPage = pageNumber ? +pageNumber : 1;
   const entriesPerPage = 10;
@@ -106,6 +113,7 @@ const ManageUsersContainer = () => {
     fetchPolicy: "no-cache",
     variables: {
       pageNumber: currentPage - 1,
+      searchQuery: queryString,
     },
   });
 
@@ -139,6 +147,9 @@ const ManageUsersContainer = () => {
       currentPage={currentPage}
       totalEntries={data.usersWithStatusPage.totalElements}
       entriesPerPage={entriesPerPage}
+      debouncedQueryString={debouncedQueryString}
+      setDebouncedQueryString={setDebouncedQueryString}
+      queryLoadingStatus={loading}
     />
   );
 };

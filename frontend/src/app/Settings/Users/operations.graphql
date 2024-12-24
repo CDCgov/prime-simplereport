@@ -30,10 +30,12 @@ query GetUsersAndStatus {
 }
 
 query GetUsersAndStatusPage(
-  $pageNumber: Int
+  $pageNumber: Int,
+  $searchQuery: String
 ) {
   usersWithStatusPage(
-    pageNumber: $pageNumber
+    pageNumber: $pageNumber,
+    searchQuery: $searchQuery
   ) {
     content {
       id
