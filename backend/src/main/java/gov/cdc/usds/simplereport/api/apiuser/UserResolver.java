@@ -42,9 +42,14 @@ public class UserResolver {
   }
 
   @QueryMapping
-  public Page<ApiUserWithStatus> usersWithStatusPage(@Argument int pageNumber) {
+  public Page<ApiUserWithStatus> usersWithStatusPage(
+      @Argument int pageNumber, @Argument String searchQuery) {
     if (pageNumber < 0) {
       pageNumber = ApiUserService.DEFAULT_OKTA_USER_PAGE_OFFSET;
+    }
+    if (!searchQuery.isBlank()) {
+      return _userService.searchUsersAndStatusInCurrentOrgPaged(
+          pageNumber, DEFAULT_OKTA_USER_PAGE_SIZE, searchQuery);
     }
     return _userService.getPagedUsersAndStatusInCurrentOrg(pageNumber, DEFAULT_OKTA_USER_PAGE_SIZE);
   }
