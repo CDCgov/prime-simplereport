@@ -273,6 +273,7 @@ public class DemoOktaRepository implements OktaRepository {
         .collect(Collectors.toMap(u -> u, u -> getUserStatus(u)));
   }
 
+  @Override
   public Map<String, UserStatus> getPagedUsersWithStatusForOrganization(
       Organization org, int pageNumber, int pageSize) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
@@ -413,6 +414,7 @@ public class DemoOktaRepository implements OktaRepository {
     allUsernames.clear();
   }
 
+  @Override
   public Integer getUsersInSingleFacility(Facility facility) {
     Integer accessCount = 0;
 
@@ -431,6 +433,7 @@ public class DemoOktaRepository implements OktaRepository {
     return accessCount;
   }
 
+  @Override
   public Integer getUsersInOrganization(Organization org) {
     return orgUsernamesMap.get(org.getExternalId()).size();
   }

@@ -688,7 +688,8 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
-  public Integer getUsersInSingleFacility(Facility facility) {
+  @Override
+  public Integer getUsersCountInSingleFacility(Facility facility) {
     String facilityAccessGroupName =
         generateFacilityGroupName(
             facility.getOrganization().getExternalId(), facility.getInternalId());
@@ -696,7 +697,8 @@ public class LiveOktaRepository implements OktaRepository {
     return getUsersCountInOktaGroup(facilityAccessGroupName);
   }
 
-  public Integer getUsersInOrganization(Organization org) {
+  @Override
+  public Integer getUsersCountInOrganization(Organization org) {
     String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
     return getUsersCountInOktaGroup(orgDefaultGroupName);
