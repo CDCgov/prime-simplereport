@@ -928,6 +928,7 @@ export type QueryUserArgs = {
 
 export type QueryUsersWithStatusPageArgs = {
   pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  searchQuery?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type Result = {
@@ -1421,6 +1422,7 @@ export type GetUsersAndStatusQuery = {
 
 export type GetUsersAndStatusPageQueryVariables = Exact<{
   pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  searchQuery?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type GetUsersAndStatusPageQuery = {
@@ -3757,8 +3759,8 @@ export type GetUsersAndStatusQueryResult = Apollo.QueryResult<
   GetUsersAndStatusQueryVariables
 >;
 export const GetUsersAndStatusPageDocument = gql`
-  query GetUsersAndStatusPage($pageNumber: Int) {
-    usersWithStatusPage(pageNumber: $pageNumber) {
+  query GetUsersAndStatusPage($pageNumber: Int, $searchQuery: String) {
+    usersWithStatusPage(pageNumber: $pageNumber, searchQuery: $searchQuery) {
       content {
         id
         firstName
@@ -3785,6 +3787,7 @@ export const GetUsersAndStatusPageDocument = gql`
  * const { data, loading, error } = useGetUsersAndStatusPageQuery({
  *   variables: {
  *      pageNumber: // value for 'pageNumber'
+ *      searchQuery: // value for 'searchQuery'
  *   },
  * });
  */

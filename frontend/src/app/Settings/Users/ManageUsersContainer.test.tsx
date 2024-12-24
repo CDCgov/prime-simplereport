@@ -21,6 +21,7 @@ import {
   ORG_ADMIN_REACTIVATE_COPY,
   SITE_ADMIN_REACTIVATE_COPY,
 } from "../../commonComponents/UserDetails/ReactivateUserModal";
+import { displayFullName } from "../../utils";
 
 import ManageUsersContainer from "./ManageUsersContainer";
 
@@ -105,6 +106,7 @@ describe("ManageUsersContainer", () => {
         query: GetUsersAndStatusPageDocument,
         variables: {
           pageNumber: 0,
+          searchQuery: "",
         },
       },
       result: {
@@ -149,6 +151,52 @@ describe("ManageUsersContainer", () => {
         },
       },
     },
+    {
+      request: {
+        operationName: "GetUsersAndStatusPage",
+        query: GetUsersAndStatusPageDocument,
+        variables: {
+          pageNumber: 0,
+          searchQuery: "bob",
+        },
+      },
+      result: {
+        data: {
+          usersWithStatusPage: {
+            totalElements: 1,
+            content: [
+              {
+                id: "1029653e-24d9-428e-83b0-468319948902",
+                firstName: "Bob",
+                middleName: null,
+                lastName: "Bobberoo",
+                email: "bob@example.com",
+                status: "ACTIVE",
+                __typename: "ApiUserWithStatus",
+              },
+            ],
+          },
+        },
+      },
+    },
+    {
+      request: {
+        operationName: "GetUsersAndStatusPage",
+        query: GetUsersAndStatusPageDocument,
+        variables: {
+          pageNumber: 0,
+          searchQuery: "john wick",
+        },
+      },
+      result: {
+        data: {
+          usersWithStatusPage: {
+            totalElements: 0,
+            content: [],
+          },
+        },
+      },
+    },
   ];
 
   const supendedUserMocks: MockedResponse[] = [
@@ -158,6 +206,7 @@ describe("ManageUsersContainer", () => {
         query: GetUsersAndStatusPageDocument,
         variables: {
           pageNumber: 0,
+          searchQuery: "",
         },
       },
       result: {
@@ -271,6 +320,81 @@ describe("ManageUsersContainer", () => {
     const notFoundMock = [{ ...mocks[0], result: {} }];
     renderComponentWithMocks(notFoundMock, store);
     await screen.findByText(/Error: Users not found/i);
+  });
+
+  it("is searchable", async () => {
+    //given
+    const { user } = renderComponentWithMocks(mocks, store);
+    await waitForElementToBeRemoved(screen.queryByText("Loading..."));
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("heading", {
+          level: 2,
+          description: /barnes, ben billy/i,
+        })
+      )
+    );
+
+    //when
+    const searchBox = screen.getByRole("searchbox", {
+      name: /search by name/i,
+    });
+    await user.type(searchBox, "bob");
+
+    //then
+    await waitFor(() => {
+      expect(
+        screen.getByRole("tab", {
+          name: displayFullName("Bob", "", "Bobberoo"),
+        })
+      ).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(
+        screen.queryByText(displayFullName("Ben", "", "Barnes"), {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("displays no results message for empty filtered list", async () => {
+    //given
+    const { user } = renderComponentWithMocks(mocks, store);
+    await waitForElementToBeRemoved(screen.queryByText("Loading..."));
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("heading", {
+          level: 2,
+          description: /barnes, ben billy/i,
+        })
+      )
+    );
+
+    //when
+    const searchBox = screen.getByRole("searchbox", {
+      name: /search by name/i,
+    });
+    await user.type(searchBox, "john wick");
+
+    //then
+    await waitFor(() => {
+      expect(
+        screen.queryByText(displayFullName("Jane", "", "Doe"), {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText(displayFullName("Bob", "", "Bobberoo"), {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
+    });
+
+    expect(screen.getAllByText("No results found.")).toHaveLength(2);
   });
 
   it("when user is an org admin , modal copy reflects the reactivate only flow", async () => {
