@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, useState } from "react";
 import { ApolloQueryResult } from "@apollo/client";
 
 import Button from "../../commonComponents/Button/Button";
@@ -43,6 +43,9 @@ interface Props {
   currentPage: number;
   totalEntries: number;
   entriesPerPage: number;
+  debouncedQueryString: string;
+  setDebouncedQueryString: Dispatch<string>;
+  queryLoadingStatus: boolean;
 }
 
 export type LimitedUsers = { [id: string]: LimitedUser };
@@ -99,6 +102,9 @@ const ManageUsers: React.FC<Props> = ({
   currentPage,
   totalEntries,
   entriesPerPage,
+  debouncedQueryString,
+  setDebouncedQueryString,
+  queryLoadingStatus,
 }) => {
   const [userWithPermissions, updateUserWithPermissions] =
     useState<SettingsUser | null>();
@@ -405,22 +411,39 @@ const ManageUsers: React.FC<Props> = ({
           isUpdating={isUpdating}
         />
       ) : null}
-      {!activeUser || !localUsers.length ? (
+      {queryLoadingStatus ? (
         <div className="usa-card__body">
-          {!localUsers.length ? (
-            <p>There are no users in this organization</p>
-          ) : (
-            <p>Loading user data</p>
-          )}
+          <p>Loading user data</p>
         </div>
-      ) : (
-        <div className="usa-card__body">
-          <div className="grid-row">
-            <UsersSideNav
-              activeUserId={activeUser.id || ""}
-              users={sortedUsers}
-              onChangeActiveUser={onChangeActiveUser}
-            />
+      ) : null}
+      <div className="usa-card__body">
+        <div className="grid-row">
+          <UsersSideNav
+            activeUserId={activeUser?.id || ""}
+            users={sortedUsers}
+            onChangeActiveUser={onChangeActiveUser}
+            debouncedQueryString={debouncedQueryString}
+            setDebouncedQueryString={setDebouncedQueryString}
+          />
+          {localUsers.length <= 0 ? (
+            <div
+              className={
+                "display-flex flex-column flex-align-center margin-left-10 margin-top-2"
+              }
+            >
+              <div className="margin-bottom-105">No results found.</div>
+              <div>
+                Check for spelling errors or
+                <Button
+                  className={"margin-left-1"}
+                  id={`no-results-clear-filter-button`}
+                  onClick={() => setDebouncedQueryString("")}
+                  label={"Clear search filter"}
+                ></Button>
+              </div>
+            </div>
+          ) : null}
+          {activeUser ? (
             <div
               role="tabpanel"
               aria-labelledby={"user-tab-" + user?.id}
@@ -501,23 +524,23 @@ const ManageUsers: React.FC<Props> = ({
                 />
               )}
             </div>
-            {showInProgressModal && (
-              <InProgressModal
-                onClose={() => updateShowInProgressModal(false)}
-                onContinue={() => handleContinueChangeActiveUser()}
-              />
-            )}
-          </div>
-          <div className="grid-row">
-            <Pagination
-              baseRoute={"/settings"}
-              totalEntries={totalEntries}
-              entriesPerPage={entriesPerPage}
-              currentPage={currentPage}
-            ></Pagination>
-          </div>
+          ) : null}
+          {showInProgressModal && (
+            <InProgressModal
+              onClose={() => updateShowInProgressModal(false)}
+              onContinue={() => handleContinueChangeActiveUser()}
+            />
+          )}
         </div>
-      )}
+        <div className="grid-row">
+          <Pagination
+            baseRoute={"/settings"}
+            totalEntries={totalEntries}
+            entriesPerPage={entriesPerPage}
+            currentPage={currentPage}
+          ></Pagination>
+        </div>
+      </div>
     </div>
   );
 };
