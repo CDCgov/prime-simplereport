@@ -415,7 +415,7 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   @Override
-  public Integer getUsersInSingleFacility(Facility facility) {
+  public Integer getUsersCountInSingleFacility(Facility facility) {
     Integer accessCount = 0;
 
     for (OrganizationRoleClaims existingClaims : usernameOrgRolesMap.values()) {
@@ -434,7 +434,7 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   @Override
-  public Integer getUsersInOrganization(Organization org) {
+  public Integer getUsersCountInOrganization(Organization org) {
     return orgUsernamesMap.get(org.getExternalId()).size();
   }
 

@@ -632,7 +632,7 @@ public class ApiUserService {
             .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
             .toList();
 
-    Integer userCountInOrg = _oktaRepo.getUsersInOrganization(org);
+    Integer userCountInOrg = _oktaRepo.getUsersCountInOrganization(org);
     PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
 
     return new PageImpl<>(userWithStatusList, pageRequest, userCountInOrg);
