@@ -421,7 +421,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               <a
                 aria-label="Page 1"
                 class="is-active"
-                href="/settings/1"
+                href="/settings/users/1"
               >
                 <span>
                   1
