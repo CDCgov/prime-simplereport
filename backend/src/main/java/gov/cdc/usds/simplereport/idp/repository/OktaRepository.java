@@ -92,9 +92,9 @@ public interface OktaRepository {
 
   Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 
-  Integer getUsersInSingleFacility(Facility facility);
+  Integer getUsersCountInSingleFacility(Facility facility);
 
-  Integer getUsersInOrganization(Organization org);
+  Integer getUsersCountInOrganization(Organization org);
 
   PartialOktaUser findUser(String username);
 

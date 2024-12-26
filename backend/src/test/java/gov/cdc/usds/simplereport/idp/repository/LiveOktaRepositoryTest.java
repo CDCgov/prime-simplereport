@@ -33,6 +33,7 @@ import com.okta.sdk.resource.model.UserProfile;
 import com.okta.sdk.resource.model.UserStatus;
 import com.okta.sdk.resource.user.UserBuilder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
@@ -47,6 +48,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -690,6 +692,109 @@ class LiveOktaRepositoryTest {
 
     var actual = _repo.getPagedUsersWithStatusForOrganization(org, 0, 10);
     assertEquals(Map.of("email@example.com", UserStatus.ACTIVE), actual);
+  }
+
+  @Test
+  void getUsersCountInOrganization() {
+    String orgExternalId = "ce8782ca-18ba-4384-95fc-fbb7be0ef577";
+
+    var groupProfilePrefix = "SR-UNITTEST-TENANT:" + orgExternalId + ":NO_ACCESS";
+
+    var mockOrg = mock(Organization.class);
+    when(mockOrg.getExternalId()).thenReturn(orgExternalId);
+
+    var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
+    when(groupApi.listGroups(
+            eq(groupProfilePrefix),
+            isNull(),
+            isNull(),
+            eq(1),
+            eq("stats"),
+            isNull(),
+            isNull(),
+            isNull()))
+        .thenReturn(mockGroupList);
+
+    var mockEmbeddedMap = mock(Map.class);
+    when(mockGroup.getEmbedded()).thenReturn(mockEmbeddedMap);
+    var mockStatsLinkedHashMap = mock(LinkedHashMap.class);
+    when(mockEmbeddedMap.get(eq("stats"))).thenReturn(mockStatsLinkedHashMap);
+    when(mockStatsLinkedHashMap.get(eq("usersCount"))).thenReturn(10);
+
+    var actual = _repo.getUsersCountInOrganization(mockOrg);
+    assertEquals(10, actual);
+  }
+
+  @Test
+  void getUsersCountInSingleFacility() {
+    String facilityInternalId = "05bc0080-ad53-4b7a-a4b5-d1f86059a304";
+    String orgExternalId = "ce8782ca-18ba-4384-95fc-fbb7be0ef577";
+
+    var facilitySuffix = ":FACILITY_ACCESS:" + facilityInternalId;
+    var groupProfilePrefix = "SR-UNITTEST-TENANT:" + orgExternalId + facilitySuffix;
+
+    var mockOrg = mock(Organization.class);
+    var mockFacility = mock(Facility.class);
+    when(mockFacility.getOrganization()).thenReturn(mockOrg);
+    when(mockOrg.getExternalId()).thenReturn(orgExternalId);
+    when(mockFacility.getInternalId()).thenReturn(UUID.fromString(facilityInternalId));
+
+    var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
+    when(groupApi.listGroups(
+            eq(groupProfilePrefix),
+            isNull(),
+            isNull(),
+            eq(1),
+            eq("stats"),
+            isNull(),
+            isNull(),
+            isNull()))
+        .thenReturn(mockGroupList);
+
+    var mockEmbeddedMap = mock(Map.class);
+    when(mockGroup.getEmbedded()).thenReturn(mockEmbeddedMap);
+    var mockStatsLinkedHashMap = mock(LinkedHashMap.class);
+    when(mockEmbeddedMap.get(eq("stats"))).thenReturn(mockStatsLinkedHashMap);
+    when(mockStatsLinkedHashMap.get(eq("usersCount"))).thenReturn(10);
+
+    var actual = _repo.getUsersCountInSingleFacility(mockFacility);
+    assertEquals(10, actual);
+  }
+
+  @Test
+  void
+      getUsersCountInSingleFacility_throwsBadRequestException_whenUnableToRetrieveOktaGroupStats() {
+    String facilityInternalId = "05bc0080-ad53-4b7a-a4b5-d1f86059a304";
+    String orgExternalId = "ce8782ca-18ba-4384-95fc-fbb7be0ef577";
+
+    var facilitySuffix = ":FACILITY_ACCESS:" + facilityInternalId;
+    var groupProfilePrefix = "SR-UNITTEST-TENANT:" + orgExternalId + facilitySuffix;
+
+    var mockOrg = mock(Organization.class);
+    var mockFacility = mock(Facility.class);
+    when(mockFacility.getOrganization()).thenReturn(mockOrg);
+    when(mockOrg.getExternalId()).thenReturn(orgExternalId);
+    when(mockFacility.getInternalId()).thenReturn(UUID.fromString(facilityInternalId));
+
+    var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
+    when(groupApi.listGroups(
+            eq(groupProfilePrefix),
+            isNull(),
+            isNull(),
+            eq(1),
+            eq("stats"),
+            isNull(),
+            isNull(),
+            isNull()))
+        .thenReturn(mockGroupList);
+
+    Throwable caught =
+        assertThrows(
+            BadRequestException.class, () -> _repo.getUsersCountInSingleFacility(mockFacility));
+    assertEquals("Unable to retrieve okta group stats", caught.getMessage());
   }
 
   @Test
