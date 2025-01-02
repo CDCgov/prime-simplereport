@@ -541,6 +541,18 @@ public class TestResultRow implements FileRow {
                 equipmentModelName.getValue(), testPerformedCode.getValue()));
   }
 
+  private boolean isChlamydiaResult() {
+    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
+      return false;
+    }
+
+    return resultsUploaderCachingService
+        .getChlamydiaEquipmentModelAndTestPerformedCodeSet()
+        .contains(
+            ResultsUploaderCachingService.getKey(
+                equipmentModelName.getValue(), testPerformedCode.getValue()));
+  }
+
   private List<FeedbackMessage> generateInvalidDataErrorMessages() {
     String errorMessage =
         "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
@@ -681,6 +693,14 @@ public class TestResultRow implements FileRow {
           validateRequiredFieldsForPositiveResult(
               testResult,
               DiseaseService.GONORRHEA_NAME,
+              List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
+    }
+
+    if (isChlamydiaResult()) {
+      errors.addAll(
+          validateRequiredFieldsForPositiveResult(
+              testResult,
+              DiseaseService.CHLAMYDIA_NAME,
               List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
     }
 
