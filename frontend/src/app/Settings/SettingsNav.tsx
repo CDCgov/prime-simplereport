@@ -21,7 +21,11 @@ const SettingsNav = () => {
     <nav className="prime-secondary-nav" aria-label="Secondary navigation">
       <ul className="usa-nav__secondary-links prime-nav">
         <li className="usa-nav__secondary-item">
-          <LinkWithQuery to={`/settings`} end className={classNameByActive}>
+          <LinkWithQuery
+            to={`/settings/users/1`}
+            end
+            className={classNameByActive}
+          >
             Manage users
           </LinkWithQuery>
         </li>

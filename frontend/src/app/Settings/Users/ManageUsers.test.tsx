@@ -271,6 +271,7 @@ let reactivateUserAndResetPassword: (obj: any) => Promise<any>;
 let resetUserPassword: (obj: any) => Promise<any>;
 let resetUserMfa: (obj: any) => Promise<any>;
 let resendUserActivationEmail: (obj: any) => Promise<any>;
+let setDebouncedQueryString = jest.fn();
 
 type TestContainerProps = {
   children: React.ReactNode;
@@ -362,70 +363,18 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={updateUserName}
             updateUserEmail={updateUserEmail}
+            currentPage={1}
+            entriesPerPage={10}
+            totalEntries={3}
+            debouncedQueryString={""}
+            setDebouncedQueryString={setDebouncedQueryString}
+            queryLoadingStatus={false}
           />
         </TestContainer>
       );
       await waitForElementToBeRemoved(() => screen.queryByText("?, ?"));
       return { user: userEvent.setup(), ...renderControls };
     };
-
-    it("is searchable", async () => {
-      //given
-      const { user } = await renderAndWaitForLoad();
-
-      //when
-      const searchBox = screen.getByRole("searchbox", {
-        name: /search by name/i,
-      });
-
-      await user.type(searchBox, "john");
-
-      //then
-      await waitFor(() => {
-        expect(
-          screen.getByRole("tab", {
-            name: displayFullName("John", "", "Arthur"),
-          })
-        ).toBeInTheDocument();
-      });
-      await waitFor(() => {
-        expect(
-          screen.queryByText(displayFullName("Bob", "", "Bobberoo"), {
-            exact: false,
-          })
-        ).not.toBeInTheDocument();
-      });
-    });
-
-    it("displays no results message for empty filtered list", async () => {
-      //given
-      const { user } = await renderAndWaitForLoad();
-
-      //when
-      const searchBox = screen.getByRole("searchbox", {
-        name: /search by name/i,
-      });
-      await user.type(searchBox, "john wick");
-
-      //then
-      await waitFor(() => {
-        expect(
-          screen.queryByText(displayFullName("Jane", "", "Doe"), {
-            exact: false,
-          })
-        ).not.toBeInTheDocument();
-      });
-
-      await waitFor(() => {
-        expect(
-          screen.queryByText(displayFullName("Bob", "", "Bobberoo"), {
-            exact: false,
-          })
-        ).not.toBeInTheDocument();
-      });
-
-      expect(screen.getByText("No results found.")).toBeInTheDocument();
-    });
 
     it("enables logged-in user's settings except deletion and roles", async () => {
       const { user } = await renderAndWaitForLoad();
@@ -773,6 +722,12 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
+            totalEntries={0}
+            entriesPerPage={10}
+            currentPage={1}
+            debouncedQueryString={""}
+            setDebouncedQueryString={setDebouncedQueryString}
+            queryLoadingStatus={false}
           />
         </TestContainer>
       );
@@ -783,8 +738,7 @@ describe("ManageUsers", () => {
 
     it("fails gracefully when there are no users", async () => {
       await renderWithNoUsers();
-      const noUsers = await screen.findByText("no users", { exact: false });
-      expect(noUsers).toBeInTheDocument();
+      expect(screen.getAllByText("No results found.")).toHaveLength(2);
     });
 
     it("adds a user when zero users exist", async () => {
@@ -835,6 +789,12 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
+            totalEntries={2}
+            entriesPerPage={10}
+            currentPage={1}
+            debouncedQueryString={""}
+            setDebouncedQueryString={setDebouncedQueryString}
+            queryLoadingStatus={false}
           />
         </TestContainer>
       );
@@ -875,6 +835,12 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
+            totalEntries={2}
+            entriesPerPage={10}
+            currentPage={1}
+            debouncedQueryString={""}
+            setDebouncedQueryString={setDebouncedQueryString}
+            queryLoadingStatus={false}
           />
         </TestContainer>
       );
@@ -916,6 +882,12 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
+            totalEntries={2}
+            entriesPerPage={10}
+            currentPage={1}
+            debouncedQueryString={""}
+            setDebouncedQueryString={setDebouncedQueryString}
+            queryLoadingStatus={false}
           />
         </TestContainer>
       );
@@ -1013,6 +985,12 @@ describe("ManageUsers", () => {
         resendUserActivationEmail={resendUserActivationEmail}
         updateUserName={() => Promise.resolve()}
         updateUserEmail={() => Promise.resolve()}
+        totalEntries={3}
+        entriesPerPage={10}
+        currentPage={1}
+        debouncedQueryString={""}
+        setDebouncedQueryString={setDebouncedQueryString}
+        queryLoadingStatus={false}
       />
     );
     render(
