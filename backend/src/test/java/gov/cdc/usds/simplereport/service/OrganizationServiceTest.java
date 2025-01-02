@@ -459,7 +459,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     UUID facilityId = UUID.randomUUID();
     Facility mockFacility = mock(Facility.class);
     doReturn(Optional.of(mockFacility)).when(this.facilityRepository).findById(facilityId);
-    doReturn(2).when(oktaRepository).getUsersInSingleFacility(mockFacility);
+    doReturn(2).when(oktaRepository).getUsersCountInSingleFacility(mockFacility);
     doReturn(1).when(personRepository).countByFacilityAndIsDeleted(mockFacility, false);
     FacilityStats stats = _service.getFacilityStats(facilityId);
 
@@ -479,7 +479,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     doReturn(2).when(personRepository).countByFacilityAndIsDeleted(mockFacility, false);
     FacilityStats stats = _service.getFacilityStats(facilityId);
 
-    verify(oktaRepository, times(0)).getUsersInSingleFacility(mockFacility);
+    verify(oktaRepository, times(0)).getUsersCountInSingleFacility(mockFacility);
     assertEquals(4, stats.getUsersSingleAccessCount());
     assertEquals(2, stats.getPatientsSingleAccessCount());
   }

@@ -273,6 +273,21 @@ public class DemoOktaRepository implements OktaRepository {
         .collect(Collectors.toMap(u -> u, u -> getUserStatus(u)));
   }
 
+  @Override
+  public Map<String, UserStatus> getPagedUsersWithStatusForOrganization(
+      Organization org, int pageNumber, int pageSize) {
+    if (!orgUsernamesMap.containsKey(org.getExternalId())) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot get Okta users from nonexistent organization.");
+    }
+    List<String> allOrgUsernamesList =
+        orgUsernamesMap.get(org.getExternalId()).stream().sorted().collect(Collectors.toList());
+    int startIndex = pageNumber * pageSize;
+    int endIndex = Math.min((startIndex + pageSize), allOrgUsernamesList.size());
+    List<String> pageContent = allOrgUsernamesList.subList(startIndex, endIndex);
+    return pageContent.stream().collect(Collectors.toMap(u -> u, this::getUserStatus));
+  }
+
   // this method doesn't mean much in a demo env
   public void createOrganization(Organization org) {
     String externalId = org.getExternalId();
@@ -399,7 +414,8 @@ public class DemoOktaRepository implements OktaRepository {
     allUsernames.clear();
   }
 
-  public Integer getUsersInSingleFacility(Facility facility) {
+  @Override
+  public Integer getUsersCountInSingleFacility(Facility facility) {
     Integer accessCount = 0;
 
     for (OrganizationRoleClaims existingClaims : usernameOrgRolesMap.values()) {
@@ -415,6 +431,11 @@ public class DemoOktaRepository implements OktaRepository {
     }
 
     return accessCount;
+  }
+
+  @Override
+  public Integer getUsersCountInOrganization(Organization org) {
+    return orgUsernamesMap.get(org.getExternalId()).size();
   }
 
   @Override
