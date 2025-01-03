@@ -44,6 +44,7 @@ export const es: LanguageConfig = {
         HIV: "VIH",
         SYPHILIS: "Sífilis",
         HEPATITIS_C: "Hepatitis C",
+        GONORRHEA: "Gonorrea",
       },
       diseaseResultTitle: {
         COVID19: "COVID-19 resultado",
@@ -54,6 +55,7 @@ export const es: LanguageConfig = {
         HIV: "Resultado de la prueba del VIH",
         SYPHILIS: "Sífilis resultado",
         HEPATITIS_C: "Hepatitis C resultado",
+        GONORRHEA: "Gonorrea resultado",
       },
       role: {
         STAFF: "Personal",
@@ -452,6 +454,15 @@ export const es: LanguageConfig = {
           p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del hepatitis C.</0> (cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results).",
           treatmentLink:
             "https://www.cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results",
+        },
+      },
+      gonorrheaNotes: {
+        h1: "Para Gonorrea:",
+        positive: {
+          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
+          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo de gonorrea.</0> (cdc.gov/gonorrhea/es/about/acerca-de-la-gonorrea.html).",
+          treatmentLink:
+            "https://www.cdc.gov/gonorrhea/es/about/acerca-de-la-gonorrea.html",
         },
       },
       tos: {
