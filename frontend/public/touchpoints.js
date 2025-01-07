@@ -654,7 +654,7 @@ var formOptions = {
 
 // Note: When updating Touchpoints you need to update this HTML
 // To whoever has to maintain this, I'm sorry this is so gross.
-const touchpointsFormHtmlString = `
+var touchpointsFormHtmlString = `
   <div class="fba-modal">
     <div id="fba-modal-dialog" class="fba-modal-dialog" role="dialog" aria-modal="true">
       <div class="touchpoints-form-wrapper" id="touchpoints-form-5b1efe87" data-touchpoints-form-id="5b1efe87" tabindex="-1">
