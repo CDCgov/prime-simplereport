@@ -8,6 +8,7 @@ export enum MULTIPLEX_DISEASES {
   FLU_A_AND_B = "Flu A and B",
   HEPATITIS_C = "Hepatitis C",
   GONORRHEA = "Gonorrhea",
+  CHLAMYDIA = "Chlamydia",
 }
 
 export enum TEST_RESULTS {

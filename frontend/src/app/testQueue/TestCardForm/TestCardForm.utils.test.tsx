@@ -145,5 +145,28 @@ describe("TestCardForm.utils", () => {
         )
       ).toEqual(AoeValidationErrorMessages.COMPLETE);
     });
+
+    it("should return false if Chlamydia questions are unanswered", () => {
+      const positive: TestFormState = {
+        ...incompleteState,
+      };
+      expect(
+        generateAoeValidationState(positive, AOEFormOption.CHLAMYDIA)
+      ).toEqual(AoeValidationErrorMessages.INCOMPLETE);
+    });
+
+    it("should return true when Chlamydia positive is selected and questions are answered", () => {
+      const positiveChlamydiaStateCompleteAOE: TestFormState = {
+        ...completeStateWithSymptoms,
+      };
+      positiveChlamydiaStateCompleteAOE.aoeResponses.symptoms =
+        '{"77880009":true,"405729008":false,"301822002":false,"249301002":false,"49650001":false,"9957009":false,"162156001":false,"63901009":false,"438457000":false}';
+      expect(
+        generateAoeValidationState(
+          positiveChlamydiaStateCompleteAOE,
+          AOEFormOption.CHLAMYDIA
+        )
+      ).toEqual(AoeValidationErrorMessages.COMPLETE);
+    });
   });
 });

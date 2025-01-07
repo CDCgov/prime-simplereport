@@ -10,6 +10,7 @@ import {
 import mockSupportedDiseaseTestPerformedHIV from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 import mockSupportedDiseaseTestPerformedSyphilis from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
 import mockSupportedDiseaseTestPerformedGonorrhea from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedGonorrhea";
+import mockSupportedDiseaseTestPerformedChlamydia from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedChlamydia";
 
 import { QueriedFacility, QueriedTestOrder } from "./TestCardForm/types";
 import mockSupportedDiseaseCovid from "./mocks/mockSupportedDiseaseCovid";
@@ -49,6 +50,7 @@ export const device7Name = "HIV device";
 export const device8Name = "Syphilis device";
 export const device9Name = "Hepatitis C device";
 export const device10Name = "Gonorrhea device";
+export const chlamydiaDeviceName = "Chlamydia device";
 
 export const device1Id = "DEVICE-1-ID";
 export const device2Id = "DEVICE-2-ID";
@@ -60,6 +62,7 @@ export const device7Id = "DEVICE-7-ID";
 export const device8Id = "DEVICE-8-ID";
 export const device9Id = "DEVICE-9-ID";
 export const device10Id = "DEVICE-10-ID";
+export const chlamydiaDeviceId = "CHLAMYDIA-DEVICE-ID";
 
 export const deletedDeviceId = "DELETED-DEVICE-ID";
 export const deletedDeviceName = "Deleted";
@@ -424,6 +427,21 @@ export const facilityInfo: QueriedFacility = {
       testLength: 15,
       supportedDiseaseTestPerformed: [
         ...mockSupportedDiseaseTestPerformedGonorrhea,
+      ],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+      ],
+    },
+    {
+      internalId: chlamydiaDeviceId,
+      name: chlamydiaDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseTestPerformedChlamydia,
       ],
       swabTypes: [
         {
