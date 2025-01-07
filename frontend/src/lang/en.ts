@@ -41,6 +41,7 @@ export const en = {
         HIV: "HIV",
         SYPHILIS: "Syphilis",
         HEPATITIS_C: "Hepatitis C",
+        GONORRHEA: "Gonorrhea",
       },
       diseaseResultTitle: {
         COVID19: "COVID-19 result",
@@ -51,6 +52,7 @@ export const en = {
         HIV: "HIV result",
         SYPHILIS: "Syphilis result",
         HEPATITIS_C: "Hepatitis C result",
+        GONORRHEA: "Gonorrhea result",
       },
       role: {
         STAFF: "Staff",
@@ -429,6 +431,14 @@ export const en = {
           p1: "<0>Visit the CDC website to learn more about a positive Hepatitis C result</0> (cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results).",
           treatmentLink:
             "https://www.cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results",
+        },
+      },
+      gonorrheaNotes: {
+        h1: "For Gonorrhea:",
+        positive: {
+          p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
+          p1: "<0>Visit the CDC website to learn more about a positive Gonorrhea result.</0> (cdc.gov/gonorrhea/about).",
+          treatmentLink: "https://www.cdc.gov/gonorrhea/about/index.html",
         },
       },
       tos: {
