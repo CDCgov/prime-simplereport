@@ -36,6 +36,8 @@ export const hepatitisCDeviceName = "HEPATITIS C";
 export const hepatitisCDeviceId = "HEPATITIS C-DEVICE-ID";
 export const gonorrheaDeviceName = "GONORRHEA";
 export const gonorrheaDeviceId = "GONORRHEA-DEVICE-ID";
+export const chlamydiaDeviceName = "Chlamydia device";
+export const chlamydiaDeviceId = "CHLAMYDIA-DEVICE-ID";
 
 // 6 instead of 7 because HIV devices are filtered out when HIV feature flag is disabled
 export const DEFAULT_DEVICE_OPTIONS_LENGTH = 6;
@@ -50,7 +52,6 @@ export const device7Name = "HIV device";
 export const device8Name = "Syphilis device";
 export const device9Name = "Hepatitis C device";
 export const device10Name = "Gonorrhea device";
-export const chlamydiaDeviceName = "Chlamydia device";
 
 export const device1Id = "DEVICE-1-ID";
 export const device2Id = "DEVICE-2-ID";
@@ -62,7 +63,6 @@ export const device7Id = "DEVICE-7-ID";
 export const device8Id = "DEVICE-8-ID";
 export const device9Id = "DEVICE-9-ID";
 export const device10Id = "DEVICE-10-ID";
-export const chlamydiaDeviceId = "CHLAMYDIA-DEVICE-ID";
 
 export const deletedDeviceId = "DELETED-DEVICE-ID";
 export const deletedDeviceName = "Deleted";
