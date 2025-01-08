@@ -45,6 +45,7 @@ export const es: LanguageConfig = {
         SYPHILIS: "Sífilis",
         HEPATITIS_C: "Hepatitis C",
         GONORRHEA: "Gonorrea",
+        CHLAMYDIA: "Clamdia",
       },
       diseaseResultTitle: {
         COVID19: "COVID-19 resultado",
@@ -56,6 +57,7 @@ export const es: LanguageConfig = {
         SYPHILIS: "Sífilis resultado",
         HEPATITIS_C: "Hepatitis C resultado",
         GONORRHEA: "Gonorrea resultado",
+        CHLAMYDIA: "Clamdia resultado",
       },
       role: {
         STAFF: "Personal",
@@ -463,6 +465,15 @@ export const es: LanguageConfig = {
           p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo de gonorrea.</0> (cdc.gov/gonorrhea/es/about/acerca-de-la-gonorrea.html).",
           treatmentLink:
             "https://www.cdc.gov/gonorrhea/es/about/acerca-de-la-gonorrea.html",
+        },
+      },
+      chlamydiaNotes: {
+        h1: "Para Clamidia:",
+        positive: {
+          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
+          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo de clamidia.</0> (cdc.gov/chlamydia/es/about/acerca-de-la-gonorrea.html).",
+          treatmentLink:
+            "https://www.cdc.gov/chlamydia/es/about/acerca-de-las-infecciones-por-clamidia.html",
         },
       },
       tos: {
