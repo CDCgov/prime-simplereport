@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.okta.sdk.resource.model.UserStatus;
+import gov.cdc.usds.simplereport.api.apiuser.ManageUsersPageWrapper;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -154,7 +155,10 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @WithSimpleReportOrgAdminUser
   void getPagedUsersAndStatusInCurrentOrg_success() {
     initSampleData();
-    Page<ApiUserWithStatus> usersPage = _service.getPagedUsersAndStatusInCurrentOrg(0, 3);
+    ManageUsersPageWrapper usersPageWrapper = _service.getPagedUsersAndStatusInCurrentOrg(0, 3);
+    assertEquals(6, usersPageWrapper.getTotalUsersInOrg());
+
+    Page<ApiUserWithStatus> usersPage = usersPageWrapper.getPageContent();
     List<ApiUserWithStatus> users = usersPage.stream().toList();
     assertEquals(3, users.size());
 
@@ -163,7 +167,10 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     checkApiUserWithStatus(
         users.get(2), "allfacilities@example.com", "Williams", UserStatus.ACTIVE);
 
-    Page<ApiUserWithStatus> users2ndPage = _service.getPagedUsersAndStatusInCurrentOrg(1, 3);
+    ManageUsersPageWrapper users2ndPageWrapper = _service.getPagedUsersAndStatusInCurrentOrg(1, 3);
+    assertEquals(6, users2ndPageWrapper.getTotalUsersInOrg());
+
+    Page<ApiUserWithStatus> users2ndPage = users2ndPageWrapper.getPageContent();
     List<ApiUserWithStatus> users2ndList = users2ndPage.stream().toList();
     assertEquals(3, users2ndList.size());
 
@@ -177,10 +184,12 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @WithSimpleReportOrgAdminUser
   void searchUsersAndStatusInCurrentOrgPaged_success() {
     initSampleData();
-    Page<ApiUserWithStatus> usersPage =
+    ManageUsersPageWrapper usersPageWrapper =
         _service.searchUsersAndStatusInCurrentOrgPaged(0, 10, "Bob");
+    Page<ApiUserWithStatus> usersPage = usersPageWrapper.getPageContent();
     List<ApiUserWithStatus> users = usersPage.stream().toList();
     assertEquals(1, users.size());
+    assertEquals(6, usersPageWrapper.getTotalUsersInOrg());
     checkApiUserWithStatus(users.get(0), "bobbity@example.com", "Bobberoo", UserStatus.ACTIVE);
   }
 
