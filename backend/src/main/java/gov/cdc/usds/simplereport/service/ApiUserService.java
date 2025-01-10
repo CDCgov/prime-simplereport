@@ -4,6 +4,7 @@ import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
+import gov.cdc.usds.simplereport.api.apiuser.ManageUsersPageWrapper;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -621,7 +622,7 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public Page<ApiUserWithStatus> getPagedUsersAndStatusInCurrentOrg(int pageNumber, int pageSize) {
+  public ManageUsersPageWrapper getPagedUsersAndStatusInCurrentOrg(int pageNumber, int pageSize) {
     Organization org = _orgService.getCurrentOrganization();
 
     final Map<String, UserStatus> emailsToStatus =
@@ -634,15 +635,18 @@ public class ApiUserService {
 
     Integer userCountInOrg = _oktaRepo.getUsersCountInOrganization(org);
     PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+    Page<ApiUserWithStatus> pageContent =
+        new PageImpl<>(userWithStatusList, pageRequest, userCountInOrg);
 
-    return new PageImpl<>(userWithStatusList, pageRequest, userCountInOrg);
+    return new ManageUsersPageWrapper(pageContent, userCountInOrg);
   }
 
-  public Page<ApiUserWithStatus> searchUsersAndStatusInCurrentOrgPaged(
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public ManageUsersPageWrapper searchUsersAndStatusInCurrentOrgPaged(
       int pageNumber, int pageSize, String searchQuery) {
     List<ApiUserWithStatus> allUsers = getUsersAndStatusInCurrentOrg();
 
-    List<ApiUserWithStatus> filteredUsersList =
+    List<ApiUserWithStatus> totalFilteredUsersList =
         allUsers.stream()
             .filter(
                 u -> {
@@ -655,14 +659,19 @@ public class ApiUserService {
                 })
             .toList();
 
-    int totalResults = filteredUsersList.size();
+    int totalSearchResults = totalFilteredUsersList.size();
     int startIndex = pageNumber * pageSize;
-    int endIndex = Math.min((startIndex + pageSize), filteredUsersList.size());
+    int endIndex = Math.min((startIndex + pageSize), totalFilteredUsersList.size());
 
-    List<ApiUserWithStatus> pageContent = filteredUsersList.subList(startIndex, endIndex);
+    Organization org = _orgService.getCurrentOrganization();
+    Integer userCountInOrg = _oktaRepo.getUsersCountInOrganization(org);
+
+    List<ApiUserWithStatus> filteredSublist = totalFilteredUsersList.subList(startIndex, endIndex);
     PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+    Page<ApiUserWithStatus> pageContent =
+        new PageImpl<>(filteredSublist, pageRequest, totalSearchResults);
 
-    return new PageImpl<>(pageContent, pageRequest, totalResults);
+    return new ManageUsersPageWrapper(pageContent, userCountInOrg);
   }
 
   // To be addressed in #8108

@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.stereotype.Controller;
@@ -42,7 +41,7 @@ public class UserResolver {
   }
 
   @QueryMapping
-  public Page<ApiUserWithStatus> usersWithStatusPage(
+  public ManageUsersPageWrapper usersWithStatusPage(
       @Argument int pageNumber, @Argument String searchQuery) {
     if (pageNumber < 0) {
       pageNumber = ApiUserService.DEFAULT_OKTA_USER_PAGE_OFFSET;
