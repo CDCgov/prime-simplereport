@@ -27,6 +27,7 @@ import {
   TestCorrectionReasons,
 } from "../../testResults/viewResults/actionMenuModals/TestResultCorrectionModal";
 import {
+  chlamydiaSymptomDefinitions,
   gonorrheaSymptomDefinitions,
   hepatitisCSymptomDefinitions,
   PregnancyCode,
@@ -637,6 +638,23 @@ const TestCardForm = ({
               }}
               diseaseSymptomDefinitions={gonorrheaSymptomDefinitions}
               diseaseNameForFormIds={"gonorrhea"}
+            />
+          </div>
+        )}
+        {whichAoeFormOption === AOEFormOption.CHLAMYDIA && (
+          <div className="grid-row grid-gap">
+            <STIGenericAOEForm
+              testOrder={testOrder}
+              responses={state.aoeResponses}
+              hasAttemptedSubmit={hasAttemptedSubmit}
+              onResponseChange={(responses) => {
+                dispatch({
+                  type: TestFormActionCase.UPDATE_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+              diseaseSymptomDefinitions={chlamydiaSymptomDefinitions}
+              diseaseNameForFormIds={"chlamydia"}
             />
           </div>
         )}

@@ -33,6 +33,7 @@ const diseaseResultTitlePxpMap: Record<MULTIPLEX_DISEASES, string> = {
   [MULTIPLEX_DISEASES.SYPHILIS]: "constants.diseaseResultTitle.SYPHILIS",
   [MULTIPLEX_DISEASES.HEPATITIS_C]: "constants.diseaseResultTitle.HEPATITIS_C",
   [MULTIPLEX_DISEASES.GONORRHEA]: "constants.diseaseResultTitle.GONORRHEA",
+  [MULTIPLEX_DISEASES.CHLAMYDIA]: "constants.diseaseResultTitle.CHLAMYDIA",
 };
 
 const diseaseResultReportingAppMap: Record<MULTIPLEX_DISEASES, string> = {
@@ -45,6 +46,7 @@ const diseaseResultReportingAppMap: Record<MULTIPLEX_DISEASES, string> = {
   [MULTIPLEX_DISEASES.SYPHILIS]: "constants.disease.SYPHILIS",
   [MULTIPLEX_DISEASES.HEPATITIS_C]: "constants.disease.HEPATITIS_C",
   [MULTIPLEX_DISEASES.GONORRHEA]: "constants.disease.GONORRHEA",
+  [MULTIPLEX_DISEASES.CHLAMYDIA]: "constants.disease.CHLAMYDIA",
 };
 
 const setResult = (result: string, t: translateFn) => {

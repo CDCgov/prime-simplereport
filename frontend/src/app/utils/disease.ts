@@ -22,6 +22,10 @@ export const useSupportedDiseaseList = () => {
   if (!gonorrheaEnabled) {
     allDiseases = allDiseases.filter((d) => d !== MULTIPLEX_DISEASES.GONORRHEA);
   }
+  const chlamydiaEnabled = Boolean(useFeature("chlamydiaEnabled"));
+  if (!chlamydiaEnabled) {
+    allDiseases = allDiseases.filter((d) => d !== MULTIPLEX_DISEASES.CHLAMYDIA);
+  }
   return allDiseases;
 };
 

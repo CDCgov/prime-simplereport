@@ -4,6 +4,8 @@ import _ from "lodash";
 
 import { AoeQuestionResponses } from "../TestCardFormReducer";
 import {
+  chlamydiaSymptomDefinitions,
+  chlamydiaSymptomsMap,
   gonorrheaSymptomDefinitions,
   gonorrheaSymptomsMap,
   hepatitisCSymptomDefinitions,
@@ -190,6 +192,11 @@ export function stringifySymptomJsonForAoeUpdate(
       mapSymptomBoolLiteralsToBool(symptomJson, gonorrheaSymptomDefinitions)
     );
   }
+  if (_.isEqual(symptomKeys, Object.keys(chlamydiaSymptomsMap))) {
+    symptomPayload = JSON.stringify(
+      mapSymptomBoolLiteralsToBool(symptomJson, chlamydiaSymptomDefinitions)
+    );
+  }
   return symptomPayload;
 }
 
@@ -209,6 +216,9 @@ export function mapSpecifiedSymptomBoolLiteralsToBool(
   }
   if (disease === AOEFormOption.GONORRHEA) {
     symptomDefinitionToParse = gonorrheaSymptomDefinitions;
+  }
+  if (disease === AOEFormOption.CHLAMYDIA) {
+    symptomDefinitionToParse = chlamydiaSymptomDefinitions;
   }
   // there are no symptoms for that test card, so return true
   if (!symptomDefinitionToParse) return { shouldReturn: true };

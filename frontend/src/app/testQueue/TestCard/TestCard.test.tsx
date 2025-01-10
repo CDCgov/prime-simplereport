@@ -9,7 +9,7 @@ import {
   within,
 } from "@testing-library/react";
 import moment from "moment";
-import userEvent from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 import * as flaggedMock from "flagged";
 
 import { getAppInsights } from "../../TelemetryService";
@@ -71,6 +71,8 @@ import {
   baseStiAoeUpdateMock,
   device10Id,
   device10Name,
+  chlamydiaDeviceId,
+  chlamydiaDeviceName,
 } from "../testCardTestConstants";
 import { QueriedFacility } from "../TestCardForm/types";
 import mockSupportedDiseaseMultiplex, {
@@ -81,6 +83,7 @@ import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/Device
 import { UpdateTestOrderTimerStartedAtDocument } from "../../../generated/graphql";
 import mockSupportedDiseaseTestPerformedHepatitisC from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHepatitisC";
 import mockSupportedDiseaseTestPerformedGonorrhea from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedGonorrhea";
+import mockSupportedDiseaseTestPerformedChlamydia from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedChlamydia";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
@@ -295,6 +298,21 @@ const facilityInfo: QueriedFacility = {
         },
       ],
     },
+    {
+      internalId: chlamydiaDeviceId,
+      name: chlamydiaDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseTestPerformedChlamydia,
+      ],
+      swabTypes: [
+        {
+          name: specimen3Name,
+          internalId: specimen3Id,
+          typeCode: "122555007",
+        },
+      ],
+    },
   ],
 };
 export const devicesMap = new Map();
@@ -326,6 +344,49 @@ describe("TestCard", () => {
     deviceNameOrder.forEach((deviceName, index) => {
       expect(deviceDropdown.options[index].label).toEqual(deviceName);
     });
+  };
+
+  const expectRequiredAOEQuestionsForPositiveGenericSTI = async (
+    user: UserEvent
+  ) => {
+    await user.click(
+      screen.getByLabelText("Positive", {
+        exact: false,
+      })
+    );
+
+    expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Is the patient currently experiencing or showing signs of symptoms?"
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("What is the gender of their sexual partners?")
+    ).toBeInTheDocument();
+
+    const symptomFieldSet = screen.getByTestId(
+      `has-any-symptoms-${sharedTestOrderInfo.internalId}`
+    );
+    await user.click(within(symptomFieldSet).getByLabelText("Yes"));
+
+    expect(
+      screen.getByText("Select any symptoms the patient is experiencing")
+    ).toBeInTheDocument();
+  };
+
+  const expectHiddenAOEQuestionsForNonPositiveGenericSTI = () => {
+    expect(
+      screen.queryByText("Is the patient pregnant?")
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(
+        "Is the patient currently experiencing or showing signs of symptoms?"
+      )
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("What is the gender of their sexual partners?")
+    ).not.toBeInTheDocument();
   };
 
   const devicesMap = new Map();
@@ -1295,17 +1356,9 @@ describe("TestCard", () => {
 
       await user.selectOptions(deviceDropdown, device8Name);
       expect(screen.getByText("Syphilis result")).toBeInTheDocument();
-      expect(
-        screen.queryByText("Is the patient pregnant?")
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "Is the patient currently experiencing or showing signs of symptoms?"
-        )
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("What is the gender of their sexual partners?")
-      ).not.toBeInTheDocument();
+
+      expectHiddenAOEQuestionsForNonPositiveGenericSTI();
+
       expect(
         screen.queryByText(
           "Has the patient been told they have syphilis before?"
@@ -1317,17 +1370,9 @@ describe("TestCard", () => {
           exact: false,
         })
       );
-      expect(
-        screen.queryByText("Is the patient pregnant?")
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "Is the patient currently experiencing or showing signs of symptoms?"
-        )
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("What is the gender of their sexual partners?")
-      ).not.toBeInTheDocument();
+
+      expectHiddenAOEQuestionsForNonPositiveGenericSTI();
+
       expect(
         screen.queryByText(
           "Has the patient been told they have syphilis before?"
@@ -1381,30 +1426,7 @@ describe("TestCard", () => {
       await user.selectOptions(deviceDropdown, device9Name);
       expect(screen.getByText("Hepatitis C result")).toBeInTheDocument();
 
-      await user.click(
-        screen.getByLabelText("Positive", {
-          exact: false,
-        })
-      );
-
-      expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "Is the patient currently experiencing or showing signs of symptoms?"
-        )
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText("What is the gender of their sexual partners?")
-      ).toBeInTheDocument();
-
-      const symptomFieldSet = screen.getByTestId(
-        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
-      );
-      await user.click(within(symptomFieldSet).getByLabelText("Yes"));
-
-      expect(
-        screen.getByText("Select any symptoms the patient is experiencing")
-      ).toBeInTheDocument();
+      await expectRequiredAOEQuestionsForPositiveGenericSTI(user);
     });
 
     it("hides AOE questions when there is no positive Hepatitis C result", async function () {
@@ -1423,34 +1445,16 @@ describe("TestCard", () => {
 
       await user.selectOptions(deviceDropdown, device9Name);
       expect(screen.getByText("Hepatitis C result")).toBeInTheDocument();
-      expect(
-        screen.queryByText("Is the patient pregnant?")
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "Is the patient currently experiencing or showing signs of symptoms?"
-        )
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("What is the gender of their sexual partners?")
-      ).not.toBeInTheDocument();
+
+      expectHiddenAOEQuestionsForNonPositiveGenericSTI();
 
       await user.click(
         screen.getByLabelText("Inconclusive", {
           exact: false,
         })
       );
-      expect(
-        screen.queryByText("Is the patient pregnant?")
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "Is the patient currently experiencing or showing signs of symptoms?"
-        )
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("What is the gender of their sexual partners?")
-      ).not.toBeInTheDocument();
+
+      expectHiddenAOEQuestionsForNonPositiveGenericSTI();
     });
 
     it("checks that Hep C submission only works if AOE questions are valid", async function () {
@@ -1550,30 +1554,7 @@ describe("TestCard", () => {
       await user.selectOptions(deviceDropdown, device10Name);
       expect(screen.getByText("Gonorrhea result")).toBeInTheDocument();
 
-      await user.click(
-        screen.getByLabelText("Positive", {
-          exact: false,
-        })
-      );
-
-      expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "Is the patient currently experiencing or showing signs of symptoms?"
-        )
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText("What is the gender of their sexual partners?")
-      ).toBeInTheDocument();
-
-      const symptomFieldSet = screen.getByTestId(
-        `has-any-symptoms-${sharedTestOrderInfo.internalId}`
-      );
-      await user.click(within(symptomFieldSet).getByLabelText("Yes"));
-
-      expect(
-        screen.getByText("Select any symptoms the patient is experiencing")
-      ).toBeInTheDocument();
+      await expectRequiredAOEQuestionsForPositiveGenericSTI(user);
     });
 
     it("hides AOE questions when there is no positive Gonorrhea result", async function () {
@@ -1592,34 +1573,92 @@ describe("TestCard", () => {
 
       await user.selectOptions(deviceDropdown, device10Name);
       expect(screen.getByText("Gonorrhea result")).toBeInTheDocument();
-      expect(
-        screen.queryByText("Is the patient pregnant?")
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "Is the patient currently experiencing or showing signs of symptoms?"
-        )
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("What is the gender of their sexual partners?")
-      ).not.toBeInTheDocument();
+      expectHiddenAOEQuestionsForNonPositiveGenericSTI();
 
       await user.click(
         screen.getByLabelText("Inconclusive", {
           exact: false,
         })
       );
-      expect(
-        screen.queryByText("Is the patient pregnant?")
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText(
-          "Is the patient currently experiencing or showing signs of symptoms?"
-        )
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByText("What is the gender of their sexual partners?")
-      ).not.toBeInTheDocument();
+
+      expectHiddenAOEQuestionsForNonPositiveGenericSTI();
+    });
+
+    it("shows radio buttons for Chlamydia when a Chlamydia device is chosen", async function () {
+      mockDiseaseEnabledFlag("chlamydia");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.CHLAMYDIA,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      expect(screen.queryByText("Chlamydia result")).not.toBeInTheDocument();
+
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, chlamydiaDeviceName);
+      expect(screen.getByText("Chlamydia result")).toBeInTheDocument();
+    });
+
+    it("shows required Chlamydia AOE questions when a positive Chlamydia result is present", async function () {
+      mockDiseaseEnabledFlag("chlamydia");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.CHLAMYDIA,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+        {
+          ...baseStiAoeUpdateMock({
+            ...NO_SYMPTOMS_FALSE_OVERRIDE,
+          }),
+          ...mutationResponse,
+        },
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+      expect(deviceDropdown.options.length).toEqual(
+        DEFAULT_DEVICE_OPTIONS_LENGTH + 1
+      );
+
+      await user.selectOptions(deviceDropdown, chlamydiaDeviceName);
+      expect(screen.getByText("Chlamydia result")).toBeInTheDocument();
+
+      await expectRequiredAOEQuestionsForPositiveGenericSTI(user);
+    });
+
+    it("hides AOE questions when there is no positive Chlamydia result", async function () {
+      mockDiseaseEnabledFlag("chlamydia");
+
+      const mocks = [
+        generateEditQueueMock(
+          MULTIPLEX_DISEASES.CHLAMYDIA,
+          TEST_RESULTS.POSITIVE
+        ),
+        blankUpdateAoeEventMock,
+      ];
+
+      const { user } = await renderQueueItem({ mocks });
+      const deviceDropdown = await getDeviceTypeDropdown();
+
+      await user.selectOptions(deviceDropdown, chlamydiaDeviceName);
+      expect(screen.getByText("Chlamydia result")).toBeInTheDocument();
+
+      expectHiddenAOEQuestionsForNonPositiveGenericSTI();
+
+      await user.click(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
+
+      expectHiddenAOEQuestionsForNonPositiveGenericSTI();
     });
 
     it("checks that submission only works if AOE questions are valid", async function () {
