@@ -719,8 +719,8 @@ class LiveOktaRepositoryTest {
     var mockEmbeddedMap = mock(Map.class);
     when(mockGroup.getEmbedded()).thenReturn(mockEmbeddedMap);
     var mockStatsLinkedHashMap = mock(LinkedHashMap.class);
-    when(mockEmbeddedMap.get(eq("stats"))).thenReturn(mockStatsLinkedHashMap);
-    when(mockStatsLinkedHashMap.get(eq("usersCount"))).thenReturn(10);
+    when(mockEmbeddedMap.get("stats")).thenReturn(mockStatsLinkedHashMap);
+    when(mockStatsLinkedHashMap.get("usersCount")).thenReturn(10);
 
     var actual = _repo.getUsersCountInOrganization(mockOrg);
     assertEquals(10, actual);
@@ -756,8 +756,8 @@ class LiveOktaRepositoryTest {
     var mockEmbeddedMap = mock(Map.class);
     when(mockGroup.getEmbedded()).thenReturn(mockEmbeddedMap);
     var mockStatsLinkedHashMap = mock(LinkedHashMap.class);
-    when(mockEmbeddedMap.get(eq("stats"))).thenReturn(mockStatsLinkedHashMap);
-    when(mockStatsLinkedHashMap.get(eq("usersCount"))).thenReturn(10);
+    when(mockEmbeddedMap.get("stats")).thenReturn(mockStatsLinkedHashMap);
+    when(mockStatsLinkedHashMap.get("usersCount")).thenReturn(10);
 
     var actual = _repo.getUsersCountInSingleFacility(mockFacility);
     assertEquals(10, actual);
