@@ -5,6 +5,8 @@ import { MockedProvider } from "@apollo/client/testing";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
 import {
   asymptomaticTestOrderInfo,
+  chlamydiaDeviceId,
+  chlamydiaDeviceName,
   covidDeviceId,
   covidDeviceName,
   devicesMap,
@@ -218,6 +220,24 @@ describe("TestCardForm", () => {
             internalId: gonorrheaDeviceId,
             name: gonorrheaDeviceName,
             model: gonorrheaDeviceName,
+            testLength: 15,
+          },
+        },
+      };
+
+      expect(await renderTestCardForm({ props })).toMatchSnapshot();
+    });
+
+    it("matches snapshot for chlamydia device", async () => {
+      const props = {
+        ...testProps,
+        testOrder: {
+          ...testProps.testOrder,
+          results: [{ testResult: "POSITIVE", disease: { name: "CHLAMYDIA" } }],
+          deviceType: {
+            internalId: chlamydiaDeviceId,
+            name: chlamydiaDeviceName,
+            model: chlamydiaDeviceName,
             testLength: 15,
           },
         },

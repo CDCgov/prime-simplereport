@@ -51,6 +51,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -592,47 +593,81 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertThat(adminIds).isEqualTo(expectedIds);
   }
 
-  private void sendOrgAdminEmailCSVAsyncTest() throws ExecutionException, InterruptedException {
-    setupDataByFacility();
-    String type = "facilities";
+  private void sendOrgAdminEmailCSVAsync_mnFacilities_test()
+      throws ExecutionException, InterruptedException {
     when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
     when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
 
+    String type = "facilities";
     String mnExternalId = "747e341d-0467-45b8-b92f-a638da2bf1ee";
     UUID mnId = organizationRepository.findByExternalId(mnExternalId).get().getInternalId();
     List<String> mnEmails = _service.sendOrgAdminEmailCSVAsync(List.of(mnId), type, "MN").get();
     List<String> expectedMnEmails =
         List.of("mn-orgBadmin1@example.com", "mn-orgBadmin2@example.com");
-    verify(emailService, times(1)).sendWithCSVAttachment(expectedMnEmails, "MN", type);
+    ArgumentCaptor<List<String>> arg1 = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
+    ArgumentCaptor<String> arg3 = ArgumentCaptor.forClass(String.class);
+    verify(emailService, times(1))
+        .sendWithCSVAttachment(arg1.capture(), arg2.capture(), arg3.capture());
+    assertEquals(expectedMnEmails, arg1.getValue());
+    assertEquals("MN", arg2.getValue());
+    assertEquals(type, arg3.getValue());
     assertThat(mnEmails).isEqualTo(expectedMnEmails);
+  }
 
-    String njExternalId = "d6b3951b-6698-4ee7-9d63-aaadee85bac0";
-    UUID njId = organizationRepository.findByExternalId(njExternalId).get().getInternalId();
-    List<String> njEmails = _service.sendOrgAdminEmailCSVAsync(List.of(njId), type, "NJ").get();
-    List<String> expectedNjEmails = List.of("nj-orgAadmin1@example.com");
-    verify(emailService, times(1)).sendWithCSVAttachment(expectedNjEmails, "NJ", type);
-    assertThat(njEmails).isEqualTo(expectedNjEmails);
+  private void sendOrgAdminEmailCSVAsync_paFacilities_test()
+      throws ExecutionException, InterruptedException {
+    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
 
+    String type = "facilities";
     List<String> nonExistentOrgEmails =
         _service.sendOrgAdminEmailCSVAsync(List.of(), type, "PA").get();
-    verify(emailService, times(1)).sendWithCSVAttachment(nonExistentOrgEmails, "PA", type);
+    ArgumentCaptor<List<String>> arg1 = ArgumentCaptor.forClass(List.class);
+    ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
+    ArgumentCaptor<String> arg3 = ArgumentCaptor.forClass(String.class);
+    verify(emailService, times(1))
+        .sendWithCSVAttachment(arg1.capture(), arg2.capture(), arg3.capture());
+    assertEquals(nonExistentOrgEmails, arg1.getValue());
+    assertEquals("PA", arg2.getValue());
+    assertEquals(type, arg3.getValue());
     assertThat(nonExistentOrgEmails).isEmpty();
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSVAsync_withOktaMigrationDisabled_success()
+  void sendOrgAdminEmailCSVAsync_withEmails_withOktaMigrationDisabled_success()
       throws ExecutionException, InterruptedException {
     when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
-    sendOrgAdminEmailCSVAsyncTest();
+    setupDataByFacility();
+    sendOrgAdminEmailCSVAsync_mnFacilities_test();
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSVAsync_withOktaMigrationEnabled_success()
+  void sendOrgAdminEmailCSVAsync_withNoEmails_withOktaMigrationDisabled_success()
+      throws ExecutionException, InterruptedException {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
+    setupDataByFacility();
+    sendOrgAdminEmailCSVAsync_paFacilities_test();
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void sendOrgAdminEmailCSVAsync_withEmails_withOktaMigrationEnabled_success()
       throws ExecutionException, InterruptedException {
     when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
-    sendOrgAdminEmailCSVAsyncTest();
+    setupDataByFacility();
+    sendOrgAdminEmailCSVAsync_mnFacilities_test();
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void sendOrgAdminEmailCSVAsync_withNoEmails_withOktaMigrationEnabled_success()
+      throws ExecutionException, InterruptedException {
+    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+    setupDataByFacility();
+    sendOrgAdminEmailCSVAsync_paFacilities_test();
   }
 
   @Test

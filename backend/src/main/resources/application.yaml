@@ -180,6 +180,7 @@ datahub:
   csv-upload-api-fhir-client: "simple_report.fullelr-bulkuploader"
 features:
   oktaMigrationEnabled: false
+  chlamydiaEnabled: true
   gonorrheaEnabled: true
   hepatitisCEnabled: true
   syphilisEnabled: true

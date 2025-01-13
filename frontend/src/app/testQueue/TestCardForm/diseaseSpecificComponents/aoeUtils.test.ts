@@ -1,4 +1,6 @@
 import {
+  chlamydiaSymptomDefinitions,
+  chlamydiaSymptomOrder,
   gonorrheaSymptomDefinitions,
   gonorrheaSymptomOrder,
   hepatitisCSymptomDefinitions,
@@ -40,6 +42,17 @@ describe("mapSymptomBoolLiteralsToBool", () => {
       gonorrheaSymptomDefinitions
     );
     gonorrheaSymptomOrder.forEach((symptomKey) => {
+      expect(parsedPayload[symptomKey]).toEqual(false);
+    });
+  });
+  it("takes a JSON payload of {'Chlamydia symptom SNOMEDS' : boolean strings} and parses the strings into booleans", () => {
+    const chlamydiaSymptomPayload =
+      '{"77880009":false,"405729008":false,"301822002":false,"249301002":false,"49650001":false,"9957009":false,"162156001":false,"63901009":false,"438457000":false}\n';
+    const parsedPayload = mapSymptomBoolLiteralsToBool(
+      chlamydiaSymptomPayload,
+      chlamydiaSymptomDefinitions
+    );
+    chlamydiaSymptomOrder.forEach((symptomKey) => {
       expect(parsedPayload[symptomKey]).toEqual(false);
     });
   });

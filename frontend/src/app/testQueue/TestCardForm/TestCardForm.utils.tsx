@@ -28,6 +28,7 @@ export enum AOEFormOption {
   SYPHILIS = "SYPHILIS",
   HEPATITIS_C = "HEPATITIS_C",
   GONORRHEA = "GONORRHEA",
+  CHLAMYDIA = "CHLAMYDIA",
   NONE = "NONE",
 }
 
@@ -67,6 +68,7 @@ export function useFilteredDeviceTypes(facility: QueriedFacility) {
   const syphilisEnabled = useFeature("syphilisEnabled");
   const hepatitisCEnabled = useFeature("hepatitisCEnabled");
   const gonorrheaEnabled = useFeature("gonorrheaEnabled");
+  const chlamydiaEnabled = useFeature("chlamydiaEnabled");
 
   let deviceTypes = [...facility!.deviceTypes];
 
@@ -92,6 +94,12 @@ export function useFilteredDeviceTypes(facility: QueriedFacility) {
     deviceTypes = filterDiseaseFromAllDevices(
       deviceTypes,
       MULTIPLEX_DISEASES.GONORRHEA
+    );
+  }
+  if (!chlamydiaEnabled) {
+    deviceTypes = filterDiseaseFromAllDevices(
+      deviceTypes,
+      MULTIPLEX_DISEASES.CHLAMYDIA
     );
   }
   return deviceTypes;
@@ -215,6 +223,15 @@ export const useAOEFormOption = (
     devicesMap
       .get(testFormState.deviceId)
       ?.supportedDiseaseTestPerformed.filter(
+        (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.CHLAMYDIA
+      ).length === 1
+  ) {
+    return resultHasPositive ? AOEFormOption.CHLAMYDIA : AOEFormOption.NONE;
+  }
+  if (
+    devicesMap
+      .get(testFormState.deviceId)
+      ?.supportedDiseaseTestPerformed.filter(
         (x) => x.supportedDisease.name === MULTIPLEX_DISEASES.GONORRHEA
       ).length === 1
   ) {
@@ -305,6 +322,11 @@ export const REQUIRED_AOE_QUESTIONS_BY_DISEASE: {
     AoeQuestionName.NO_SYMPTOMS,
   ],
   [AOEFormOption.GONORRHEA]: [
+    AoeQuestionName.PREGNANCY,
+    AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
+    AoeQuestionName.NO_SYMPTOMS,
+  ],
+  [AOEFormOption.CHLAMYDIA]: [
     AoeQuestionName.PREGNANCY,
     AoeQuestionName.GENDER_OF_SEXUAL_PARTNERS,
     AoeQuestionName.NO_SYMPTOMS,

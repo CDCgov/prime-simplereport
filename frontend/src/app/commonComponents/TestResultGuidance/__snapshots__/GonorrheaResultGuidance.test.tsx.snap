@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GonorrheaResultGuidance displays guidance for a Gonorrhea result 1`] = `
+<div>
+  <p
+    class="text-bold sr-guidance-heading"
+  >
+    For Gonorrhea:
+  </p>
+  <p>
+    If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.
+  </p>
+  <p>
+    <a
+      href="https://www.cdc.gov/gonorrhea/about/index.html"
+      rel="noopener noreferrer"
+      target="_blank"
+    >
+      Visit the CDC website to learn more about a positive Gonorrhea result.
+    </a>
+     (cdc.gov/gonorrhea/about).
+  </p>
+</div>
+`;

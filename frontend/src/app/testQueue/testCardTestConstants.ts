@@ -10,6 +10,7 @@ import {
 import mockSupportedDiseaseTestPerformedHIV from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 import mockSupportedDiseaseTestPerformedSyphilis from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
 import mockSupportedDiseaseTestPerformedGonorrhea from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedGonorrhea";
+import mockSupportedDiseaseTestPerformedChlamydia from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedChlamydia";
 
 import { QueriedFacility, QueriedTestOrder } from "./TestCardForm/types";
 import mockSupportedDiseaseCovid from "./mocks/mockSupportedDiseaseCovid";
@@ -35,6 +36,8 @@ export const hepatitisCDeviceName = "HEPATITIS C";
 export const hepatitisCDeviceId = "HEPATITIS C-DEVICE-ID";
 export const gonorrheaDeviceName = "GONORRHEA";
 export const gonorrheaDeviceId = "GONORRHEA-DEVICE-ID";
+export const chlamydiaDeviceName = "Chlamydia device";
+export const chlamydiaDeviceId = "CHLAMYDIA-DEVICE-ID";
 
 // 6 instead of 7 because HIV devices are filtered out when HIV feature flag is disabled
 export const DEFAULT_DEVICE_OPTIONS_LENGTH = 6;
@@ -424,6 +427,21 @@ export const facilityInfo: QueriedFacility = {
       testLength: 15,
       supportedDiseaseTestPerformed: [
         ...mockSupportedDiseaseTestPerformedGonorrhea,
+      ],
+      swabTypes: [
+        {
+          name: specimen1Name,
+          internalId: specimen1Id,
+          typeCode: "445297001",
+        },
+      ],
+    },
+    {
+      internalId: chlamydiaDeviceId,
+      name: chlamydiaDeviceName,
+      testLength: 15,
+      supportedDiseaseTestPerformed: [
+        ...mockSupportedDiseaseTestPerformedChlamydia,
       ],
       swabTypes: [
         {
