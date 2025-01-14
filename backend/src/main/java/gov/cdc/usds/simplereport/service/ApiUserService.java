@@ -730,14 +730,11 @@ public class ApiUserService {
     OrganizationRoles orgRoles =
         getOrganizationRoles(Optional.ofNullable(oktaClaims), apiUser, isSiteAdmin);
 
-    try {
-      _dbOrgRoleClaimsService.checkOrgRoleClaimsEquality(
-          List.of(oktaClaims),
-          List.of(_dbOrgRoleClaimsService.getOrganizationRoleClaims(apiUser)),
-          apiUser.getLoginEmail());
-    } catch (MisconfiguredUserException e) {
-      log.error("Misconfigured organizations in DB for User ID: {}", apiUser.getInternalId());
-    }
+    _dbOrgRoleClaimsService.checkOrgRoleClaimsEquality(
+        List.of(oktaClaims),
+        List.of(_dbOrgRoleClaimsService.getOrganizationRoleClaims(apiUser)),
+        apiUser.getLoginEmail());
+
     return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
   }
 
