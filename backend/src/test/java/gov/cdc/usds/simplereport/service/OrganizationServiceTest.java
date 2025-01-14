@@ -40,7 +40,6 @@ import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -61,7 +60,6 @@ import org.springframework.security.access.AccessDeniedException;
 @EnableAsync
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
-  @Autowired private TestDataFactory testDataFactory;
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @Autowired @SpyBean private FacilityRepository facilityRepository;
   @Autowired @SpyBean private OrganizationRepository organizationRepository;
@@ -156,7 +154,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   private DeviceType getDeviceConfig() {
-    return testDataFactory.createDeviceType("Abbott ID Now", "Abbott", "1");
+    return _dataFactory.createDeviceType("Abbott ID Now", "Abbott", "1");
   }
 
   @Test
@@ -190,8 +188,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void getOrganizationsAndFacility_filterByIdentityVerified_success() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.saveValidOrganization();
-    Organization unverifiedOrg = testDataFactory.saveUnverifiedOrganization();
+    Organization verifiedOrg = _dataFactory.saveValidOrganization();
+    Organization unverifiedOrg = _dataFactory.saveUnverifiedOrganization();
 
     // WHEN
     List<Organization> allOrgs = _service.getOrganizations(null);
@@ -221,9 +219,9 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void getFacilitiesIncludeArchived_includeArchived_success() {
-    Organization org = testDataFactory.saveValidOrganization();
-    Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
-    testDataFactory.createValidFacility(org, "Not deleted");
+    Organization org = _dataFactory.saveValidOrganization();
+    Facility deletedFacility = _dataFactory.createArchivedFacility(org, "Delete me");
+    _dataFactory.createValidFacility(org, "Not deleted");
 
     Set<Facility> archivedFacilities = _service.getFacilitiesIncludeArchived(org, true);
 
@@ -236,9 +234,9 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void getFacilitiesIncludeArchived_excludeArchived_success() {
-    Organization org = testDataFactory.saveValidOrganization();
-    testDataFactory.createArchivedFacility(org, "Delete me");
-    Facility activeFacility = testDataFactory.createValidFacility(org, "Not deleted");
+    Organization org = _dataFactory.saveValidOrganization();
+    _dataFactory.createArchivedFacility(org, "Delete me");
+    Facility activeFacility = _dataFactory.createValidFacility(org, "Not deleted");
 
     Set<Facility> facilities = _service.getFacilitiesIncludeArchived(org, false);
 
@@ -251,8 +249,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void viewArchivedFacilities_success() {
-    Organization org = testDataFactory.saveValidOrganization();
-    Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
+    Organization org = _dataFactory.saveValidOrganization();
+    Facility deletedFacility = _dataFactory.createArchivedFacility(org, "Delete me");
 
     Set<Facility> archivedFacilities = _service.getArchivedFacilities(org);
 
@@ -264,8 +262,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportStandardUser
   void viewArchivedFacilities_standardUser_failure() {
-    Organization org = testDataFactory.saveValidOrganization();
-    testDataFactory.createArchivedFacility(org, "Delete me");
+    Organization org = _dataFactory.saveValidOrganization();
+    _dataFactory.createArchivedFacility(org, "Delete me");
 
     assertThrows(AccessDeniedException.class, () -> _service.getArchivedFacilities());
   }
@@ -275,9 +273,9 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void deleteFacilityTest_successful() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.saveValidOrganization();
+    Organization verifiedOrg = _dataFactory.saveValidOrganization();
     Facility mistakeFacility =
-        testDataFactory.createValidFacility(verifiedOrg, "This facility is a mistake");
+        _dataFactory.createValidFacility(verifiedOrg, "This facility is a mistake");
     // WHEN
     Facility deletedFacility =
         _service.markFacilityAsDeleted(mistakeFacility.getInternalId(), true);
@@ -303,7 +301,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void deleteOrganizationTest_successful() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.saveValidOrganization();
+    Organization verifiedOrg = _dataFactory.saveValidOrganization();
     // WHEN
     Organization deletedOrganization =
         _service.markOrganizationAsDeleted(verifiedOrg.getInternalId(), true);
@@ -333,7 +331,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void verifyOrganizationNoPermissions_noUser_withOktaMigrationDisabled_success() {
-    Organization org = testDataFactory.saveUnverifiedOrganization();
+    Organization org = _dataFactory.saveUnverifiedOrganization();
     _service.verifyOrganizationNoPermissions(org.getExternalId());
 
     org = _service.getOrganization(org.getExternalId());
@@ -347,7 +345,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void verifyOrganizationNoPermissions_noUser_withOktaMigrationEnabled_throws() {
     when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
-    Organization org = testDataFactory.saveUnverifiedOrganization();
+    Organization org = _dataFactory.saveUnverifiedOrganization();
     String orgExternalId = org.getExternalId();
 
     IllegalStateException e =
@@ -363,7 +361,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void verifyOrganizationNoPermissions_withUsers_withOktaMigrationEnabled_success() {
     when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
-    Organization org = testDataFactory.saveUnverifiedOrganizationWithUser("fake@example.com");
+    Organization org = _dataFactory.saveUnverifiedOrganizationWithUser("fake@example.com");
 
     _service.verifyOrganizationNoPermissions(org.getExternalId());
     verify(dbAuthorizationService, times(1)).getOrgAdminUsers(org);
@@ -376,7 +374,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void verifyOrganizationNoPermissions_orgAlreadyVerified_failure() {
-    Organization org = testDataFactory.saveValidOrganization();
+    Organization org = _dataFactory.saveValidOrganization();
     String orgExternalId = org.getExternalId();
     IllegalStateException e =
         assertThrows(
@@ -390,7 +388,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void setIdentityVerified_withOktaMigrationDisabled_success() {
     when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
-    Organization unverifiedOrg = testDataFactory.saveUnverifiedOrganization();
+    Organization unverifiedOrg = _dataFactory.saveUnverifiedOrganization();
 
     boolean status = _service.setIdentityVerified(unverifiedOrg.getExternalId(), true);
     verify(dbAuthorizationService, times(0)).getOrgAdminUsers(unverifiedOrg);
@@ -403,7 +401,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   void setIdentityVerified_withOktaMigrationEnabled_success() {
     when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
     Organization unverifiedOrg =
-        testDataFactory.saveUnverifiedOrganizationWithUser("fake@example.com");
+        _dataFactory.saveUnverifiedOrganizationWithUser("fake@example.com");
 
     boolean status = _service.setIdentityVerified(unverifiedOrg.getExternalId(), true);
     verify(dbAuthorizationService, times(1)).getOrgAdminUsers(unverifiedOrg);
@@ -743,7 +741,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             new Organization("Org A", "k12", "d6b3951b-6698-4ee7-9d63-aaadee85bac0", true));
     _dataFactory.createValidFacility(orgA, "Org A Facility 1", orgAStreetAddress);
     _dataFactory.createValidFacility(orgA, "Org A Facility 2", orgAStreetAddress);
-    testDataFactory.createValidApiUser("nj-orgAadmin1@example.com", orgA, Role.ADMIN);
+    _dataFactory.createValidApiUser("nj-orgAadmin1@example.com", orgA, Role.ADMIN);
 
     StreetAddress orgBStreetAddress =
         new StreetAddress("234 Red Street", null, "Minneapolis", "MN", "55407", "Hennepin");
@@ -751,8 +749,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         _dataFactory.saveOrganization(
             new Organization("Org B", "airport", "747e341d-0467-45b8-b92f-a638da2bf1ee", true));
     _dataFactory.createValidFacility(orgB, "Org B Facility 1", orgBStreetAddress);
-    testDataFactory.createValidApiUser("mn-orgBadmin1@example.com", orgB, Role.ADMIN);
-    testDataFactory.createValidApiUser("mn-orgBadmin2@example.com", orgB, Role.ADMIN);
+    _dataFactory.createValidApiUser("mn-orgBadmin1@example.com", orgB, Role.ADMIN);
+    _dataFactory.createValidApiUser("mn-orgBadmin2@example.com", orgB, Role.ADMIN);
   }
 
   private void setupDataByPatient() {
@@ -766,7 +764,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         _dataFactory.saveOrganization(
             new Organization(
                 "Org A", "k12", "CA-org-a-5359aa13-93b2-4680-802c-9c90acb5d251", true));
-    testDataFactory.createValidApiUser("ca-orgAadmin1@example.com", orgA, Role.ADMIN);
+    _dataFactory.createValidApiUser("ca-orgAadmin1@example.com", orgA, Role.ADMIN);
     Facility orgAFacility =
         _dataFactory.createValidFacility(orgA, "Org A Facility 1", caStreetAddress);
 
@@ -779,8 +777,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         _dataFactory.saveOrganization(
             new Organization(
                 "Org B", "airport", "MN-org-b-3dddkv89-8981-421b-bd61-f293723284", true));
-    testDataFactory.createValidApiUser("mn-orgBadmin1@example.com", orgB, Role.ADMIN);
-    testDataFactory.createValidApiUser("mn-orgBuser@example.com", orgB, Role.USER);
+    _dataFactory.createValidApiUser("mn-orgBadmin1@example.com", orgB, Role.ADMIN);
+    _dataFactory.createValidApiUser("mn-orgBuser@example.com", orgB, Role.USER);
     Facility orgBFacility =
         _dataFactory.createValidFacility(orgB, "Org B Facility 1", mnStreetAddress);
     // create patient in CA with a test event for Org A

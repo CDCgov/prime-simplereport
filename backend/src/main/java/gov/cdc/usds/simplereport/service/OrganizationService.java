@@ -555,7 +555,7 @@ public class OrganizationService {
         .collect(Collectors.toList());
   }
 
-  @Async
+  @Async("applicationTaskExecutor")
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public CompletableFuture<List<String>> sendOrgAdminEmailCSVAsync(
       List<UUID> orgInternalIds, String type, String state) {
