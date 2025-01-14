@@ -15,3 +15,5 @@ simple-report:
       - https://dev2.simplereport.gov
 twilio:
   enabled: true
+features:
+  oktaMigrationEnabled: true
