@@ -309,7 +309,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
           <ul>
             <li>
               <a
-                href="/assets/resources/test_results_example_10-3-2022.csv"
+                href="/assets/resources/test_results_example_10-31-2023.csv"
                 className="usa-link"
                 onClick={() => {
                   appInsights?.trackEvent({
@@ -523,7 +523,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                 results, you need to adjust it to match the SimpleReport
                 template. If you don’t have one, use the{" "}
                 <a
-                  href="/assets/resources/test_results_example_10-3-2022.csv"
+                  href="/assets/resources/test_results_example_10-31-2023.csv"
                   className="usa-link"
                   onClick={() => {
                     appInsights?.trackEvent({
