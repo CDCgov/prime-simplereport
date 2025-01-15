@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
-import static gov.cdc.usds.simplereport.service.ApiUserService.DEFAULT_OKTA_USER_PAGE_SIZE;
-
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -18,6 +16,8 @@ import org.springframework.stereotype.Controller;
 /** Resolver for the graphql User type */
 @Controller
 public class UserResolver {
+  public static final int DEFAULT_OKTA_USER_PAGE_SIZE = 10;
+  public static final int DEFAULT_OKTA_USER_PAGE_OFFSET = 0;
 
   private ApiUserService _userService;
 
@@ -44,7 +44,7 @@ public class UserResolver {
   public ManageUsersPageWrapper usersWithStatusPage(
       @Argument int pageNumber, @Argument String searchQuery) {
     if (pageNumber < 0) {
-      pageNumber = ApiUserService.DEFAULT_OKTA_USER_PAGE_OFFSET;
+      pageNumber = DEFAULT_OKTA_USER_PAGE_OFFSET;
     }
     if (!searchQuery.isBlank()) {
       return _userService.searchUsersAndStatusInCurrentOrgPaged(

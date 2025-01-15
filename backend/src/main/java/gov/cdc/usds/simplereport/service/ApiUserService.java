@@ -85,8 +85,6 @@ public class ApiUserService {
   @Autowired private DbOrgRoleClaimsService _dbOrgRoleClaimsService;
 
   @Autowired private FeatureFlagsConfig _featureFlagsConfig;
-  public static final int DEFAULT_OKTA_USER_PAGE_SIZE = 10;
-  public static final int DEFAULT_OKTA_USER_PAGE_OFFSET = 0;
 
   private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
     log.info("User with id={} updated by user with id={}", authorId, updatedUserId);
