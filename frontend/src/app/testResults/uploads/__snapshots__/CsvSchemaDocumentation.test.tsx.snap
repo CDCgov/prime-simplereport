@@ -102,7 +102,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
           <li>
             <a
               class="usa-link"
-              href="/assets/resources/test_results_example_10-3-2022.csv"
+              href="/assets/resources/test_results_example_10-31-2023.csv"
             >
               SimpleReport spreadsheet template with example data [CSV download]
             </a>
@@ -6762,7 +6762,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                
               <a
                 class="usa-link"
-                href="/assets/resources/test_results_example_10-3-2022.csv"
+                href="/assets/resources/test_results_example_10-31-2023.csv"
               >
                 spreadsheet template
               </a>
