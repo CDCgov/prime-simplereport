@@ -119,7 +119,6 @@ const UnarchivePatientInformation = ({
               {displayFacilityName()}
             </h2>
             <div className="sr-showing-patients-on-page display-flex flex-align-center">
-              {loading && "Loading..."}
               {displayPagination() && (
                 <>
                   Showing{" "}
