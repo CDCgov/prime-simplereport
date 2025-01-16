@@ -5,7 +5,7 @@ import "../../../i18n";
 import ChlamydiaResultGuidance from "./ChlamydiaResultGuidance";
 
 describe("ChlamydiaResultGuidance", () => {
-  it("displays guidance for a Gonorrhea result", () => {
+  it("displays guidance for a Chlamydia result", () => {
     const { container } = render(<ChlamydiaResultGuidance />);
     expect(screen.getByText("For Chlamydia:")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
