@@ -471,7 +471,7 @@ export const es: LanguageConfig = {
         h1: "Para Clamidia:",
         positive: {
           p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
-          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo de clamidia.</0> (cdc.gov/chlamydia/es/about/acerca-de-la-gonorrea.html).",
+          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo de clamidia.</0> (cdc.gov/chlamydia/es/about/acerca-de-las-infecciones-por-clamidia.html).",
           treatmentLink:
             "https://www.cdc.gov/chlamydia/es/about/acerca-de-las-infecciones-por-clamidia.html",
         },
