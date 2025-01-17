@@ -658,7 +658,7 @@ public class ApiUserService {
             .toList();
 
     int totalSearchResults = totalFilteredUsersList.size();
-    int startIndex = pageNumber * pageSize;
+    int startIndex = totalSearchResults > pageSize ? pageNumber * pageSize : 0;
     int endIndex = Math.min((startIndex + pageSize), totalFilteredUsersList.size());
 
     Organization org = _orgService.getCurrentOrganization();
