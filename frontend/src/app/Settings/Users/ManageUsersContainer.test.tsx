@@ -112,8 +112,11 @@ describe("ManageUsersContainer", () => {
       result: {
         data: {
           usersWithStatusPage: {
-            totalElements: 6,
-            content: mockedUsersWithStatus,
+            pageContent: {
+              content: mockedUsersWithStatus,
+              totalElements: 6,
+            },
+            totalUsersInOrg: 6,
           },
         },
       },
@@ -163,18 +166,21 @@ describe("ManageUsersContainer", () => {
       result: {
         data: {
           usersWithStatusPage: {
-            totalElements: 1,
-            content: [
-              {
-                id: "1029653e-24d9-428e-83b0-468319948902",
-                firstName: "Bob",
-                middleName: null,
-                lastName: "Bobberoo",
-                email: "bob@example.com",
-                status: "ACTIVE",
-                __typename: "ApiUserWithStatus",
-              },
-            ],
+            pageContent: {
+              content: [
+                {
+                  id: "1029653e-24d9-428e-83b0-468319948902",
+                  firstName: "Bob",
+                  middleName: null,
+                  lastName: "Bobberoo",
+                  email: "bob@example.com",
+                  status: "ACTIVE",
+                  __typename: "ApiUserWithStatus",
+                },
+              ],
+              totalElements: 1,
+            },
+            totalUsersInOrg: 6,
           },
         },
       },
@@ -191,8 +197,11 @@ describe("ManageUsersContainer", () => {
       result: {
         data: {
           usersWithStatusPage: {
-            totalElements: 0,
-            content: [],
+            pageContent: {
+              content: [],
+              totalElements: 0,
+            },
+            totalUsersInOrg: 6,
           },
         },
       },
@@ -212,8 +221,11 @@ describe("ManageUsersContainer", () => {
       result: {
         data: {
           usersWithStatusPage: {
-            totalElements: 6,
-            content: mockedUsersWithStatus,
+            pageContent: {
+              content: mockedUsersWithStatus,
+              totalElements: 6,
+            },
+            totalUsersInOrg: 6,
           },
         },
       },

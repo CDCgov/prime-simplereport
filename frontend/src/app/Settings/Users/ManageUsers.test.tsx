@@ -369,6 +369,7 @@ describe("ManageUsers", () => {
             debouncedQueryString={""}
             setDebouncedQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
+            totalUsersInOrg={3}
           />
         </TestContainer>
       );
@@ -728,6 +729,7 @@ describe("ManageUsers", () => {
             debouncedQueryString={""}
             setDebouncedQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
+            totalUsersInOrg={0}
           />
         </TestContainer>
       );
@@ -738,7 +740,9 @@ describe("ManageUsers", () => {
 
     it("fails gracefully when there are no users", async () => {
       await renderWithNoUsers();
-      expect(screen.getAllByText("No results found.")).toHaveLength(2);
+      expect(
+        screen.getByText("There are no users in this organization.")
+      ).toBeInTheDocument();
     });
 
     it("adds a user when zero users exist", async () => {
@@ -795,6 +799,7 @@ describe("ManageUsers", () => {
             debouncedQueryString={""}
             setDebouncedQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
+            totalUsersInOrg={2}
           />
         </TestContainer>
       );
@@ -841,6 +846,7 @@ describe("ManageUsers", () => {
             debouncedQueryString={""}
             setDebouncedQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
+            totalUsersInOrg={2}
           />
         </TestContainer>
       );
@@ -888,6 +894,7 @@ describe("ManageUsers", () => {
             debouncedQueryString={""}
             setDebouncedQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
+            totalUsersInOrg={2}
           />
         </TestContainer>
       );
@@ -991,6 +998,7 @@ describe("ManageUsers", () => {
         debouncedQueryString={""}
         setDebouncedQueryString={setDebouncedQueryString}
         queryLoadingStatus={false}
+        totalUsersInOrg={3}
       />
     );
     render(

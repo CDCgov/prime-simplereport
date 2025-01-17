@@ -131,7 +131,7 @@ const ManageUsersContainer = () => {
 
   return (
     <ManageUsers
-      users={data.usersWithStatusPage.content ?? []}
+      users={data.usersWithStatusPage.pageContent.content ?? []}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
@@ -145,11 +145,12 @@ const ManageUsersContainer = () => {
       resendUserActivationEmail={resendUserActivationEmail}
       getUsers={getUsers}
       currentPage={currentPage}
-      totalEntries={data.usersWithStatusPage.totalElements}
+      totalEntries={data.usersWithStatusPage.pageContent.totalElements}
       entriesPerPage={entriesPerPage}
       debouncedQueryString={debouncedQueryString}
       setDebouncedQueryString={setDebouncedQueryString}
       queryLoadingStatus={loading}
+      totalUsersInOrg={data.usersWithStatusPage.totalUsersInOrg}
     />
   );
 };

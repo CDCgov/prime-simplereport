@@ -29,23 +29,20 @@ query GetUsersAndStatus {
   }
 }
 
-query GetUsersAndStatusPage(
-  $pageNumber: Int,
-  $searchQuery: String
-) {
-  usersWithStatusPage(
-    pageNumber: $pageNumber,
-    searchQuery: $searchQuery
-  ) {
-    content {
-      id
-      firstName
-      middleName
-      lastName
-      email
-      status
+query GetUsersAndStatusPage($pageNumber: Int, $searchQuery: String) {
+  usersWithStatusPage(pageNumber: $pageNumber, searchQuery: $searchQuery) {
+    pageContent {
+      content {
+        id
+        firstName
+        middleName
+        lastName
+        email
+        status
+      }
+      totalElements
     }
-    totalElements
+    totalUsersInOrg
   }
 }
 
