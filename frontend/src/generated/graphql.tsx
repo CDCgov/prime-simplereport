@@ -93,6 +93,12 @@ export type ApiUserWithStatus = {
   suffix?: Maybe<Scalars["String"]["output"]>;
 };
 
+export type ApiUserWithStatusAndCountPage = {
+  __typename?: "ApiUserWithStatusAndCountPage";
+  pageContent: ApiUserWithStatusPage;
+  totalUsersInOrg: Scalars["Int"]["output"];
+};
+
 export type ApiUserWithStatusPage = {
   __typename?: "ApiUserWithStatusPage";
   content?: Maybe<Array<ApiUserWithStatus>>;
@@ -774,7 +780,7 @@ export type Query = {
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
-  usersWithStatusPage: ApiUserWithStatusPage;
+  usersWithStatusPage: ApiUserWithStatusAndCountPage;
   whoami: User;
 };
 
@@ -1428,17 +1434,21 @@ export type GetUsersAndStatusPageQueryVariables = Exact<{
 export type GetUsersAndStatusPageQuery = {
   __typename?: "Query";
   usersWithStatusPage: {
-    __typename?: "ApiUserWithStatusPage";
-    totalElements: number;
-    content?: Array<{
-      __typename?: "ApiUserWithStatus";
-      id: string;
-      firstName?: string | null;
-      middleName?: string | null;
-      lastName: string;
-      email: string;
-      status?: string | null;
-    }> | null;
+    __typename?: "ApiUserWithStatusAndCountPage";
+    totalUsersInOrg: number;
+    pageContent: {
+      __typename?: "ApiUserWithStatusPage";
+      totalElements: number;
+      content?: Array<{
+        __typename?: "ApiUserWithStatus";
+        id: string;
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName: string;
+        email: string;
+        status?: string | null;
+      }> | null;
+    };
   };
 };
 
@@ -3761,15 +3771,18 @@ export type GetUsersAndStatusQueryResult = Apollo.QueryResult<
 export const GetUsersAndStatusPageDocument = gql`
   query GetUsersAndStatusPage($pageNumber: Int, $searchQuery: String) {
     usersWithStatusPage(pageNumber: $pageNumber, searchQuery: $searchQuery) {
-      content {
-        id
-        firstName
-        middleName
-        lastName
-        email
-        status
+      pageContent {
+        content {
+          id
+          firstName
+          middleName
+          lastName
+          email
+          status
+        }
+        totalElements
       }
-      totalElements
+      totalUsersInOrg
     }
   }
 `;
