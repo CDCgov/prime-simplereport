@@ -204,6 +204,16 @@ type ApiUserWithStatus {
   status: String
 }
 
+type ApiUserWithStatusPage {
+  totalElements: Int!
+  content: [ApiUserWithStatus!]
+}
+
+type ApiUserWithStatusAndCountPage {
+  pageContent: ApiUserWithStatusPage!
+  totalUsersInOrg: Int!
+}
+
 # Patient and test types
 
 type Patient
@@ -545,6 +555,7 @@ type Query {
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!]
     @requiredPermissions(allOf: ["MANAGE_USERS"])
+  usersWithStatusPage(pageNumber: Int, searchQuery: String): ApiUserWithStatusAndCountPage! @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID, email: String): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
