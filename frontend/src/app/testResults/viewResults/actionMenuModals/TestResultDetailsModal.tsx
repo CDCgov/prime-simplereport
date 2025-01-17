@@ -65,8 +65,16 @@ export const DetachedTestResultDetailsModal = ({
     data?.testResult.results,
     MULTIPLEX_DISEASES.GONORRHEA
   );
+  const isChlamydiaResult = !!getResultForDisease(
+    data?.testResult.results,
+    MULTIPLEX_DISEASES.CHLAMYDIA
+  );
   const showGenderOfSexualPartners =
-    isHIVResult || isSyphilisResult || isHepatitisCResult || isGonorrheaResult;
+    isHIVResult ||
+    isSyphilisResult ||
+    isHepatitisCResult ||
+    isGonorrheaResult ||
+    isChlamydiaResult;
 
   const dateTested = data?.testResult.dateTested;
 

@@ -7,6 +7,7 @@ import RsvResultGuidance from "../commonComponents/TestResultGuidance/RsvResultG
 import SyphilisResultGuidance from "../commonComponents/TestResultGuidance/SyphilisResultGuidance";
 import HepatitisCResultGuidance from "../commonComponents/TestResultGuidance/HepatitisCResultGuidance";
 import GonorrheaResultGuidance from "../commonComponents/TestResultGuidance/GonorrheaResultGuidance";
+import ChlamydiaResultGuidance from "../commonComponents/TestResultGuidance/ChlamydiaResultGuidance";
 
 export function getResultByDiseaseName(
   results: MultiplexResults,
@@ -110,6 +111,11 @@ export const getGuidanceForResults = (
   match = getResultForDisease(results, MULTIPLEX_DISEASES.GONORRHEA);
   if (match) {
     guidance.push(<GonorrheaResultGuidance />);
+  }
+
+  match = getResultForDisease(results, MULTIPLEX_DISEASES.CHLAMYDIA);
+  if (match) {
+    guidance.push(<ChlamydiaResultGuidance />);
   }
 
   return guidance;
