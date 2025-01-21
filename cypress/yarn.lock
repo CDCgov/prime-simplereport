@@ -495,10 +495,10 @@ cypress-axe@^1.5.0:
   resolved "https://registry.yarnpkg.com/cypress-axe/-/cypress-axe-1.5.0.tgz#95082734583da77b51ce9b7784e14a442016c7a1"
   integrity sha512-Hy/owCjfj+25KMsecvDgo4fC/781ccL+e8p+UUYoadGVM2ogZF9XIKbiM6KI8Y3cEaSreymdD6ZzccbI2bY0lQ==
 
-cypress-localstorage-commands@^2.2.6:
-  version "2.2.6"
-  resolved "https://registry.yarnpkg.com/cypress-localstorage-commands/-/cypress-localstorage-commands-2.2.6.tgz#537557ae7420f91060d373e0e0c0612c7c322d13"
-  integrity sha512-l3nZ+Lu6YbBWk4UIfNrRkNK56BkF8zVbCrqzCf35x4Nlx2wA2r0spBOZXnKjbutQZgo6qDqtS8uXoSqV36YM1Q==
+cypress-localstorage-commands@^2.2.7:
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/cypress-localstorage-commands/-/cypress-localstorage-commands-2.2.7.tgz#62c26474902e430372d9dfecec7c75f5fcdfda24"
+  integrity sha512-hUe6hz/3TD9Ph70CUHJLSiTzL0INikUQ4W3CRd7XmaGCDjwR6jGAlvTCGmxZ6yGc4Mq/WN6L8xJAu+dOrIvYCA==
 
 cypress@^13.6.6:
   version "13.7.3"
