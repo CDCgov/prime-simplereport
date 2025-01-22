@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -34,7 +33,6 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
-import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -61,17 +59,15 @@ import org.springframework.security.access.AccessDeniedException;
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
-  @Autowired @SpyBean private FacilityRepository facilityRepository;
-  @Autowired @SpyBean private OrganizationRepository organizationRepository;
+  @SpyBean private FacilityRepository facilityRepository;
+  @SpyBean private OrganizationRepository organizationRepository;
   @Autowired private DeviceTypeRepository deviceTypeRepository;
-  @Autowired @SpyBean private OktaRepository oktaRepository;
-  @Autowired @SpyBean private PersonRepository personRepository;
-  @Autowired @SpyBean private ProviderRepository providerRepository;
+  @SpyBean private OktaRepository oktaRepository;
+  @SpyBean private PersonRepository personRepository;
   @Autowired ApiUserRepository _apiUserRepo;
-  @Autowired private DemoUserConfiguration userConfiguration;
-  @Autowired @SpyBean private EmailService emailService;
-  @Autowired @SpyBean private DbAuthorizationService dbAuthorizationService;
-  @Autowired @MockBean private FeatureFlagsConfig featureFlagsConfig;
+  @MockBean private EmailService emailService;
+  @SpyBean private DbAuthorizationService dbAuthorizationService;
+  @MockBean private FeatureFlagsConfig featureFlagsConfig;
 
   @BeforeEach
   void setupData() {
