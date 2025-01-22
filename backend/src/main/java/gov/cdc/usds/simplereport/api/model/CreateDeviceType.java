@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,4 +17,24 @@ public class CreateDeviceType {
   private List<UUID> swabTypes;
   private List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformed;
   private int testLength;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CreateDeviceType that = (CreateDeviceType) o;
+    return Objects.equals(name, that.name)
+        && Objects.equals(manufacturer, that.manufacturer)
+        && Objects.equals(model, that.model)
+        && swabTypes.stream().allMatch(s -> that.swabTypes.contains(s))
+        && swabTypes.size() == that.swabTypes.size()
+        && supportedDiseaseTestPerformed.stream()
+            .allMatch(a -> that.supportedDiseaseTestPerformed.stream().anyMatch(b -> a.equals(b)))
+        && supportedDiseaseTestPerformed.size() == that.supportedDiseaseTestPerformed.size()
+        && Objects.equals(testLength, that.testLength);
+  }
 }

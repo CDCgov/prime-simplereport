@@ -27,8 +27,8 @@ public class SupportedDisease extends IdentifiedEntity {
   @JsonView(PublicDeviceType.class)
   private String loinc;
 
-  @JsonIgnore
   @OneToMany(mappedBy = "supportedDisease")
+  @JsonIgnore
   private List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
 
   @ConstructorBinding

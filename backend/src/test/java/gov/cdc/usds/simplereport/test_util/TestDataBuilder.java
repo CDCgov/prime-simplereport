@@ -116,6 +116,20 @@ public class TestDataBuilder {
         "Nebula-navigating outlaw");
   }
 
+  public static DeviceTypeDisease createDeviceTypeDisease(
+      SupportedDisease supportedDisease, String testOrdedLoincCode, UUID deviceId) {
+    return new DeviceTypeDisease(
+        deviceId,
+        supportedDisease,
+        supportedDisease.getLoinc(),
+        String.join(testOrdedLoincCode, " test performed loinc long name"),
+        UUID.randomUUID().toString(),
+        "MNI",
+        String.join(testOrdedLoincCode, " teskit name id"),
+        testOrdedLoincCode,
+        String.join(testOrdedLoincCode, " test ordered loinc long name"));
+  }
+
   public static DeviceTypeDisease createDeviceTypeDisease(SupportedDisease supportedDisease) {
     return new DeviceTypeDisease(
         UUID.randomUUID(),
@@ -206,8 +220,22 @@ public class TestDataBuilder {
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
+  public static DeviceType createDeviceType(String deviceName, List<SpecimenType> swabTypes) {
+    return new DeviceType(
+        deviceName,
+        String.format("%s Manufacturer", deviceName),
+        String.format("%s Model", deviceName),
+        15,
+        swabTypes,
+        List.of());
+  }
+
   public static SpecimenType createSpecimenType() {
     return new SpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321");
+  }
+
+  public static SpecimenType createSpecimenType(String name, String typeCode) {
+    return new SpecimenType(name, typeCode, name + " location", "1111111");
   }
 
   public static Facility createFacility() {

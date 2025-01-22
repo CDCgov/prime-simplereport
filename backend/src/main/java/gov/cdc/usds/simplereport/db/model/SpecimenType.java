@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.validators.NumericCode;
 import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import java.util.Objects;
 import org.hibernate.annotations.NaturalId;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
@@ -80,5 +81,20 @@ public class SpecimenType extends EternalAuditedEntity {
 
   public void setCollectionLocationCode(String collectionLocationCode) {
     this.collectionLocationCode = collectionLocationCode;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SpecimenType that = (SpecimenType) o;
+    return Objects.equals(name, that.name)
+        && Objects.equals(typeCode, that.typeCode)
+        && Objects.equals(collectionLocationName, that.collectionLocationName)
+        && Objects.equals(collectionLocationCode, that.collectionLocationCode);
   }
 }

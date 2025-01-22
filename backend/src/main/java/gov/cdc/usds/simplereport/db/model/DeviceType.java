@@ -22,7 +22,6 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding;
 @Getter
 @Setter
 public class DeviceType extends EternalAuditedEntity {
-
   @Column(nullable = false)
   @JsonView(PublicDeviceType.class)
   private String name;
@@ -109,4 +108,30 @@ public class DeviceType extends EternalAuditedEntity {
   public int hashCode() {
     return Objects.hash(model, name, testLength, manufacturer);
   }
+
+  //  public String serializeWithPublicView() {
+  //    try {
+  //      ObjectMapper objectMapper =
+  //          new ObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
+  //      ;
+  //      return objectMapper.writerWithView(DeviceTypeView.Public.class).writeValueAsString(this);
+  //    } catch (Exception e) {
+  //      return null;
+  //    }
+  //  }
+  //
+  //  public DeviceType deserializeWithPublicView(String serialized) {
+  //    try {
+  //      ObjectMapper objectMapper =
+  //          new ObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
+  //      ;
+  //
+  //      return objectMapper
+  //          .readerWithView(DeviceTypeView.Public.class)
+  //          .forType(DeviceType.class)
+  //          .readValue(serialized);
+  //    } catch (Exception e) {
+  //      return null;
+  //    }
+  //  }
 }
