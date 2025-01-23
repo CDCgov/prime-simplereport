@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import gov.cdc.usds.simplereport.api.devicetype.PublicDeviceType;
 import gov.cdc.usds.simplereport.validators.NumericCode;
 import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
 import jakarta.persistence.Column;
@@ -12,16 +14,23 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding;
 public class SpecimenType extends EternalAuditedEntity {
 
   @Column(nullable = false)
+  @JsonView(PublicDeviceType.class)
   private String name;
 
   @Column(nullable = false, updatable = false)
   @RequiredNumericCode
   @NaturalId
+  @JsonView(PublicDeviceType.class)
   private String typeCode;
 
-  @Column private String collectionLocationName;
+  @Column
+  @JsonView(PublicDeviceType.class)
+  private String collectionLocationName;
 
-  @Column @NumericCode private String collectionLocationCode;
+  @Column
+  @NumericCode
+  @JsonView(PublicDeviceType.class)
+  private String collectionLocationCode;
 
   protected SpecimenType() {} // for hibernate
 
