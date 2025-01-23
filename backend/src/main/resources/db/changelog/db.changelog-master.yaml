@@ -5834,8 +5834,59 @@ databaseChangeLog:
                     FROM ${database.defaultSchemaName}.facility_providers
                     WHERE facility_providers.facility_id = facility.internal_id
                     LIMIT 1
-                  )
+                  ),
+                  NULL
                 );
         - addNotNullConstraint:
             tableName: facility
             columnName: ordering_provider_id
+            validate: false
+  - changeSet:
+      id: add-unique-constraint-to-provider
+      author: tnd8@cdc.gov
+      comment: Enforces a provider belonging to only 1 single facility and deletes duplicate assignments in facility_provider table
+      changes:
+        - sql:
+            sql: |
+              DELETE FROM ${database.defaultSchemaName}.facility_providers t1
+              USING (
+                      SELECT DISTINCT ON (provider_id) provider_id, facility_id
+                      FROM ${database.defaultSchemaName}.facility_providers
+              ) t2
+              WHERE t1.provider_id = t2.provider_id
+              AND t1.facility_id != t2.facility_id;
+        - addUniqueConstraint:
+            tableName: facility_providers
+            columnNames: provider_id
+      rollback:
+        - dropUniqueConstraint:
+            tableName: facility_providers
+            uniqueColumns: provider_id
+  - changeSet:
+      id: add-unique-constraint-to-default-provider
+      author: tnd8@cdc.gov
+      comment: Enforces a provider only being default provider at one facility and clears the nullable default_ordering_provider_id column
+      changes:
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.facility
+              SET default_ordering_provider_id = NULL;
+        - addUniqueConstraint:
+            tableName: facility
+            columnNames: default_ordering_provider_id
+      rollback:
+        - dropUniqueConstraint:
+            tableName: facility
+            uniqueColumns: default_ordering_provider_id
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.facility
+              SET default_ordering_provider_id = COALESCE(
+                  (
+                    SELECT provider_id
+                    FROM ${database.defaultSchemaName}.facility_providers
+                    WHERE facility_providers.facility_id = facility.internal_id
+                    LIMIT 1
+                  ),
+                  NULL
+                );

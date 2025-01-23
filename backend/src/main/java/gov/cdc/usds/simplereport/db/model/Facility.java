@@ -10,6 +10,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   @Column @Getter @Setter private String cliaNumber;
 
-  @ManyToOne
+  @OneToOne
   @JoinColumn(name = "default_ordering_provider_id")
   private Provider defaultOrderingProvider;
 
@@ -69,14 +70,14 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.email = facilityBuilder.email;
     this.defaultOrderingProvider = facilityBuilder.orderingProvider;
     if (facilityBuilder.orderingProvider != null) {
-      this.orderingProviders.add(facilityBuilder.orderingProvider);
+      addProvider(facilityBuilder.orderingProvider);
     }
     this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
     this.setDefaultDeviceTypeSpecimenType(
         facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
   }
 
-  // todo: make sure callers can handle null
+  // todo: update callers to handle no provider use case
   public Provider getOrderingProvider() {
     if (defaultOrderingProvider != null) {
       return defaultOrderingProvider;

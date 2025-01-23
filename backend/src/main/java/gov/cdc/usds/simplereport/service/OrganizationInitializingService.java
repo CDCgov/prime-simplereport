@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -71,7 +72,6 @@ public class OrganizationInitializingService {
     initCurrentUser();
 
     log.debug("Organization init called (again?)");
-    Provider savedProvider = _providerRepo.save(_props.getProvider());
 
     List<DeviceType> deviceTypes = initDevices();
     List<DeviceType> facilityDeviceTypes =
@@ -106,7 +106,6 @@ public class OrganizationInitializingService {
             _props.getFacilities(),
             facilitiesByName,
             orgsByExternalId,
-            savedProvider,
             defaultDeviceType,
             defaultSpecimenType,
             facilityDeviceTypes);
@@ -129,6 +128,7 @@ public class OrganizationInitializingService {
 
     configurePatientRegistrationLinks(_props.getPatientRegistrationLinks(), facilitiesByName);
     createPatients(_props.getPatients());
+    createProviders(facilitiesByName);
     // Abusing the class name "OrganizationInitializingService" a little, but the
     // users are in the org.
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
@@ -272,7 +272,6 @@ public class OrganizationInitializingService {
       List<InitialSetupProperties.ConfigFacility> facilities,
       Map<String, Facility> facilitiesByName,
       Map<String, Organization> orgsByExternalId,
-      Provider savedProvider,
       DeviceType defaultDeviceType,
       SpecimenType defaultSpecimenType,
       List<DeviceType> facilityDeviceTypes) {
@@ -283,7 +282,6 @@ public class OrganizationInitializingService {
                     ? facilitiesByName.get(f.getName())
                     : f.makeRealFacility(
                         orgsByExternalId.get(f.getOrganizationExternalId()),
-                        savedProvider,
                         defaultDeviceType,
                         defaultSpecimenType,
                         facilityDeviceTypes))
@@ -420,6 +418,23 @@ public class OrganizationInitializingService {
               p.makePatient(org, p.getFirstName(), p.getLastName(), p.getBirthDate());
           log.info(String.format("Creating patient: %s with DOB %s", fullName, p.getBirthDate()));
           _personRepository.save(createdPatient);
+        }
+      }
+    }
+  }
+
+  public void createProviders(Map<String, Facility> facilitiesByName) {
+    for (InitialSetupProperties.ConfigProvider p : _props.getProviders()) {
+      PersonName n = new PersonName(p.getFirstName(), "", p.getLastName(), "");
+      if (!_providerRepo.existsByNameInfoAndProviderId(n, p.getProviderId())) {
+        Provider newProvider = p.makeProvider();
+        log.info("Creating provider {} {} at facility {}", newProvider.getNameInfo().getFirstName(), newProvider.getNameInfo().getLastName(), p.getFacilityName());
+        _providerRepo.save(newProvider);
+
+        String facilityName = p.getFacilityName();
+        if (facilityName != null && facilitiesByName.containsKey(facilityName)) {
+          Facility facility = facilitiesByName.get(facilityName);
+          facility.addProvider(newProvider);
         }
       }
     }

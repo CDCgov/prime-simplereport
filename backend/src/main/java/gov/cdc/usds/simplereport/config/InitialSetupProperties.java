@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 public class InitialSetupProperties {
   private final List<Organization> organizations;
-  private final Provider provider;
+  private final List<ConfigProvider> providers;
   private final List<SpecimenType> specimenTypes;
   private final List<ConfigDeviceType> deviceTypes;
   private final List<String> configuredDeviceTypes;
@@ -47,18 +47,6 @@ public class InitialSetupProperties {
                     o.getExternalId(),
                     o.getIdentityVerified()))
         .collect(Collectors.toList());
-  }
-
-  public Provider getProvider() {
-    PersonName n = provider.getNameInfo();
-    return new Provider(
-        n.getFirstName(),
-        n.getMiddleName(),
-        n.getLastName(),
-        n.getSuffix(),
-        provider.getProviderId(),
-        provider.getAddress(),
-        provider.getTelephone());
   }
 
   public List<SpecimenType> getSpecimenTypes() {
@@ -84,7 +72,6 @@ public class InitialSetupProperties {
 
     public Facility makeRealFacility(
         Organization org,
-        Provider provider,
         DeviceType defaultDeviceType,
         SpecimenType defaultSpecimenType,
         List<DeviceType> configured) {
@@ -97,7 +84,6 @@ public class InitialSetupProperties {
               .facilityAddress(getAddress())
               .phone(getTelephone())
               .email(getEmail())
-              .orderingProvider(provider)
               .defaultDeviceType(defaultDeviceType)
               .defaultSpecimenType(defaultSpecimenType)
               .configuredDevices(configured)
@@ -156,6 +142,27 @@ public class InitialSetupProperties {
           .role(PersonRole.STAFF)
           .testResultDeliveryPreference(TestResultDeliveryPreference.NONE)
           .build();
+    }
+  }
+
+  @Value
+  public static class ConfigProvider {
+    String firstName;
+    String lastName;
+    String providerId;
+    StreetAddress address;
+    String telephone;
+    String facilityName;
+
+    public Provider makeProvider() {
+      return new Provider(
+              firstName,
+              "",
+              lastName,
+              "",
+              providerId,
+              address,
+              telephone);
     }
   }
 

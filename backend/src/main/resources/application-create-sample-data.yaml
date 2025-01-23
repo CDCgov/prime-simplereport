@@ -49,16 +49,27 @@ simple-report-initialization:
       telephone: 8002324636
       email: downtownclinic@dat.org
       organization-external-id: DAT_ORG
-  provider:
-    first-name: Fred
-    last-name: Flintstone
-    provider-id: 1234567890
-    telephone: (202) 555-1212
-    address:
-      street-1: 123 Main Street
-      city: Oz
-      state: KS
-      postal-code: "12345"
+  providers:
+    - first-name: Fred
+      last-name: Flintstone
+      provider-id: 1234567890
+      telephone: (202) 555-1212
+      address:
+        street-1: 123 Main Street
+        city: Oz
+        state: KS
+        postal-code: "12345"
+      facility-name: Testing Site
+    - first-name: Wilma
+      last-name: Flintstone
+      provider-id: 82
+      telephone: (202) 867-5309
+      address:
+        street-1: 123 Main Street
+        city: Beverly Hills
+        state: CA
+        postal-code: "90024"
+      facility-name: Uptown Clinic
   configured-device-types:
     - LumiraDX
     - Quidel Sofia 2

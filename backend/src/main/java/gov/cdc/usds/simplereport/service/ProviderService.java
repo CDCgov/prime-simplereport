@@ -56,6 +56,7 @@ public class ProviderService {
       throw new IllegalArgumentException("Missing required fields for provider");
     }
 
+    // todo: this doesn't really matter since auth will fail
     Provider p =
         providerRepository
             .findByInternalIdAndIsDeletedIsFalse(providerInternalId)
@@ -81,6 +82,7 @@ public class ProviderService {
             .orElseThrow(
                 () ->
                     new IllegalArgumentException(
+                        // todo: doesn't really matter since auth would fail
                         "Provider with id " + providerInternalId + " not found"));
 
     if (p.getIsDeleted()) {
