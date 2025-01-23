@@ -4,6 +4,7 @@ import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
+import gov.cdc.usds.simplereport.api.apiuser.ManageUsersPageWrapper;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -46,6 +47,9 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -613,6 +617,59 @@ public class ApiUserService {
       usersInOrg = _apiUserRepo.findAllByLoginEmailInOrderByName(orgUserEmails);
     }
     return usersInOrg;
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public ManageUsersPageWrapper getPagedUsersAndStatusInCurrentOrg(int pageNumber, int pageSize) {
+    Organization org = _orgService.getCurrentOrganization();
+
+    final Map<String, UserStatus> emailsToStatus =
+        _oktaRepo.getPagedUsersWithStatusForOrganization(org, pageNumber, pageSize);
+    List<ApiUser> users = _apiUserRepo.findAllByLoginEmailInOrderByName(emailsToStatus.keySet());
+    List<ApiUserWithStatus> userWithStatusList =
+        users.stream()
+            .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
+            .toList();
+
+    Integer userCountInOrg = _oktaRepo.getUsersCountInOrganization(org);
+    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+    Page<ApiUserWithStatus> pageContent =
+        new PageImpl<>(userWithStatusList, pageRequest, userCountInOrg);
+
+    return new ManageUsersPageWrapper(pageContent, userCountInOrg);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public ManageUsersPageWrapper searchUsersAndStatusInCurrentOrgPaged(
+      int pageNumber, int pageSize, String searchQuery) {
+    List<ApiUserWithStatus> allUsers = getUsersAndStatusInCurrentOrg();
+
+    List<ApiUserWithStatus> totalFilteredUsersList =
+        allUsers.stream()
+            .filter(
+                u -> {
+                  String firstName =
+                      u.getFirstName() == null ? "" : String.format("%s ", u.getFirstName());
+                  String middleName =
+                      u.getMiddleName() == null ? "" : String.format("%s ", u.getMiddleName());
+                  String fullName = firstName + middleName + u.getLastName();
+                  return fullName.toLowerCase().contains(searchQuery.toLowerCase());
+                })
+            .toList();
+
+    int totalSearchResults = totalFilteredUsersList.size();
+    int startIndex = pageNumber * pageSize;
+    int endIndex = Math.min((startIndex + pageSize), totalFilteredUsersList.size());
+
+    Organization org = _orgService.getCurrentOrganization();
+    Integer userCountInOrg = _oktaRepo.getUsersCountInOrganization(org);
+
+    List<ApiUserWithStatus> filteredSublist = totalFilteredUsersList.subList(startIndex, endIndex);
+    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+    Page<ApiUserWithStatus> pageContent =
+        new PageImpl<>(filteredSublist, pageRequest, totalSearchResults);
+
+    return new ManageUsersPageWrapper(pageContent, userCountInOrg);
   }
 
   // To be addressed in #8108

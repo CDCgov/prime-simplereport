@@ -496,7 +496,7 @@ public class OrganizationService {
       usersWithSingleFacilityAccess =
           dbAuthorizationService.getUsersWithSingleFacilityAccessCount(facility);
     } else {
-      usersWithSingleFacilityAccess = this.oktaRepository.getUsersInSingleFacility(facility);
+      usersWithSingleFacilityAccess = this.oktaRepository.getUsersCountInSingleFacility(facility);
     }
     return FacilityStats.builder()
         .usersSingleAccessCount(usersWithSingleFacilityAccess)
@@ -555,7 +555,7 @@ public class OrganizationService {
         .collect(Collectors.toList());
   }
 
-  @Async
+  @Async("applicationTaskExecutor")
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public CompletableFuture<List<String>> sendOrgAdminEmailCSVAsync(
       List<UUID> orgInternalIds, String type, String state) {

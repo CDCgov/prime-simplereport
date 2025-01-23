@@ -43,6 +43,8 @@ public class DemoOktaRepository implements OktaRepository {
   @Value("${simple-report.authorization.environment-name:DEV}")
   private String environment;
 
+  private static final String NON_EXISTANT_ORG_GET_USERS_ERROR =
+      "Cannot get Okta users from nonexistent organization.";
   private final OrganizationExtractor organizationExtractor;
   private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
 
@@ -257,8 +259,7 @@ public class DemoOktaRepository implements OktaRepository {
   // returns ALL users including inactive ones
   public Set<String> getAllUsersForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
-      throw new IllegalGraphqlArgumentException(
-          "Cannot get Okta users from nonexistent organization.");
+      throw new IllegalGraphqlArgumentException(NON_EXISTANT_ORG_GET_USERS_ERROR);
     }
     return orgUsernamesMap.get(org.getExternalId()).stream()
         .collect(Collectors.toUnmodifiableSet());
@@ -266,11 +267,24 @@ public class DemoOktaRepository implements OktaRepository {
 
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
-      throw new IllegalGraphqlArgumentException(
-          "Cannot get Okta users from nonexistent organization.");
+      throw new IllegalGraphqlArgumentException(NON_EXISTANT_ORG_GET_USERS_ERROR);
     }
     return orgUsernamesMap.get(org.getExternalId()).stream()
         .collect(Collectors.toMap(u -> u, u -> getUserStatus(u)));
+  }
+
+  @Override
+  public Map<String, UserStatus> getPagedUsersWithStatusForOrganization(
+      Organization org, int pageNumber, int pageSize) {
+    if (!orgUsernamesMap.containsKey(org.getExternalId())) {
+      throw new IllegalGraphqlArgumentException(NON_EXISTANT_ORG_GET_USERS_ERROR);
+    }
+    List<String> allOrgUsernamesList =
+        orgUsernamesMap.get(org.getExternalId()).stream().sorted().collect(Collectors.toList());
+    int startIndex = pageNumber * pageSize;
+    int endIndex = Math.min((startIndex + pageSize), allOrgUsernamesList.size());
+    List<String> pageContent = allOrgUsernamesList.subList(startIndex, endIndex);
+    return pageContent.stream().collect(Collectors.toMap(u -> u, this::getUserStatus));
   }
 
   // this method doesn't mean much in a demo env
@@ -399,7 +413,8 @@ public class DemoOktaRepository implements OktaRepository {
     allUsernames.clear();
   }
 
-  public Integer getUsersInSingleFacility(Facility facility) {
+  @Override
+  public Integer getUsersCountInSingleFacility(Facility facility) {
     Integer accessCount = 0;
 
     for (OrganizationRoleClaims existingClaims : usernameOrgRolesMap.values()) {
@@ -415,6 +430,11 @@ public class DemoOktaRepository implements OktaRepository {
     }
 
     return accessCount;
+  }
+
+  @Override
+  public Integer getUsersCountInOrganization(Organization org) {
+    return orgUsernamesMap.get(org.getExternalId()).size();
   }
 
   @Override

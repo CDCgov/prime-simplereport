@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.okta.sdk.resource.model.UserStatus;
+import gov.cdc.usds.simplereport.api.apiuser.ManageUsersPageWrapper;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -51,6 +52,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
@@ -147,6 +149,48 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     checkApiUserWithStatus(users.get(4), "notruby@example.com", "Reynolds", UserStatus.ACTIVE);
     checkApiUserWithStatus(
         users.get(5), "allfacilities@example.com", "Williams", UserStatus.ACTIVE);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getPagedUsersAndStatusInCurrentOrg_success() {
+    initSampleData();
+    ManageUsersPageWrapper usersPageWrapper = _service.getPagedUsersAndStatusInCurrentOrg(0, 3);
+    assertEquals(6, usersPageWrapper.getTotalUsersInOrg());
+
+    Page<ApiUserWithStatus> usersPage = usersPageWrapper.getPageContent();
+    List<ApiUserWithStatus> users = usersPage.stream().toList();
+    assertEquals(3, users.size());
+
+    checkApiUserWithStatus(users.get(0), "admin@example.com", "Andrews", UserStatus.ACTIVE);
+    checkApiUserWithStatus(users.get(1), "bobbity@example.com", "Bobberoo", UserStatus.ACTIVE);
+    checkApiUserWithStatus(
+        users.get(2), "allfacilities@example.com", "Williams", UserStatus.ACTIVE);
+
+    ManageUsersPageWrapper users2ndPageWrapper = _service.getPagedUsersAndStatusInCurrentOrg(1, 3);
+    assertEquals(6, users2ndPageWrapper.getTotalUsersInOrg());
+
+    Page<ApiUserWithStatus> users2ndPage = users2ndPageWrapper.getPageContent();
+    List<ApiUserWithStatus> users2ndList = users2ndPage.stream().toList();
+    assertEquals(3, users2ndList.size());
+
+    checkApiUserWithStatus(users2ndList.get(0), "invalid@example.com", "Irwin", UserStatus.ACTIVE);
+    checkApiUserWithStatus(users2ndList.get(1), "nobody@example.com", "Nixon", UserStatus.ACTIVE);
+    checkApiUserWithStatus(
+        users2ndList.get(2), "notruby@example.com", "Reynolds", UserStatus.ACTIVE);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void searchUsersAndStatusInCurrentOrgPaged_success() {
+    initSampleData();
+    ManageUsersPageWrapper usersPageWrapper =
+        _service.searchUsersAndStatusInCurrentOrgPaged(0, 10, "Bob");
+    Page<ApiUserWithStatus> usersPage = usersPageWrapper.getPageContent();
+    List<ApiUserWithStatus> users = usersPage.stream().toList();
+    assertEquals(1, users.size());
+    assertEquals(6, usersPageWrapper.getTotalUsersInOrg());
+    checkApiUserWithStatus(users.get(0), "bobbity@example.com", "Bobberoo", UserStatus.ACTIVE);
   }
 
   @Test
