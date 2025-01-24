@@ -98,13 +98,15 @@ export const SelfRegistrationForm = ({
         }}
         entityName={entityName}
       />
-      <PersonForm
-        patient={EMPTY_PERSON}
-        savePerson={savePerson}
-        getFooter={getFooter}
-        view={PersonFormView.SELF_REGISTRATION}
-        onBlur={onBlur}
-      />
+      <div className="prime-edit-patient">
+        <PersonForm
+          patient={EMPTY_PERSON}
+          savePerson={savePerson}
+          getFooter={getFooter}
+          view={PersonFormView.SELF_REGISTRATION}
+          onBlur={onBlur}
+        />
+      </div>
     </div>
   );
 };
