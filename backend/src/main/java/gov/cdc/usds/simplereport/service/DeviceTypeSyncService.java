@@ -180,6 +180,8 @@ public class DeviceTypeSyncService {
 
     devices.forEach(
         device -> {
+          log.info(
+              "Preparing device sync info for {} {}", device.getManufacturer(), device.getModel());
           // Skip sync for any device entries with incomplete data
           if (device == null
               || device.getManufacturer() == null
