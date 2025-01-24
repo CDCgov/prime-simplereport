@@ -1,11 +1,11 @@
 import { gql, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import { RootState } from "../../store";
 import { Role } from "../../permissions";
 import {
   Maybe,
-  useGetUsersAndStatusQuery,
   useResendActivationEmailMutation,
   useUpdateUserNameMutation,
   useEditUserEmailMutation,
@@ -17,8 +17,11 @@ import {
   useSetUserIsDeletedMutation,
   useAddUserToCurrentOrgMutation,
   useResetUserPasswordMutation,
+  useGetUsersAndStatusPageQuery,
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
+import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
+import { SEARCH_DEBOUNCE_TIME } from "../../testQueue/constants";
 
 import ManageUsers from "./ManageUsers";
 
@@ -92,12 +95,27 @@ const ManageUsersContainer = () => {
   const [resetMfa] = useResetUserMfaMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
+  const [queryString, debouncedQueryString, setDebouncedQueryString] =
+    useDebounce("", {
+      debounceTime: SEARCH_DEBOUNCE_TIME,
+    });
+
+  const { pageNumber } = useParams();
+  const currentPage = pageNumber ? +pageNumber : 1;
+  const entriesPerPage = 10;
+
   const {
     data,
     loading,
     error,
     refetch: getUsers,
-  } = useGetUsersAndStatusQuery({ fetchPolicy: "no-cache" });
+  } = useGetUsersAndStatusPageQuery({
+    fetchPolicy: "no-cache",
+    variables: {
+      pageNumber: currentPage - 1,
+      searchQuery: queryString,
+    },
+  });
 
   if (loading) {
     return <p> Loading... </p>;
@@ -113,7 +131,7 @@ const ManageUsersContainer = () => {
 
   return (
     <ManageUsers
-      users={data.usersWithStatus ?? []}
+      users={data.usersWithStatusPage.pageContent.content ?? []}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
@@ -126,6 +144,13 @@ const ManageUsersContainer = () => {
       reactivateUser={reactivateUser}
       resendUserActivationEmail={resendUserActivationEmail}
       getUsers={getUsers}
+      currentPage={currentPage}
+      totalEntries={data.usersWithStatusPage.pageContent.totalElements}
+      entriesPerPage={entriesPerPage}
+      debouncedQueryString={debouncedQueryString}
+      setDebouncedQueryString={setDebouncedQueryString}
+      queryLoadingStatus={loading}
+      totalUsersInOrg={data.usersWithStatusPage.totalUsersInOrg}
     />
   );
 };
