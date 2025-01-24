@@ -46,11 +46,9 @@ public class UserResolver {
     if (pageNumber < 0) {
       pageNumber = DEFAULT_OKTA_USER_PAGE_OFFSET;
     }
-    if (!searchQuery.isBlank()) {
-      return _userService.searchUsersAndStatusInCurrentOrgPaged(
-          pageNumber, DEFAULT_OKTA_USER_PAGE_SIZE, searchQuery);
-    }
-    return _userService.getPagedUsersAndStatusInCurrentOrg(pageNumber, DEFAULT_OKTA_USER_PAGE_SIZE);
+
+    return _userService.getPagedUsersAndStatusInCurrentOrg(
+        pageNumber, DEFAULT_OKTA_USER_PAGE_SIZE, searchQuery);
   }
 
   @QueryMapping
