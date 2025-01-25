@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -56,10 +57,35 @@ class DeviceTypeControllerTest extends BaseFullStackTest {
     assertThat(deviceType.getString("model")).isEqualTo("SFN");
     assertThat(deviceType.getString("name")).isEqualTo("Acme SuperFine");
     assertThat(deviceType.getInt("testLength")).isEqualTo(15);
-    assertThat(deviceType.getJSONArray("supportedDiseaseTestPerformed")).isEmpty();
     // ensure deviceType internalId is not returned
     assertTrue(deviceType.isNull("internalId"));
 
+    // has supportedDiseaseTestPerformed
+    JSONArray supportedDiseaseTestPerformedList =
+        deviceType.getJSONArray("supportedDiseaseTestPerformed");
+    assertThat(supportedDiseaseTestPerformedList.length()).isEqualTo(1);
+    JSONObject supportedDiseaseTestPerformed = supportedDiseaseTestPerformedList.getJSONObject(0);
+    assertFalse(supportedDiseaseTestPerformed.has("deviceTypeId"));
+    assertThat(supportedDiseaseTestPerformed.getString("testPerformedLoincCode"))
+        .isEqualTo("94500-6");
+    assertThat(supportedDiseaseTestPerformed.getString("testPerformedLoincLongName"))
+        .isEqualTo(
+            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection");
+    assertThat(supportedDiseaseTestPerformed.getString("equipmentUidType")).isEqualTo("MNI");
+    assertThat(supportedDiseaseTestPerformed.getString("testkitNameId"))
+        .isEqualTo("1copy COVID-19 qPCR Multi Kit_1drop Inc.");
+    assertThat(supportedDiseaseTestPerformed.getString("testOrderedLoincCode"))
+        .isEqualTo("94531-1");
+    assertThat(supportedDiseaseTestPerformed.getString("testOrderedLoincLongName"))
+        .isEqualTo(
+            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
+    // has supportedDisease
+    JSONObject supportedDisease = supportedDiseaseTestPerformed.getJSONObject("supportedDisease");
+    assertThat(supportedDisease.getString("name")).isEqualTo("COVID-19");
+    assertThat(supportedDisease.getString("loinc")).isEqualTo("96741-4");
+    assertFalse(supportedDisease.has("supportedDiseaseTestPerformed"));
+
+    // has swabTypes
     JSONArray swabTypes = deviceType.getJSONArray("swabTypes");
     assertThat(swabTypes.length()).isEqualTo(1);
     JSONObject swabType = swabTypes.getJSONObject(0);
