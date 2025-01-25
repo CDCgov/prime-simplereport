@@ -49,6 +49,7 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -101,6 +102,7 @@ public class TestDataFactory {
   @Autowired private PatientLinkRepository patientLinkRepository;
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
+  @Autowired private SupportedDiseaseRepository supportedDiseaseRepository;
   @Autowired private DemoOktaRepository oktaRepository;
   @Autowired private TestResultUploadRepository testResultUploadRepository;
   @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
@@ -131,6 +133,21 @@ public class TestDataFactory {
     deviceSpecimenTypeNewRepository.save(
         new DeviceTypeSpecimenTypeMapping(
             genericDeviceType.getInternalId(), genericSpecimenType.getInternalId()));
+
+    SupportedDisease covid = supportedDiseaseRepository.findByName("COVID-19").get();
+
+    DeviceTypeDisease genericDeviceTypeDisease =
+        new DeviceTypeDisease(
+            genericDeviceType.getInternalId(),
+            covid,
+            "94500-6",
+            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+            "Rotor-Gene Q 5plex HRM_QIAGEN GmbH",
+            "MNI",
+            "1copy COVID-19 qPCR Multi Kit_1drop Inc.",
+            "94531-1",
+            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
+    deviceTypeDiseaseRepository.save(genericDeviceTypeDisease);
   }
 
   public Organization saveOrganization(Organization org) {

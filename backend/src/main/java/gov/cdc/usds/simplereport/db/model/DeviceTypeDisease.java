@@ -25,6 +25,7 @@ public class DeviceTypeDisease extends IdentifiedEntity {
 
   @ManyToOne
   @JoinColumn(name = "supported_disease_id")
+  @JsonView(PublicDeviceType.class)
   private SupportedDisease supportedDisease;
 
   @Column
