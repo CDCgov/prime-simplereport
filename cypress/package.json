@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "@faker-js/faker": "^9.1.0",
+    "@faker-js/faker": "^9.4.0",
     "cypress": "^13.6.6",
-    "cypress-localstorage-commands": "^2.2.6",
+    "cypress-localstorage-commands": "^2.2.7",
     "dayjs": "^1.11.13",
     "eslint": "^9.15.0",
     "eslint-plugin-cypress": "^4.1.0",

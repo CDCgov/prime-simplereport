@@ -26,6 +26,7 @@ public class DiseaseService {
   public static final String HIV_NAME = "HIV";
   public static final String SYPHILIS_NAME = "Syphilis";
   public static final String GONORRHEA_NAME = "Gonorrhea";
+  public static final String CHLAMYDIA_NAME = "Chlamydia";
 
   private final DiseaseCacheService diseaseCacheService;
 

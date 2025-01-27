@@ -23,7 +23,7 @@
   },
   "main": "dist/**/index.js",
   "dependencies": {
-    "@azure/functions": "^4.5.1",
+    "@azure/functions": "^4.6.0",
     "@azure/storage-queue": "^12.25.0",
     "applicationinsights": "^3.4.0",
     "csv-stringify": "^6.5.1",
@@ -39,7 +39,7 @@
     "@types/node": "^22.7.7",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "azure-functions-core-tools": "^4.0.5801",
+    "azure-functions-core-tools": "^4.0.6821",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
     "jest": "^29.7.0",
