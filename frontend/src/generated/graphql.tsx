@@ -93,6 +93,18 @@ export type ApiUserWithStatus = {
   suffix?: Maybe<Scalars["String"]["output"]>;
 };
 
+export type ApiUserWithStatusAndCountPage = {
+  __typename?: "ApiUserWithStatusAndCountPage";
+  pageContent: ApiUserWithStatusPage;
+  totalUsersInOrg: Scalars["Int"]["output"];
+};
+
+export type ApiUserWithStatusPage = {
+  __typename?: "ApiUserWithStatusPage";
+  content?: Maybe<Array<ApiUserWithStatus>>;
+  totalElements: Scalars["Int"]["output"];
+};
+
 export enum ArchivedStatus {
   All = "ALL",
   Archived = "ARCHIVED",
@@ -768,6 +780,7 @@ export type Query = {
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
+  usersWithStatusPage: ApiUserWithStatusAndCountPage;
   whoami: User;
 };
 
@@ -917,6 +930,11 @@ export type QueryUploadSubmissionsArgs = {
 export type QueryUserArgs = {
   email?: InputMaybe<Scalars["String"]["input"]>;
   id?: InputMaybe<Scalars["ID"]["input"]>;
+};
+
+export type QueryUsersWithStatusPageArgs = {
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  searchQuery?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type Result = {
