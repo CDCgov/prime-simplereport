@@ -38,7 +38,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
-class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncService> {
+class DeviceTypeLIVDSyncServiceIntegrationTest extends BaseServiceTest<DeviceTypeLIVDSyncService> {
   @Autowired private DeviceTypeService deviceTypeService;
   @Autowired private DeviceTypeRepository deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
