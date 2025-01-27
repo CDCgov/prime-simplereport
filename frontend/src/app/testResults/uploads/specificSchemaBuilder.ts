@@ -708,8 +708,6 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
                   {
                     ...aoeDocumententationItems.genders_of_sexual_partners,
                     requiredStatusTag: RequiredStatusTag.REQUIRED_FOR_POSITIVES,
-                    //add new items here and reopen app and navigate to the guide
-                    // aoeDocumententationItems.employed_in_healthcare,
                   },
                 ],
               },
