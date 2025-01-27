@@ -434,19 +434,10 @@ const ManageUsers: React.FC<Props> = ({
             {localUsers.length <= 0 ? (
               <div
                 className={
-                  "display-flex flex-column flex-align-center margin-top-2 no-results-found"
+                  "display-flex flex-column flex-align-center margin-top-8 no-results-found"
                 }
               >
                 <div className="margin-bottom-105">No results found.</div>
-                <div>
-                  Check for spelling errors or
-                  <Button
-                    className={"margin-left-1"}
-                    id={`no-results-clear-filter-button`}
-                    onClick={() => setDebouncedQueryString("")}
-                    label={"Clear search filter"}
-                  ></Button>
-                </div>
               </div>
             ) : null}
             {activeUser ? (

@@ -8,6 +8,7 @@ import { formatUserStatus } from "../../utils/text";
 import { OktaUserStatus } from "../../utils/user";
 import "./ManageUsers.scss";
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
+import Button from "../../commonComponents/Button/Button";
 
 import { LimitedUser } from "./ManageUsersContainer";
 
@@ -34,6 +35,7 @@ const UsersSideNav: React.FC<Props> = ({
     <div className="display-block users-sidenav">
       <h2 className="users-sidenav-header">Users</h2>
       <SearchInput
+        className="padding-right-2"
         onInputChange={(e) => setDebouncedQueryString(e.target.value)}
         disabled={true}
         queryString={debouncedQueryString}
@@ -41,7 +43,7 @@ const UsersSideNav: React.FC<Props> = ({
         showSubmitButton={false}
       />
       <nav
-        className="prime-secondary-nav maxh-tablet-lg overflow-y-scroll"
+        className="prime-secondary-nav maxh-tablet-lg"
         aria-label="Tertiary navigation"
       >
         <div
@@ -51,8 +53,19 @@ const UsersSideNav: React.FC<Props> = ({
         >
           {users.length === 0 && (
             <div className={"usa-sidenav__item users-sidenav-item"}>
-              <div className={"padding-105 padding-right-2 padding-left-3"}>
+              <div className={"padding-2 padding-left-3 padding-top-3"}>
                 No results found.
+              </div>
+              <div className={"padding-105 padding-left-3 padding-y-0"}>
+                Check for spelling errors or
+              </div>
+              <div className={"padding-1 padding-left-3 padding-bottom-4"}>
+                <Button
+                  className={"clear-filter-button"}
+                  id={`clear-filter-button`}
+                  onClick={() => setDebouncedQueryString("")}
+                  label={"Clear search filter"}
+                ></Button>
               </div>
             </div>
           )}
