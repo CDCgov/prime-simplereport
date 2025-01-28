@@ -2,7 +2,7 @@
 name: Design Issue request
 about: Report a design issue
 title: ''
-labels: ''
+labels: UX Health
 assignees: ''
 
 ---

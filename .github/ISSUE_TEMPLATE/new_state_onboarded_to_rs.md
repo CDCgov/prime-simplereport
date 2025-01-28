@@ -2,7 +2,7 @@
 name: SimpleReport (State | Status Update)
 about: Checklist for adding/updating a state's status in SimpleReport
 title: "[ STATE UPDATE]"
-labels: Needs refinement
+labels: ''
 assignees: ''
 
 ---
