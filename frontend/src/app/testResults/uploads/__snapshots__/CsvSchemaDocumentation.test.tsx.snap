@@ -1359,7 +1359,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8 prime-ul margin-top-0"
               >
-                Use one of the LOINC codes listed below, which come from the
+                Use one of the LOINC codes listed below, which come from the 
                 <a
                   class="usa-link"
                   href="https://phinvads.cdc.gov/vads/SearchVocab.action"
@@ -1550,7 +1550,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                       F
                     </code>
                   </mark>
-                   or
+                   or 
                   <mark>
                     <code>
                       Female
@@ -1565,7 +1565,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                       M
                     </code>
                   </mark>
-                   or
+                   or 
                   <mark>
                     <code>
                       Male
@@ -1580,7 +1580,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                       TW
                     </code>
                   </mark>
-                   or
+                   or 
                   <mark>
                     <code>
                       Trans_Woman
@@ -1595,7 +1595,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                       TM
                     </code>
                   </mark>
-                   or
+                   or 
                   <mark>
                     <code>
                       Trans_Man
@@ -1610,7 +1610,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                       NB
                     </code>
                   </mark>
-                   or
+                   or 
                   <mark>
                     <code>
                       Non_Binary
@@ -1625,7 +1625,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                       O
                     </code>
                   </mark>
-                   or
+                   or 
                   <mark>
                     <code>
                       Other
@@ -1640,7 +1640,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                       R
                     </code>
                   </mark>
-                   or
+                   or 
                   <mark>
                     <code>
                       Refused
