@@ -1649,6 +1649,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 </li>
               </ul>
             </div>
+          </div>
           <div
             class="rs-documentation__values margin-top-6"
           >
