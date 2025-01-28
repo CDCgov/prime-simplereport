@@ -2,7 +2,7 @@
 name: Dependency upgrade
 about: Tag a dependency for upgrade
 title: ''
-labels: dependencies, Tech Debt, Eng Health, Needs refinement
+labels: dependencies, Eng Health
 assignees: ''
 
 ---

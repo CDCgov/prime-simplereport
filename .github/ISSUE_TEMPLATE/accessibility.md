@@ -2,7 +2,7 @@
 name: Accessibility Ticket
 about: Create a new work item for accessibility issues
 title: ""
-labels: Accessibility, Needs refinement
+labels: Accessibility
 assignees: ""
 ---
 

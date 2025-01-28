@@ -2,7 +2,7 @@
 name: SimpleReport (New Universal Pipeline Update)
 about: Checklist for followups after a state has been added to the universal pipeline
 title: "[ UNIVERSAL PIPELINE UPDATE]"
-labels: Needs refinement
+labels: ''
 assignees: ""
 ---
 
