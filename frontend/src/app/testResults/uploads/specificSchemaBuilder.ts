@@ -131,6 +131,25 @@ const aoeDocumententationItems: Record<string, CsvSchemaItem> = {
     ],
     format: "Use one of the accepted values listed below",
   },
+  genders_of_sexual_partners: {
+    name: "Genders of sexual partners",
+    colHeader: "genders_of_sexual_partners",
+    requiredStatusTag: RequiredStatusTag.OPTIONAL,
+    acceptedValues: [
+      "<mark><code>F</code></mark> or <mark><code>Female</code></mark>",
+      "<mark><code>M</code></mark> or <mark><code>Male</code></mark>",
+      "<mark><code>TW</code></mark> or <mark><code>Trans Woman</code></mark>",
+      "<mark><code>TM</code></mark> or <mark><code>Trans Man</code></mark>",
+      "<mark><code>NB</code></mark> or <mark><code>Non Binary</code></mark> or <mark><code>Nonbinary</code></mark>",
+      "<mark><code>O</code></mark> or <mark><code>Other</code></mark>",
+      "<mark><code>R</code></mark> or <mark><code>Refused</code></mark>",
+    ],
+    description: [
+      "This field allows for the reporting of the genders of the patient's sexual partners. This information is crucial for understanding and tracking HIV transmission patterns. Use one or more of the accepted values listed below",
+    ],
+    format:
+      'Multiple genders can be reported by separating the codes with commas (e.g., "Female,Male" for female and male partners).',
+  },
 };
 
 export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
@@ -257,7 +276,26 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
                   "<mark><code>N</code></mark> or <mark><code>Not applicable</code></mark>",
                 ],
                 description: [
+                  "This field captures the sex assigned at birth. It's important to distinguish this from patient_gender_identity, which refers to the patient's current gender identity.",
+                ],
+                format:
                   'Use one of the LOINC codes listed below, which come from the <a href="https://phinvads.cdc.gov/vads/SearchVocab.action" class="usa-link" target="_blank" rel="noreferrer noopener">PHIN VADS system</a>',
+              },
+              {
+                name: "Patient gender identity",
+                colHeader: "patient_gender_identity",
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
+                acceptedValues: [
+                  "<mark><code>F</code></mark> or <mark><code>Female</code></mark>",
+                  "<mark><code>M</code></mark> or <mark><code>Male</code></mark>",
+                  "<mark><code>TW</code></mark> or <mark><code>Trans Woman</code></mark>",
+                  "<mark><code>TM</code></mark> or <mark><code>Trans Man</code></mark>",
+                  "<mark><code>NB</code></mark> or <mark><code>Non Binary</code></mark> or <mark><code>Nonbinary</code></mark>",
+                  "<mark><code>O</code></mark> or <mark><code>Other</code></mark>",
+                  "<mark><code>R</code></mark> or <mark><code>Refused</code></mark>",
+                ],
+                description: [
+                  "This field captures the patient's current gender identity. It's important to distinguish this from patient_gender, which refers to the sex assigned at birth.",
                 ],
               },
               {
@@ -665,6 +703,10 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
                 items: [
                   {
                     ...aoeDocumententationItems.pregnant,
+                    requiredStatusTag: RequiredStatusTag.REQUIRED_FOR_POSITIVES,
+                  },
+                  {
+                    ...aoeDocumententationItems.genders_of_sexual_partners,
                     requiredStatusTag: RequiredStatusTag.REQUIRED_FOR_POSITIVES,
                   },
                 ],

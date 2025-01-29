@@ -376,9 +376,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Enter unique patient identifier. This is typically the Medical Record Number. 
                   <strong>
                     <em>
@@ -387,9 +385,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   </strong>
                   .
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   <em>
                     Some jurisdictions may require this field, ReportStream will notify you if this is the case.
                   </em>
@@ -474,9 +470,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Last name, separated from first name
                 </div>
               </div>
@@ -530,9 +524,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   First name, separated from last name
                 </div>
               </div>
@@ -586,9 +578,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Middle name, if known
                 </div>
               </div>
@@ -642,9 +632,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Patient’s street address or one of the accepted values below
                 </div>
               </div>
@@ -798,9 +786,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If a patient’s city is unknown or they’re experiencing homelessness, use 
                   <a
                     class="usa-link"
@@ -970,9 +956,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   County or parish name
                 </div>
               </div>
@@ -1055,9 +1039,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If no address is given or a patient is experiencing homelessness, use 
                   <a
                     class="usa-link"
@@ -1161,9 +1143,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If no address is given or a patient is experiencing homelessness, use 
                   <a
                     class="usa-link"
@@ -1340,19 +1320,32 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
-                  Use one of the LOINC codes listed below, which come from the 
-                  <a
-                    class="usa-link"
-                    href="https://phinvads.cdc.gov/vads/SearchVocab.action"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    PHIN VADS system
-                  </a>
+                <div>
+                  This field captures the sex assigned at birth. It's important to distinguish this from patient_gender_identity, which refers to the patient's current gender identity.
                 </div>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="format"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Format
+              </div>
+              <div
+                class="grid-col-8 prime-ul margin-top-0"
+              >
+                Use one of the LOINC codes listed below, which come from the 
+                <a
+                  class="usa-link"
+                  href="https://phinvads.cdc.gov/vads/SearchVocab.action"
+                  rel="noreferrer noopener"
+                  target="_blank"
+                >
+                  PHIN VADS system
+                </a>
               </div>
             </div>
             <div
@@ -1466,6 +1459,185 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
             <h5
               class="margin-bottom-2"
               data-testid="header"
+              id="patient_gender_identity"
+            >
+              Patient gender identity
+              <span
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom"
+              >
+                Optional
+              </span>
+            </h5>
+            <div
+              class="margin-bottom-3"
+              data-testid="subheader"
+            />
+            <div
+              class="grid-row margin-bottom-05"
+              data-testid="column-header"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Column header
+              </div>
+              <div
+                class="grid-col-auto"
+              >
+                <code>
+                  patient_gender_identity
+                </code>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="description"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Description
+              </div>
+              <div
+                class="grid-col-8"
+              >
+                <div>
+                  This field captures the patient's current gender identity. It's important to distinguish this from patient_gender, which refers to the sex assigned at birth.
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="accepted-values"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Accepted values
+              </div>
+              <ul
+                class="grid-col-8 prime-ul margin-top-0"
+              >
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      F
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Female
+                    </code>
+                  </mark>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      M
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Male
+                    </code>
+                  </mark>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      TW
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Trans Woman
+                    </code>
+                  </mark>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      TM
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Trans Man
+                    </code>
+                  </mark>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      NB
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Non Binary
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Nonbinary
+                    </code>
+                  </mark>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      O
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Other
+                    </code>
+                  </mark>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      R
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Refused
+                    </code>
+                  </mark>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="rs-documentation__values margin-top-6"
+          >
+            <h5
+              class="margin-bottom-2"
+              data-testid="header"
               id="patient_race"
             >
               Patient race
@@ -1508,9 +1680,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Use one of the LOINC codes listed below, which come from the 
                   <a
                     class="usa-link"
@@ -1706,9 +1876,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Use one of the LOINC codes list below, which come from the 
                   <a
                     class="usa-link"
@@ -1829,9 +1997,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Look up a Language Concept Code or Name from the  
                   <a
                     class="usa-link"
@@ -2016,9 +2182,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   A unique ID that identifies a single result, which allows public health departments to refer back to a test event.
                 </div>
               </div>
@@ -2093,14 +2257,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   The name of the device or test kit used for testing.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Find your device on the 
                   <a
                     class="usa-link"
@@ -2206,9 +2366,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If you want to include this value, you can find it in the CDC’s 
                   <a
                     class="usa-link"
@@ -2307,9 +2465,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If you want to include this value, you can find it in the CDC’s 
                   <a
                     class="usa-link"
@@ -2408,9 +2564,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Find your device on the 
                   <a
                     class="usa-link"
@@ -2640,9 +2794,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Use one of the common values below, or find your device on the 
                   <a
                     class="usa-link"
@@ -2773,14 +2925,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
@@ -2896,9 +3044,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -2915,14 +3061,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   </a>
                    value.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
@@ -3038,9 +3180,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -3057,14 +3197,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   </a>
                    value.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
@@ -3180,14 +3316,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
@@ -3303,9 +3435,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -3322,14 +3452,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   </a>
                    value.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the ordering provider address (if available), or ET (Eastern Time).
                 </div>
               </div>
@@ -3454,19 +3580,13 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   The SNOMED code representing the type of biological sample used for testing.
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   <br />
                 </div>
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Find the specimen type for your device on the 
                   <a
                     class="usa-link"
@@ -3580,9 +3700,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Enter the National Provider Identifier (NPI), the unique 10-digit number that identifies a healthcare provider. You can find NPIs at the 
                   <a
                     class="usa-link"
@@ -3713,9 +3831,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Last name, separated from first name
                 </div>
               </div>
@@ -3769,9 +3885,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   First name, separated from last name
                 </div>
               </div>
@@ -3825,9 +3939,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Middle name, if known
                 </div>
               </div>
@@ -4307,9 +4419,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   CLIA number from the 
                   <a
                     class="usa-link"
@@ -4394,9 +4504,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Name of facility that processed test results
                 </div>
               </div>
@@ -5244,9 +5352,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Date
                 </div>
               </div>
@@ -5457,9 +5563,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If the resident congregate setting is “Y” or “Yes,” then provide residence type
                 </div>
               </div>
@@ -6045,9 +6149,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -6107,9 +6209,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -6169,9 +6269,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Address, continued
                 </div>
               </div>
@@ -6225,9 +6323,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -6287,9 +6383,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -6393,9 +6487,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -6499,9 +6591,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -6606,9 +6696,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field isn't meant for characteristics of the condition tested or statements about false positive or negative results.
                 </div>
               </div>
@@ -6677,9 +6765,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div
-                  class="margin-bottom-1"
-                >
+                <div>
                   Enter test result status using the accepted format listed below. If left blank, value will default to F for final.
                 </div>
               </div>

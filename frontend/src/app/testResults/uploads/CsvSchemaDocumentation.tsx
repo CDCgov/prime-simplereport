@@ -81,7 +81,6 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           <div className="grid-col-8">
             {item.description?.map((line) => (
               <div
-                className="margin-bottom-1"
                 key={`${item.colHeader}-description-${line}`}
                 dangerouslySetInnerHTML={{ __html: `${line}` }}
               />
