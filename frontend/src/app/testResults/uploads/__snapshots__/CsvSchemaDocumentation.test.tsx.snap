@@ -1559,7 +1559,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                    or 
                   <mark>
                     <code>
-                      Trans_Woman
+                      Trans Woman
                     </code>
                   </mark>
                 </li>
@@ -1574,7 +1574,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                    or 
                   <mark>
                     <code>
-                      Trans_Man
+                      Trans Man
                     </code>
                   </mark>
                 </li>
@@ -1589,7 +1589,13 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                    or 
                   <mark>
                     <code>
-                      Non_Binary
+                      Non Binary
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      Nonbinary
                     </code>
                   </mark>
                 </li>
