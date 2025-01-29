@@ -642,8 +642,17 @@ public class ApiUserService {
     }
 
     int totalSearchResults = filteredUsers.size();
-    int startIndex = totalSearchResults > pageSize ? pageNumber * pageSize : 0;
-    int endIndex = Math.min((startIndex + pageSize), filteredUsers.size());
+
+    int startIndex = pageNumber * pageSize;
+
+    boolean onlyOnePageOfResults = totalSearchResults <= pageSize;
+    boolean requestedPageOutOfBounds = startIndex > totalSearchResults;
+
+    if (onlyOnePageOfResults || requestedPageOutOfBounds) {
+      startIndex = 0;
+    }
+
+    int endIndex = Math.min((startIndex + pageSize), totalSearchResults);
 
     List<ApiUserWithStatus> filteredSublist = filteredUsers.subList(startIndex, endIndex);
 
