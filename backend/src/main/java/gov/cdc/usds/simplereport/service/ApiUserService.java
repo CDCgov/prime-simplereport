@@ -875,7 +875,9 @@ public class ApiUserService {
               .map(IdentifiedEntity::getInternalId)
               .collect(Collectors.toList());
       Set<Facility> facilitiesToGiveAccessTo =
-          getFacilitiesToGiveAccess(org, roles, new HashSet<>(facilitiesInternalIds));
+          facilitiesInternalIds.isEmpty()
+              ? new HashSet<>()
+              : getFacilitiesToGiveAccess(org, roles, new HashSet<>(facilitiesInternalIds));
       apiUser.setFacilities(facilitiesToGiveAccessTo);
       apiUser.setRoles(roles, org);
     } catch (MisconfiguredUserException | PrivilegeUpdateFacilityAccessException e) {
