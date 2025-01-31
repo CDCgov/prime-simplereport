@@ -71,20 +71,9 @@ export const en = {
         other: OTHER,
         refused: REFUSED,
       },
-      genderIdentity: {
-        female: FEMALE,
-        male: MALE,
-        transwoman: GenderIdentityDisplay.transwoman,
-        transman: GenderIdentityDisplay.transman,
-        nonbinary: GenderIdentityDisplay.nonbinary,
-        other: "Gender identity not listed here",
-        refused: REFUSED,
-      },
       gender: {
         female: FEMALE,
         male: MALE,
-        other: OTHER,
-        refused: REFUSED,
       },
       ethnicity: {
         hispanic: YES,
@@ -202,10 +191,7 @@ export const en = {
           race: "Race",
           tribalAffiliation: "Tribal affiliation",
           ethnicity: "Are you Hispanic or Latino?",
-          gender: "Sex assigned at birth",
-          genderIdentity: "What's your gender identity?",
-          genderHelpText:
-            "This is usually the gender that is written on your original birth certificate.",
+          gender: "Sex",
         },
         housingAndWork: {
           heading: "Housing and work",

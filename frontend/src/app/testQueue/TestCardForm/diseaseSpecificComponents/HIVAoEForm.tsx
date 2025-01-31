@@ -32,7 +32,7 @@ export const HIVAoEForm = ({
   const { onPregnancyChange, onSexualPartnerGenderChange } =
     generateAoeListenerHooks(onResponseChange, responses);
 
-  const { GENDER_IDENTITY_VALUES } = useTranslatedConstants();
+  const { GENDER_VALUES } = useTranslatedConstants();
   const {
     showPregnancyError,
     selectedGenders,
@@ -63,12 +63,12 @@ export const HIVAoEForm = ({
         <div className="grid-col-12 desktop:grid-col-6">
           <MultiSelect
             name={`sexual-partner-gender-${testOrder.internalId}`}
-            options={GENDER_IDENTITY_VALUES}
+            options={GENDER_VALUES}
             onChange={onSexualPartnerGenderChange}
             initialSelectedValues={selectedGenders}
             label={
               <>
-                What is the gender of their sexual partners?{" "}
+                What is the sex of their sexual partners?{" "}
                 <span className={"text-base-dark"}>
                   (Select all that apply.)
                 </span>
