@@ -1,14 +1,11 @@
 import React from "react";
 
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
-import { getAppInsights } from "../../TelemetryService";
 import { BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT } from "../../../config/constants";
 
 import UploadForm from "./UploadForm";
 
 const DiseaseSpecificUploadContainer = () => {
-  const appInsights = getAppInsights();
-
   const alert = (
     <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
       <div className="usa-alert__body">
@@ -28,17 +25,6 @@ const DiseaseSpecificUploadContainer = () => {
               }
             >
               SimpleReport online user guide
-            </a>
-            .{" "}
-            <a
-              href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
-              onClick={() => {
-                appInsights?.trackEvent({
-                  name: "Access bulk uploader flu guide",
-                });
-              }}
-            >
-              See more information and guidance about reporting these diseases
             </a>
             .
           </p>
