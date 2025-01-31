@@ -189,7 +189,7 @@ describe("CsvSchemaDocumentation tests", () => {
 
       await user.click(hivAoeTab);
 
-      expect(screen.getAllByText("Required for Positives")).toHaveLength(3);
+      expect(screen.getAllByText("Required for Positives")).toHaveLength(2);
     });
     it("logs to App Insights on template download", async () => {
       const mockTrackEvent = jest.fn();
