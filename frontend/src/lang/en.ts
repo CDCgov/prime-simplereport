@@ -202,10 +202,10 @@ export const en = {
           race: "Race",
           tribalAffiliation: "Tribal affiliation",
           ethnicity: "Are you Hispanic or Latino?",
-          gender: "Sex assigned at birth",
+          gender: "Sex",
           // genderIdentity: "What's your gender identity?",
-          genderHelpText:
-            "This is usually the gender that is written on your original birth certificate.",
+          // genderHelpText:
+          //   "This is usually the gender that is written on your original birth certificate.",
         },
         housingAndWork: {
           heading: "Housing and work",

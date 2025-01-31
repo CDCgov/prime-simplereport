@@ -612,7 +612,7 @@ const PersonForm = (props: Props) => {
         {/*/>*/}
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
-          hintText={t("patient.form.demographics.genderHelpText")}
+          // hintText={t("patient.form.demographics.genderHelpText")}
           name="gender"
           required={view !== PersonFormView.PXP}
           validationStatus={validationStatus("gender")}

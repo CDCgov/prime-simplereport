@@ -17,3 +17,4 @@ twilio:
   enabled: true
 features:
   oktaMigrationEnabled: true
+  syphilisEnabled: true

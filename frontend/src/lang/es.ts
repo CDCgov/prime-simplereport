@@ -212,8 +212,8 @@ export const es: LanguageConfig = {
           ethnicity: "¿Es usted hispano o latino?",
           gender: "Sexo asignado al nacer",
           // genderIdentity: "¿Cuál es su identidad de género?",
-          genderHelpText:
-            "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
+          // genderHelpText:
+          //   "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },
         housingAndWork: {
           heading: "Vivienda y trabajo",

@@ -60,7 +60,7 @@ describe("Add Patient: saving changes and starting a test", () => {
           value: "refused",
           exact: true,
         },
-        "Sex assigned at birth": {
+        Sex: {
           label: "Female",
           value: "female",
           exact: true,
@@ -133,7 +133,7 @@ describe("Add Patient: saving changes and starting a test", () => {
           value: "refused",
           exact: true,
         },
-        "Sex assigned at birth": {
+        Sex: {
           label: "Female",
           value: "female",
           exact: true,

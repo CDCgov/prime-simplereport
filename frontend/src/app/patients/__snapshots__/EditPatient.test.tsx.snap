@@ -4604,7 +4604,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <legend
                     class="usa-legend"
                   >
-                    Sex assigned at birth
+                    Sex
                     <abbr
                       class="usa-hint usa-hint--required"
                       title="required"
@@ -4613,11 +4613,6 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       *
                     </abbr>
                   </legend>
-                  <span
-                    class="usa-hint"
-                  >
-                    This is usually the gender that is written on your original birth certificate.
-                  </span>
                   <div
                     class=""
                   >
