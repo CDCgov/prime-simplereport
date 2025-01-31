@@ -1,7 +1,7 @@
 import React from "react";
 
 import MultiSelect from "../../../../commonComponents/MultiSelect/MultiSelect";
-import { GENDER_IDENTITY_VALUES } from "../../../../constants";
+import { GENDER_VALUES } from "../../../../constants";
 import { AoeQuestionProps } from "../aoeUtils";
 
 export const GenderOfSexualPartnersAoe = ({
@@ -33,7 +33,7 @@ export const GenderOfSexualPartnersAoe = ({
   return (
     <MultiSelect
       name={`sexual-partner-gender-${testOrderId}`}
-      options={GENDER_IDENTITY_VALUES}
+      options={GENDER_VALUES}
       onChange={onSexualPartnerGenderChange}
       initialSelectedValues={selectedGenders}
       label={

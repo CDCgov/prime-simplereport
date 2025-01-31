@@ -2,11 +2,11 @@ export const UNKNOWN = "Unknown";
 export const GenderIdentityDisplay: { [_K in GenderIdentity]: string } = {
   female: "Female",
   male: "Male",
-  transwoman: "Transwoman",
-  transman: "Transman",
-  nonbinary: "Nonbinary or gender non-conforming",
-  other: "Other",
-  refused: "Prefer not to answer",
+  // transwoman: "Transwoman",
+  // transman: "Transman",
+  // nonbinary: "Nonbinary or gender non-conforming",
+  // other: "Other",
+  // refused: "Prefer not to answer",
 } as const;
 
 export const formatGenderOfSexualPartnersForDisplay = (

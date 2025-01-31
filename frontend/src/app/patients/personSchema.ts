@@ -12,7 +12,7 @@ import {
   GENDER_VALUES,
   TRIBAL_AFFILIATION_VALUES,
   PHONE_TYPE_VALUES,
-  GENDER_IDENTITY_VALUES,
+  // GENDER_IDENTITY_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 import { languages } from "../../config/constants";
@@ -284,14 +284,14 @@ const updateFieldSchemata: (
     .mixed()
     .oneOf(getValues(GENDER_VALUES), t("patient.form.errors.gender") || "")
     .required(),
-  genderIdentity: yup
-    .mixed()
-    .nullable()
-    .oneOf(
-      [...getValues(GENDER_IDENTITY_VALUES), "", null],
-      t("patient.form.errors.genderIdentity") || ""
-    )
-    .notRequired(),
+  // genderIdentity: yup
+  //   .mixed()
+  //   .nullable()
+  //   .oneOf(
+  //     [...getValues(GENDER_IDENTITY_VALUES), "", null],
+  //     t("patient.form.errors.genderIdentity") || ""
+  //   )
+  //   .notRequired(),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup

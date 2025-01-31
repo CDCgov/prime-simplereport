@@ -133,7 +133,7 @@ Object {
             <td
               class="padding-y-3 border-bottom-1px border-base-lighter"
             >
-              Female, Male, Other
+              Female, Male
             </td>
           </tr>
           <tr>
@@ -281,7 +281,7 @@ Object {
           <td
             class="padding-y-3 border-bottom-1px border-base-lighter"
           >
-            Female, Male, Other
+            Female, Male
           </td>
         </tr>
         <tr>
@@ -510,7 +510,7 @@ Object {
             <td
               class="padding-y-3 border-bottom-1px border-base-lighter"
             >
-              Female, Male, Other
+              Female, Male
             </td>
           </tr>
           <tr>
@@ -694,7 +694,7 @@ Object {
           <td
             class="padding-y-3 border-bottom-1px border-base-lighter"
           >
-            Female, Male, Other
+            Female, Male
           </td>
         </tr>
         <tr>

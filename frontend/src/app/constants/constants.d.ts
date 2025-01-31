@@ -8,14 +8,12 @@ type Race =
   | "refused";
 type Ethnicity = "hispanic" | "not_hispanic" | "refused";
 type Gender = "male" | "female" | "other" | "refused";
-type GenderIdentity =
-  | "female"
-  | "male"
-  | "transwoman"
-  | "transman"
-  | "nonbinary"
-  | "other"
-  | "refused";
+type GenderIdentity = "female" | "male";
+// | "transwoman"
+// | "transman"
+// | "nonbinary"
+// | "other"
+// | "refused";
 type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
 type PhoneType = "MOBILE" | "LANDLINE" | "UNKNOWN";
@@ -595,7 +593,7 @@ interface PersonUpdate extends Address {
   race: Race;
   ethnicity: Ethnicity;
   gender: Gender;
-  genderIdentity: GenderIdentity;
+  // genderIdentity: GenderIdentity;
   residentCongregateSetting: boolean | null | undefined;
   employedInHealthcare: boolean | null | undefined;
   tribalAffiliation: TribalAffiliation | undefined;

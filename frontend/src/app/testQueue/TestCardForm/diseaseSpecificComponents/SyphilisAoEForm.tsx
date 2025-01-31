@@ -69,7 +69,7 @@ export const SyphilisAoEForm = ({
   );
 
   const CHECKBOX_COLS_TO_DISPLAY = 3;
-  const { GENDER_IDENTITY_VALUES } = useTranslatedConstants();
+  const { GENDER_VALUES } = useTranslatedConstants();
   return (
     <div
       className="grid-col"
@@ -79,12 +79,12 @@ export const SyphilisAoEForm = ({
         <div className="grid-col-auto">
           <MultiSelect
             name={`sexual-partner-gender-${testOrder.internalId}`}
-            options={GENDER_IDENTITY_VALUES}
+            options={GENDER_VALUES}
             onChange={onSexualPartnerGenderChange}
             initialSelectedValues={selectedGenders}
             label={
               <>
-                What is the gender of their sexual partners?{" "}
+                What is the sex of their sexual partners?{" "}
                 <span className={"text-base-dark"}>
                   (Select all that apply.)
                 </span>

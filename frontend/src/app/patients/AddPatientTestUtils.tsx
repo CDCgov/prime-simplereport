@@ -111,7 +111,7 @@ const addPatientRequestParams = {
   race: "other",
   ethnicity: "refused",
   gender: "female",
-  genderIdentity: "female",
+  // genderIdentity: "female",
   facilityId: mockFacilityID,
   preferredLanguage: null,
   testResultDelivery: "SMS",
