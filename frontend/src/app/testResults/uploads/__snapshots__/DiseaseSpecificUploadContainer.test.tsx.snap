@@ -45,13 +45,6 @@ exports[`Disease specific upload container test passes axe tests 1`] = `
                   SimpleReport online user guide
                 </a>
                 .
-                 
-                <a
-                  href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
-                >
-                  See more information and guidance about reporting these diseases
-                </a>
-                .
               </p>
               <p>
                 All organizations can continue to report COVID-19 results to their public health department using the bulk uploader. Flu and RSV reporting will be available in other jurisdictions soon.
