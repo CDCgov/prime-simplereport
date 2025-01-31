@@ -308,7 +308,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
           <ul>
             <li>
               <a
-                href="/assets/resources/test_results_example_10-31-2023.csv"
+                href="/assets/resources/test_results_example_01-31-2025.csv"
                 className="usa-link"
                 onClick={() => {
                   appInsights?.trackEvent({
