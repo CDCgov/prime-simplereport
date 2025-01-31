@@ -74,20 +74,9 @@ export const es: LanguageConfig = {
         other: OTHER,
         refused: REFUSED,
       },
-      // genderIdentity: {
-      //   female: "Femenino",
-      //   male: "Masculino",
-      //   transwoman: "Transfemenino o mujer transgénero",
-      //   transman: "Transmasculino u hombre transgénero",
-      //   nonbinary: "No binario o género no conforme",
-      //   other: "Identidad de género no está en la lista",
-      //   refused: REFUSED,
-      // },
       gender: {
         female: "Femenino",
         male: "Masculino",
-        // other: "Persona no binaria",
-        // refused: REFUSED,
       },
       ethnicity: {
         hispanic: YES,
@@ -211,9 +200,6 @@ export const es: LanguageConfig = {
           tribalAffiliation: "Afiliación tribal",
           ethnicity: "¿Es usted hispano o latino?",
           gender: "Sexo asignado al nacer",
-          // genderIdentity: "¿Cuál es su identidad de género?",
-          // genderHelpText:
-          //   "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },
         housingAndWork: {
           heading: "Vivienda y trabajo",

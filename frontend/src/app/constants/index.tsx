@@ -66,27 +66,8 @@ const genderValues = (_t: TFunction): { value: Gender; label: string }[] => {
   return [
     { label: i18n.t("constants.gender.female"), value: "female" },
     { label: i18n.t("constants.gender.male"), value: "male" },
-    // { label: i18n.t("constants.gender.other"), value: "other" },
-    // { label: i18n.t("constants.gender.refused"), value: "refused" },
   ];
 };
-
-// const genderIdentityValues = (
-//   _t: TFunction
-// ): { value: GenderIdentity; label: string }[] => {
-//   return [
-//     { label: i18n.t("constants.genderIdentity.female"), value: "female" },
-//     { label: i18n.t("constants.genderIdentity.male"), value: "male" },
-//     {
-//       label: i18n.t("constants.genderIdentity.transwoman"),
-//       value: "transwoman",
-//     },
-//     { label: i18n.t("constants.genderIdentity.transman"), value: "transman" },
-//     { label: i18n.t("constants.genderIdentity.nonbinary"), value: "nonbinary" },
-//     { label: i18n.t("constants.genderIdentity.other"), value: "other" },
-//     { label: i18n.t("constants.genderIdentity.refused"), value: "refused" },
-//   ];
-// };
 
 const yesNoValues = (_t: TFunction): { value: YesNo; label: string }[] => {
   return [
@@ -769,7 +750,6 @@ export const RACE_VALUES = raceValues(i18n.t);
 export const ROLE_VALUES = roleValues(i18n.t);
 export const ETHNICITY_VALUES = ethnicityValues(i18n.t);
 export const GENDER_VALUES = genderValues(i18n.t);
-// export const GENDER_IDENTITY_VALUES = genderIdentityValues(i18n.t);
 export const YES_NO_VALUES = yesNoValues(i18n.t);
 export const PHONE_TYPE_VALUES = phoneTypeValues(i18n.t);
 export const YES_NO_UNKNOWN_VALUES = yesNoUnkownValues(i18n.t);
@@ -783,7 +763,6 @@ export const useTranslatedConstants = () => {
     ROLE_VALUES: roleValues(t),
     ETHNICITY_VALUES: ethnicityValues(t),
     GENDER_VALUES: genderValues(t),
-    // GENDER_IDENTITY_VALUES: genderIdentityValues(t),
     TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS:
       testResultDeliveryPreferenceValuesSms(t),
     TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL:

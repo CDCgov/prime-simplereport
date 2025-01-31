@@ -61,11 +61,6 @@ describe("Add Patient: All required fields entered and submitting address verifi
           value: "female",
           exact: true,
         },
-        // "What's your gender identity?": {
-        //   label: "Female",
-        //   value: "female",
-        //   exact: true,
-        // },
       }
     );
 

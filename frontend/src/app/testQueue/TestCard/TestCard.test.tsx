@@ -1243,10 +1243,9 @@ describe("TestCard", () => {
         })
       );
       expect(screen.getByText("Is the patient pregnant?")).toBeInTheDocument();
-      // TODO figure out why this is failing
-      // expect(
-      //   screen.getByText("What is the sex of their sexual partners?")
-      // ).toBeInTheDocument();
+      expect(
+        screen.getByText("What is the sex of their sexual partners?")
+      ).toBeInTheDocument();
       expect(
         screen.queryByText(
           "Is the patient currently experiencing or showing signs of symptoms?"
@@ -1333,10 +1332,9 @@ describe("TestCard", () => {
           "Is the patient currently experiencing or showing signs of symptoms?"
         )
       ).toBeInTheDocument();
-      // TODO: figure out why this is failing
-      // expect(
-      //   screen.getByText("What is the sex of their sexual partners?")
-      // ).toBeInTheDocument();
+      expect(
+        screen.getByText("What is the sex of their sexual partners?")
+      ).toBeInTheDocument();
       expect(
         screen.getByText("Has the patient been told they have syphilis before?")
       ).toBeInTheDocument();

@@ -65,11 +65,6 @@ describe("Add Patient: saving changes and starting a test", () => {
           value: "female",
           exact: true,
         },
-        // "What's your gender identity?": {
-        //   label: "Female",
-        //   value: "female",
-        //   exact: true,
-        // },
       }
     );
 
@@ -138,11 +133,6 @@ describe("Add Patient: saving changes and starting a test", () => {
           value: "female",
           exact: true,
         },
-        // "What's your gender identity?": {
-        //   label: "Female",
-        //   value: "female",
-        //   exact: true,
-        // },
       }
     );
     await user.click(
