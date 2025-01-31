@@ -5839,3 +5839,20 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: facility
             columnName: ordering_provider_id
+  - changeSet:
+      id: dropColumn genderIdentity
+      author: tmz1@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: remove-gender_identity-from-person-table
+        - dropColumn:
+            columnName: gender_identity
+            tableName: person
+      rollback:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: gender_identity
+                  type: text
+                  remarks: represents the persons gender identity
