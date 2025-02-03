@@ -117,10 +117,6 @@ const ManageUsersContainer = () => {
       debounceTime: SEARCH_DEBOUNCE_TIME,
     });
 
-  useEffect(() => {
-    filterByName(queryString);
-  }, [queryString]);
-
   const filterByName = (name: string) => {
     let searchParams: Record<string, string> = {
       facility: activeFacilityId,
@@ -138,6 +134,10 @@ const ManageUsersContainer = () => {
       search: new URLSearchParams(searchParams).toString(),
     });
   };
+
+  useEffect(() => {
+    filterByName(queryString);
+  }, [queryString, filterByName]);
 
   const {
     data,
