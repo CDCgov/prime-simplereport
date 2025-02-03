@@ -1,6 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
 
 import { RootState } from "../../store";
 import { Role } from "../../permissions";
@@ -22,6 +23,8 @@ import {
 import { useDocumentTitle } from "../../utils/hooks";
 import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
 import { SEARCH_DEBOUNCE_TIME } from "../../testQueue/constants";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+import { getParameterFromUrl } from "../../utils/url";
 
 import ManageUsers from "./ManageUsers";
 
@@ -95,14 +98,46 @@ const ManageUsersContainer = () => {
   const [resetMfa] = useResetUserMfaMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
-  const [queryString, debouncedQueryString, setDebouncedQueryString] =
-    useDebounce("", {
-      debounceTime: SEARCH_DEBOUNCE_TIME,
-    });
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id || "";
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // this gets page number from the route parameters (/settings/users/1)
   const { pageNumber } = useParams();
   const currentPage = pageNumber ? +pageNumber : 1;
   const entriesPerPage = 14;
+
+  // this gets name query from the query parameters (?name=abc)
+  const nameQuery = getParameterFromUrl("name", location);
+
+  const [queryString, debouncedQueryString, setDebouncedQueryString] =
+    useDebounce(nameQuery ?? "", {
+      debounceTime: SEARCH_DEBOUNCE_TIME,
+    });
+
+  useEffect(() => {
+    filterByName(queryString);
+  }, [queryString]);
+
+  const filterByName = (name: string) => {
+    let searchParams: Record<string, string> = {
+      facility: activeFacilityId,
+    };
+
+    if (name && name.trim() !== "") {
+      searchParams = {
+        ...searchParams,
+        name: name,
+      };
+    }
+
+    navigate({
+      pathname: "/settings/users/1",
+      search: new URLSearchParams(searchParams).toString(),
+    });
+  };
 
   const {
     data,
@@ -113,7 +148,7 @@ const ManageUsersContainer = () => {
     fetchPolicy: "no-cache",
     variables: {
       pageNumber: currentPage - 1,
-      searchQuery: queryString,
+      searchQuery: nameQuery,
     },
   });
 

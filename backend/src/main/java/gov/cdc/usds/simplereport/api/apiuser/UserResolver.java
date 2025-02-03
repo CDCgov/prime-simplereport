@@ -47,6 +47,10 @@ public class UserResolver {
       pageNumber = DEFAULT_OKTA_USER_PAGE_OFFSET;
     }
 
+    if (searchQuery == null) {
+      searchQuery = "";
+    }
+
     return _userService.getPagedUsersAndStatusInCurrentOrg(
         pageNumber, DEFAULT_OKTA_USER_PAGE_SIZE, searchQuery);
   }
