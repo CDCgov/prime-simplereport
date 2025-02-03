@@ -102,7 +102,7 @@ const ManageUsersContainer = () => {
 
   const { pageNumber } = useParams();
   const currentPage = pageNumber ? +pageNumber : 1;
-  const entriesPerPage = 10;
+  const entriesPerPage = 14;
 
   const {
     data,

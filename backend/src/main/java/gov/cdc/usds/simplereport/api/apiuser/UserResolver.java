@@ -16,7 +16,7 @@ import org.springframework.stereotype.Controller;
 /** Resolver for the graphql User type */
 @Controller
 public class UserResolver {
-  public static final int DEFAULT_OKTA_USER_PAGE_SIZE = 10;
+  public static final int DEFAULT_OKTA_USER_PAGE_SIZE = 14;
   public static final int DEFAULT_OKTA_USER_PAGE_OFFSET = 0;
 
   private ApiUserService _userService;
