@@ -106,7 +106,7 @@ describe("ManageUsersContainer", () => {
         query: GetUsersAndStatusPageDocument,
         variables: {
           pageNumber: 0,
-          searchQuery: "",
+          searchQuery: null,
         },
       },
       result: {
@@ -215,7 +215,7 @@ describe("ManageUsersContainer", () => {
         query: GetUsersAndStatusPageDocument,
         variables: {
           pageNumber: 0,
-          searchQuery: "",
+          searchQuery: null,
         },
       },
       result: {
