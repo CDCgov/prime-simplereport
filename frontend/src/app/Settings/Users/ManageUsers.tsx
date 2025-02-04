@@ -43,8 +43,8 @@ interface Props {
   currentPage: number;
   totalEntries: number;
   entriesPerPage: number;
-  debouncedQueryString: string;
-  setDebouncedQueryString: Dispatch<string>;
+  queryString: string;
+  setQueryString: Dispatch<string>;
   queryLoadingStatus: boolean;
   totalUsersInOrg: number;
 }
@@ -103,8 +103,8 @@ const ManageUsers: React.FC<Props> = ({
   currentPage,
   totalEntries,
   entriesPerPage,
-  debouncedQueryString,
-  setDebouncedQueryString,
+  queryString,
+  setQueryString,
   queryLoadingStatus,
   totalUsersInOrg,
 }) => {
@@ -428,8 +428,8 @@ const ManageUsers: React.FC<Props> = ({
               activeUserId={activeUser?.id || ""}
               users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
-              debouncedQueryString={debouncedQueryString}
-              setDebouncedQueryString={setDebouncedQueryString}
+              queryString={queryString}
+              setQueryString={setQueryString}
             />
             {localUsers.length <= 0 ? (
               <div

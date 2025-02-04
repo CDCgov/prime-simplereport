@@ -16,16 +16,16 @@ interface Props {
   activeUserId: string;
   users: LimitedUser[];
   onChangeActiveUser: (userId: string) => void;
-  debouncedQueryString: string;
-  setDebouncedQueryString: Dispatch<string>;
+  queryString: string;
+  setQueryString: Dispatch<string>;
 }
 
 const UsersSideNav: React.FC<Props> = ({
   activeUserId,
   users,
   onChangeActiveUser,
-  debouncedQueryString,
-  setDebouncedQueryString,
+  queryString,
+  setQueryString,
 }) => {
   const getIdsAsString = (users: LimitedUser[]) => {
     return users.map((user) => "user-tab-" + user.id.toString()).join(" ");
@@ -36,9 +36,9 @@ const UsersSideNav: React.FC<Props> = ({
       <h2 className="users-sidenav-header">Users</h2>
       <SearchInput
         className="padding-right-2"
-        onInputChange={(e) => setDebouncedQueryString(e.target.value)}
+        onInputChange={(e) => setQueryString(e.target.value)}
         disabled={true}
-        queryString={debouncedQueryString}
+        queryString={queryString}
         placeholder={`Search by name`}
         showSubmitButton={false}
       />
@@ -63,7 +63,7 @@ const UsersSideNav: React.FC<Props> = ({
                 <Button
                   className={"clear-filter-button"}
                   id={`clear-filter-button`}
-                  onClick={() => setDebouncedQueryString("")}
+                  onClick={() => setQueryString("")}
                   label={"Clear search filter"}
                 ></Button>
               </div>

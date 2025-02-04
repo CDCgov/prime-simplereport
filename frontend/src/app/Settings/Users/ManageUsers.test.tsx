@@ -366,8 +366,8 @@ describe("ManageUsers", () => {
             currentPage={1}
             entriesPerPage={10}
             totalEntries={3}
-            debouncedQueryString={""}
-            setDebouncedQueryString={setDebouncedQueryString}
+            queryString={""}
+            setQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={3}
           />
@@ -726,8 +726,8 @@ describe("ManageUsers", () => {
             totalEntries={0}
             entriesPerPage={10}
             currentPage={1}
-            debouncedQueryString={""}
-            setDebouncedQueryString={setDebouncedQueryString}
+            queryString={""}
+            setQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={0}
           />
@@ -796,8 +796,8 @@ describe("ManageUsers", () => {
             totalEntries={2}
             entriesPerPage={10}
             currentPage={1}
-            debouncedQueryString={""}
-            setDebouncedQueryString={setDebouncedQueryString}
+            queryString={""}
+            setQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={2}
           />
@@ -843,8 +843,8 @@ describe("ManageUsers", () => {
             totalEntries={2}
             entriesPerPage={10}
             currentPage={1}
-            debouncedQueryString={""}
-            setDebouncedQueryString={setDebouncedQueryString}
+            queryString={""}
+            setQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={2}
           />
@@ -891,8 +891,8 @@ describe("ManageUsers", () => {
             totalEntries={2}
             entriesPerPage={10}
             currentPage={1}
-            debouncedQueryString={""}
-            setDebouncedQueryString={setDebouncedQueryString}
+            queryString={""}
+            setQueryString={setDebouncedQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={2}
           />
@@ -995,8 +995,8 @@ describe("ManageUsers", () => {
         totalEntries={3}
         entriesPerPage={10}
         currentPage={1}
-        debouncedQueryString={""}
-        setDebouncedQueryString={setDebouncedQueryString}
+        queryString={""}
+        setQueryString={setDebouncedQueryString}
         queryLoadingStatus={false}
         totalUsersInOrg={3}
       />

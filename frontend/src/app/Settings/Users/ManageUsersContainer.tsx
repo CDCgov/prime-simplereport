@@ -1,7 +1,7 @@
 import { gql, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useState } from "react";
 
 import { RootState } from "../../store";
 import { Role } from "../../permissions";
@@ -21,7 +21,7 @@ import {
   useGetUsersAndStatusPageQuery,
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
-import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
+import { useDebouncedEffect } from "../../testQueue/addToQueue/useDebounce";
 import { SEARCH_DEBOUNCE_TIME } from "../../testQueue/constants";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 import { getParameterFromUrl } from "../../utils/url";
@@ -112,10 +112,7 @@ const ManageUsersContainer = () => {
   // this gets name query from the query parameters (?name=abc)
   const nameQuery = getParameterFromUrl("name", location);
 
-  const [queryString, debouncedQueryString, setDebouncedQueryString] =
-    useDebounce(nameQuery ?? "", {
-      debounceTime: SEARCH_DEBOUNCE_TIME,
-    });
+  const [queryString, setQueryString] = useState(nameQuery ?? "");
 
   const filterByName = (name: string) => {
     let searchParams: Record<string, string> = {
@@ -135,9 +132,13 @@ const ManageUsersContainer = () => {
     });
   };
 
-  useEffect(() => {
-    filterByName(queryString);
-  }, [queryString, filterByName]);
+  useDebouncedEffect(
+    () => {
+      filterByName(queryString);
+    },
+    [queryString],
+    SEARCH_DEBOUNCE_TIME
+  );
 
   const {
     data,
@@ -182,8 +183,8 @@ const ManageUsersContainer = () => {
       currentPage={currentPage}
       totalEntries={data.usersWithStatusPage.pageContent.totalElements}
       entriesPerPage={entriesPerPage}
-      debouncedQueryString={debouncedQueryString}
-      setDebouncedQueryString={setDebouncedQueryString}
+      queryString={queryString}
+      setQueryString={setQueryString}
       queryLoadingStatus={loading}
       totalUsersInOrg={data.usersWithStatusPage.totalUsersInOrg}
     />
