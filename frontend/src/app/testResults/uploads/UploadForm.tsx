@@ -60,7 +60,9 @@ export function groupErrors(
 
 export function getErrorMessage(error: EnhancedFeedbackMessage) {
   if (error.message) {
-    const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+){1,7})/g;
+    const headerRegex =
+      /([a-z0-9]+(?:_[a-z0-9]+){1,7}|icu|comment|hospitalized|pregnant)/g;
+    //could hard code list of one word cols?
     return (
       <span data-testid="error-message">
         {error.message.split(headerRegex).map((value) => (
