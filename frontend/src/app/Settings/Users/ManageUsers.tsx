@@ -537,6 +537,7 @@ const ManageUsers: React.FC<Props> = ({
               totalEntries={totalEntries}
               entriesPerPage={entriesPerPage}
               currentPage={currentPage}
+              pageGroupSize={5}
             ></Pagination>
           </div>
         </div>
