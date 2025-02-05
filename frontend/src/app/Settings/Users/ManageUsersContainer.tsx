@@ -107,6 +107,7 @@ const ManageUsersContainer = () => {
   // this gets page number from the route parameters (/settings/users/1)
   const { pageNumber } = useParams();
   const currentPage = pageNumber ? +pageNumber : 1;
+  const entriesPerPage = 12;
 
   // this gets name query from the query parameters (?name=abc)
   const nameQuery = getParameterFromUrl("name", location);
@@ -181,9 +182,7 @@ const ManageUsersContainer = () => {
       getUsers={getUsers}
       currentPage={currentPage}
       totalEntries={data.usersWithStatusPage.pageContent.totalElements}
-      entriesPerPage={
-        data.usersWithStatusPage.pageContent.content?.length ?? 12
-      }
+      entriesPerPage={entriesPerPage}
       queryString={queryString}
       setQueryString={setQueryString}
       queryLoadingStatus={loading}
