@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.service.DeviceTypeLIVDSyncService;
 import gov.cdc.usds.simplereport.service.DeviceTypeProdSyncService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,23 @@ public class DeviceTypeController {
       deviceTypeLIVDSyncService.syncDevices(dryRun);
     } catch (DryRunException e) {
       log.info("Dry run");
+    }
+  }
+
+  /**
+   * Temporary endpoint to aid in testing of the SRProductionClient Fetches DeviceTypes from
+   * PRODUCTION
+   *
+   * @return list of DeviceTypes from prod
+   */
+  @GetMapping("/devices/prod-devices")
+  public List<DeviceType> getDeviceTypesFromProduction(HttpServletRequest request) {
+    try {
+      String headerToken = request.getHeader("Sr-Prod-Devices-Token");
+      deviceTypeProdSyncService.validateToken(headerToken);
+      return deviceTypeProdSyncService.getDeviceTypesFromProduction();
+    } catch (AccessDeniedException e) {
+      return new ArrayList<>();
     }
   }
 
