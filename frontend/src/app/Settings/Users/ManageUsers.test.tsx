@@ -271,7 +271,7 @@ let reactivateUserAndResetPassword: (obj: any) => Promise<any>;
 let resetUserPassword: (obj: any) => Promise<any>;
 let resetUserMfa: (obj: any) => Promise<any>;
 let resendUserActivationEmail: (obj: any) => Promise<any>;
-let setDebouncedQueryString = jest.fn();
+let setQueryString = jest.fn();
 
 type TestContainerProps = {
   children: React.ReactNode;
@@ -367,7 +367,7 @@ describe("ManageUsers", () => {
             entriesPerPage={10}
             totalEntries={3}
             queryString={""}
-            setQueryString={setDebouncedQueryString}
+            setQueryString={setQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={3}
           />
@@ -727,7 +727,7 @@ describe("ManageUsers", () => {
             entriesPerPage={10}
             currentPage={1}
             queryString={""}
-            setQueryString={setDebouncedQueryString}
+            setQueryString={setQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={0}
           />
@@ -797,7 +797,7 @@ describe("ManageUsers", () => {
             entriesPerPage={10}
             currentPage={1}
             queryString={""}
-            setQueryString={setDebouncedQueryString}
+            setQueryString={setQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={2}
           />
@@ -844,7 +844,7 @@ describe("ManageUsers", () => {
             entriesPerPage={10}
             currentPage={1}
             queryString={""}
-            setQueryString={setDebouncedQueryString}
+            setQueryString={setQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={2}
           />
@@ -892,7 +892,7 @@ describe("ManageUsers", () => {
             entriesPerPage={10}
             currentPage={1}
             queryString={""}
-            setQueryString={setDebouncedQueryString}
+            setQueryString={setQueryString}
             queryLoadingStatus={false}
             totalUsersInOrg={2}
           />
@@ -996,7 +996,7 @@ describe("ManageUsers", () => {
         entriesPerPage={10}
         currentPage={1}
         queryString={""}
-        setQueryString={setDebouncedQueryString}
+        setQueryString={setQueryString}
         queryLoadingStatus={false}
         totalUsersInOrg={3}
       />
