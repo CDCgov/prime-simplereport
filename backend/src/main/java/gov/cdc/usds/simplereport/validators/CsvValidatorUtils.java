@@ -98,7 +98,7 @@ public class CsvValidatorUtils {
    * @see gov.cdc.usds.simplereport.utils.DateTimeUtils
    */
   private static final String DATE_TIME_REGEX =
-      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$";
+      "^(0{0,1}[1-9]|1[0-2])\\s*/\\s*(0{0,1}[1-9]|1\\d|2\\d|3[01])\\s*/\\s*\\d{4}(\\s+([0-1]?[0-9]|2[0-3])\\s*:\\s*[0-5][0-9](\\s+\\S+)?)?\\s*$";
 
   private static final String LOINC_CODE_REGEX = "([0-9]{5})-[0-9]";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
@@ -448,11 +448,16 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
+    ValueOrError trimmedInput =
+        new ValueOrError(
+            input.getValue() != null ? input.getValue().trim() : null,
+            input.getHeader(),
+            input.isRequired());
+    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(trimmedInput, DATE_TIME_REGEX));
     if (input.getValue() != null
         && errors.isEmpty()
-        && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
-      errors.addAll(validateDateTimeZoneCode(input));
+        && trimmedInput.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
+      errors.addAll(validateDateTimeZoneCode(trimmedInput));
     }
     return errors;
   }
