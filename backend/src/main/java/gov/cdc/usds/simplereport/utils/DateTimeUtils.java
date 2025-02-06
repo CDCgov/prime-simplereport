@@ -131,10 +131,13 @@ public class DateTimeUtils {
     return ZonedDateTime.of(localDateTime, zoneId);
   }
 
-  private static ZoneId parseDateStringZoneId(String dateString) {
+  public static ZoneId parseDateStringZoneId(String dateString) {
     ZoneId zoneId;
-
-    var timezoneCode = dateString.substring(dateString.lastIndexOf(" ")).trim();
+    int lastSpaceIndex = dateString.lastIndexOf(" ");
+    if (lastSpaceIndex < 0) {
+      return FALLBACK_TIMEZONE_ID;
+    }
+    var timezoneCode = dateString.substring(lastSpaceIndex + 1).trim();
     try {
       zoneId = parseZoneId(timezoneCode);
     } catch (DateTimeException e) {
@@ -157,8 +160,13 @@ public class DateTimeUtils {
   public static LocalDateTime parseLocalDateTime(
       String value, DateTimeFormatter dateTimeFormatter) {
     String dateTimeString = value;
+    dateTimeString =
+        dateTimeString.replaceAll("\\s*/\\s*", "/").replaceAll("\\s*:\\s*", ":").trim();
     if (hasTimezoneSubstring(value)) {
-      dateTimeString = dateTimeString.substring(0, value.lastIndexOf(' ')).trim();
+      int lastSpaceIndex = dateTimeString.lastIndexOf(' ');
+      if (lastSpaceIndex > 0) {
+        dateTimeString = dateTimeString.substring(0, lastSpaceIndex).trim();
+      }
     }
     LocalDateTime localDateTime;
     var temporalAccessor =

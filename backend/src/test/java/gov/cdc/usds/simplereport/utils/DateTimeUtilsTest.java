@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.utils;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.getCurrentDatestamp;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.parseDateStringZoneId;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.parseLocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,8 +54,57 @@ public class DateTimeUtilsTest {
   }
 
   @Test
+  void testConvertToZonedDateTime_withExtraWhitespace() {
+    String dateString = "01 / 01 / 2023 11 : 11";
+    ZonedDateTime actualZonedDateTime = convertToZonedDateTime(dateString);
+    ZonedDateTime expectedZonedDateTime =
+        ZonedDateTime.of(2023, 1, 1, 11, 11, 0, 0, ZoneId.of("US/Eastern"));
+    assertThat(actualZonedDateTime).isEqualTo(expectedZonedDateTime);
+  }
+
+  @Test
+  void testParseLocalDateTime_withExtraWhitespace() {
+    String dateTimeString = "01 / 01 / 2023 11 : 11";
+    LocalDateTime expectedDateTime = LocalDateTime.of(2023, 1, 1, 11, 11);
+    LocalDateTime actualDateTime = parseLocalDateTime(dateTimeString, DATE_TIME_FORMATTER);
+    assertThat(actualDateTime).isEqualTo(expectedDateTime);
+  }
+
+  @Test
   void testConvertToZonedDateTime_withFallback() {
     testConvertToZonedDateTime("6/28/2023 14:00", ZoneId.of("US/Eastern"));
+  }
+
+  @Test
+  void testParseDateStringZoneId_withTimezone() {
+    String dateString = "01/01/2023 11:11 EST";
+    ZoneId expectedZoneId = ZoneId.of("US/Eastern");
+    ZoneId actualZoneId = parseDateStringZoneId(dateString);
+    assertThat(actualZoneId).isEqualTo(expectedZoneId);
+  }
+
+  @Test
+  void testParseDateStringZoneId_withoutTimezone() {
+    String dateString = "01/01/2023 11:11";
+    ZoneId expectedZoneId = ZoneId.of("US/Eastern");
+    ZoneId actualZoneId = parseDateStringZoneId(dateString);
+    assertThat(actualZoneId).isEqualTo(expectedZoneId);
+  }
+
+  @Test
+  void testParseDateStringZoneId_pureDateOnly() {
+    String dateString = "01/01/2023";
+    ZoneId expectedZoneId = ZoneId.of("US/Eastern");
+    ZoneId actualZoneId = parseDateStringZoneId(dateString);
+    assertThat(actualZoneId).isEqualTo(expectedZoneId);
+  }
+
+  @Test
+  void testParseDateStringZoneId_invalidTimezone() {
+    String dateString = "01/01/2023 11:11 XYZ";
+    ZoneId expectedZoneId = ZoneId.of("US/Eastern");
+    ZoneId actualZoneId = parseDateStringZoneId(dateString);
+    assertThat(actualZoneId).isEqualTo(expectedZoneId);
   }
 
   @Test
