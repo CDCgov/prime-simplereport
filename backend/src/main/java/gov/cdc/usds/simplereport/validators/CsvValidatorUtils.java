@@ -448,16 +448,11 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    ValueOrError trimmedInput =
-        new ValueOrError(
-            input.getValue() != null ? input.getValue().trim() : null,
-            input.getHeader(),
-            input.isRequired());
-    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(trimmedInput, DATE_TIME_REGEX));
+    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
     if (input.getValue() != null
         && errors.isEmpty()
-        && trimmedInput.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
-      errors.addAll(validateDateTimeZoneCode(trimmedInput));
+        && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
+      errors.addAll(validateDateTimeZoneCode(input));
     }
     return errors;
   }
