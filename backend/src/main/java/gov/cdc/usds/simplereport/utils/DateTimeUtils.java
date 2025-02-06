@@ -161,7 +161,7 @@ public class DateTimeUtils {
       String value, DateTimeFormatter dateTimeFormatter) {
     String dateTimeString = value;
     dateTimeString =
-        dateTimeString.replaceAll("\\s*/\\s*", "/").replaceAll("\\s*:\\s*", ":").trim();
+        dateTimeString.replace(" / ", "/").replace(" :", ":").replace(": ", ":").trim();
     if (hasTimezoneSubstring(value)) {
       int lastSpaceIndex = dateTimeString.lastIndexOf(' ');
       if (lastSpaceIndex > 0) {
