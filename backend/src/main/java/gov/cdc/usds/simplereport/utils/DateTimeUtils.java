@@ -24,8 +24,18 @@ public class DateTimeUtils {
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yyyy[ H:mm]");
 
+  private static final String MONTH = "(0?[1-9]|1[0-2])";
+  private static final String DAY = "(0?[1-9]|[12]\\d|3[01])";
+  private static final String HOUR = "(0?\\d|1\\d|2[0-3])";
+
   public static final String TIMEZONE_SUFFIX_REGEX =
-      "^(0?[1-9]|1[0-2])\\s*/\\s*(0?[1-9]|1\\d|2\\d|3[01])\\s*/\\s*\\d{4}\\s+([0-1]?\\d|2[0-3])\\s*:\\s*[0-5]\\d\\s+(\\S+)\\s*$";
+      "^"
+          + MONTH
+          + "\\s*/\\s*"
+          + DAY
+          + "\\s*/\\s*\\d{4}\\s+"
+          + HOUR
+          + "\\s*:\\s*[0-5]\\d\\s+(\\S+)\\s*$";
 
   public static final ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 

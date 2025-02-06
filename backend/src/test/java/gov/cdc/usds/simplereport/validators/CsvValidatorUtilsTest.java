@@ -211,14 +211,10 @@ class CsvValidatorUtilsTest {
   @Test
   void invalidDateTimeWithWhitespace() {
     var invalidDateTimes = new ArrayList<ValueOrError>();
-    invalidDateTimes.add(
-        new ValueOrError("01/01/202311:11", "datetime")); // No space between date and time
-    invalidDateTimes.add(
-        new ValueOrError("01 01 2023 11:11", "datetime")); // Spaces instead of slashes
-    invalidDateTimes.add(
-        new ValueOrError("01/01/2023 11 11", "datetime")); // Space instead of colon
-    invalidDateTimes.add(
-        new ValueOrError("01/01/2023 11:11EST", "datetime")); // No space before timezone
+    invalidDateTimes.add(new ValueOrError("01/01/202311:11", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01 01 2023 11:11", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11 11", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11EST", "datetime"));
     for (var datetime : invalidDateTimes) {
       assertThat(validateDateTime(datetime)).hasSize(1);
     }
