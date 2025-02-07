@@ -27,15 +27,24 @@ public class DateTimeUtils {
   private static final String MONTH = "(0?[1-9]|1[0-2])";
   private static final String DAY = "(0?[1-9]|[12]\\d|3[01])";
   private static final String HOUR = "(0?\\d|1\\d|2[0-3])";
+  private static final String YEAR = "\\d{4}";
+  private static final String MINUTES = "[0-5]\\d";
+  private static final String TIMEZONE_CODE = "(\\S+)";
 
   public static final String TIMEZONE_SUFFIX_REGEX =
       "^"
           + MONTH
           + "\\s*/\\s*"
           + DAY
-          + "\\s*/\\s*\\d{4}\\s+"
+          + "\\s*/\\s*"
+          + YEAR
+          + "\\s+"
           + HOUR
-          + "\\s*:\\s*[0-5]\\d\\s+(\\S+)\\s*$";
+          + "\\s*:\\s*"
+          + MINUTES
+          + "\\s+"
+          + TIMEZONE_CODE
+          + "\\s*$";
 
   public static final ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 
@@ -161,7 +170,16 @@ public class DateTimeUtils {
       String value, DateTimeFormatter dateTimeFormatter) {
     String dateTimeString = value;
     dateTimeString =
-        dateTimeString.replace(" / ", "/").replace(" :", ":").replace(": ", ":").trim();
+        dateTimeString
+            .replace(" /", "/")
+            .replace("/ ", "/")
+            .replace("  /", "/") // Handles ("/" with multiple spaces before)
+            .replace("/  ", "/") // Handles ("/" with multiple spaces after)
+            .replace(" :", ":") // Removes space before ":"
+            .replace(": ", ":") // Removes space after ":"
+            .replace("  :", ":") // Handles (":" with multiple spaces before)
+            .replace(":  ", ":") // Handles (":" with multiple spaces after)
+            .trim();
     if (hasTimezoneSubstring(value)) {
       int lastSpaceIndex = dateTimeString.lastIndexOf(' ');
       if (lastSpaceIndex > 0) {
