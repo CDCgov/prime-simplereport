@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.FALLBACK_TIMEZONE_ID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.getCurrentDatestamp;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.parseDateStringZoneId;
@@ -60,6 +61,29 @@ public class DateTimeUtilsTest {
     ZonedDateTime expectedZonedDateTime =
         ZonedDateTime.of(2023, 1, 1, 11, 11, 0, 0, ZoneId.of("US/Eastern"));
     assertThat(actualZonedDateTime).isEqualTo(expectedZonedDateTime);
+  }
+
+  @Test
+  void testParseDateStringZoneId_withTrailingWhitespace() {
+    String[] testCases = {
+      "01/01/2023 11:11 EST ", "01/01/2023 11:11 EST  ",
+    };
+
+    for (String dateString : testCases) {
+      ZoneId expectedZoneId = ZoneId.of("US/Eastern");
+      ZoneId actualZoneId = parseDateStringZoneId(dateString);
+
+      assertThat(actualZoneId)
+          .as("Testing timezone parsing with trailing whitespace: " + dateString)
+          .isEqualTo(expectedZoneId);
+    }
+  }
+
+  @Test
+  void testParseDateStringZoneId_withOnlyWhitespace() {
+    String dateString = "01/01/2023 11:11  ";
+    ZoneId actualZoneId = parseDateStringZoneId(dateString);
+    assertThat(actualZoneId).isEqualTo(FALLBACK_TIMEZONE_ID);
   }
 
   @Test
