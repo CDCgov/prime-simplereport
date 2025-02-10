@@ -18,7 +18,8 @@ jobs:
         if: github.event.pull_request.user.login  == 'dependabot[bot]'
         env:
           pr_title: ${{github.event.pull_request.title}}
+          pr_number: ${{github.event.pull_request.number}}
         run: |
-          issue_title="Dependabot PR $pr_title opened"
+          issue_title="Dependabot PR #$pr_number $pr_title opened"
           issue=$(gh issue list --json number --jq '.[].number' --label "dependencies" --label "Dependabot" --search "is:issue is:open $issue_title")
           gh issue close "$issue"

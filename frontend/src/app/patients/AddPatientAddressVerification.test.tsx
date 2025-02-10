@@ -56,12 +56,7 @@ describe("Add Patient: All required fields entered and submitting address verifi
           value: "refused",
           exact: true,
         },
-        "Sex assigned at birth": {
-          label: "Female",
-          value: "female",
-          exact: true,
-        },
-        "What's your gender identity?": {
+        Sex: {
           label: "Female",
           value: "female",
           exact: true,
@@ -128,7 +123,7 @@ describe("Add Patient: All required fields entered and submitting address verifi
           value: "refused",
           exact: true,
         },
-        "Sex assigned at birth": {
+        Sex: {
           label: "Female",
           value: "female",
           exact: true,
@@ -169,7 +164,7 @@ describe("Add Patient: All required fields entered and submitting address verifi
           value: "SMS",
           exact: false,
         },
-        "Sex assigned at birth": {
+        Sex: {
           label: "Female",
           value: "female",
           exact: true,

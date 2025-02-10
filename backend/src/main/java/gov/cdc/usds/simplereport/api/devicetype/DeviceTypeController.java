@@ -3,9 +3,9 @@ package gov.cdc.usds.simplereport.api.devicetype;
 import com.fasterxml.jackson.annotation.JsonView;
 import gov.cdc.usds.simplereport.api.model.errors.DryRunException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.service.DeviceTypeLIVDSyncService;
 import gov.cdc.usds.simplereport.service.DeviceTypeProdSyncService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
-import gov.cdc.usds.simplereport.service.DeviceTypeSyncService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 public class DeviceTypeController {
-  @Autowired private DeviceTypeSyncService deviceTypeSyncService;
+  @Autowired private DeviceTypeLIVDSyncService deviceTypeLIVDSyncService;
   @Autowired private DeviceTypeProdSyncService deviceTypeProdSyncService;
   @Autowired private DeviceTypeService deviceTypeService;
 
   @GetMapping("/devices/sync")
   public void syncDevices(@RequestParam boolean dryRun) {
     try {
-      deviceTypeSyncService.syncDevices(dryRun);
+      deviceTypeLIVDSyncService.syncDevices(dryRun);
     } catch (DryRunException e) {
       log.info("Dry run");
     }

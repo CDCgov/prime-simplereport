@@ -38,7 +38,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
-class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncService> {
+class DeviceTypeLIVDSyncServiceIntegrationTest extends BaseServiceTest<DeviceTypeLIVDSyncService> {
   @Autowired private DeviceTypeService deviceTypeService;
   @Autowired private DeviceTypeRepository deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
@@ -52,11 +52,11 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   private SpecimenType swab3;
   private DeviceType devA;
   private DeviceType devB;
-  private final String SPECIMEN_DESCRIPTION_ONE =
+  private final String specimenDescriptionOne =
       "anterior nasal swabs (697989009^Anterior nares swab^SCT)\r";
-  private final String SPECIMEN_DESCRIPTION_TWO =
+  private final String specimenDescriptionTwo =
       "nasopharyngeal swabs (258500001^Nasopharyngeal swab^SCT)\r";
-  private final String SPECIMEN_DESCRIPTION_THREE = "to be added (999999999^To Be Added^SCT)\r";
+  private final String specimenDescriptionThree = "to be added (999999999^To Be Added^SCT)\r";
 
   @BeforeEach
   void setup() {
@@ -120,7 +120,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer("Manufacturer A")
             .model("Model A")
-            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne))
             .vendorAnalyteName("influenza A RNA Result")
             .testPerformedLoincCode("7777777")
             .testPerformedLoincLongName("7777777 plus some extra stuff")
@@ -161,7 +161,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer("New Device Manufacturer")
             .model("New Device Model")
-            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne))
             .vendorAnalyteName(vendorAnalyteName)
             .testPerformedLoincCode("8888888")
             .testPerformedLoincLongName("8888888 plus some extra stuff")
@@ -205,7 +205,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer(devA.getManufacturer())
             .model(devA.getModel())
-            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE, SPECIMEN_DESCRIPTION_TWO))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne, specimenDescriptionTwo))
             .vendorAnalyteName("influenza A RNA Result")
             .testPerformedLoincCode("0123456")
             .testPerformedLoincLongName("0123456 plus some extra stuff")
@@ -220,8 +220,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer(devB.getManufacturer())
             .model(devB.getModel())
-            .vendorSpecimenDescription(
-                List.of(SPECIMEN_DESCRIPTION_ONE, SPECIMEN_DESCRIPTION_THREE))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne, specimenDescriptionThree))
             .vendorAnalyteName("influenza A RNA Result")
             .testPerformedLoincCode("0123456")
             .testPerformedLoincLongName("0123456 plus some extra stuff")
@@ -274,7 +273,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer("Manufacturer A")
             .model("Model A")
-            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne))
             .vendorAnalyteName("influenza A RNA Result")
             .testPerformedLoincCode("7777777")
             .testPerformedLoincLongName("7777777 plus some extra stuff")
@@ -312,7 +311,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer(existingDevice.getManufacturer())
             .model(existingDevice.getModel())
-            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne))
             .vendorAnalyteName("covid")
             .testPerformedLoincCode("000000000")
             .testPerformedLoincLongName("000000000 plus some extra stuff")
@@ -340,7 +339,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer("Some manufacturer")
             .model("Some model")
-            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne))
             .vendorAnalyteName("invalid disease!")
             .testPerformedLoincCode("000000000")
             .testPerformedLoincLongName("000000000 plus some extra stuff")
@@ -368,7 +367,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer("Shiny New Manufacturer")
             .model("Device A")
-            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne))
             .vendorAnalyteName("fluA")
             .testPerformedLoincCode("000000000")
             .testPerformedLoincLongName("000000000 plus some extra stuff")
@@ -395,7 +394,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
         LIVDResponse.builder()
             .manufacturer("Applied BioCode, Inc.")
             .model("BioCode CoV-2 Flu Plus Assay")
-            .vendorSpecimenDescription(List.of(SPECIMEN_DESCRIPTION_ONE))
+            .vendorSpecimenDescription(List.of(specimenDescriptionOne))
             .vendorAnalyteName("fluA")
             .testPerformedLoincCode("000000000")
             .testPerformedLoincLongName("000000000 plus some extra stuff")

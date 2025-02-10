@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
-public class DeviceTypeSyncService {
+public class DeviceTypeLIVDSyncService {
   private static final Set<String> FluA_DEVICE_SYNC_BLOCK_LIST =
       Set.of(
           "BioCode CoV-2 Flu Plus Assay|Applied BioCode, Inc.",

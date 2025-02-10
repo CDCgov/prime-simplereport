@@ -379,7 +379,6 @@ const PersonForm = (props: Props) => {
     RACE_VALUES,
     ETHNICITY_VALUES,
     GENDER_VALUES,
-    GENDER_IDENTITY_VALUES,
     ROLE_VALUES,
     TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL,
   } = useTranslatedConstants();
@@ -602,17 +601,7 @@ const PersonForm = (props: Props) => {
           errorMessage={errors.ethnicity}
         />
         <RadioGroup
-          legend={t("patient.form.demographics.genderIdentity")}
-          name="genderIdentity"
-          validationStatus={validationStatus("genderIdentity")}
-          buttons={GENDER_IDENTITY_VALUES}
-          selectedRadio={patient.genderIdentity}
-          onChange={onPersonChange("genderIdentity")}
-          errorMessage={errors.genderIdentity}
-        />
-        <RadioGroup
           legend={t("patient.form.demographics.gender")}
-          hintText={t("patient.form.demographics.genderHelpText")}
           name="gender"
           required={view !== PersonFormView.PXP}
           validationStatus={validationStatus("gender")}

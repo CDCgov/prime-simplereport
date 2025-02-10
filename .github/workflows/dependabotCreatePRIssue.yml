@@ -21,7 +21,7 @@ jobs:
           number: ${{github.event.pull_request.number}}
           url: ${{github.event.pull_request.url}}
         run: |
-          title="Dependabot PR $title opened"
+          title="Dependabot PR #$number $title opened"
           labels="dependencies,Dependabot"
           body="Dependabot has opened PR #$number
           Link: $url"

@@ -52,7 +52,6 @@ describe("Adding a single patient", () => {
     cy.get('[data-cy="personForm-dob-input"]').type(patient.dobForInput);
     cy.get('[data-cy="phone-input-0"]').type(patient.phone);
     cy.get('[data-cy="radio-group-option-phoneType-0-MOBILE"]').click();
-    cy.get('[data-cy="radio-group-option-genderIdentity-female"]').click();
     cy.get('[data-cy="radio-group-option-gender-female"]').click();
     cy.get('[data-cy="street-input"]').type(patient.address);
     cy.get('[data-cy="state-input"]').select(patient.state);

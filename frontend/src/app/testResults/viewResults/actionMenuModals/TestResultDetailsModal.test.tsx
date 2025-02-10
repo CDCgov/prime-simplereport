@@ -75,7 +75,7 @@ hivTestResult.results = [
     __typename: "MultiplexResult",
   },
 ];
-hivTestResult.surveyData.genderOfSexualPartners = ["female", "male", "other"];
+hivTestResult.surveyData.genderOfSexualPartners = ["female", "male"];
 hivTestResult.surveyData.pregnancy = "77386006";
 
 const syphilisTestResult = JSON.parse(JSON.stringify(nonMultiplexTestResult));
@@ -92,11 +92,7 @@ syphilisTestResult.surveyData.symptoms =
   '{"724386005":"false","195469007":"false","26284000":"false","266128007":"true","56940005":"true","91554004":"false","15188001":"false","246636008":"true","56317004":"false"}';
 syphilisTestResult.surveyData.symptomOnset = "2024-09-24";
 syphilisTestResult.surveyData.noSymptoms = false;
-syphilisTestResult.surveyData.genderOfSexualPartners = [
-  "female",
-  "male",
-  "other",
-];
+syphilisTestResult.surveyData.genderOfSexualPartners = ["female", "male"];
 
 const renderComponent = (testResult: TestResult) =>
   render(
@@ -171,7 +167,7 @@ describe("HIV TestResultDetailsModal", () => {
     expect(screen.queryByText("Symptoms")).not.toBeInTheDocument();
     expect(screen.queryByText("Symptom onset")).not.toBeInTheDocument();
     expect(screen.getByText("Gender of sexual partners")).toBeInTheDocument();
-    expect(screen.getByText("Female, Male, Other")).toBeInTheDocument();
+    expect(screen.getByText("Female, Male")).toBeInTheDocument();
     expect(screen.getByText("Pregnant?")).toBeInTheDocument();
   });
 
@@ -199,7 +195,7 @@ describe("Syphilis TestResultDetailsModal", () => {
       )
     ).toBeInTheDocument();
     expect(screen.getByText("Gender of sexual partners")).toBeInTheDocument();
-    expect(screen.getByText("Female, Male, Other")).toBeInTheDocument();
+    expect(screen.getByText("Female, Male")).toBeInTheDocument();
     expect(screen.getByText("Pregnant?")).toBeInTheDocument();
     expect(
       screen.getByText("Previously told they have syphilis?")

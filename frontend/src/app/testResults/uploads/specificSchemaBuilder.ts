@@ -245,22 +245,6 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
                 examples: ["3/30/1972", "12/8/2002"],
               },
               {
-                name: "Patient gender",
-                colHeader: "patient_gender",
-                requiredStatusTag: RequiredStatusTag.REQUIRED,
-                acceptedValues: [
-                  "<mark><code>M</code></mark> or <mark><code>Male</code></mark>",
-                  "<mark><code>F</code></mark> or <mark><code>Female</code></mark>",
-                  "<mark><code>O</code></mark> or <mark><code>Other</code></mark>",
-                  "<mark><code>U</code></mark> or <mark><code>Unknown</code></mark>",
-                  "<mark><code>A</code></mark> or <mark><code>Ambiguous</code></mark>",
-                  "<mark><code>N</code></mark> or <mark><code>Not applicable</code></mark>",
-                ],
-                description: [
-                  'Use one of the LOINC codes listed below, which come from the <a href="https://phinvads.cdc.gov/vads/SearchVocab.action" class="usa-link" target="_blank" rel="noreferrer noopener">PHIN VADS system</a>',
-                ],
-              },
-              {
                 name: "Patient race",
                 colHeader: "patient_race",
                 requiredStatusTag: RequiredStatusTag.REQUIRED,

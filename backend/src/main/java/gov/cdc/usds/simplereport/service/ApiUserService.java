@@ -620,56 +620,37 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public ManageUsersPageWrapper getPagedUsersAndStatusInCurrentOrg(int pageNumber, int pageSize) {
-    Organization org = _orgService.getCurrentOrganization();
-
-    final Map<String, UserStatus> emailsToStatus =
-        _oktaRepo.getPagedUsersWithStatusForOrganization(org, pageNumber, pageSize);
-    List<ApiUser> users = _apiUserRepo.findAllByLoginEmailInOrderByName(emailsToStatus.keySet());
-    List<ApiUserWithStatus> userWithStatusList =
-        users.stream()
-            .map(u -> new ApiUserWithStatus(u, emailsToStatus.get(u.getLoginEmail())))
-            .toList();
-
-    Integer userCountInOrg = _oktaRepo.getUsersCountInOrganization(org);
-    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-    Page<ApiUserWithStatus> pageContent =
-        new PageImpl<>(userWithStatusList, pageRequest, userCountInOrg);
-
-    return new ManageUsersPageWrapper(pageContent, userCountInOrg);
-  }
-
-  @AuthorizationConfiguration.RequirePermissionManageUsers
-  public ManageUsersPageWrapper searchUsersAndStatusInCurrentOrgPaged(
+  public ManageUsersPageWrapper getPagedUsersAndStatusInCurrentOrg(
       int pageNumber, int pageSize, String searchQuery) {
     List<ApiUserWithStatus> allUsers = getUsersAndStatusInCurrentOrg();
 
-    List<ApiUserWithStatus> totalFilteredUsersList =
-        allUsers.stream()
-            .filter(
-                u -> {
-                  String firstName =
-                      u.getFirstName() == null ? "" : String.format("%s ", u.getFirstName());
-                  String middleName =
-                      u.getMiddleName() == null ? "" : String.format("%s ", u.getMiddleName());
-                  String fullName = firstName + middleName + u.getLastName();
-                  return fullName.toLowerCase().contains(searchQuery.toLowerCase());
-                })
-            .toList();
+    List<ApiUserWithStatus> filteredUsers = allUsers;
 
-    int totalSearchResults = totalFilteredUsersList.size();
-    int startIndex = pageNumber * pageSize;
-    int endIndex = Math.min((startIndex + pageSize), totalFilteredUsersList.size());
+    if (!searchQuery.isBlank()) {
+      filteredUsers =
+          allUsers.stream()
+              .filter(
+                  u -> {
+                    String firstName =
+                        u.getFirstName() == null ? "" : String.format("%s ", u.getFirstName());
+                    String middleName =
+                        u.getMiddleName() == null ? "" : String.format("%s ", u.getMiddleName());
+                    String fullName = firstName + middleName + u.getLastName();
+                    return fullName.toLowerCase().contains(searchQuery.toLowerCase());
+                  })
+              .toList();
+    }
 
-    Organization org = _orgService.getCurrentOrganization();
-    Integer userCountInOrg = _oktaRepo.getUsersCountInOrganization(org);
+    int totalSearchResults = filteredUsers.size();
+    int startIndex = totalSearchResults > pageSize ? pageNumber * pageSize : 0;
+    int endIndex = Math.min((startIndex + pageSize), filteredUsers.size());
 
-    List<ApiUserWithStatus> filteredSublist = totalFilteredUsersList.subList(startIndex, endIndex);
-    PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+    List<ApiUserWithStatus> filteredSublist = filteredUsers.subList(startIndex, endIndex);
+
     Page<ApiUserWithStatus> pageContent =
-        new PageImpl<>(filteredSublist, pageRequest, totalSearchResults);
+        new PageImpl<>(filteredSublist, PageRequest.of(pageNumber, pageSize), totalSearchResults);
 
-    return new ManageUsersPageWrapper(pageContent, userCountInOrg);
+    return new ManageUsersPageWrapper(pageContent, allUsers.size());
   }
 
   // To be addressed in #8108
@@ -894,10 +875,12 @@ public class ApiUserService {
               .map(IdentifiedEntity::getInternalId)
               .collect(Collectors.toList());
       Set<Facility> facilitiesToGiveAccessTo =
-          getFacilitiesToGiveAccess(org, roles, new HashSet<>(facilitiesInternalIds));
+          facilitiesInternalIds.isEmpty()
+              ? new HashSet<>()
+              : getFacilitiesToGiveAccess(org, roles, new HashSet<>(facilitiesInternalIds));
       apiUser.setFacilities(facilitiesToGiveAccessTo);
       apiUser.setRoles(roles, org);
-    } catch (MisconfiguredUserException | PrivilegeUpdateFacilityAccessException e) {
+    } catch (MisconfiguredUserException e) {
       log.warn(
           "Could not migrate roles and facilities for user with id={}", apiUser.getInternalId());
     }

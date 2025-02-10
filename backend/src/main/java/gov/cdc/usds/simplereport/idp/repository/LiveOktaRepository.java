@@ -229,11 +229,11 @@ public class LiveOktaRepository implements OktaRepository {
   @Override
   public Map<String, UserStatus> getPagedUsersWithStatusForOrganization(
       Organization org, int pageNumber, int pageSize) {
-    Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
-    int afterIndex = pageNumber * pageSize;
-    List<User> groupUsers =
-        groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), String.valueOf(afterIndex), pageSize);
-    return groupUsers.stream()
+    List<User> allUsers = getAllUsersForOrg(org);
+    int startIndex = pageNumber * pageSize;
+    int endIndex = Math.min((startIndex + pageSize), allUsers.size());
+    List<User> userSublist = allUsers.subList(startIndex, endIndex);
+    return userSublist.stream()
         .collect(
             Collectors.toMap(
                 u -> Objects.requireNonNull(u.getProfile()).getLogin(), User::getStatus));

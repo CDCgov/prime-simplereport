@@ -83,7 +83,6 @@ describe("EditPatient", () => {
               race: "white",
               ethnicity: "hispanic",
               gender: "male",
-              genderIdentity: "male",
               residentCongregateSetting: true,
               employedInHealthcare: true,
               facility: null,
@@ -120,7 +119,6 @@ describe("EditPatient", () => {
             race: "white",
             ethnicity: "hispanic",
             gender: "male",
-            genderIdentity: "male",
             residentCongregateSetting: true,
             employedInHealthcare: true,
             facility: null,
@@ -295,7 +293,6 @@ describe("EditPatient", () => {
               race: null,
               ethnicity: null,
               gender: null,
-              genderIdentity: null,
               residentCongregateSetting: true,
               employedInHealthcare: true,
               facility: null,
@@ -403,7 +400,6 @@ describe("EditPatient", () => {
               race: null,
               ethnicity: null,
               gender: null,
-              genderIdentity: null,
               residentCongregateSetting: true,
               employedInHealthcare: true,
               facility: null,
@@ -497,8 +493,7 @@ describe("EditPatient", () => {
             country: null,
             race: "refused",
             ethnicity: "refused",
-            gender: "refused",
-            genderIdentity: "refused",
+            gender: "female",
             residentCongregateSetting: null,
             employedInHealthcare: null,
             facility: null,
@@ -527,12 +522,7 @@ describe("EditPatient", () => {
       expect(
         (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
       ).toBeInTheDocument();
-      [
-        "Race",
-        "Are you Hispanic or Latino?",
-        "Sex assigned at birth",
-        "What's your gender identity?",
-      ].forEach((legend) => {
+      ["Race", "Are you Hispanic or Latino?"].forEach((legend) => {
         const fieldset = screen.getByText(legend).closest("fieldset");
         if (fieldset === null) {
           throw Error(`Unable to corresponding fieldset for ${legend}`);

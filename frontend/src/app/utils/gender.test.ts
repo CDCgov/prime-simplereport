@@ -6,15 +6,13 @@ describe("formatGenderOfSexualPartnersForDisplay", () => {
     expect(formatGenderOfSexualPartnersForDisplay(genders)).toBe(UNKNOWN);
   });
   it("displays a single gender", () => {
-    const genders: string[] = ["nonbinary"];
-    expect(formatGenderOfSexualPartnersForDisplay(genders)).toBe(
-      "Nonbinary or gender non-conforming"
-    );
+    const genders: string[] = ["female"];
+    expect(formatGenderOfSexualPartnersForDisplay(genders)).toBe("Female");
   });
   it("displays genders as a comma-separated list", () => {
-    const genders: string[] = ["female", "male", "transman", "transwoman"];
+    const genders: string[] = ["female", "male"];
     expect(formatGenderOfSexualPartnersForDisplay(genders)).toBe(
-      "Female, Male, Transman, Transwoman"
+      "Female, Male"
     );
   });
   it("displays unknown if gender values are not supported", () => {

@@ -155,7 +155,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @WithSimpleReportOrgAdminUser
   void getPagedUsersAndStatusInCurrentOrg_success() {
     initSampleData();
-    ManageUsersPageWrapper usersPageWrapper = _service.getPagedUsersAndStatusInCurrentOrg(0, 3);
+    ManageUsersPageWrapper usersPageWrapper = _service.getPagedUsersAndStatusInCurrentOrg(0, 3, "");
     assertEquals(6, usersPageWrapper.getTotalUsersInOrg());
 
     Page<ApiUserWithStatus> usersPage = usersPageWrapper.getPageContent();
@@ -164,20 +164,21 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     checkApiUserWithStatus(users.get(0), "admin@example.com", "Andrews", UserStatus.ACTIVE);
     checkApiUserWithStatus(users.get(1), "bobbity@example.com", "Bobberoo", UserStatus.ACTIVE);
-    checkApiUserWithStatus(
-        users.get(2), "allfacilities@example.com", "Williams", UserStatus.ACTIVE);
+    checkApiUserWithStatus(users.get(2), "invalid@example.com", "Irwin", UserStatus.ACTIVE);
 
-    ManageUsersPageWrapper users2ndPageWrapper = _service.getPagedUsersAndStatusInCurrentOrg(1, 3);
+    ManageUsersPageWrapper users2ndPageWrapper =
+        _service.getPagedUsersAndStatusInCurrentOrg(1, 3, "");
     assertEquals(6, users2ndPageWrapper.getTotalUsersInOrg());
 
     Page<ApiUserWithStatus> users2ndPage = users2ndPageWrapper.getPageContent();
     List<ApiUserWithStatus> users2ndList = users2ndPage.stream().toList();
     assertEquals(3, users2ndList.size());
 
-    checkApiUserWithStatus(users2ndList.get(0), "invalid@example.com", "Irwin", UserStatus.ACTIVE);
-    checkApiUserWithStatus(users2ndList.get(1), "nobody@example.com", "Nixon", UserStatus.ACTIVE);
+    checkApiUserWithStatus(users2ndList.get(0), "nobody@example.com", "Nixon", UserStatus.ACTIVE);
     checkApiUserWithStatus(
-        users2ndList.get(2), "notruby@example.com", "Reynolds", UserStatus.ACTIVE);
+        users2ndList.get(1), "notruby@example.com", "Reynolds", UserStatus.ACTIVE);
+    checkApiUserWithStatus(
+        users2ndList.get(2), "allfacilities@example.com", "Williams", UserStatus.ACTIVE);
   }
 
   @Test
@@ -185,7 +186,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   void searchUsersAndStatusInCurrentOrgPaged_success() {
     initSampleData();
     ManageUsersPageWrapper usersPageWrapper =
-        _service.searchUsersAndStatusInCurrentOrgPaged(0, 10, "Bob");
+        _service.getPagedUsersAndStatusInCurrentOrg(0, 10, "Bob");
     Page<ApiUserWithStatus> usersPage = usersPageWrapper.getPageContent();
     List<ApiUserWithStatus> users = usersPage.stream().toList();
     assertEquals(1, users.size());

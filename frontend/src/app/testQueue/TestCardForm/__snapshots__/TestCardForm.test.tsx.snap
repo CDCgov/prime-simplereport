@@ -245,7 +245,7 @@ Object {
                     for="36"
                     id="label-for-36"
                   >
-                    What is the gender of their sexual partners?
+                    What is the sex of their sexual partners?
                      
                     <span
                       class="text-base-dark"
@@ -356,78 +356,13 @@ Object {
                         aria-selected="false"
                         aria-setsize="64"
                         class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-other"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
-                        role="option"
-                        tabindex="-1"
-                        value="other"
-                      >
-                        Gender identity not listed here
-                      </li>
-                      <li
-                        aria-posinset="3"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
                         data-testid="multi-select-option-male"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-2"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
                         role="option"
                         tabindex="-1"
                         value="male"
                       >
                         Male
-                      </li>
-                      <li
-                        aria-posinset="4"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-nonbinary"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-3"
-                        role="option"
-                        tabindex="-1"
-                        value="nonbinary"
-                      >
-                        Nonbinary or gender non-conforming
-                      </li>
-                      <li
-                        aria-posinset="5"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-refused"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-4"
-                        role="option"
-                        tabindex="-1"
-                        value="refused"
-                      >
-                        Prefer not to answer
-                      </li>
-                      <li
-                        aria-posinset="6"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-transman"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-5"
-                        role="option"
-                        tabindex="-1"
-                        value="transman"
-                      >
-                        Transman
-                      </li>
-                      <li
-                        aria-posinset="7"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-transwoman"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-6"
-                        role="option"
-                        tabindex="-1"
-                        value="transwoman"
-                      >
-                        Transwoman
                       </li>
                     </ul>
                     <div
@@ -913,7 +848,7 @@ Object {
                   for="36"
                   id="label-for-36"
                 >
-                  What is the gender of their sexual partners?
+                  What is the sex of their sexual partners?
                    
                   <span
                     class="text-base-dark"
@@ -1024,78 +959,13 @@ Object {
                       aria-selected="false"
                       aria-setsize="64"
                       class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-other"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
-                      role="option"
-                      tabindex="-1"
-                      value="other"
-                    >
-                      Gender identity not listed here
-                    </li>
-                    <li
-                      aria-posinset="3"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
                       data-testid="multi-select-option-male"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-2"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
                       role="option"
                       tabindex="-1"
                       value="male"
                     >
                       Male
-                    </li>
-                    <li
-                      aria-posinset="4"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-nonbinary"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-3"
-                      role="option"
-                      tabindex="-1"
-                      value="nonbinary"
-                    >
-                      Nonbinary or gender non-conforming
-                    </li>
-                    <li
-                      aria-posinset="5"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-refused"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-4"
-                      role="option"
-                      tabindex="-1"
-                      value="refused"
-                    >
-                      Prefer not to answer
-                    </li>
-                    <li
-                      aria-posinset="6"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-transman"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-5"
-                      role="option"
-                      tabindex="-1"
-                      value="transman"
-                    >
-                      Transman
-                    </li>
-                    <li
-                      aria-posinset="7"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-transwoman"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-6"
-                      role="option"
-                      tabindex="-1"
-                      value="transwoman"
-                    >
-                      Transwoman
                     </li>
                   </ul>
                   <div
@@ -3183,7 +3053,7 @@ Object {
                     for="31"
                     id="label-for-31"
                   >
-                    What is the gender of their sexual partners?
+                    What is the sex of their sexual partners?
                      
                     <span
                       class="text-base-dark"
@@ -3294,78 +3164,13 @@ Object {
                         aria-selected="false"
                         aria-setsize="64"
                         class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-other"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
-                        role="option"
-                        tabindex="-1"
-                        value="other"
-                      >
-                        Gender identity not listed here
-                      </li>
-                      <li
-                        aria-posinset="3"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
                         data-testid="multi-select-option-male"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-2"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
                         role="option"
                         tabindex="-1"
                         value="male"
                       >
                         Male
-                      </li>
-                      <li
-                        aria-posinset="4"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-nonbinary"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-3"
-                        role="option"
-                        tabindex="-1"
-                        value="nonbinary"
-                      >
-                        Nonbinary or gender non-conforming
-                      </li>
-                      <li
-                        aria-posinset="5"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-refused"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-4"
-                        role="option"
-                        tabindex="-1"
-                        value="refused"
-                      >
-                        Prefer not to answer
-                      </li>
-                      <li
-                        aria-posinset="6"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-transman"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-5"
-                        role="option"
-                        tabindex="-1"
-                        value="transman"
-                      >
-                        Transman
-                      </li>
-                      <li
-                        aria-posinset="7"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-transwoman"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-6"
-                        role="option"
-                        tabindex="-1"
-                        value="transwoman"
-                      >
-                        Transwoman
                       </li>
                     </ul>
                     <div
@@ -3851,7 +3656,7 @@ Object {
                   for="31"
                   id="label-for-31"
                 >
-                  What is the gender of their sexual partners?
+                  What is the sex of their sexual partners?
                    
                   <span
                     class="text-base-dark"
@@ -3962,78 +3767,13 @@ Object {
                       aria-selected="false"
                       aria-setsize="64"
                       class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-other"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
-                      role="option"
-                      tabindex="-1"
-                      value="other"
-                    >
-                      Gender identity not listed here
-                    </li>
-                    <li
-                      aria-posinset="3"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
                       data-testid="multi-select-option-male"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-2"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
                       role="option"
                       tabindex="-1"
                       value="male"
                     >
                       Male
-                    </li>
-                    <li
-                      aria-posinset="4"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-nonbinary"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-3"
-                      role="option"
-                      tabindex="-1"
-                      value="nonbinary"
-                    >
-                      Nonbinary or gender non-conforming
-                    </li>
-                    <li
-                      aria-posinset="5"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-refused"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-4"
-                      role="option"
-                      tabindex="-1"
-                      value="refused"
-                    >
-                      Prefer not to answer
-                    </li>
-                    <li
-                      aria-posinset="6"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-transman"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-5"
-                      role="option"
-                      tabindex="-1"
-                      value="transman"
-                    >
-                      Transman
-                    </li>
-                    <li
-                      aria-posinset="7"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-transwoman"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-6"
-                      role="option"
-                      tabindex="-1"
-                      value="transwoman"
-                    >
-                      Transwoman
                     </li>
                   </ul>
                   <div
@@ -7584,7 +7324,7 @@ Object {
                     for="21"
                     id="label-for-21"
                   >
-                    What is the gender of their sexual partners?
+                    What is the sex of their sexual partners?
                      
                     <span
                       class="text-base-dark"
@@ -7695,78 +7435,13 @@ Object {
                         aria-selected="false"
                         aria-setsize="64"
                         class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-other"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
-                        role="option"
-                        tabindex="-1"
-                        value="other"
-                      >
-                        Gender identity not listed here
-                      </li>
-                      <li
-                        aria-posinset="3"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
                         data-testid="multi-select-option-male"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-2"
+                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
                         role="option"
                         tabindex="-1"
                         value="male"
                       >
                         Male
-                      </li>
-                      <li
-                        aria-posinset="4"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-nonbinary"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-3"
-                        role="option"
-                        tabindex="-1"
-                        value="nonbinary"
-                      >
-                        Nonbinary or gender non-conforming
-                      </li>
-                      <li
-                        aria-posinset="5"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-refused"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-4"
-                        role="option"
-                        tabindex="-1"
-                        value="refused"
-                      >
-                        Prefer not to answer
-                      </li>
-                      <li
-                        aria-posinset="6"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-transman"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-5"
-                        role="option"
-                        tabindex="-1"
-                        value="transman"
-                      >
-                        Transman
-                      </li>
-                      <li
-                        aria-posinset="7"
-                        aria-selected="false"
-                        aria-setsize="64"
-                        class="usa-combo-box__list-option"
-                        data-testid="multi-select-option-transwoman"
-                        id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-6"
-                        role="option"
-                        tabindex="-1"
-                        value="transwoman"
-                      >
-                        Transwoman
                       </li>
                     </ul>
                     <div
@@ -8339,7 +8014,7 @@ Object {
                   for="21"
                   id="label-for-21"
                 >
-                  What is the gender of their sexual partners?
+                  What is the sex of their sexual partners?
                    
                   <span
                     class="text-base-dark"
@@ -8450,78 +8125,13 @@ Object {
                       aria-selected="false"
                       aria-setsize="64"
                       class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-other"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
-                      role="option"
-                      tabindex="-1"
-                      value="other"
-                    >
-                      Gender identity not listed here
-                    </li>
-                    <li
-                      aria-posinset="3"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
                       data-testid="multi-select-option-male"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-2"
+                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-1"
                       role="option"
                       tabindex="-1"
                       value="male"
                     >
                       Male
-                    </li>
-                    <li
-                      aria-posinset="4"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-nonbinary"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-3"
-                      role="option"
-                      tabindex="-1"
-                      value="nonbinary"
-                    >
-                      Nonbinary or gender non-conforming
-                    </li>
-                    <li
-                      aria-posinset="5"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-refused"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-4"
-                      role="option"
-                      tabindex="-1"
-                      value="refused"
-                    >
-                      Prefer not to answer
-                    </li>
-                    <li
-                      aria-posinset="6"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-transman"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-5"
-                      role="option"
-                      tabindex="-1"
-                      value="transman"
-                    >
-                      Transman
-                    </li>
-                    <li
-                      aria-posinset="7"
-                      aria-selected="false"
-                      aria-setsize="64"
-                      class="usa-combo-box__list-option"
-                      data-testid="multi-select-option-transwoman"
-                      id="multi-select-sexual-partner-gender-1b02363b-ce71-4f30-a2d6-d82b56a91b39-list--option-6"
-                      role="option"
-                      tabindex="-1"
-                      value="transwoman"
-                    >
-                      Transwoman
                     </li>
                   </ul>
                   <div
