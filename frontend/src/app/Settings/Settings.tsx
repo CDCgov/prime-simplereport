@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
@@ -30,6 +30,7 @@ const Settings = () => {
             element={<ManageSelfRegistrationLinksContainer />}
           />
           <Route path="users/:pageNumber" element={<ManageUsersContainer />} />
+          <Route index element={<Navigate to="/settings/users/1" />} />
         </Routes>
       </div>
     </div>
