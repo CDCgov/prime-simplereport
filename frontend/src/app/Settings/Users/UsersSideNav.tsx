@@ -62,7 +62,6 @@ const UsersSideNav: React.FC<Props> = ({
               <div className={"padding-1 padding-left-3 padding-bottom-4"}>
                 <Button
                   className={"clear-filter-button"}
-                  id={`clear-filter-button`}
                   onClick={() => setQueryString("")}
                   label={"Clear search filter"}
                 ></Button>
