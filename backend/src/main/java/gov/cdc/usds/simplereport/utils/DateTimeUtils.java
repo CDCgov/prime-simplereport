@@ -156,7 +156,7 @@ public class DateTimeUtils {
   public static LocalDateTime parseLocalDateTime(
       String value, DateTimeFormatter dateTimeFormatter) {
     String dateTimeString = value;
-    dateTimeString = dateTimeString.replaceAll("\\s*([/:])\\s*", "$1").trim();
+    dateTimeString = dateTimeString.replaceAll("\\s*+([/:])\\s*+", "$1").trim();
     if (hasTimezoneSubstring(value)) {
       dateTimeString = dateTimeString.substring(0, value.lastIndexOf(' ')).trim();
     }
