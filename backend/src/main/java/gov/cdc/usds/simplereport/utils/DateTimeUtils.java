@@ -142,11 +142,12 @@ public class DateTimeUtils {
 
   public static ZoneId parseDateStringZoneId(String dateString) {
     ZoneId zoneId;
+    String trimmedString = dateString.trim();
     int lastSpaceIndex = dateString.lastIndexOf(" ");
     if (lastSpaceIndex < 0) {
       return FALLBACK_TIMEZONE_ID;
     }
-    var timezoneCode = dateString.substring(lastSpaceIndex + 1).trim();
+    var timezoneCode = trimmedString.substring(trimmedString.lastIndexOf(" ") + 1);
     try {
       zoneId = parseZoneId(timezoneCode);
     } catch (DateTimeException e) {

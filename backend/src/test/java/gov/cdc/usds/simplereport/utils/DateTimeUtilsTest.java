@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -105,6 +106,27 @@ public class DateTimeUtilsTest {
     ZoneId expectedZoneId = ZoneId.of("US/Eastern");
     ZoneId actualZoneId = parseDateStringZoneId(dateString);
     assertThat(actualZoneId).isEqualTo(expectedZoneId);
+  }
+
+  @Test
+  void testParseDateStringZoneId_handlesTrailingWhitespace() {
+    Map<String, ZoneId> testCases =
+        Map.of(
+            "01/01/2023 11:11 PT ", ZoneId.of("US/Pacific"),
+            "01/01/2023 11:11 EST  ", ZoneId.of("US/Eastern"),
+            "01/01/2023 11:11 MST\t", ZoneId.of("US/Mountain"),
+            "01/01/2023 11:11 CST \t ", ZoneId.of("US/Central"),
+            "01/01/2023 11:11 HST    ", ZoneId.of("US/Hawaii"));
+
+    for (Map.Entry<String, ZoneId> testCase : testCases.entrySet()) {
+      String dateString = testCase.getKey();
+      ZoneId expectedZoneId = testCase.getValue();
+
+      ZoneId actualZoneId = parseDateStringZoneId(dateString);
+      assertThat(actualZoneId)
+          .as("Testing timezone parsing with trailing whitespace: '%s'", dateString)
+          .isEqualTo(expectedZoneId);
+    }
   }
 
   @Test
