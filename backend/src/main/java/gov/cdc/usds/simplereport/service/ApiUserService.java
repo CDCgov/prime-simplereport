@@ -35,6 +35,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -631,12 +632,18 @@ public class ApiUserService {
           allUsers.stream()
               .filter(
                   u -> {
-                    String firstName =
-                        u.getFirstName() == null ? "" : String.format("%s ", u.getFirstName());
-                    String middleName =
-                        u.getMiddleName() == null ? "" : String.format("%s ", u.getMiddleName());
-                    String fullName = firstName + middleName + u.getLastName();
-                    return fullName.toLowerCase().contains(searchQuery.toLowerCase());
+                    String cleanedSearchQuery = searchQuery.replace(",", " ");
+                    List<String> querySubstringList =
+                        Arrays.stream(cleanedSearchQuery.toLowerCase().split("\\s+")).toList();
+
+                    String fullName =
+                        u.getNameInfo().getFirstName()
+                            + " "
+                            + u.getNameInfo().getMiddleName()
+                            + " "
+                            + u.getNameInfo().getLastName();
+
+                    return querySubstringList.stream().allMatch(fullName.toLowerCase()::contains);
                   })
               .toList();
     }

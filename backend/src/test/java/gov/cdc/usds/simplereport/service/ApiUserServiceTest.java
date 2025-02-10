@@ -196,6 +196,28 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void searchUsersAndStatusInCurrentOrgPaged_lastFirstPartial_success() {
+    initSampleData();
+    ManageUsersPageWrapper usersPageWrapper =
+        _service.getPagedUsersAndStatusInCurrentOrg(0, 10, "be, bo");
+    List<ApiUserWithStatus> users = usersPageWrapper.getPageContent().stream().toList();
+    assertEquals(1, users.size());
+    checkApiUserWithStatus(users.get(0), "bobbity@example.com", "Bobberoo", UserStatus.ACTIVE);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void searchUsersAndStatusInCurrentOrgPaged_firstLastPartial_success() {
+    initSampleData();
+    ManageUsersPageWrapper usersPageWrapper =
+        _service.getPagedUsersAndStatusInCurrentOrg(0, 10, "ru re");
+    List<ApiUserWithStatus> users = usersPageWrapper.getPageContent().stream().toList();
+    assertEquals(1, users.size());
+    checkApiUserWithStatus(users.get(0), "notruby@example.com", "Reynolds", UserStatus.ACTIVE);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void searchUsersAndStatusInCurrentOrgPaged_pageNumberOutOfBounds_success() {
     initSampleData();
     ManageUsersPageWrapper usersPageWrapper =
