@@ -44,7 +44,10 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TRE
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_PART;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_CODE;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIME_PART;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.timezoneAbbreviationZoneIdMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
@@ -97,8 +100,8 @@ public class CsvValidatorUtils {
    *
    * @see gov.cdc.usds.simplereport.utils.DateTimeUtils
    */
-  private static final String DATE_TIME_REGEX =
-      "^(0{0,1}[1-9]|1[0-2])\\s*/\\s*(0{0,1}[1-9]|1\\d|2\\d|3[01])\\s*/\\s*\\d{4}(\\s+([0-1]?[0-9]|2[0-3])\\s*:\\s*[0-5][0-9](\\s+\\S+)?)?\\s*$";
+  public static final String DATE_TIME_REGEX =
+      "^" + DATE_PART + "(?:\\s+" + TIME_PART + "(?:\\s+" + TIMEZONE_CODE + ")?)?\\s*$";
 
   private static final String LOINC_CODE_REGEX = "([0-9]{5})-[0-9]";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";

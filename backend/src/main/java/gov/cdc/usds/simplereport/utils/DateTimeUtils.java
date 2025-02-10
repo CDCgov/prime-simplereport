@@ -29,22 +29,12 @@ public class DateTimeUtils {
   private static final String HOUR = "(0?\\d|1\\d|2[0-3])";
   private static final String YEAR = "\\d{4}";
   private static final String MINUTES = "[0-5]\\d";
-  private static final String TIMEZONE_CODE = "(\\S+)";
+  public static final String TIMEZONE_CODE = "(\\S+)";
+  public static final String DATE_PART = MONTH + "\\s*/\\s*" + DAY + "\\s*/\\s*" + YEAR;
+  public static final String TIME_PART = HOUR + "\\s*:\\s*" + MINUTES;
 
   public static final String TIMEZONE_SUFFIX_REGEX =
-      "^"
-          + MONTH
-          + "\\s*/\\s*"
-          + DAY
-          + "\\s*/\\s*"
-          + YEAR
-          + "\\s+"
-          + HOUR
-          + "\\s*:\\s*"
-          + MINUTES
-          + "\\s+"
-          + TIMEZONE_CODE
-          + "\\s*$";
+      "^" + DATE_PART + "\\s+" + TIME_PART + "\\s+" + TIMEZONE_CODE + "\\s*$";
 
   public static final ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 
@@ -143,10 +133,6 @@ public class DateTimeUtils {
   public static ZoneId parseDateStringZoneId(String dateString) {
     ZoneId zoneId;
     String trimmedString = dateString.trim();
-    int lastSpaceIndex = dateString.lastIndexOf(" ");
-    if (lastSpaceIndex < 0) {
-      return FALLBACK_TIMEZONE_ID;
-    }
     var timezoneCode = trimmedString.substring(trimmedString.lastIndexOf(" ") + 1);
     try {
       zoneId = parseZoneId(timezoneCode);
@@ -170,22 +156,9 @@ public class DateTimeUtils {
   public static LocalDateTime parseLocalDateTime(
       String value, DateTimeFormatter dateTimeFormatter) {
     String dateTimeString = value;
-    dateTimeString =
-        dateTimeString
-            .replace(" /", "/")
-            .replace("/ ", "/")
-            .replace("  /", "/") // Handles ("/" with multiple spaces before)
-            .replace("/  ", "/") // Handles ("/" with multiple spaces after)
-            .replace(" :", ":") // Removes space before ":"
-            .replace(": ", ":") // Removes space after ":"
-            .replace("  :", ":") // Handles (":" with multiple spaces before)
-            .replace(":  ", ":") // Handles (":" with multiple spaces after)
-            .trim();
+    dateTimeString = dateTimeString.replaceAll("\\s*([/:])\\s*", "$1").trim();
     if (hasTimezoneSubstring(value)) {
-      int lastSpaceIndex = dateTimeString.lastIndexOf(' ');
-      if (lastSpaceIndex > 0) {
-        dateTimeString = dateTimeString.substring(0, lastSpaceIndex).trim();
-      }
+      dateTimeString = dateTimeString.substring(0, value.lastIndexOf(' ')).trim();
     }
     LocalDateTime localDateTime;
     var temporalAccessor =
