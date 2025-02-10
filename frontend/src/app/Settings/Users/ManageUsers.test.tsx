@@ -364,7 +364,7 @@ describe("ManageUsers", () => {
             updateUserName={updateUserName}
             updateUserEmail={updateUserEmail}
             currentPage={1}
-            entriesPerPage={10}
+            entriesPerPage={12}
             totalEntries={3}
             queryString={""}
             setQueryString={setQueryString}
@@ -724,7 +724,7 @@ describe("ManageUsers", () => {
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
             totalEntries={0}
-            entriesPerPage={10}
+            entriesPerPage={12}
             currentPage={1}
             queryString={""}
             setQueryString={setQueryString}
@@ -794,7 +794,7 @@ describe("ManageUsers", () => {
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
             totalEntries={2}
-            entriesPerPage={10}
+            entriesPerPage={12}
             currentPage={1}
             queryString={""}
             setQueryString={setQueryString}
@@ -841,7 +841,7 @@ describe("ManageUsers", () => {
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
             totalEntries={2}
-            entriesPerPage={10}
+            entriesPerPage={12}
             currentPage={1}
             queryString={""}
             setQueryString={setQueryString}
@@ -889,7 +889,7 @@ describe("ManageUsers", () => {
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
             totalEntries={2}
-            entriesPerPage={10}
+            entriesPerPage={12}
             currentPage={1}
             queryString={""}
             setQueryString={setQueryString}
@@ -993,7 +993,7 @@ describe("ManageUsers", () => {
         updateUserName={() => Promise.resolve()}
         updateUserEmail={() => Promise.resolve()}
         totalEntries={3}
-        entriesPerPage={10}
+        entriesPerPage={12}
         currentPage={1}
         queryString={""}
         setQueryString={setQueryString}
