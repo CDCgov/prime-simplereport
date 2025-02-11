@@ -14,7 +14,8 @@ import "./Settings.scss";
 const Settings = () => {
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
-  const settingsIndexRedirect = "/settings/users/1?" + activeFacilityId;
+  const settingsIndexRedirect =
+    "/settings/users/1?facility=" + activeFacilityId;
 
   return (
     <div className="prime-home flex-1">
