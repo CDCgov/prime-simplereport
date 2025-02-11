@@ -52,10 +52,8 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.AccessDeniedException;
 
-@EnableAsync
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
