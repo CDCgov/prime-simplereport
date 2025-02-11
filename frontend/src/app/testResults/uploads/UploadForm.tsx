@@ -62,7 +62,7 @@ export function getErrorMessage(error: EnhancedFeedbackMessage) {
   if (error.message) {
     const header = error.fieldHeader;
     const headerRegex = new RegExp(
-      `(${header} | [a-z0-9]+(?:_[a-z0-9]+){1,7})`,
+      `(${header}|[a-z0-9]+(?:_[a-z0-9]+){1,7})`,
       "g"
     );
     return (
