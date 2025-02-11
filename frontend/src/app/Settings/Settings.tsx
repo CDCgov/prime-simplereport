@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
@@ -8,7 +10,6 @@ import SettingsNav from "./SettingsNav";
 import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLinksContainer";
 
 import "./Settings.scss";
-import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 const Settings = () => {
   const [facility] = useSelectedFacility();
