@@ -8,8 +8,13 @@ import SettingsNav from "./SettingsNav";
 import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLinksContainer";
 
 import "./Settings.scss";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 const Settings = () => {
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id || "";
+  const settingsIndexRedirect = "/settings/users/1?" + activeFacilityId;
+
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -30,7 +35,7 @@ const Settings = () => {
             element={<ManageSelfRegistrationLinksContainer />}
           />
           <Route path="users/:pageNumber" element={<ManageUsersContainer />} />
-          <Route index element={<Navigate to="/settings/users/1" />} />
+          <Route index element={<Navigate to={settingsIndexRedirect} />} />
         </Routes>
       </div>
     </div>
