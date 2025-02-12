@@ -28,7 +28,7 @@ features:
   gonorrheaEnabled: false
   hepatitisCEnabled: false
   syphilisEnabled: false
-  hivBulkUploadEnabled: true
-  hivEnabled: true
+  hivBulkUploadEnabled: false
+  hivEnabled: false
   agnosticEnabled: false
   agnosticBulkUploadEnabled: false
