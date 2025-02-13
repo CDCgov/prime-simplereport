@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Dispatch, useState } from "react";
 import { ApolloQueryResult } from "@apollo/client";
 
 import Button from "../../commonComponents/Button/Button";
@@ -11,6 +11,7 @@ import {
   UserPermission,
 } from "../../../generated/graphql";
 import UserHeading from "../../commonComponents/UserDetails/UserHeading";
+import Pagination from "../../commonComponents/Pagination";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
@@ -39,6 +40,13 @@ interface Props {
   reactivateUser: (variables: any) => Promise<any>;
   resendUserActivationEmail: (variables: any) => Promise<any>;
   getUsers: () => Promise<ApolloQueryResult<GetUsersAndStatusQuery>>;
+  currentPage: number;
+  totalEntries: number;
+  entriesPerPage: number;
+  queryString: string;
+  setQueryString: Dispatch<string>;
+  queryLoadingStatus: boolean;
+  totalUsersInOrg: number;
 }
 
 export type LimitedUsers = { [id: string]: LimitedUser };
@@ -92,6 +100,13 @@ const ManageUsers: React.FC<Props> = ({
   reactivateUser,
   resendUserActivationEmail,
   getUsers,
+  currentPage,
+  totalEntries,
+  entriesPerPage,
+  queryString,
+  setQueryString,
+  queryLoadingStatus,
+  totalUsersInOrg,
 }) => {
   const [userWithPermissions, updateUserWithPermissions] =
     useState<SettingsUser | null>();
@@ -398,108 +413,132 @@ const ManageUsers: React.FC<Props> = ({
           isUpdating={isUpdating}
         />
       ) : null}
-      {!activeUser || !localUsers.length ? (
+      {queryLoadingStatus ? (
         <div className="usa-card__body">
-          {!localUsers.length ? (
-            <p>There are no users in this organization</p>
-          ) : (
-            <p>Loading user data</p>
-          )}
+          <p>Loading user data</p>
+        </div>
+      ) : totalUsersInOrg === 0 ? (
+        <div className="usa-card__body">
+          <p>There are no users in this organization.</p>
         </div>
       ) : (
         <div className="usa-card__body">
           <div className="grid-row">
             <UsersSideNav
-              activeUserId={activeUser.id || ""}
+              activeUserId={activeUser?.id || ""}
               users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
+              queryString={queryString}
+              setQueryString={setQueryString}
             />
-            <div
-              role="tabpanel"
-              aria-labelledby={"user-tab-" + user?.id}
-              className="tablet:grid-col padding-left-3 user-detail-column"
-            >
-              <UserHeading
-                user={user}
-                isUserSelf={isUserSelf(user, loggedInUser)}
-                isUpdating={isUpdating}
-                onResendUserActivationEmail={handleResendUserActivationEmail}
-                onReactivateUser={handleReactivateUser}
-                onUndeleteUser={() => {}}
-              />
-              <nav
-                className="prime-secondary-nav margin-top-4 padding-bottom-0"
-                aria-label="User action navigation"
+            {localUsers.length <= 0 ? (
+              <div
+                className={
+                  "display-flex flex-column flex-align-center margin-top-8 no-results-found"
+                }
               >
-                <div
-                  role="tablist"
-                  aria-owns={`userinformation-tab facility-access-tab-id`}
-                  className="usa-nav__secondary-links prime-nav usa-list"
-                >
-                  <div
-                    className={`usa-nav__secondary-item ${
-                      navItemSelected === "User information"
-                        ? "usa-current"
-                        : ""
-                    }`}
-                  >
-                    <button
-                      id={`userinformation-tab`}
-                      role="tab"
-                      className="usa-button--unstyled text-ink text-no-underline"
-                      onClick={() => setNavItemSelected("User information")}
-                      aria-selected={navItemSelected === "User information"}
-                    >
-                      User information
-                    </button>
-                  </div>
-                  <div
-                    className={`usa-nav__secondary-item ${
-                      navItemSelected === "Facility access" ? "usa-current" : ""
-                    }`}
-                  >
-                    <button
-                      id={`facility-access-tab-id`}
-                      role="tab"
-                      className="usa-button--unstyled text-ink text-no-underline"
-                      onClick={() => setNavItemSelected("Facility access")}
-                      aria-selected={navItemSelected === "Facility access"}
-                    >
-                      Facility access
-                    </button>
-                  </div>
-                </div>
-              </nav>
-              {navItemSelected === "User information" ? (
-                <UserInfoTab
+                <div className="margin-bottom-105">No results found.</div>
+              </div>
+            ) : null}
+            {activeUser ? (
+              <div
+                role="tabpanel"
+                aria-labelledby={"user-tab-" + user?.id}
+                className="tablet:grid-col padding-left-3 user-detail-column"
+              >
+                <UserHeading
                   user={user}
-                  isUserActive={isUserActive(user)}
                   isUserSelf={isUserSelf(user, loggedInUser)}
                   isUpdating={isUpdating}
-                  onEditUserName={handleEditUserName}
-                  onEditUserEmail={handleEditUserEmail}
-                  onResetUserPassword={handleResetUserPassword}
-                  onResetUserMfa={handleResetUserMfa}
-                  onDeleteUser={handleDeleteUser}
+                  onResendUserActivationEmail={handleResendUserActivationEmail}
+                  onReactivateUser={handleReactivateUser}
+                  onUndeleteUser={() => {}}
                 />
-              ) : (
-                <FacilityAccessTab
-                  user={user}
-                  isUpdating={isUpdating}
-                  isUserEdited={isUserEdited}
-                  onUpdateUser={handleUpdateUser}
-                  updateLocalUserState={updateLocalUserState}
-                  loggedInUser={loggedInUser}
-                  allFacilities={allFacilities}
-                />
-              )}
-            </div>
+                <nav
+                  className="prime-secondary-nav margin-top-4 padding-bottom-0"
+                  aria-label="User action navigation"
+                >
+                  <div
+                    role="tablist"
+                    aria-owns={`userinformation-tab facility-access-tab-id`}
+                    className="usa-nav__secondary-links prime-nav usa-list"
+                  >
+                    <div
+                      className={`usa-nav__secondary-item ${
+                        navItemSelected === "User information"
+                          ? "usa-current"
+                          : ""
+                      }`}
+                    >
+                      <button
+                        id={`userinformation-tab`}
+                        role="tab"
+                        className="usa-button--unstyled text-ink text-no-underline"
+                        onClick={() => setNavItemSelected("User information")}
+                        aria-selected={navItemSelected === "User information"}
+                      >
+                        User information
+                      </button>
+                    </div>
+                    <div
+                      className={`usa-nav__secondary-item ${
+                        navItemSelected === "Facility access"
+                          ? "usa-current"
+                          : ""
+                      }`}
+                    >
+                      <button
+                        id={`facility-access-tab-id`}
+                        role="tab"
+                        className="usa-button--unstyled text-ink text-no-underline"
+                        onClick={() => setNavItemSelected("Facility access")}
+                        aria-selected={navItemSelected === "Facility access"}
+                      >
+                        Facility access
+                      </button>
+                    </div>
+                  </div>
+                </nav>
+                {navItemSelected === "User information" ? (
+                  <UserInfoTab
+                    user={user}
+                    isUserActive={isUserActive(user)}
+                    isUserSelf={isUserSelf(user, loggedInUser)}
+                    isUpdating={isUpdating}
+                    onEditUserName={handleEditUserName}
+                    onEditUserEmail={handleEditUserEmail}
+                    onResetUserPassword={handleResetUserPassword}
+                    onResetUserMfa={handleResetUserMfa}
+                    onDeleteUser={handleDeleteUser}
+                  />
+                ) : (
+                  <FacilityAccessTab
+                    user={user}
+                    isUpdating={isUpdating}
+                    isUserEdited={isUserEdited}
+                    onUpdateUser={handleUpdateUser}
+                    updateLocalUserState={updateLocalUserState}
+                    loggedInUser={loggedInUser}
+                    allFacilities={allFacilities}
+                  />
+                )}
+              </div>
+            ) : null}
             {showInProgressModal && (
               <InProgressModal
                 onClose={() => updateShowInProgressModal(false)}
                 onContinue={() => handleContinueChangeActiveUser()}
               />
             )}
+          </div>
+          <div className="grid-row">
+            <Pagination
+              baseRoute={"/settings/users"}
+              totalEntries={totalEntries}
+              entriesPerPage={entriesPerPage}
+              currentPage={currentPage}
+              pageGroupSize={5}
+            ></Pagination>
           </div>
         </div>
       )}

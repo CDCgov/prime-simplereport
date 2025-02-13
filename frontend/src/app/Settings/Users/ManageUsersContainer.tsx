@@ -1,11 +1,12 @@
 import { gql, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 
 import { RootState } from "../../store";
 import { Role } from "../../permissions";
 import {
   Maybe,
-  useGetUsersAndStatusQuery,
   useResendActivationEmailMutation,
   useUpdateUserNameMutation,
   useEditUserEmailMutation,
@@ -17,8 +18,13 @@ import {
   useSetUserIsDeletedMutation,
   useAddUserToCurrentOrgMutation,
   useResetUserPasswordMutation,
+  useGetUsersAndStatusPageQuery,
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
+import { useDebouncedEffect } from "../../testQueue/addToQueue/useDebounce";
+import { SEARCH_DEBOUNCE_TIME } from "../../testQueue/constants";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+import { getParameterFromUrl } from "../../utils/url";
 
 import ManageUsers from "./ManageUsers";
 
@@ -92,12 +98,60 @@ const ManageUsersContainer = () => {
   const [resetMfa] = useResetUserMfaMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
+  const [facility] = useSelectedFacility();
+  const activeFacilityId = facility?.id || "";
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // this gets page number from the route parameters (/settings/users/1)
+  const { pageNumber } = useParams();
+  const currentPage = pageNumber ? +pageNumber : 1;
+  const entriesPerPage = 12;
+
+  // this gets name query from the query parameters (?name=abc)
+  const nameQuery = getParameterFromUrl("name", location);
+
+  const [queryString, setQueryString] = useState(nameQuery ?? "");
+
+  const filterByName = (name: string) => {
+    let searchParams: Record<string, string> = {
+      facility: activeFacilityId,
+    };
+
+    if (name && name.trim() !== "") {
+      searchParams = {
+        ...searchParams,
+        name: name,
+      };
+    }
+
+    navigate({
+      pathname: "/settings/users/1",
+      search: new URLSearchParams(searchParams).toString(),
+    });
+  };
+
+  useDebouncedEffect(
+    () => {
+      filterByName(queryString);
+    },
+    [queryString],
+    SEARCH_DEBOUNCE_TIME
+  );
+
   const {
     data,
     loading,
     error,
     refetch: getUsers,
-  } = useGetUsersAndStatusQuery({ fetchPolicy: "no-cache" });
+  } = useGetUsersAndStatusPageQuery({
+    fetchPolicy: "no-cache",
+    variables: {
+      pageNumber: currentPage - 1,
+      searchQuery: nameQuery,
+    },
+  });
 
   if (loading) {
     return <p> Loading... </p>;
@@ -113,7 +167,7 @@ const ManageUsersContainer = () => {
 
   return (
     <ManageUsers
-      users={data.usersWithStatus ?? []}
+      users={data.usersWithStatusPage.pageContent.content ?? []}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
@@ -126,6 +180,13 @@ const ManageUsersContainer = () => {
       reactivateUser={reactivateUser}
       resendUserActivationEmail={resendUserActivationEmail}
       getUsers={getUsers}
+      currentPage={currentPage}
+      totalEntries={data.usersWithStatusPage.pageContent.totalElements}
+      entriesPerPage={entriesPerPage}
+      queryString={queryString}
+      setQueryString={setQueryString}
+      queryLoadingStatus={loading}
+      totalUsersInOrg={data.usersWithStatusPage.totalUsersInOrg}
     />
   );
 };
