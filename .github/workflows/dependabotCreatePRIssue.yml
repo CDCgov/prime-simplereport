@@ -2,6 +2,7 @@ name: Dependabot Create Issue
 on:
   pull_request:
     types: [opened, reopened]
+    branches: ['dependabot/**']
 
 jobs:
   issue:
