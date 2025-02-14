@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredExcept
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -38,17 +39,19 @@ import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -587,138 +590,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertThat(adminIds).isEqualTo(expectedIds);
   }
 
-  private void sendOrgAdminEmailCSVAsync_mnFacilities_test()
-      throws ExecutionException, InterruptedException {
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    String type = "facilities";
-    String mnExternalId = "747e341d-0467-45b8-b92f-a638da2bf1ee";
-    UUID mnId = organizationRepository.findByExternalId(mnExternalId).get().getInternalId();
-    List<String> mnEmails = _service.sendOrgAdminEmailCSVAsync(List.of(mnId), type, "MN").get();
-    List<String> expectedMnEmails =
-        List.of("mn-orgBadmin1@example.com", "mn-orgBadmin2@example.com");
-    ArgumentCaptor<List<String>> arg1 = ArgumentCaptor.forClass(List.class);
-    ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
-    ArgumentCaptor<String> arg3 = ArgumentCaptor.forClass(String.class);
-    verify(emailService, times(1))
-        .sendWithCSVAttachment(arg1.capture(), arg2.capture(), arg3.capture());
-    assertEquals(expectedMnEmails, arg1.getValue());
-    assertEquals("MN", arg2.getValue());
-    assertEquals(type, arg3.getValue());
-    assertThat(mnEmails).isEqualTo(expectedMnEmails);
-  }
-
-  private void sendOrgAdminEmailCSVAsync_paFacilities_test()
-      throws ExecutionException, InterruptedException {
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    String type = "facilities";
-    List<String> nonExistentOrgEmails =
-        _service.sendOrgAdminEmailCSVAsync(List.of(), type, "PA").get();
-    ArgumentCaptor<List<String>> arg1 = ArgumentCaptor.forClass(List.class);
-    ArgumentCaptor<String> arg2 = ArgumentCaptor.forClass(String.class);
-    ArgumentCaptor<String> arg3 = ArgumentCaptor.forClass(String.class);
-    verify(emailService, times(1))
-        .sendWithCSVAttachment(arg1.capture(), arg2.capture(), arg3.capture());
-    assertEquals(nonExistentOrgEmails, arg1.getValue());
-    assertEquals("PA", arg2.getValue());
-    assertEquals(type, arg3.getValue());
-    assertThat(nonExistentOrgEmails).isEmpty();
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSVAsync_withEmails_withOktaMigrationDisabled_success()
-      throws ExecutionException, InterruptedException {
-    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
-    setupDataByFacility();
-    sendOrgAdminEmailCSVAsync_mnFacilities_test();
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSVAsync_withNoEmails_withOktaMigrationDisabled_success()
-      throws ExecutionException, InterruptedException {
-    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
-    setupDataByFacility();
-    sendOrgAdminEmailCSVAsync_paFacilities_test();
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSVAsync_withEmails_withOktaMigrationEnabled_success()
-      throws ExecutionException, InterruptedException {
-    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
-    setupDataByFacility();
-    sendOrgAdminEmailCSVAsync_mnFacilities_test();
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSVAsync_withNoEmails_withOktaMigrationEnabled_success()
-      throws ExecutionException, InterruptedException {
-    when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
-    setupDataByFacility();
-    sendOrgAdminEmailCSVAsync_paFacilities_test();
-  }
-
-  @Test
-  @WithSimpleReportStandardUser
-  void sendOrgAdminEmailCSV_accessDeniedException() {
-    assertThrows(
-        AccessDeniedException.class,
-        () -> {
-          _service.sendOrgAdminEmailCSV("facilities", "NM");
-        });
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSV_byFacilities_success() {
-    setupDataByFacility();
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    boolean mnEmailSent = _service.sendOrgAdminEmailCSV("facilities", "MN");
-    verify(facilityRepository, times(1)).findByFacilityState("MN");
-    assertThat(mnEmailSent).isTrue();
-
-    boolean njEmailSent = _service.sendOrgAdminEmailCSV("faCilities", "NJ");
-    verify(facilityRepository, times(1)).findByFacilityState("NJ");
-    assertThat(njEmailSent).isTrue();
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSV_byPatients_success() {
-    setupDataByPatient();
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    boolean caEmailSent = _service.sendOrgAdminEmailCSV("patients", "CA");
-    verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("CA");
-    assertThat(caEmailSent).isTrue();
-
-    boolean njEmailSent = _service.sendOrgAdminEmailCSV("PATIENTS", "NJ");
-    verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("NJ");
-    assertThat(njEmailSent).isTrue();
-  }
-
-  @Test
-  @WithSimpleReportSiteAdminUser
-  void sendOrgAdminEmailCSV_byUnsupportedType_success() {
-    setupDataByPatient();
-    when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
-    when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
-
-    boolean unsupportedTypeEmailSent = _service.sendOrgAdminEmailCSV("Unsuported", "CA");
-    verify(organizationRepository, times(0)).findAllByPatientStateWithTestEvents("CA");
-    verify(facilityRepository, times(0)).findByFacilityState("CA");
-    assertThat(unsupportedTypeEmailSent).isTrue();
-  }
-
   @Test
   @WithSimpleReportSiteAdminUser
   void deleteE2EOktaOrganization_succeeds() {
@@ -729,27 +600,179 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     verify(oktaRepository, times(1)).deleteOrganization(createdOrg);
   }
 
-  private void setupDataByFacility() {
+  @Nested
+  @DisplayName("Sending org admin email CSV")
+  class SendOrgAdminEmailCSVTest {
+    @BeforeEach
+    void setupOrgs() {
+      when(oktaRepository.getOktaRateLimitSleepMs()).thenReturn(0);
+      when(oktaRepository.getOktaOrgsLimit()).thenReturn(1);
+    }
+
+    private void sendOrgAdminEmailCSVAsync_mnFacilities_test(
+        Map<String, List<String>> expectedMnFacilityOrgEmails)
+        throws ExecutionException, InterruptedException {
+      String type = "facilities";
+      String state = "MN";
+      String mnExternalId = expectedMnFacilityOrgEmails.keySet().stream().findFirst().get();
+      UUID mnId = organizationRepository.findByExternalId(mnExternalId).get().getInternalId();
+      List<String> mnEmails = _service.sendOrgAdminEmailCSVAsync(List.of(mnId), type, state).get();
+      List<String> expectedEmails = expectedMnFacilityOrgEmails.get(mnExternalId);
+      verify(emailService, times(1)).sendWithCSVAttachment(expectedEmails, state, type);
+      assertThat(mnEmails).isEqualTo(expectedEmails);
+    }
+
+    private void sendOrgAdminEmailCSVAsync_paFacilities_test()
+        throws ExecutionException, InterruptedException {
+      String type = "facilities";
+      String state = "PA";
+      List<String> nonExistentOrgEmails =
+          _service.sendOrgAdminEmailCSVAsync(List.of(), type, state).get();
+      verify(emailService, times(1)).sendWithCSVAttachment(nonExistentOrgEmails, state, type);
+      assertThat(nonExistentOrgEmails).isEmpty();
+    }
+
+    private void sendOrgAdminEmailCSVAsync_njPatients_test(List<String> expectedNJPatientsOrgEmails)
+        throws ExecutionException, InterruptedException {
+      String type = "patients";
+      String state = "NJ";
+      List<UUID> orgsWithNJPatientTestEvents =
+          organizationRepository.findAllByPatientStateWithTestEvents(state).stream()
+              .map(IdentifiedEntity::getInternalId)
+              .toList();
+      List<String> njPatientsOrgEmails =
+          _service.sendOrgAdminEmailCSVAsync(orgsWithNJPatientTestEvents, type, state).get();
+      verify(emailService, times(1)).sendWithCSVAttachment(njPatientsOrgEmails, state, type);
+      assertThat(njPatientsOrgEmails).isEqualTo(expectedNJPatientsOrgEmails);
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSVAsync_withEmailsByFacility_withOktaMigrationDisabled_success()
+        throws ExecutionException, InterruptedException {
+      when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
+      Map<String, List<String>> orgEmailsByFacility = setupFacilitiesAndReturnMNFacOrgEmails();
+      sendOrgAdminEmailCSVAsync_mnFacilities_test(orgEmailsByFacility);
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSVAsync_withEmailsByFacility_withOktaMigrationEnabled_success()
+        throws ExecutionException, InterruptedException {
+      when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+      Map<String, List<String>> orgEmailsByFacility = setupFacilitiesAndReturnMNFacOrgEmails();
+      sendOrgAdminEmailCSVAsync_mnFacilities_test(orgEmailsByFacility);
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSVAsync_withNoEmailsByFacility_withOktaMigrationDisabled_success()
+        throws ExecutionException, InterruptedException {
+      when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
+      sendOrgAdminEmailCSVAsync_paFacilities_test();
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSVAsync_withNoEmailsByFacility_withOktaMigrationEnabled_success()
+        throws ExecutionException, InterruptedException {
+      when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
+      sendOrgAdminEmailCSVAsync_paFacilities_test();
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSVAsync_withEmailsByPatient_withOktaMigrationDisabled_success()
+        throws ExecutionException, InterruptedException {
+      when(featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(false);
+      List<String> njPatientOrgAdminEmails = setupPatientsAndReturnNJPatientsOrgEmails();
+      sendOrgAdminEmailCSVAsync_njPatients_test(njPatientOrgAdminEmails);
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSVAsync_withEmailsByPatient_withOktaMigrationEnabled_success()
+        throws ExecutionException, InterruptedException {
+      List<String> njPatientOrgAdminEmails = setupPatientsAndReturnNJPatientsOrgEmails();
+      sendOrgAdminEmailCSVAsync_njPatients_test(njPatientOrgAdminEmails);
+    }
+
+    @Test
+    @WithSimpleReportStandardUser
+    void sendOrgAdminEmailCSV_accessDeniedException() {
+      assertThrows(
+          AccessDeniedException.class,
+          () -> {
+            _service.sendOrgAdminEmailCSV("facilities", "NM");
+          });
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSV_byFacilities_success() {
+      boolean mnEmailSent = _service.sendOrgAdminEmailCSV("facilities", "MN");
+      verify(facilityRepository, times(1)).findByFacilityState("MN");
+      assertThat(mnEmailSent).isTrue();
+
+      boolean njEmailSent = _service.sendOrgAdminEmailCSV("faCilities", "NJ");
+      verify(facilityRepository, times(1)).findByFacilityState("NJ");
+      assertThat(njEmailSent).isTrue();
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSV_byPatients_success() {
+      boolean caEmailSent = _service.sendOrgAdminEmailCSV("patients", "CA");
+      verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("CA");
+      assertThat(caEmailSent).isTrue();
+
+      boolean njEmailSent = _service.sendOrgAdminEmailCSV("PATIENTS", "NJ");
+      verify(organizationRepository, times(1)).findAllByPatientStateWithTestEvents("NJ");
+      assertThat(njEmailSent).isTrue();
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void sendOrgAdminEmailCSV_byUnsupportedType_success() {
+      boolean unsupportedTypeEmailSent = _service.sendOrgAdminEmailCSV("Unsupported", "CA");
+      verify(organizationRepository, times(0)).findAllByPatientStateWithTestEvents("CA");
+      verify(facilityRepository, times(0)).findByFacilityState("CA");
+      assertThat(unsupportedTypeEmailSent).isTrue();
+    }
+  }
+
+  private Map<String, List<String>> setupFacilitiesAndReturnMNFacOrgEmails() {
     StreetAddress orgAStreetAddress =
         new StreetAddress("123 Main Street", null, "Hackensack", "NJ", "07601", "Bergen");
+    String njOrgUUID = UUID.randomUUID().toString();
+    String njOrgEmail = njOrgUUID + "@example.com";
     Organization orgA =
-        _dataFactory.saveOrganization(
-            new Organization("Org A", "k12", "d6b3951b-6698-4ee7-9d63-aaadee85bac0", true));
+        _dataFactory.saveOrganization(new Organization(njOrgUUID, "k12", njOrgUUID, true));
     _dataFactory.createValidFacility(orgA, "Org A Facility 1", orgAStreetAddress);
     _dataFactory.createValidFacility(orgA, "Org A Facility 2", orgAStreetAddress);
-    _dataFactory.createValidApiUser("nj-orgAadmin1@example.com", orgA, Role.ADMIN);
+    _dataFactory.createValidApiUser(njOrgEmail, orgA, Role.ADMIN);
+
+    String mnOrgUUID = UUID.randomUUID().toString();
+    String mnOrgEmail1 = mnOrgUUID + "1@example.com";
+    String mnOrgEmail2 = mnOrgUUID + "2@example.com";
 
     StreetAddress orgBStreetAddress =
         new StreetAddress("234 Red Street", null, "Minneapolis", "MN", "55407", "Hennepin");
     Organization orgB =
-        _dataFactory.saveOrganization(
-            new Organization("Org B", "airport", "747e341d-0467-45b8-b92f-a638da2bf1ee", true));
+        _dataFactory.saveOrganization(new Organization(mnOrgUUID, "airport", mnOrgUUID, true));
     _dataFactory.createValidFacility(orgB, "Org B Facility 1", orgBStreetAddress);
-    _dataFactory.createValidApiUser("mn-orgBadmin1@example.com", orgB, Role.ADMIN);
-    _dataFactory.createValidApiUser("mn-orgBadmin2@example.com", orgB, Role.ADMIN);
+    _dataFactory.createValidApiUser(mnOrgUUID + "1@example.com", orgB, Role.ADMIN);
+    _dataFactory.createValidApiUser(mnOrgUUID + "2@example.com", orgB, Role.ADMIN);
+
+    Map<String, List<String>> mnEmails = new HashMap<>();
+    mnEmails.put(mnOrgUUID, List.of(mnOrgEmail1, mnOrgEmail2));
+
+    return mnEmails;
   }
 
-  private void setupDataByPatient() {
+  private List<String> setupPatientsAndReturnNJPatientsOrgEmails() {
+    String orgAUUID = UUID.randomUUID().toString();
+    String orgAEmail = orgAUUID + "@example.com";
     StreetAddress njStreetAddress =
         new StreetAddress("123 Main Street", null, "Hackensack", "NJ", "07601", "Bergen");
     StreetAddress caStreetAddress =
@@ -757,33 +780,35 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     StreetAddress mnStreetAddress =
         new StreetAddress("234 Red Street", null, "Minneapolis", "MN", "55407", "Hennepin");
     Organization orgA =
-        _dataFactory.saveOrganization(
-            new Organization(
-                "Org A", "k12", "CA-org-a-5359aa13-93b2-4680-802c-9c90acb5d251", true));
-    _dataFactory.createValidApiUser("ca-orgAadmin1@example.com", orgA, Role.ADMIN);
+        _dataFactory.saveOrganization(new Organization(orgAUUID, "k12", orgAUUID, true));
+    _dataFactory.createValidApiUser(orgAEmail, orgA, Role.ADMIN);
     Facility orgAFacility =
-        _dataFactory.createValidFacility(orgA, "Org A Facility 1", caStreetAddress);
+        _dataFactory.createValidFacility(orgA, "Org A Facility 1", njStreetAddress);
 
     // create patient in NJ with a test event for Org A
     Person orgAPatient1 =
         _dataFactory.createFullPersonWithAddress(orgA, njStreetAddress, "Joe", "Moe");
     _dataFactory.createTestEvent(orgAPatient1, orgAFacility, TestResult.POSITIVE);
 
+    String orgBUUID = UUID.randomUUID().toString();
+    String orgBEmail1 = orgBUUID + "1@example.com";
+    String orgBEmail2 = orgBUUID + "2@example.com";
     Organization orgB =
-        _dataFactory.saveOrganization(
-            new Organization(
-                "Org B", "airport", "MN-org-b-3dddkv89-8981-421b-bd61-f293723284", true));
-    _dataFactory.createValidApiUser("mn-orgBadmin1@example.com", orgB, Role.ADMIN);
-    _dataFactory.createValidApiUser("mn-orgBuser@example.com", orgB, Role.USER);
+        _dataFactory.saveOrganization(new Organization(orgBUUID, "airport", orgBUUID, true));
+    _dataFactory.createValidApiUser(orgBEmail1, orgB, Role.ADMIN);
+    _dataFactory.createValidApiUser(
+        orgBEmail2, orgB, Role.USER); // should not be returned since not an admin
     Facility orgBFacility =
         _dataFactory.createValidFacility(orgB, "Org B Facility 1", mnStreetAddress);
     // create patient in CA with a test event for Org A
     Person orgAPatient2 =
         _dataFactory.createFullPersonWithAddress(orgA, caStreetAddress, "Ed", "Eaves");
     _dataFactory.createTestEvent(orgAPatient2, orgBFacility, TestResult.UNDETERMINED);
-    // create patient in CA with a test event for Org B
+    // create patient in NJ with a test event for Org B
     Person orgBPatient1 =
-        _dataFactory.createFullPersonWithAddress(orgB, caStreetAddress, "Mary", "Meade");
+        _dataFactory.createFullPersonWithAddress(orgB, njStreetAddress, "Mary", "Meade");
     _dataFactory.createTestEvent(orgBPatient1, orgBFacility, TestResult.NEGATIVE);
+
+    return Stream.of(orgAEmail, orgBEmail1).sorted().collect(Collectors.toList());
   }
 }
