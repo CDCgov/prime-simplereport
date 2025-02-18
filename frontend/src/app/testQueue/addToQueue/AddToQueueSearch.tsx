@@ -180,6 +180,7 @@ const AddToQueueSearchBox = ({
         disabled={!allowQuery}
         placeholder={`Search for a ${PATIENT_TERM} to start their test`}
         showSubmitButton={false}
+        disableEnterSubmit={true}
       />
       <SearchResults
         page="queue"
