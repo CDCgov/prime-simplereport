@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -48,6 +49,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.info.GitProperties;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
@@ -484,11 +486,12 @@ public class BulkUploadResultsToFhirTest {
     // The processing is threaded so the elapsed time is closely tied to available CPU cores. GitHub
     // action runners
     // will require more time because they have less cores than our dev or prod machines.
-    assertTrue(
-        elapsedTime < 30000,
+    String msg =
         "Bundle processing took more than 30 seconds for 5000 rows. It took "
             + elapsedTime
-            + " milliseconds.");
+            + " milliseconds.";
+    log.info(msg);
+    assertTrue(elapsedTime < 30000, msg);
   }
 
   @Test
