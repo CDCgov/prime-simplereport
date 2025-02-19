@@ -18,7 +18,6 @@ import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
-import gov.cdc.usds.simplereport.service.SRProductionClient;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -46,12 +45,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.springframework.boot.info.GitProperties;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
   private static ResultsUploaderCachingService resultsUploaderCachingService;
@@ -61,8 +59,6 @@ public class BulkUploadResultsToFhirTest {
   private final UUIDGenerator uuidGenerator = new UUIDGenerator();
   private final DateGenerator dateGenerator = new DateGenerator();
   BulkUploadResultsToFhir sut;
-
-  @MockBean SRProductionClient _mockSRProductionClient;
 
   @BeforeAll
   public static void init() throws SmartyException, IOException, InterruptedException {
@@ -477,29 +473,24 @@ public class BulkUploadResultsToFhirTest {
 
   @Test
   void convertExistingCsv_meetsProcessingSpeed() {
-    try (InputStream inputStream =
-        BulkUploadResultsToFhirTest.class
-            .getClassLoader()
-            .getResourceAsStream("testResultUpload/test-results-upload-valid-5000-rows.csv")) {
-      var startTime = System.currentTimeMillis();
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-5000-rows.csv");
 
-      sut.convertToFhirBundles(inputStream, UUID.randomUUID());
+    var startTime = System.currentTimeMillis();
 
-      var endTime = System.currentTimeMillis();
-      var elapsedTime = endTime - startTime;
+    sut.convertToFhirBundles(input, UUID.randomUUID());
 
-      // The processing is threaded so the elapsed time is closely tied to available CPU cores.
-      // GitHub
-      // action runners
-      // will require more time because they have less cores than our dev or prod machines.
-      assertTrue(
-          elapsedTime < 30000,
-          "Bundle processing took more than 30 seconds for 5000 rows. It took "
-              + elapsedTime
-              + " milliseconds.");
-    } catch (IOException e) {
-      fail("IOException when loading csv");
-    }
+    var endTime = System.currentTimeMillis();
+    var elapsedTime = endTime - startTime;
+
+    // The processing is threaded so the elapsed time is closely tied to available CPU cores. GitHub
+    // action runners
+    // will require more time because they have less cores than our dev or prod machines.
+    String msg =
+        "Bundle processing took more than 30 seconds for 5000 rows. It took "
+            + elapsedTime
+            + " milliseconds.";
+    fail(msg);
+    assertTrue(elapsedTime < 30000, msg);
   }
 
   @Test
