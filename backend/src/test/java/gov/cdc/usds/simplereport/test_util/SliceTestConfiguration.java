@@ -33,7 +33,6 @@ import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.ResultService;
-import gov.cdc.usds.simplereport.service.SRProductionClient;
 import gov.cdc.usds.simplereport.service.TenantDataAccessService;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -47,7 +46,6 @@ import java.lang.annotation.Target;
 import java.util.List;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -150,8 +148,6 @@ public class SliceTestConfiguration {
     public static final String OTHER_ORG_USER =
         SliceTestConfiguration.OTHER_ORG_ROLE_PREFIX + "USER";
   }
-
-  @MockBean private SRProductionClient _srProductionClient;
 
   @Bean
   public IdentitySupplier testIdentityProvider() {
