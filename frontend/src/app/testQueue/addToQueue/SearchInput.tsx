@@ -20,7 +20,6 @@ type Props = {
   showSubmitButton?: boolean;
   labeledBy?: string;
   dataCy?: string;
-  disableEnterSubmit?: boolean;
 };
 
 const SearchInput = ({
@@ -35,7 +34,6 @@ const SearchInput = ({
   showSubmitButton = true,
   labeledBy,
   dataCy,
-  disableEnterSubmit = false,
 }: Props) => {
   const classes = classnames(
     "usa-search",
@@ -51,14 +49,9 @@ const SearchInput = ({
     }
   }, [focusOnMount]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    if (disableEnterSubmit) {
-      e.preventDefault();
-    }
-  };
   return (
     <div className={classnames("prime-search-container", className)}>
-      <form className={classes} role="search" onSubmit={handleSubmit}>
+      <form className={classes} role="search">
         <label
           className={label ? "display-block" : "usa-sr-only"}
           htmlFor="search-field-small"

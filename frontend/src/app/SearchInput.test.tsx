@@ -6,47 +6,29 @@ import SearchInput from "../app/testQueue/addToQueue/SearchInput";
 describe("SearchInput", () => {
   const onInputChange = jest.fn();
 
-  it("prevents form submission when disableEnterSubmit is true", () => {
+  it("calls onSearchClick and prevents default when onSearchClick calls e.preventDefault", () => {
     const preventDefaultSpy = jest.spyOn(Event.prototype, "preventDefault");
+
+    const onSearchClick = jest.fn((e) => {
+      e.preventDefault();
+    });
 
     render(
       <SearchInput
         onInputChange={onInputChange}
+        onSearchClick={onSearchClick}
         queryString=""
         placeholder="Search..."
-        disableEnterSubmit={true}
-        showSubmitButton={false}
+        showSubmitButton={true}
       />
     );
-    const form = screen.getByRole("search");
 
-    fireEvent.submit(form);
+    const button = screen.getByRole("button");
+    fireEvent.click(button);
 
+    expect(onSearchClick).toHaveBeenCalled();
     expect(preventDefaultSpy).toHaveBeenCalled();
 
     preventDefaultSpy.mockRestore();
-  });
-
-  it("allows form submission when disableEnterSubmit is false", () => {
-    render(
-      <SearchInput
-        onInputChange={onInputChange}
-        queryString=""
-        placeholder="Search..."
-        disableEnterSubmit={false}
-        showSubmitButton={false}
-      />
-    );
-    const form = screen.getByRole("search");
-    const submitEvent = new Event("submit", {
-      bubbles: true,
-      cancelable: true,
-    });
-    submitEvent.preventDefault = jest.fn();
-
-    fireEvent.submit(form, submitEvent);
-
-    // preventDefault will not be called
-    expect(submitEvent.preventDefault).not.toHaveBeenCalled();
   });
 });

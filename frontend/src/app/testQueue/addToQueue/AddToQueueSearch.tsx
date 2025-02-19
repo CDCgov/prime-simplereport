@@ -175,12 +175,12 @@ const AddToQueueSearchBox = ({
   return (
     <React.Fragment>
       <SearchInput
+        onSearchClick={(e) => e.preventDefault()}
         onInputChange={onInputChange}
         queryString={debounced}
         disabled={!allowQuery}
         placeholder={`Search for a ${PATIENT_TERM} to start their test`}
         showSubmitButton={false}
-        disableEnterSubmit={true}
       />
       <SearchResults
         page="queue"
