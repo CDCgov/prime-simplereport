@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonNodesE
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -492,6 +493,7 @@ public class BulkUploadResultsToFhirTest {
             + " milliseconds.";
     log.info(msg);
     assertTrue(elapsedTime < 30000, msg);
+    fail(msg);
   }
 
   @Test
