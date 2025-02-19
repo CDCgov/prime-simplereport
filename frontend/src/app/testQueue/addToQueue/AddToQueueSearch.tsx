@@ -175,6 +175,7 @@ const AddToQueueSearchBox = ({
   return (
     <React.Fragment>
       <SearchInput
+        onSearchClick={(e) => e.preventDefault()}
         onInputChange={onInputChange}
         queryString={debounced}
         disabled={!allowQuery}
