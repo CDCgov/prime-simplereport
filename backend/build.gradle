@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'org.liquibase:liquibase-core:4.30.0'
+        classpath 'org.liquibase:liquibase-core:4.31.1'
     }
 }
 
@@ -83,7 +83,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     // this provides additional types for JsonB and for ListArray types in Postgres
     implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.6'
-    implementation 'org.liquibase:liquibase-core:4.30.0'
+    implementation 'org.liquibase:liquibase-core:4.31.1'
     implementation 'org.postgresql:postgresql:42.7.4'
 
     // data validation
@@ -160,7 +160,7 @@ dependencies {
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.79'
 
     // Needed for Liquibase Gradle Plugin
-    liquibaseRuntime 'org.liquibase:liquibase-core:4.30.0'
+    liquibaseRuntime 'org.liquibase:liquibase-core:4.31.1'
     liquibaseRuntime 'info.picocli:picocli:4.7.5'
 }
 
