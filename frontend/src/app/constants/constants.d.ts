@@ -621,6 +621,7 @@ interface PersonFormData extends Person {
 type Language =
   | "English"
   | "Spanish"
+  | "Esperanto"
   | "Unknown"
   | "Afrikaans"
   | "Amaric"
