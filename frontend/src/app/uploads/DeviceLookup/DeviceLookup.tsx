@@ -47,6 +47,12 @@ export const searchDevices = (
 
 const DeviceLookup = (props: Props) => {
   const hivBulkUploadEnabled = useFeature("hivBulkUploadEnabled") as boolean;
+  const gonorrheaBulkUploadEnabled = useFeature(
+    "gonorrheaBulkUploadEnabled"
+  ) as boolean;
+  const hepatitisCBulkUploadEnabled = useFeature(
+    "hepatitisCBulkUploadEnabled"
+  ) as boolean;
 
   let deviceDisplayOptions = props.deviceOptions;
   if (!hivBulkUploadEnabled) {
@@ -56,6 +62,26 @@ const DeviceLookup = (props: Props) => {
           .map((s) => s.supportedDisease)
           .map((sup) => sup.name)
           .includes("HIV")
+    );
+  }
+
+  if (!gonorrheaBulkUploadEnabled) {
+    deviceDisplayOptions = deviceDisplayOptions.filter(
+      (d) =>
+        !d.supportedDiseaseTestPerformed
+          .map((s) => s.supportedDisease)
+          .map((sup) => sup.name)
+          .includes("Gonorrhea")
+    );
+  }
+
+  if (!hepatitisCBulkUploadEnabled) {
+    deviceDisplayOptions = deviceDisplayOptions.filter(
+      (d) =>
+        !d.supportedDiseaseTestPerformed
+          .map((s) => s.supportedDisease)
+          .map((sup) => sup.name)
+          .includes("Hepatitis C")
     );
   }
 

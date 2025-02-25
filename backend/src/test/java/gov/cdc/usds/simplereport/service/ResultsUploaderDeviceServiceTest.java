@@ -110,6 +110,37 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     assertThat(validationResult).isTrue();
   }
 
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsFalseWhenHepCIsOff() {
+    // GIVEN
+    when(featureFlagsConfig.isHepatitisCEnabled()).thenReturn(false);
+    createDeviceType(
+        "hepatitisC device", List.of("5010-4"), diseaseService.hepatitisC().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("hepatitisC device", "5010-4");
+    System.out.println("Hepatitis C disease name: " + diseaseService.hepatitisC().getName());
+
+    // THEN
+    assertThat(validationResult).isFalse();
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsTrueWhenHepCIsOn() {
+    // GIVEN
+    when(featureFlagsConfig.isHepatitisCEnabled()).thenReturn(true);
+    createDeviceType(
+        "hepatitisC device", List.of("5010-4"), diseaseService.hepatitisC().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("hepatitisC device", "5010-4");
+
+    // THEN
+    assertThat(validationResult).isTrue();
+  }
+
   private DeviceType createDeviceType(
       String model, List<String> testPerformedCodes, UUID diseaseUUID) {
     SpecimenType specimenType =
