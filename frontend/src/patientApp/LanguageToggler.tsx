@@ -3,6 +3,7 @@ import i18n from "../i18n";
 import { setLanguage } from "../app/utils/languages";
 import "./LanguageToggler.scss";
 
+// Should be modified in the future to be a selector, not a switch button
 export default function LanguageToggler() {
   return (
     <div lang={i18n.language === "en" ? (i18n.language === "es" ? "eo" : "es") : "en"}>
