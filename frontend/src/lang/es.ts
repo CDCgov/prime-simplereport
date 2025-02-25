@@ -106,6 +106,7 @@ export const es: LanguageConfig = {
     languages: {
       English: "Inglés",
       Spanish: "Español",
+      Esperanto: "Esperanto"
     },
     common: {
       required: "Los campos obligatorios están marcados con un asterisco",

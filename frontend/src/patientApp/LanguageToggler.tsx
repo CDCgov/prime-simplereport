@@ -5,16 +5,16 @@ import "./LanguageToggler.scss";
 
 export default function LanguageToggler() {
   return (
-    <div lang={i18n.language === "en" ? "es" : "en"}>
+    <div lang={i18n.language === "en" ? (i18n.language === "es" ? "eo" : "es") : "en"}>
       <Button
         icon={"globe"}
         className="sr-language-toggler usa-button--unstyled"
         onClick={() => {
-          const displayLanguage = i18n.language === "en" ? "es" : "en";
+          const displayLanguage = i18n.language === "en" ? (i18n.language === "es" ? "eo" : "es") : "en";
           setLanguage(displayLanguage);
         }}
       >
-        {i18n.language === "en" ? "Español" : "English"}
+        {i18n.language === "en" ? (i18n.language === "es" ? "Esperanto" : "Español") : "English"}
       </Button>
     </div>
   );

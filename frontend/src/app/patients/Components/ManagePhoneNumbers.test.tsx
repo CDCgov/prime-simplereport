@@ -4,6 +4,9 @@ import userEvent from "@testing-library/user-event";
 
 import i18n from "../../../i18n";
 import { es } from "../../../lang/es";
+import { eo } from "../../../lang/eo";
+
+const langs = { es, eo };
 
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
 
@@ -84,22 +87,24 @@ describe("ManagePhoneNumbers", () => {
       ).toBe(1);
     });
   });
-  it("translates errors", async () => {
-    const { user } = renderWithUser();
-    const primary = await screen.findByLabelText("Primary phone", {
-      exact: false,
-    });
-    // Show two errors
-    await user.clear(primary);
-    await user.tab();
+  for (const [lang, translations] of Object.entries(langs)) {
+    it("translates errors", async () => {
+      const { user } = renderWithUser();
+      const primary = await screen.findByLabelText("Primary phone", {
+        exact: false,
+      });
+      // Show two errors
+      await user.clear(primary);
+      await user.tab();
 
-    await waitFor(() => {
-      i18n.changeLanguage("es");
+      await waitFor(() => {
+        i18n.changeLanguage(lang);
+      });
+      expect(
+        await screen.findByText(translations.translation.patient.form.errors.telephone)
+      ).toBeInTheDocument();
     });
-    expect(
-      await screen.findByText(es.translation.patient.form.errors.telephone)
-    ).toBeInTheDocument();
-  });
+  }
   it("adds and removes phone numbers", async () => {
     const { user } = renderWithUser();
     const primary = await screen.findByLabelText("Primary phone", {

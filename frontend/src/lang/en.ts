@@ -103,6 +103,7 @@ export const en = {
     languages: {
       English: "English",
       Spanish: "Spanish",
+      Esperanto: "Esperanto"
     },
     common: {
       required: "Required fields are marked with an asterisk",
