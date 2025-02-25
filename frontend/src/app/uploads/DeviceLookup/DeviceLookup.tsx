@@ -50,9 +50,7 @@ const DeviceLookup = (props: Props) => {
   const gonorrheaBulkUploadEnabled = useFeature(
     "gonorrheaBulkUploadEnabled"
   ) as boolean;
-  const hepatitisCBulkUploadEnabled = useFeature(
-    "hepatitisCBulkUploadEnabled"
-  ) as boolean;
+  const hepatitisCEnabled = useFeature("hepatitisCEnabled") as boolean;
 
   let deviceDisplayOptions = props.deviceOptions;
   if (!hivBulkUploadEnabled) {
@@ -75,7 +73,7 @@ const DeviceLookup = (props: Props) => {
     );
   }
 
-  if (!hepatitisCBulkUploadEnabled) {
+  if (!hepatitisCEnabled) {
     deviceDisplayOptions = deviceDisplayOptions.filter(
       (d) =>
         !d.supportedDiseaseTestPerformed
