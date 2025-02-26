@@ -60,7 +60,11 @@ export function groupErrors(
 
 export function getErrorMessage(error: EnhancedFeedbackMessage) {
   if (error.message) {
-    const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+){1,7})/g;
+    const header = error.fieldHeader;
+    const headerRegex = new RegExp(
+      `(${header}|[a-z0-9]+(?:_[a-z0-9]+){1,7})`,
+      "g"
+    );
     return (
       <span data-testid="error-message">
         {error.message.split(headerRegex).map((value) => (

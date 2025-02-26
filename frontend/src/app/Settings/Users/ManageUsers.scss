@@ -35,6 +35,18 @@
     margin: 1em auto;
   }
 
+  .no-results-found {
+    width: 75%;
+  }
+
+  .clear-filter-button {
+    width: auto !important;
+  }
+
+  .usa-pagination ol {
+    padding-left: 0 !important;
+  }
+
   .usa-sidenav__item.users-sidenav-item button {
     width: 100%;
   }

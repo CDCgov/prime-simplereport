@@ -1426,6 +1426,32 @@ export type GetUsersAndStatusQuery = {
   }> | null;
 };
 
+export type GetUsersAndStatusPageQueryVariables = Exact<{
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  searchQuery?: InputMaybe<Scalars["String"]["input"]>;
+}>;
+
+export type GetUsersAndStatusPageQuery = {
+  __typename?: "Query";
+  usersWithStatusPage: {
+    __typename?: "ApiUserWithStatusAndCountPage";
+    totalUsersInOrg: number;
+    pageContent: {
+      __typename?: "ApiUserWithStatusPage";
+      totalElements: number;
+      content?: Array<{
+        __typename?: "ApiUserWithStatus";
+        id: string;
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName: string;
+        email: string;
+        status?: string | null;
+      }> | null;
+    };
+  };
+};
+
 export type ResendActivationEmailMutationVariables = Exact<{
   id: Scalars["ID"]["input"];
 }>;
@@ -3741,6 +3767,96 @@ export type GetUsersAndStatusSuspenseQueryHookResult = ReturnType<
 export type GetUsersAndStatusQueryResult = Apollo.QueryResult<
   GetUsersAndStatusQuery,
   GetUsersAndStatusQueryVariables
+>;
+export const GetUsersAndStatusPageDocument = gql`
+  query GetUsersAndStatusPage($pageNumber: Int, $searchQuery: String) {
+    usersWithStatusPage(pageNumber: $pageNumber, searchQuery: $searchQuery) {
+      pageContent {
+        content {
+          id
+          firstName
+          middleName
+          lastName
+          email
+          status
+        }
+        totalElements
+      }
+      totalUsersInOrg
+    }
+  }
+`;
+
+/**
+ * __useGetUsersAndStatusPageQuery__
+ *
+ * To run a query within a React component, call `useGetUsersAndStatusPageQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUsersAndStatusPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUsersAndStatusPageQuery({
+ *   variables: {
+ *      pageNumber: // value for 'pageNumber'
+ *      searchQuery: // value for 'searchQuery'
+ *   },
+ * });
+ */
+export function useGetUsersAndStatusPageQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetUsersAndStatusPageQuery,
+    GetUsersAndStatusPageQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUsersAndStatusPageQuery,
+    GetUsersAndStatusPageQueryVariables
+  >(GetUsersAndStatusPageDocument, options);
+}
+export function useGetUsersAndStatusPageLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUsersAndStatusPageQuery,
+    GetUsersAndStatusPageQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUsersAndStatusPageQuery,
+    GetUsersAndStatusPageQueryVariables
+  >(GetUsersAndStatusPageDocument, options);
+}
+export function useGetUsersAndStatusPageSuspenseQuery(
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetUsersAndStatusPageQuery,
+        GetUsersAndStatusPageQueryVariables
+      >
+) {
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<
+    GetUsersAndStatusPageQuery,
+    GetUsersAndStatusPageQueryVariables
+  >(GetUsersAndStatusPageDocument, options);
+}
+export type GetUsersAndStatusPageQueryHookResult = ReturnType<
+  typeof useGetUsersAndStatusPageQuery
+>;
+export type GetUsersAndStatusPageLazyQueryHookResult = ReturnType<
+  typeof useGetUsersAndStatusPageLazyQuery
+>;
+export type GetUsersAndStatusPageSuspenseQueryHookResult = ReturnType<
+  typeof useGetUsersAndStatusPageSuspenseQuery
+>;
+export type GetUsersAndStatusPageQueryResult = Apollo.QueryResult<
+  GetUsersAndStatusPageQuery,
+  GetUsersAndStatusPageQueryVariables
 >;
 export const ResendActivationEmailDocument = gql`
   mutation ResendActivationEmail($id: ID!) {

@@ -69,7 +69,7 @@ exports[`Header displays correctly 1`] = `
               <a
                 class="prime-nav-link"
                 data-testid="mobile-settings-button"
-                href="/settings"
+                href="/settings/users/1"
                 id="mobile-settings-button"
                 role="link"
               >
@@ -272,7 +272,7 @@ exports[`Header displays correctly 1`] = `
             <a
               class="prime-nav-link"
               data-testid="desktop-settings-button"
-              href="/settings"
+              href="/settings/users/1"
               id="desktop-settings-button"
               role="link"
             >
