@@ -115,11 +115,11 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isChlamydiaEnabled()).thenReturn(false);
     createDeviceType(
-        "chlamydia device", List.of("6349-5"), diseaseService.chlamydia().getInternalId());
+        "chlamydia device", List.of("97088-0"), diseaseService.chlamydia().getInternalId());
 
     // WHEN
     boolean validationResult =
-        deviceService.validateResultsOnlyIncludeActiveDiseases("chlamydia device", "6349-5");
+        deviceService.validateResultsOnlyIncludeActiveDiseases("chlamydia device", "97088-0");
 
     // THEN
     assertThat(validationResult).isFalse();
@@ -130,11 +130,11 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isChlamydiaEnabled()).thenReturn(true);
     createDeviceType(
-        "chlamydia device", List.of("6349-5"), diseaseService.chlamydia().getInternalId());
+        "chlamydia device", List.of("97088-0"), diseaseService.chlamydia().getInternalId());
 
     // WHEN
     boolean validationResult =
-        deviceService.validateResultsOnlyIncludeActiveDiseases("chlamydia device", "6349-5");
+        deviceService.validateResultsOnlyIncludeActiveDiseases("chlamydia device", "97088-0");
 
     // THEN
     assertThat(validationResult).isTrue();
@@ -145,11 +145,11 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isGonorrheaEnabled()).thenReturn(false);
     createDeviceType(
-        "gonorrhea device", List.of("8248-7"), diseaseService.gonorrhea().getInternalId());
+        "gonorrhea device", List.of("97088-0"), diseaseService.gonorrhea().getInternalId());
 
     // WHEN
     boolean validationResult =
-        deviceService.validateResultsOnlyIncludeActiveDiseases("gonorrhea device", "8248-7");
+        deviceService.validateResultsOnlyIncludeActiveDiseases("gonorrhea device", "97088-0");
 
     // THEN
     assertThat(validationResult).isFalse();
@@ -160,11 +160,11 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isGonorrheaEnabled()).thenReturn(true);
     createDeviceType(
-        "gonorrhea device", List.of("8248-7"), diseaseService.gonorrhea().getInternalId());
+        "gonorrhea device", List.of("97088-0"), diseaseService.gonorrhea().getInternalId());
 
     // WHEN
     boolean validationResult =
-        deviceService.validateResultsOnlyIncludeActiveDiseases("gonorrhea device", "8248-7");
+        deviceService.validateResultsOnlyIncludeActiveDiseases("gonorrhea device", "97088-0");
 
     // THEN
     assertThat(validationResult).isTrue();
@@ -175,11 +175,11 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isSyphilisEnabled()).thenReturn(false);
     createDeviceType(
-        "syphilis device", List.of("5010-4"), diseaseService.syphilis().getInternalId());
+        "syphilis device", List.of("97088-0"), diseaseService.syphilis().getInternalId());
 
     // WHEN
     boolean validationResult =
-        deviceService.validateResultsOnlyIncludeActiveDiseases("syphilis device", "5010-4");
+        deviceService.validateResultsOnlyIncludeActiveDiseases("syphilis device", "97088-0");
 
     // THEN
     assertThat(validationResult).isFalse();
@@ -190,11 +190,11 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isSyphilisEnabled()).thenReturn(true);
     createDeviceType(
-        "syphilis device", List.of("7185-2"), diseaseService.syphilis().getInternalId());
+        "syphilis device", List.of("97088-0"), diseaseService.syphilis().getInternalId());
 
     // WHEN
     boolean validationResult =
-        deviceService.validateResultsOnlyIncludeActiveDiseases("syphilis device", "7185-2");
+        deviceService.validateResultsOnlyIncludeActiveDiseases("syphilis device", "97088-0");
 
     // THEN
     assertThat(validationResult).isTrue();
@@ -205,11 +205,11 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isHepatitisCEnabled()).thenReturn(false);
     createDeviceType(
-        "hepatitisC device", List.of("5010-4"), diseaseService.hepatitisC().getInternalId());
+        "hepatitisC device", List.of("97088-0"), diseaseService.hepatitisC().getInternalId());
 
     // WHEN
     boolean validationResult =
-        deviceService.validateResultsOnlyIncludeActiveDiseases("hepatitisC device", "5010-4");
+        deviceService.validateResultsOnlyIncludeActiveDiseases("hepatitisC device", "97088-0");
 
     // THEN
     assertThat(validationResult).isFalse();
@@ -220,11 +220,11 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isHepatitisCEnabled()).thenReturn(true);
     createDeviceType(
-        "hepatitisC device", List.of("5010-4"), diseaseService.hepatitisC().getInternalId());
+        "hepatitisC device", List.of("97088-0"), diseaseService.hepatitisC().getInternalId());
 
     // WHEN
     boolean validationResult =
-        deviceService.validateResultsOnlyIncludeActiveDiseases("hepatitisC device", "5010-4");
+        deviceService.validateResultsOnlyIncludeActiveDiseases("hepatitisC device", "97088-0");
 
     // THEN
     assertThat(validationResult).isTrue();
