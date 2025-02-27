@@ -292,6 +292,81 @@ class FileValidatorTest {
   }
 
   @Test
+  void testResults_validFile_gonorrheaOnlyWhenGonorrheaFeatureFlagIsFalse() {
+
+    when(featureFlagsConfig.isGonorrheaEnabled()).thenReturn(false);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(
+            Map.of("modelgonorrhea|12345-0", TestDataBuilder.createDeviceTypeForGonorrhea()));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-gonorrhea-only.csv");
+
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    assertThat(errors).isNotEmpty();
+    assertThat(errors.get(0).getMessage())
+        .contains(
+            "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
+  }
+
+  @Test
+  void testResults_validFile_chlamydiaOnlyWhenChlamydiaFeatureFlagIsFalse() {
+
+    when(featureFlagsConfig.isChlamydiaEnabled()).thenReturn(false);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(
+            Map.of("modelchlamydia|24334-5", TestDataBuilder.createDeviceTypeForChlamydia()));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-chlamydia-only.csv");
+
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    assertThat(errors).isNotEmpty();
+    assertThat(errors.get(0).getMessage())
+        .contains(
+            "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
+  }
+
+  @Test
+  void testResults_validFile_OnlySyphilisFeatureFlagIsFalse() {
+
+    when(featureFlagsConfig.isSyphilisEnabled()).thenReturn(false);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("modelsyphilis|2343-1", TestDataBuilder.createDeviceTypeForSyphilis()));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-syph-only.csv");
+
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    assertThat(errors).isNotEmpty();
+    assertThat(errors.get(0).getMessage())
+        .contains(
+            "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
+  }
+
+  @Test
+  void testResults_validFile_OnlyHepatitisCFeatureFlagIsFalse() {
+
+    when(featureFlagsConfig.isHepatitisCEnabled()).thenReturn(false);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(
+            Map.of("modelhepatitisc|2424-9", TestDataBuilder.createDeviceTypeForHepatitisC()));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-hepatitisC-only.csv");
+
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    assertThat(errors).isNotEmpty();
+    assertThat(errors.get(0).getMessage())
+        .contains(
+            "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
+  }
+
+  @Test
   void testResults_validFile_rsvOnly() {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-rsv-only.csv");
