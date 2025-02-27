@@ -130,7 +130,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // GIVEN
     when(featureFlagsConfig.isChlamydiaEnabled()).thenReturn(true);
     createDeviceType(
-        "chlamydia device", List.of("6349-5"), diseaseService.gonorrhea().getInternalId());
+        "chlamydia device", List.of("6349-5"), diseaseService.chlamydia().getInternalId());
 
     // WHEN
     boolean validationResult =

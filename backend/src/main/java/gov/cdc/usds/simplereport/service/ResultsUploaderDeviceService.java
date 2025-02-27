@@ -75,7 +75,7 @@ public class ResultsUploaderDeviceService {
     if (supportedDiseaseNamesToCheck.contains("HIV")) {
       return featureFlagsConfig.isHivBulkUploadEnabled();
     }
-    if (supportedDiseaseNamesToCheck.contains("chlamydia")) {
+    if (supportedDiseaseNamesToCheck.contains("Chlamydia")) {
       return featureFlagsConfig.isChlamydiaEnabled();
     }
     if (supportedDiseaseNamesToCheck.contains("Gonorrhea")) {
