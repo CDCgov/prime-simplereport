@@ -295,7 +295,6 @@ describe("ManageDevices", () => {
     });
   });
 
-  // Keep remaining existing tests
   it("removes a device from the list", async () => {
     validFacility.devices = ["device-a"];
     const { user } = renderWithUser(validFacility);
