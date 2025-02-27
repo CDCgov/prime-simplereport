@@ -47,10 +47,10 @@ export const searchDevices = (
 
 const DeviceLookup = (props: Props) => {
   const hivBulkUploadEnabled = useFeature("hivBulkUploadEnabled") as boolean;
-  const gonorrheaBulkUploadEnabled = useFeature(
-    "gonorrheaBulkUploadEnabled"
-  ) as boolean;
+  const gonorrheaEnabled = useFeature("gonorrheaEnabled") as boolean;
   const hepatitisCEnabled = useFeature("hepatitisCEnabled") as boolean;
+  const syphilisEnabled = useFeature("syphilisEnabled") as boolean;
+  const chlamydiaEnabled = useFeature("chlamydiaEnabled") as boolean;
 
   let deviceDisplayOptions = props.deviceOptions;
   if (!hivBulkUploadEnabled) {
@@ -63,13 +63,13 @@ const DeviceLookup = (props: Props) => {
     );
   }
 
-  if (!gonorrheaBulkUploadEnabled) {
+  if (!gonorrheaEnabled) {
     deviceDisplayOptions = deviceDisplayOptions.filter(
       (d) =>
         !d.supportedDiseaseTestPerformed
           .map((s) => s.supportedDisease)
-          .map((sup) => sup.name)
-          .includes("Gonorrhea")
+          .map((sup) => sup.name.toLowerCase())
+          .includes("gonorrhea")
     );
   }
 
@@ -78,9 +78,38 @@ const DeviceLookup = (props: Props) => {
       (d) =>
         !d.supportedDiseaseTestPerformed
           .map((s) => s.supportedDisease)
-          .map((sup) => sup.name)
-          .includes("Hepatitis C")
+          .map((sup) => sup.name.toLowerCase())
+          .includes("hepatitis C")
     );
+
+    if (!syphilisEnabled) {
+      deviceDisplayOptions = deviceDisplayOptions.filter(
+        (d) =>
+          !d.supportedDiseaseTestPerformed
+            .map((s) => s.supportedDisease)
+            .map((sup) => sup.name.toLowerCase())
+            .includes("syphilis".toLowerCase())
+      );
+    }
+
+    console.log(
+      "All devices:",
+      deviceDisplayOptions.map((d) => ({
+        name: d.name,
+        diseases: d.supportedDiseaseTestPerformed.map(
+          (s) => s.supportedDisease.name
+        ),
+      }))
+    );
+    if (!chlamydiaEnabled) {
+      deviceDisplayOptions = deviceDisplayOptions.filter(
+        (d) =>
+          !d.supportedDiseaseTestPerformed
+            .map((s) => s.supportedDisease)
+            .map((sup) => sup.name.toLowerCase())
+            .includes("chlamydia")
+      );
+    }
   }
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
