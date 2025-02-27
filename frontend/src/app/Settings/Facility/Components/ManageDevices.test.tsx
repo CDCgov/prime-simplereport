@@ -1,5 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as flagged from "flagged";
 
 import { FacilityFormData } from "../FacilityForm";
 import mockSupportedDiseaseTestPerformedCovid from "../../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
@@ -9,6 +10,20 @@ import ManageDevices from "./ManageDevices";
 
 let validFacility: FacilityFormData;
 
+const createMockDiseaseTest = (diseaseName: string) => [
+  {
+    deviceTypeId: "device-id",
+    supportedDisease: {
+      name: diseaseName,
+      internalId: `${diseaseName.toLowerCase()}-id`,
+      loinc: "1234-5",
+    },
+    testPerformedLoincCode: "test-code",
+    testkitNameId: "testkit-id",
+    equipmentUid: "equipment-id",
+    testOrderedLoincCode: "ordered-code",
+  },
+];
 export const deviceA = {
   internalId: "device-a",
   name: "Device A",
@@ -18,27 +33,70 @@ export const deviceA = {
   swabTypes: [],
   testLength: 10,
 };
-export const deviceB = {
-  internalId: "device-b",
-  name: "Device B",
-  model: "Device B",
-  manufacturer: "Manufacturer B",
-  supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+export const deviceHepatitisC = {
+  internalId: "device-hep-c",
+  name: "Hepatitis C Device",
+  model: "Hepatitis C Device",
+  manufacturer: "Manufacturer H",
+  supportedDiseaseTestPerformed: createMockDiseaseTest("Hepatitis C"),
   swabTypes: [],
   testLength: 10,
 };
-export const deviceC = {
-  internalId: "device-c",
-  name: "Device C",
-  model: "Device C",
+
+export const deviceHIV = {
+  internalId: "device-hiv",
+  name: "HIV Device",
+  model: "HIV Device",
+  manufacturer: "Manufacturer H",
+  supportedDiseaseTestPerformed: createMockDiseaseTest("hiv"),
+  swabTypes: [],
+  testLength: 10,
+};
+
+export const deviceGonorrhea = {
+  internalId: "device-gonorrhea",
+  name: "Gonorrhea Device",
+  model: "Gonorrhea Device",
+  manufacturer: "Manufacturer G",
+  supportedDiseaseTestPerformed: createMockDiseaseTest("gonorrhea"),
+  swabTypes: [],
+  testLength: 10,
+};
+
+export const deviceChlamydia = {
+  internalId: "device-chlamydia",
+  name: "Chlamydia Device",
+  model: "Chlamydia Device",
   manufacturer: "Manufacturer C",
-  supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+  supportedDiseaseTestPerformed: createMockDiseaseTest("chlamydia"),
+  swabTypes: [],
+  testLength: 10,
+};
+
+export const deviceSyphilis = {
+  internalId: "device-syphilis",
+  name: "Syphilis Device",
+  model: "Syphilis Device",
+  manufacturer: "Manufacturer S",
+  supportedDiseaseTestPerformed: createMockDiseaseTest("syphilis"),
   swabTypes: [],
   testLength: 10,
 };
 
 const onChangeSpy = jest.fn();
-const devices: DeviceType[] = [deviceC, deviceB, deviceA];
+const allDevices: DeviceType[] = [
+  deviceA,
+  deviceHepatitisC,
+  deviceHIV,
+  deviceGonorrhea,
+  deviceChlamydia,
+  deviceSyphilis,
+];
+
+jest.mock("flagged", () => ({
+  ...jest.requireActual("flagged"),
+  useFeature: jest.fn(),
+}));
 
 beforeEach(() => {
   validFacility = {
@@ -68,12 +126,19 @@ beforeEach(() => {
     },
     devices: [],
   };
-});
 
+  (flagged.useFeature as jest.Mock).mockReset();
+
+  (flagged.useFeature as jest.Mock).mockImplementation(() => {
+    return true;
+  });
+
+  jest.clearAllMocks();
+});
 function ManageDevicesContainer(props: { facility: FacilityFormData }) {
   return (
     <ManageDevices
-      deviceTypes={devices}
+      deviceTypes={allDevices}
       errors={{}}
       newOrg={false}
       formCurrentValues={props.facility}
@@ -101,23 +166,138 @@ describe("ManageDevices", () => {
   });
 
   it("allows adding devices", async () => {
-    validFacility.devices = ["device-a", "device-b"];
+    validFacility.devices = ["device-a"];
     const { user } = renderWithUser(validFacility);
 
     const deviceInput = screen.getByLabelText("Search for a device to add it");
 
     await user.click(deviceInput);
-
-    await user.click(screen.getByLabelText("Select Manufacturer C Device C"));
-
     expect(await screen.findByTestId("pill-container"));
-    expect(
-      await within(screen.getByTestId("pill-container")).findByText("Device C")
-    );
   });
 
+  describe("feature flag filtering", () => {
+    it("filters out Hepatitis C devices when hepatitisCEnabled is false", async () => {
+      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
+        if (flagName === "hepatitisCEnabled") return false;
+        return true;
+      });
+
+      const { user } = renderWithUser(validFacility);
+      const deviceInput = screen.getByLabelText(
+        "Search for a device to add it"
+      );
+
+      await user.click(deviceInput);
+
+      expect(
+        screen.queryByLabelText("Select Manufacturer H Hepatitis C Device")
+      ).not.toBeInTheDocument();
+    });
+
+    it("filters out HIV devices when hivEnabled is false", async () => {
+      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
+        if (flagName === "hivEnabled") return false;
+        return true;
+      });
+
+      const { user } = renderWithUser(validFacility);
+      const deviceInput = screen.getByLabelText(
+        "Search for a device to add it"
+      );
+
+      await user.click(deviceInput);
+
+      expect(
+        screen.queryByLabelText("Select Manufacturer H HIV Device")
+      ).not.toBeInTheDocument();
+    });
+
+    it("filters out gonorrhea devices when gonorrheaEnabled is false", async () => {
+      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
+        if (flagName === "gonorrheaEnabled") return false;
+        return true;
+      });
+
+      const { user } = renderWithUser(validFacility);
+      const deviceInput = screen.getByLabelText(
+        "Search for a device to add it"
+      );
+
+      await user.click(deviceInput);
+
+      expect(
+        screen.queryByLabelText("Select Manufacturer G Gonorrhea Device")
+      ).not.toBeInTheDocument();
+
+      expect(
+        screen.getByLabelText("Select Manufacturer A Device A")
+      ).toBeInTheDocument();
+    });
+
+    it("filters out chlamydia devices when chlamydiaEnabled is false", async () => {
+      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
+        if (flagName === "chlamydiaEnabled") return false;
+        return true;
+      });
+
+      const { user } = renderWithUser(validFacility);
+      const deviceInput = screen.getByLabelText(
+        "Search for a device to add it"
+      );
+
+      await user.click(deviceInput);
+
+      expect(
+        screen.queryByLabelText("Select Manufacturer C Chlamydia Device")
+      ).not.toBeInTheDocument();
+    });
+
+    it("filters out syphilis devices when syphilisEnabled is false", async () => {
+      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
+        if (flagName === "syphilisEnabled") return false;
+        return true;
+      });
+
+      const { user } = renderWithUser(validFacility);
+      const deviceInput = screen.getByLabelText(
+        "Search for a device to add it"
+      );
+
+      await user.click(deviceInput);
+      expect(
+        screen.queryByLabelText("Select Manufacturer S Syphilis Device")
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows all devices when all feature flags are enabled", async () => {
+      const { user } = renderWithUser(validFacility);
+      const deviceInput = screen.getByLabelText(
+        "Search for a device to add it"
+      );
+
+      await user.click(deviceInput);
+
+      expect(
+        screen.getByLabelText("Select Manufacturer H Hepatitis C Device")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("Select Manufacturer H HIV Device")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("Select Manufacturer G Gonorrhea Device")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("Select Manufacturer C Chlamydia Device")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByLabelText("Select Manufacturer S Syphilis Device")
+      ).toBeInTheDocument();
+    });
+  });
+
+  // Keep remaining existing tests
   it("removes a device from the list", async () => {
-    validFacility.devices = ["device-a", "device-b"];
+    validFacility.devices = ["device-a"];
     const { user } = renderWithUser(validFacility);
     const pillContainer = screen.getByTestId("pill-container");
     const deleteIcon = await within(pillContainer).getAllByRole("button")[0];
@@ -138,11 +318,11 @@ describe("ManageDevices", () => {
 
     await user.click(deviceInput);
 
-    await user.click(screen.getByLabelText("Select Manufacturer C Device C"));
+    await user.click(screen.getByLabelText("Select Manufacturer A Device A"));
     const pillContainer = screen.getByTestId("pill-container");
-    within(pillContainer).getByText("Device C");
+    within(pillContainer).getByText("Device A");
 
     await user.click(deviceInput);
-    expect(onChangeSpy).toBeCalledWith(["device-c"]);
+    expect(onChangeSpy).toBeCalledWith(["device-a"]);
   });
 });

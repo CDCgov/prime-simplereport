@@ -1,4 +1,5 @@
 import React from "react";
+import { useFeature } from "flagged";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import "./ManageDevices.scss";
@@ -24,15 +25,64 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
+  const chlamydiaEnabled = useFeature("chlamydiaEnabled") as boolean;
+  const gonorrheaEnabled = useFeature("gonorrheaEnabled") as boolean;
+  const hepatitisCEnabled = useFeature("hepatitisCEnabled") as boolean;
+  const hivEnabled = useFeature("hivEnabled") as boolean;
+  const syphilisEnabled = useFeature("syphilisEnabled") as boolean;
+
+  const filteredDeviceTypes = deviceTypes.filter((device) => {
+    if (!chlamydiaEnabled) {
+      const hasChlamydia = device.supportedDiseaseTestPerformed?.some(
+        (test: { supportedDisease: { name: string } }) =>
+          test.supportedDisease?.name === "chlamydia"
+      );
+      if (hasChlamydia) return false;
+    }
+
+    if (!gonorrheaEnabled) {
+      const hasGonorrhea = device.supportedDiseaseTestPerformed?.some(
+        (test: { supportedDisease: { name: string } }) =>
+          test.supportedDisease?.name === "Gonorrhea"
+      );
+      if (hasGonorrhea) return false;
+    }
+
+    if (!hepatitisCEnabled) {
+      const hasHepatitisC = device.supportedDiseaseTestPerformed?.some(
+        (test: { supportedDisease: { name: string } }) =>
+          test.supportedDisease?.name === "Hepatitis C"
+      );
+      if (hasHepatitisC) return false;
+    }
+
+    if (!hivEnabled) {
+      const hasHiv = device.supportedDiseaseTestPerformed?.some(
+        (test: { supportedDisease: { name: string } }) =>
+          test.supportedDisease?.name === "hiv"
+      );
+      if (hasHiv) return false;
+    }
+
+    if (!syphilisEnabled) {
+      const hasSyphilis = device.supportedDiseaseTestPerformed?.some(
+        (test: { supportedDisease: { name: string } }) =>
+          test.supportedDisease?.name === "Syphilis"
+      );
+      if (hasSyphilis) return false;
+    }
+    return true;
+  });
+
   const deviceTypeOptions = Array.from(
-    deviceTypes.map((device) => ({
+    filteredDeviceTypes.map((device) => ({
       label: device.model,
       value: device.internalId,
     }))
   );
 
   const getUnselectedDevices = (): FacilityFormDeviceType[] => {
-    return deviceTypes.filter(
+    return filteredDeviceTypes.filter(
       (device) => !formCurrentValues.devices.includes(device.internalId)
     );
   };
