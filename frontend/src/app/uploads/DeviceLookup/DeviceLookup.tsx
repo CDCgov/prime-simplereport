@@ -73,6 +73,26 @@ const DeviceLookup = (props: Props) => {
     );
   }
 
+  if (!syphilisEnabled) {
+    deviceDisplayOptions = deviceDisplayOptions.filter(
+      (d) =>
+        !d.supportedDiseaseTestPerformed
+          .map((s) => s.supportedDisease)
+          .map((sup) => sup.name.toLowerCase())
+          .includes("syphilis".toLowerCase())
+    );
+  }
+
+  if (!chlamydiaEnabled) {
+    deviceDisplayOptions = deviceDisplayOptions.filter(
+      (d) =>
+        !d.supportedDiseaseTestPerformed
+          .map((s) => s.supportedDisease)
+          .map((sup) => sup.name.toLowerCase())
+          .includes("chlamydia")
+    );
+  }
+
   if (!hepatitisCEnabled) {
     deviceDisplayOptions = deviceDisplayOptions.filter(
       (d) =>
@@ -81,35 +101,6 @@ const DeviceLookup = (props: Props) => {
           .map((sup) => sup.name.toLowerCase())
           .includes("hepatitis C")
     );
-
-    if (!syphilisEnabled) {
-      deviceDisplayOptions = deviceDisplayOptions.filter(
-        (d) =>
-          !d.supportedDiseaseTestPerformed
-            .map((s) => s.supportedDisease)
-            .map((sup) => sup.name.toLowerCase())
-            .includes("syphilis".toLowerCase())
-      );
-    }
-
-    console.log(
-      "All devices:",
-      deviceDisplayOptions.map((d) => ({
-        name: d.name,
-        diseases: d.supportedDiseaseTestPerformed.map(
-          (s) => s.supportedDisease.name
-        ),
-      }))
-    );
-    if (!chlamydiaEnabled) {
-      deviceDisplayOptions = deviceDisplayOptions.filter(
-        (d) =>
-          !d.supportedDiseaseTestPerformed
-            .map((s) => s.supportedDisease)
-            .map((sup) => sup.name.toLowerCase())
-            .includes("chlamydia")
-      );
-    }
   }
 
   const [queryString, debounced, setDebounced] = useDebounce("", {

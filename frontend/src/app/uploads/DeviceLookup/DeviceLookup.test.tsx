@@ -11,6 +11,9 @@ import * as flaggedMock from "flagged";
 
 import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
+import mockSupportedDiseaseTestPerformedGonorrhea from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedGonorrhea";
+import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
+import mockSupportedDiseaseTestPerformedHepatitisC from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHepatitisC";
 
 import DeviceLookup from "./DeviceLookup";
 
@@ -61,6 +64,33 @@ const devices = [
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
     supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedHIV,
   },
+  {
+    internalId: "GonD",
+    name: "Acme Gonorrhea Device (RT-PCR)",
+    model: "Model G",
+    manufacturer: "Celoxitin",
+    testLength: 15,
+    swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedGonorrhea,
+  },
+  {
+    internalId: "Syph",
+    name: "Jaron Syphilis Device",
+    model: "Model Syph",
+    manufacturer: "Xpert",
+    testLength: 45,
+    swabTypes: [{ internalId: "234", name: "nose", typeCode: "n123" }],
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedSyphilis,
+  },
+  {
+    internalId: "HepC",
+    name: "Laron HepC Device",
+    model: "Model C",
+    manufacturer: "Xpert",
+    testLength: 20,
+    swabTypes: [{ internalId: "456", name: "nose", typeCode: "n123" }],
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedHepatitisC,
+  },
 ];
 
 describe("Device lookup", () => {
@@ -104,9 +134,7 @@ describe("Device lookup", () => {
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "model");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    await user.click(screen.getByText("Select"));
-
-    expect(screen.getByText("Acme Emitter (RT-PCR)")).toBeInTheDocument();
+    await user.click(screen.getByLabelText("Select Celoxitin Model A"));
 
     const model = screen.getByLabelText("Equipment model name");
     expect(model).toBeDisabled();
@@ -131,8 +159,10 @@ describe("Device lookup", () => {
   });
 
   it("hiv devices are filtered out if feature flag is off", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(false);
-
+    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
+      if (feature === "hivBulkUploadEnabled") return false;
+      return true;
+    });
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "HIV");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
@@ -142,12 +172,92 @@ describe("Device lookup", () => {
   });
 
   it("hiv devices show up if feature flag is on", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockReturnValue(true);
-
+    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
+      if (feature === "hivBulkUploadEnabled") return true;
+      return true;
+    });
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "HIV");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
     expect(screen.getByText("Model A")).toBeInTheDocument();
+  });
+
+  it("gonorrhea devices are filtered out if feature flag is off", async () => {
+    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
+      if (feature === "gonorrheaEnabled") return false;
+      return true;
+    });
+
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "Gonorrhea");
+    await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
+
+    expect(screen.queryByText("Model G")).not.toBeInTheDocument();
+  });
+
+  it("gonorrhea devices show up if feature flag is on", async () => {
+    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
+      if (feature === "gonorrheaEnabled") return true;
+      return true;
+    });
+
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "Gonorrhea");
+    await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
+    expect(screen.getByText("Model G")).toBeInTheDocument();
+  });
+
+  it("syphilis devices are filtered out if feature flag is off", async () => {
+    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
+      console.log("useFeature called with:", feature);
+      if (feature === "syphilisEnabled") return false;
+      return true;
+    });
+
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "Syphilis");
+    await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
+    await waitFor(() => {
+      expect(screen.queryByText("Model Syph")).not.toBeInTheDocument();
+    });
+  });
+
+  it("syphilis devices show up if feature flag is on", async () => {
+    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
+      if (feature === "syphilisEnabled") return true;
+      return true;
+    });
+
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "Syphilis");
+    await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
+    expect(screen.getByText("Model Syph")).toBeInTheDocument();
+  });
+
+  it("hepatitis C devices are filtered out if feature flag is off", async () => {
+    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
+      if (feature === "hepatitisCEnabled") return false;
+      return true;
+    });
+
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "Hepatitis C");
+    await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
+    expect(
+      screen.getByText("No device found matching", { exact: false })
+    ).toBeInTheDocument();
+  });
+
+  it("hepatitis C devices show up if feature flag is on", async () => {
+    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
+      if (feature === "hepatitisCEnabled") return true;
+      return true;
+    });
+
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "Laron");
+    await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
+    expect(screen.getByText("Model C")).toBeInTheDocument();
   });
 
   it("copy button displays when device selected", async () => {
@@ -165,7 +275,7 @@ describe("Device lookup", () => {
     jest.spyOn(navigator.clipboard, "writeText");
     await user.type(screen.getByLabelText("Select device"), "model");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    await user.click(screen.getByText("Select"));
+    await user.click(screen.getByLabelText("Select Celoxitin Model A"));
 
     const button = screen.getByLabelText(
       "Copy equipment model name for Acme Emitter (RT-PCR)"
