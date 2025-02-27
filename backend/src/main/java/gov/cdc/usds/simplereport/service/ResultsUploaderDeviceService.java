@@ -75,12 +75,19 @@ public class ResultsUploaderDeviceService {
     if (supportedDiseaseNamesToCheck.contains("HIV")) {
       return featureFlagsConfig.isHivBulkUploadEnabled();
     }
-    if (supportedDiseaseNamesToCheck.contains("gonorrhea")) {
+    if (supportedDiseaseNamesToCheck.contains("chlamydia")) {
+      return featureFlagsConfig.isChlamydiaEnabled();
+    }
+    if (supportedDiseaseNamesToCheck.contains("Gonorrhea")) {
       return featureFlagsConfig.isGonorrheaEnabled();
     }
     if (supportedDiseaseNamesToCheck.contains("Hepatitis C")) {
       return featureFlagsConfig.isHepatitisCEnabled();
     }
+    if (supportedDiseaseNamesToCheck.contains("Syphilis")) {
+      return featureFlagsConfig.isSyphilisEnabled();
+    }
+
     return true;
   }
 }

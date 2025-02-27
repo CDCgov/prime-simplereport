@@ -111,6 +111,96 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
   }
 
   @Test
+  void validateOnlyIncludeActiveDiseases_returnsFalseWhenChlamydiaIsOff() {
+    // GIVEN
+    when(featureFlagsConfig.isChlamydiaEnabled()).thenReturn(false);
+    createDeviceType(
+        "chlamydia device", List.of("6349-5"), diseaseService.chlamydia().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("chlamydia device", "6349-5");
+
+    // THEN
+    assertThat(validationResult).isFalse();
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsTrueWhenChlamydiaIsOn() {
+    // GIVEN
+    when(featureFlagsConfig.isChlamydiaEnabled()).thenReturn(true);
+    createDeviceType(
+        "chlamydia device", List.of("6349-5"), diseaseService.gonorrhea().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("chlamydia device", "6349-5");
+
+    // THEN
+    assertThat(validationResult).isTrue();
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsFalseWhenGonorrheaIsOff() {
+    // GIVEN
+    when(featureFlagsConfig.isGonorrheaEnabled()).thenReturn(false);
+    createDeviceType(
+        "gonorrhea device", List.of("8248-7"), diseaseService.gonorrhea().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("gonorrhea device", "8248-7");
+
+    // THEN
+    assertThat(validationResult).isFalse();
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsTrueWhenGonorrheaIsOn() {
+    // GIVEN
+    when(featureFlagsConfig.isGonorrheaEnabled()).thenReturn(true);
+    createDeviceType(
+        "gonorrhea device", List.of("8248-7"), diseaseService.gonorrhea().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("gonorrhea device", "8248-7");
+
+    // THEN
+    assertThat(validationResult).isTrue();
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsFalseWhenSyphilisIsOff() {
+    // GIVEN
+    when(featureFlagsConfig.isSyphilisEnabled()).thenReturn(false);
+    createDeviceType(
+        "syphilis device", List.of("5010-4"), diseaseService.syphilis().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("syphilis device", "5010-4");
+
+    // THEN
+    assertThat(validationResult).isFalse();
+  }
+
+  @Test
+  void validateOnlyIncludeActiveDiseases_returnsTrueWhenSyphilisIsOn() {
+    // GIVEN
+    when(featureFlagsConfig.isSyphilisEnabled()).thenReturn(true);
+    createDeviceType(
+        "syphilis device", List.of("7185-2"), diseaseService.syphilis().getInternalId());
+
+    // WHEN
+    boolean validationResult =
+        deviceService.validateResultsOnlyIncludeActiveDiseases("syphilis device", "7185-2");
+
+    // THEN
+    assertThat(validationResult).isTrue();
+  }
+
+  @Test
   void validateOnlyIncludeActiveDiseases_returnsFalseWhenHepCIsOff() {
     // GIVEN
     when(featureFlagsConfig.isHepatitisCEnabled()).thenReturn(false);
@@ -120,7 +210,6 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
     // WHEN
     boolean validationResult =
         deviceService.validateResultsOnlyIncludeActiveDiseases("hepatitisC device", "5010-4");
-    System.out.println("Hepatitis C disease name: " + diseaseService.hepatitisC().getName());
 
     // THEN
     assertThat(validationResult).isFalse();
