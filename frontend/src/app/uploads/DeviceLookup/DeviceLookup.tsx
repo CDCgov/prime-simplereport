@@ -68,8 +68,8 @@ const DeviceLookup = (props: Props) => {
       (d) =>
         !d.supportedDiseaseTestPerformed
           .map((s) => s.supportedDisease)
-          .map((sup) => sup.name.toLowerCase())
-          .includes("gonorrhea")
+          .map((sup) => sup.name)
+          .includes("Gonorrhea")
     );
   }
 
@@ -78,8 +78,8 @@ const DeviceLookup = (props: Props) => {
       (d) =>
         !d.supportedDiseaseTestPerformed
           .map((s) => s.supportedDisease)
-          .map((sup) => sup.name.toLowerCase())
-          .includes("syphilis".toLowerCase())
+          .map((sup) => sup.name)
+          .includes("Syphilis")
     );
   }
 
@@ -88,8 +88,8 @@ const DeviceLookup = (props: Props) => {
       (d) =>
         !d.supportedDiseaseTestPerformed
           .map((s) => s.supportedDisease)
-          .map((sup) => sup.name.toLowerCase())
-          .includes("chlamydia")
+          .map((sup) => sup.name)
+          .includes("Chlamydia")
     );
   }
 
