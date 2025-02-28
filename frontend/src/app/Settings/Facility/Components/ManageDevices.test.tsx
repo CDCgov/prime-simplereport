@@ -232,7 +232,7 @@ describe("ManageDevices", () => {
       await user.click(deviceInput);
 
       expect(
-        screen.queryByLabelText("Select Manufacturer H HIV Device")
+        screen.queryByLabelText("Select Manufacturer H hiv Device")
       ).not.toBeInTheDocument();
       expect(
         screen.getByLabelText("Select Manufacturer A Device A")
@@ -253,7 +253,7 @@ describe("ManageDevices", () => {
       await user.click(deviceInput);
 
       expect(
-        screen.queryByLabelText("Select Manufacturer G Gonorrhea Device")
+        screen.queryByLabelText("Select Manufacturer G gonorrhea Device")
       ).not.toBeInTheDocument();
 
       expect(
@@ -295,7 +295,7 @@ describe("ManageDevices", () => {
 
       await user.click(deviceInput);
       expect(
-        screen.queryByLabelText("Select Manufacturer S Syphilis Device")
+        screen.queryByLabelText("Select Manufacturer S syphilis Device")
       ).not.toBeInTheDocument();
       expect(
         screen.getByLabelText("Select Manufacturer A Device A")

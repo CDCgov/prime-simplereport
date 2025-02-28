@@ -98,11 +98,10 @@ const DeviceLookup = (props: Props) => {
       (d) =>
         !d.supportedDiseaseTestPerformed
           .map((s) => s.supportedDisease)
-          .map((sup) => sup.name.toLowerCase())
-          .includes("hepatitis C")
+          .map((sup) => sup.name)
+          .includes("Hepatitis C")
     );
   }
-
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
