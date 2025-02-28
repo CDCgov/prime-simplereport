@@ -43,7 +43,7 @@ const ManageDevices: React.FC<Props> = ({
     if (!gonorrheaEnabled) {
       const hasGonorrhea = device.supportedDiseaseTestPerformed?.some(
         (test: { supportedDisease: { name: string } }) =>
-          test.supportedDisease?.name === "gonorrhea"
+          test.supportedDisease?.name === "Gonorrhea"
       );
       if (hasGonorrhea) return false;
     }
@@ -59,7 +59,7 @@ const ManageDevices: React.FC<Props> = ({
     if (!hivEnabled) {
       const hasHiv = device.supportedDiseaseTestPerformed?.some(
         (test: { supportedDisease: { name: string } }) =>
-          test.supportedDisease?.name === "hiv"
+          test.supportedDisease?.name === "HIV"
       );
       if (hasHiv) return false;
     }
@@ -67,7 +67,7 @@ const ManageDevices: React.FC<Props> = ({
     if (!syphilisEnabled) {
       const hasSyphilis = device.supportedDiseaseTestPerformed?.some(
         (test: { supportedDisease: { name: string } }) =>
-          test.supportedDisease?.name === "syphilis"
+          test.supportedDisease?.name === "Syphilis"
       );
       if (hasSyphilis) return false;
     }
