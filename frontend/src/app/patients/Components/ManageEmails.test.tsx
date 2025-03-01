@@ -4,8 +4,11 @@ import userEvent from "@testing-library/user-event";
 
 import i18n from "../../../i18n";
 import { es } from "../../../lang/es";
+import { eo } from "../../../lang/eo";
 
 import ManageEmails from "./ManageEmails";
+
+const langs = { es, eo };
 
 const patient = {
   facilityId: "facility-id",
@@ -103,26 +106,28 @@ describe("ManageEmails", () => {
     );
   });
 
-  it("translates errors", async () => {
-    const { user } = renderWithUser();
-    const primary = await screen.findByLabelText("Email address", {
-      exact: false,
+  for (const [lang, translations] of Object.entries(langs)) {
+    it("translates errors", async () => {
+      const { user } = renderWithUser();
+      const primary = await screen.findByLabelText("Email address", {
+        exact: false,
+      });
+
+      // Enter bad info and blur
+
+      await user.type(primary, "invalid email");
+
+      await user.tab();
+
+      await waitFor(() => {
+        i18n.changeLanguage(lang);
+      });
+
+      expect(
+        await screen.findByText(translations.translation.patient.form.errors.email)
+      ).toBeInTheDocument();
     });
-
-    // Enter bad info and blur
-
-    await user.type(primary, "invalid email");
-
-    await user.tab();
-
-    await waitFor(() => {
-      i18n.changeLanguage("es");
-    });
-
-    expect(
-      await screen.findByText(es.translation.patient.form.errors.email)
-    ).toBeInTheDocument();
-  });
+  }
 
   it("adds and removes email addresses", async () => {
     const { user } = renderWithUser();
