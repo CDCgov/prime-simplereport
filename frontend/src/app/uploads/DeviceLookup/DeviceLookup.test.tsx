@@ -7,13 +7,13 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import * as flaggedMock from "flagged";
 
 import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 import mockSupportedDiseaseTestPerformedHIV from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHIV";
 import mockSupportedDiseaseTestPerformedGonorrhea from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedGonorrhea";
 import mockSupportedDiseaseTestPerformedSyphilis from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedSyphilis";
 import mockSupportedDiseaseTestPerformedHepatitisC from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedHepatitisC";
+import * as diseaseUtils from "../../utils/disease";
 
 import DeviceLookup from "./DeviceLookup";
 
@@ -58,8 +58,8 @@ const devices = [
   {
     internalId: "abc2",
     name: "Acme HIV Device (RT-PCR)",
-    model: "Model A",
-    manufacturer: "Celoxitin",
+    model: "Model HIV",
+    manufacturer: "Cytotoxic",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
     supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedHIV,
@@ -68,7 +68,7 @@ const devices = [
     internalId: "GonD",
     name: "Acme Gonorrhea Device (RT-PCR)",
     model: "Model G",
-    manufacturer: "Celoxitin",
+    manufacturer: "Dytotoxic",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
     supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedGonorrhea,
@@ -93,6 +93,12 @@ const devices = [
   },
 ];
 
+const DISEASE_UTILS_PATH = "../../utils/disease";
+jest.mock(DISEASE_UTILS_PATH, () => ({
+  ...jest.requireActual(DISEASE_UTILS_PATH),
+  useDisabledFeatureDiseaseList: jest.fn().mockReturnValue([]),
+}));
+
 describe("Device lookup", () => {
   const renderWithUser = () => ({
     user: userEvent.setup(),
@@ -101,6 +107,12 @@ describe("Device lookup", () => {
         <DeviceLookup deviceOptions={devices} />
       </MemoryRouter>
     ),
+  });
+
+  beforeEach(() => {
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+      []
+    );
   });
 
   afterAll(() => {
@@ -159,10 +171,10 @@ describe("Device lookup", () => {
   });
 
   it("hiv devices are filtered out if feature flag is off", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
-      if (feature === "hivBulkUploadEnabled") return false;
-      return true;
-    });
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue([
+      "HIV",
+    ]);
+
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "HIV");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
@@ -172,21 +184,20 @@ describe("Device lookup", () => {
   });
 
   it("hiv devices show up if feature flag is on", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
-      if (feature === "hivBulkUploadEnabled") return true;
-      return true;
-    });
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+      []
+    );
+
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "HIV");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    expect(screen.getByText("Model A")).toBeInTheDocument();
+    expect(screen.getByText("Model HIV")).toBeInTheDocument();
   });
 
   it("gonorrhea devices are filtered out if feature flag is off", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
-      if (feature === "gonorrheaEnabled") return false;
-      return true;
-    });
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue([
+      "Gonorrhea",
+    ]);
 
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "Gonorrhea");
@@ -196,10 +207,9 @@ describe("Device lookup", () => {
   });
 
   it("gonorrhea devices show up if feature flag is on", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
-      if (feature === "gonorrheaEnabled") return true;
-      return true;
-    });
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+      []
+    );
 
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "Gonorrhea");
@@ -208,11 +218,9 @@ describe("Device lookup", () => {
   });
 
   it("syphilis devices are filtered out if feature flag is off", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
-      console.log("useFeature called with:", feature);
-      if (feature === "syphilisEnabled") return false;
-      return true;
-    });
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue([
+      "Syphilis",
+    ]);
 
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "Syphilis");
@@ -223,10 +231,9 @@ describe("Device lookup", () => {
   });
 
   it("syphilis devices show up if feature flag is on", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
-      if (feature === "syphilisEnabled") return true;
-      return true;
-    });
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+      []
+    );
 
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "Syphilis");
@@ -235,10 +242,9 @@ describe("Device lookup", () => {
   });
 
   it("hepatitis C devices are filtered out if feature flag is off", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
-      if (feature === "hepatitisCEnabled") return false;
-      return true;
-    });
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue([
+      "Hepatitis C",
+    ]);
 
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "Hepatitis C");
@@ -249,10 +255,9 @@ describe("Device lookup", () => {
   });
 
   it("hepatitis C devices show up if feature flag is on", async () => {
-    jest.spyOn(flaggedMock, "useFeature").mockImplementation((feature) => {
-      if (feature === "hepatitisCEnabled") return true;
-      return true;
-    });
+    (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+      []
+    );
 
     const { user } = renderWithUser();
     await user.type(screen.getByLabelText("Select device"), "Laron");
