@@ -73,7 +73,7 @@ public class ResultsUploaderDeviceService {
 
     // can extend this to check for other diseases / feature flags in the future
     if (supportedDiseaseNamesToCheck.contains("HIV")) {
-      return featureFlagsConfig.isHivBulkUploadEnabled();
+      return featureFlagsConfig.isHivEnabled();
     }
     if (supportedDiseaseNamesToCheck.contains("Chlamydia")) {
       return featureFlagsConfig.isChlamydiaEnabled();

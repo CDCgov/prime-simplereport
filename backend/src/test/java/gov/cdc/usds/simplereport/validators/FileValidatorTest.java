@@ -279,7 +279,7 @@ class FileValidatorTest {
 
   @Test
   void testResults_validFile_hivOnlyWhenHivFeatureFlagIsTrue() {
-    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(true);
+    when(featureFlagsConfig.isHivEnabled()).thenReturn(true);
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         // key/val of device in HIV CS
         .thenReturn(Map.of("modelhiv|16249-0", TestDataBuilder.createDeviceTypeForHIV()));
@@ -472,7 +472,7 @@ class FileValidatorTest {
 
   @Test
   void testResultsFile_unavailableDisease_returnsUnavailableDiseaseError() {
-    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(false);
+    when(featureFlagsConfig.isHivEnabled()).thenReturn(false);
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         // key/val of device in HIV CSV
         .thenReturn(Map.of("modelhiv|16249-0", TestDataBuilder.createDeviceTypeForHIV()));

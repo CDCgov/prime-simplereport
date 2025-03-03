@@ -85,7 +85,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
   @Test
   void validateOnlyIncludeActiveDiseases_returnsFalseWhenHIVIsOff() {
     // GIVEN
-    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(false);
+    when(featureFlagsConfig.isHivEnabled()).thenReturn(false);
     createDeviceType("hiv device", List.of("97088-0"), diseaseService.hiv().getInternalId());
 
     // WHEN
@@ -99,7 +99,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
   @Test
   void validateOnlyIncludeActiveDiseases_returnsTrueWhenHIVIsOn() {
     // GIVEN
-    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(true);
+    when(featureFlagsConfig.isHivEnabled()).thenReturn(true);
     createDeviceType("hiv device", List.of("97088-0"), diseaseService.hiv().getInternalId());
 
     // WHEN
