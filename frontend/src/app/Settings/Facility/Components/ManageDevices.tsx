@@ -1,5 +1,4 @@
 import React from "react";
-import { useFeature } from "flagged";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import "./ManageDevices.scss";
@@ -7,6 +6,10 @@ import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSe
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
 import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
+import {
+  useDisabledFeatureDiseaseList,
+  mapStringToDiseaseEnum,
+} from "../../../utils/disease";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
@@ -25,53 +28,20 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
-  const chlamydiaEnabled = useFeature("chlamydiaEnabled") as boolean;
-  const gonorrheaEnabled = useFeature("gonorrheaEnabled") as boolean;
-  const hepatitisCEnabled = useFeature("hepatitisCEnabled") as boolean;
-  const hivEnabled = useFeature("hivEnabled") as boolean;
-  const syphilisEnabled = useFeature("syphilisEnabled") as boolean;
+  const disabledDiseases = useDisabledFeatureDiseaseList();
 
   const filteredDeviceTypes = deviceTypes.filter((device) => {
-    if (!chlamydiaEnabled) {
-      const hasChlamydia = device.supportedDiseaseTestPerformed?.some(
-        (test: { supportedDisease: { name: string } }) =>
-          test.supportedDisease?.name === "chlamydia"
-      );
-      if (hasChlamydia) return false;
-    }
-
-    if (!gonorrheaEnabled) {
-      const hasGonorrhea = device.supportedDiseaseTestPerformed?.some(
-        (test: { supportedDisease: { name: string } }) =>
-          test.supportedDisease?.name === "Gonorrhea"
-      );
-      if (hasGonorrhea) return false;
-    }
-
-    if (!hepatitisCEnabled) {
-      const hasHepatitisC = device.supportedDiseaseTestPerformed?.some(
-        (test: { supportedDisease: { name: string } }) =>
-          test.supportedDisease?.name === "Hepatitis C"
-      );
-      if (hasHepatitisC) return false;
-    }
-
-    if (!hivEnabled) {
-      const hasHiv = device.supportedDiseaseTestPerformed?.some(
-        (test: { supportedDisease: { name: string } }) =>
-          test.supportedDisease?.name === "HIV"
-      );
-      if (hasHiv) return false;
-    }
-
-    if (!syphilisEnabled) {
-      const hasSyphilis = device.supportedDiseaseTestPerformed?.some(
-        (test: { supportedDisease: { name: string } }) =>
-          test.supportedDisease?.name === "Syphilis"
-      );
-      if (hasSyphilis) return false;
-    }
-    return true;
+    const hasDisabledDisease = device.supportedDiseaseTestPerformed?.some(
+      (test: { supportedDisease: { name: string } }) => {
+        const mappedDisease = mapStringToDiseaseEnum(
+          test.supportedDisease?.name
+        );
+        return (
+          mappedDisease !== null && disabledDiseases.includes(mappedDisease)
+        );
+      }
+    );
+    return !hasDisabledDisease;
   });
 
   const deviceTypeOptions = Array.from(

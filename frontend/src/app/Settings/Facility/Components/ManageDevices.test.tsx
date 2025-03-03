@@ -1,7 +1,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as flagged from "flagged"; // Import flagged module for mocking
 
+import * as diseaseUtils from "../../../utils/disease";
 import { FacilityFormData } from "../FacilityForm";
 import mockSupportedDiseaseTestPerformedCovid from "../../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 import { DeviceType } from "../../../../generated/graphql";
@@ -113,9 +113,11 @@ const allDevices: DeviceType[] = [
   deviceSyphilis,
 ];
 
-jest.mock("flagged", () => ({
-  ...jest.requireActual("flagged"),
-  useFeature: jest.fn(),
+const DISEASE_UTILS_PATH = "../../../utils/disease";
+
+jest.mock(DISEASE_UTILS_PATH, () => ({
+  ...jest.requireActual(DISEASE_UTILS_PATH),
+  useDisabledFeatureDiseaseList: jest.fn().mockReturnValue([]),
 }));
 
 beforeEach(() => {
@@ -146,11 +148,9 @@ beforeEach(() => {
     },
     devices: [],
   };
-  (flagged.useFeature as jest.Mock).mockReset();
-  (flagged.useFeature as jest.Mock).mockImplementation(() => {
-    return true;
-  });
   jest.clearAllMocks();
+
+  (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue([]);
 });
 function ManageDevicesContainer(props: { facility: FacilityFormData }) {
   return (
@@ -198,10 +198,9 @@ describe("ManageDevices", () => {
 
   describe("feature flag filtering", () => {
     it("filters out Hepatitis C devices when hepatitisCEnabled is false", async () => {
-      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
-        if (flagName === "hepatitisCEnabled") return false;
-        return true;
-      });
+      (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+        ["Hepatitis C"]
+      );
 
       const { user } = renderWithUser(validFacility);
       const deviceInput = screen.getByLabelText(
@@ -219,10 +218,9 @@ describe("ManageDevices", () => {
     });
 
     it("filters out HIV devices when hivEnabled is false", async () => {
-      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
-        if (flagName === "hivEnabled") return false;
-        return true;
-      });
+      (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+        ["HIV"]
+      );
 
       const { user } = renderWithUser(validFacility);
       const deviceInput = screen.getByLabelText(
@@ -240,10 +238,9 @@ describe("ManageDevices", () => {
     });
 
     it("filters out gonorrhea devices when gonorrheaEnabled is false", async () => {
-      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
-        if (flagName === "gonorrheaEnabled") return false;
-        return true;
-      });
+      (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+        ["Gonorrhea"]
+      );
 
       const { user } = renderWithUser(validFacility);
       const deviceInput = screen.getByLabelText(
@@ -262,10 +259,9 @@ describe("ManageDevices", () => {
     });
 
     it("filters out chlamydia devices when chlamydiaEnabled is false", async () => {
-      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
-        if (flagName === "chlamydiaEnabled") return false;
-        return true;
-      });
+      (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+        ["Chlamydia"]
+      );
 
       const { user } = renderWithUser(validFacility);
       const deviceInput = screen.getByLabelText(
@@ -283,10 +279,9 @@ describe("ManageDevices", () => {
     });
 
     it("filters out syphilis devices when syphilisEnabled is false", async () => {
-      (flagged.useFeature as jest.Mock).mockImplementation((flagName) => {
-        if (flagName === "syphilisEnabled") return false;
-        return true;
-      });
+      (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+        ["Syphilis"]
+      );
 
       const { user } = renderWithUser(validFacility);
       const deviceInput = screen.getByLabelText(
@@ -303,6 +298,10 @@ describe("ManageDevices", () => {
     });
 
     it("shows all devices when all feature flags are enabled", async () => {
+      (diseaseUtils.useDisabledFeatureDiseaseList as jest.Mock).mockReturnValue(
+        []
+      );
+
       const { user } = renderWithUser(validFacility);
       const deviceInput = screen.getByLabelText(
         "Search for a device to add it"
