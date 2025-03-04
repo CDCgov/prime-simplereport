@@ -253,6 +253,22 @@ public class LiveOktaRepository implements OktaRepository {
     return allUsers;
   }
 
+  private List<User> getAllUsersForFacility(Facility facility) {
+    PagedList<User> pagedUserList = new PagedList<>();
+    List<User> allUsers = new ArrayList<>();
+    String facilityAccessGroupName =
+        generateFacilityGroupName(
+            facility.getOrganization().getExternalId(), facility.getInternalId());
+    do {
+      pagedUserList =
+          (PagedList<User>)
+              groupApi.listGroupUsers(
+                  facilityAccessGroupName, pagedUserList.getAfter(), OKTA_PAGE_SIZE);
+      allUsers.addAll(pagedUserList);
+    } while (pagedUserList.hasMoreItems());
+    return allUsers;
+  }
+
   private Group getDefaultOktaGroup(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
@@ -690,12 +706,16 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public Integer getUsersCountInSingleFacility(Facility facility) {
+    // problem is as here
     String facilityAccessGroupName =
         generateFacilityGroupName(
             facility.getOrganization().getExternalId(), facility.getInternalId());
-
     return getUsersCountInOktaGroup(facilityAccessGroupName);
   }
+
+  //  public Integer getUniqueUsersCountInSingeFacility(Facility facility){
+  //    List<User> users = getAllUsersForFacility(facility);
+  //  }
 
   @Override
   public Integer getUsersCountInOrganization(Organization org) {
