@@ -14,7 +14,10 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { SearchableDevice, searchFields } from "../../utils/device";
 import useComponentVisible from "../../commonComponents/ComponentVisible";
-import { useDisabledFeatureDiseaseList } from "../../utils/disease";
+import {
+  mapStringToDiseaseEnum,
+  useDisabledFeatureDiseaseList,
+} from "../../utils/disease";
 
 import DeviceSearchResults from "./DeviceSearchResults";
 import DeviceDetails from "./DeviceDetails";
@@ -49,17 +52,18 @@ const DeviceLookup = (props: Props) => {
   const disabledDiseases = useDisabledFeatureDiseaseList();
 
   const deviceDisplayOptions = props.deviceOptions.filter((device) => {
-    const deviceDiseases = device.supportedDiseaseTestPerformed.map(
-      (s) => s.supportedDisease.name
+    const hasDisabledDisease = device.supportedDiseaseTestPerformed.some(
+      (test) => {
+        const mappedDisease = mapStringToDiseaseEnum(
+          test.supportedDisease.name
+        );
+        return (
+          mappedDisease !== null && disabledDiseases.includes(mappedDisease)
+        );
+      }
     );
 
-    const hasDisabledDisease = deviceDiseases.some((diseaseName) =>
-      disabledDiseases.some(
-        (disabledDisease) =>
-          disabledDisease.toLowerCase() === diseaseName.toLowerCase()
-      )
-    );
-
+    // Keep the device if it doesn't have any disabled diseases
     return !hasDisabledDisease;
   });
 
