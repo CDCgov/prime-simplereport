@@ -29,7 +29,6 @@ public class FeatureFlagsConfig {
   private boolean gonorrheaEnabled;
   private boolean hepatitisCEnabled;
   private boolean syphilisEnabled;
-  private boolean hivBulkUploadEnabled;
   private boolean hivEnabled;
   private boolean agnosticEnabled;
   private boolean agnosticBulkUploadEnabled;
@@ -47,7 +46,6 @@ public class FeatureFlagsConfig {
       case "gonorrheaEnabled" -> setGonorrheaEnabled(flagValue);
       case "hepatitisCEnabled" -> setHepatitisCEnabled(flagValue);
       case "syphilisEnabled" -> setSyphilisEnabled(flagValue);
-      case "hivBulkUploadEnabled" -> setHivBulkUploadEnabled(flagValue);
       case "hivEnabled" -> setHivEnabled(flagValue);
       case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
       case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);

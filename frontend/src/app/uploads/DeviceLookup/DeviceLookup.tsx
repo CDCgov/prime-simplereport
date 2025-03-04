@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import "./DeviceLookup.scss";
 import { uniq } from "lodash";
-import { useFeature } from "flagged";
 
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
@@ -15,6 +14,10 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { SearchableDevice, searchFields } from "../../utils/device";
 import useComponentVisible from "../../commonComponents/ComponentVisible";
+import {
+  mapStringToDiseaseEnum,
+  useDisabledFeatureDiseaseList,
+} from "../../utils/disease";
 
 import DeviceSearchResults from "./DeviceSearchResults";
 import DeviceDetails from "./DeviceDetails";
@@ -46,18 +49,23 @@ export const searchDevices = (
 };
 
 const DeviceLookup = (props: Props) => {
-  const hivBulkUploadEnabled = useFeature("hivBulkUploadEnabled") as boolean;
+  const disabledDiseases = useDisabledFeatureDiseaseList();
 
-  let deviceDisplayOptions = props.deviceOptions;
-  if (!hivBulkUploadEnabled) {
-    deviceDisplayOptions = deviceDisplayOptions.filter(
-      (d) =>
-        !d.supportedDiseaseTestPerformed
-          .map((s) => s.supportedDisease)
-          .map((sup) => sup.name)
-          .includes("HIV")
+  const deviceDisplayOptions = props.deviceOptions.filter((device) => {
+    const hasDisabledDisease = device.supportedDiseaseTestPerformed.some(
+      (test) => {
+        const mappedDisease = mapStringToDiseaseEnum(
+          test.supportedDisease.name
+        );
+        return (
+          mappedDisease !== null && disabledDiseases.includes(mappedDisease)
+        );
+      }
     );
-  }
+
+    // Keep the device if it doesn't have any disabled diseases
+    return !hasDisabledDisease;
+  });
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,

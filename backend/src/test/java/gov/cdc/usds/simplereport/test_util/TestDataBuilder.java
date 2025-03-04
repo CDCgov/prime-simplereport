@@ -197,6 +197,42 @@ public class TestDataBuilder {
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
+  public static DeviceType createDeviceTypeForGonorrhea() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createGonorrheaSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceTypeForSyphilis() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createSyphilisSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceTypeForChlamydia() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createChlamydiaSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceTypeForHepatitisC() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createHepatitisCSSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
   public static DeviceType createDeviceTypeForRSV() {
     List<SpecimenType> swabTypes = new ArrayList<>();
     List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
@@ -279,6 +315,22 @@ public class TestDataBuilder {
 
   public static SupportedDisease createHIVSupportedDisease() {
     return new SupportedDisease("HIV", "16249-0");
+  }
+
+  public static SupportedDisease createGonorrheaSupportedDisease() {
+    return new SupportedDisease("Gonorrhea", "12345-0");
+  }
+
+  public static SupportedDisease createSyphilisSupportedDisease() {
+    return new SupportedDisease("Syphilis", "2343-1");
+  }
+
+  public static SupportedDisease createChlamydiaSupportedDisease() {
+    return new SupportedDisease("Chlamydia", "24334-5");
+  }
+
+  public static SupportedDisease createHepatitisCSSupportedDisease() {
+    return new SupportedDisease("Hepatitis C", "2424-9");
   }
 
   public static SupportedDisease createRSVSupportedDisease() {

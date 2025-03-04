@@ -2,6 +2,22 @@ import { useFeature } from "flagged";
 
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
 
+export const mapStringToDiseaseEnum = (
+  diseaseName: string
+): MULTIPLEX_DISEASES | null => {
+  const normalized = diseaseName.toLowerCase();
+
+  const diseaseMap: Record<string, MULTIPLEX_DISEASES> = {
+    chlamydia: MULTIPLEX_DISEASES.CHLAMYDIA,
+    gonorrhea: MULTIPLEX_DISEASES.GONORRHEA,
+    "hepatitis c": MULTIPLEX_DISEASES.HEPATITIS_C,
+    hiv: MULTIPLEX_DISEASES.HIV,
+    syphilis: MULTIPLEX_DISEASES.SYPHILIS,
+  };
+
+  return diseaseMap[normalized] || null;
+};
+
 export const useSupportedDiseaseList = () => {
   let allDiseases = Object.values(MULTIPLEX_DISEASES);
   const hivEnabled = Boolean(useFeature("hivEnabled"));
