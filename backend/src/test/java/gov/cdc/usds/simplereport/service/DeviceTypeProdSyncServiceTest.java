@@ -3,21 +3,36 @@ package gov.cdc.usds.simplereport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.mockito.InjectMocks;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class DeviceTypeProdSyncServiceTest extends BaseServiceTest<DeviceTypeProdSyncService> {
-  @Value("${simple-report.production.devices-token}")
-  private String token;
+  @InjectMocks private DeviceTypeProdSyncService _deviceTypeProdSyncService;
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(_deviceTypeProdSyncService, "token", "real-token");
+  }
 
   @Test
   void validateToken_withValidToken_success() {
-    assertThat(_service.validateToken(token)).isTrue();
+    assertThat(_deviceTypeProdSyncService.validateToken("real-token")).isTrue();
   }
 
   @Test
   void validateToken_withInvalidToken_throwsException() {
-    assertThrows(AccessDeniedException.class, () -> _service.validateToken("foo"));
+    assertThrows(
+        AccessDeniedException.class, () -> _deviceTypeProdSyncService.validateToken("foo"));
+  }
+
+  @Test
+  void getProd_DeviceTypes_withDeviceSyncDisabled_throwsException() {
+    ReflectionTestUtils.setField(_deviceTypeProdSyncService, "deviceSyncEnabled", false);
+    assertThrows(
+        BadRequestException.class, () -> _deviceTypeProdSyncService.getDeviceTypesFromProduction());
   }
 }
