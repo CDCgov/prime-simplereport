@@ -7,7 +7,6 @@ assignees: ""
 ---
 
 ## Date of request
-
 X/X/XXXX
 
 ## Who requested it / the origin of the work
