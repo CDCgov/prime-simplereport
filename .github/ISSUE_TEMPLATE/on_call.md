@@ -1,13 +1,12 @@
 ---
-name: Support Request
-about: Fill this out for any work that stems from customer support, asks from other teams, being on call, incidents, etc. You may fill this out retroactively.
+name: On Call
+about: Fill this out for any work that stems from being on call, such as customer support, asks from other teams, incidents, general requests for help, etc. You may fill this out retroactively.
 title: ""
-labels: "Support Request"
+labels: "On Call"
 assignees: ""
 ---
 
 ## Date of request
-
 X/X/XXXX
 
 ## Who requested it / the origin of the work
