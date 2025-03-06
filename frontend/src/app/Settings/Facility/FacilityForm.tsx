@@ -328,7 +328,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             <div>
               <div className="display-flex flex-align-center">
                 {props.newOrg ? (
-                  <h2 className="margin-top-05">Welcome to SimpleReport!</h2>
+                  <h1 className="margin-top-05">Welcome to SimpleReport!</h1>
                 ) : (
                   <>
                     <svg
@@ -348,9 +348,9 @@ const FacilityForm: React.FC<Props> = (props) => {
                   </>
                 )}
               </div>
-              <h1 className="font-heading-lg margin-y-1">
+              <h2 className="font-heading-lg margin-y-1">
                 {facility.name || "Add facility"}
-              </h1>
+              </h2>
             </div>
             <div
               style={{
