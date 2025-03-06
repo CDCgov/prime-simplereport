@@ -279,7 +279,7 @@ class FileValidatorTest {
 
   @Test
   void testResults_validFile_hivOnlyWhenHivFeatureFlagIsTrue() {
-    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(true);
+    when(featureFlagsConfig.isHivEnabled()).thenReturn(true);
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         // key/val of device in HIV CS
         .thenReturn(Map.of("modelhiv|16249-0", TestDataBuilder.createDeviceTypeForHIV()));
@@ -289,6 +289,81 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
     assertThat(errors).isEmpty();
+  }
+
+  @Test
+  void testResults_validFile_gonorrheaOnlyWhenGonorrheaFeatureFlagIsFalse() {
+
+    when(featureFlagsConfig.isGonorrheaEnabled()).thenReturn(false);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(
+            Map.of("modelgonorrhea|12345-0", TestDataBuilder.createDeviceTypeForGonorrhea()));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-gonorrhea-only.csv");
+
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    assertThat(errors).isNotEmpty();
+    assertThat(errors.get(0).getMessage())
+        .contains(
+            "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
+  }
+
+  @Test
+  void testResults_validFile_chlamydiaOnlyWhenChlamydiaFeatureFlagIsFalse() {
+
+    when(featureFlagsConfig.isChlamydiaEnabled()).thenReturn(false);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(
+            Map.of("modelchlamydia|24334-5", TestDataBuilder.createDeviceTypeForChlamydia()));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-chlamydia-only.csv");
+
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    assertThat(errors).isNotEmpty();
+    assertThat(errors.get(0).getMessage())
+        .contains(
+            "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
+  }
+
+  @Test
+  void testResults_validFile_OnlySyphilisFeatureFlagIsFalse() {
+
+    when(featureFlagsConfig.isSyphilisEnabled()).thenReturn(false);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("modelsyphilis|2343-1", TestDataBuilder.createDeviceTypeForSyphilis()));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-syph-only.csv");
+
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    assertThat(errors).isNotEmpty();
+    assertThat(errors.get(0).getMessage())
+        .contains(
+            "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
+  }
+
+  @Test
+  void testResults_validFile_OnlyHepatitisCFeatureFlagIsFalse() {
+
+    when(featureFlagsConfig.isHepatitisCEnabled()).thenReturn(false);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(
+            Map.of("modelhepatitisc|2424-9", TestDataBuilder.createDeviceTypeForHepatitisC()));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-hepatitisC-only.csv");
+
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    assertThat(errors).isNotEmpty();
+    assertThat(errors.get(0).getMessage())
+        .contains(
+            "equipment_model_name and test_performed_code combination map to a non-active disease in this jurisdiction");
   }
 
   @Test
@@ -397,7 +472,7 @@ class FileValidatorTest {
 
   @Test
   void testResultsFile_unavailableDisease_returnsUnavailableDiseaseError() {
-    when(featureFlagsConfig.isHivBulkUploadEnabled()).thenReturn(false);
+    when(featureFlagsConfig.isHivEnabled()).thenReturn(false);
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         // key/val of device in HIV CSV
         .thenReturn(Map.of("modelhiv|16249-0", TestDataBuilder.createDeviceTypeForHIV()));
