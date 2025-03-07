@@ -33,7 +33,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
-import gov.cdc.usds.simplereport.api.model.errors.EmptyCsvException;
+import gov.cdc.usds.simplereport.api.model.errors.NoCovidRowsException;
 import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -191,8 +191,8 @@ public class TestResultUploadService {
     return Optional.empty();
   }
 
-  private byte[] transformCsvContent(byte[] content) {
-    List<Map<String, String>> updatedRows = new ArrayList<>();
+  private byte[] transformAndExtractCovidCsvContent(byte[] content) {
+    List<Map<String, String>> extractedCovidRows = new ArrayList<>();
     final MappingIterator<Map<String, String>> valueIterator =
         getIteratorForCsv(new ByteArrayInputStream(content));
     while (valueIterator.hasNext()) {
@@ -202,19 +202,20 @@ public class TestResultUploadService {
       } catch (CsvProcessingException ex) {
         // anything that would land here should have been caught and handled by the file validator
         log.error("Unable to parse csv.", ex);
-        continue;
+        throw ex;
       }
 
       if (isCovidResult(row)) {
-        updatedRows.add(transformCsvRow(row));
+        extractedCovidRows.add(transformCsvRow(row));
       }
     }
 
-    if (updatedRows.isEmpty()) {
+    if (extractedCovidRows.isEmpty()) {
       return new byte[0];
     }
 
-    var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
+    var headers =
+        extractedCovidRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
     var csvMapper =
         new CsvMapper()
             .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
@@ -224,14 +225,14 @@ public class TestResultUploadService {
                     .setUseHeader(true)
                     .addColumns(headers, CsvSchema.ColumnType.STRING)
                     .build());
-    String csvContent;
+    String csvCovidContent;
     try {
-      csvContent = csvMapper.writeValueAsString(updatedRows);
+      csvCovidContent = csvMapper.writeValueAsString(extractedCovidRows);
     } catch (JsonProcessingException e) {
-      throw new CsvProcessingException("Error writing transformed csv rows");
+      throw new CsvProcessingException("Error writing transformed Covid csv rows");
     }
 
-    return csvContent.getBytes(StandardCharsets.UTF_8);
+    return csvCovidContent.getBytes(StandardCharsets.UTF_8);
   }
 
   private boolean isCovidResult(Map<String, String> row) {
@@ -432,15 +433,15 @@ public class TestResultUploadService {
             () -> {
               long start = System.currentTimeMillis();
               FutureResult<UploadResponse, Exception> result;
-              var csvContent = transformCsvContent(content);
-              if (csvContent.length == 0) {
+              var covidCsvContent = transformAndExtractCovidCsvContent(content);
+              if (covidCsvContent.length == 0) {
                 return new CovidSubmissionSummary(
-                    submissionId, org, null, new EmptyCsvException(), null);
+                    submissionId, org, null, new NoCovidRowsException(), null);
               }
               try {
                 result =
                     FutureResult.<UploadResponse, Exception>builder()
-                        .value(_client.uploadCSV(csvContent))
+                        .value(_client.uploadCSV(covidCsvContent))
                         .build();
               } catch (FeignException e) {
                 log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());

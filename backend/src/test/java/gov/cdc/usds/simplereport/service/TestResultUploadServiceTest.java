@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus.FAILURE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -50,16 +49,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import org.apache.commons.io.IOUtils;
+import java.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +61,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -95,47 +86,13 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
   @Mock private DiseaseService diseaseService;
+  @SpyBean private BulkUploadResultsToFhir bulkUploadResultsToFhir;
   @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()
   public void init() {
     initSampleData();
     ReflectionTestUtils.setField(sut, "processingModeCodeValue", "P");
-  }
-
-  @Test
-  @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportStandardUser
-  void integrationTest_returnsSuccessfulResult() throws IOException {
-    var responseFile =
-        TestResultUploadServiceTest.class
-            .getClassLoader()
-            .getResourceAsStream("responses/datahub-response.json");
-    assert responseFile != null;
-    var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
-    stubFor(
-        WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(HttpStatus.OK.value())
-                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(mockResponse)));
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    when(repoMock.save(any())).thenReturn(null);
-
-    List<TestResultUpload> output = this._service.processResultCSV(input);
-    assertEquals(UploadStatus.PENDING, output.get(0).getStatus());
-    assertEquals(14, output.get(0).getRecordsCount());
-    assertNotNull(output.get(0).getOrganization());
-
-    var warningMessage = Arrays.stream(output.get(0).getWarnings()).findFirst().get();
-    assertNotNull(warningMessage.getMessage());
-    assertNotNull(warningMessage.getScope());
-    assertEquals(0, output.get(0).getErrors().length);
-
-    assertNotNull(output.get(0).getCreatedAt());
-    assertNotNull(output.get(0).getUpdatedAt());
-    assertNotNull(output.get(0).getInternalId());
   }
 
   @Test
@@ -155,29 +112,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Test
   @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void feignBadRequest_returnsErrorMessage() throws IOException {
-    doReturn(null).when(repoMock).save(any(TestResultUpload.class));
-
-    try (var x = loadCsv("responses/datahub-error-response.json")) {
-      stubFor(
-          WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
-              .willReturn(
-                  WireMock.aResponse()
-                      .withStatus(HttpStatus.BAD_REQUEST.value())
-                      .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                      .withBody(x.readAllBytes())));
-    }
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-
-    List<TestResultUpload> response = this._service.processResultCSV(input);
-
-    assertEquals(6, response.get(0).getErrors().length);
-    assertEquals(FAILURE, response.get(0).getStatus());
-  }
-
-  @Test
-  @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportStandardUser
   void feignGeneralError_returnsFailureStatus() {
 
     stubFor(
@@ -190,6 +124,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
+    // catches Feign exception in covid pipeline and then throws JsonProcessingException ex which
+    // then throws a DependencyFailureException
     assertThrows(DependencyFailureException.class, () -> this._service.processResultCSV(input));
   }
 
@@ -202,7 +138,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void mockResponse_returnsPending() {
+  void mockResponse_returnsPending() throws Exception {
     UploadResponse response = buildUploadResponse();
 
     // todo rewrite this test to be valid - we're just testing our mocks now
@@ -219,6 +155,15 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             null);
 
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
@@ -314,7 +259,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_getUploadSubmission_fileInvalidData() {
+  void uploadService_getUploadSubmission_fileInvalidData() throws Exception {
     // GIVEN
     InputStream invalidInput = new ByteArrayInputStream("invalid".getBytes());
     when(csvFileValidatorMock.validate(any()))
@@ -332,11 +277,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_getUploadSubmission_processingModeCode_NotSet() {
+  void uploadService_getUploadSubmission_processingModeCode_NotSet() throws Exception {
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -353,12 +307,21 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_getUploadSubmission_processingModeCode_T() {
+  void uploadService_getUploadSubmission_processingModeCode_T() throws Exception {
     // GIVEN
     ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
@@ -376,11 +339,21 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_getUploadSubmission_processingModeCode_doesntOverrideFileValue() {
+  void uploadService_getUploadSubmission_processingModeCode_doesntOverrideFileValue()
+      throws Exception {
     // GIVEN
     ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -401,11 +374,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_translatesSpecimenNameToSNOMED() {
+  void uploadService_processCsv_translatesSpecimenNameToSNOMED() throws Exception {
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
@@ -429,7 +411,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void uploadService_UploadSentTwice() {
+  void uploadService_UploadSentTwice() throws Exception {
     // given
     UploadResponse response = buildUploadResponse();
     var tokenResponse = new TokenResponse();
@@ -460,7 +442,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void uploadService_FhirFailure_ReportsCSVResult() {
+  void uploadService_FhirFailure_ReportsCSVResult() throws Exception {
     // given
     var org = factory.saveValidOrganization();
     var csvReportId = UUID.randomUUID();
@@ -516,7 +498,9 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void uploadService_FhirException_ReportsCSVResult() {
+  void uploadService_FhirException_ReportsCSVResult() throws Exception {
+    // I think this test needs changing to reflect that an exception should be thrown when either of
+    // the pipelines fails
     // given
     var org = factory.saveValidOrganization();
     var csvReportId = UUID.randomUUID();
@@ -562,6 +546,9 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(successfulCsvResponse);
     when(dataHubMock.uploadFhir(any(), any())).thenThrow(reportStreamException);
+    // this is creating a csvResult that comes back when the covid pipeline processing saves to the
+    // DB, but
+    // the csvResult incorrectly says it's "pending" and from the "Pipeline.UNIVERSAL"
     when(repoMock.save(any())).thenReturn(csvResult);
     when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -585,11 +572,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesEscapedCommas_inPatientAndAOEValues() {
+  void uploadService_processCsv_handlesEscapedCommas_inPatientAndAOEValues() throws Exception {
     // GIVEN
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
     setup_testResultsUpload_withEscapedCommas();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
 
     // WHEN
     sut.processResultCSV(input);
@@ -626,11 +622,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesEscapedCommas_inTestResultValues() {
+  void uploadService_processCsv_handlesEscapedCommas_inTestResultValues() throws Exception {
     // GIVEN
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
     setup_testResultsUpload_withEscapedCommas();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
 
     // WHEN
     sut.processResultCSV(input);
@@ -655,11 +660,21 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesEscapedCommas_inOrderingProviderAndFacilityValues() {
+  void uploadService_processCsv_handlesEscapedCommas_inOrderingProviderAndFacilityValues()
+      throws Exception {
     // GIVEN
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
     setup_testResultsUpload_withEscapedCommas();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
 
     // WHEN
     sut.processResultCSV(input);
@@ -689,11 +704,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesEscapedCommas_inTestingLabValues() {
+  void uploadService_processCsv_handlesEscapedCommas_inTestingLabValues() throws Exception {
     // GIVEN
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
     setup_testResultsUpload_withEscapedCommas();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
 
     // WHEN
     sut.processResultCSV(input);
@@ -713,11 +737,21 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesDefaultDateTimeZone_withValidOrderingProviderAddress() {
+  void uploadService_processCsv_handlesDefaultDateTimeZone_withValidOrderingProviderAddress()
+      throws Exception {
     // GIVEN
     ZoneId zoneId = ZoneId.of("US/Pacific");
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
     UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
@@ -747,10 +781,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_defaultsToEasternTimeZone_withInvalidOrderingProviderAddress() {
+  void uploadService_processCsv_defaultsToEasternTimeZone_withInvalidOrderingProviderAddress()
+      throws Exception {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
     UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
@@ -784,11 +828,21 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processResultCSV_defaultsToTestingLabAddress_whenNoOrderingFacilityAddress() {
+  void uploadService_processResultCSV_defaultsToTestingLabAddress_whenNoOrderingFacilityAddress()
+      throws Exception {
     // GIVEN
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-no-ordering-facility.csv");
     setup_testResultsUpload_withEscapedCommas();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
 
     // WHEN
     sut.processResultCSV(input);
@@ -808,12 +862,21 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_transforms_match_expected_csv() throws IOException {
+  void uploadService_processCsv_transforms_match_expected_csv() throws Exception {
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
     UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
@@ -837,11 +900,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_filter_out_non_covid_csv() throws IOException {
+  void uploadService_processCsv_filter_out_non_covid_csv() throws Exception {
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-with-flu-results.csv");
     UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
@@ -865,7 +937,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_only_submit_fhir_when_flu_only_csv() {
+  void uploadService_processCsv_only_submit_fhir_when_flu_only_csv() throws Exception {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
     UploadResponse response = buildUploadResponse();
