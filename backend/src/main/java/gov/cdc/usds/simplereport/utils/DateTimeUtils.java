@@ -99,6 +99,7 @@ public class DateTimeUtils {
       StreetAddress addressForTimezone) {
     ZoneId zoneId;
     LocalDateTime localDateTime;
+    dateString = dateString.strip();
 
     // If user provided timezone code in datetime field
     if (hasTimezoneSubstring(dateString)) {
@@ -116,6 +117,7 @@ public class DateTimeUtils {
   }
 
   public static ZonedDateTime convertToZonedDateTime(String dateString) {
+    dateString = dateString.strip();
     ZoneId zoneId = parseDateStringZoneId(dateString);
     LocalDateTime localDateTime = parseLocalDateTime(dateString, DATE_TIME_FORMATTER);
     return ZonedDateTime.of(localDateTime, zoneId);

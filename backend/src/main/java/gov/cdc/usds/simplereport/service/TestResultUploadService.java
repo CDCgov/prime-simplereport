@@ -141,7 +141,7 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public List<TestResultUpload> processResultCSV(InputStream csvStream) {
+  public List<TestResultUpload> processResultCSV(InputStream csvStream) throws Exception {
     List<TestResultUpload> uploadSummary = new ArrayList<>();
     var submissionId = UUID.randomUUID();
     Organization org = _orgService.getCurrentOrganization();
@@ -404,7 +404,8 @@ public class TestResultUploadService {
   }
 
   private Optional<TestResultUpload> processUniversalPipelineResponse(
-      CompletableFuture<UniversalSubmissionSummary> futureSubmissionSummary) {
+      CompletableFuture<UniversalSubmissionSummary> futureSubmissionSummary)
+      throws CsvProcessingException, ExecutionException, InterruptedException {
     try {
       UniversalSubmissionSummary submissionSummary = futureSubmissionSummary.get();
       if (submissionSummary != null && submissionSummary.submissionResponse() != null) {
@@ -418,6 +419,7 @@ public class TestResultUploadService {
     } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
       log.error("Error processing FHIR in bulk result upload", e);
       Thread.currentThread().interrupt();
+      throw e;
     }
 
     return Optional.empty();
@@ -472,7 +474,10 @@ public class TestResultUploadService {
 
   private Optional<TestResultUpload> processCovidPipelineResponse(
       CompletableFuture<CovidSubmissionSummary> futureSubmissionSummary)
-      throws DependencyFailureException {
+      throws DependencyFailureException,
+          CsvProcessingException,
+          ExecutionException,
+          InterruptedException {
     try {
       CovidSubmissionSummary submissionSummary = futureSubmissionSummary.get();
       if (submissionSummary.processingException() instanceof DependencyFailureException) {
@@ -490,6 +495,7 @@ public class TestResultUploadService {
     } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
       log.error("Error processing csv in bulk result upload", e);
       Thread.currentThread().interrupt();
+      throw e;
     }
 
     return Optional.empty();
