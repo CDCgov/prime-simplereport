@@ -191,6 +191,36 @@ class CsvValidatorUtilsTest {
   }
 
   @Test
+  void validDateTimeWithWhitespace() {
+    var validDateTimes = new ArrayList<ValueOrError>();
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11", "datetime"));
+    validDateTimes.add(new ValueOrError(" 01/01/2023 11:11 ", "datetime"));
+    validDateTimes.add(new ValueOrError("01 / 01 / 2023 11 : 11", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023   11:11", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 EST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11  EST", "datetime"));
+    validDateTimes.add(new ValueOrError("01 / 01 / 2023 11 : 11 EST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023   11:11   EST", "datetime"));
+    validDateTimes.add(new ValueOrError(" 01/01/2023 11:11 EST ", "datetime"));
+
+    for (var datetime : validDateTimes) {
+      assertThat(validateDateTime(datetime)).isEmpty();
+    }
+  }
+
+  @Test
+  void invalidDateTimeWithWhitespace() {
+    var invalidDateTimes = new ArrayList<ValueOrError>();
+    invalidDateTimes.add(new ValueOrError("01/01/202311:11", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01 01 2023 11:11", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11 11", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11EST", "datetime"));
+    for (var datetime : invalidDateTimes) {
+      assertThat(validateDateTime(datetime)).hasSize(1);
+    }
+  }
+
+  @Test
   void invalidDateFormat() {
     var invalidDates = new ArrayList<ValueOrError>();
     invalidDates.add(new ValueOrError("00/01/2023", "date"));
