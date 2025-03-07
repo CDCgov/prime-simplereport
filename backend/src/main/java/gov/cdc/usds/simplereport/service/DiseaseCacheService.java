@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DiseaseCacheService {
 
+  private final GitProperties gitProperties;
   private final SupportedDiseaseRepository _supportedDiseaseRepo;
 
   @Cacheable(SUPPORTED_DISEASE_ID_MAP)
   public Map<UUID, SupportedDisease> getKnownSupportedDiseasesMap() {
+    log.info("deployment testing log with commit " + gitProperties.getCommitId());
     log.info("generating " + SUPPORTED_DISEASE_ID_MAP + " cache");
     return _supportedDiseaseRepo.findAll().stream()
         .collect(Collectors.toMap(SupportedDisease::getInternalId, Function.identity()));
