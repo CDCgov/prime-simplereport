@@ -27,7 +27,7 @@ public class DiseaseCacheService {
 
   @Cacheable(SUPPORTED_DISEASE_ID_MAP)
   public Map<UUID, SupportedDisease> getKnownSupportedDiseasesMap() {
-    log.info("deployment testing log with commit " + gitProperties.getCommitId());
+    log.info("deployment testing log version 2 with commit " + gitProperties.getCommitId());
     log.info("generating " + SUPPORTED_DISEASE_ID_MAP + " cache");
     return _supportedDiseaseRepo.findAll().stream()
         .collect(Collectors.toMap(SupportedDisease::getInternalId, Function.identity()));
