@@ -130,7 +130,7 @@ public class TestResultUploadService {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
 
-  private static final String TIME_MEASSUREMENT_MILLISECONDS_NAME="milliseconds";
+  private static final String TIME_MEASSUREMENT_MILLISECONDS_NAME=" milliseconds";
   
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
