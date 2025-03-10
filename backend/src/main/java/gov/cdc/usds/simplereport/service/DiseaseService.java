@@ -37,7 +37,8 @@ public class DiseaseService {
   }
 
   public void initDiseases() {
-    log.info("deployment init testing log with commit " + gitProperties.getShortCommitId());
+    log.info(
+        "deployment init testing log version 2 with commit " + gitProperties.getShortCommitId());
     getKnownSupportedDiseasesMap();
   }
 
