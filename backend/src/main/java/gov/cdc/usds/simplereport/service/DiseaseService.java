@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,12 +30,14 @@ public class DiseaseService {
   public static final String CHLAMYDIA_NAME = "Chlamydia";
 
   private final DiseaseCacheService diseaseCacheService;
+  private final GitProperties gitProperties;
 
   public Map<UUID, SupportedDisease> getKnownSupportedDiseasesMap() {
     return diseaseCacheService.getKnownSupportedDiseasesMap();
   }
 
   public void initDiseases() {
+    log.info("deployment init testing log with commit " + gitProperties.getShortCommitId());
     getKnownSupportedDiseasesMap();
   }
 
