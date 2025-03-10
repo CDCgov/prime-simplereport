@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -505,8 +506,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   void uploadService_FhirException_ReportsCSVResult() throws Exception {
-    // I think this test needs changing to reflect that an exception should be thrown when either of
-    // the pipelines fails
     // given
     var org = factory.saveValidOrganization();
     var csvReportId = UUID.randomUUID();
@@ -566,15 +565,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     // when
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    var output = sut.processResultCSV(input);
+    assertThrows(ExecutionException.class, () -> sut.processResultCSV(input));
 
     // then
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
     verify(dataHubMock).uploadFhir(stringCaptor.capture(), stringCaptor.capture());
-
     verify(repoMock, Mockito.times(1)).save(any());
-    assertEquals(UploadStatus.PENDING, output.get(0).getStatus());
-    assertEquals(output.get(0).getReportId(), csvReportId);
   }
 
   @Test
