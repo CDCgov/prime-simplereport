@@ -67,8 +67,16 @@ public class DiseaseService {
     return getDiseaseByName(HEPATITIS_C_NAME);
   }
 
+  public SupportedDisease chlamydia() {
+    return getDiseaseByName(CHLAMYDIA_NAME);
+  }
+
   public SupportedDisease gonorrhea() {
     return getDiseaseByName(GONORRHEA_NAME);
+  }
+
+  public SupportedDisease syphilis() {
+    return getDiseaseByName(SYPHILIS_NAME);
   }
 
   public SupportedDisease rsv() {

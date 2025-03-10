@@ -6,6 +6,10 @@ import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSe
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
 import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
+import {
+  useDisabledFeatureDiseaseList,
+  mapStringToDiseaseEnum,
+} from "../../../utils/disease";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
@@ -24,15 +28,31 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
+  const disabledDiseases = useDisabledFeatureDiseaseList();
+
+  const filteredDeviceTypes = deviceTypes.filter((device) => {
+    const hasDisabledDisease = device.supportedDiseaseTestPerformed?.some(
+      (test: { supportedDisease: { name: string } }) => {
+        const mappedDisease = mapStringToDiseaseEnum(
+          test.supportedDisease?.name
+        );
+        return (
+          mappedDisease !== null && disabledDiseases.includes(mappedDisease)
+        );
+      }
+    );
+    return !hasDisabledDisease;
+  });
+
   const deviceTypeOptions = Array.from(
-    deviceTypes.map((device) => ({
+    filteredDeviceTypes.map((device) => ({
       label: device.model,
       value: device.internalId,
     }))
   );
 
   const getUnselectedDevices = (): FacilityFormDeviceType[] => {
-    return deviceTypes.filter(
+    return filteredDeviceTypes.filter(
       (device) => !formCurrentValues.devices.includes(device.internalId)
     );
   };
