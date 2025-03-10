@@ -29,7 +29,6 @@ import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
-import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
 import Schema from "./testResults/uploads/CsvSchemaDocumentation";
 import Submission from "./testResults/submissions/Submission";
@@ -193,9 +192,6 @@ const ReportingApp = () => {
   return (
     <>
       <VersionEnforcer />
-      {process.env.REACT_APP_DISABLE_MAINTENANCE_BANNER === "true" ? null : (
-        <MaintenanceBanner />
-      )}
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}
