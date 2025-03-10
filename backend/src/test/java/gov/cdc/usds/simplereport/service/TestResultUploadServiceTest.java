@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus.FAILURE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
@@ -49,7 +49,15 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +69,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -86,7 +93,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
   @Mock private DiseaseService diseaseService;
-  @SpyBean private BulkUploadResultsToFhir bulkUploadResultsToFhir;
   @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()
@@ -548,7 +554,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.uploadFhir(any(), any())).thenThrow(reportStreamException);
     // this is creating a csvResult that comes back when the covid pipeline processing saves to the
     // DB, but
-    // the csvResult incorrectly says it's "pending" and from the "Pipeline.UNIVERSAL"
+    // the csvResult incorrectly says it's "pending" and from the "Pipeline.UNIVERSAL" due to the
+    // csvResult mock
     when(repoMock.save(any())).thenReturn(csvResult);
     when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())

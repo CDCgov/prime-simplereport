@@ -28,9 +28,7 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -55,7 +53,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
 
   @SpyBean private BulkUploadResultsToFhir bulkUploadResultsToFhir;
 
-  @BeforeAll
+  @BeforeEach
   void setup() throws IOException {
     Date date = Date.from(Instant.parse("2023-05-24T19:33:06.472Z"));
     when(dateGenerator.newDate()).thenReturn(date);
@@ -106,8 +104,13 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
                     .withBody(mockResponse)));
   }
 
+  @AfterEach
+  void clearApiCalls() {
+    reset();
+  }
+
   @Test
-  void CSVUploadToCovidAndUniversalPipelines() throws Exception {
+  void CSVUploadToCovidAndUniversalPipelinesSucceeds() throws Exception {
     var sampleFhirMessage =
         IOUtils.toString(
             Objects.requireNonNull(
@@ -163,7 +166,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   }
 
   @Test
-  void CSVSucceedsUploadToCovidPipelineAndFailsUniversalPipeline() throws Exception {
+  void CSVUploadSucceedsToCovidPipelineAndFailsUniversalPipeline() throws Exception {
     var responseFile =
         getClass().getClassLoader().getResourceAsStream("responses/datahub-error-response.json");
 
@@ -198,29 +201,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
             TEXT_CSV_CONTENT_TYPE,
             input.readAllBytes());
 
-    var covidPendingJsonMatch =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream(
-                        "testResultUpload/upload-test-results-covid-pipeline-pending.txt")),
-            StandardCharsets.UTF_8);
-
-    var universalFailureJsonMatch =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream(
-                        "testResultUpload/upload-test-results-universal-pipeline-failure.txt")),
-            StandardCharsets.UTF_8);
-
-    mockMvc
-        .perform(multipart(RESULT_UPLOAD).file(file))
-        .andExpect(status().isOk())
-        .andExpect(content().string(containsString(covidPendingJsonMatch)))
-        .andExpect(content().string(containsString(universalFailureJsonMatch)));
+    mockMvc.perform(multipart(RESULT_UPLOAD).file(file)).andExpect(status().isBadRequest());
 
     verify(
         exactly(1),

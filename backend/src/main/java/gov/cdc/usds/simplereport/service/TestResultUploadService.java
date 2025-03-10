@@ -75,10 +75,12 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -165,6 +167,17 @@ public class TestResultUploadService {
 
         processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
         processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
+
+        List<Pipeline> failedPipelines =
+            uploadSummary.stream()
+                .filter(summary -> summary.getStatus() == UploadStatus.FAILURE)
+                .map(TestResultUpload::getDestination)
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        if (CollectionUtils.isNotEmpty(failedPipelines)) {
+          throw new CsvProcessingException(
+              "The following pipeline(s) have failed: " + failedPipelines);
+        }
       }
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
@@ -395,7 +408,12 @@ public class TestResultUploadService {
               // convert csv to fhir and serialize to json
               FHIRBundleRecord fhirBundleWithMeta =
                   fhirConverter.convertToFhirBundles(content, org.getInternalId());
-              UploadResponse response = uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
+              UploadResponse response;
+              try {
+                response = uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
+              } catch (JsonProcessingException e) {
+                throw new CsvProcessingException("Unable to parse Report Stream response.");
+              }
               log.info(
                   "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
 
@@ -502,12 +520,12 @@ public class TestResultUploadService {
     return Optional.empty();
   }
 
-  private UploadResponse parseFeignException(FeignException e) {
+  private UploadResponse parseFeignException(FeignException e) throws JsonProcessingException {
     try {
       return mapper.readValue(e.contentUTF8(), UploadResponse.class);
     } catch (JsonProcessingException ex) {
       log.error("Unable to parse Report Stream response.", ex);
-      return null;
+      throw ex;
     }
   }
 
@@ -633,14 +651,20 @@ public class TestResultUploadService {
               // convert csv to fhir and serialize to json
               List<String> serializedFhirBundles =
                   fhirConverter.convertToConditionAgnosticFhirBundles(content);
-              UploadResponse response = uploadBundleAsFhir(serializedFhirBundles);
+              UploadResponse response = null;
+              try {
+                response = uploadBundleAsFhir(serializedFhirBundles);
+              } catch (JsonProcessingException e) {
+                throw new CsvProcessingException("Unable to parse Report Stream response.");
+              }
               log.info(
                   "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
               return response;
             }));
   }
 
-  private UploadResponse uploadBundleAsFhir(List<String> serializedFhirBundles) {
+  private UploadResponse uploadBundleAsFhir(List<String> serializedFhirBundles)
+      throws JsonProcessingException {
     // build the ndjson request body
     var ndJson = new StringBuilder();
     for (String bundle : serializedFhirBundles) {

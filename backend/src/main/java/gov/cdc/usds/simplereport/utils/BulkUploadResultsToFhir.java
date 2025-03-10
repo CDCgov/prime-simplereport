@@ -125,7 +125,7 @@ public class BulkUploadResultsToFhir {
       } catch (CsvProcessingException ex) {
         // anything that would land here should have been caught and handled by the file validator
         log.error("Unable to parse csv.", ex);
-        continue;
+        throw ex;
       }
       TestResultRow fileRow = new TestResultRow(row);
 
