@@ -1,4 +1,3 @@
-// MaintenanceWrapper.tsx
 import React from "react";
 
 import { MaintenanceBanner } from "./app/commonComponents/MaintenanceBanner";
