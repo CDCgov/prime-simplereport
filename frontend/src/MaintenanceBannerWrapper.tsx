@@ -2,11 +2,11 @@ import React from "react";
 
 import { MaintenanceBanner } from "./app/commonComponents/MaintenanceBanner";
 
-interface MaintenanceWrapperProps {
+interface MaintenanceBannerWrapperProps {
   children: React.ReactNode;
 }
 
-const MaintenanceWrapper: React.FC<MaintenanceWrapperProps> = ({
+const MaintenanceBannerWrapper: React.FC<MaintenanceBannerWrapperProps> = ({
   children,
 }) => {
   return (
@@ -19,4 +19,4 @@ const MaintenanceWrapper: React.FC<MaintenanceWrapperProps> = ({
   );
 };
 
-export default MaintenanceWrapper;
+export default MaintenanceBannerWrapper;

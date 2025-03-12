@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 
-import MaintenanceWrapper from "./MaintenanceWrapper";
+import MaintenanceBannerWrapper from "./MaintenanceBannerWrapper";
 
 const MockPatientApp = () => <div data-testid="patient-app">Patient App</div>;
 const MockReportingApp = () => (
@@ -15,25 +15,25 @@ const TestRoutes = () => (
     <Route
       path="/pxp/*"
       element={
-        <MaintenanceWrapper>
+        <MaintenanceBannerWrapper>
           <MockPatientApp />
-        </MaintenanceWrapper>
+        </MaintenanceBannerWrapper>
       }
     />
     <Route
       path="/sign-up/*"
       element={
-        <MaintenanceWrapper>
+        <MaintenanceBannerWrapper>
           <MockSignUpApp />
-        </MaintenanceWrapper>
+        </MaintenanceBannerWrapper>
       }
     />
     <Route
       path="/*"
       element={
-        <MaintenanceWrapper>
+        <MaintenanceBannerWrapper>
           <MockReportingApp />
-        </MaintenanceWrapper>
+        </MaintenanceBannerWrapper>
       }
     />
   </Routes>

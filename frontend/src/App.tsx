@@ -43,7 +43,7 @@ import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
 import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
-import MaintenanceWrapper from "./MaintenanceWrapper";
+import MaintenanceBannerWrapper from "./MaintenanceBannerWrapper";
 
 // Initialize telemetry early
 ai.initialize();
@@ -128,18 +128,18 @@ const routes = createRoutesFromElements(
     <Route
       path="/pxp/*"
       element={
-        <MaintenanceWrapper>
+        <MaintenanceBannerWrapper>
           <PatientApp />
-        </MaintenanceWrapper>
+        </MaintenanceBannerWrapper>
       }
     />
     <Route path="/uac/*" element={<AccountCreationApp />} />
     <Route
       path="/sign-up/*"
       element={
-        <MaintenanceWrapper>
+        <MaintenanceBannerWrapper>
           <SignUpApp />
-        </MaintenanceWrapper>
+        </MaintenanceBannerWrapper>
       }
     />
     <Route path="/register/:registrationLink" element={<SelfRegistration />} />
@@ -148,9 +148,9 @@ const routes = createRoutesFromElements(
     <Route
       path="/*"
       element={
-        <MaintenanceWrapper>
+        <MaintenanceBannerWrapper>
           <ReportingApp />{" "}
-        </MaintenanceWrapper>
+        </MaintenanceBannerWrapper>
       }
     />
     <Route element={<>Page not found</>} />
