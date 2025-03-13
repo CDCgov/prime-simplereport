@@ -238,6 +238,66 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
 
   @Test
   void
+      CSVUpload_Returns200_WhenFailsCovidPipelineAndSucceedsUniversalPipelineWith_ParseableFailure()
+          throws Exception {
+    var responseFile =
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("responses/datahub-parseable-error-response.json");
+
+    var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
+
+    // submits the FHIR bundles to universal pipeline
+    stubFor(
+        WireMock.post(urlEqualTo("/api/reports?processing=async"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withStatus(HttpStatus.BAD_REQUEST.value())
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody(mockResponse)));
+
+    var sampleFhirMessage =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
+            StandardCharsets.UTF_8);
+
+    var covidPipelineCsvStream =
+        loadCsv("testResultUpload/test-results-upload-integration-expected-transform.csv");
+    var expectedCovidPipelineCsvString = new String(covidPipelineCsvStream.readAllBytes());
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
+    var file =
+        new MockMultipartFile(
+            "file",
+            "test-results-upload-integration.csv",
+            TEXT_CSV_CONTENT_TYPE,
+            input.readAllBytes());
+
+    mockMvc
+        .perform(multipart(RESULT_UPLOAD).file(file))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].status").value("PENDING"))
+        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].recordsCount").value(14))
+        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].errors.length()").value(0))
+        .andExpect(jsonPath("$[?(@.destination == 'COVID')].status").value("FAILURE"))
+        .andExpect(jsonPath("$[?(@.destination == 'COVID')].recordsCount").value(0))
+        .andExpect(jsonPath("$[?(@.destination == 'COVID')].errors.length()").value(6));
+
+    verify(
+        exactly(1),
+        postRequestedFor(urlEqualTo("/api/waters"))
+            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
+    verify(
+        exactly(1),
+        postRequestedFor(urlEqualTo("/api/reports?processing=async"))
+            .withRequestBody(equalTo(expectedCovidPipelineCsvString)));
+  }
+
+  @Test
+  void
       CSVUpload_Returns400_WhenSucceedsToCovidPipelineAndFailsUniversalPipelineWith_UnparseableFailure()
           throws Exception {
 
