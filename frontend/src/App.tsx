@@ -142,7 +142,14 @@ const routes = createRoutesFromElements(
         </MaintenanceBannerWrapper>
       }
     />
-    <Route path="/register/:registrationLink" element={<SelfRegistration />} />
+    <Route
+      path="/register/:registrationLink"
+      element={
+        <MaintenanceBannerWrapper>
+          <SelfRegistration />
+        </MaintenanceBannerWrapper>
+      }
+    />
     <Route path="/session-timeout" element={<SessionTimeout />} />
     <Route path="/reload-app" element={<Navigate to="/" />} />
     <Route

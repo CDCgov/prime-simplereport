@@ -9,6 +9,9 @@ const MockReportingApp = () => (
   <div data-testid="reporting-app">Reporting App</div>
 );
 const MockSignUpApp = () => <div data-testid="signup-app">Sign Up App</div>;
+const MockSelfRegistration = () => (
+  <div data-testid="self-registration">Self Registration</div>
+);
 
 const TestRoutes = () => (
   <Routes>
@@ -25,6 +28,14 @@ const TestRoutes = () => (
       element={
         <MaintenanceBannerWrapper>
           <MockSignUpApp />
+        </MaintenanceBannerWrapper>
+      }
+    />
+    <Route
+      path="/register/:registrationLink"
+      element={
+        <MaintenanceBannerWrapper>
+          <MockSelfRegistration />
         </MaintenanceBannerWrapper>
       }
     />
@@ -87,6 +98,30 @@ describe("Maintenance Banner working correctly", () => {
     );
 
     expect(screen.getByTestId("signup-app")).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("System Maintenance", { exact: false })
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("shows maintenance banner with registration page when maintenance is active", async () => {
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      json: jest.fn().mockResolvedValueOnce({
+        active: true,
+        header: "System Maintenance",
+        message: "The system is undergoing maintenance",
+      }),
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/register/abc123"]}>
+        <TestRoutes />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId("self-registration")).toBeInTheDocument();
 
     await waitFor(() => {
       expect(
