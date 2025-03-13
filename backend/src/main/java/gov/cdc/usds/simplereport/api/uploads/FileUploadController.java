@@ -64,6 +64,7 @@ public class FileUploadController {
   }
 
   @PostMapping(RESULT_UPLOAD)
+  @SuppressWarnings({"checkstyle:illegalcatch"})
   public List<TestResultUpload> handleResultsUpload(@RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);
 
