@@ -33,7 +33,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
-import gov.cdc.usds.simplereport.api.model.errors.NoCovidRowsException;
 import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -75,12 +74,10 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -160,24 +157,18 @@ public class TestResultUploadService {
       }
 
       if (content.length > 0) {
-        CompletableFuture<CovidSubmissionSummary> covidSubmission =
-            submitResultsToCovidPipeline(content, org, submissionId);
         CompletableFuture<UniversalSubmissionSummary> universalSubmission =
             submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
 
-        processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
-        processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
+        var covidCsvContent = transformAndExtractCovidCsvContent(content);
 
-        List<Pipeline> failedPipelines =
-            uploadSummary.stream()
-                .filter(summary -> summary.getStatus() == UploadStatus.FAILURE)
-                .map(TestResultUpload::getDestination)
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        if (CollectionUtils.isNotEmpty(failedPipelines)) {
-          throw new CsvProcessingException(
-              "The following pipeline(s) have failed: " + failedPipelines);
+        if (covidCsvContent.length != 0) {
+          CompletableFuture<CovidSubmissionSummary> covidSubmission =
+              submitResultsToCovidPipeline(covidCsvContent, org, submissionId);
+          processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
         }
+
+        processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
@@ -445,17 +436,12 @@ public class TestResultUploadService {
   }
 
   private CompletableFuture<CovidSubmissionSummary> submitResultsToCovidPipeline(
-      byte[] content, Organization org, UUID submissionId) {
+      byte[] covidCsvContent, Organization org, UUID submissionId) {
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
               long start = System.currentTimeMillis();
               FutureResult<UploadResponse, Exception> result;
-              var covidCsvContent = transformAndExtractCovidCsvContent(content);
-              if (covidCsvContent.length == 0) {
-                return new CovidSubmissionSummary(
-                    submissionId, org, null, new NoCovidRowsException(), null);
-              }
               try {
                 result =
                     FutureResult.<UploadResponse, Exception>builder()
@@ -578,21 +564,6 @@ public class TestResultUploadService {
       return Optional.of(uploadRecord);
     }
     return Optional.empty();
-  }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public TestResultUpload processHIVResultCSV(InputStream csvStream) {
-    FeedbackMessage[] empty = {};
-    return TestResultUpload.builder()
-        .submissionId(UUID.randomUUID())
-        .reportId(null)
-        .status(UploadStatus.PENDING)
-        .recordsCount(0)
-        .warnings(empty)
-        .errors(empty)
-        .organization(null)
-        .destination(Pipeline.UNIVERSAL)
-        .build();
   }
 
   @Getter

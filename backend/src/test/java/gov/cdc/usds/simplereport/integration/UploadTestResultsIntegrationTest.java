@@ -3,12 +3,12 @@ package gov.cdc.usds.simplereport.integration;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static gov.cdc.usds.simplereport.api.uploads.FileUploadController.TEXT_CSV_CONTENT_TYPE;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
@@ -166,13 +166,16 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   }
 
   @Test
-  void CSVUploadSucceedsToCovidPipelineAndFailsUniversalPipeline() throws Exception {
+  void CSVUploadSucceedsToCovidPipelineAndFailsUniversalPipelineWithParseableFailure()
+      throws Exception {
     var responseFile =
-        getClass().getClassLoader().getResourceAsStream("responses/datahub-error-response.json");
+        getClass()
+            .getClassLoader()
+            .getResourceAsStream("responses/datahub-parseable-error-response.json");
 
     var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
 
-    // submits the FHIR bundles
+    // submits the FHIR bundles to universal pipeline
     stubFor(
         WireMock.post(urlEqualTo("/api/waters"))
             .willReturn(
@@ -201,7 +204,15 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
             TEXT_CSV_CONTENT_TYPE,
             input.readAllBytes());
 
-    mockMvc.perform(multipart(RESULT_UPLOAD).file(file)).andExpect(status().isBadRequest());
+    mockMvc
+        .perform(multipart(RESULT_UPLOAD).file(file))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[?(@.destination == 'COVID')].status").value("PENDING"))
+        .andExpect(jsonPath("$[?(@.destination == 'COVID')].recordsCount").value(14))
+        .andExpect(jsonPath("$[?(@.destination == 'COVID')].errors.length()").value(0))
+        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].status").value("FAILURE"))
+        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].recordsCount").value(0))
+        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].errors.length()").value(6));
 
     verify(
         exactly(1),

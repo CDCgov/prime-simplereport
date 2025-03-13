@@ -6,7 +6,6 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIterator
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -117,99 +116,11 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  @DirtiesContext
-  @SliceTestConfiguration.WithSimpleReportStandardUser
-  void feignGeneralError_returnsFailureStatus() {
-
-    stubFor(
-        WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody("you messed up")));
-
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-
-    // catches Feign exception in covid pipeline and then throws JsonProcessingException ex which
-    // then throws a DependencyFailureException
-    assertThrows(DependencyFailureException.class, () -> this._service.processResultCSV(input));
-  }
-
-  @Test
   @SliceTestConfiguration.WithSimpleReportEntryOnlyUser
   void unauthorizedUser_NotAuthorizedResponse() throws IOException {
     try (InputStream input = loadCsv("test-upload-test-results.csv")) {
       assertThrows(AccessDeniedException.class, () -> this._service.processResultCSV(input));
     }
-  }
-
-  @Test
-  void mockResponse_returnsPending() throws Exception {
-    UploadResponse response = buildUploadResponse();
-
-    // todo rewrite this test to be valid - we're just testing our mocks now
-    var result =
-        new TestResultUpload(
-            response.getReportId(),
-            UUID.randomUUID(),
-            UploadStatus.PENDING,
-            response.getReportItemCount(),
-            orgServiceMock.getCurrentOrganization(),
-            response.getWarnings(),
-            response.getErrors(),
-            Pipeline.COVID,
-            null);
-
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    var tokenResponse = new TokenResponse();
-    tokenResponse.setAccessToken("fake-rs-access-token");
-
-    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
-        .thenReturn("fake-rs-sender-token");
-    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
-    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
-        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
-    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
-
-    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
-    when(repoMock.save(any())).thenReturn(result);
-
-    var output = sut.processResultCSV(input);
-    assertNotNull(output.get(0).getReportId());
-    assertEquals(UploadStatus.PENDING, output.get(0).getStatus());
-  }
-
-  @Test
-  void mockResponse_returnsGatewayTimeout() {
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-
-    String responseBody =
-        "<HTML><HEAD>\n"
-            + "<TITLE>Gateway Timeout - In read </TITLE>\n"
-            + "</HEAD><BODY>\n"
-            + "<H1>Gateway Timeout</H1>\n"
-            + "The proxy server did not receive a timely response from the upstream server.<P>\n"
-            + "Reference&#32;&#35;1&#46;136bdc17&#46;1666816860&#46;528d7d3c\n"
-            + "</BODY></HTML>";
-
-    Request req =
-        Request.create(Request.HttpMethod.POST, "", new HashMap<>(), null, new RequestTemplate());
-    FeignException reportStreamResponse =
-        new FeignException.GatewayTimeout(responseBody, req, null, new HashMap<>());
-    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
-    when(dataHubMock.uploadCSV(any())).thenThrow(reportStreamResponse);
-    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
-
-    assertThrows(DependencyFailureException.class, () -> sut.processResultCSV(input));
-  }
-
-  private InputStream loadCsv(String csvFile) {
-    return TestResultUploadService.class.getClassLoader().getResourceAsStream(csvFile);
   }
 
   @Test
@@ -277,6 +188,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     List<TestResultUpload> result = sut.processResultCSV(invalidInput);
 
     // THEN
+    assertEquals(1, result.size());
     assertThat(result.get(0).getStatus()).isEqualTo(FAILURE);
     assertThat(result.get(0).getErrors()).hasSize(1);
     assertThat(result.get(0).getErrors()[0].getMessage()).isEqualTo("my lovely error message");
@@ -288,7 +200,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -298,7 +210,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
@@ -319,7 +231,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -329,7 +241,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
@@ -351,7 +263,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -361,7 +273,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
@@ -385,7 +297,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -395,7 +307,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
@@ -418,14 +330,14 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void uploadService_UploadSentTwice() throws Exception {
+  void uploadService_processCsv_ToCovidAndUniversalPipelines_Success() throws Exception {
     // given
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
-    when(dataHubMock.uploadFhir(any(), any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
+    when(dataHubMock.uploadFhir(any(), any())).thenReturn(successfulResponse);
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
 
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
@@ -442,44 +354,59 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     // when
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    sut.processResultCSV(input);
+    var output = sut.processResultCSV(input);
 
+    assertEquals(2, output.size());
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
     verify(dataHubMock).uploadFhir(stringCaptor.capture(), stringCaptor.capture());
   }
 
   @Test
-  void uploadService_FhirFailure_ReportsCSVResult() throws Exception {
+  void uploadService_processCsv_ParseableUniversalPipelineFailure_ReturnsResult() throws Exception {
     // given
     var org = factory.saveValidOrganization();
     var csvReportId = UUID.randomUUID();
-    var csvResponse = new UploadResponse();
-    csvResponse.setId(csvReportId);
-    csvResponse.setOverallStatus(ReportStreamStatus.RECEIVED);
-    csvResponse.setReportItemCount(5);
-    csvResponse.setErrors(new FeedbackMessage[] {});
-    csvResponse.setWarnings(new FeedbackMessage[] {});
-    var fhirResponse = new UploadResponse();
-    fhirResponse.setId(UUID.randomUUID());
-    fhirResponse.setOverallStatus(ReportStreamStatus.ERROR);
+    var covidPipelineUploadReceived = new UploadResponse();
+    covidPipelineUploadReceived.setId(csvReportId);
+    covidPipelineUploadReceived.setOverallStatus(ReportStreamStatus.RECEIVED);
+    covidPipelineUploadReceived.setReportItemCount(5);
+    covidPipelineUploadReceived.setErrors(new FeedbackMessage[] {});
+    covidPipelineUploadReceived.setWarnings(new FeedbackMessage[] {});
+    var universalPipelineUploadError = new UploadResponse();
+    universalPipelineUploadError.setId(UUID.randomUUID());
+    universalPipelineUploadError.setOverallStatus(ReportStreamStatus.ERROR);
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
-    var csvResult =
+    var covidPipelineDbSaveResponse =
         new TestResultUpload(
             csvReportId,
             UUID.randomUUID(),
             UploadStatus.PENDING,
             5,
             org,
-            csvResponse.getWarnings(),
-            csvResponse.getErrors(),
+            covidPipelineUploadReceived.getWarnings(),
+            covidPipelineUploadReceived.getErrors(),
+            Pipeline.COVID,
+            null);
+
+    var universalPipelineDbSaveResponse =
+        new TestResultUpload(
+            csvReportId,
+            UUID.randomUUID(),
+            UploadStatus.FAILURE,
+            5,
+            org,
+            universalPipelineUploadError.getWarnings(),
+            universalPipelineUploadError.getErrors(),
             Pipeline.UNIVERSAL,
             null);
 
-    when(dataHubMock.uploadCSV(any())).thenReturn(csvResponse);
-    when(dataHubMock.uploadFhir(any(), any())).thenReturn(fhirResponse);
+    when(dataHubMock.uploadCSV(any())).thenReturn(covidPipelineUploadReceived);
+    when(dataHubMock.uploadFhir(any(), any())).thenReturn(universalPipelineUploadError);
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(repoMock.save(any())).thenReturn(csvResult);
+    when(repoMock.save(any()))
+        .thenReturn(covidPipelineDbSaveResponse)
+        .thenReturn(universalPipelineDbSaveResponse);
 
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
@@ -494,18 +421,108 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     // when
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    var output = sut.processResultCSV(input);
+    List<TestResultUpload> output = sut.processResultCSV(input);
 
     // then
+    assertEquals(2, output.size());
+    TestResultUpload covidResult =
+        output.stream()
+            .filter(result -> result.getDestination().equals(Pipeline.COVID))
+            .findFirst()
+            .get();
+    TestResultUpload universalResult =
+        output.stream()
+            .filter(result -> result.getDestination().equals(Pipeline.UNIVERSAL))
+            .findFirst()
+            .get();
+    assertEquals(UploadStatus.PENDING, covidResult.getStatus());
+    assertEquals(UploadStatus.FAILURE, universalResult.getStatus());
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
     verify(dataHubMock).uploadFhir(stringCaptor.capture(), stringCaptor.capture());
-
-    assertEquals(UploadStatus.PENDING, output.get(0).getStatus());
-    assertEquals(output.get(0).getReportId(), csvReportId);
   }
 
   @Test
-  void uploadService_FhirException_ReportsCSVResult() throws Exception {
+  void uploadService_processCsv_ParseableCovidPipelineFailure_ReturnsResult() throws Exception {
+    // given
+    var org = factory.saveValidOrganization();
+    var csvReportId = UUID.randomUUID();
+    var covidPipelineUploadReceived = new UploadResponse();
+    covidPipelineUploadReceived.setId(csvReportId);
+    covidPipelineUploadReceived.setOverallStatus(ReportStreamStatus.ERROR);
+    covidPipelineUploadReceived.setReportItemCount(5);
+    covidPipelineUploadReceived.setErrors(new FeedbackMessage[] {});
+    covidPipelineUploadReceived.setWarnings(new FeedbackMessage[] {});
+    var universalPipelineUploadError = new UploadResponse();
+    universalPipelineUploadError.setId(UUID.randomUUID());
+    universalPipelineUploadError.setOverallStatus(ReportStreamStatus.RECEIVED);
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+    var covidPipelineDbSaveResponse =
+        new TestResultUpload(
+            csvReportId,
+            UUID.randomUUID(),
+            UploadStatus.FAILURE,
+            5,
+            org,
+            covidPipelineUploadReceived.getWarnings(),
+            covidPipelineUploadReceived.getErrors(),
+            Pipeline.COVID,
+            null);
+
+    var universalPipelineDbSaveResponse =
+        new TestResultUpload(
+            csvReportId,
+            UUID.randomUUID(),
+            UploadStatus.PENDING,
+            5,
+            org,
+            universalPipelineUploadError.getWarnings(),
+            universalPipelineUploadError.getErrors(),
+            Pipeline.UNIVERSAL,
+            null);
+
+    when(dataHubMock.uploadCSV(any())).thenReturn(covidPipelineUploadReceived);
+    when(dataHubMock.uploadFhir(any(), any())).thenReturn(universalPipelineUploadError);
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
+    when(repoMock.save(any()))
+        .thenReturn(covidPipelineDbSaveResponse)
+        .thenReturn(universalPipelineDbSaveResponse);
+
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+
+    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
+    ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
+
+    // when
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    List<TestResultUpload> output = sut.processResultCSV(input);
+
+    // then
+    assertEquals(2, output.size());
+    TestResultUpload covidResult =
+        output.stream()
+            .filter(result -> result.getDestination().equals(Pipeline.COVID))
+            .findFirst()
+            .get();
+    TestResultUpload universalResult =
+        output.stream()
+            .filter(result -> result.getDestination().equals(Pipeline.UNIVERSAL))
+            .findFirst()
+            .get();
+    assertEquals(UploadStatus.FAILURE, covidResult.getStatus());
+    assertEquals(UploadStatus.PENDING, universalResult.getStatus());
+    verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
+    verify(dataHubMock).uploadFhir(stringCaptor.capture(), stringCaptor.capture());
+  }
+
+  @Test
+  void uploadService_processCsv_UnparseableUniversalPipelineFailure_ThrowsExecutionException() {
     // given
     var org = factory.saveValidOrganization();
     var csvReportId = UUID.randomUUID();
@@ -571,6 +588,52 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
     verify(dataHubMock).uploadFhir(stringCaptor.capture(), stringCaptor.capture());
     verify(repoMock, Mockito.times(1)).save(any());
+  }
+
+  @Test
+  @DirtiesContext
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_UnparseableCovidPipelineFailure_throwsDependencyFailureException() {
+
+    stubFor(
+        WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody("you messed up")));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+
+    // catches Feign exception in covid pipeline and then throws JsonProcessingException ex which
+    // then throws a DependencyFailureException
+    assertThrows(DependencyFailureException.class, () -> this._service.processResultCSV(input));
+  }
+
+  @Test
+  void
+      uploadService_processCsv_UnparseableGatewayTimeout_FromCovidPipeline_throwsDependencyFailureException() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+
+    String responseBody =
+        "<HTML><HEAD>\n"
+            + "<TITLE>Gateway Timeout - In read </TITLE>\n"
+            + "</HEAD><BODY>\n"
+            + "<H1>Gateway Timeout</H1>\n"
+            + "The proxy server did not receive a timely response from the upstream server.<P>\n"
+            + "Reference&#32;&#35;1&#46;136bdc17&#46;1666816860&#46;528d7d3c\n"
+            + "</BODY></HTML>";
+
+    Request req =
+        Request.create(Request.HttpMethod.POST, "", new HashMap<>(), null, new RequestTemplate());
+    FeignException reportStreamResponse =
+        new FeignException.GatewayTimeout(responseBody, req, null, new HashMap<>());
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
+    when(dataHubMock.uploadCSV(any())).thenThrow(reportStreamResponse);
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+
+    assertThrows(DependencyFailureException.class, () -> sut.processResultCSV(input));
   }
 
   @Test
@@ -745,7 +808,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     ZoneId zoneId = ZoneId.of("US/Pacific");
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -755,7 +818,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -788,7 +851,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
       throws Exception {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -798,7 +861,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -870,7 +933,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -880,7 +943,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -907,7 +970,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-with-flu-results.csv");
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -917,7 +980,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -943,7 +1006,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   void uploadService_processCsv_only_submit_fhir_when_flu_only_csv() throws Exception {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
-    UploadResponse response = buildUploadResponse();
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
@@ -952,7 +1015,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
         .thenReturn("fake-rs-sender-token");
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
-    when(dataHubMock.uploadFhir(anyString(), anyString())).thenReturn(response);
+    when(dataHubMock.uploadFhir(anyString(), anyString())).thenReturn(successfulResponse);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
@@ -960,15 +1023,20 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
     // WHEN
-    sut.processResultCSV(input);
+    var output = sut.processResultCSV(input);
 
     // THEN
+    assertEquals(1, output.size());
     verify(dataHubMock, never()).uploadCSV(any());
     verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
   }
 
+  private InputStream loadCsv(String csvFile) {
+    return TestResultUploadService.class.getClassLoader().getResourceAsStream(csvFile);
+  }
+
   @NotNull
-  private static UploadResponse buildUploadResponse() {
+  private static UploadResponse buildSuccessfulUploadResponse() {
     var response = new UploadResponse();
     response.setId(UUID.randomUUID());
     response.setOverallStatus(ReportStreamStatus.RECEIVED);
@@ -979,8 +1047,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   void setup_testResultsUpload_withEscapedCommas() {
-    UploadResponse response = buildUploadResponse();
-    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
+    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
