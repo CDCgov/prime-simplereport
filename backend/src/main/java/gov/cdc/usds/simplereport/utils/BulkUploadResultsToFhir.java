@@ -449,6 +449,7 @@ public class BulkUploadResultsToFhir {
       } catch (DateTimeParseException e) {
         // empty values for optional fields come through as empty strings, not null
         log.error("Unable to parse date from CSV.");
+        throw e;
       }
     }
 
