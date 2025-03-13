@@ -568,10 +568,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(successfulCsvResponse);
     when(dataHubMock.uploadFhir(any(), any())).thenThrow(reportStreamException);
-    // this is creating a csvResult that comes back when the covid pipeline processing saves to the
-    // DB, but
-    // the csvResult incorrectly says it's "pending" and from the "Pipeline.UNIVERSAL" due to the
-    // csvResult mock
     when(repoMock.save(any())).thenReturn(csvResult);
     when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
