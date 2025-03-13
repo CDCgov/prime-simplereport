@@ -105,12 +105,12 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   }
 
   @AfterEach
-  void clearApiCalls() {
+  void clearMocks() {
     reset();
   }
 
   @Test
-  void CSVUploadToCovidAndUniversalPipelinesSucceeds() throws Exception {
+  void CSVUpload_ToCovidAndUniversalPipelines_Succeeds() throws Exception {
     var sampleFhirMessage =
         IOUtils.toString(
             Objects.requireNonNull(
@@ -166,8 +166,9 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   }
 
   @Test
-  void CSVUploadSucceedsToCovidPipelineAndFailsUniversalPipelineWithParseableFailure()
-      throws Exception {
+  void
+      CSVUpload_Returns200_WhenSucceedsToCovidPipelineAndFailsUniversalPipelineWith_ParseableFailure()
+          throws Exception {
     var responseFile =
         getClass()
             .getClassLoader()
@@ -213,6 +214,55 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
         .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].status").value("FAILURE"))
         .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].recordsCount").value(0))
         .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].errors.length()").value(6));
+
+    verify(
+        exactly(1),
+        postRequestedFor(urlEqualTo("/api/waters"))
+            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
+    verify(
+        exactly(1),
+        postRequestedFor(urlEqualTo("/api/reports?processing=async"))
+            .withRequestBody(equalTo(expectedCovidPipelineCsvString)));
+  }
+
+  @Test
+  void
+      CSVUpload_Returns400_WhenSucceedsToCovidPipelineAndFailsUniversalPipelineWith_UnparseableFailure()
+          throws Exception {
+
+    // submits the FHIR bundles to universal pipeline
+    stubFor(
+        WireMock.post(urlEqualTo("/api/waters"))
+            .willReturn(
+                WireMock.aResponse()
+                    .withStatus(HttpStatus.BAD_REQUEST.value())
+                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                    .withBody("this is unparseable")));
+
+    var sampleFhirMessage =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
+            StandardCharsets.UTF_8);
+
+    var covidPipelineCsvStream =
+        loadCsv("testResultUpload/test-results-upload-integration-expected-transform.csv");
+    var expectedCovidPipelineCsvString = new String(covidPipelineCsvStream.readAllBytes());
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
+    var file =
+        new MockMultipartFile(
+            "file",
+            "test-results-upload-integration.csv",
+            TEXT_CSV_CONTENT_TYPE,
+            input.readAllBytes());
+
+    mockMvc
+        .perform(multipart(RESULT_UPLOAD).file(file))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string(""));
 
     verify(
         exactly(1),

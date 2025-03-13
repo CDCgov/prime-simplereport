@@ -622,7 +622,7 @@ public class TestResultUploadService {
               // convert csv to fhir and serialize to json
               List<String> serializedFhirBundles =
                   fhirConverter.convertToConditionAgnosticFhirBundles(content);
-              UploadResponse response = null;
+              UploadResponse response;
               try {
                 response = uploadBundleAsFhir(serializedFhirBundles);
               } catch (JsonProcessingException e) {
