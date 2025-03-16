@@ -67,7 +67,7 @@ dependencies {
      *
      * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 24 February 2025.
      */
-    implementation 'com.squareup.okio:okio:3.9.1'
+    implementation 'com.squareup.okio:okio:3.10.2'
     implementation 'org.springframework:spring-core:6.2.1'
     implementation 'org.springframework.security:spring-security-core:6.4.3'
     implementation 'org.springframework.security:spring-security-oauth2-client:6.3.5'
