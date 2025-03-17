@@ -201,13 +201,7 @@ public class TestResultUploadService {
         getIteratorForCsv(new ByteArrayInputStream(content));
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
-      try {
-        row = getNextRow(valueIterator);
-      } catch (CsvProcessingException ex) {
-        // anything that would land here should have been caught and handled by the file validator
-        log.error("Unable to parse csv.", ex);
-        throw ex;
-      }
+      row = getNextRow(valueIterator);
 
       if (isCovidResult(row)) {
         extractedCovidRows.add(transformCsvRow(row));
