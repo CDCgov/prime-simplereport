@@ -43,6 +43,7 @@ import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
 import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
+import MaintenanceBannerWrapper from "./MaintenanceBannerWrapper";
 
 // Initialize telemetry early
 ai.initialize();
@@ -124,13 +125,41 @@ const client = new ApolloClient({
 const routes = createRoutesFromElements(
   <Route element={<AppRouterShell />}>
     <Route path="/health/*" element={<HealthChecks />} />
-    <Route path="/pxp/*" element={<PatientApp />} />
+    <Route
+      path="/pxp/*"
+      element={
+        <MaintenanceBannerWrapper>
+          <PatientApp />
+        </MaintenanceBannerWrapper>
+      }
+    />
     <Route path="/uac/*" element={<AccountCreationApp />} />
-    <Route path="/sign-up/*" element={<SignUpApp />} />
-    <Route path="/register/:registrationLink" element={<SelfRegistration />} />
+    <Route
+      path="/sign-up/*"
+      element={
+        <MaintenanceBannerWrapper>
+          <SignUpApp />
+        </MaintenanceBannerWrapper>
+      }
+    />
+    <Route
+      path="/register/:registrationLink"
+      element={
+        <MaintenanceBannerWrapper>
+          <SelfRegistration />
+        </MaintenanceBannerWrapper>
+      }
+    />
     <Route path="/session-timeout" element={<SessionTimeout />} />
     <Route path="/reload-app" element={<Navigate to="/" />} />
-    <Route path="/*" element={<ReportingApp />} />
+    <Route
+      path="/*"
+      element={
+        <MaintenanceBannerWrapper>
+          <ReportingApp />{" "}
+        </MaintenanceBannerWrapper>
+      }
+    />
     <Route element={<>Page not found</>} />
   </Route>
 );
