@@ -826,9 +826,9 @@ public class FhirConverter {
           createAOEObservation(
               eventId + LOINC_AOE_SYMPTOM_ONSET,
               createLoincConcept(
-                      LOINC_AOE_SYMPTOM_ONSET,
-                      SYMPTOM_ONSET_AOE_DESCRIPTION,
-                      SYMPTOM_ONSET_AOE_DESCRIPTION),
+                  LOINC_AOE_SYMPTOM_ONSET,
+                  SYMPTOM_ONSET_AOE_DESCRIPTION,
+                  SYMPTOM_ONSET_AOE_DESCRIPTION),
               new DateTimeType(symptomOnsetDate.toString())));
     }
     return observations;
