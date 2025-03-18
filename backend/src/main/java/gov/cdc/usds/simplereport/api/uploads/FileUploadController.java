@@ -71,7 +71,7 @@ public class FileUploadController {
     try (InputStream resultsUpload = file.getInputStream()) {
       return testResultUploadService.processResultCSV(resultsUpload);
       // catching every exception here ensures that the user will see an error toast for any bulk
-      // upload exception
+      // upload exception. Removing this could result in silent bulk upload failures.
     } catch (Exception e) {
       log.error("Test result CSV encountered an unexpected error", e);
       throw new CsvProcessingException("Unable to process test result CSV upload");
