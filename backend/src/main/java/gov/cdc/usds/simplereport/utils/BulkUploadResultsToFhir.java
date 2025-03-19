@@ -120,13 +120,8 @@ public class BulkUploadResultsToFhir {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
-      try {
-        row = getNextRow(valueIterator);
-      } catch (CsvProcessingException ex) {
-        // anything that would land here should have been caught and handled by the file validator
-        log.error("Unable to parse csv.", ex);
-        continue;
-      }
+      row = getNextRow(valueIterator);
+
       TestResultRow fileRow = new TestResultRow(row);
 
       Optional<String> disease =
@@ -449,6 +444,7 @@ public class BulkUploadResultsToFhir {
       } catch (DateTimeParseException e) {
         // empty values for optional fields come through as empty strings, not null
         log.error("Unable to parse date from CSV.");
+        throw e;
       }
     }
 
