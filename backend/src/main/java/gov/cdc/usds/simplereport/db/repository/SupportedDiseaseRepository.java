@@ -11,6 +11,8 @@ public interface SupportedDiseaseRepository extends CrudRepository<SupportedDise
 
   Optional<SupportedDisease> findByName(String name);
 
+  List<SupportedDisease> findByNameAndLoinc(String name, String loinc);
+
   @Override
   List<SupportedDisease> findAll();
 }

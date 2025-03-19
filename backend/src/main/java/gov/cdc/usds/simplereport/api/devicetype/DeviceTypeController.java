@@ -34,6 +34,24 @@ public class DeviceTypeController {
     }
   }
 
+  @GetMapping("/devices/prod-sync")
+  public ResponseEntity<Object> syncDevicesFromProd(
+      HttpServletRequest request, @RequestParam boolean dryRun) {
+    String returnMsg;
+    try {
+      String headerToken = request.getHeader("Sr-Prod-Devices-Token");
+      deviceTypeProdSyncService.validateToken(headerToken);
+      returnMsg = deviceTypeProdSyncService.syncDevicesFromProd(dryRun);
+    } catch (DryRunException e) {
+      returnMsg = e.getMessage();
+    } catch (AccessDeniedException e) {
+      log.error(e.getMessage());
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+    log.info(returnMsg);
+    return ResponseEntity.status(HttpStatus.OK).body(returnMsg);
+  }
+
   @GetMapping("/devices")
   @JsonView(PublicDeviceType.class)
   public ResponseEntity<Object> getDevices(HttpServletRequest request) {
@@ -43,6 +61,7 @@ public class DeviceTypeController {
       List<DeviceType> devices = deviceTypeService.fetchDeviceTypes();
       return ResponseEntity.status(HttpStatus.OK).body(devices);
     } catch (AccessDeniedException e) {
+      log.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
   }

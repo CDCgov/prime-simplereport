@@ -157,22 +157,43 @@ public class TestDataBuilder {
         "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
   }
 
+  public static DeviceTypeDisease createDeviceTypeDisease(
+      UUID uuid, SupportedDisease supportedDisease) {
+    return new DeviceTypeDisease(
+        uuid,
+        supportedDisease,
+        String.format("test_performed_loinc_code_%s", uuid),
+        String.format("test_performed_loinc_long_name_%s", uuid),
+        String.format("equipment_uid_%s", uuid),
+        String.format("equipment_uid_type_%s", uuid),
+        String.format("test_kit_name_id_%s", uuid),
+        String.format("test_ordered_loinc_code_%s", uuid),
+        String.format("test_ordered_loinc_long_name_%s", uuid));
+  }
+
   public static DeviceType createDeviceType() {
     return new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15);
   }
 
-  public static DeviceType createDeviceTypeForCovid() {
-    List<SpecimenType> swabTypes = new ArrayList<>();
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
-    supportedDiseaseTestPerformed.add(createDeviceTypeDisease());
+  public static DeviceType createDeviceType(
+      String deviceName,
+      Integer testLength,
+      List<SpecimenType> swabTypes,
+      List<DeviceTypeDisease> deviceTypeDiseases) {
     return new DeviceType(
-        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+        String.format("%s", deviceName),
+        String.format("%s Manufacturer", deviceName),
+        String.format("%s Model", deviceName),
+        testLength,
+        swabTypes,
+        deviceTypeDiseases);
   }
 
   public static DeviceType createDeviceTypeForBulkUpload() {
     List<SpecimenType> swabTypes = new ArrayList<>();
+    SupportedDisease covid = createCovidSupportedDiseaseForBulkUpload();
     List<DeviceTypeDisease> supportedDiseaseTestPerformed =
-        List.of(createDeviceTypeDiseaseForBulkUpload(createCovidSupportedDiseaseForBulkUpload()));
+        List.of(createDeviceTypeDiseaseForBulkUpload(covid));
     return new DeviceType(
         DEFAULT_DEVICE_TYPE, "Acme", "ID NOW", 15, swabTypes, supportedDiseaseTestPerformed);
   }
@@ -242,8 +263,22 @@ public class TestDataBuilder {
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
+  public static DeviceType createDeviceType(String deviceName, List<SpecimenType> swabTypes) {
+    return new DeviceType(
+        deviceName,
+        String.format("%s Manufacturer", deviceName),
+        String.format("%s Model", deviceName),
+        15,
+        swabTypes,
+        List.of());
+  }
+
   public static SpecimenType createSpecimenType() {
     return new SpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321");
+  }
+
+  public static SpecimenType createSpecimenType(String name, String typeCode) {
+    return new SpecimenType(name, typeCode, name + " location", "1111111");
   }
 
   public static Facility createFacility() {
