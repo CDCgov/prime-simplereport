@@ -120,13 +120,8 @@ public class BulkUploadResultsToFhir {
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
-      try {
-        row = getNextRow(valueIterator);
-      } catch (CsvProcessingException ex) {
-        // anything that would land here should have been caught and handled by the file validator
-        log.error("Unable to parse csv.", ex);
-        throw ex;
-      }
+      row = getNextRow(valueIterator);
+
       TestResultRow fileRow = new TestResultRow(row);
 
       Optional<String> disease =
