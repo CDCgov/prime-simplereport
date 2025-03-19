@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.utils;
 import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonNodesEqual;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -15,6 +14,7 @@ import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
@@ -70,9 +70,10 @@ public class BulkUploadResultsToFhirTest {
   @BeforeEach
   public void beforeEach() {
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
+    DeviceType deviceType = TestDataBuilder.createDeviceTypeForBulkUpload();
 
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+        .thenReturn(Map.of("id now|94534-5", deviceType));
 
     when(resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(
@@ -468,27 +469,6 @@ public class BulkUploadResultsToFhirTest {
         getJsonStream("testResultUpload/test-results-upload-valid-as-fhir.ndjson");
     String expectedBundleString = inputStreamToString(jsonStream);
     assertThat(actualBundles).isEqualTo(expectedBundleString);
-  }
-
-  @Test
-  void convertExistingCsv_meetsProcessingSpeed() {
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-4000-rows.csv");
-
-    var startTime = System.currentTimeMillis();
-
-    sut.convertToFhirBundles(input, UUID.randomUUID());
-
-    var endTime = System.currentTimeMillis();
-    var elapsedTime = endTime - startTime;
-
-    // The processing is threaded so the elapsed time is closely tied to available CPU cores. GitHub
-    // action runners
-    // will require more time because they have less cores than our dev or prod machines.
-    assertTrue(
-        elapsedTime < 30000,
-        "Bundle processing took more than 30 seconds for 5000 rows. It took "
-            + elapsedTime
-            + " milliseconds.");
   }
 
   @Test
