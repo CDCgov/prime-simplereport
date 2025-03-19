@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -132,6 +133,7 @@ public class DeviceTypeLIVDSyncService {
   private final DeviceTypeService deviceTypeService;
   private final DiseaseService diseaseService;
   private final SpecimenTypeService specimenTypeService;
+  private final DeviceTypeSyncService deviceTypeSyncService;
 
   public String extractSpecimenTypeCode(String specimenDescription) {
     Pattern specimenCode = Pattern.compile("^(.*?)\\^");
@@ -391,32 +393,15 @@ public class DeviceTypeLIVDSyncService {
 
   private boolean hasUpdates(UpdateDeviceType update, DeviceType existing) {
     List<DeviceTypeDisease> incomingDiseases =
-        deviceTypeService.createDeviceTypeDiseaseList(
+        deviceTypeSyncService.createUpdatedDeviceTypeDiseaseList(
             update.getSupportedDiseaseTestPerformed(), existing);
-    List<UUID> incomingSwabs = update.getSwabTypes();
-
-    if (existing.getSwabTypes() == null) {
-      return true;
-    }
-
-    if (existing.getSupportedDiseaseTestPerformed() == null) {
-      return true;
-    }
-
-    boolean hasDiseaseUpdates =
-        !incomingDiseases.stream()
-            .allMatch(
-                d ->
-                    existing.getSupportedDiseaseTestPerformed().stream()
-                        .anyMatch(b -> b.equals(d)));
-    boolean hasSwabUpdates =
-        !incomingSwabs.stream()
-            .allMatch(
-                d ->
-                    existing.getSwabTypes().stream()
-                        .map(SpecimenType::getInternalId)
-                        .anyMatch(b -> b.equals(d)));
-
-    return hasDiseaseUpdates || hasSwabUpdates;
+    List<UUID> incomingSwabs =
+        update.getSwabTypes().stream()
+            .map(specimenTypeRepository::findById)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(IdentifiedEntity::getInternalId)
+            .toList();
+    return deviceTypeSyncService.hasUpdates(incomingDiseases, incomingSwabs, existing);
   }
 }

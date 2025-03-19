@@ -17,11 +17,9 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,18 +39,13 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
   @Mock private DeviceTypeRepository _deviceTypeRepoMock;
-
+  @Mock private DeviceTypeSyncService _deviceTypeSyncServiceMock;
   private DeviceTypeService deviceTypeServiceWithMock;
 
   @BeforeAll
   void setup() {
     this.deviceTypeServiceWithMock =
-        new DeviceTypeService(
-            _deviceTypeRepoMock,
-            mock(DeviceSpecimenTypeNewRepository.class),
-            mock(SpecimenTypeRepository.class),
-            mock(SupportedDiseaseRepository.class),
-            mock(DeviceTypeDiseaseRepository.class));
+        new DeviceTypeService(_deviceTypeRepoMock, _deviceTypeSyncServiceMock);
   }
 
   @Test

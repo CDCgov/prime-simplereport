@@ -159,31 +159,24 @@ public class OrganizationInitializingService {
 
     Map<String, DeviceType> deviceTypesByName =
         _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(DeviceType::getName, d -> d));
+    List<DeviceType> addedDevices = new ArrayList<>();
     for (DeviceType d : getDeviceTypes(specimenTypesByCode)) {
       if (!deviceTypesByName.containsKey(d.getName())) {
         log.info("Creating device type {}", d.getName());
         DeviceType deviceType = _deviceTypeRepo.save(d);
-        deviceTypesByName.put(deviceType.getName(), deviceType);
+        addedDevices.add(deviceType);
       }
     }
 
-    Map<String, DeviceTypeDisease> deviceExtraInfoByLoincTestkitEquipmentId =
-        deviceTypeDiseaseRepository.findAll().stream()
-            .collect(Collectors.toMap(d -> deviceExtraInfoKey(d), d -> d));
-    for (DeviceTypeDisease d : getDeviceTypeDiseaseCode(deviceTypesByName)) {
-      if (!deviceExtraInfoByLoincTestkitEquipmentId.containsKey(deviceExtraInfoKey(d))) {
-        log.info("Creating device test performed loinc code {}", d.getTestPerformedLoincCode());
-        DeviceTypeDisease deviceTypeDisease = deviceTypeDiseaseRepository.save(d);
-        deviceExtraInfoByLoincTestkitEquipmentId.put(
-            deviceTypeDisease.getTestPerformedLoincCode(), deviceTypeDisease);
-      }
-    }
-
-    return new ArrayList<>(deviceTypesByName.values());
-  }
-
-  private static String deviceExtraInfoKey(DeviceTypeDisease d) {
-    return d.getTestPerformedLoincCode() + d.getTestkitNameId() + d.getEquipmentUid();
+    addedDevices.forEach(
+        (device) -> {
+          List<DeviceTypeDisease> deviceTypeDiseaseList =
+              deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(Set.of(device.getInternalId()));
+          if (deviceTypeDiseaseList.isEmpty()) {
+            getDeviceTypeDiseaseCode(device);
+          }
+        });
+    return new ArrayList<>(_deviceTypeRepo.findAll());
   }
 
   private List<DeviceType> getDeviceTypes(Map<String, SpecimenType> specimenTypesByCode) {
@@ -203,28 +196,76 @@ public class OrganizationInitializingService {
         .collect(Collectors.toList());
   }
 
-  private List<DeviceTypeDisease> getDeviceTypeDiseaseCode(
-      Map<String, DeviceType> deviceTypesByName) {
-    List<List<DeviceTypeDisease>> collect =
+  private void getDeviceTypeDiseaseCode(DeviceType deviceToFind) {
+    InitialSetupProperties.ConfigDeviceType configDeviceType =
         _props.getDeviceTypes().stream()
-            .map(
-                device ->
-                    device.getTestPerformedLoincs().stream()
-                        .map(
-                            c ->
-                                DeviceTypeDisease.builder()
-                                    .deviceTypeId(
-                                        deviceTypesByName.get(device.getName()).getInternalId())
-                                    .equipmentUid(c.getEquipmentUid())
-                                    .testkitNameId(c.getTestkitNameId())
-                                    .testPerformedLoincCode(c.getTestPerformedLoincCode())
-                                    .supportedDisease(
-                                        diseaseService.getDiseaseByName(c.getSupportedDisease()))
-                                    .testOrderedLoincCode(c.getTestOrderedLoincCode())
-                                    .build())
-                        .collect(Collectors.toList()))
-            .collect(Collectors.toList());
-    return collect.stream().flatMap(List::stream).collect(Collectors.toList());
+            .filter(d -> d.getName().equals(deviceToFind.getName()))
+            .findFirst()
+            .get();
+    configDeviceType
+        .getTestPerformedLoincs()
+        .forEach(
+            testPerformedLoinc -> {
+              DeviceTypeDisease diseaseToAdd =
+                  DeviceTypeDisease.builder()
+                      .deviceTypeId(deviceToFind.getInternalId())
+                      .equipmentUid(testPerformedLoinc.getEquipmentUid())
+                      .testOrderedLoincCode(testPerformedLoinc.getTestOrderedLoincCode())
+                      .testkitNameId(testPerformedLoinc.getTestkitNameId())
+                      .testPerformedLoincCode(testPerformedLoinc.getTestPerformedLoincCode())
+                      .supportedDisease(
+                          diseaseService.getDiseaseByName(testPerformedLoinc.getSupportedDisease()))
+                      .build();
+              deviceTypeDiseaseRepository.save(diseaseToAdd);
+            });
+    //    List<List<DeviceTypeDisease>> collect =
+    //            _props.getDeviceTypes().stream()
+    //                    .map(
+    //                            device ->
+    //                                    device.getTestPerformedLoincs().stream()
+    //                                            .map(
+    //                                                    c ->
+    //                                                            DeviceTypeDisease.builder()
+    //                                                                    .deviceTypeId(
+    //
+    // deviceTypesByName.get(device.getName()).getInternalId())
+    //
+    // .equipmentUid(c.getEquipmentUid())
+    //
+    // .testkitNameId(c.getTestkitNameId())
+    //
+    // .testPerformedLoincCode(c.getTestPerformedLoincCode())
+    //                                                                    .supportedDisease(
+    //
+    // diseaseService.getDiseaseByName(c.getSupportedDisease()))
+    //
+    // .testOrderedLoincCode(c.getTestOrderedLoincCode())
+    //                                                                    .build())
+    //                                            .collect(Collectors.toList()))
+    //                    .toList();
+    //    return collect.stream().flatMap(List::stream).collect(Collectors.toList());
+    //    List<List<DeviceTypeDisease>> collect =
+    //        _props.getDeviceTypes().stream()
+    //            .map(
+    //                device ->
+    //                    device.getTestPerformedLoincs().stream()
+    //                        .map(
+    //                            c ->
+    //                                DeviceTypeDisease.builder()
+    //                                    .deviceTypeId(
+    //
+    // deviceTypesByName.get(device.getName()).getInternalId())
+    //                                    .equipmentUid(c.getEquipmentUid())
+    //                                    .testkitNameId(c.getTestkitNameId())
+    //                                    .testPerformedLoincCode(c.getTestPerformedLoincCode())
+    //                                    .supportedDisease(
+    //
+    // diseaseService.getDiseaseByName(c.getSupportedDisease()))
+    //                                    .testOrderedLoincCode(c.getTestOrderedLoincCode())
+    //                                    .build())
+    //                        .collect(Collectors.toList()))
+    //            .toList();
+    //    return collect.stream().flatMap(List::stream).collect(Collectors.toList());
   }
 
   private void initOktaOrg(Organization org) {

@@ -34,6 +34,16 @@ public class DeviceTypeController {
     }
   }
 
+  @GetMapping("/devices/prod-sync")
+  public void syncDevicesFromProd(@RequestParam boolean dryRun) {
+    try {
+      deviceTypeProdSyncService.syncDevicesFromProd(dryRun);
+    } catch (DryRunException e) {
+      log.info(e.getMessage());
+      log.info("Prod device sync - dry run");
+    }
+  }
+
   @GetMapping("/devices")
   @JsonView(PublicDeviceType.class)
   public ResponseEntity<Object> getDevices(HttpServletRequest request) {
