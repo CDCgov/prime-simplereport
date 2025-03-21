@@ -24,8 +24,17 @@ public class DateTimeUtils {
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yyyy[ H:mm]");
 
+  private static final String MONTH = "(0?[1-9]|1[0-2])";
+  private static final String DAY = "(0?[1-9]|[12]\\d|3[01])";
+  private static final String HOUR = "(0?\\d|1\\d|2[0-3])";
+  private static final String YEAR = "\\d{4}";
+  private static final String MINUTES = "[0-5]\\d";
+  public static final String TIMEZONE_CODE = "(\\S+)";
+  public static final String DATE_PART = MONTH + "\\s*/\\s*" + DAY + "\\s*/\\s*" + YEAR;
+  public static final String TIME_PART = HOUR + "\\s*:\\s*" + MINUTES;
+
   public static final String TIMEZONE_SUFFIX_REGEX =
-      "^(0?[1-9]|1[0-2])/(0?[1-9]|1\\d|2\\d|3[01])/\\d{4}( ([0-1]?\\d|2[0-3]):[0-5]\\d)( \\S+)$";
+      "^" + DATE_PART + "\\s+" + TIME_PART + "\\s+" + TIMEZONE_CODE + "\\s*$";
 
   public static final ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 
@@ -123,10 +132,10 @@ public class DateTimeUtils {
     return ZonedDateTime.of(localDateTime, zoneId);
   }
 
-  private static ZoneId parseDateStringZoneId(String dateString) {
+  public static ZoneId parseDateStringZoneId(String dateString) {
     ZoneId zoneId;
-
-    var timezoneCode = dateString.substring(dateString.lastIndexOf(" ")).trim();
+    String trimmedString = dateString.trim();
+    var timezoneCode = trimmedString.substring(trimmedString.lastIndexOf(" ") + 1);
     try {
       zoneId = parseZoneId(timezoneCode);
     } catch (DateTimeException e) {
@@ -149,6 +158,7 @@ public class DateTimeUtils {
   public static LocalDateTime parseLocalDateTime(
       String value, DateTimeFormatter dateTimeFormatter) {
     String dateTimeString = value;
+    dateTimeString = dateTimeString.replaceAll("\\s*+([/:])\\s*+", "$1").trim();
     if (hasTimezoneSubstring(value)) {
       dateTimeString = dateTimeString.substring(0, value.lastIndexOf(' ')).trim();
     }
