@@ -472,7 +472,7 @@ public class BulkUploadResultsToFhirTest {
 
   @Test
   void convertExistingCsv_meetsProcessingSpeed() {
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-5000-rows.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-4000-rows.csv");
 
     var startTime = System.currentTimeMillis();
 

@@ -8,8 +8,8 @@ import gov.cdc.usds.simplereport.service.DeviceTypeProdSyncService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 public class DeviceTypeController {
-  @Autowired private DeviceTypeLIVDSyncService deviceTypeLIVDSyncService;
-  @Autowired private DeviceTypeProdSyncService deviceTypeProdSyncService;
-  @Autowired private DeviceTypeService deviceTypeService;
+  private final DeviceTypeLIVDSyncService deviceTypeLIVDSyncService;
+  private final DeviceTypeProdSyncService deviceTypeProdSyncService;
+  private final DeviceTypeService deviceTypeService;
 
   @GetMapping("/devices/sync")
   public void syncDevices(@RequestParam boolean dryRun) {
