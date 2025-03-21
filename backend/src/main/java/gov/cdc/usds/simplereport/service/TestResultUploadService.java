@@ -129,6 +129,8 @@ public class TestResultUploadService {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
 
+  private static final String TIME_MEASSUREMENT_MILLISECONDS_NAME=" milliseconds";
+  
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
 
@@ -400,7 +402,7 @@ public class TestResultUploadService {
                 throw new CsvProcessingException("Unable to parse Report Stream response.");
               }
               log.info(
-                  "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+                  "FHIR submitted in " + (System.currentTimeMillis() - start) + TIME_MEASSUREMENT_MILLISECONDS_NAME);
 
               return new UniversalSubmissionSummary(
                   submissionId, org, response, fhirBundleWithMeta.metadata());
@@ -458,7 +460,7 @@ public class TestResultUploadService {
                 }
               }
               log.info(
-                  "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+                  "CSV submitted in " + (System.currentTimeMillis() - start) + TIME_MEASSUREMENT_MILLISECONDS_NAME);
 
               HashMap<String, Integer> diseaseReported = new HashMap<>();
 
@@ -623,7 +625,7 @@ public class TestResultUploadService {
                 throw new CsvProcessingException("Unable to parse Report Stream response.");
               }
               log.info(
-                  "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+                  "FHIR submitted in " + (System.currentTimeMillis() - start) + TIME_MEASSUREMENT_MILLISECONDS_NAME);
               return response;
             }));
   }
