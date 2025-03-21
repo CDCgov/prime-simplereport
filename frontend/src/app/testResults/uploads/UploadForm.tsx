@@ -348,8 +348,12 @@ const UploadForm: React.FC<UploadFormProps> = ({
         });
       } else {
         const response = await res.json();
-        // failed upload due to validation errors
-        if (response?.length === 1 && response[0].errors?.length) {
+        const allErrors = response.flatMap(
+          (item: { errors: any[] }) => item.errors
+        );
+
+        // failed upload due to validation errors from either Simple Report or Report Stream
+        if (allErrors.length > 0) {
           setErrorMessage(
             <>
               Please resolve the errors below and{" "}
@@ -357,12 +361,12 @@ const UploadForm: React.FC<UploadFormProps> = ({
               file has not been accepted.
             </>
           );
-          setErrors(groupErrors(response[0].errors));
+          setErrors(groupErrors(allErrors));
           setFileValid(false);
           appInsights?.trackEvent({
             name: "Spreadsheet upload validation failure",
             properties: {
-              errors: response[0].errors,
+              errors: allErrors,
               org: orgName,
               user: user?.email,
               uploadType: uploadType,
@@ -375,6 +379,22 @@ const UploadForm: React.FC<UploadFormProps> = ({
             name: "Spreadsheet upload success",
             properties: {
               "report ID": response[0]?.reportId,
+              org: orgName,
+              user: user?.email,
+              uploadType: uploadType,
+            },
+          });
+        } else {
+          setErrorMessage(
+            <>
+              There was an unexpected processing error. Your file has not been
+              accepted. <br /> Contact support if you continue having issues.
+            </>
+          );
+          setFileValid(false);
+          appInsights?.trackEvent({
+            name: "Unexpected error",
+            properties: {
               org: orgName,
               user: user?.email,
               uploadType: uploadType,
