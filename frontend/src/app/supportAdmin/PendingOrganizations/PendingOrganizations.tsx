@@ -55,6 +55,18 @@ const initialState: PendingOrganizationState = {
 };
 
 const phoneUtil = PhoneNumberUtil.getInstance();
+
+const parsePhoneNumber = (phoneNumber: string) => {
+  try {
+    return phoneUtil.format(
+      phoneUtil.parseAndKeepRawInput(phoneNumber, "US"),
+      PhoneNumberFormat.NATIONAL
+    );
+  } catch {
+    return "";
+  }
+};
+
 const PendingOrganizations = ({
   organizations,
   submitIdentityVerified,
@@ -217,12 +229,7 @@ const PendingOrganizations = ({
         <td className="word-break-break-word">
           <a href={`mailto:${o.adminEmail}}`}>{o.adminEmail}</a>
           <br />
-          {o.adminPhone
-            ? phoneUtil.format(
-                phoneUtil.parseAndKeepRawInput(o.adminPhone, "US"),
-                PhoneNumberFormat.NATIONAL
-              )
-            : ""}
+          {parsePhoneNumber(o.adminPhone)}
         </td>
         <td
           data-testid="org-created-at-table-cell"
