@@ -422,6 +422,7 @@ export const countryOptions = Object.entries(countries)
 export const languages: Language[] = [
   "English",
   "Spanish",
+  "Esperanto",
   "Unknown",
   "Afrikaans",
   "Amaric",
