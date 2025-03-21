@@ -479,7 +479,7 @@ public class TestResultUploadService {
           InterruptedException {
     try {
       CovidSubmissionSummary submissionSummary = futureSubmissionSummary.get();
-      if (submissionSummary.processingException() != null) {
+      if (submissionSummary.processingException() instanceof DependencyFailureException) {
         throw (DependencyFailureException) submissionSummary.processingException();
       }
 
