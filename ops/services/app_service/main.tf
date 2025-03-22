@@ -109,8 +109,7 @@ resource "azurerm_linux_web_app_slot" "staging" {
     # This application stack is what we use to deploy the docker image to the staging slot
     # After it becomes healthy, we swap the staging slot with the production slot to complete the deployment
     application_stack {
-      docker_image     = var.docker_image
-      docker_image_tag = var.docker_image_tag
+      docker_image_name = "${var.docker_image_name}:${var.docker_image_tag}"
     }
 
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
