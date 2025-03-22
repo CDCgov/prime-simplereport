@@ -1,0 +1,92 @@
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+spring:
+  datasource:
+    simplereport:
+      hikari:
+        jdbc-url: jdbc:postgresql://localhost:5432/simple_report
+    metabase:
+      hikari:
+        jdbc-url: jdbc:postgresql://localhost:5432/metabase
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true # override this in application-local.yaml to get pretty-printed SQL all the time
+        default_schema: simple_report
+  liquibase:
+    simplereport:
+      user: simple_report_migrations
+      password: migrations456
+      default-schema: simple_report
+    metabase:
+      user: simple_report_migrations
+      password: migrations456
+      default-schema: public
+  mail:
+    host: localhost
+    port: 1025
+datahub:
+  url: "https://staging.prime.cdc.gov/"
+  api-key: "d2liOCOag2oEhxKlUaa7RIeGBJYOvAGCiXptkcLwK9F1P0FhC5mNoA=="
+  api-version: "2021-09-21"
+  csv-upload-api-client: "simple_report.csvuploader"
+  signing-key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    MIIEowIBAAKCAQEAqWSENQUdIUGF5UNjF+q1b5HmWmg72r9bAqC0vXQdD4rgu3uG
+    y4Nlp5rllbMqGnDOTKvoO6TA98QNZqFMt/yWbKPRo93hYEio1OsTzfyDbwiJKQ1c
+    liZH3yAITy7pFxV5gNiPQy82WgZehY7QqE5XPQ9T5S1qu5QBJu1NBBDlJOru1TCi
+    StpFkA2rttMFONIpsgGuPiOwVk9hko5irPJQyOBbLKIgAAPsThzjZGqbpNewZPON
+    R+lPE7jqVIPqAtrZnVb2EJbIlFTw4ln7I5XPPjJNNLDNRcFOi7PQGnrhmmuoDeZx
+    pTxws7NIX3d9hjfs/T4QYa9Y9VrRAftrY5ranwIDAQABAoIBAH8FmP4JL6bYc4dP
+    2Ob+Yb+gMJRqxTdrdtuplt7aS1B0W8E7CAFkLr5YMQDosRHStWBZKHRRP0KMCWCE
+    Y/sztbkRvwqaP37r/W5sORWl3QlN5UybcGpHmm1+n7yA+NkOiWZM/mDq7l7jl82f
+    ImiTFmf7LnYUcIzol1SRbcc2xB3BtYVEp9lOCAUY0UEpZ64Rt6FMuopmWnj0GPOU
+    C7cgV+l8hXengT+USUFzkTTh2dJtyKC+iP1yB8UVJLzUaPL6PCPo+Kf1zTaaKx1s
+    NoTlew8iUM5HUfHyR/vFQL9B4jMraGZWz5NRimH0ftTmJN8iNZl3etyjz4kTkd8E
+    BSIWb4ECgYEA17em4udYht3Z72iGmEIkOOLphXDB9w2+rE3AfdVQw2aCs3GZmj1G
+    gVMNf0nQMJd68YJoh6ndNZ50dOrGSXjmVdSEAF1P9RhMw4pyhLxEhg87NKekqQqU
+    01+RXH0KaIn+OmFoKNpg9L+B1A65QUlNXOAz4S3OGMnr1vTg6yH71JkCgYEAyQZQ
+    i4QQmDcYKAV7LcoU4tUn7wF4CQzQIAmvby5/wpd59PivINUWzZeE0B6BK7pZ0AU4
+    P9sqnnFTE5heCi8sfKBVH7PI51b8ypRVixFdtG1H2/8QuXUJQcxXene2D1qeYEmb
+    N3H2Ss18AQoUqCUKyyVDwSnNRG/DBEoVL9Ygc/cCgYEAnETajL1zECBe5GQgPOSN
+    QPiAmr5YhRRb8I5Sx9VkMGlufXfqAiYpkT4NJQzf2JOj6JjECKMxMMqdKqV5B3ih
+    w8Oz7F+ssKztzynYU/fe3A7koPxg+GRF8+njb9DVXW250akGv7GTUzn4XxpbccQc
+    Ww/ABXwdNS/xvUKgPTXdLOECgYAkt1SKxupJAvcUiDvBV0GNVKVgkAIelQqGb35t
+    bi7DmesahTlnY8QwdNY7NPcex4CT8AAgGaWlHsmvsIqsjYUwlhA2JB4zsr2lOoaN
+    SfS1eahAVEv3s5qnO+1WXvsPvttids80x0nWy8U0Y2T2eR2JkRrY8wuczlTuOaG5
+    BQEUbQKBgDehT+8z2UVAs7GCgW94WYSy0daHtvudCVj1PYfdjYj7eUxpXRhUy3TA
+    7shgcoxrmo4aG/hbWgHKB5v5/vN9BbwjzBWBakEVR3ZCMymRzkZlD4XerSVxjFi3
+    6FvGXdtGtRr4zypEL7G8w/AbnR7uxIVqqv0fEBuVGmopZIY5Xecx
+    -----END RSA PRIVATE KEY-----
+simple-report:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+  azure-reporting-queue:
+    enabled: false
+    fhir-queue-enabled: false
+  demo-users:
+    site-admin-emails:
+      - bob@example.com
+    default-user:
+      identity:
+        username: bob@example.com
+        first-name: Bob
+        last-name: Bobberoo
+      authorization:
+        organization-external-id: ${SR_DEMO_USER_ORG:DIS_ORG}
+        #        organization-external-id: DIS_ORG
+        granted-roles: ADMIN
+
+#SMARTY_AUTH_ID: get_from_team
+#SMARTY_AUTH_TOKEN: get_from_team
+smarty-streets:
+  id: 5fd1cc7a-9b6e-af9d-caec-720efe038282
+  token: yX4PfEN02sDYE8QE4Auz
+features:
+  singleEntryRsvEnabled: true
+  agnosticBulkUploadEnabled: false
+  gonorrheaEnabled: false
+  hepatitisCEnabled: true
