@@ -726,6 +726,46 @@ describe("TestResultsList", () => {
         );
       });
     });
+
+    it("should not navigate when focusing the search input on pages other than page 1", async () => {
+      const search = new URLSearchParams({
+        facility: "1",
+      });
+
+      const user = userEvent.setup();
+
+      render(
+        <MemoryRouter
+          initialEntries={[
+            { pathname: "/results/2", search: search.toString() },
+          ]}
+        >
+          <Provider store={store}>
+            <MockedProvider mocks={mocks}>
+              <TestResultsList />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+
+      const pageLink = await screen.findByRole("link", { name: /page 2/i });
+      const initialPath = pageLink.getAttribute("href");
+
+      const searchInput = screen.getByRole("searchbox", {
+        name: /search by name/i,
+      });
+
+      await user.click(searchInput);
+
+      await waitFor(() => {}, { timeout: 100 });
+
+      const pageLinkAfter = screen.getByRole("link", { name: /page 2/i });
+      expect(pageLinkAfter).toHaveAttribute("href", initialPath);
+    });
   });
 
   it("should hide facility filter if user can see only 1 facility", async () => {

@@ -159,6 +159,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
   const handlePatientInputChange: ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
+    if (event.type !== "change") return;
     if (event.target.value === "") {
       setFilterParams("patientId")(null);
     }
