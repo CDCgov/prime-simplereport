@@ -257,13 +257,13 @@ describe("Uploads", () => {
       await waitFor(() => {
         expect(
           screen.getByText(
-            "There was a server error. Your file has not been accepted."
+            "There was a server error. Your file has not been accepted. Contact support if you continue having issues."
           )
         ).toBeInTheDocument();
       });
       expect(
         screen.getByText(
-          "There was a server error. Your file has not been accepted."
+          "There was a server error. Your file has not been accepted. Contact support if you continue having issues."
         ).parentElement?.parentElement
       ).toHaveFocus();
       expect(screen.queryByText("Requested Edit")).not.toBeInTheDocument();

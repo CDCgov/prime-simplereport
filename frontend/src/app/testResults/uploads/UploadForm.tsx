@@ -332,7 +332,10 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
       if (res.status !== 200) {
         setErrorMessage(
-          <>There was a server error. Your file has not been accepted.</>
+          <>
+            There was a server error. Your file has not been accepted. <br />{" "}
+            Contact support if you continue having issues.
+          </>
         );
         setFileValid(false);
         appInsights?.trackEvent({

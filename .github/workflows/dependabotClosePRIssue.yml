@@ -2,7 +2,6 @@ name: Dependabot Close Issue
 on:
   pull_request:
     types: [closed]
-    branches: ['dependabot/**']
 
 jobs:
   issue:
