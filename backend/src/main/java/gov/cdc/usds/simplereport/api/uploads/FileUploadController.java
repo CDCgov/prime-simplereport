@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
@@ -29,6 +30,7 @@ public class FileUploadController {
   public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
   private final PatientBulkUploadService patientBulkUploadService;
   private final TestResultUploadService testResultUploadService;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   @PostMapping(PATIENT_UPLOAD)
   public PatientBulkUploadResponse handlePatientsUpload(
@@ -65,7 +67,12 @@ public class FileUploadController {
 
   @PostMapping(RESULT_UPLOAD)
   @SuppressWarnings({"checkstyle:illegalcatch"})
-  public List<TestResultUpload> handleResultsUpload(@RequestParam("file") MultipartFile file) {
+  public List<TestResultUpload> handleResultsUpload(@RequestParam("file") MultipartFile file)
+      throws Exception {
+    if (featureFlagsConfig.isBulkUploadDisabled()) {
+      throw new Exception("Bulk upload feature is temporarily disabled.");
+    }
+
     assertCsvFileType(file);
 
     try (InputStream resultsUpload = file.getInputStream()) {
