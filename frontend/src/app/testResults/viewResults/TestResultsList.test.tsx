@@ -728,7 +728,7 @@ describe("TestResultsList", () => {
     });
   });
 
-  it("should hide facility filter if user can see only 1 facility", async () => {
+  it("should hide facility filter if user can see only one facility", async () => {
     const localStore = mockStore({
       organization: {
         name: "Organization Name",
