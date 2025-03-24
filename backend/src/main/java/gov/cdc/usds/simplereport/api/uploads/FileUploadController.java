@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
+import gov.cdc.usds.simplereport.api.model.errors.BulkUploadDisabledException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
@@ -67,10 +68,9 @@ public class FileUploadController {
 
   @PostMapping(RESULT_UPLOAD)
   @SuppressWarnings({"checkstyle:illegalcatch"})
-  public List<TestResultUpload> handleResultsUpload(@RequestParam("file") MultipartFile file)
-      throws Exception {
+  public List<TestResultUpload> handleResultsUpload(@RequestParam("file") MultipartFile file) {
     if (featureFlagsConfig.isBulkUploadDisabled()) {
-      throw new Exception("Bulk upload feature is temporarily disabled.");
+      throw new BulkUploadDisabledException("Bulk upload feature is temporarily disabled.");
     }
 
     assertCsvFileType(file);
