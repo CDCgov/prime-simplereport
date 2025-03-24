@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.uploads.FileUploadController.TEXT_CS
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -16,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
@@ -39,6 +41,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
   @Autowired private MockMvc mockMvc;
   @MockBean private PatientBulkUploadService patientBulkUploadService;
   @MockBean private TestResultUploadService testResultUploadService;
+  @MockBean private FeatureFlagsConfig _featureFlagsConfig;
 
   @Test
   void patientsUploadTest_happy() throws Exception {
@@ -229,5 +232,24 @@ class FileUploadControllerTest extends BaseFullStackTest {
             result ->
                 assertEquals(
                     "Only CSV files are supported", result.getResolvedException().getMessage()));
+  }
+
+  @Test
+  void resultsUploadTest_FeatureDisabled() throws Exception {
+    when(_featureFlagsConfig.isBulkUploadDisabled()).thenReturn(true);
+    MockMultipartFile file =
+        new MockMultipartFile(
+            "file", "results.csv", TEXT_CSV_CONTENT_TYPE, "csvContent".getBytes());
+
+    mockMvc
+        .perform(multipart(RESULT_UPLOAD).file(file))
+        .andExpect(status().isInternalServerError())
+        .andExpect(result -> assertNotNull(result.getResolvedException()))
+        .andExpect(
+            result ->
+                assertEquals(
+                    "Bulk upload feature is temporarily disabled.",
+                    result.getResolvedException().getMessage()))
+        .andReturn();
   }
 }
