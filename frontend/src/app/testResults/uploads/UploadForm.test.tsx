@@ -457,6 +457,60 @@ describe("Uploads", () => {
         },
       });
     });
+
+    it("Unexpected error toast shown to user for 200 response code when there are no errors or reportId", async () => {
+      jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify([
+              {
+                reportId: null,
+                status: "ERROR",
+                recordsCount: 1,
+                warnings: [],
+                errors: [],
+              },
+            ]),
+            { status: 200 }
+          )
+        );
+      });
+
+      const { user } = renderWithUser();
+
+      const fileInput = screen.getByTestId("upload-csv-input");
+      await user.upload(fileInput, validFile());
+      expect(
+        screen.getByText("Drag file here or choose from folder to change file")
+      ).toBeInTheDocument();
+
+      const submitButton = screen.getByTestId("button");
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Error: File not accepted")
+        ).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByText((content) => {
+          return content.includes(
+            "There was an unexpected processing error. Your file has not been accepted. " +
+              "Contact support if you continue having issues."
+          );
+        })
+      ).toBeInTheDocument();
+
+      expect(mockTrackEvent).toHaveBeenCalledWith({
+        name: "Unexpected error",
+        properties: {
+          org: "Test Org",
+          user: "testuser@test.org",
+          uploadType: "Disease Specific",
+        },
+      });
+    });
   });
 
   describe("error row grouping", () => {
