@@ -334,6 +334,178 @@ describe("Uploads", () => {
         },
       });
     });
+
+    it("response errors are shown to user when upload fails one pipeline", async () => {
+      jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify([
+              {
+                internalId: "2c8eb0a5-4e82-4723-a851-c50e7c6b1564",
+                createdAt: "2025-03-21T18:42:22.157+00:00",
+                updatedAt: "2025-03-21T18:42:22.183+00:00",
+                reportId: null,
+                submissionId: "6d014dcf-f1ec-46e3-8ebe-5211ca865645",
+                status: "PENDING",
+                recordsCount: 0,
+                warnings: [
+                  {
+                    scope: "item",
+                    message:
+                      "No match found for equipment_model_id (equipment_model_id); please refer to the CDC LIVD table LOINC Mapping spreadsheet for acceptable values.",
+                    indices: [1],
+                    fieldHeader: null,
+                    fieldRequired: false,
+                    errorType: null,
+                    source: null,
+                  },
+                  {
+                    scope: "item",
+                    message:
+                      "No match found for test_kit_name_id (test_kit_name_id); please refer to the CDC LIVD table LOINC Mapping spreadsheet for acceptable values.",
+                    indices: [1],
+                    fieldHeader: null,
+                    fieldRequired: false,
+                    errorType: null,
+                    source: null,
+                  },
+                  {
+                    scope: "item",
+                    message:
+                      "No match found for test_performed_name (test_performed_name); please refer to the CDC LIVD table LOINC Mapping spreadsheet for acceptable values.",
+                    indices: [1],
+                    fieldHeader: null,
+                    fieldRequired: false,
+                    errorType: null,
+                    source: null,
+                  },
+                ],
+                errors: [
+                  {
+                    scope: "item",
+                    message:
+                      "No match found for equipment_model_name (equipment_model_name); please refer to the CDC LIVD table LOINC Mapping spreadsheet for acceptable values.",
+                    indices: [1],
+                    fieldHeader: null,
+                    fieldRequired: false,
+                    errorType: null,
+                    source: "REPORT_STREAM",
+                  },
+                ],
+                destination: "COVID",
+                uploadDiseaseDetails: null,
+              },
+              {
+                internalId: "3b651647-5d37-4cd9-abd7-7bd2e3b6d778",
+                createdAt: "2025-03-21T18:42:22.926+00:00",
+                updatedAt: "2025-03-21T18:42:22.926+00:00",
+                reportId: "1153c235-ad05-4407-a52c-77ee3f6fb32e",
+                submissionId: "6d014dcf-f1ec-46e3-8ebe-5211ca865645",
+                status: "PENDING",
+                recordsCount: 1,
+                warnings: [],
+                errors: [],
+                destination: "UNIVERSAL",
+                uploadDiseaseDetails: null,
+              },
+            ]),
+            { status: 200 }
+          )
+        );
+      });
+
+      const { user } = renderWithUser();
+
+      const fileInput = screen.getByTestId("upload-csv-input");
+      await user.upload(fileInput, validFile());
+      expect(
+        screen.getByText("Drag file here or choose from folder to change file")
+      ).toBeInTheDocument();
+
+      const submitButton = screen.getByTestId("button");
+      await user.click(submitButton);
+
+      expect(
+        await screen.findByText("Error: File not accepted")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Error")).toBeInTheDocument();
+      expect(screen.getByText("Row(s)")).toBeInTheDocument();
+      expect(screen.getByText("No match found for")).toBeInTheDocument();
+      expect(screen.getAllByText("equipment_model_name")).toHaveLength(2);
+
+      expect(mockTrackEvent).toHaveBeenCalledWith({
+        name: "Spreadsheet upload validation failure",
+        properties: {
+          errors: [
+            {
+              message:
+                "No match found for equipment_model_name (equipment_model_name); please refer to the CDC LIVD table LOINC Mapping spreadsheet for acceptable values.",
+              scope: "item",
+              errorType: null,
+              fieldHeader: null,
+              fieldRequired: false,
+              indices: [1],
+              indicesRange: ["1"],
+              source: "REPORT_STREAM",
+            },
+          ],
+          org: "Test Org",
+          user: "testuser@test.org",
+          uploadType: "Disease Specific",
+        },
+      });
+    });
+
+    it("Unexpected error toast shown to user for 200 response code when there are no errors or reportId", async () => {
+      jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
+        return Promise.resolve(
+          new Response(
+            JSON.stringify([
+              {
+                reportId: null,
+                status: "ERROR",
+                recordsCount: 1,
+                warnings: [],
+                errors: [],
+              },
+            ]),
+            { status: 200 }
+          )
+        );
+      });
+
+      const { user } = renderWithUser();
+
+      const fileInput = screen.getByTestId("upload-csv-input");
+      await user.upload(fileInput, validFile());
+      expect(
+        screen.getByText("Drag file here or choose from folder to change file")
+      ).toBeInTheDocument();
+
+      const submitButton = screen.getByTestId("button");
+      await user.click(submitButton);
+
+      expect(
+        await screen.findByText("Error: File not accepted")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText((content) => {
+          return content.includes(
+            "There was an unexpected processing error. Your file has not been accepted. " +
+              "Contact support if you continue having issues."
+          );
+        })
+      ).toBeInTheDocument();
+
+      expect(mockTrackEvent).toHaveBeenCalledWith({
+        name: "Unexpected error",
+        properties: {
+          org: "Test Org",
+          user: "testuser@test.org",
+          uploadType: "Disease Specific",
+        },
+      });
+    });
   });
 
   describe("error row grouping", () => {
