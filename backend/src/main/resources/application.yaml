@@ -178,6 +178,10 @@ datahub:
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
   csv-upload-api-client: "simple_report.csvuploader"
   csv-upload-api-fhir-client: "simple_report.fullelr-bulkuploader"
+aphl:
+  tes:
+    api-key: ${APHL_TES_API_KEY:super-secret-api-key}
+    url: "https://tes.tools.aimsplatform.org/api/fhir"
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true
