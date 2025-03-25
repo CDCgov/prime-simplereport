@@ -440,6 +440,85 @@ type FeatureFlag {
   value: Boolean!
 }
 
+input PatientReportInput {
+  firstName: String!
+  middleName: String
+  lastName: String!
+  suffix: String
+  email: String
+  phone: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  country: String
+  sex: String
+  dateOfBirth: LocalDate
+  race: String
+  ethnicity: String
+  tribalAffiliation: String
+}
+
+input ProviderReportInput {
+  firstName: String!
+  middleName: String
+  lastName: String!
+  suffix: String
+  npi: String!
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  country: String
+  email: String
+  phone: String
+}
+
+input FacilityReportInput {
+  name: String!
+  phone: String
+  email: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  country: String
+  clia: String!
+}
+
+input SpecimenInput {
+  snomedTypeCode: String!
+  collectionDate: DateTime
+  collectionTime: String
+  receivedDate: DateTime
+  collectionLocationName: String
+  collectionLocationCode: String
+}
+
+input TestDetailsInput {
+  condition: String
+  testOrderLoinc: String!
+  testPerformedLoinc: String!
+  testPerformedLoincShortName: String
+  resultType: ResultScaleType!
+  resultValue: String!
+  resultDate: DateTime
+  resultTime: String
+  resultInterpretation: String
+}
+
+enum ResultScaleType {
+  QUANTITATIVE
+  ORDINAL
+  NOMINAL
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -731,4 +810,11 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  submitLabReport(
+    patient: PatientReportInput
+    provider: ProviderReportInput,
+    facility: FacilityReportInput,
+    specimen: SpecimenInput,
+    testDetailsList: [TestDetailsInput]
+  ): String
 }
