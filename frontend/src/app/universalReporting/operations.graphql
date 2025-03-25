@@ -1,0 +1,15 @@
+mutation SubmitLabReport(
+  $patient: PatientReportInput
+  $provider: ProviderReportInput
+  $facility: FacilityReportInput
+  $specimen: SpecimenInput
+  $testDetailsList: [TestDetailsInput]
+) {
+  submitLabReport(
+    patient: $patient
+    provider: $provider
+    facility: $facility
+    specimen: $specimen
+    testDetailsList: $testDetailsList
+  )
+}

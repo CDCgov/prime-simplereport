@@ -176,6 +176,20 @@ export type FacilityAddressInput = {
   zipCode: Scalars["String"]["input"];
 };
 
+export type FacilityReportInput = {
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  clia: Scalars["String"]["input"];
+  country?: InputMaybe<Scalars["String"]["input"]>;
+  county?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  name: Scalars["String"]["input"];
+  phone?: InputMaybe<Scalars["String"]["input"]>;
+  state?: InputMaybe<Scalars["String"]["input"]>;
+  street?: InputMaybe<Scalars["String"]["input"]>;
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  zipCode?: InputMaybe<Scalars["String"]["input"]>;
+};
+
 export type FacilityStats = {
   __typename?: "FacilityStats";
   patientsSingleAccessCount?: Maybe<Scalars["Int"]["output"]>;
@@ -250,6 +264,7 @@ export type Mutation = {
   setPatientIsDeleted?: Maybe<Patient>;
   setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]["output"]>;
   setUserIsDeleted?: Maybe<User>;
+  submitLabReport?: Maybe<Scalars["String"]["output"]>;
   submitQueueItem?: Maybe<AddTestResultResponse>;
   updateAoeQuestions?: Maybe<Scalars["String"]["output"]>;
   updateDeviceType?: Maybe<DeviceType>;
@@ -486,6 +501,14 @@ export type MutationSetUserIsDeletedArgs = {
   id: Scalars["ID"]["input"];
 };
 
+export type MutationSubmitLabReportArgs = {
+  facility?: InputMaybe<FacilityReportInput>;
+  patient?: InputMaybe<PatientReportInput>;
+  provider?: InputMaybe<ProviderReportInput>;
+  specimen?: InputMaybe<SpecimenInput>;
+  testDetailsList?: InputMaybe<Array<InputMaybe<TestDetailsInput>>>;
+};
+
 export type MutationSubmitQueueItemArgs = {
   dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
   deviceTypeId: Scalars["ID"]["input"];
@@ -686,6 +709,27 @@ export type PatientLink = {
   testOrder?: Maybe<TestOrder>;
 };
 
+export type PatientReportInput = {
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  country?: InputMaybe<Scalars["String"]["input"]>;
+  county?: InputMaybe<Scalars["String"]["input"]>;
+  dateOfBirth?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  lastName: Scalars["String"]["input"];
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  phone?: InputMaybe<Scalars["String"]["input"]>;
+  race?: InputMaybe<Scalars["String"]["input"]>;
+  sex?: InputMaybe<Scalars["String"]["input"]>;
+  state?: InputMaybe<Scalars["String"]["input"]>;
+  street?: InputMaybe<Scalars["String"]["input"]>;
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
+  zipCode?: InputMaybe<Scalars["String"]["input"]>;
+};
+
 export type PendingOrganization = {
   __typename?: "PendingOrganization";
   adminEmail: Scalars["String"]["output"];
@@ -738,6 +782,23 @@ export type ProviderInput = {
   lastName?: InputMaybe<Scalars["String"]["input"]>;
   middleName?: InputMaybe<Scalars["String"]["input"]>;
   npi?: InputMaybe<Scalars["String"]["input"]>;
+  phone?: InputMaybe<Scalars["String"]["input"]>;
+  state?: InputMaybe<Scalars["String"]["input"]>;
+  street?: InputMaybe<Scalars["String"]["input"]>;
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  zipCode?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type ProviderReportInput = {
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  country?: InputMaybe<Scalars["String"]["input"]>;
+  county?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  lastName: Scalars["String"]["input"];
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  npi: Scalars["String"]["input"];
   phone?: InputMaybe<Scalars["String"]["input"]>;
   state?: InputMaybe<Scalars["String"]["input"]>;
   street?: InputMaybe<Scalars["String"]["input"]>;
@@ -955,6 +1016,12 @@ export type Result = {
   testResult: Scalars["String"]["output"];
 };
 
+export enum ResultScaleType {
+  Nominal = "NOMINAL",
+  Ordinal = "ORDINAL",
+  Quantitative = "QUANTITATIVE",
+}
+
 export enum ResultValue {
   Negative = "NEGATIVE",
   Positive = "POSITIVE",
@@ -973,6 +1040,15 @@ export enum Role {
   TestResultUploadUser = "TEST_RESULT_UPLOAD_USER",
   User = "USER",
 }
+
+export type SpecimenInput = {
+  collectionDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
+  collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
+  collectionTime?: InputMaybe<Scalars["String"]["input"]>;
+  receivedDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  snomedTypeCode: Scalars["String"]["input"];
+};
 
 export type SpecimenType = {
   __typename?: "SpecimenType";
@@ -1018,6 +1094,18 @@ export enum TestCorrectionStatus {
   Original = "ORIGINAL",
   Removed = "REMOVED",
 }
+
+export type TestDetailsInput = {
+  condition?: InputMaybe<Scalars["String"]["input"]>;
+  resultDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  resultInterpretation?: InputMaybe<Scalars["String"]["input"]>;
+  resultTime?: InputMaybe<Scalars["String"]["input"]>;
+  resultType: ResultScaleType;
+  resultValue: Scalars["String"]["input"];
+  testOrderLoinc: Scalars["String"]["input"];
+  testPerformedLoinc: Scalars["String"]["input"];
+  testPerformedLoincShortName?: InputMaybe<Scalars["String"]["input"]>;
+};
 
 export type TestOrder = {
   __typename?: "TestOrder";
@@ -2963,6 +3051,21 @@ export type GetTestResultDetailsQuery = {
       };
     } | null;
   } | null;
+};
+
+export type SubmitLabReportMutationVariables = Exact<{
+  patient?: InputMaybe<PatientReportInput>;
+  provider?: InputMaybe<ProviderReportInput>;
+  facility?: InputMaybe<FacilityReportInput>;
+  specimen?: InputMaybe<SpecimenInput>;
+  testDetailsList?: InputMaybe<
+    Array<InputMaybe<TestDetailsInput>> | InputMaybe<TestDetailsInput>
+  >;
+}>;
+
+export type SubmitLabReportMutation = {
+  __typename?: "Mutation";
+  submitLabReport?: string | null;
 };
 
 export type GetDeviceTypesForLookupQueryVariables = Exact<{
@@ -9582,6 +9685,70 @@ export type GetTestResultDetailsSuspenseQueryHookResult = ReturnType<
 export type GetTestResultDetailsQueryResult = Apollo.QueryResult<
   GetTestResultDetailsQuery,
   GetTestResultDetailsQueryVariables
+>;
+export const SubmitLabReportDocument = gql`
+  mutation SubmitLabReport(
+    $patient: PatientReportInput
+    $provider: ProviderReportInput
+    $facility: FacilityReportInput
+    $specimen: SpecimenInput
+    $testDetailsList: [TestDetailsInput]
+  ) {
+    submitLabReport(
+      patient: $patient
+      provider: $provider
+      facility: $facility
+      specimen: $specimen
+      testDetailsList: $testDetailsList
+    )
+  }
+`;
+export type SubmitLabReportMutationFn = Apollo.MutationFunction<
+  SubmitLabReportMutation,
+  SubmitLabReportMutationVariables
+>;
+
+/**
+ * __useSubmitLabReportMutation__
+ *
+ * To run a mutation, you first call `useSubmitLabReportMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSubmitLabReportMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [submitLabReportMutation, { data, loading, error }] = useSubmitLabReportMutation({
+ *   variables: {
+ *      patient: // value for 'patient'
+ *      provider: // value for 'provider'
+ *      facility: // value for 'facility'
+ *      specimen: // value for 'specimen'
+ *      testDetailsList: // value for 'testDetailsList'
+ *   },
+ * });
+ */
+export function useSubmitLabReportMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SubmitLabReportMutation,
+    SubmitLabReportMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SubmitLabReportMutation,
+    SubmitLabReportMutationVariables
+  >(SubmitLabReportDocument, options);
+}
+export type SubmitLabReportMutationHookResult = ReturnType<
+  typeof useSubmitLabReportMutation
+>;
+export type SubmitLabReportMutationResult =
+  Apollo.MutationResult<SubmitLabReportMutation>;
+export type SubmitLabReportMutationOptions = Apollo.BaseMutationOptions<
+  SubmitLabReportMutation,
+  SubmitLabReportMutationVariables
 >;
 export const GetDeviceTypesForLookupDocument = gql`
   query getDeviceTypesForLookup {
