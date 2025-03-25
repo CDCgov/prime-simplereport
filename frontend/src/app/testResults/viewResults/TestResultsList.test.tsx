@@ -727,7 +727,7 @@ describe("TestResultsList", () => {
       });
     });
 
-    it("should not navigate when focusing the search input on pages other than page 1", async () => {
+    it("should not navigate to page 1 when focusing the search input on pages other then page 1", async () => {
       const search = new URLSearchParams({
         facility: "1",
       });
