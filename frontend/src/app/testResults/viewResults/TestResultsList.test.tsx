@@ -741,7 +741,7 @@ describe("TestResultsList", () => {
           ]}
         >
           <Provider store={store}>
-            <MockedProvider mocks={mocks}>
+            <MockedProvider mocks={mocksWithMultiplex}>
               <TestResultsList />
             </MockedProvider>
           </Provider>
@@ -749,11 +749,13 @@ describe("TestResultsList", () => {
       );
 
       expect(
-        await screen.findByText("Test Results", { exact: false })
+        await screen.findByText("Test results", { exact: false })
       ).toBeInTheDocument();
 
-      const pageLink = await screen.findByRole("link", { name: /page 2/i });
-      const initialPath = pageLink.getAttribute("href");
+      const paginationText = await screen.findByText(
+        /Showing results for.*of.*/i
+      );
+      const initialPaginationText = paginationText.textContent || "";
 
       const searchInput = screen.getByRole("searchbox", {
         name: /search by name/i,
@@ -761,10 +763,11 @@ describe("TestResultsList", () => {
 
       await user.click(searchInput);
 
-      await waitFor(() => {}, { timeout: 100 });
-
-      const pageLinkAfter = screen.getByRole("link", { name: /page 2/i });
-      expect(pageLinkAfter).toHaveAttribute("href", initialPath);
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Showing results for.*of.*/i)
+        ).toHaveTextContent(initialPaginationText);
+      });
     });
   });
 
