@@ -40,6 +40,7 @@ import DiseaseSpecificUploadContainer from "./testResults/uploads/DiseaseSpecifi
 import AgnosticUploadContainer from "./testResults/uploads/AgnosticUploadContainer";
 import { specificSchemaBuilder } from "./testResults/uploads/specificSchemaBuilder";
 import { agnosticSchemaBuilder } from "./testResults/uploads/agnosticSchemaBuilder";
+import LabReportForm from "./universalReporting/LabReportForm";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -286,6 +287,16 @@ const ReportingApp = () => {
                   />
                 </>
               )}
+              <Route
+                path="results/universal"
+                element={
+                  <ProtectedRoute
+                    requiredPermissions={canViewResults}
+                    userPermissions={data.whoami.permissions}
+                    element={<LabReportForm />}
+                  />
+                }
+              />
               <Route
                 path="results/upload/submit/guide"
                 element={
