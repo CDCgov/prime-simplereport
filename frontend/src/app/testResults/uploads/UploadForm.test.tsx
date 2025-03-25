@@ -425,11 +425,9 @@ describe("Uploads", () => {
       const submitButton = screen.getByTestId("button");
       await user.click(submitButton);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText("Error: File not accepted")
-        ).toBeInTheDocument();
-      });
+      expect(
+        await screen.findByText("Error: File not accepted")
+      ).toBeInTheDocument();
       expect(screen.getByText("Error")).toBeInTheDocument();
       expect(screen.getByText("Row(s)")).toBeInTheDocument();
       expect(screen.getByText("No match found for")).toBeInTheDocument();
@@ -487,12 +485,9 @@ describe("Uploads", () => {
       const submitButton = screen.getByTestId("button");
       await user.click(submitButton);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText("Error: File not accepted")
-        ).toBeInTheDocument();
-      });
-
+      expect(
+        await screen.findByText("Error: File not accepted")
+      ).toBeInTheDocument();
       expect(
         screen.getByText((content) => {
           return content.includes(
