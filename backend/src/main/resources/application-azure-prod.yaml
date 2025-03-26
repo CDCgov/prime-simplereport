@@ -19,6 +19,8 @@ simple-report:
     enabled: true
   support-escalation:
     enabled: true
+  production:
+    device-sync-enabled: false
 twilio:
   enabled: true
   from-number: "+14045312484"
