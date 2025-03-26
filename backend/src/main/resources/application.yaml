@@ -182,6 +182,10 @@ aphl:
   tes:
     api-key: ${APHL_TES_API_KEY:super-secret-api-key}
     url: "https://tes.tools.aimsplatform.org/api/fhir"
+loinc-fhir:
+  username: ${LOINC_FHIR_API_USERNAME:simple-report-user}
+  password: ${LOINC_FHIR_API_PASSWORD:super-secret-password}
+  url: "https://fhir.loinc.org"
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true
