@@ -21,4 +21,8 @@ public class Condition extends EternalAuditedEntity {
     this.code = code;
     this.display = display;
   }
+
+  protected Condition() {
+    /* for hibernate */
+  }
 }
