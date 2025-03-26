@@ -6,11 +6,14 @@ import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import feign.Response;
 import gov.cdc.usds.simplereport.db.model.Condition;
+import gov.cdc.usds.simplereport.db.model.LoincStaging;
 import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
+import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ public class ConditionService {
 
   private final TerminologyExchangeClient tesClient;
   private final ConditionRepository conditionRepository;
+  private final LoincStagingRepository loincStagingRepository;
 
   public List<Condition> syncConditions() {
     List<Condition> conditionList = new ArrayList<>();
@@ -53,8 +57,11 @@ public class ConditionService {
       for (var entry : bundle.getEntry()) {
         ValueSet valueSet = (ValueSet) entry.getResource();
         CodeableConcept conditionConcept = parseCondition(valueSet);
-        Optional<Condition> condition = saveCondition(conditionConcept);
-        condition.ifPresent(conditionList::add);
+        Condition condition = saveCondition(conditionConcept);
+        conditionList.add(condition);
+        var loincList = parseLoinc(valueSet);
+        loincList.ifPresent(
+            conceptSetComponent -> saveLoincList(conceptSetComponent.getConcept(), condition));
       }
 
       hasNext = bundle.getLink().stream().anyMatch(link -> link.getRelation().equals("next"));
@@ -62,6 +69,23 @@ public class ConditionService {
     }
 
     return conditionList;
+  }
+
+  private void saveLoincList(
+      List<ValueSet.ConceptReferenceComponent> conceptList, Condition condition) {
+    for (var concept : conceptList) {
+      String code = concept.getCode();
+      String display = concept.getDisplay();
+
+      loincStagingRepository.save(new LoincStaging(code, display, condition));
+    }
+  }
+
+  private Optional<ValueSet.ConceptSetComponent> parseLoinc(ValueSet valueSet) {
+    var composeList = valueSet.getCompose().getInclude();
+    return composeList.stream()
+        .filter(component -> Objects.equals(component.getSystem(), "http://loinc.org"))
+        .findFirst();
   }
 
   private Bundle parseResponseToBundle(String responseString) {
@@ -88,15 +112,15 @@ public class ConditionService {
     return new CodeableConcept();
   }
 
-  private Optional<Condition> saveCondition(CodeableConcept conditionConcept) {
+  private Condition saveCondition(CodeableConcept conditionConcept) {
     String code = conditionConcept.getCoding().get(0).getCode();
     String display = conditionConcept.getText();
 
     Condition foundCondition = conditionRepository.findConditionByCode(code);
 
     if (foundCondition == null) {
-      return Optional.of(conditionRepository.save(new Condition(code, display)));
+      foundCondition = (conditionRepository.save(new Condition(code, display)));
     }
-    return Optional.empty();
+    return foundCondition;
   }
 }
