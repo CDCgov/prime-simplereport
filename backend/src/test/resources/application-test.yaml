@@ -55,6 +55,7 @@ logging:
     # com.zaxxer.hikari.HikariConfig: DEBUG
     org.springframework.web.client.RestTemplate: DEBUG
 simple-report:
+  processing-mode-code: P
   authorization:
     environment-name: "UNITTEST"
   sendgrid:
