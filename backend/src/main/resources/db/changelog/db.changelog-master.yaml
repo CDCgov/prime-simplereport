@@ -5839,3 +5839,65 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: facility
             columnName: ordering_provider_id
+  - changeSet:
+      id: add-condition-table
+      author: ggs2@cdc.gov
+      changes:
+        - tagDatabase:
+              tag: add-condition-table
+        - createTable:
+            tableName: condition
+            remarks: Any reportable public health condition.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: text
+                  remarks: The SNOMED code that represents this reportable condition.
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: display
+                  type: text
+                  remarks: The display name of this reportable condition.
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+      rollback:
+        - dropTable:
+            tableName: condition
