@@ -5868,7 +5868,7 @@ databaseChangeLog:
                   type: text
                   remarks: The display name of this reportable condition.
                   constraints:
-                    unique: true
+                    unique: false
                     nullable: false
               - column:
                   name: created_at
@@ -5898,6 +5898,53 @@ databaseChangeLog:
                     nullable: true
                     references: api_user
                     foreignKeyName: fk__anyentity__updated_by
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
       rollback:
         - dropTable:
             tableName: condition
+  - changeSet:
+      id: add-loinc-staging-table
+      author: ggs2@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-loinc-staging-table
+        - createTable:
+            tableName: loinc_staging
+            remarks: Staging table for LOINC ETL process
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: condition_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__loinc_staging__condition_id
+                    references: condition
+              - column:
+                  name: code
+                  type: text
+                  remarks: The LOINC code.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: display
+                  type: text
+                  remarks: The display name of the LOINC.
+                  constraints:
+                    unique: false
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: loinc_staging
