@@ -1,4 +1,5 @@
 simple-report:
+  processing-mode-code: P
   cors:
     allowed-origins:
       - https://www.simplereport.gov
