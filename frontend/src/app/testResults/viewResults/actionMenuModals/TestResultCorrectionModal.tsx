@@ -157,17 +157,12 @@ export const DetachedTestResultCorrectionModal = ({
         id: testResultId,
         reason: correctionDetails || reason,
       },
-    })
-      .then(() => {
-        // TODO: better text here, maybe indicating to user that the test should now
-        // be available in the queue
-        showSuccess("", "Result marked as correction");
-      })
-      .finally(() => {
-        setTimeout(() => {
-          navigate(`/queue?facility=${activeFacilityId}`);
-        }, 1000);
-      });
+    }).then(() => {
+      // TODO: better text here, maybe indicating to user that the test should now
+      // be available in the queue
+      showSuccess("", "Result marked as correction");
+      navigate(`/queue?facility=${activeFacilityId}`);
+    });
   };
 
   const validationMessageForDeletedFacility = () => {
