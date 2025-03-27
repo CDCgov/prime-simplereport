@@ -12,12 +12,11 @@ locals {
 
 # Create the virtual network and the persistent subnets
 resource "azurerm_virtual_network" "vn" {
-  name                = "${var.app_name}-${var.env}-network"
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  address_space       = [var.network_address]
-
-  tags = var.management_tags
+  name                           = "${var.app_name}-${var.env}-network"
+  resource_group_name            = var.resource_group_name
+  location                       = var.location
+  address_space                  = [var.network_address]
+  tags                           = var.management_tags
 }
 
 resource "azurerm_subnet" "vms" {
@@ -26,7 +25,7 @@ resource "azurerm_subnet" "vms" {
   resource_group_name               = var.resource_group_name
   virtual_network_name              = azurerm_virtual_network.vn.name
   address_prefixes                  = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
-  private_endpoint_network_policies = "Disabled"
+  private_endpoint_network_policies = "NetworkSecurityGroupEnabled"
 }
 
 resource "azurerm_subnet" "lbs" {
