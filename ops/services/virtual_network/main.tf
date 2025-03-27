@@ -26,7 +26,7 @@ resource "azurerm_subnet" "vms" {
   resource_group_name               = var.resource_group_name
   virtual_network_name              = azurerm_virtual_network.vn.name
   address_prefixes                  = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
-  private_endpoint_network_policies = "Enabled"
+  private_endpoint_network_policies = "Disabled"
 }
 
 resource "azurerm_subnet" "lbs" {
