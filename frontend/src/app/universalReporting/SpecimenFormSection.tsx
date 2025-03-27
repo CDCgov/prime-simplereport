@@ -23,11 +23,11 @@ const SpecimenFormSection = ({
     <>
       <div className="grid-row">
         <div className="grid-col-auto">
-          <h2 className={"font-sans-md"}>Specimen Info</h2>
+          <h2 className={"font-sans-lg"}>Specimen Info</h2>
         </div>
       </div>
-      <div className="grid-row grid-gap padding-bottom-2">
-        <div className="grid-col-auto">
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
           <Dropdown
             label="Specimen type"
             name="specimen-type"
@@ -43,6 +43,8 @@ const SpecimenFormSection = ({
             options={specimenOption}
           />
         </div>
+      </div>
+      <div className="grid-row grid-gap">
         <div className="grid-col-auto">
           <TextInput
             name="specimen-collection-date"
@@ -87,7 +89,9 @@ const SpecimenFormSection = ({
             }}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"specimen-collection-location-name"}
             type={"text"}
@@ -101,7 +105,7 @@ const SpecimenFormSection = ({
             value={specimen.collectionLocationName ?? ""}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"specimen-collection-location-code"}
             type={"text"}

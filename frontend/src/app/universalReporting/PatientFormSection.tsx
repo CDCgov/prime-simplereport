@@ -1,7 +1,24 @@
-import { Dispatch } from "react";
+import React, { Dispatch } from "react";
+import moment from "moment/moment";
+import { ComboBox } from "@trussworks/react-uswds";
+import { useTranslation } from "react-i18next";
 
 import TextInput from "../commonComponents/TextInput";
 import { PatientReportInput } from "../../generated/graphql";
+import RadioGroup from "../commonComponents/RadioGroup";
+import {
+  ETHNICITY_VALUES,
+  GENDER_VALUES,
+  RACE_VALUES,
+  TRIBAL_AFFILIATION_VALUES,
+} from "../constants";
+import { formatDate } from "../utils/date";
+import {
+  canadianProvinceCodes,
+  countryOptions,
+  stateCodes,
+} from "../../config/constants";
+import Select from "../commonComponents/Select";
 
 type PatientFormSectionProps = {
   patient: PatientReportInput;
@@ -12,15 +29,20 @@ const PatientFormSection = ({
   patient,
   setPatient,
 }: PatientFormSectionProps) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <div className="grid-row">
         <div className="grid-col-auto">
-          <h2 className={"font-sans-md"}>Patient Info</h2>
+          <h2 className={"font-sans-lg"}>Patient Info</h2>
+          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
+            General information
+          </h3>
         </div>
       </div>
-      <div className="grid-row grid-gap padding-bottom-2">
-        <div className="grid-col-auto">
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-first-name"}
             type={"text"}
@@ -31,7 +53,7 @@ const PatientFormSection = ({
             value={patient.firstName}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-middle-name"}
             type={"text"}
@@ -42,7 +64,9 @@ const PatientFormSection = ({
             value={patient.middleName ?? ""}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-last-name"}
             type={"text"}
@@ -53,7 +77,7 @@ const PatientFormSection = ({
             value={patient.lastName}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-suffix"}
             type={"text"}
@@ -62,7 +86,16 @@ const PatientFormSection = ({
             value={patient.suffix ?? ""}
           ></TextInput>
         </div>
+      </div>
+      <div className="grid-row">
         <div className="grid-col-auto">
+          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
+            Contact information
+          </h3>
+        </div>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-email"}
             label={"Patient email"}
@@ -70,7 +103,7 @@ const PatientFormSection = ({
             onChange={(e) => setPatient({ ...patient, email: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-phone"}
             label={"Patient phone"}
@@ -78,7 +111,9 @@ const PatientFormSection = ({
             onChange={(e) => setPatient({ ...patient, phone: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
           <TextInput
             name={"patient-street"}
             label={"Patient street address 1"}
@@ -86,7 +121,9 @@ const PatientFormSection = ({
             onChange={(e) => setPatient({ ...patient, street: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
           <TextInput
             name={"patient-street"}
             label={"Patient street address 2"}
@@ -96,7 +133,9 @@ const PatientFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-city"}
             label={"Patient city"}
@@ -104,7 +143,7 @@ const PatientFormSection = ({
             onChange={(e) => setPatient({ ...patient, city: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-county"}
             label={"Patient county"}
@@ -112,69 +151,135 @@ const PatientFormSection = ({
             onChange={(e) => setPatient({ ...patient, county: e.target.value })}
           ></TextInput>
         </div>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
+          <Select<string>
+            label={"Patient country"}
+            name="patient-country"
+            value={patient.country || "USA"}
+            options={countryOptions}
+            onChange={(country) => setPatient({ ...patient, country })}
+          />
+        </div>
+        {patient.country === "USA" || patient.country === "CAN" ? (
+          <>
+            <div className="grid-col-2">
+              {patient.country === "USA" ? (
+                <Select<string>
+                  label={"Patient state"}
+                  name="patient-state"
+                  value={patient.state ?? ""}
+                  options={stateCodes.map((c) => ({ label: c, value: c }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={(state) => setPatient({ ...patient, state })}
+                />
+              ) : undefined}
+              {patient.country === "CAN" ? (
+                <Select<string>
+                  label={"Patient province"}
+                  name="patient-state"
+                  value={patient.state || ""}
+                  options={canadianProvinceCodes.map((c) => ({
+                    label: c,
+                    value: c,
+                  }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={(state) => setPatient({ ...patient, state })}
+                />
+              ) : undefined}
+            </div>
+            <div className="grid-col-2">
+              <TextInput
+                name={"patient-zip-code"}
+                label={"Patient ZIP code"}
+                value={patient.zipCode ?? ""}
+                onChange={(e) =>
+                  setPatient({ ...patient, zipCode: e.target.value })
+                }
+              ></TextInput>
+            </div>
+          </>
+        ) : undefined}
+      </div>
+      <div className="grid-row">
         <div className="grid-col-auto">
+          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
+            Demographics
+          </h3>
+        </div>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
-            name={"patient-state"}
-            label={"Patient state"}
-            value={patient.state ?? ""}
-            onChange={(e) => setPatient({ ...patient, state: e.target.value })}
+            name="patient-date-of-birth"
+            type="date"
+            label="Patient date of birth"
+            min={formatDate(new Date("Jan 1, 1900"))}
+            max={formatDate(moment().toDate())}
+            value={formatDate(moment(patient.dateOfBirth).toDate())}
+            onChange={(e) => {
+              setPatient({
+                ...patient,
+                dateOfBirth: e.target.value,
+              });
+            }}
           ></TextInput>
         </div>
+      </div>
+      <div className="grid-row grid-gap">
         <div className="grid-col-auto">
-          <TextInput
-            name={"patient-zip-code"}
-            label={"Patient ZIP code"}
-            value={patient.zipCode ?? ""}
-            onChange={(e) =>
-              setPatient({ ...patient, zipCode: e.target.value })
+          <RadioGroup<string>
+            legend={"Patient sex"}
+            name="patient-sex"
+            buttons={GENDER_VALUES}
+            selectedRadio={patient.sex}
+            onChange={(gender) =>
+              setPatient({ ...patient, sex: gender.toString() })
             }
-          ></TextInput>
+          />
         </div>
+      </div>
+      <div className="grid-row grid-gap">
         <div className="grid-col-auto">
-          <TextInput
-            name={"patient-sex"}
-            label={"Patient sex"}
-            value={patient.sex ?? ""}
-            onChange={(e) => setPatient({ ...patient, sex: e.target.value })}
-          ></TextInput>
+          <RadioGroup<string>
+            legend={"Patient race"}
+            name="patient-race"
+            buttons={RACE_VALUES}
+            selectedRadio={patient.race}
+            onChange={(race) => setPatient({ ...patient, race: race })}
+          />
         </div>
+      </div>
+      <div className="grid-row grid-gap">
         <div className="grid-col-auto">
-          <TextInput
-            name={"patient-date-of-birth"}
-            label={"Patient date of birth"}
-            value={patient.dateOfBirth ?? ""}
-            onChange={(e) =>
-              setPatient({ ...patient, dateOfBirth: e.target.value })
-            }
-          ></TextInput>
-        </div>
-        <div className="grid-col-auto">
-          <TextInput
-            name={"patient-race"}
-            label={"Patient race"}
-            value={patient.race ?? ""}
-            onChange={(e) => setPatient({ ...patient, race: e.target.value })}
-          ></TextInput>
-        </div>
-        <div className="grid-col-auto">
-          <TextInput
+          <RadioGroup<string>
+            legend={"Is the patient Hispanic or Latino?"}
             name={"patient-ethnicity"}
-            label={"Patient ethnicity"}
-            value={patient.ethnicity ?? ""}
-            onChange={(e) =>
-              setPatient({ ...patient, ethnicity: e.target.value })
+            buttons={ETHNICITY_VALUES}
+            selectedRadio={patient.ethnicity}
+            onChange={(ethnicity) =>
+              setPatient({ ...patient, ethnicity: ethnicity })
             }
-          ></TextInput>
+          />
         </div>
+      </div>
+      <div className="grid-row grid-gap">
         <div className="grid-col-auto">
-          <TextInput
-            name={"patient-tribal_affiliation"}
-            label={"Patient tribal affiliation"}
-            value={patient.tribalAffiliation ?? ""}
-            onChange={(e) =>
-              setPatient({ ...patient, tribalAffiliation: e.target.value })
+          <label className="usa-legend" htmlFor="tribal-affiliation">
+            Patient tribal affiliation
+          </label>
+          <ComboBox
+            id="tribal-affiliation"
+            name="tribal-affiliation"
+            options={TRIBAL_AFFILIATION_VALUES}
+            onChange={(tribalAffiliation) =>
+              setPatient({ ...patient, tribalAffiliation: tribalAffiliation })
             }
-          ></TextInput>
+            defaultValue={patient.tribalAffiliation || undefined}
+          />
         </div>
       </div>
     </>

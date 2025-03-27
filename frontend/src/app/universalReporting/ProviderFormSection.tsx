@@ -1,7 +1,14 @@
-import { Dispatch } from "react";
+import React, { Dispatch } from "react";
+import { useTranslation } from "react-i18next";
 
 import TextInput from "../commonComponents/TextInput";
 import { ProviderReportInput } from "../../generated/graphql";
+import Select from "../commonComponents/Select";
+import {
+  canadianProvinceCodes,
+  countryOptions,
+  stateCodes,
+} from "../../config/constants";
 
 type ProviderFormSectionProps = {
   provider: ProviderReportInput;
@@ -12,15 +19,20 @@ const ProviderFormSection = ({
   provider,
   setProvider,
 }: ProviderFormSectionProps) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <div className="grid-row">
         <div className="grid-col-auto">
-          <h2 className={"font-sans-md"}>Provider Info</h2>
+          <h2 className={"font-sans-lg"}>Provider Info</h2>
+          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
+            General information
+          </h3>
         </div>
       </div>
-      <div className="grid-row grid-gap padding-bottom-2">
-        <div className="grid-col-auto">
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"provider-first-name"}
             type={"text"}
@@ -31,7 +43,7 @@ const ProviderFormSection = ({
             value={provider.firstName}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"provider-middle-name"}
             type={"text"}
@@ -42,7 +54,9 @@ const ProviderFormSection = ({
             value={provider.middleName ?? ""}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"provider-last-name"}
             type={"text"}
@@ -53,7 +67,7 @@ const ProviderFormSection = ({
             value={provider.lastName}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"provider-suffix"}
             type={"text"}
@@ -64,7 +78,26 @@ const ProviderFormSection = ({
             value={provider.suffix ?? ""}
           ></TextInput>
         </div>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
+          <TextInput
+            name={"provider-npi"}
+            label={"Provider NPI number"}
+            value={provider.npi}
+            onChange={(e) => setProvider({ ...provider, npi: e.target.value })}
+          ></TextInput>
+        </div>
+      </div>
+      <div className="grid-row">
         <div className="grid-col-auto">
+          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
+            Contact information
+          </h3>
+        </div>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"provider-email"}
             label={"Provider email"}
@@ -74,7 +107,7 @@ const ProviderFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"provider-phone"}
             label={"Provider phone"}
@@ -84,7 +117,9 @@ const ProviderFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
           <TextInput
             name={"provider-street"}
             label={"Provider street address 1"}
@@ -94,7 +129,9 @@ const ProviderFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
           <TextInput
             name={"provider-street"}
             label={"Provider street address 2"}
@@ -104,7 +141,9 @@ const ProviderFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"provider-city"}
             label={"Provider city"}
@@ -112,7 +151,7 @@ const ProviderFormSection = ({
             onChange={(e) => setProvider({ ...provider, city: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"provider-county"}
             label={"Provider county"}
@@ -122,34 +161,58 @@ const ProviderFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
-          <TextInput
-            name={"provider-state"}
-            label={"Provider state"}
-            value={provider.state ?? ""}
-            onChange={(e) =>
-              setProvider({ ...provider, state: e.target.value })
-            }
-          ></TextInput>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
+          <Select<string>
+            label={"Provider country"}
+            name="provider-country"
+            value={provider.country || "USA"}
+            options={countryOptions}
+            onChange={(country) => setProvider({ ...provider, country })}
+          />
         </div>
-        <div className="grid-col-auto">
-          <TextInput
-            name={"provider-zip-code"}
-            label={"Provider ZIP code"}
-            value={provider.zipCode ?? ""}
-            onChange={(e) =>
-              setProvider({ ...provider, zipCode: e.target.value })
-            }
-          ></TextInput>
-        </div>
-        <div className="grid-col-auto">
-          <TextInput
-            name={"provider-npi"}
-            label={"Provider NPI number"}
-            value={provider.npi}
-            onChange={(e) => setProvider({ ...provider, npi: e.target.value })}
-          ></TextInput>
-        </div>
+        {provider.country === "USA" || provider.country === "CAN" ? (
+          <>
+            <div className="grid-col-2">
+              {provider.country === "USA" ? (
+                <Select<string>
+                  label={"Provider state"}
+                  name="provider-state"
+                  value={provider.state ?? ""}
+                  options={stateCodes.map((c) => ({ label: c, value: c }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={(state) => setProvider({ ...provider, state })}
+                />
+              ) : undefined}
+              {provider.country === "CAN" ? (
+                <Select<string>
+                  label={"Provider province"}
+                  name="provider-state"
+                  value={provider.state || ""}
+                  options={canadianProvinceCodes.map((c) => ({
+                    label: c,
+                    value: c,
+                  }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={(state) => setProvider({ ...provider, state })}
+                />
+              ) : undefined}
+            </div>
+            <div className="grid-col-2">
+              <TextInput
+                name={"provider-zip-code"}
+                label={"Provider ZIP code"}
+                value={provider.zipCode ?? ""}
+                onChange={(e) =>
+                  setProvider({ ...provider, zipCode: e.target.value })
+                }
+              ></TextInput>
+            </div>
+          </>
+        ) : undefined}
       </div>
     </>
   );

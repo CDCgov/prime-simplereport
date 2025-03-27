@@ -18,6 +18,7 @@ public class PatientReportInput {
   private String county;
   private String state;
   private String zipCode;
+  private String country;
   private String sex;
   private String dateOfBirth;
   private String race;

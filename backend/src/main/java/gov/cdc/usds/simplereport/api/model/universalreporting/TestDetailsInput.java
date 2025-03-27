@@ -8,8 +8,9 @@ import lombok.Getter;
 @Builder
 public class TestDetailsInput {
   private String condition;
-  private String loincCode;
-  private String loincShortName;
+  private String testOrderLoinc;
+  private String testPerformedLoinc;
+  private String testPerformedLoincShortName;
   private String resultType;
   private String resultValue;
   private Date resultDate;

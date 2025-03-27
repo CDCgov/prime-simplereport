@@ -453,8 +453,9 @@ input PatientReportInput {
   county: String
   state: String
   zipCode: String
+  country: String
   sex: String
-  dateOfBirth: String
+  dateOfBirth: LocalDate
   race: String
   ethnicity: String
   tribalAffiliation: String
@@ -472,6 +473,7 @@ input ProviderReportInput {
   county: String
   state: String
   zipCode: String
+  country: String
   email: String
   phone: String
 }
@@ -486,6 +488,7 @@ input FacilityReportInput {
   county: String
   state: String
   zipCode: String
+  country: String
   clia: String!
 }
 
@@ -500,8 +503,9 @@ input SpecimenInput {
 
 input TestDetailsInput {
   condition: String
-  loincCode: String!
-  loincShortName: String
+  testOrderLoinc: String!
+  testPerformedLoinc: String!
+  testPerformedLoincShortName: String
   resultType: ResultScaleType!
   resultValue: String!
   resultDate: DateTime

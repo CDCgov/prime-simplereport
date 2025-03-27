@@ -179,6 +179,7 @@ export type FacilityAddressInput = {
 export type FacilityReportInput = {
   city?: InputMaybe<Scalars["String"]["input"]>;
   clia: Scalars["String"]["input"];
+  country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   name: Scalars["String"]["input"];
@@ -710,8 +711,9 @@ export type PatientLink = {
 
 export type PatientReportInput = {
   city?: InputMaybe<Scalars["String"]["input"]>;
+  country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
-  dateOfBirth?: InputMaybe<Scalars["String"]["input"]>;
+  dateOfBirth?: InputMaybe<Scalars["LocalDate"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   ethnicity?: InputMaybe<Scalars["String"]["input"]>;
   firstName: Scalars["String"]["input"];
@@ -790,6 +792,7 @@ export type ProviderInput = {
 
 export type ProviderReportInput = {
   city?: InputMaybe<Scalars["String"]["input"]>;
+  country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   firstName: Scalars["String"]["input"];
@@ -1094,13 +1097,14 @@ export enum TestCorrectionStatus {
 
 export type TestDetailsInput = {
   condition?: InputMaybe<Scalars["String"]["input"]>;
-  loincCode: Scalars["String"]["input"];
-  loincShortName?: InputMaybe<Scalars["String"]["input"]>;
   resultDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   resultInterpretation?: InputMaybe<Scalars["String"]["input"]>;
   resultTime?: InputMaybe<Scalars["String"]["input"]>;
   resultType: ResultScaleType;
   resultValue: Scalars["String"]["input"];
+  testOrderLoinc: Scalars["String"]["input"];
+  testPerformedLoinc: Scalars["String"]["input"];
+  testPerformedLoincShortName?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type TestOrder = {

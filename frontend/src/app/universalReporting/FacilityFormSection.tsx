@@ -1,7 +1,14 @@
-import { Dispatch } from "react";
+import React, { Dispatch } from "react";
+import { useTranslation } from "react-i18next";
 
 import TextInput from "../commonComponents/TextInput";
 import { FacilityReportInput } from "../../generated/graphql";
+import Select from "../commonComponents/Select";
+import {
+  canadianProvinceCodes,
+  countryOptions,
+  stateCodes,
+} from "../../config/constants";
 
 type FacilityFormSectionProps = {
   facility: FacilityReportInput;
@@ -12,15 +19,20 @@ const FacilityFormSection = ({
   facility,
   setFacility,
 }: FacilityFormSectionProps) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <div className="grid-row">
         <div className="grid-col-auto">
-          <h2 className={"font-sans-md"}>Facility Info</h2>
+          <h2 className={"font-sans-lg"}>Facility Info</h2>
+          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
+            General information
+          </h3>
         </div>
       </div>
-      <div className="grid-row grid-gap padding-bottom-2">
-        <div className="grid-col-auto">
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
           <TextInput
             name={"facility-name"}
             type={"text"}
@@ -29,7 +41,26 @@ const FacilityFormSection = ({
             value={facility.name}
           ></TextInput>
         </div>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
+          <TextInput
+            name={"facility-clia"}
+            label={"Facility CLIA number"}
+            value={facility.clia}
+            onChange={(e) => setFacility({ ...facility, clia: e.target.value })}
+          ></TextInput>
+        </div>
+      </div>
+      <div className="grid-row">
         <div className="grid-col-auto">
+          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
+            Contact information
+          </h3>
+        </div>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"facility-email"}
             label={"Facility email"}
@@ -39,7 +70,7 @@ const FacilityFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"facility-phone"}
             label={"Facility phone"}
@@ -49,7 +80,9 @@ const FacilityFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-8">
           <TextInput
             name={"facility-street"}
             label={"Facility street address 1"}
@@ -59,7 +92,7 @@ const FacilityFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-8">
           <TextInput
             name={"facility-street"}
             label={"Facility street address 2"}
@@ -69,7 +102,9 @@ const FacilityFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
           <TextInput
             name={"facility-city"}
             label={"Facility city"}
@@ -77,7 +112,7 @@ const FacilityFormSection = ({
             onChange={(e) => setFacility({ ...facility, city: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
+        <div className="grid-col-4">
           <TextInput
             name={"facility-county"}
             label={"Facility county"}
@@ -87,34 +122,58 @@ const FacilityFormSection = ({
             }
           ></TextInput>
         </div>
-        <div className="grid-col-auto">
-          <TextInput
-            name={"facility-state"}
-            label={"Facility state"}
-            value={facility.state ?? ""}
-            onChange={(e) =>
-              setFacility({ ...facility, state: e.target.value })
-            }
-          ></TextInput>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="grid-col-4">
+          <Select<string>
+            label={"Facility country"}
+            name="facility-country"
+            value={facility.country || "USA"}
+            options={countryOptions}
+            onChange={(country) => setFacility({ ...facility, country })}
+          />
         </div>
-        <div className="grid-col-auto">
-          <TextInput
-            name={"facility-zip-code"}
-            label={"Facility ZIP code"}
-            value={facility.zipCode ?? ""}
-            onChange={(e) =>
-              setFacility({ ...facility, zipCode: e.target.value })
-            }
-          ></TextInput>
-        </div>
-        <div className="grid-col-auto">
-          <TextInput
-            name={"facility-clia"}
-            label={"Facility CLIA number"}
-            value={facility.clia}
-            onChange={(e) => setFacility({ ...facility, clia: e.target.value })}
-          ></TextInput>
-        </div>
+        {facility.country === "USA" || facility.country === "CAN" ? (
+          <>
+            <div className="grid-col-2">
+              {facility.country === "USA" ? (
+                <Select<string>
+                  label={"Facility state"}
+                  name="facility-state"
+                  value={facility.state ?? ""}
+                  options={stateCodes.map((c) => ({ label: c, value: c }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={(state) => setFacility({ ...facility, state })}
+                />
+              ) : undefined}
+              {facility.country === "CAN" ? (
+                <Select<string>
+                  label={"Facility province"}
+                  name="facility-state"
+                  value={facility.state || ""}
+                  options={canadianProvinceCodes.map((c) => ({
+                    label: c,
+                    value: c,
+                  }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={(state) => setFacility({ ...facility, state })}
+                />
+              ) : undefined}
+            </div>
+            <div className="grid-col-2">
+              <TextInput
+                name={"facility-zip-code"}
+                label={"Facility ZIP code"}
+                value={facility.zipCode ?? ""}
+                onChange={(e) =>
+                  setFacility({ ...facility, zipCode: e.target.value })
+                }
+              ></TextInput>
+            </div>
+          </>
+        ) : undefined}
       </div>
     </>
   );
