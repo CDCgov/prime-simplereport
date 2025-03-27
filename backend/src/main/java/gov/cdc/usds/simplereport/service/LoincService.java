@@ -1,8 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.db.model.LoincStaging;
+import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -10,12 +14,15 @@ import org.springframework.stereotype.Service;
 public class LoincService {
 
   private final LoincFhirClient loincFhirClient;
+  private final LoincStagingRepository loincStagingRepository;
 
   public String getCodeSystemLookup(String code) {
     return loincFhirClient.getCodeSystemLookup(code);
   }
 
-  public String  syncLabs() {
-    return "Labs Synced!";
+  public List<LoincStaging>  syncLabs() {
+
+    return loincStagingRepository.findByLimit(20);
   }
+
 }
