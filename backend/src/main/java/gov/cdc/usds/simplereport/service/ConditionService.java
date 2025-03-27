@@ -73,12 +73,14 @@ public class ConditionService {
 
   private void saveLoincList(
       List<ValueSet.ConceptReferenceComponent> conceptList, Condition condition) {
+    List<LoincStaging> loincStagingList = new ArrayList<>();
     for (var concept : conceptList) {
       String code = concept.getCode();
       String display = concept.getDisplay();
 
-      loincStagingRepository.save(new LoincStaging(code, display, condition));
+      loincStagingList.add(new LoincStaging(code, display, condition));
     }
+    loincStagingRepository.saveAll(loincStagingList);
   }
 
   private Optional<ValueSet.ConceptSetComponent> parseLoinc(ValueSet valueSet) {
