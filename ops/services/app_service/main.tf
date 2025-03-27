@@ -118,9 +118,9 @@ resource "azurerm_linux_web_app_slot" "staging" {
     # After it becomes healthy, we swap the staging slot with the production slot to complete the deployment
     application_stack {
       docker_image_name        = "${var.docker_image_name}:${var.docker_image_tag}"
-      docker_registry_url      = local.docker_settings
-      docker_registry_username = local.docker_settings
-      docker_registry_password = local.docker_settings
+      docker_registry_url      = local.docker_settings["DOCKER_REGISTRY_SERVER_URL"]
+      docker_registry_username = local.docker_settings["DOCKER_REGISTRY_SERVER_USERNAME"]
+      docker_registry_password = local.docker_settings["DOCKER_REGISTRY_SERVER_PASSWORD"]
     }
 
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
