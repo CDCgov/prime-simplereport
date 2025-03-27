@@ -17,4 +17,7 @@ public class LoincController {
   public String getCodeSystemLookup(@RequestParam String code) {
     return loincService.getCodeSystemLookup(code);
   }
+
+  @GetMapping("universal/syncLabs")
+  public String syncLabs() { return loincService.syncLabs(); }
 }
