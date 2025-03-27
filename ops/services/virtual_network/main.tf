@@ -16,6 +16,7 @@ resource "azurerm_virtual_network" "vn" {
   resource_group_name            = var.resource_group_name
   location                       = var.location
   address_space                  = [var.network_address]
+  private_endpoint_vnet_policies = "Basic"
   tags                           = var.management_tags
 }
 
@@ -25,7 +26,7 @@ resource "azurerm_subnet" "vms" {
   resource_group_name               = var.resource_group_name
   virtual_network_name              = azurerm_virtual_network.vn.name
   address_prefixes                  = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
-  private_endpoint_network_policies = "NetworkSecurityGroupEnabled"
+  private_endpoint_network_policies = ["NetworkSecurityGroupEnabled", "RouteTableEnabled"]
 }
 
 resource "azurerm_subnet" "lbs" {
