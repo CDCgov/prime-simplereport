@@ -14,4 +14,8 @@ public class LoincService {
   public String getCodeSystemLookup(String code) {
     return loincFhirClient.getCodeSystemLookup(code);
   }
+
+  public String  syncLabs() {
+    return "Labs Synced!";
+  }
 }
