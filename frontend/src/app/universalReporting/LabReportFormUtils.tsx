@@ -1,3 +1,5 @@
+import { ResultScaleType } from "../../generated/graphql";
+
 type Specimen = {
   name: string;
   type_code: string;
@@ -46,27 +48,21 @@ export enum UNIVERSAL_CONDITIONS {
   CHLAMYDIA = "Chlamydia",
 }
 
-export enum ResultScaleType {
-  QUANTITATIVE = "Quantitative",
-  ORDINAL = "Ordinal",
-  NOMINAL = "Nominal",
-}
-
 export const ResultScaleTypeOptions: {
   label: string;
   value: ResultScaleType;
 }[] = [
   {
-    label: ResultScaleType.ORDINAL,
-    value: ResultScaleType.ORDINAL,
+    label: ResultScaleType.Ordinal,
+    value: ResultScaleType.Ordinal,
   },
   {
-    label: ResultScaleType.QUANTITATIVE,
-    value: ResultScaleType.QUANTITATIVE,
+    label: ResultScaleType.Quantitative,
+    value: ResultScaleType.Quantitative,
   },
   {
-    label: ResultScaleType.NOMINAL,
-    value: ResultScaleType.NOMINAL,
+    label: ResultScaleType.Nominal,
+    value: ResultScaleType.Nominal,
   },
 ];
 

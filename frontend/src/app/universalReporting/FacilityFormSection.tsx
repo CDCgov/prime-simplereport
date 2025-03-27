@@ -1,15 +1,14 @@
 import { Dispatch } from "react";
 
 import TextInput from "../commonComponents/TextInput";
-
-import { UniversalFacility } from "./types";
+import { FacilityReportInput } from "../../generated/graphql";
 
 type FacilityFormSectionProps = {
-  facility: UniversalFacility;
-  setFacility: Dispatch<UniversalFacility>;
+  facility: FacilityReportInput;
+  setFacility: Dispatch<FacilityReportInput>;
 };
 
-export const FacilityFormSection = ({
+const FacilityFormSection = ({
   facility,
   setFacility,
 }: FacilityFormSectionProps) => {
@@ -34,7 +33,7 @@ export const FacilityFormSection = ({
           <TextInput
             name={"facility-email"}
             label={"Facility email"}
-            value={facility.email}
+            value={facility.email ?? ""}
             onChange={(e) =>
               setFacility({ ...facility, email: e.target.value })
             }
@@ -44,7 +43,7 @@ export const FacilityFormSection = ({
           <TextInput
             name={"facility-phone"}
             label={"Facility phone"}
-            value={facility.phone}
+            value={facility.phone ?? ""}
             onChange={(e) =>
               setFacility({ ...facility, phone: e.target.value })
             }
@@ -52,11 +51,59 @@ export const FacilityFormSection = ({
         </div>
         <div className="grid-col-auto">
           <TextInput
-            name={"facility-address"}
-            label={"Facility address"}
-            value={facility.address}
+            name={"facility-street"}
+            label={"Facility street address 1"}
+            value={facility.street ?? ""}
             onChange={(e) =>
-              setFacility({ ...facility, address: e.target.value })
+              setFacility({ ...facility, street: e.target.value })
+            }
+          ></TextInput>
+        </div>
+        <div className="grid-col-auto">
+          <TextInput
+            name={"facility-street"}
+            label={"Facility street address 2"}
+            value={facility.streetTwo ?? ""}
+            onChange={(e) =>
+              setFacility({ ...facility, streetTwo: e.target.value })
+            }
+          ></TextInput>
+        </div>
+        <div className="grid-col-auto">
+          <TextInput
+            name={"facility-city"}
+            label={"Facility city"}
+            value={facility.city ?? ""}
+            onChange={(e) => setFacility({ ...facility, city: e.target.value })}
+          ></TextInput>
+        </div>
+        <div className="grid-col-auto">
+          <TextInput
+            name={"facility-county"}
+            label={"Facility county"}
+            value={facility.county ?? ""}
+            onChange={(e) =>
+              setFacility({ ...facility, county: e.target.value })
+            }
+          ></TextInput>
+        </div>
+        <div className="grid-col-auto">
+          <TextInput
+            name={"facility-state"}
+            label={"Facility state"}
+            value={facility.state ?? ""}
+            onChange={(e) =>
+              setFacility({ ...facility, state: e.target.value })
+            }
+          ></TextInput>
+        </div>
+        <div className="grid-col-auto">
+          <TextInput
+            name={"facility-zip-code"}
+            label={"Facility ZIP code"}
+            value={facility.zipCode ?? ""}
+            onChange={(e) =>
+              setFacility({ ...facility, zipCode: e.target.value })
             }
           ></TextInput>
         </div>
@@ -72,3 +119,5 @@ export const FacilityFormSection = ({
     </>
   );
 };
+
+export default FacilityFormSection;

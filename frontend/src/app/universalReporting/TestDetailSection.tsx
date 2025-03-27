@@ -6,14 +6,14 @@ import TextInput from "../commonComponents/TextInput";
 import RadioGroup, { RadioGroupOptions } from "../commonComponents/RadioGroup";
 import { TEST_RESULTS } from "../testResults/constants";
 import { formatDate } from "../utils/date";
-
 import "./TestDetailSection.scss";
-import { UniversalTestDetails } from "./types";
-import { ResultScaleType, ResultScaleTypeOptions } from "./LabReportFormUtils";
+import { ResultScaleType, TestDetailsInput } from "../../generated/graphql";
+
+import { ResultScaleTypeOptions } from "./LabReportFormUtils";
 
 type TestDetailSectionProps = {
-  testDetails: UniversalTestDetails;
-  updateTestDetails: (details: UniversalTestDetails) => void;
+  testDetails: TestDetailsInput;
+  updateTestDetails: (details: TestDetailsInput) => void;
 };
 
 const ordinalResultButtons: RadioGroupOptions<string> = [
@@ -31,7 +31,7 @@ const ordinalResultButtons: RadioGroupOptions<string> = [
   },
 ];
 
-export const TestDetailSection = ({
+const TestDetailSection = ({
   testDetails,
   updateTestDetails,
 }: TestDetailSectionProps) => {
@@ -53,10 +53,10 @@ export const TestDetailSection = ({
             onChange={(e) =>
               updateTestDetails({
                 ...testDetails,
-                loinc_short_name: e.target.value,
+                loincShortName: e.target.value,
               })
             }
-            value={testDetails.loinc_short_name}
+            value={testDetails.loincShortName ?? ""}
           ></TextInput>
         </div>
         <div className="grid-col-auto">
@@ -67,10 +67,10 @@ export const TestDetailSection = ({
             onChange={(e) =>
               updateTestDetails({
                 ...testDetails,
-                loinc_code: e.target.value,
+                loincCode: e.target.value,
               })
             }
-            value={testDetails.loinc_code}
+            value={testDetails.loincCode}
           ></TextInput>
         </div>
 
@@ -81,11 +81,11 @@ export const TestDetailSection = ({
             label="Test result date"
             min={formatDate(new Date("Jan 1, 2020"))}
             max={formatDate(moment().toDate())}
-            value={formatDate(moment(testDetails.result_date).toDate())}
+            value={formatDate(moment(testDetails.resultDate).toDate())}
             onChange={(e) => {
               updateTestDetails({
                 ...testDetails,
-                result_date: e.target.value,
+                resultDate: e.target.value,
               });
             }}
           ></TextInput>
@@ -96,11 +96,11 @@ export const TestDetailSection = ({
             type="time"
             label="Test result time"
             step="60"
-            value={testDetails.result_time}
+            value={testDetails.resultTime ?? ""}
             onChange={(e) => {
               updateTestDetails({
                 ...testDetails,
-                result_time: e.target.value,
+                resultTime: e.target.value,
               });
             }}
           ></TextInput>
@@ -112,29 +112,32 @@ export const TestDetailSection = ({
             legend="Type of test result"
             name={`condition-${testDetails.condition}-test-result-type`}
             onChange={(value) =>
-              updateTestDetails({ ...testDetails, result_type: value })
+              updateTestDetails({
+                ...testDetails,
+                resultType: value,
+              } as TestDetailsInput)
             }
             buttons={ResultScaleTypeOptions}
-            selectedRadio={testDetails.result_type}
+            selectedRadio={testDetails.resultType}
             required={true}
           />
         </div>
-        {testDetails.result_type === ResultScaleType.ORDINAL ? (
+        {testDetails.resultType === ResultScaleType.Ordinal ? (
           <div className="grid-col-auto">
             <RadioGroup<string>
               legend={`${testDetails.condition} test result`}
               buttons={ordinalResultButtons}
               name={`condition-${testDetails.condition}-test-result-value`}
-              selectedRadio={testDetails.result_value}
+              selectedRadio={testDetails.resultValue}
               required={true}
               onChange={(value) =>
-                updateTestDetails({ ...testDetails, result_value: value })
+                updateTestDetails({ ...testDetails, resultValue: value })
               }
             />
           </div>
         ) : undefined}
-        {testDetails.result_type === ResultScaleType.QUANTITATIVE ||
-        testDetails.result_type === ResultScaleType.NOMINAL ? (
+        {testDetails.resultType === ResultScaleType.Quantitative ||
+        testDetails.resultType === ResultScaleType.Nominal ? (
           <div className="grid-col-auto">
             <TextInput
               name={`condition-${testDetails.condition}-test-result-value`}
@@ -143,10 +146,10 @@ export const TestDetailSection = ({
               onChange={(e) =>
                 updateTestDetails({
                   ...testDetails,
-                  result_value: e.target.value,
+                  resultValue: e.target.value,
                 })
               }
-              value={testDetails.result_value}
+              value={testDetails.resultValue}
               required={true}
             ></TextInput>
           </div>
@@ -165,11 +168,11 @@ export const TestDetailSection = ({
               onChange={(e) =>
                 updateTestDetails({
                   ...testDetails,
-                  result_interpretation: e.target.value,
+                  resultInterpretation: e.target.value,
                 })
               }
               maxLength={10000}
-              value={testDetails.result_interpretation}
+              value={testDetails.resultInterpretation ?? ""}
             ></Textarea>
           </div>
         </div>
@@ -177,3 +180,5 @@ export const TestDetailSection = ({
     </>
   );
 };
+
+export default TestDetailSection;

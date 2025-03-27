@@ -2,62 +2,85 @@ import React, { useState } from "react";
 import { Button } from "@trussworks/react-uswds";
 
 import MultiSelect from "../commonComponents/MultiSelect/MultiSelect";
-
-import { PatientFormSection } from "./PatientFormSection";
-import { ProviderFormSection } from "./ProviderFormSection";
-import { FacilityFormSection } from "./FacilityFormSection";
-import { ResultScaleType, useConditionOptionList } from "./LabReportFormUtils";
-import { TestDetailSection } from "./TestDetailSection";
-import SpecimenFormSection from "./SpecimenFormSection";
 import {
-  UniversalFacility,
-  UniversalPatient,
-  UniversalProvider,
-  UniversalSpecimen,
-  UniversalTestDetails,
-} from "./types";
+  FacilityReportInput,
+  PatientReportInput,
+  ProviderReportInput,
+  ResultScaleType,
+  SpecimenInput,
+  TestDetailsInput,
+  useSubmitLabReportMutation,
+} from "../../generated/graphql";
+
+import { useConditionOptionList } from "./LabReportFormUtils";
+import SpecimenFormSection from "./SpecimenFormSection";
+import TestDetailSection from "./TestDetailSection";
+import FacilityFormSection from "./FacilityFormSection";
+import ProviderFormSection from "./ProviderFormSection";
+import PatientFormSection from "./PatientFormSection";
 
 const LabReportForm = () => {
-  const [patient, setPatient] = useState<UniversalPatient>({
-    address: "",
-    date_of_birth: "",
-    email: "",
-    ethnicity: "",
-    name: "",
-    phone: "",
-    race: "",
-    sex: "",
-    tribal_affiliation: "",
+  const [patient, setPatient] = useState<PatientReportInput>({
+    city: undefined,
+    county: undefined,
+    dateOfBirth: undefined,
+    email: undefined,
+    ethnicity: undefined,
+    firstName: "",
+    lastName: "",
+    middleName: undefined,
+    phone: undefined,
+    race: undefined,
+    sex: undefined,
+    state: undefined,
+    street: undefined,
+    streetTwo: undefined,
+    suffix: undefined,
+    tribalAffiliation: undefined,
+    zipCode: undefined,
   });
-  const [provider, setProvider] = useState<UniversalProvider>({
-    address: "",
-    email: "",
-    name: "",
-    npi_number: "",
-    phone: "",
+  const [provider, setProvider] = useState<ProviderReportInput>({
+    city: undefined,
+    county: undefined,
+    email: undefined,
+    firstName: "",
+    lastName: "",
+    middleName: undefined,
+    npi: "",
+    phone: undefined,
+    state: undefined,
+    street: undefined,
+    streetTwo: undefined,
+    suffix: undefined,
+    zipCode: undefined,
   });
-  const [facility, setFacility] = useState<UniversalFacility>({
-    address: "",
+  const [facility, setFacility] = useState<FacilityReportInput>({
+    city: undefined,
     clia: "",
-    email: "",
+    county: undefined,
+    email: undefined,
     name: "",
-    phone: "",
+    phone: undefined,
+    state: undefined,
+    street: undefined,
+    streetTwo: undefined,
+    zipCode: undefined,
   });
-  const [specimen, setSpecimen] = useState<UniversalSpecimen>({
-    collection_date: "",
-    collection_location_code: "",
-    collection_location_name: "",
-    collection_time: "",
-    name: "",
-    received_date: "",
-    snomed_type_code: "",
+  const [specimen, setSpecimen] = useState<SpecimenInput>({
+    snomedTypeCode: "",
+    collectionDate: "",
+    collectionTime: "",
+    receivedDate: "",
+    collectionLocationCode: "",
+    collectionLocationName: "",
   });
   const [conditions, setConditions] = useState<string[]>([]);
-  const [testDetailList, setTestDetailList] = useState<UniversalTestDetails[]>(
-    []
-  );
+  const [testDetailList, setTestDetailList] = useState<TestDetailsInput[]>([]);
+  const [submissionResponse, setSubmissionResponse] = useState("");
 
   const conditionOptions = useConditionOptionList();
+
+  const [submitLabReport] = useSubmitLabReportMutation();
 
   const updateConditions = (selectedConditions: string[]) => {
     // could update this in the future to ask the user before accidentally removing a populated test details section
@@ -68,13 +91,13 @@ const LabReportForm = () => {
       if (!filteredTestDetails.some((x) => x.condition === value)) {
         filteredTestDetails.push({
           condition: value,
-          loinc_code: "",
-          loinc_short_name: "",
-          result_date: "",
-          result_interpretation: "",
-          result_time: "",
-          result_type: ResultScaleType.ORDINAL,
-          result_value: "",
+          loincCode: "",
+          loincShortName: "",
+          resultDate: "",
+          resultInterpretation: "",
+          resultTime: "",
+          resultType: ResultScaleType.Ordinal,
+          resultValue: "",
         });
       }
     });
@@ -82,7 +105,7 @@ const LabReportForm = () => {
     setTestDetailList(filteredTestDetails);
   };
 
-  const updateTestDetails = (details: UniversalTestDetails) => {
+  const updateTestDetails = (details: TestDetailsInput) => {
     const updatedList = [...testDetailList];
     const index = testDetailList.findIndex(
       (x) => x.condition === details.condition
@@ -91,8 +114,19 @@ const LabReportForm = () => {
     setTestDetailList(updatedList);
   };
 
-  const submitForm = () => {
-    console.log("submit form");
+  const submitForm = async () => {
+    const submissionResponse = await submitLabReport({
+      variables: {
+        patient: { ...patient },
+        provider: { ...provider },
+        facility: { ...facility },
+        specimen: { ...specimen },
+        testDetailsList: [...testDetailList],
+      },
+    });
+    setSubmissionResponse(
+      submissionResponse.data?.submitLabReport ?? "Response was null"
+    );
   };
 
   return (
@@ -175,6 +209,11 @@ const LabReportForm = () => {
             Submit results
           </Button>
         </div>
+        {submissionResponse.length > 0 ? (
+          <div className="prime-container card-container">
+            <div className="usa-card__body">{submissionResponse}</div>
+          </div>
+        ) : undefined}
       </div>
     </div>
   );

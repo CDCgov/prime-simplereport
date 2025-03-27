@@ -4,13 +4,13 @@ import React, { Dispatch } from "react";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import { formatDate } from "../utils/date";
+import { SpecimenInput } from "../../generated/graphql";
 
 import { useSpecimenTypeOptionList } from "./LabReportFormUtils";
-import { UniversalSpecimen } from "./types";
 
 type SpecimenFormSectionProps = {
-  specimen: UniversalSpecimen;
-  setSpecimen: Dispatch<UniversalSpecimen>;
+  specimen: SpecimenInput;
+  setSpecimen: Dispatch<SpecimenInput>;
 };
 
 const SpecimenFormSection = ({
@@ -31,11 +31,11 @@ const SpecimenFormSection = ({
           <Dropdown
             label="Specimen type"
             name="specimen-type"
-            selectedValue={specimen.snomed_type_code}
+            selectedValue={specimen.snomedTypeCode}
             onChange={(e) =>
               setSpecimen({
                 ...specimen,
-                snomed_type_code: e.target.value,
+                snomedTypeCode: e.target.value,
               })
             }
             className="card-dropdown"
@@ -50,11 +50,11 @@ const SpecimenFormSection = ({
             label="Specimen collection date"
             min={formatDate(new Date("Jan 1, 2020"))}
             max={formatDate(moment().toDate())}
-            value={formatDate(moment(specimen.collection_date).toDate())}
+            value={formatDate(moment(specimen.collectionDate).toDate())}
             onChange={(e) => {
               setSpecimen({
                 ...specimen,
-                collection_date: e.target.value,
+                collectionDate: e.target.value,
               });
             }}
           ></TextInput>
@@ -65,11 +65,11 @@ const SpecimenFormSection = ({
             type="time"
             label="Specimen collection time"
             step="60"
-            value={specimen.collection_time}
+            value={specimen.collectionTime ?? ""}
             onChange={(e) => {
               setSpecimen({
                 ...specimen,
-                collection_time: e.target.value,
+                collectionTime: e.target.value,
               });
             }}
           ></TextInput>
@@ -81,9 +81,9 @@ const SpecimenFormSection = ({
             label="Specimen received_date"
             min={formatDate(new Date("Jan 1, 2020"))}
             max={formatDate(moment().toDate())}
-            value={formatDate(moment(specimen.received_date).toDate())}
+            value={formatDate(moment(specimen.receivedDate).toDate())}
             onChange={(e) => {
-              setSpecimen({ ...specimen, received_date: e.target.value });
+              setSpecimen({ ...specimen, receivedDate: e.target.value });
             }}
           ></TextInput>
         </div>
@@ -95,10 +95,10 @@ const SpecimenFormSection = ({
             onChange={(e) =>
               setSpecimen({
                 ...specimen,
-                collection_location_name: e.target.value,
+                collectionLocationName: e.target.value,
               })
             }
-            value={specimen.collection_location_name}
+            value={specimen.collectionLocationName ?? ""}
           ></TextInput>
         </div>
         <div className="grid-col-auto">
@@ -109,10 +109,10 @@ const SpecimenFormSection = ({
             onChange={(e) =>
               setSpecimen({
                 ...specimen,
-                collection_location_code: e.target.value,
+                collectionLocationCode: e.target.value,
               })
             }
-            value={specimen.collection_location_code}
+            value={specimen.collectionLocationCode ?? ""}
           ></TextInput>
         </div>
       </div>
