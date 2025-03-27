@@ -713,9 +713,10 @@ public class LiveOktaRepository implements OktaRepository {
     return getUsersCountInOktaGroup(facilityAccessGroupName);
   }
 
-  //  public Integer getUniqueUsersCountInSingeFacility(Facility facility){
-  //    List<User> users = getAllUsersForFacility(facility);
-  //  }
+  public Integer getFacilityUserCount(Facility facility) {
+    List<User> users = getAllUsersForFacility(facility);
+    return users.size();
+  }
 
   @Override
   public Integer getUsersCountInOrganization(Organization org) {
