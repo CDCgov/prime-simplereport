@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@trussworks/react-uswds";
+import { v4 as uuidv4 } from "uuid";
 
 import MultiSelect from "../commonComponents/MultiSelect/MultiSelect";
 import {
@@ -18,6 +19,9 @@ import TestDetailSection from "./TestDetailSection";
 import FacilityFormSection from "./FacilityFormSection";
 import ProviderFormSection from "./ProviderFormSection";
 import PatientFormSection from "./PatientFormSection";
+
+// for unique key props when handling the array
+export type TestDetailsInputKeyed = TestDetailsInput & { key: string };
 
 const LabReportForm = () => {
   const [patient, setPatient] = useState<PatientReportInput>({
@@ -75,37 +79,33 @@ const LabReportForm = () => {
     collectionLocationName: "",
   });
   const [conditions, setConditions] = useState<string[]>([]);
-  const [testDetailList, setTestDetailList] = useState<TestDetailsInput[]>([]);
+  const [testDetailList, setTestDetailList] = useState<TestDetailsInputKeyed[]>(
+    []
+  );
   const [submissionResponse, setSubmissionResponse] = useState("");
 
   const conditionOptions = useConditionOptionList();
 
   const [submitLabReport] = useSubmitLabReportMutation();
 
-  const updateConditions = (selectedConditions: string[]) => {
-    // could update this in the future to ask the user before accidentally removing a populated test details section
-    const filteredTestDetails = [...testDetailList].filter((x) =>
-      selectedConditions.includes(x.condition)
-    );
-    selectedConditions.forEach((value) => {
-      if (!filteredTestDetails.some((x) => x.condition === value)) {
-        filteredTestDetails.push({
-          condition: value,
-          loincCode: "",
-          loincShortName: "",
-          resultDate: "",
-          resultInterpretation: "",
-          resultTime: "",
-          resultType: ResultScaleType.Ordinal,
-          resultValue: "",
-        });
-      }
-    });
-    setConditions(selectedConditions);
-    setTestDetailList(filteredTestDetails);
+  const addTestDetails = () => {
+    const updatedList = [...testDetailList];
+    updatedList.push({
+      key: uuidv4(),
+      loincCode: "",
+      resultType: ResultScaleType.Ordinal,
+      resultValue: "",
+    } as TestDetailsInputKeyed);
+    setTestDetailList(updatedList);
   };
 
-  const updateTestDetails = (details: TestDetailsInput) => {
+  const removeTestDetails = (key: string) => {
+    let updatedList = [...testDetailList];
+    updatedList = updatedList.filter((x) => x.key !== key);
+    setTestDetailList(updatedList);
+  };
+
+  const updateTestDetails = (details: TestDetailsInputKeyed) => {
     const updatedList = [...testDetailList];
     const index = testDetailList.findIndex(
       (x) => x.condition === details.condition
@@ -131,7 +131,7 @@ const LabReportForm = () => {
 
   return (
     <div className="prime-home flex-1">
-      <div className="grid-container">
+      <div className="grid-container padding-bottom-10">
         <div className="prime-container card-container">
           <div className="usa-card__header">
             <h1 className={"font-sans-lg"}>Universal Lab Reporting Form</h1>
@@ -158,14 +158,6 @@ const LabReportForm = () => {
         </div>
         <div className="prime-container card-container">
           <div className="usa-card__body">
-            <SpecimenFormSection
-              specimen={specimen}
-              setSpecimen={setSpecimen}
-            />
-          </div>
-        </div>
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
             <div className="grid-row grid-gap">
               <div className="grid-col-auto">
                 <h2 className={"font-sans-md"}>Conditions Tested</h2>
@@ -176,7 +168,7 @@ const LabReportForm = () => {
                 <MultiSelect
                   name={"selected-conditions"}
                   options={conditionOptions}
-                  onChange={(e) => updateConditions(e)}
+                  onChange={(e) => setConditions(e)}
                   initialSelectedValues={conditions}
                   label={
                     <>
@@ -190,21 +182,42 @@ const LabReportForm = () => {
                 />
               </div>
             </div>
+            <div className="grid-row grid-gap">
+              <div className="grid-col-auto">
+                <Button type={"button"} onClick={() => addTestDetails()}>
+                  Add new test report
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="prime-container card-container">
+          <div className="usa-card__body">
+            <SpecimenFormSection
+              specimen={specimen}
+              setSpecimen={setSpecimen}
+            />
           </div>
         </div>
         {testDetailList.map((testDetails) => {
           return (
-            <div className="prime-container card-container">
+            <div
+              className="prime-container card-container"
+              key={testDetails.key}
+            >
               <div className="usa-card__body">
                 <TestDetailSection
                   testDetails={testDetails}
                   updateTestDetails={updateTestDetails}
+                  selectedConditions={conditions}
+                  selectedSpecimen={specimen.snomedTypeCode}
+                  removeTest={removeTestDetails}
                 />
               </div>
             </div>
           );
         })}
-        <div className="padding-bottom-4">
+        <div className="padding-bottom-10">
           <Button onClick={() => submitForm()} type={"button"}>
             Submit results
           </Button>

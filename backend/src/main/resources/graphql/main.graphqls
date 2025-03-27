@@ -499,7 +499,7 @@ input SpecimenInput {
 }
 
 input TestDetailsInput {
-  condition: String!
+  condition: String
   loincCode: String!
   loincShortName: String
   resultType: ResultScaleType!

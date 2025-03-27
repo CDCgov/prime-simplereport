@@ -1093,7 +1093,7 @@ export enum TestCorrectionStatus {
 }
 
 export type TestDetailsInput = {
-  condition: Scalars["String"]["input"];
+  condition?: InputMaybe<Scalars["String"]["input"]>;
   loincCode: Scalars["String"]["input"];
   loincShortName?: InputMaybe<Scalars["String"]["input"]>;
   resultDate?: InputMaybe<Scalars["DateTime"]["input"]>;
