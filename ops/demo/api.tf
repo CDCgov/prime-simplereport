@@ -10,7 +10,7 @@ module "simple_report_api" {
   lb_subnet_id     = data.terraform_remote_state.persistent_demo.outputs.subnet_lbs_id
 
   docker_image_name = "simplereportacr.azurecr.io/api/simple-report-api-build"
-  docker_image_tag = var.acr_image_tag
+  docker_image_tag  = var.acr_image_tag
 
   key_vault_id = data.azurerm_key_vault.global.id
   tenant_id    = data.azurerm_client_config.current.tenant_id

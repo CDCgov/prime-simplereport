@@ -5,12 +5,20 @@ locals {
       if v != ""
     },
     {
+      "WEBSITES_PORT"      = "8080"
+      "WEBSITE_DNS_SERVER" = "168.63.129.16" # https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones
+  })
+  docker_settings = merge(var.docker_settings,
+    {
+      for k, v in var.deploy_info : join("_", ["INFO", "DEPLOY", upper(k)]) => v
+      if v != ""
+    },
+    {
       "DOCKER_REGISTRY_SERVER_PASSWORD" = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
       "DOCKER_REGISTRY_SERVER_URL"      = "https://${data.terraform_remote_state.global.outputs.acr_simeplereport_name}.azurecr.io"
       "DOCKER_REGISTRY_SERVER_USERNAME" = data.terraform_remote_state.global.outputs.acr_simeplereport_name
-      "WEBSITES_PORT"                   = "8080"
-      "WEBSITE_DNS_SERVER"              = "168.63.129.16" # https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones
   })
+
 }
 
 resource "azurerm_service_plan" "service_plan" {
@@ -109,10 +117,10 @@ resource "azurerm_linux_web_app_slot" "staging" {
     # This application stack is what we use to deploy the docker image to the staging slot
     # After it becomes healthy, we swap the staging slot with the production slot to complete the deployment
     application_stack {
-      docker_image_name = "${var.docker_image_name}:${var.docker_image_tag}"
-      docker_registry_url = local.all_app_settings
-      docker_registry_username = local.all_app_settings
-      docker_registry_password = local.all_app_settings
+      docker_image_name        = "${var.docker_image_name}:${var.docker_image_tag}"
+      docker_registry_url      = local.docker_settings
+      docker_registry_username = local.docker_settings
+      docker_registry_password = local.docker_settings
     }
 
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!

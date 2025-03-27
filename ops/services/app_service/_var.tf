@@ -14,7 +14,9 @@ variable "docker_image_name" {}
 variable "docker_image_tag" {}
 variable "webapp_subnet_id" {}
 variable "lb_subnet_id" {}
-
+variable "docker_settings" {
+  default = {}
+}
 variable "app_settings" {
   default = {}
 }
