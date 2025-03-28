@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import gov.cdc.usds.simplereport.api.model.errors.DryRunException;
 import gov.cdc.usds.simplereport.service.DeviceTypeProdSyncService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import org.json.JSONArray;
@@ -18,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -28,22 +30,21 @@ class DeviceTypeControllerTest extends BaseFullStackTest {
   @MockBean private DeviceTypeProdSyncService _mockDeviceTypeProdSyncService;
 
   @BeforeEach
-  void init() {
-    TestUserIdentities.withStandardUser(
-        () -> {
-          _dataFactory.initGenericDeviceTypeAndSpecimenType();
-        });
+  void setUp() {
+    ReflectionTestUtils.setField(_mockDeviceTypeProdSyncService, "token", "real-token");
   }
 
   @Test
   void getDevices_withValidateToken_success() throws Exception {
+    // use devices saved to test DB to test that this endpoint correctly omits internal ids and
+    // other non PublicDeviceType fields
+    TestUserIdentities.withStandardUser(
+        () -> {
+          _dataFactory.initGenericDeviceTypeAndSpecimenType();
+        });
     when(_mockDeviceTypeProdSyncService.validateToken(any())).thenReturn(true);
     MockHttpServletRequestBuilder builder =
-        get(ResourceLinks.DEVICES)
-            .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8");
-
+        get(ResourceLinks.DEVICES).contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE));
     MvcResult result = this._mockMvc.perform(builder).andReturn();
     MockHttpServletResponse res = result.getResponse();
 
@@ -102,15 +103,57 @@ class DeviceTypeControllerTest extends BaseFullStackTest {
     when(_mockDeviceTypeProdSyncService.validateToken(any()))
         .thenThrow(new AccessDeniedException("Bad token"));
     MockHttpServletRequestBuilder builder =
-        get(ResourceLinks.DEVICES)
-            .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE))
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8");
+        get(ResourceLinks.DEVICES).contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE));
 
     MvcResult result = this._mockMvc.perform(builder).andReturn();
     MockHttpServletResponse res = result.getResponse();
 
     assertThat(res.getStatus()).isEqualTo(401);
     assertThat(res.getContentAsString()).isEmpty();
+  }
+
+  @Test
+  void syncDevicesFromProd_withInvalidToken_unauthorized() throws Exception {
+    when(_mockDeviceTypeProdSyncService.validateToken(any()))
+        .thenThrow(new AccessDeniedException("Bad token"));
+
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.DEVICES_PROD_SYNC + "?dryRun=false")
+            .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE));
+    MvcResult result = this._mockMvc.perform(builder).andReturn();
+    MockHttpServletResponse res = result.getResponse();
+
+    assertThat(res.getStatus()).isEqualTo(401);
+    assertThat(res.getContentAsString()).isEmpty();
+  }
+
+  @Test
+  void syncDevicesFromProd_dryRun_success() throws Exception {
+    String message = "Device sync from prod (dry run) - Devices created: 461 | Devices updated: 3";
+    when(_mockDeviceTypeProdSyncService.validateToken(any())).thenReturn(true);
+    when(_mockDeviceTypeProdSyncService.syncDevicesFromProd(true))
+        .thenThrow(new DryRunException(message));
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.DEVICES_PROD_SYNC + "?dryRun=true")
+            .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE));
+    MvcResult result = this._mockMvc.perform(builder).andReturn();
+    MockHttpServletResponse res = result.getResponse();
+    assertThat(res.getStatus()).isEqualTo(200);
+    assertThat(res.getContentAsString()).isEqualTo(message);
+  }
+
+  @Test
+  void syncDevicesFromProd_success() throws Exception {
+    String message = "Device sync from prod (dry run) - Devices created: 461 | Devices updated: 3";
+    when(_mockDeviceTypeProdSyncService.validateToken(any())).thenReturn(true);
+    when(_mockDeviceTypeProdSyncService.syncDevicesFromProd(false)).thenReturn(message);
+    MockHttpServletRequestBuilder builder =
+        get(ResourceLinks.DEVICES_PROD_SYNC + "?dryRun=false")
+            .contentType(MediaType.valueOf(MediaType.APPLICATION_JSON_VALUE));
+    MvcResult result = this._mockMvc.perform(builder).andReturn();
+    MockHttpServletResponse res = result.getResponse();
+
+    assertThat(res.getStatus()).isEqualTo(200);
+    assertThat(res.getContentAsString()).isEqualTo(message);
   }
 }

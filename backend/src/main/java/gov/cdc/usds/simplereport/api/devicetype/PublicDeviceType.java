@@ -1,3 +1,5 @@
 package gov.cdc.usds.simplereport.api.devicetype;
 
-public interface PublicDeviceType {}
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+
+public class PublicDeviceType extends DeviceType {}

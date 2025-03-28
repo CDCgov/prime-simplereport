@@ -6,11 +6,13 @@ import gov.cdc.usds.simplereport.validators.NumericCode;
 import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.NaturalId;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /** A SNOMED-registered specimen type that can be used by one or more {@link DeviceType}s. */
 @Entity
+@EqualsAndHashCode(callSuper = false)
 public class SpecimenType extends EternalAuditedEntity {
 
   @Column(nullable = false)
