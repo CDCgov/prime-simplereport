@@ -551,6 +551,14 @@ public class TestOrderService {
         ensureCorrectionFlowBackwardCompatibility(event);
         order.setCorrectionStatus(status);
         order.setReasonForCorrection(reasonForCorrection);
+        Person currentPatient = order.getPatient();
+        Optional<TestOrder> pendingTestOrder =
+            _testOrderRepo.fetchQueueItem(currentPatient.getOrganization(), currentPatient);
+        if (pendingTestOrder.isPresent()) {
+          throw new IllegalGraphqlArgumentException(
+              "Cannot correct a test for a patient with an active test");
+        }
+
         order.markPending();
         if (order.getDateTestedBackdate() == null) {
           order.setDateTestedBackdate(event.getDateTested());
