@@ -496,6 +496,7 @@ public class OrganizationService {
       usersWithSingleFacilityAccess =
           dbAuthorizationService.getUsersWithSingleFacilityAccessCount(facility);
     } else {
+      // problem is right here
       usersWithSingleFacilityAccess = this.oktaRepository.getUsersCountInSingleFacility(facility);
     }
     return FacilityStats.builder()
