@@ -84,7 +84,7 @@ dependencies {
     // this provides additional types for JsonB and for ListArray types in Postgres
     implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.6'
     implementation 'org.liquibase:liquibase-core:4.31.1'
-    implementation 'org.postgresql:postgresql:42.7.4'
+    implementation 'org.postgresql:postgresql:42.7.5'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.28'
