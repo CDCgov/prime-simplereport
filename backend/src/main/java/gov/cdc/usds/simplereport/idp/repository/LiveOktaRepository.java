@@ -253,7 +253,7 @@ public class LiveOktaRepository implements OktaRepository {
     return allUsers;
   }
 
-  private List<User> getAllUsersForFacility(Facility facility) {
+  private List<User> getAllUniqueUsersForFacility(Facility facility) {
     PagedList<User> pagedUserList = new PagedList<>();
     List<User> allUsers = new ArrayList<>();
     String facilityAccessGroupName =
@@ -264,7 +264,26 @@ public class LiveOktaRepository implements OktaRepository {
           (PagedList<User>)
               groupApi.listGroupUsers(
                   facilityAccessGroupName, pagedUserList.getAfter(), OKTA_PAGE_SIZE);
-      allUsers.addAll(pagedUserList);
+      pagedUserList.stream()
+          .filter(
+              user -> {
+                List<Group> usersGroups = userApi.listUserGroups(user.getId());
+                List<Group> facilityGroupsOnly =
+                    usersGroups.stream()
+                        .filter(
+                            group ->
+                                group
+                                    .getId()
+                                    .contains(OrganizationExtractor.FACILITY_ACCESS_MARKER))
+                        .toList();
+                if (facilityGroupsOnly.size() == 1
+                    && facilityGroupsOnly.get(0).getId().equals(facilityAccessGroupName)) {
+                  return true;
+                } else {
+                  return false;
+                }
+              })
+          .forEach(allUsers::add);
     } while (pagedUserList.hasMoreItems());
     return allUsers;
   }
@@ -713,8 +732,8 @@ public class LiveOktaRepository implements OktaRepository {
     return getUsersCountInOktaGroup(facilityAccessGroupName);
   }
 
-  public Integer getFacilityUserCount(Facility facility) {
-    List<User> users = getAllUsersForFacility(facility);
+  public Integer getUniqueFacilityUserCount(Facility facility) {
+    List<User> users = getAllUniqueUsersForFacility(facility);
     return users.size();
   }
 
