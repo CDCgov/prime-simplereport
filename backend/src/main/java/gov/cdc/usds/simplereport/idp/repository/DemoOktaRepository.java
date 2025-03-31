@@ -438,6 +438,11 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   @Override
+  public Integer getUniqueFacilityUserCount(Facility facility) {
+    return 0;
+  }
+
+  @Override
   public String getApplicationStatusForHealthCheck() {
     return ACTIVE_LITERAL;
   }
