@@ -1045,7 +1045,6 @@ export type SpecimenInput = {
   collectionDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
   collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
-  collectionTime?: InputMaybe<Scalars["String"]["input"]>;
   receivedDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   snomedTypeCode: Scalars["String"]["input"];
 };
@@ -1096,10 +1095,8 @@ export enum TestCorrectionStatus {
 }
 
 export type TestDetailsInput = {
-  condition?: InputMaybe<Scalars["String"]["input"]>;
   resultDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   resultInterpretation?: InputMaybe<Scalars["String"]["input"]>;
-  resultTime?: InputMaybe<Scalars["String"]["input"]>;
   resultType: ResultScaleType;
   resultValue: Scalars["String"]["input"];
   testOrderLoinc: Scalars["String"]["input"];

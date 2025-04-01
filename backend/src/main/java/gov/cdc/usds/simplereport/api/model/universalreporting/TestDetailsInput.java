@@ -14,6 +14,5 @@ public class TestDetailsInput {
   private String resultType;
   private String resultValue;
   private Date resultDate;
-  private String resultTime;
   private String resultInterpretation;
 }
