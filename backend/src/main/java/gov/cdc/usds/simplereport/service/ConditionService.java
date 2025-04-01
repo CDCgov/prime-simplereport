@@ -38,6 +38,10 @@ public class ConditionService {
 
   private static final int PAGE_SIZE = 20;
 
+  public List<Condition> getConditions() {
+    return conditionRepository.findAll();
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String syncHasLabs() {
     List<Condition> allConditions = conditionRepository.findAll();

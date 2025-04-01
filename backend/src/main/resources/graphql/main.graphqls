@@ -516,6 +516,11 @@ enum ResultScaleType {
   NOMINAL
 }
 
+type Condition {
+  code: String!
+  display: String!
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -644,6 +649,7 @@ type Query {
     pageSize: Int
   ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
+  conditions: [Condition!]
 }
 
 type Mutation {
