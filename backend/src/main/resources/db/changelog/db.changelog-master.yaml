@@ -5948,3 +5948,134 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: loinc_staging
+  - changeSet:
+      id: add-lab-table
+      author: tlx4@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-lab-table
+        - createTable:
+            tableName: lab
+            remarks: Table to hold all labs for universal reporting
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: text
+                  remarks: The LOINC code.
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: display
+                  type: text
+                  remarks: The display name of the LOINC.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  remarks: The description of the LOINC.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: long_common_name
+                  type: text
+                  remarks: The long common name for the lab.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: scale_code
+                  type: text
+                  remarks: The scale code for the LOINC indicating the kind of result e.g. qualitative, quantiative, etc.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: scale_display
+                  type: text
+                  remarks: The display value for the LOINC's scale indicating the kind of result e.g. qualitative, quantiative, etc.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: system_code
+                  type: text
+                  remarks: The code for the LOINC's system indicating the specimen type.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: system_display
+                  type: text
+                  remarks: The display value for the LOINC's system indicating the specimen type.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: answer_list
+                  type: text
+                  remarks: The code value for the LOINC's answer list, when available.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: order_or_observation
+                  type: text
+                  remarks: Indicates if the LOINC is an order, observation, or both.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: panel
+                  type: bool
+                  remarks: Does the LOINC represent a panel?
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: lab
