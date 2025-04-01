@@ -35,6 +35,34 @@ const TestDetailSection = ({
   testDetails,
   updateTestDetails,
 }: TestDetailSectionProps) => {
+  const handleResultDateUpdate = (value: string) => {
+    if (value) {
+      const newResultDate = moment(value);
+      if (testDetails.resultDate) {
+        const previousCollectionDate = moment(testDetails.resultDate);
+        newResultDate.hour(previousCollectionDate.hour());
+        newResultDate.minute(previousCollectionDate.minute());
+      }
+      updateTestDetails({
+        ...testDetails,
+        resultDate: newResultDate.toISOString(),
+      });
+    }
+  };
+
+  const handleResultTimeUpdate = (value: string) => {
+    if (value) {
+      const [hours, minutes] = value.split(":");
+      const newResultDate = moment(testDetails.resultDate)
+        .hours(parseInt(hours))
+        .minutes(parseInt(minutes));
+      updateTestDetails({
+        ...testDetails,
+        resultDate: newResultDate.toISOString(),
+      });
+    }
+  };
+
   return (
     <>
       <div className="grid-row grid-gap flex-justify">
@@ -53,12 +81,7 @@ const TestDetailSection = ({
             min={formatDate(new Date("Jan 1, 2020"))}
             max={formatDate(moment().toDate())}
             value={formatDate(moment(testDetails.resultDate).toDate())}
-            onChange={(e) => {
-              updateTestDetails({
-                ...testDetails,
-                resultDate: e.target.value,
-              });
-            }}
+            onChange={(e) => handleResultDateUpdate(e.target.value)}
           ></TextInput>
         </div>
         <div className="grid-col-4">
@@ -67,13 +90,8 @@ const TestDetailSection = ({
             type="time"
             label="Test result time"
             step="60"
-            value={testDetails.resultTime ?? ""}
-            onChange={(e) => {
-              updateTestDetails({
-                ...testDetails,
-                resultTime: e.target.value,
-              });
-            }}
+            value={moment(testDetails.resultDate).format("HH:mm")}
+            onChange={(e) => handleResultTimeUpdate(e.target.value)}
           ></TextInput>
         </div>
       </div>
