@@ -121,6 +121,12 @@ export type AskOnEntrySurvey = {
   syphilisHistory?: Maybe<Scalars["String"]["output"]>;
 };
 
+export type Condition = {
+  __typename?: "Condition";
+  code: Scalars["String"]["output"];
+  display: Scalars["String"]["output"];
+};
+
 export type CreateDeviceType = {
   manufacturer: Scalars["String"]["input"];
   model: Scalars["String"]["input"];
@@ -809,6 +815,7 @@ export type ProviderReportInput = {
 
 export type Query = {
   __typename?: "Query";
+  conditions?: Maybe<Array<Condition>>;
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType: Array<DeviceType>;
   deviceTypes: Array<DeviceType>;
@@ -3048,6 +3055,17 @@ export type GetTestResultDetailsQuery = {
       };
     } | null;
   } | null;
+};
+
+export type GetConditionsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetConditionsQuery = {
+  __typename?: "Query";
+  conditions?: Array<{
+    __typename?: "Condition";
+    code: string;
+    display: string;
+  }> | null;
 };
 
 export type SubmitLabReportMutationVariables = Exact<{
@@ -9682,6 +9700,84 @@ export type GetTestResultDetailsSuspenseQueryHookResult = ReturnType<
 export type GetTestResultDetailsQueryResult = Apollo.QueryResult<
   GetTestResultDetailsQuery,
   GetTestResultDetailsQueryVariables
+>;
+export const GetConditionsDocument = gql`
+  query GetConditions {
+    conditions {
+      code
+      display
+    }
+  }
+`;
+
+/**
+ * __useGetConditionsQuery__
+ *
+ * To run a query within a React component, call `useGetConditionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetConditionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetConditionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetConditionsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetConditionsQuery,
+    GetConditionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetConditionsQuery, GetConditionsQueryVariables>(
+    GetConditionsDocument,
+    options
+  );
+}
+export function useGetConditionsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetConditionsQuery,
+    GetConditionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetConditionsQuery, GetConditionsQueryVariables>(
+    GetConditionsDocument,
+    options
+  );
+}
+export function useGetConditionsSuspenseQuery(
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetConditionsQuery,
+        GetConditionsQueryVariables
+      >
+) {
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<
+    GetConditionsQuery,
+    GetConditionsQueryVariables
+  >(GetConditionsDocument, options);
+}
+export type GetConditionsQueryHookResult = ReturnType<
+  typeof useGetConditionsQuery
+>;
+export type GetConditionsLazyQueryHookResult = ReturnType<
+  typeof useGetConditionsLazyQuery
+>;
+export type GetConditionsSuspenseQueryHookResult = ReturnType<
+  typeof useGetConditionsSuspenseQuery
+>;
+export type GetConditionsQueryResult = Apollo.QueryResult<
+  GetConditionsQuery,
+  GetConditionsQueryVariables
 >;
 export const SubmitLabReportDocument = gql`
   mutation SubmitLabReport(

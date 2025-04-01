@@ -1,3 +1,10 @@
+query GetConditions {
+  conditions {
+    code
+    display
+  }
+}
+
 mutation SubmitLabReport(
   $patient: PatientReportInput
   $provider: ProviderReportInput
