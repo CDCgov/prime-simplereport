@@ -51,44 +51,52 @@ public class LoincService {
     CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     allFutures.join();
 
-      try{
-        for (int i = 0; i < futures.size(); i++) {
-          Response response = futures.get(i).get();
-          LoincStaging loinc = loincs.get(i);
-          log.info("Processing LOINC API response for: {}", loinc.getCode());
-          if (response.status() == 200) {
-            Parameters parameters = parseResponseToParameters(response);
-            Optional<Lab> lab = parametersToLab(loinc, parameters);
-            lab.ifPresent(labs::add);
-          }
-        }
+    List<LoincStaging> failedLoincs = new ArrayList<>();
+    List<LoincStaging> successLoincs = new ArrayList<>();
+    for (int i = 0; i < futures.size(); i++) {
+      Response response = futures.get(i).getNow(null);
+      LoincStaging loinc = loincs.get(i);
+      if (response.status() != 200) {
+        failedLoincs.add(loinc);
+        log.error("Received a {} status code from the LOINC API response for: {}", response.status(), loinc.getCode());
+        continue;
       }
-      catch (Exception e){
-        throw new RuntimeException(e);
+      Optional<Parameters> parameters = parseResponseToParameters(response);
+      if (parameters.isEmpty()) {
+        failedLoincs.add(loinc);
+        continue;
+      }
+      Optional<Lab> lab = parametersToLab(loinc, parameters.get());
+      if (lab.isEmpty()) {
+        failedLoincs.add(loinc);
+        continue;
+      }
+      labs.add(lab.get());
+      successLoincs.add(loinc);
     }
-    log.info("All Futures done");
 
     labRepository.saveAll(labs);
     return labs;
   }
 
-  private Parameters parseResponseToParameters(Response response) {
+  private Optional<Parameters> parseResponseToParameters(Response response) {
 
     String bodyString;
     try {
       bodyString = IOUtils.toString(response.body().asInputStream(), StandardCharsets.UTF_8);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      log.error("Failed to parse LOINC API response to string", e);
+      return Optional.empty();
     }
 
     Parameters parameters;
     try {
       parameters = (Parameters) this.parser.parseResource(bodyString);
-    } catch (ConfigurationException | DataFormatException exception) {
-      log.error("Failed to parse response from LOINC FHIR API to a Parameters resource.");
-      throw exception;
+    } catch (ConfigurationException | DataFormatException e) {
+      log.error("Failed to parse response from LOINC FHIR API to a Parameters resource.", e);
+      return Optional.empty();
     }
-    return parameters;
+    return Optional.of(parameters);
   }
 
   private Optional<Lab> parametersToLab(LoincStaging loinc, Parameters parameters) {
