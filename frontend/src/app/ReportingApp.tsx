@@ -85,6 +85,7 @@ const checkOktaLoginStatus = (
 
 const ReportingApp = () => {
   const agnosticEnabled = useFeature("agnosticEnabled");
+  const universalReportingEnabled = useFeature("universalReportingEnabled");
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -287,16 +288,18 @@ const ReportingApp = () => {
                   />
                 </>
               )}
-              <Route
-                path="results/universal"
-                element={
-                  <ProtectedRoute
-                    requiredPermissions={canViewResults}
-                    userPermissions={data.whoami.permissions}
-                    element={<LabReportForm />}
-                  />
-                }
-              />
+              {universalReportingEnabled && (
+                <Route
+                  path="results/universal"
+                  element={
+                    <ProtectedRoute
+                      requiredPermissions={canViewResults}
+                      userPermissions={data.whoami.permissions}
+                      element={<LabReportForm />}
+                    />
+                  }
+                />
+              )}
               <Route
                 path="results/upload/submit/guide"
                 element={
