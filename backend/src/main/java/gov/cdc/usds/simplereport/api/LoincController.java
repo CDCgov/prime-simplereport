@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
+import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
 import gov.cdc.usds.simplereport.service.LoincService;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +17,6 @@ import java.util.List;
 public class LoincController {
   private final LoincService loincService;
 
-  @GetMapping("/universal/loinc/codeSystem")
-  public String getCodeSystemLookup(@RequestParam String code) {
-    return loincService.getCodeSystemLookup(code);
-  }
-
   @GetMapping("universal/syncLabs")
-  public List<LoincStaging> syncLabs() { return loincService.syncLabs(); }
+  public List<Lab> syncLabs() { return loincService.syncLabs(); }
 }
