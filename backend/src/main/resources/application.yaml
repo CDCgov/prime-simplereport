@@ -195,7 +195,7 @@ features:
   hivEnabled: true
   agnosticEnabled: true
   agnosticBulkUploadEnabled: true
-  universalReporting: true
+  universalReportingEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}
