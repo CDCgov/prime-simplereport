@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,20 @@ class DeviceTypeProdSyncServiceTest extends BaseServiceTest<DeviceTypeProdSyncSe
   @Value("${simple-report.production.devices-token}")
   private String token;
 
+  private SpecimenType swab1;
+  private SpecimenType swab2;
+  private SupportedDisease covid;
+  private SupportedDisease flu;
+
+  @BeforeEach
+  void setup() {
+    swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
+    swab2 = TestDataBuilder.createSpecimenType("Nasopharyngeal swab", "258500001");
+    _specimenTypeRepo.saveAll(List.of(swab1, swab2));
+    covid = _supportedDiseaseRepo.findByNameAndLoinc("COVID-19", "96741-4").get(0);
+    flu = _supportedDiseaseRepo.findByNameAndLoinc("Flu A", "LP14239-5").get(0);
+  }
+
   @Test
   void validateToken_withValidToken_success() {
     assertThat(_service.validateToken(token)).isTrue();
@@ -53,13 +68,9 @@ class DeviceTypeProdSyncServiceTest extends BaseServiceTest<DeviceTypeProdSyncSe
 
   @Test
   void syncDevicesFromProd_dryRun_throwsException() {
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
-    SpecimenType swab2 = TestDataBuilder.createSpecimenType("Nasopharyngeal swab", "258500001");
-    _specimenTypeRepo.saveAll(List.of(swab1, swab2));
-    SupportedDisease covid = _supportedDiseaseRepo.findByNameAndLoinc("COVID-19", "96741-4").get(0);
-    SupportedDisease flu = _supportedDiseaseRepo.findByNameAndLoinc("Flu A", "LP14239-5").get(0);
     DeviceType savedDevice =
         TestDataBuilder.createDeviceType("Quidel Sofia 2", List.of(swab1, swab2));
+
     _deviceTypeRepo.save(savedDevice);
     DeviceTypeDisease supportedDiseaseTestPerformed1 =
         TestDataBuilder.createDeviceTypeDisease(savedDevice.getInternalId(), covid);
@@ -98,11 +109,6 @@ class DeviceTypeProdSyncServiceTest extends BaseServiceTest<DeviceTypeProdSyncSe
 
   @Test
   void syncDevicesFromProd_withUpdates_success() {
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
-    SpecimenType swab2 = TestDataBuilder.createSpecimenType("Nasopharyngeal swab", "258500001");
-    _specimenTypeRepo.saveAll(List.of(swab1, swab2));
-    SupportedDisease covid = _supportedDiseaseRepo.findByNameAndLoinc("COVID-19", "96741-4").get(0);
-    SupportedDisease flu = _supportedDiseaseRepo.findByNameAndLoinc("Flu A", "LP14239-5").get(0);
     DeviceType savedDevice =
         TestDataBuilder.createDeviceType("Quidel Sofia 2", List.of(swab1, swab2));
     _deviceTypeRepo.save(savedDevice);
@@ -146,10 +152,6 @@ class DeviceTypeProdSyncServiceTest extends BaseServiceTest<DeviceTypeProdSyncSe
 
   @Test
   void syncDevicesFromProd_noUpdates_success() {
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
-    _specimenTypeRepo.save(swab1);
-    SupportedDisease covid = _supportedDiseaseRepo.findByNameAndLoinc("COVID-19", "96741-4").get(0);
-
     DeviceType savedDevice = TestDataBuilder.createDeviceType("Quidel Sofia 2", List.of(swab1));
     _deviceTypeRepo.save(savedDevice);
     DeviceTypeDisease supportedDiseaseTestPerformed1 =

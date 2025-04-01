@@ -16,30 +16,40 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
-  @Autowired private SupportedDiseaseRepository _supportedDiseaseRepo;
-  @Autowired private DeviceTypeDiseaseRepository _deviceTypeDiseaseRepo;
   @Autowired private SpecimenTypeRepository _specimenTypeRepo;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
 
+  private SpecimenType swab1;
+  private SpecimenType swab2;
+  private SpecimenType swab3;
+  private SupportedDisease covid;
+  private SupportedDisease flu;
+  private DeviceType device;
+
+  @BeforeEach
+  void setup() {
+    swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
+    swab2 = TestDataBuilder.createSpecimenType("Nasopharyngeal swab", "258500001");
+    swab3 = TestDataBuilder.createSpecimenType("A fake specimen type", "000000000");
+    covid = _supportedDiseaseRepo.findByNameAndLoinc("COVID-19", "96741-4").get(0);
+    flu = _supportedDiseaseRepo.findByNameAndLoinc("Flu A", "LP14239-5").get(0);
+    device = _deviceTypeRepo.save(TestDataBuilder.createDeviceType());
+  }
+
   @Test
   void createUpdatedDeviceTypeDiseaseList_success() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    _deviceTypeRepo.save(device);
-    SupportedDisease covid = new SupportedDisease("covid-19", "96741-4");
-    _supportedDiseaseRepo.save(covid);
     SupportedDiseaseTestPerformedInput input1 =
         SupportedDiseaseTestPerformedInput.builder()
             .supportedDisease(covid.getInternalId())
@@ -76,8 +86,6 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void hasUpdates_withNoIncomingSwabTypes_withNoSwabsOnExistingDevice_returnsFalse() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    SupportedDisease covid = TestDataBuilder.createCovidSupportedDisease();
     device.setSupportedDiseaseTestPerformed(
         List.of(TestDataBuilder.createDeviceTypeDisease(covid)));
     assertFalse(_service.hasUpdates(List.of(), List.of(), device));
@@ -85,29 +93,21 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void hasUpdates_withNoIncomingSwabTypes_withSwabOnExistingDevice_returnsTrue() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    SupportedDisease covid = TestDataBuilder.createCovidSupportedDisease();
     device.setSupportedDiseaseTestPerformed(
         List.of(TestDataBuilder.createDeviceTypeDisease(covid)));
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
     device.setSwabTypes(List.of(swab1));
     assertTrue(_service.hasUpdates(List.of(), List.of(), device));
   }
 
   @Test
   void hasUpdates_withNoIncomingDisease_withNoDiseaseOnExistingDevice_returnsFalse() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
     device.setSwabTypes(List.of(swab1));
     assertFalse(_service.hasUpdates(List.of(), List.of(swab1), device));
   }
 
   @Test
   void hasUpdates_withNoIncomingDisease_withDiseaseOnExistingDevice_returnsTrue() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
     device.setSwabTypes(List.of(swab1));
-    SupportedDisease covid = TestDataBuilder.createCovidSupportedDisease();
     device.setSupportedDiseaseTestPerformed(
         List.of(TestDataBuilder.createDeviceTypeDisease(covid)));
     assertTrue(_service.hasUpdates(List.of(), List.of(swab1), device));
@@ -115,10 +115,7 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void hasUpdates_withIncomingDisease_withNoDiseaseOnExistingDevice_returnsTrue() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
     device.setSwabTypes(List.of(swab1));
-    SupportedDisease covid = TestDataBuilder.createCovidSupportedDisease();
     List<DeviceTypeDisease> deviceTypeDiseases =
         List.of(TestDataBuilder.createDeviceTypeDisease(covid));
     assertTrue(_service.hasUpdates(deviceTypeDiseases, List.of(swab1), device));
@@ -126,16 +123,12 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void hasUpdates_withDifferentSupportedDiseaseTestPerformed_returnsTrue() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
     device.setSwabTypes(List.of(swab1));
-    SupportedDisease covid = TestDataBuilder.createCovidSupportedDisease();
 
     DeviceTypeDisease supportedDiseaseTestPerformed1 =
         TestDataBuilder.createDeviceTypeDisease(UUID.randomUUID(), covid);
     device.setSupportedDiseaseTestPerformed(List.of(supportedDiseaseTestPerformed1));
 
-    SupportedDisease flu = TestDataBuilder.createFluASupportedDisease();
     DeviceTypeDisease supportedDiseaseTestPerformed2 =
         TestDataBuilder.createDeviceTypeDisease(UUID.randomUUID(), flu);
     device.setSupportedDiseaseTestPerformed(
@@ -146,17 +139,12 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void hasUpdates_withDifferentSwabTypes_returnsTrue() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
-    SpecimenType swab2 = TestDataBuilder.createSpecimenType("Nasopharyngeal swab", "258500001");
-    SpecimenType swab3 = TestDataBuilder.createSpecimenType("A fake specimen type", "000000000");
     device.setSwabTypes(List.of(swab1, swab2));
     SupportedDisease covid = TestDataBuilder.createCovidSupportedDisease();
     DeviceTypeDisease supportedDiseaseTestPerformed1 =
         TestDataBuilder.createDeviceTypeDisease(UUID.randomUUID(), covid);
     device.setSupportedDiseaseTestPerformed(List.of(supportedDiseaseTestPerformed1));
 
-    SupportedDisease flu = TestDataBuilder.createFluASupportedDisease();
     DeviceTypeDisease supportedDiseaseTestPerformed2 =
         TestDataBuilder.createDeviceTypeDisease(UUID.randomUUID(), flu);
     device.setSupportedDiseaseTestPerformed(
@@ -171,16 +159,11 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void hasUpdates_withNoUpdates_returnsFalse() {
-    DeviceType device = TestDataBuilder.createDeviceType();
-    SpecimenType swab1 = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
-    SpecimenType swab2 = TestDataBuilder.createSpecimenType("Nasopharyngeal swab", "258500001");
-    SpecimenType swab3 = TestDataBuilder.createSpecimenType("A fake specimen type", "000000000");
     device.setSwabTypes(List.of(swab1, swab2, swab3));
     SupportedDisease covid = TestDataBuilder.createCovidSupportedDisease();
 
     DeviceTypeDisease supportedDiseaseTestPerformed1 =
         TestDataBuilder.createDeviceTypeDisease(UUID.randomUUID(), covid);
-    SupportedDisease flu = TestDataBuilder.createFluASupportedDisease();
     DeviceTypeDisease supportedDiseaseTestPerformed2 =
         TestDataBuilder.createDeviceTypeDisease(UUID.randomUUID(), flu);
     device.setSupportedDiseaseTestPerformed(
@@ -195,7 +178,7 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void createDeviceType_swabTypeDeleted_throwsException() {
-    _specimenTypeRepo.save(TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009"));
+    _specimenTypeRepo.save(swab1);
     SpecimenType swab = _specimenTypeRepo.findByTypeCode("697989009").get();
     CreateDeviceType deviceToCreate =
         CreateDeviceType.builder()
@@ -235,7 +218,7 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void updateDeviceType_swabTypeDeleted_throwsException() {
-    _specimenTypeRepo.save(TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009"));
+    _specimenTypeRepo.save(swab1);
     SpecimenType swab = _specimenTypeRepo.findByTypeCode("697989009").get();
     DeviceType savedDevice =
         TestDataBuilder.createDeviceType("COVID Device", 15, List.of(swab), List.of());
@@ -260,24 +243,20 @@ class DeviceTypeSyncServiceTest extends BaseServiceTest<DeviceTypeSyncService> {
 
   @Test
   void createDeviceTypes_success() {
-    SpecimenType savedSwab = TestDataBuilder.createSpecimenType("Anterior nares swab", "697989009");
-    SpecimenType deletedSwab =
-        TestDataBuilder.createSpecimenType("Nasopharyngeal swab", "258500001");
-    SpecimenType newSwab = TestDataBuilder.createSpecimenType("Oral fluid specimen", "441620008");
-    _specimenTypeRepo.saveAll(List.of(savedSwab, deletedSwab));
+    _specimenTypeRepo.saveAll(List.of(swab1, swab2));
 
     SpecimenType updatedSavedSwab =
         TestDataBuilder.createSpecimenType("Anterior nares updated swab", "697989009");
     DeviceType deviceToCreate =
         TestDataBuilder.createDeviceType(
-            "COVID Device", 15, List.of(updatedSavedSwab, deletedSwab, newSwab), List.of());
-    _specimenTypeRepo.delete(deletedSwab);
+            "COVID Device", 15, List.of(updatedSavedSwab, swab2, swab3), List.of());
+    _specimenTypeRepo.delete(swab2);
 
     assertTrue(_specimenTypeRepo.findByTypeCode("258500001").get().getIsDeleted());
     _service.createDeviceTypes(List.of(deviceToCreate));
     assertEquals(_specimenTypeRepo.findByTypeCode("697989009").get(), updatedSavedSwab);
     assertFalse(_specimenTypeRepo.findByTypeCode("258500001").get().getIsDeleted());
-    assertEquals(_specimenTypeRepo.findByTypeCode("441620008").get(), newSwab);
+    assertEquals(_specimenTypeRepo.findByTypeCode("000000000").get(), swab3);
     assertNotNull(_deviceTypeRepo.findDeviceTypeByName("COVID Device"));
   }
 }
