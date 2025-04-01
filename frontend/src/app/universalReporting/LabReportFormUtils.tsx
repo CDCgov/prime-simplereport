@@ -1,4 +1,4 @@
-import { ResultScaleType } from "../../generated/graphql";
+import { Condition, ResultScaleType } from "../../generated/graphql";
 
 type Specimen = {
   name: string;
@@ -66,12 +66,11 @@ export const ResultScaleTypeOptions: {
   },
 ];
 
-export const useConditionOptionList = () => {
-  const allConditions = Object.values(UNIVERSAL_CONDITIONS);
-  const options = allConditions.map((disease) => {
+export const buildConditionsOptionList = (conditions: Condition[]) => {
+  const options = conditions.map((condition) => {
     return {
-      value: disease,
-      label: disease,
+      value: condition.code,
+      label: `${condition.display} - ${condition.code}`,
     };
   });
   options.sort((a, b) => (a.label > b.label ? 1 : -1));

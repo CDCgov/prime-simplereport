@@ -8,13 +8,14 @@ import {
   ProviderReportInput,
   SpecimenInput,
   TestDetailsInput,
+  useGetConditionsQuery,
   useSubmitLabReportMutation,
 } from "../../generated/graphql";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 
 import {
+  buildConditionsOptionList,
   TestOrderLoinc,
-  useConditionOptionList,
   useFilteredTestOrderLoincListQueryStub,
 } from "./LabReportFormUtils";
 import SpecimenFormSection from "./SpecimenFormSection";
@@ -88,7 +89,12 @@ const LabReportForm = () => {
 
   const [submitLabReport] = useSubmitLabReportMutation();
 
-  const conditionOptions = useConditionOptionList();
+  const { data: conditionsData, loading: conditionsLoading } =
+    useGetConditionsQuery();
+
+  const conditionOptions = buildConditionsOptionList(
+    conditionsData?.conditions ?? []
+  );
 
   const testOrderLoincList = useFilteredTestOrderLoincListQueryStub();
 
@@ -174,21 +180,25 @@ const LabReportForm = () => {
             </div>
             <div className="grid-row margin-bottom-5">
               <div className="grid-col-8">
-                <MultiSelect
-                  name={"selected-conditions"}
-                  options={conditionOptions}
-                  onChange={(e) => setConditions(e)}
-                  initialSelectedValues={conditions}
-                  label={
-                    <>
-                      Conditions to report{" "}
-                      <span className={"text-base-dark"}>
-                        (Select all that apply.)
-                      </span>
-                    </>
-                  }
-                  required={true}
-                />
+                {conditionsLoading ? (
+                  <div>Loading condition list...</div>
+                ) : (
+                  <MultiSelect
+                    name={"selected-conditions"}
+                    options={conditionOptions}
+                    onChange={(e) => setConditions(e)}
+                    initialSelectedValues={conditions}
+                    label={
+                      <>
+                        Conditions to report{" "}
+                        <span className={"text-base-dark"}>
+                          (Select all that apply.)
+                        </span>
+                      </>
+                    }
+                    required={true}
+                  />
+                )}
               </div>
             </div>
           </div>

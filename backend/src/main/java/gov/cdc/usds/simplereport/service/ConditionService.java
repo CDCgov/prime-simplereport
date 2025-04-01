@@ -34,6 +34,10 @@ public class ConditionService {
   private final ConditionRepository conditionRepository;
   private final LoincStagingRepository loincStagingRepository;
 
+  public List<Condition> getConditions() {
+    return conditionRepository.findAll();
+  }
+
   public List<Condition> syncConditions() {
     List<Condition> conditionList = new ArrayList<>();
 

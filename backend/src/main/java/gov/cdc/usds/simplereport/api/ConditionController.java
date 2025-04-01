@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.service.ConditionService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,5 +18,10 @@ public class ConditionController {
   @GetMapping("/universal/conditions")
   public List<Condition> syncConditions() {
     return conditionService.syncConditions();
+  }
+
+  @QueryMapping
+  public List<Condition> conditions() {
+    return conditionService.getConditions();
   }
 }
