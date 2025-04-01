@@ -9,7 +9,6 @@ import lombok.Getter;
 public class SpecimenInput {
   private String typeSnomed;
   private Date collectionDate;
-  private String collectionTime;
   private Date receivedDate;
   private String collectionLocationName;
   private String collectionLocationCode;

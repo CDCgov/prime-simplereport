@@ -76,7 +76,6 @@ const LabReportForm = () => {
   const [specimen, setSpecimen] = useState<SpecimenInput>({
     snomedTypeCode: "",
     collectionDate: "",
-    collectionTime: "",
     receivedDate: "",
     collectionLocationCode: "",
     collectionLocationName: "",
@@ -102,6 +101,7 @@ const LabReportForm = () => {
         testPerformedLoincShortName: value.shortName,
         resultType: value.resultType.toUpperCase(),
         resultValue: "",
+        resultDate: "",
       } as TestDetailsInput);
     });
     setTestDetailList(updatedList);

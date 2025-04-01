@@ -19,6 +19,34 @@ const SpecimenFormSection = ({
 }: SpecimenFormSectionProps) => {
   const specimenOption = useSpecimenTypeOptionList();
 
+  const handleCollectionDateUpdate = (value: string) => {
+    if (value) {
+      const newCollectionDate = moment(value);
+      if (specimen.collectionDate) {
+        const previousCollectionDate = moment(specimen.collectionDate);
+        newCollectionDate.hour(previousCollectionDate.hour());
+        newCollectionDate.minute(previousCollectionDate.minute());
+      }
+      setSpecimen({
+        ...specimen,
+        collectionDate: newCollectionDate.toISOString(),
+      });
+    }
+  };
+
+  const handleCollectionTimeUpdate = (value: string) => {
+    if (value) {
+      const [hours, minutes] = value.split(":");
+      const newCollectionDate = moment(specimen.collectionDate)
+        .hours(parseInt(hours))
+        .minutes(parseInt(minutes));
+      setSpecimen({
+        ...specimen,
+        collectionDate: newCollectionDate.toISOString(),
+      });
+    }
+  };
+
   return (
     <>
       <div className="grid-row">
@@ -53,12 +81,7 @@ const SpecimenFormSection = ({
             min={formatDate(new Date("Jan 1, 2020"))}
             max={formatDate(moment().toDate())}
             value={formatDate(moment(specimen.collectionDate).toDate())}
-            onChange={(e) => {
-              setSpecimen({
-                ...specimen,
-                collectionDate: e.target.value,
-              });
-            }}
+            onChange={(e) => handleCollectionDateUpdate(e.target.value)}
           ></TextInput>
         </div>
         <div className="grid-col-auto">
@@ -67,13 +90,8 @@ const SpecimenFormSection = ({
             type="time"
             label="Specimen collection time"
             step="60"
-            value={specimen.collectionTime ?? ""}
-            onChange={(e) => {
-              setSpecimen({
-                ...specimen,
-                collectionTime: e.target.value,
-              });
-            }}
+            value={moment(specimen.collectionDate).format("HH:mm")}
+            onChange={(e) => handleCollectionTimeUpdate(e.target.value)}
           ></TextInput>
         </div>
         <div className="grid-col-auto">
@@ -85,7 +103,10 @@ const SpecimenFormSection = ({
             max={formatDate(moment().toDate())}
             value={formatDate(moment(specimen.receivedDate).toDate())}
             onChange={(e) => {
-              setSpecimen({ ...specimen, receivedDate: e.target.value });
+              setSpecimen({
+                ...specimen,
+                receivedDate: moment(e.target.value),
+              });
             }}
           ></TextInput>
         </div>

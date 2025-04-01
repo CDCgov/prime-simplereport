@@ -495,21 +495,18 @@ input FacilityReportInput {
 input SpecimenInput {
   snomedTypeCode: String!
   collectionDate: DateTime
-  collectionTime: String
   receivedDate: DateTime
   collectionLocationName: String
   collectionLocationCode: String
 }
 
 input TestDetailsInput {
-  condition: String
   testOrderLoinc: String!
   testPerformedLoinc: String!
   testPerformedLoincShortName: String
   resultType: ResultScaleType!
   resultValue: String!
   resultDate: DateTime
-  resultTime: String
   resultInterpretation: String
 }
 
