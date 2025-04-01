@@ -16,26 +16,20 @@ public class Lab extends EternalAuditedEntity {
   @Column(nullable = false)
   private String display;
 
-  @Column
-  private String description;
+  @Column private String description;
 
-  @Column (nullable = false)
+  @Column(nullable = false)
   private String longCommonName;
 
-  @Column
-  private String scaleCode;
+  @Column private String scaleCode;
 
-  @Column
-  private String scaleDisplay;
+  @Column private String scaleDisplay;
 
-  @Column
-  private String systemCode;
+  @Column private String systemCode;
 
-  @Column
-  private String systemDisplay;
+  @Column private String systemDisplay;
 
-  @Column
-  private String answerList;
+  @Column private String answerList;
 
   @Column(nullable = false)
   private String orderOrObservation;
@@ -43,8 +37,18 @@ public class Lab extends EternalAuditedEntity {
   @Column(nullable = false)
   private Boolean panel;
 
-
-  public Lab(String code, String display, String description, String longCommonName, String scaleCode, String scaleDisplay, String systemCode, String systemDisplay, String answerList, String orderOrObservation, Boolean panel) {
+  public Lab(
+      String code,
+      String display,
+      String description,
+      String longCommonName,
+      String scaleCode,
+      String scaleDisplay,
+      String systemCode,
+      String systemDisplay,
+      String answerList,
+      String orderOrObservation,
+      Boolean panel) {
     super();
     this.code = code;
     this.display = display;
