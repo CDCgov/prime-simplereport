@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model.universalreporting;
 
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,7 +9,7 @@ import lombok.Getter;
 public class PatientReportInput {
   private String firstName;
   private String middleName;
-  private String lastname;
+  private String lastName;
   private String suffix;
   private String email;
   private String phone;
@@ -20,7 +21,7 @@ public class PatientReportInput {
   private String zipCode;
   private String country;
   private String sex;
-  private String dateOfBirth;
+  private LocalDate dateOfBirth;
   private String race;
   private String ethnicity;
   private String tribalAffiliation;
