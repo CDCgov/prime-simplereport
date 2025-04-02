@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
+import gov.cdc.usds.simplereport.api.DeviceSyncRequestContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
@@ -57,7 +58,8 @@ public class UserAuthorizationVerifier {
   private final PatientLinkRepository _patientLinkRepo;
   private final OktaRepository _oktaRepo;
   private final AuthorizationService _authService;
-  private final CurrentAccountRequestContextHolder _contextHolder;
+  private final CurrentAccountRequestContextHolder _currentAccountRequestContextHolder;
+  private final DeviceSyncRequestContextHolder _deviceSyncRequestContextHolder;
   private final FeatureFlagsConfig _featureFlagsConfig;
 
   public boolean userHasSiteAdminRole() {
@@ -291,7 +293,12 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean permitAllAccountRequests() {
-    _contextHolder.setIsAccountRequest(true);
+    _currentAccountRequestContextHolder.setIsAccountRequest(true);
+    return true;
+  }
+
+  public boolean permitDeviceSyncRequests() {
+    _deviceSyncRequestContextHolder.setIsDeviceSyncRequest(true);
     return true;
   }
 

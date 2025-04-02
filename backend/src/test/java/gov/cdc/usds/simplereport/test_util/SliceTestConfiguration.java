@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.DeviceSyncRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.heathcheck.BackendAndDatabaseHealthIndicator;
 import gov.cdc.usds.simplereport.api.heathcheck.OktaHealthIndicator;
@@ -104,6 +105,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
   CurrentAccountRequestContextHolder.class,
+  DeviceSyncRequestContextHolder.class,
   ApiUserContextHolder.class,
   CurrentOrganizationRolesContextHolder.class,
   OrderingProviderRequiredValidator.class,

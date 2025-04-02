@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
+import gov.cdc.usds.simplereport.api.DeviceSyncRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
 import gov.cdc.usds.simplereport.api.apiuser.ManageUsersPageWrapper;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
@@ -80,7 +81,7 @@ public class ApiUserService {
   @Autowired private WebhookContextHolder _webhookContextHolder;
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
-
+  @Autowired private DeviceSyncRequestContextHolder _deviceSyncRequestContextHolder;
   @Autowired private DbAuthorizationService _dbAuthService;
 
   @Autowired private DbOrgRoleClaimsService _dbOrgRoleClaimsService;
@@ -529,6 +530,9 @@ public class ApiUserService {
       }
       if (_webhookContextHolder.isWebhook()) {
         return Optional.of(getWebhookApiUser());
+      }
+      if (_deviceSyncRequestContextHolder.isDeviceSyncRequest()) {
+        return Optional.of(getAnonymousApiUser());
       }
       throw new UnidentifiedUserException();
     }

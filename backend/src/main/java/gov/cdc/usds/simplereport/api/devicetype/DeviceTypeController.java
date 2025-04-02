@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.devicetype;
 
+import static gov.cdc.usds.simplereport.config.AuthorizationConfiguration.AUTHORIZER_BEAN;
+
 import com.fasterxml.jackson.annotation.JsonView;
 import gov.cdc.usds.simplereport.api.model.errors.DryRunException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -13,12 +15,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
+@PreAuthorize("@" + AUTHORIZER_BEAN + ".permitDeviceSyncRequests()")
+@PostAuthorize("@restAuditLogManager.logAnonymousRestSuccess(#request)")
 @Slf4j
 public class DeviceTypeController {
   private final DeviceTypeLIVDSyncService deviceTypeLIVDSyncService;
@@ -26,7 +34,7 @@ public class DeviceTypeController {
   private final DeviceTypeService deviceTypeService;
 
   @GetMapping("/devices/sync")
-  public void syncDevices(@RequestParam boolean dryRun) {
+  public void syncDevices(HttpServletRequest request, @RequestParam boolean dryRun) {
     try {
       deviceTypeLIVDSyncService.syncDevices(dryRun);
     } catch (DryRunException e) {
@@ -48,7 +56,7 @@ public class DeviceTypeController {
       //      log.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
-    //    log.info(returnMsg);
+    log.info(returnMsg);
     return ResponseEntity.status(HttpStatus.OK).body(returnMsg);
   }
 
@@ -61,7 +69,7 @@ public class DeviceTypeController {
       List<DeviceType> devices = deviceTypeService.fetchDeviceTypes();
       return ResponseEntity.status(HttpStatus.OK).body(devices);
     } catch (AccessDeniedException e) {
-      //      log.error(e.getMessage());
+      log.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
   }
