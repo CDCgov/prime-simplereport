@@ -191,36 +191,6 @@
   },
   {
     "resourceType": "Observation",
-    "id": "49ff18e5-0ff3-36e3-8297-5124c92ff80c",
-    "identifier": [
-      {
-        "use": "official",
-        "type": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "81959-9",
-              "display": "Public health laboratory ask at order entry panel"
-            }
-          ]
-        }
-      }
-    ],
-    "status": "final",
-    "code": {
-      "coding": [
-        {
-          "system": "http://loinc.org",
-          "code": "65222-2",
-          "display": "Date and time of symptom onset"
-        }
-      ],
-      "text": "Date and time of symptom onset"
-    },
-    "valueDateTime": "2023-03-04"
-  },
-  {
-    "resourceType": "Observation",
     "id": "07099f95-8754-3317-8e87-e1c4717c1af1",
     "identifier": [
       {
@@ -294,6 +264,36 @@
         }
       ]
     }
+  },
+  {
+    "resourceType": "Observation",
+    "id": "bb1e4cfa-14f9-3f65-b7e1-d1272b7ea2f1",
+    "identifier": [
+      {
+        "use": "official",
+        "type": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "81959-9",
+              "display": "Public health laboratory ask at order entry panel"
+            }
+          ]
+        }
+      }
+    ],
+    "status": "final",
+    "code": {
+      "coding": [
+        {
+          "system": "http://loinc.org",
+          "code": "11368-8",
+          "display": "Illness or injury onset date and time"
+        }
+      ],
+      "text": "Illness or injury onset date and time"
+    },
+    "valueDateTime": "2023-03-04"
   },
   {
     "resourceType": "Observation",

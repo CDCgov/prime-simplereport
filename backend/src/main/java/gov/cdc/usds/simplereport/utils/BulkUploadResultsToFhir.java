@@ -95,8 +95,8 @@ public class BulkUploadResultsToFhir {
 
   private final Map<String, String> testResultToSnomedMap =
       Map.of(
-          "Positive".toLowerCase(), "10828004",
-          "Negative".toLowerCase(), "260385009",
+          "Positive".toLowerCase(), "260373001",
+          "Negative".toLowerCase(), "260415000",
           "Detected".toLowerCase(), "260373001",
           "Not Detected".toLowerCase(), "260415000",
           "Invalid Result".toLowerCase(), "455371000124106");

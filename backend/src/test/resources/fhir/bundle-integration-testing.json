@@ -705,11 +705,11 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "65222-2",
-              "display": "Date and time of symptom onset"
+              "code": "11368-8",
+              "display": "Illness or injury onset date and time"
             }
           ],
-          "text": "Date and time of symptom onset"
+          "text": "Illness or injury onset date and time"
         },
         "subject": {
           "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

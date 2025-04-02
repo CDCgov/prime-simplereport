@@ -39,7 +39,7 @@
   },
   {
     "resourceType": "Observation",
-    "id": "49ff18e5-0ff3-36e3-8297-5124c92ff80c",
+    "id": "bb1e4cfa-14f9-3f65-b7e1-d1272b7ea2f1",
     "identifier": [
       {
         "use": "official",
@@ -59,11 +59,11 @@
       "coding": [
         {
           "system": "http://loinc.org",
-          "code": "65222-2",
-          "display": "Date and time of symptom onset"
+          "code": "11368-8",
+          "display": "Illness or injury onset date and time"
         }
       ],
-      "text": "Date and time of symptom onset"
+      "text": "Illness or injury onset date and time"
     },
     "valueDateTime": "2023-03-04"
   }
