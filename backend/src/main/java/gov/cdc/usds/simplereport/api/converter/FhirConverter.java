@@ -11,60 +11,7 @@ import static gov.cdc.usds.simplereport.api.Translators.REFUSED;
 import static gov.cdc.usds.simplereport.api.Translators.TRANS_MAN;
 import static gov.cdc.usds.simplereport.api.Translators.TRANS_WOMAN;
 import static gov.cdc.usds.simplereport.api.Translators.getSymptomName;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAGS_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_ABNORMAL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DIAGNOSTIC_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LABORATORY_STRING_LITERAL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LAB_STRING_LITERAL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_IDENTIFIER;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_PREGNANCY_STATUS;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_RESIDENCE_TYPE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_RESIDENT_CONGREGATE_SETTING;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_GENDER_IDENTITY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_SYMPTOM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_SYMPTOM_TIMING_PANEL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_VALUE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_VERSION;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NPI_PREFIX;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.OBSERVATION_CATEGORY_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_EFFECTIVE_DATE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTICIONER_IDENTIFIER_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SIMPLE_REPORT_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TESTKIT_NAME_ID_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.*;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
@@ -809,11 +756,7 @@ public class FhirConverter {
   }
 
   public Set<Observation> convertToAOESymptomaticObservation(
-      String eventId,
-      Boolean symptomatic,
-      LocalDate symptomOnsetDate,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      String eventId, Boolean symptomatic, LocalDate symptomOnsetDate) {
     var observations = new LinkedHashSet<Observation>();
     var symptomaticCode =
         createLoincConcept(
@@ -822,11 +765,7 @@ public class FhirConverter {
             "Has symptoms related to condition of interest");
     observations.add(
         createAOEObservation(
-            eventId + LOINC_AOE_SYMPTOMATIC,
-            symptomaticCode,
-            createYesNoUnkConcept(symptomatic),
-            correctionStatus,
-            correctionReason));
+            eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(symptomatic)));
 
     if (Boolean.TRUE.equals(symptomatic) && symptomOnsetDate != null) {
       observations.add(
@@ -834,11 +773,9 @@ public class FhirConverter {
               eventId + LOINC_AOE_SYMPTOM_ONSET,
               createLoincConcept(
                   LOINC_AOE_SYMPTOM_ONSET,
-                  "Illness or injury onset date and time",
-                  "Illness or injury onset date and time"),
-              new DateTimeType(symptomOnsetDate.toString()),
-              correctionStatus,
-              correctionReason));
+                  SYMPTOM_ONSET_AOE_DESCRIPTION,
+                  SYMPTOM_ONSET_AOE_DESCRIPTION),
+              new DateTimeType(symptomOnsetDate.toString())));
     }
     return observations;
   }
@@ -854,8 +791,7 @@ public class FhirConverter {
     return observation;
   }
 
-  public Set<Observation> convertToSymptomsObservations(
-      List<String> symptoms, TestCorrectionStatus correctionStatus, String correctionReason) {
+  public Set<Observation> convertToSymptomsObservations(List<String> symptoms) {
     HashSet<Observation> observations = new HashSet<>();
 
     CodeableConcept symptomStatusCode = createLoincConcept(LOINC_SYMPTOM, "Symptom", "Symptom");
@@ -865,21 +801,14 @@ public class FhirConverter {
           String symptomName = getSymptomName(symptom);
           if (symptomName != null && !symptomName.isBlank()) {
             CodeableConcept symptomValueCode = createSNOMEDConcept(symptom, symptomName, null);
-            Observation symptomObservation =
-                createSymptomObservation(symptomStatusCode, symptomValueCode);
-            setStatus(symptomObservation, correctionStatus);
-            addCorrectionNote(
-                correctionStatus != TestCorrectionStatus.ORIGINAL,
-                correctionReason,
-                symptomObservation);
-            observations.add(symptomObservation);
+            observations.add(createSymptomObservation(symptomStatusCode, symptomValueCode));
           }
         });
     return observations;
   }
 
   public Set<Observation> convertToAOEGenderOfSexualPartnersObservation(
-      Set<String> sexualPartners, TestCorrectionStatus correctionStatus, String correctionReason) {
+      Set<String> sexualPartners) {
     HashSet<Observation> observations = new LinkedHashSet<>();
 
     for (String sexualPartner : sexualPartners) {
@@ -901,17 +830,12 @@ public class FhirConverter {
           createAOEObservation(
               uuidGenerator.randomUUID().toString(),
               genderOfSexualPartnerStatusCode,
-              genderOfSexualPartnerValueCode,
-              correctionStatus,
-              correctionReason));
+              genderOfSexualPartnerValueCode));
     }
     return observations;
   }
 
-  public Observation convertToAOEPregnancyObservation(
-      String pregnancyStatusSnomed,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+  public Observation convertToAOEPregnancyObservation(String pregnancyStatusSnomed) {
     String pregnancyStatusDisplay = pregnancyStatusDisplayMap.get(pregnancyStatusSnomed);
     CodeableConcept pregnancyStatusCode =
         createLoincConcept(LOINC_AOE_PREGNANCY_STATUS, "Pregnancy status", "Pregnancy status");
@@ -920,13 +844,10 @@ public class FhirConverter {
     return createAOEObservation(
         uuidGenerator.randomUUID() + LOINC_AOE_PREGNANCY_STATUS,
         pregnancyStatusCode,
-        pregnancyStatusValueCode,
-        correctionStatus,
-        correctionReason);
+        pregnancyStatusValueCode);
   }
 
-  public Observation convertToAOESyphilisHistoryObservation(
-      String syphilisHistory, TestCorrectionStatus correctionStatus, String correctionReason) {
+  public Observation convertToAOESyphilisHistoryObservation(String syphilisHistory) {
     CodeableConcept observationCode =
         createSNOMEDConcept(
             YES_SYPHILIS_HISTORY_SNOMED, "History of syphilis", "History of syphilis");
@@ -937,43 +858,28 @@ public class FhirConverter {
       hasHistory = false;
     }
     return createAOEObservation(
-        uuidGenerator.randomUUID().toString(),
-        observationCode,
-        createYesNoUnkConcept(hasHistory),
-        correctionStatus,
-        correctionReason);
+        uuidGenerator.randomUUID().toString(), observationCode, createYesNoUnkConcept(hasHistory));
   }
 
   public Observation convertToAOEYesNoUnkObservation(
-      Boolean isObserved,
-      String observationLoinc,
-      String observationDisplayText,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      Boolean isObserved, String observationLoinc, String observationDisplayText) {
     CodeableConcept observationCode =
         createLoincConcept(observationLoinc, observationDisplayText, observationDisplayText);
     return createAOEObservation(
         uuidGenerator.randomUUID() + observationLoinc,
         observationCode,
-        createYesNoUnkConcept(isObserved),
-        correctionStatus,
-        correctionReason);
+        createYesNoUnkConcept(isObserved));
   }
 
   public Set<Observation> convertToAOEResidenceObservation(
-      Boolean residesInCongregateSetting,
-      String residenceTypeSnomed,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      Boolean residesInCongregateSetting, String residenceTypeSnomed) {
     HashSet<Observation> observations = new LinkedHashSet<>();
 
     observations.add(
         convertToAOEYesNoUnkObservation(
             residesInCongregateSetting,
             LOINC_AOE_RESIDENT_CONGREGATE_SETTING,
-            "Resides in a congregate care setting",
-            correctionStatus,
-            correctionReason));
+            "Resides in a congregate care setting"));
 
     if (Boolean.TRUE.equals(residesInCongregateSetting)
         && StringUtils.isNotBlank(residenceTypeSnomed)) {
@@ -985,18 +891,13 @@ public class FhirConverter {
           createAOEObservation(
               uuidGenerator.randomUUID() + LOINC_AOE_RESIDENCE_TYPE,
               residenceTypeCode,
-              createSNOMEDConcept(residenceTypeSnomed, residenceTypeTextDisplay),
-              correctionStatus,
-              correctionReason));
+              createSNOMEDConcept(residenceTypeSnomed, residenceTypeTextDisplay)));
     }
     return observations;
   }
 
   public Set<Observation> convertToAOEGenderIdentityObservation(
-      String eventId,
-      String genderIdentity,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      String eventId, String genderIdentity) {
     Set<Observation> observations = new LinkedHashSet<>();
     if (StringUtils.isNotBlank(genderIdentity)
         && GENDER_IDENTITIES.contains(genderIdentity.toLowerCase())) {
@@ -1036,22 +937,14 @@ public class FhirConverter {
 
         observations.add(
             createAOEObservation(
-                eventId + LOINC_GENDER_IDENTITY,
-                genderIdentityLoincConcept,
-                valueCodeableConcept,
-                correctionStatus,
-                correctionReason));
+                eventId + LOINC_GENDER_IDENTITY, genderIdentityLoincConcept, valueCodeableConcept));
       }
     }
     return observations;
   }
 
   public Set<Observation> convertToAOEObservations(
-      String eventId,
-      AskOnEntrySurvey surveyData,
-      Person patientData,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      String eventId, AskOnEntrySurvey surveyData, Person patientData) {
     HashSet<Observation> observations = new LinkedHashSet<>();
     Boolean symptomatic = null;
     if (Boolean.TRUE.equals(surveyData.getNoSymptoms())) {
@@ -1060,19 +953,15 @@ public class FhirConverter {
         && surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
       symptomatic = true;
       List<String> symptomsPresent = getFilteredSymptomsPresent(surveyData.getSymptoms());
-      observations.addAll(
-          convertToSymptomsObservations(symptomsPresent, correctionStatus, correctionReason));
-    }
+      observations.addAll(convertToSymptomsObservations(symptomsPresent));
+    } // implied else: AoE form was not completed. Symptomatic set to null
 
     var symptomOnsetDate = surveyData.getSymptomOnsetDate();
-    observations.addAll(
-        convertToAOESymptomaticObservation(
-            eventId, symptomatic, symptomOnsetDate, correctionStatus, correctionReason));
+    observations.addAll(convertToAOESymptomaticObservation(eventId, symptomatic, symptomOnsetDate));
 
     String pregnancyStatus = surveyData.getPregnancy();
     if (pregnancyStatus != null && pregnancyStatusSnomedMap.values().contains(pregnancyStatus)) {
-      observations.add(
-          convertToAOEPregnancyObservation(pregnancyStatus, correctionStatus, correctionReason));
+      observations.add(convertToAOEPregnancyObservation(surveyData.getPregnancy()));
     }
 
     if (patientData != null) {
@@ -1081,55 +970,35 @@ public class FhirConverter {
             convertToAOEYesNoUnkObservation(
                 patientData.getEmployedInHealthcare(),
                 LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
-                AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY,
-                correctionStatus,
-                correctionReason));
+                AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
       }
 
       if (patientData.getResidentCongregateSetting() != null) {
         observations.addAll(
-            convertToAOEResidenceObservation(
-                patientData.getResidentCongregateSetting(),
-                null,
-                correctionStatus,
-                correctionReason));
+            convertToAOEResidenceObservation(patientData.getResidentCongregateSetting(), null));
       }
 
       if (StringUtils.isNotBlank(patientData.getGenderIdentity())) {
         observations.addAll(
-            convertToAOEGenderIdentityObservation(
-                eventId, patientData.getGenderIdentity(), correctionStatus, correctionReason));
+            convertToAOEGenderIdentityObservation(eventId, patientData.getGenderIdentity()));
       }
     }
 
     if (surveyData.getGenderOfSexualPartners() != null) {
       Set<String> sexualPartners = new HashSet<>(surveyData.getGenderOfSexualPartners());
-      observations.addAll(
-          convertToAOEGenderOfSexualPartnersObservation(
-              sexualPartners, correctionStatus, correctionReason));
+      observations.addAll(convertToAOEGenderOfSexualPartnersObservation(sexualPartners));
     }
 
     if (surveyData.getSyphilisHistory() != null) {
-      observations.add(
-          convertToAOESyphilisHistoryObservation(
-              surveyData.getSyphilisHistory(), correctionStatus, correctionReason));
+      observations.add(convertToAOESyphilisHistoryObservation(surveyData.getSyphilisHistory()));
     }
 
     return observations;
   }
 
-  public Observation createAOEObservation(
-      String uniqueName,
-      CodeableConcept code,
-      Type value,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason) {
-    var observation = new Observation().setCode(code).setValue(value);
-
-    setStatus(observation, correctionStatus);
-
-    addCorrectionNote(
-        correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
+  public Observation createAOEObservation(String uniqueName, CodeableConcept code, Type value) {
+    var observation =
+        new Observation().setStatus(ObservationStatus.FINAL).setCode(code).setValue(value);
     observation.setId(UUID.nameUUIDFromBytes(uniqueName.getBytes()).toString());
 
     observation
@@ -1452,9 +1321,7 @@ public class FhirConverter {
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(),
                     testEvent.getSurveyData(),
-                    testEvent.getPatientData(),
-                    testEvent.getCorrectionStatus(),
-                    testEvent.getReasonForCorrection()))
+                    testEvent.getPatientData()))
             .serviceRequest(convertToServiceRequest(testEvent.getOrder(), dateTested))
             .diagnosticReport(convertToDiagnosticReport(testEvent, currentDate))
             .currentDate(currentDate)
