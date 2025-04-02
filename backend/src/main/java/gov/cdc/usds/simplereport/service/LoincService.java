@@ -42,7 +42,7 @@ public class LoincService {
 
   public List<Lab>  syncLabs() {
     log.info("Sync Labs");
-    PageRequest pageRequest = PageRequest.of(0, 100);
+    PageRequest pageRequest = PageRequest.of(0, 1000);
     List<CompletableFuture<Response>> futures = new ArrayList<>();
     List<Lab> labs = new ArrayList<>();
     List<LoincStaging> failedLoincs = new ArrayList<>();
@@ -79,7 +79,7 @@ public class LoincService {
         successLoincs.add(loinc);
       }
       log.info("LOINC API response parsed.");
-      bulkInsertLabs(labs);
+      loadLabs(labs);
       log.info("Data written to lab table.");
       log.info("Completed page: {}", loincPage.getNumber());
       futures.clear();
@@ -214,5 +214,15 @@ public class LoincService {
       ps.setTimestamp(14, Timestamp.valueOf(LocalDateTime.now()));
       ps.setBoolean(15, false);
     });
+  }
+
+  public List<Lab> loadLabs(List<Lab> labs) {
+    for (int i = 0; i < labs.size(); i++ ) {
+      Lab foundLab = labRepository.findByCode(labs.get(i).getCode());
+      if (foundLab != null) {
+        labs.set(i, foundLab);
+      }
+    }
+    return (List<Lab>) labRepository.saveAll(labs);
   }
 }
