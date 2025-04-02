@@ -522,6 +522,7 @@ public class FhirConverter {
             .race(person.getRace())
             .ethnicity(person.getEthnicity())
             .tribalAffiliations(person.getTribalAffiliation())
+            .preferredLanguage(person.getPreferredLanguage())
             .build());
   }
 
@@ -540,6 +541,7 @@ public class FhirConverter {
 
     patient.setId(props.getId());
     patient.addIdentifier().setValue(props.getId());
+    patient.setLanguage(props.getPreferredLanguage());
 
     if (!CollectionUtils.isEmpty(props.getPhoneNumbers())) {
       convertPhoneNumbersToContactPoint(props.getPhoneNumbers()).forEach(patient::addTelecom);
@@ -1649,15 +1651,15 @@ public class FhirConverter {
     return patient;
   }
 
-  public CodeableConcept convertToPatientPreferredLanguage(String prefferedLanguage) {
-    if (StringUtils.isNotBlank(prefferedLanguage)) {
-      CodeableConcept paitentPreferedLanguageCodeableConcept = new CodeableConcept();
-      Coding paitentPreferedLanguageCoding = paitentPreferedLanguageCodeableConcept.addCoding();
-      paitentPreferedLanguageCoding.setCode(prefferedLanguage);
-    }
-
-    return;
-  }
+  //  public CodeableConcept convertToPatientPreferredLanguage(String prefferedLanguage) {
+  //    if (StringUtils.isNotBlank(prefferedLanguage)) {
+  //      CodeableConcept paitentPreferedLanguageCodeableConcept = new CodeableConcept();
+  //      Coding paitentPreferedLanguageCoding = paitentPreferedLanguageCodeableConcept.addCoding();
+  //      paitentPreferedLanguageCoding.setCode(prefferedLanguage);
+  //    }
+  //
+  //    return;
+  //  }
 
   private List<String> getFilteredSymptomsPresent(Map<String, Boolean> symptomsMap) {
     return symptomsMap.entrySet().stream()
