@@ -43,43 +43,49 @@ public class LoincService {
   public List<Lab>  syncLabs() {
     log.info("Sync Labs");
     PageRequest pageRequest = PageRequest.of(0, 100);
-    Page<LoincStaging> loincPage = loincStagingRepository.findAll(pageRequest);
-    List<LoincStaging> loincs = loincPage.getContent();
     List<CompletableFuture<Response>> futures = new ArrayList<>();
     List<Lab> labs = new ArrayList<>();
-    log.info("Found {} Labs", loincs.size());
-    loincs.forEach(loinc -> futures.add(CompletableFuture.supplyAsync(()->loincFhirClient.getCodeSystemLookup(loinc.getCode()))));
-    log.info("Futures created");
-    CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
-    allFutures.join();
-    log.info("Futures completed");
     List<LoincStaging> failedLoincs = new ArrayList<>();
     List<LoincStaging> successLoincs = new ArrayList<>();
-    for (int i = 0; i < futures.size(); i++) {
-      Response response = futures.get(i).getNow(null);
-      LoincStaging loinc = loincs.get(i);
-      if (response.status() != 200) {
-        failedLoincs.add(loinc);
-        log.error("Received a {} status code from the LOINC API response for: {}", response.status(), loinc.getCode());
-        continue;
-      }
-      Optional<Parameters> parameters = parseResponseToParameters(response);
-      if (parameters.isEmpty()) {
-        failedLoincs.add(loinc);
-        continue;
-      }
-      Optional<Lab> lab = parametersToLab(loinc, parameters.get());
-      if (lab.isEmpty()) {
-        failedLoincs.add(loinc);
-        continue;
-      }
-      labs.add(lab.get());
-      successLoincs.add(loinc);
-    }
-    log.info("LOINC API response parsed.");
+    Page<LoincStaging> loincPage = loincStagingRepository.findAll(pageRequest);
 
-    bulkInsertLabs(labs);
-    log.info("Data written to lab table.");
+    while (loincPage.hasNext()) {
+      List<LoincStaging> loincs = loincPage.getContent();
+      log.info("Found {} Labs", loincs.size());
+      loincs.forEach(loinc -> futures.add(CompletableFuture.supplyAsync(() -> loincFhirClient.getCodeSystemLookup(loinc.getCode()))));
+      log.info("Futures created");
+      CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+      allFutures.join();
+      log.info("Futures completed");
+      for (int i = 0; i < futures.size(); i++) {
+        Response response = futures.get(i).getNow(null);
+        LoincStaging loinc = loincs.get(i);
+        if (response.status() != 200) {
+          failedLoincs.add(loinc);
+          log.error("Received a {} status code from the LOINC API response for: {}", response.status(), loinc.getCode());
+          continue;
+        }
+        Optional<Parameters> parameters = parseResponseToParameters(response);
+        if (parameters.isEmpty()) {
+          failedLoincs.add(loinc);
+          continue;
+        }
+        Optional<Lab> lab = parametersToLab(loinc, parameters.get());
+        if (lab.isEmpty()) {
+          failedLoincs.add(loinc);
+          continue;
+        }
+        labs.add(lab.get());
+        successLoincs.add(loinc);
+      }
+      log.info("LOINC API response parsed.");
+      bulkInsertLabs(labs);
+      log.info("Data written to lab table.");
+      log.info("Completed page: {}", loincPage.getNumber());
+      futures.clear();
+      pageRequest = pageRequest.next();
+      loincPage = loincStagingRepository.findAll(pageRequest);
+    }
     return labs;
   }
 
