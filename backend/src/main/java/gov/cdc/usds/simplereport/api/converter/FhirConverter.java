@@ -77,7 +77,9 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusDisplayMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.pregnancyStatusSnomedMap;
 
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
+import ca.uhn.fhir.parser.IParser;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
@@ -181,6 +183,9 @@ public class FhirConverter {
 
   private final UUIDGenerator uuidGenerator;
   private final DateGenerator dateGenerator;
+
+  final FhirContext ctx = FhirContext.forR4();
+  final IParser parser = ctx.newJsonParser();
 
   private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
@@ -1573,7 +1578,7 @@ public class FhirConverter {
                 new BundleEntryComponent()
                     .setFullUrl(pair.getFirst())
                     .setResource(pair.getSecond())));
-
+    String serialized = parser.encodeResourceToString(bundle);
     return bundle;
   }
 
