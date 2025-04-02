@@ -2,6 +2,12 @@ package gov.cdc.usds.simplereport.db.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,11 +37,22 @@ public class Lab extends EternalAuditedEntity {
 
   @Column private String answerList;
 
+  @JoinTable(
+      name = "condition_lab_join",
+      joinColumns = @JoinColumn(name = "lab_id"),
+      inverseJoinColumns = @JoinColumn(name = "condition_id"))
+  @ManyToMany(fetch = FetchType.EAGER)
+  private Set<Condition> conditions = new HashSet<>();
+
   @Column(nullable = false)
   private String orderOrObservation;
 
   @Column(nullable = false)
   private Boolean panel;
+
+  public void addCondition(Condition condition) {
+    conditions.add(condition);
+  }
 
   public Lab(
       String code,

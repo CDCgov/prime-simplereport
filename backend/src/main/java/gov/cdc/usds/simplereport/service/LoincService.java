@@ -5,10 +5,10 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import feign.Response;
-import gov.cdc.usds.simplereport.db.model.ConditionLabJoin;
+import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
-import gov.cdc.usds.simplereport.db.repository.ConditionLabJoinRepository;
+import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
@@ -37,9 +37,18 @@ public class LoincService {
   private final LoincFhirClient loincFhirClient;
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
+  private final ConditionRepository conditionRepository;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
-  @Autowired private ConditionLabJoinRepository conditionLabJoinRepository;
+
+  public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
+    List<Condition> conditions = conditionRepository.findAllByCodeIn(codes);
+    Set<Lab> labs = new HashSet<>();
+    for (var condition : conditions) {
+      labs.addAll(condition.getLabs());
+    }
+    return labs.stream().toList();
+  }
 
   public List<Lab> syncLabs() {
     log.info("Sync Labs");
@@ -279,22 +288,13 @@ public class LoincService {
   }
 
   public void loadConditionLabJoin(List<LoincStaging> loincs, List<Lab> labs) {
-
-    List<ConditionLabJoin> conditionLabJoins = new ArrayList<>();
-
     for (int i = 0; i < loincs.size(); i++) {
       LoincStaging loinc = loincs.get(i);
       Lab lab = labs.get(i);
-      List<ConditionLabJoin> foundConditionLab =
-          conditionLabJoinRepository.findByConditionIdAndLabId(
-              loinc.getCondition().getInternalId(), lab.getInternalId());
-      if (!foundConditionLab.isEmpty()) {
-        continue;
+      if (!lab.getConditions().contains(loinc.getCondition())) {
+        lab.addCondition(loinc.getCondition());
       }
-      conditionLabJoins.add(
-          new ConditionLabJoin(loinc.getCondition().getInternalId(), lab.getInternalId()));
     }
-
-    conditionLabJoinRepository.saveAll(conditionLabJoins);
+    labRepository.saveAll(labs);
   }
 }
