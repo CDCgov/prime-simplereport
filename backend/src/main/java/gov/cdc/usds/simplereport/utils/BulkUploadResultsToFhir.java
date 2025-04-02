@@ -100,17 +100,17 @@ public class BulkUploadResultsToFhir {
           "Not Detected".toLowerCase(), "260415000",
           "Invalid Result".toLowerCase(), "455371000124106");
 
-  private static final Map<String, Boolean> yesNoToBooleanMap = new HashMap<>();
+  private static final Map<String, Boolean> yesNoUnknownToBooleanMap = new HashMap<>();
 
   static {
-    yesNoToBooleanMap.put("Y".toLowerCase(), Boolean.TRUE);
-    yesNoToBooleanMap.put("YES".toLowerCase(), Boolean.TRUE);
-    yesNoToBooleanMap.put("N".toLowerCase(), Boolean.FALSE);
-    yesNoToBooleanMap.put("NO".toLowerCase(), Boolean.FALSE);
-    yesNoToBooleanMap.put("U".toLowerCase(), null);
-    yesNoToBooleanMap.put("UNK".toLowerCase(), null);
-    yesNoToBooleanMap.put(null, null);
-    yesNoToBooleanMap.put("", null);
+    yesNoUnknownToBooleanMap.put("Y".toLowerCase(), Boolean.TRUE);
+    yesNoUnknownToBooleanMap.put("YES".toLowerCase(), Boolean.TRUE);
+    yesNoUnknownToBooleanMap.put("N".toLowerCase(), Boolean.FALSE);
+    yesNoUnknownToBooleanMap.put("NO".toLowerCase(), Boolean.FALSE);
+    yesNoUnknownToBooleanMap.put("U".toLowerCase(), null);
+    yesNoUnknownToBooleanMap.put("UNK".toLowerCase(), null);
+    yesNoUnknownToBooleanMap.put(null, null);
+    yesNoUnknownToBooleanMap.put("", null);
   }
 
   public FHIRBundleRecord convertToFhirBundles(InputStream csvStream, UUID orgId) {
@@ -451,7 +451,7 @@ public class BulkUploadResultsToFhir {
     String symptomaticValue = row.getSymptomaticForDisease().getValue();
     if (valueIsYesNoOrUnknown(symptomaticValue)) {
       // symptomaticValue should be yes, no, or unknown, which correspond to true, false, or null
-      Boolean symptomatic = yesNoToBooleanMap.get(symptomaticValue.toLowerCase());
+      Boolean symptomatic = yesNoUnknownToBooleanMap.get(symptomaticValue.toLowerCase());
       aoeObservations.addAll(
           fhirConverter.convertToAOESymptomaticObservation(
               testEventId, symptomatic, symptomOnsetDate));
@@ -465,7 +465,8 @@ public class BulkUploadResultsToFhir {
 
     String employedInHealthcareValue = row.getEmployedInHealthcare().getValue();
     if (valueIsYesNoOrUnknown(employedInHealthcareValue.toLowerCase())) {
-      Boolean employedInHealthcare = yesNoToBooleanMap.get(employedInHealthcareValue.toLowerCase());
+      Boolean employedInHealthcare =
+          yesNoUnknownToBooleanMap.get(employedInHealthcareValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
               employedInHealthcare,
@@ -482,7 +483,7 @@ public class BulkUploadResultsToFhir {
 
     String hospitalizedValue = row.getHospitalized().getValue();
     if (valueIsYesNoOrUnknown(hospitalizedValue.toLowerCase())) {
-      Boolean hospitalized = yesNoToBooleanMap.get(hospitalizedValue.toLowerCase());
+      Boolean hospitalized = yesNoUnknownToBooleanMap.get(hospitalizedValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
               hospitalized, LOINC_AOE_HOSPITALIZED, "Hospitalized for condition"));
@@ -490,7 +491,7 @@ public class BulkUploadResultsToFhir {
 
     String icuValue = row.getIcu().getValue();
     if (valueIsYesNoOrUnknown(icuValue.toLowerCase())) {
-      Boolean hospitalized = yesNoToBooleanMap.get(icuValue.toLowerCase());
+      Boolean hospitalized = yesNoUnknownToBooleanMap.get(icuValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
               hospitalized, LOINC_AOE_ICU, "Admitted to ICU for condition"));
@@ -499,7 +500,7 @@ public class BulkUploadResultsToFhir {
     String residentCongregateSettingValue = row.getResidentCongregateSetting().getValue();
     if (valueIsYesNoOrUnknown(residentCongregateSettingValue.toLowerCase())) {
       Boolean residesInCongregateSetting =
-          yesNoToBooleanMap.get(residentCongregateSettingValue.toLowerCase());
+          yesNoUnknownToBooleanMap.get(residentCongregateSettingValue.toLowerCase());
       String residenceTypeValue = row.getResidenceType().getValue();
       String residenceTypeSnomed = null;
       if (StringUtils.isNotBlank(residenceTypeValue)) {
@@ -759,6 +760,7 @@ public class BulkUploadResultsToFhir {
   }
 
   private Boolean valueIsYesNoOrUnknown(String value) {
-    return StringUtils.isNotBlank(value) && yesNoToBooleanMap.containsKey(value.toLowerCase());
+    return StringUtils.isNotBlank(value)
+        && yesNoUnknownToBooleanMap.containsKey(value.toLowerCase());
   }
 }
