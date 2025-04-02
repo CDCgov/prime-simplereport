@@ -12,29 +12,29 @@ locals {
 
 # Create the virtual network and the persistent subnets
 resource "azurerm_virtual_network" "vn" {
-  name                           = "${var.app_name}-${var.env}-network"
-  resource_group_name            = var.resource_group_name
-  location                       = var.location
-  address_space                  = [var.network_address]
-  tags                           = var.management_tags
+  name                = "${var.app_name}-${var.env}-network"
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  address_space       = [var.network_address]
+  tags                = var.management_tags
 }
 
 resource "azurerm_subnet" "vms" {
-  count                             = var.env == "prod" ? 1 : 0
-  name                              = "${var.env}-vms"
-  resource_group_name               = var.resource_group_name
-  virtual_network_name              = azurerm_virtual_network.vn.name
-  address_prefixes                  = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
-  private_endpoint_network_policies = "Enabled"
+  count                                         = var.env == "prod" ? 1 : 0
+  name                                          = "${var.env}-vms"
+  resource_group_name                           = var.resource_group_name
+  virtual_network_name                          = azurerm_virtual_network.vn.name
+  address_prefixes                              = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
+  private_endpoint_network_policies             = "Enabled"
   private_link_service_network_policies_enabled = "false"
 }
 
 resource "azurerm_subnet" "lbs" {
-  name                 = "${local.subnet_basename}-lb"
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = [cidrsubnet(var.network_address, 8, 254)] # X.X.254.0/24
-  private_endpoint_network_policies = "Enabled"
+  name                                          = "${local.subnet_basename}-lb"
+  resource_group_name                           = var.resource_group_name
+  virtual_network_name                          = azurerm_virtual_network.vn.name
+  address_prefixes                              = [cidrsubnet(var.network_address, 8, 254)] # X.X.254.0/24
+  private_endpoint_network_policies             = "Enabled"
   private_link_service_network_policies_enabled = "false"
   service_endpoints = [
     "Microsoft.Web",
@@ -43,11 +43,11 @@ resource "azurerm_subnet" "lbs" {
 }
 
 resource "azurerm_subnet" "webapp" {
-  name                 = "${local.subnet_basename}-webapp"
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = [cidrsubnet(var.network_address, 8, 100)] # X.X.100.0/24
-  private_endpoint_network_policies = "Enabled"
+  name                                          = "${local.subnet_basename}-webapp"
+  resource_group_name                           = var.resource_group_name
+  virtual_network_name                          = azurerm_virtual_network.vn.name
+  address_prefixes                              = [cidrsubnet(var.network_address, 8, 100)] # X.X.100.0/24
+  private_endpoint_network_policies             = "Enabled"
   private_link_service_network_policies_enabled = "false"
 
   delegation {
@@ -78,11 +78,11 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 
 # Subnet + network profile for Azure Container Instances
 resource "azurerm_subnet" "container_instances" {
-  name                 = "${var.env}-azure-container-instances"
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = [cidrsubnet(var.network_address, 8, 101)] # X.X.101.0/24
-  private_endpoint_network_policies = "Enabled"
+  name                                          = "${var.env}-azure-container-instances"
+  resource_group_name                           = var.resource_group_name
+  virtual_network_name                          = azurerm_virtual_network.vn.name
+  address_prefixes                              = [cidrsubnet(var.network_address, 8, 101)] # X.X.101.0/24
+  private_endpoint_network_policies             = "Enabled"
   private_link_service_network_policies_enabled = "false"
   delegation {
     name = "${var.env}-container-instances"
@@ -111,11 +111,11 @@ resource "azurerm_network_profile" "container_instances" {
 
 # Subnet for Flexible DBs
 resource "azurerm_subnet" "db" {
-  name                 = "${var.env}-db"
-  resource_group_name  = var.resource_group_name
-  virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = [cidrsubnet(var.network_address, 8, 102)] # X.X.102.0/24
-  private_endpoint_network_policies = "Enabled"
+  name                                          = "${var.env}-db"
+  resource_group_name                           = var.resource_group_name
+  virtual_network_name                          = azurerm_virtual_network.vn.name
+  address_prefixes                              = [cidrsubnet(var.network_address, 8, 102)] # X.X.102.0/24
+  private_endpoint_network_policies             = "Enabled"
   private_link_service_network_policies_enabled = "false"
   delegation {
     name = "${var.env}-db"
