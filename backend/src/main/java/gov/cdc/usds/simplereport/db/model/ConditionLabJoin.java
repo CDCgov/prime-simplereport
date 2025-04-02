@@ -2,10 +2,9 @@ package gov.cdc.usds.simplereport.db.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -16,12 +15,12 @@ public class ConditionLabJoin extends EternalAuditedEntity {
   private UUID conditionId;
 
   @Column(nullable = false)
-  private UUID labID;
+  private UUID labId;
 
-  public ConditionLabJoin(UUID conditionId, UUID labID) {
+  public ConditionLabJoin(UUID conditionId, UUID labId) {
     super();
     this.conditionId = conditionId;
-    this.labID = labID;
+    this.labId = labId;
   }
 
   protected ConditionLabJoin() {

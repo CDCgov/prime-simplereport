@@ -5,29 +5,29 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import feign.Response;
+import gov.cdc.usds.simplereport.db.model.ConditionLabJoin;
 import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
+import gov.cdc.usds.simplereport.db.repository.ConditionLabJoinRepository;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.hl7.fhir.r4.model.Parameters;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.Type;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Parameters;
+import org.hl7.fhir.r4.model.Type;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +39,9 @@ public class LoincService {
   private final LabRepository labRepository;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
+  @Autowired private ConditionLabJoinRepository conditionLabJoinRepository;
 
-  public List<Lab>  syncLabs() {
+  public List<Lab> syncLabs() {
     log.info("Sync Labs");
     PageRequest pageRequest = PageRequest.of(0, 1000);
     List<CompletableFuture<Response>> futures = new ArrayList<>();
@@ -52,9 +53,14 @@ public class LoincService {
     while (loincPage.hasNext()) {
       List<LoincStaging> loincs = loincPage.getContent();
       log.info("Found {} Labs", loincs.size());
-      loincs.forEach(loinc -> futures.add(CompletableFuture.supplyAsync(() -> loincFhirClient.getCodeSystemLookup(loinc.getCode()))));
+      loincs.forEach(
+          loinc ->
+              futures.add(
+                  CompletableFuture.supplyAsync(
+                      () -> loincFhirClient.getCodeSystemLookup(loinc.getCode()))));
       log.info("Futures created");
-      CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+      CompletableFuture<Void> allFutures =
+          CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
       allFutures.join();
       log.info("Futures completed");
       for (int i = 0; i < futures.size(); i++) {
@@ -62,7 +68,10 @@ public class LoincService {
         LoincStaging loinc = loincs.get(i);
         if (response.status() != 200) {
           failedLoincs.add(loinc);
-          log.error("Received a {} status code from the LOINC API response for: {}", response.status(), loinc.getCode());
+          log.error(
+              "Received a {} status code from the LOINC API response for: {}",
+              response.status(),
+              loinc.getCode());
           continue;
         }
         Optional<Parameters> parameters = parseResponseToParameters(response);
@@ -79,8 +88,10 @@ public class LoincService {
         successLoincs.add(loinc);
       }
       log.info("LOINC API response parsed.");
-      loadLabs(labs);
+      labs = loadLabs(labs);
       log.info("Data written to lab table.");
+      loadConditionLabJoin(successLoincs, labs);
+      log.info("Data written to condition_lab_join table.");
       log.info("Completed page: {}", loincPage.getNumber());
       futures.clear();
       pageRequest = pageRequest.next();
@@ -111,11 +122,14 @@ public class LoincService {
 
   private Optional<Lab> parametersToLab(LoincStaging loinc, Parameters parameters) {
     List<Parameters.ParametersParameterComponent> parameter = parameters.getParameter();
-    
+
     String display = "";
-    Optional<Parameters.ParametersParameterComponent> displayParam = parameter.stream().filter(component -> Objects.equals(component.getName(), "display")).findFirst();
+    Optional<Parameters.ParametersParameterComponent> displayParam =
+        parameter.stream()
+            .filter(component -> Objects.equals(component.getName(), "display"))
+            .findFirst();
     if (displayParam.isPresent()) {
-       display = displayParam.get().getValue().toString();
+      display = displayParam.get().getValue().toString();
     }
 
     String description = null;
@@ -129,100 +143,158 @@ public class LoincService {
     boolean panel = false;
     boolean isLab = false;
 
-    List<Parameters.ParametersParameterComponent> properties= parameter.stream().filter(component -> Objects.equals(component.getName(), "property")).toList();
+    List<Parameters.ParametersParameterComponent> properties =
+        parameter.stream()
+            .filter(component -> Objects.equals(component.getName(), "property"))
+            .toList();
     for (Parameters.ParametersParameterComponent property : properties) {
       String firstValue = property.getPart().get(0).getValue().toString();
       Type lastValue = property.getPart().get(1).getValue();
 
       switch (firstValue) {
-        case "category": {
-          Coding coding = (Coding) lastValue;
-          if (coding.getCode().equals("LP29693-6")){
-            isLab = true;
+        case "category":
+          {
+            Coding coding = (Coding) lastValue;
+            if (coding.getCode().equals("LP29693-6")) {
+              isLab = true;
+            }
+            break;
           }
-          break;
-        }
-        case "DefinitionDescription": {
-          description = lastValue.toString();
-          break;
-        }
-        case "LONG_COMMON_NAME":{
-          longCommonName = lastValue.toString();
-          break;
-        }
-        case "SCALE_TYP": {
-          Coding coding = (Coding) lastValue;
-          scaleCode = coding.getCode();
-          scaleDisplay = coding.getDisplay();
-          break;
-        }
-        case "system-core": {
-          Coding coding = (Coding) lastValue;
-          systemCode = coding.getCode();
-          systemDisplay = coding.getDisplay();
-          break;
-        }
-        case "answer-list": {
-          answerList = lastValue.toString();
-          break;
-        }
-        case "ORDER_OBS": {
-          orderOrObservation = lastValue.toString();
-          break;
-        }
-        case "PanelType": {
-          if (lastValue.toString().equals("Panel")) {
-            panel = true;
+        case "DefinitionDescription":
+          {
+            description = lastValue.toString();
+            break;
           }
-          break;
-        }
+        case "LONG_COMMON_NAME":
+          {
+            longCommonName = lastValue.toString();
+            break;
+          }
+        case "SCALE_TYP":
+          {
+            Coding coding = (Coding) lastValue;
+            scaleCode = coding.getCode();
+            scaleDisplay = coding.getDisplay();
+            break;
+          }
+        case "system-core":
+          {
+            Coding coding = (Coding) lastValue;
+            systemCode = coding.getCode();
+            systemDisplay = coding.getDisplay();
+            break;
+          }
+        case "answer-list":
+          {
+            answerList = lastValue.toString();
+            break;
+          }
+        case "ORDER_OBS":
+          {
+            orderOrObservation = lastValue.toString();
+            break;
+          }
+        case "PanelType":
+          {
+            if (lastValue.toString().equals("Panel")) {
+              panel = true;
+            }
+            break;
+          }
       }
     }
 
-    if (!isLab){
+    if (!isLab) {
       return Optional.empty();
     }
 
-    return Optional.of(new Lab(loinc.getCode(), display, description, longCommonName, scaleCode, scaleDisplay, systemCode, systemDisplay, answerList, orderOrObservation, panel));
+    return Optional.of(
+        new Lab(
+            loinc.getCode(),
+            display,
+            description,
+            longCommonName,
+            scaleCode,
+            scaleDisplay,
+            systemCode,
+            systemDisplay,
+            answerList,
+            orderOrObservation,
+            panel));
   }
 
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
+  @Autowired private JdbcTemplate jdbcTemplate;
 
   public void bulkInsertLabs(List<Lab> labs) {
     // SQL query for bulk insert
-    String sql = "INSERT INTO simple_report.lab " +
-            "(internal_id, code, display, description, long_common_name, scale_code, scale_display, system_code, system_display, answer_list, order_or_observation, panel, created_at, updated_at, is_deleted) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-            "ON CONFLICT (code) DO NOTHING;";
+    String sql =
+        "INSERT INTO simple_report.lab "
+            + "(internal_id, code, display, description, long_common_name, scale_code, scale_display, system_code, system_display, answer_list, order_or_observation, panel, created_at, updated_at, is_deleted) "
+            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            + "ON CONFLICT (code) DO NOTHING;";
 
     // We use batchUpdate to handle the bulk insertion
-    jdbcTemplate.batchUpdate(sql, labs, labs.size(), (ps, lab) -> {
-      ps.setObject(1, UUID.randomUUID());
-      ps.setString(2, lab.getCode());
-      ps.setString(3, lab.getDisplay());
-      ps.setString(4, lab.getDescription());
-      ps.setString(5, lab.getLongCommonName());
-      ps.setString(6, lab.getScaleCode());
-      ps.setString(7, lab.getScaleDisplay());
-      ps.setString(8, lab.getSystemCode());
-      ps.setString(9, lab.getSystemDisplay());
-      ps.setString(10, lab.getAnswerList());
-      ps.setString(11, lab.getOrderOrObservation());
-      ps.setBoolean(12, lab.getPanel());
-      ps.setTimestamp(13, Timestamp.valueOf(LocalDateTime.now()));
-      ps.setTimestamp(14, Timestamp.valueOf(LocalDateTime.now()));
-      ps.setBoolean(15, false);
-    });
+    jdbcTemplate.batchUpdate(
+        sql,
+        labs,
+        labs.size(),
+        (ps, lab) -> {
+          ps.setObject(1, UUID.randomUUID());
+          ps.setString(2, lab.getCode());
+          ps.setString(3, lab.getDisplay());
+          ps.setString(4, lab.getDescription());
+          ps.setString(5, lab.getLongCommonName());
+          ps.setString(6, lab.getScaleCode());
+          ps.setString(7, lab.getScaleDisplay());
+          ps.setString(8, lab.getSystemCode());
+          ps.setString(9, lab.getSystemDisplay());
+          ps.setString(10, lab.getAnswerList());
+          ps.setString(11, lab.getOrderOrObservation());
+          ps.setBoolean(12, lab.getPanel());
+          ps.setTimestamp(13, Timestamp.valueOf(LocalDateTime.now()));
+          ps.setTimestamp(14, Timestamp.valueOf(LocalDateTime.now()));
+          ps.setBoolean(15, false);
+        });
   }
 
   public List<Lab> loadLabs(List<Lab> labs) {
-    for (int i = 0; i < labs.size(); i++ ) {
-      Lab foundLab = labRepository.findByCode(labs.get(i).getCode());
+
+    List<Lab> labsToSave = new ArrayList<>();
+    List<String> codes = new ArrayList<>();
+    for (int i = 0; i < labs.size(); i++) {
+      String code = labs.get(i).getCode();
+      Lab foundLab = labRepository.findByCode(code);
       if (foundLab != null) {
         labs.set(i, foundLab);
       }
+
+      if (codes.contains(code)) {
+        continue;
+      }
+      codes.add(code);
+      labsToSave.add(labs.get(i));
     }
-    return (List<Lab>) labRepository.saveAll(labs);
+    labRepository.saveAll(labsToSave);
+    return labs;
+  }
+
+  public void loadConditionLabJoin(List<LoincStaging> loincs, List<Lab> labs) {
+
+    List<ConditionLabJoin> conditionLabJoins = new ArrayList<>();
+
+    for (int i = 0; i < loincs.size(); i++) {
+      LoincStaging loinc = loincs.get(i);
+      Lab lab = labs.get(i);
+      List<ConditionLabJoin> foundConditionLab =
+          conditionLabJoinRepository.findByConditionIdAndLabId(
+              loinc.getCondition().getInternalId(), lab.getInternalId());
+      if (!foundConditionLab.isEmpty()) {
+        continue;
+      }
+      conditionLabJoins.add(
+          new ConditionLabJoin(loinc.getCondition().getInternalId(), lab.getInternalId()));
+    }
+
+    conditionLabJoinRepository.saveAll(conditionLabJoins);
   }
 }
