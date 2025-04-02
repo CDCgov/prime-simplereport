@@ -3068,6 +3068,49 @@ export type GetConditionsQuery = {
   }> | null;
 };
 
+export type GetFacilityQueryVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type GetFacilityQuery = {
+  __typename?: "Query";
+  facility?: {
+    __typename?: "Facility";
+    id: string;
+    name: string;
+    cliaNumber?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    address?: {
+      __typename?: "AddressInfo";
+      streetOne?: string | null;
+      streetTwo?: string | null;
+      city?: string | null;
+      county?: string | null;
+      state?: string | null;
+      postalCode?: string | null;
+    } | null;
+    orderingProvider?: {
+      __typename?: "Provider";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      suffix?: string | null;
+      phone?: string | null;
+      NPI?: string | null;
+      address?: {
+        __typename?: "AddressInfo";
+        streetOne?: string | null;
+        streetTwo?: string | null;
+        city?: string | null;
+        county?: string | null;
+        state?: string | null;
+        postalCode?: string | null;
+      } | null;
+    } | null;
+  } | null;
+};
+
 export type SubmitLabReportMutationVariables = Exact<{
   patient?: InputMaybe<PatientReportInput>;
   provider?: InputMaybe<ProviderReportInput>;
@@ -9778,6 +9821,114 @@ export type GetConditionsSuspenseQueryHookResult = ReturnType<
 export type GetConditionsQueryResult = Apollo.QueryResult<
   GetConditionsQuery,
   GetConditionsQueryVariables
+>;
+export const GetFacilityDocument = gql`
+  query GetFacility($id: ID!) {
+    facility(id: $id) {
+      id
+      address {
+        streetOne
+        streetTwo
+        city
+        county
+        state
+        postalCode
+      }
+      name
+      cliaNumber
+      email
+      phone
+      orderingProvider {
+        firstName
+        middleName
+        lastName
+        suffix
+        address {
+          streetOne
+          streetTwo
+          city
+          county
+          state
+          postalCode
+        }
+        phone
+        NPI
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetFacilityQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetFacilityQuery,
+    GetFacilityQueryVariables
+  > &
+    (
+      | { variables: GetFacilityQueryVariables; skip?: boolean }
+      | { skip: boolean }
+    )
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetFacilityQuery, GetFacilityQueryVariables>(
+    GetFacilityDocument,
+    options
+  );
+}
+export function useGetFacilityLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityQuery,
+    GetFacilityQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetFacilityQuery, GetFacilityQueryVariables>(
+    GetFacilityDocument,
+    options
+  );
+}
+export function useGetFacilitySuspenseQuery(
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetFacilityQuery,
+        GetFacilityQueryVariables
+      >
+) {
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<GetFacilityQuery, GetFacilityQueryVariables>(
+    GetFacilityDocument,
+    options
+  );
+}
+export type GetFacilityQueryHookResult = ReturnType<typeof useGetFacilityQuery>;
+export type GetFacilityLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityLazyQuery
+>;
+export type GetFacilitySuspenseQueryHookResult = ReturnType<
+  typeof useGetFacilitySuspenseQuery
+>;
+export type GetFacilityQueryResult = Apollo.QueryResult<
+  GetFacilityQuery,
+  GetFacilityQueryVariables
 >;
 export const SubmitLabReportDocument = gql`
   mutation SubmitLabReport(

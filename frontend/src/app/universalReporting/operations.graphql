@@ -5,6 +5,40 @@ query GetConditions {
   }
 }
 
+query GetFacility($id: ID!) {
+  facility(id: $id) {
+    id
+    address {
+      streetOne
+      streetTwo
+      city
+      county
+      state
+      postalCode
+    }
+    name
+    cliaNumber
+    email
+    phone
+    orderingProvider {
+      firstName
+      middleName
+      lastName
+      suffix
+      address {
+        streetOne
+        streetTwo
+        city
+        county
+        state
+        postalCode
+      }
+      phone
+      NPI
+    }
+  }
+}
+
 mutation SubmitLabReport(
   $patient: PatientReportInput
   $provider: ProviderReportInput
