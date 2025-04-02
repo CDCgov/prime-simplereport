@@ -17,7 +17,6 @@ resource "azurerm_virtual_network" "vn" {
   location                       = var.location
   address_space                  = [var.network_address]
   tags                           = var.management_tags
-  private_endpoint_vnet_policies = "Basic"
 }
 
 resource "azurerm_subnet" "vms" {
