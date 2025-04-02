@@ -1872,6 +1872,15 @@ class FhirConverterTest {
             .filter(entry -> entry.getFullUrl().contains("Observation/" + observation.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
+    assertThat(((Observation) observationEntry.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + patient.getId());
+    assertThat(((Observation) observationEntry.getResource()).getPerformer()).hasSize(1);
+    assertThat(((Observation) observationEntry.getResource()).getPerformerFirstRep().getReference())
+        .isEqualTo("Organization/" + organization.getId());
+    assertThat(((Observation) observationEntry.getResource()).getSpecimen().getReference())
+        .isEqualTo("Specimen/" + specimen.getId());
+    assertThat(((Observation) observationEntry.getResource()).getDevice().getReference())
+        .isEqualTo("Device/" + device.getId());
     assertThat(((Observation) observationEntry.getResource()).getStatus().toCode())
         .isEqualTo(ObservationStatus.CORRECTED.toCode());
     assertThat(((Observation) observationEntry.getResource()).getNote()).hasSize(1);
@@ -1883,6 +1892,8 @@ class FhirConverterTest {
             .filter(entry -> entry.getFullUrl().contains("Observation/" + aoeobservation1.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
+    assertThat(((Observation) aoeObservationEntry1.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + patient.getId());
     assertThat(((Observation) aoeObservationEntry1.getResource()).getStatus().toCode())
         .isEqualTo(ObservationStatus.CORRECTED.toCode());
     assertThat(((Observation) aoeObservationEntry1.getResource()).getNote()).hasSize(1);
@@ -1894,6 +1905,8 @@ class FhirConverterTest {
             .filter(entry -> entry.getFullUrl().contains("Observation/" + aoeobservation2.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
+    assertThat(((Observation) aoeObservationEntry2.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + patient.getId());
     assertThat(((Observation) aoeObservationEntry2.getResource()).getStatus().toCode())
         .isEqualTo(ObservationStatus.CORRECTED.toCode());
     assertThat(((Observation) aoeObservationEntry2.getResource()).getNote()).hasSize(1);
