@@ -162,7 +162,6 @@ simple-report:
   production:
     backend-url: ${SR_PROD_BACKEND_URL:http://localhost:8080}
     devices-token: ${SR_PROD_DEVICES_TOKEN:sr-prod-devices-fake-token}
-    device-sync-enabled: true
 twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:

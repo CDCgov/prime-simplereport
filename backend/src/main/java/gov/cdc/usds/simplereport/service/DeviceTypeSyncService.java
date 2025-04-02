@@ -278,13 +278,13 @@ public class DeviceTypeSyncService {
           DeviceType updatedDevice =
               updateDeviceType(
                   convertToUpdateDeviceType(existingDeviceId, incoming, swabTypeUUIDs));
-          String msg =
-              String.format(
-                  "Device updated - name: %s, model: %s, manufacturer: %s",
-                  updatedDevice.getName(),
-                  updatedDevice.getModel(),
-                  updatedDevice.getManufacturer());
-          log.info(msg);
+          //          String msg =
+          //              String.format(
+          //                  "Device updated - name: %s, model: %s, manufacturer: %s",
+          //                  updatedDevice.getName(),
+          //                  updatedDevice.getModel(),
+          //                  updatedDevice.getManufacturer());
+          //          log.info(msg);
         });
   }
 
@@ -296,13 +296,13 @@ public class DeviceTypeSyncService {
           CreateDeviceType createDeviceType =
               convertToCreateDeviceType(deviceToCreate, swabTypeUUIDs);
           DeviceType createdDevice = createDeviceType(createDeviceType);
-          String msg =
-              String.format(
-                  "Device created - name: %s, model: %s, manufacturer: %s",
-                  createdDevice.getName(),
-                  createdDevice.getModel(),
-                  createdDevice.getManufacturer());
-          log.info(msg);
+          //          String msg =
+          //              String.format(
+          //                  "Device created - name: %s, model: %s, manufacturer: %s",
+          //                  createdDevice.getName(),
+          //                  createdDevice.getModel(),
+          //                  createdDevice.getManufacturer());
+          //          log.info(msg);
         });
   }
 

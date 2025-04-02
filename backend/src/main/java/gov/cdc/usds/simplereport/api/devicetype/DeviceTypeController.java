@@ -45,10 +45,10 @@ public class DeviceTypeController {
     } catch (DryRunException e) {
       returnMsg = e.getMessage();
     } catch (AccessDeniedException e) {
-      log.error(e.getMessage());
+      //      log.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
-    log.info(returnMsg);
+    //    log.info(returnMsg);
     return ResponseEntity.status(HttpStatus.OK).body(returnMsg);
   }
 
@@ -61,7 +61,7 @@ public class DeviceTypeController {
       List<DeviceType> devices = deviceTypeService.fetchDeviceTypes();
       return ResponseEntity.status(HttpStatus.OK).body(devices);
     } catch (AccessDeniedException e) {
-      log.error(e.getMessage());
+      //      log.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
   }
