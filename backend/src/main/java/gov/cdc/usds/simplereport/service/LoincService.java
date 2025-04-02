@@ -97,10 +97,10 @@ public class LoincService {
         successLoincs.add(loinc);
       }
       log.info("LOINC API response parsed.");
-      labs = loadLabs(labs);
+      labs = reduceLabs(labs, successLoincs);
+      log.info("Labs reduced.");
+      labRepository.saveAll(labs);
       log.info("Data written to lab table.");
-      loadConditionLabJoin(successLoincs, labs);
-      log.info("Data written to condition_lab_join table.");
       log.info("Completed page: {}", loincPage.getNumber());
       futures.clear();
       pageRequest = pageRequest.next();
@@ -266,38 +266,6 @@ public class LoincService {
         });
   }
 
-  public List<Lab> loadLabs(List<Lab> labs) {
-
-    List<Lab> labsToSave = new ArrayList<>();
-    List<String> codes = new ArrayList<>();
-    for (int i = 0; i < labs.size(); i++) {
-      String code = labs.get(i).getCode();
-      Lab foundLab = labRepository.findByCode(code);
-      if (foundLab != null) {
-        labs.set(i, foundLab);
-      }
-
-      if (codes.contains(code)) {
-        continue;
-      }
-      codes.add(code);
-      labsToSave.add(labs.get(i));
-    }
-    labRepository.saveAll(labsToSave);
-    return labs;
-  }
-
-  public void loadConditionLabJoin(List<LoincStaging> loincs, List<Lab> labs) {
-    for (int i = 0; i < loincs.size(); i++) {
-      LoincStaging loinc = loincs.get(i);
-      Lab lab = labs.get(i);
-      if (!lab.getConditions().contains(loinc.getCondition())) {
-        lab.addCondition(loinc.getCondition());
-      }
-    }
-    labRepository.saveAll(labs);
-  }
-
   private List<Lab> reduceLabs(List<Lab> labs, List<LoincStaging> loincs) {
     List<String> codes = new ArrayList<>();
     List<Lab> labsToSave = new ArrayList<>();
@@ -311,14 +279,21 @@ public class LoincService {
       codes.add(code);
 
       Lab lab = labs.get(i);
+      Optional<Lab> foundLab = labRepository.findByCode(lab.getCode());
+      if (foundLab.isPresent()) {
+        lab = foundLab.get();
+      }
+
       for (int j = 0; j < labs.size(); j++) {
         if (code.equals(labs.get(j).getCode())) {
-          lab.addCondition(loincs.get(j).getCondition());
+          Condition conditionToAdd = loincs.get(j).getCondition();
+          if (!lab.getConditions().contains(conditionToAdd)) {
+            lab.addCondition(conditionToAdd);
+          }
         }
       }
       labsToSave.add(lab);
     }
     return labsToSave;
   }
-
 }
