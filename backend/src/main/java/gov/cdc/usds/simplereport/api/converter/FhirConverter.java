@@ -1649,6 +1649,16 @@ public class FhirConverter {
     return patient;
   }
 
+  public CodeableConcept convertToPatientPreferredLanguage(String prefferedLanguage) {
+    if (StringUtils.isNotBlank(prefferedLanguage)) {
+      CodeableConcept paitentPreferedLanguageCodeableConcept = new CodeableConcept();
+      Coding paitentPreferedLanguageCoding = paitentPreferedLanguageCodeableConcept.addCoding();
+      paitentPreferedLanguageCoding.setCode(prefferedLanguage);
+    }
+
+    return;
+  }
+
   private List<String> getFilteredSymptomsPresent(Map<String, Boolean> symptomsMap) {
     return symptomsMap.entrySet().stream()
         .filter(symptom -> Boolean.TRUE.equals(symptom.getValue()))

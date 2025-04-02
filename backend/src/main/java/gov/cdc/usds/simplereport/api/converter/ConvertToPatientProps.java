@@ -22,5 +22,6 @@ public class ConvertToPatientProps {
   private String country;
   private String race;
   private String ethnicity;
+  private String preferredLanguage;
   private List<String> tribalAffiliations;
 }
