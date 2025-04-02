@@ -6090,13 +6090,6 @@ databaseChangeLog:
             remarks: Table to model the many to many relationship between conditions and labs.
             columns:
               - column:
-                  name: internal_id
-                  type: uuid
-                  remarks: The internal database identifier for this entity.
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
                   name: condition_id
                   type: uuid
                   remarks: Internal Id of a condition in the condition table.
@@ -6112,40 +6105,6 @@ databaseChangeLog:
                     unique: false
                     foreignKeyName: fk__lab__lab_id
                     references: lab
-              - column:
-                  name: created_at
-                  type: DATETIME
-                  remarks: The creation timestamp for this entity.
-                  constraints:
-                    nullable: false
-              - column:
-                  name: updated_at
-                  type: DATETIME
-                  remarks: The timestamp for the most recent update of this entity.
-                  constraints:
-                    nullable: false
-              - column:
-                  name: created_by
-                  type: uuid
-                  remarks: The user who created this entity.
-                  constraints:
-                    nullable: true
-                    references: api_user
-                    foreignKeyName: fk__anyentity__created_by
-              - column:
-                  name: updated_by
-                  type: uuid
-                  remarks: The user who most recently updated this entity.
-                  constraints:
-                    nullable: true
-                    references: api_user
-                    foreignKeyName: fk__anyentity__updated_by
-              - column: &soft_delete_column
-                  name: is_deleted
-                  type: boolean
-                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
-                  constraints:
-                    nullable: false
       rollback:
         - dropTable:
             tableName: condition_lab_join
