@@ -448,14 +448,14 @@ public class BulkUploadResultsToFhir {
       }
     }
 
-    Boolean symptomatic = null;
-    if (StringUtils.isNotBlank(row.getSymptomaticForDisease().getValue())) {
-      symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().getValue().toLowerCase());
+    String symptomaticValue = row.getSymptomaticForDisease().getValue();
+    if (valueIsYesNoOrUnknown(symptomaticValue)) {
+      // symptomaticValue should be yes, no, or unknown, which correspond to true, false, or null
+      Boolean symptomatic = yesNoToBooleanMap.get(symptomaticValue.toLowerCase());
+      aoeObservations.addAll(
+          fhirConverter.convertToAOESymptomaticObservation(
+              testEventId, symptomatic, symptomOnsetDate));
     }
-
-    aoeObservations.addAll(
-        fhirConverter.convertToAOESymptomaticObservation(
-            testEventId, symptomatic, symptomOnsetDate));
 
     String pregnancyValue = row.getPregnant().getValue();
     if (StringUtils.isNotBlank(pregnancyValue)) {
@@ -464,7 +464,7 @@ public class BulkUploadResultsToFhir {
     }
 
     String employedInHealthcareValue = row.getEmployedInHealthcare().getValue();
-    if (StringUtils.isNotBlank(employedInHealthcareValue)) {
+    if (valueIsYesNoOrUnknown(employedInHealthcareValue.toLowerCase())) {
       Boolean employedInHealthcare = yesNoToBooleanMap.get(employedInHealthcareValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
@@ -481,7 +481,7 @@ public class BulkUploadResultsToFhir {
     }
 
     String hospitalizedValue = row.getHospitalized().getValue();
-    if (StringUtils.isNotBlank(hospitalizedValue)) {
+    if (valueIsYesNoOrUnknown(hospitalizedValue.toLowerCase())) {
       Boolean hospitalized = yesNoToBooleanMap.get(hospitalizedValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
@@ -489,7 +489,7 @@ public class BulkUploadResultsToFhir {
     }
 
     String icuValue = row.getIcu().getValue();
-    if (StringUtils.isNotBlank(icuValue)) {
+    if (valueIsYesNoOrUnknown(icuValue.toLowerCase())) {
       Boolean hospitalized = yesNoToBooleanMap.get(icuValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
@@ -497,7 +497,7 @@ public class BulkUploadResultsToFhir {
     }
 
     String residentCongregateSettingValue = row.getResidentCongregateSetting().getValue();
-    if (StringUtils.isNotBlank(residentCongregateSettingValue)) {
+    if (valueIsYesNoOrUnknown(residentCongregateSettingValue.toLowerCase())) {
       Boolean residesInCongregateSetting =
           yesNoToBooleanMap.get(residentCongregateSettingValue.toLowerCase());
       String residenceTypeValue = row.getResidenceType().getValue();
@@ -756,5 +756,9 @@ public class BulkUploadResultsToFhir {
         null,
         orderingFacilityAddr,
         DEFAULT_COUNTRY);
+  }
+
+  private Boolean valueIsYesNoOrUnknown(String value) {
+    return StringUtils.isNotBlank(value) && yesNoToBooleanMap.containsKey(value.toLowerCase());
   }
 }
