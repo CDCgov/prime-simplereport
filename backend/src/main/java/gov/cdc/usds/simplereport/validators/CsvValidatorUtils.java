@@ -44,8 +44,7 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TRE
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.timezoneAbbreviationZoneIdMap;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.*;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
 
@@ -66,6 +65,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -448,12 +448,30 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
-    if (input.getValue() != null
-        && errors.isEmpty()
-        && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
-      errors.addAll(validateDateTimeZoneCode(input));
+    String value = parseString(input.getValue());
+    List<FeedbackMessage> errors = new ArrayList<>();
+
+    if (value == null) {
+      return errors;
     }
+
+    try {
+      ZonedDateTime dateTime = convertToZonedDateTime(value);
+
+      if (hasTimezoneSubstring(value)) {
+        errors.addAll(validateDateTimeZoneCode(input));
+      }
+    } catch (DateTimeParseException e) {
+      errors.add(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message("Invalid date format: " + value + ". Expected format: M/d/yyyy [H:mm] [TZ]")
+              .errorType(ResultUploadErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
+    }
+
     return errors;
   }
 
@@ -467,7 +485,7 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message("Invalid timezone code: " + timezoneCode + " for " + input.getHeader())
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(false)
               .build());
