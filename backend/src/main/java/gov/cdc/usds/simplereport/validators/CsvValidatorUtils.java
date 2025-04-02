@@ -466,7 +466,11 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message("Invalid date format: " + value + ". Expected format: M/d/yyyy [H:mm] [TZ]")
+              .message(
+                  "Invalid date format: "
+                      + value
+                      + ". Expected format: M/d/yyyy [H:mm] [TZ] for "
+                      + input.getHeader())
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
               .build());
@@ -485,7 +489,13 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message("Invalid timezone code: " + timezoneCode + " for " + input.getHeader())
+              .message(
+                  "Invalid timezone code: "
+                      + timezoneCode
+                      + " in "
+                      + value
+                      + " for "
+                      + input.getHeader())
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(false)
               .build());
