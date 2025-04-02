@@ -32,7 +32,7 @@ const TestResult = () => {
   const guidance = getGuidanceForResults(testResult.results, isPatientApp);
 
   return (
-    <div className="pxp-test-results">
+    <div className="pxp-test-results bg-base-lightest flex-1">
       <div id="section-to-print">
         <div className="print-area">
           <StaticTestResultModal

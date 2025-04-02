@@ -4,13 +4,13 @@
   "private": true,
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
-    "cypress": "^14.0.3",
+    "cypress": "^14.2.0",
     "cypress-localstorage-commands": "^2.2.7",
     "dayjs": "^1.11.13",
     "eslint": "^9.21.0",
-    "eslint-plugin-cypress": "^4.1.0",
+    "eslint-plugin-cypress": "^4.2.0",
     "otplib": "^12.0.1",
-    "prettier": "3.5.1"
+    "prettier": "3.5.3"
   },
   "scripts": {
     "e2e:local": "CYPRESS_IS_LOCAL_RUN=true CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=http://localhost:3000,video=false",

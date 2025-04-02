@@ -33,7 +33,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
-import gov.cdc.usds.simplereport.api.model.errors.EmptyCsvException;
 import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -141,7 +140,7 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public List<TestResultUpload> processResultCSV(InputStream csvStream) {
+  public List<TestResultUpload> processResultCSV(InputStream csvStream) throws Exception {
     List<TestResultUpload> uploadSummary = new ArrayList<>();
     var submissionId = UUID.randomUUID();
     Organization org = _orgService.getCurrentOrganization();
@@ -158,12 +157,17 @@ public class TestResultUploadService {
       }
 
       if (content.length > 0) {
-        CompletableFuture<CovidSubmissionSummary> covidSubmission =
-            submitResultsToCovidPipeline(content, org, submissionId);
         CompletableFuture<UniversalSubmissionSummary> universalSubmission =
             submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
 
-        processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
+        var covidCsvContent = transformAndExtractCovidCsvContent(content);
+
+        if (covidCsvContent.length != 0) {
+          CompletableFuture<CovidSubmissionSummary> covidSubmission =
+              submitResultsToCovidPipeline(covidCsvContent, org, submissionId);
+          processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
+        }
+
         processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
@@ -191,30 +195,25 @@ public class TestResultUploadService {
     return Optional.empty();
   }
 
-  private byte[] transformCsvContent(byte[] content) {
-    List<Map<String, String>> updatedRows = new ArrayList<>();
+  private byte[] transformAndExtractCovidCsvContent(byte[] content) {
+    List<Map<String, String>> extractedCovidRows = new ArrayList<>();
     final MappingIterator<Map<String, String>> valueIterator =
         getIteratorForCsv(new ByteArrayInputStream(content));
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
-      try {
-        row = getNextRow(valueIterator);
-      } catch (CsvProcessingException ex) {
-        // anything that would land here should have been caught and handled by the file validator
-        log.error("Unable to parse csv.", ex);
-        continue;
-      }
+      row = getNextRow(valueIterator);
 
       if (isCovidResult(row)) {
-        updatedRows.add(transformCsvRow(row));
+        extractedCovidRows.add(transformCsvRow(row));
       }
     }
 
-    if (updatedRows.isEmpty()) {
+    if (extractedCovidRows.isEmpty()) {
       return new byte[0];
     }
 
-    var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
+    var headers =
+        extractedCovidRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
     var csvMapper =
         new CsvMapper()
             .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
@@ -224,14 +223,14 @@ public class TestResultUploadService {
                     .setUseHeader(true)
                     .addColumns(headers, CsvSchema.ColumnType.STRING)
                     .build());
-    String csvContent;
+    String csvCovidContent;
     try {
-      csvContent = csvMapper.writeValueAsString(updatedRows);
+      csvCovidContent = csvMapper.writeValueAsString(extractedCovidRows);
     } catch (JsonProcessingException e) {
-      throw new CsvProcessingException("Error writing transformed csv rows");
+      throw new CsvProcessingException("Error writing transformed Covid csv rows");
     }
 
-    return csvContent.getBytes(StandardCharsets.UTF_8);
+    return csvCovidContent.getBytes(StandardCharsets.UTF_8);
   }
 
   private boolean isCovidResult(Map<String, String> row) {
@@ -394,7 +393,12 @@ public class TestResultUploadService {
               // convert csv to fhir and serialize to json
               FHIRBundleRecord fhirBundleWithMeta =
                   fhirConverter.convertToFhirBundles(content, org.getInternalId());
-              UploadResponse response = uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
+              UploadResponse response;
+              try {
+                response = uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
+              } catch (JsonProcessingException e) {
+                throw new CsvProcessingException("Unable to parse Report Stream response.");
+              }
               log.info(
                   "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
 
@@ -404,7 +408,8 @@ public class TestResultUploadService {
   }
 
   private Optional<TestResultUpload> processUniversalPipelineResponse(
-      CompletableFuture<UniversalSubmissionSummary> futureSubmissionSummary) {
+      CompletableFuture<UniversalSubmissionSummary> futureSubmissionSummary)
+      throws CsvProcessingException, ExecutionException, InterruptedException {
     try {
       UniversalSubmissionSummary submissionSummary = futureSubmissionSummary.get();
       if (submissionSummary != null && submissionSummary.submissionResponse() != null) {
@@ -418,27 +423,23 @@ public class TestResultUploadService {
     } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
       log.error("Error processing FHIR in bulk result upload", e);
       Thread.currentThread().interrupt();
+      throw e;
     }
 
     return Optional.empty();
   }
 
   private CompletableFuture<CovidSubmissionSummary> submitResultsToCovidPipeline(
-      byte[] content, Organization org, UUID submissionId) {
+      byte[] covidCsvContent, Organization org, UUID submissionId) {
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
               long start = System.currentTimeMillis();
               FutureResult<UploadResponse, Exception> result;
-              var csvContent = transformCsvContent(content);
-              if (csvContent.length == 0) {
-                return new CovidSubmissionSummary(
-                    submissionId, org, null, new EmptyCsvException(), null);
-              }
               try {
                 result =
                     FutureResult.<UploadResponse, Exception>builder()
-                        .value(_client.uploadCSV(csvContent))
+                        .value(_client.uploadCSV(covidCsvContent))
                         .build();
               } catch (FeignException e) {
                 log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
@@ -472,7 +473,10 @@ public class TestResultUploadService {
 
   private Optional<TestResultUpload> processCovidPipelineResponse(
       CompletableFuture<CovidSubmissionSummary> futureSubmissionSummary)
-      throws DependencyFailureException {
+      throws DependencyFailureException,
+          CsvProcessingException,
+          ExecutionException,
+          InterruptedException {
     try {
       CovidSubmissionSummary submissionSummary = futureSubmissionSummary.get();
       if (submissionSummary.processingException() instanceof DependencyFailureException) {
@@ -490,17 +494,18 @@ public class TestResultUploadService {
     } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
       log.error("Error processing csv in bulk result upload", e);
       Thread.currentThread().interrupt();
+      throw e;
     }
 
     return Optional.empty();
   }
 
-  private UploadResponse parseFeignException(FeignException e) {
+  private UploadResponse parseFeignException(FeignException e) throws JsonProcessingException {
     try {
       return mapper.readValue(e.contentUTF8(), UploadResponse.class);
     } catch (JsonProcessingException ex) {
       log.error("Unable to parse Report Stream response.", ex);
-      return null;
+      throw ex;
     }
   }
 
@@ -553,21 +558,6 @@ public class TestResultUploadService {
       return Optional.of(uploadRecord);
     }
     return Optional.empty();
-  }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public TestResultUpload processHIVResultCSV(InputStream csvStream) {
-    FeedbackMessage[] empty = {};
-    return TestResultUpload.builder()
-        .submissionId(UUID.randomUUID())
-        .reportId(null)
-        .status(UploadStatus.PENDING)
-        .recordsCount(0)
-        .warnings(empty)
-        .errors(empty)
-        .organization(null)
-        .destination(Pipeline.UNIVERSAL)
-        .build();
   }
 
   @Getter
@@ -626,14 +616,20 @@ public class TestResultUploadService {
               // convert csv to fhir and serialize to json
               List<String> serializedFhirBundles =
                   fhirConverter.convertToConditionAgnosticFhirBundles(content);
-              UploadResponse response = uploadBundleAsFhir(serializedFhirBundles);
+              UploadResponse response;
+              try {
+                response = uploadBundleAsFhir(serializedFhirBundles);
+              } catch (JsonProcessingException e) {
+                throw new CsvProcessingException("Unable to parse Report Stream response.");
+              }
               log.info(
                   "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
               return response;
             }));
   }
 
-  private UploadResponse uploadBundleAsFhir(List<String> serializedFhirBundles) {
+  private UploadResponse uploadBundleAsFhir(List<String> serializedFhirBundles)
+      throws JsonProcessingException {
     // build the ndjson request body
     var ndJson = new StringBuilder();
     for (String bundle : serializedFhirBundles) {

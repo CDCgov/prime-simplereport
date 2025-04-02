@@ -12,7 +12,11 @@ import Page from "../../commonComponents/Page/Page";
 
 import PendingOrganizationsContainer from "./PendingOrganizationsContainer";
 
-const organizationsQuery = (name: string, id: string) => {
+const organizationsQuery = (
+  name: string,
+  id: string,
+  adminPhone = "530-867-5309"
+) => {
   return {
     request: {
       query: GetPendingOrganizationsDocument,
@@ -26,7 +30,7 @@ const organizationsQuery = (name: string, id: string) => {
             adminEmail: "admin@spacecamp.org",
             adminFirstName: "John",
             adminLastName: "Doe",
-            adminPhone: "530-867-5309",
+            adminPhone,
             createdAt: "2021-12-01T00:00:00.000Z",
           },
           {
@@ -245,6 +249,32 @@ describe("PendingOrganizationsContainer", () => {
       const rowsCreatedAt = screen.getAllByTestId("org-created-at-table-cell");
       expect(rowsCreatedAt[0]).toHaveTextContent("12/26/2021, 12:00:00 AM");
       expect(rowsCreatedAt[1]).toHaveTextContent("12/1/2021, 12:00:00 AM");
+    });
+
+    it("displays org table with invalid data hidden", async () => {
+      const invalidPhoneNumber = "invalid-phone-number";
+
+      render(
+        <Page>
+          <MockedProvider
+            mocks={[
+              organizationsQuery(
+                "Space Camp",
+                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
+                invalidPhoneNumber
+              ),
+              verificationMutation,
+              editOrganizationsMutation,
+            ]}
+          >
+            <PendingOrganizationsContainer />
+          </MockedProvider>
+        </Page>
+      );
+
+      await screen.findByText("Space Camp");
+      // we should not display the invalid phone number
+      expect(screen.queryByText(invalidPhoneNumber)).not.toBeInTheDocument();
     });
 
     describe("confirm/edit modal acts correctly", () => {

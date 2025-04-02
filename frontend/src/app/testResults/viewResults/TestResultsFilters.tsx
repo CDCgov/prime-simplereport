@@ -159,12 +159,14 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
   const handlePatientInputChange: ChangeEventHandler<HTMLInputElement> = (
     event
   ) => {
-    if (event.target.value === "") {
-      setFilterParams("patientId")(null);
-    }
-    setShowSuggestion(true);
-    if (event.target.value !== queryString) {
-      setDebounced(event.target.value);
+    if (event.type === "change") {
+      if (event.target.value === "") {
+        setFilterParams("patientId")(null);
+      }
+      setShowSuggestion(true);
+      if (event.target.value !== queryString) {
+        setDebounced(event.target.value);
+      }
     }
   };
 
