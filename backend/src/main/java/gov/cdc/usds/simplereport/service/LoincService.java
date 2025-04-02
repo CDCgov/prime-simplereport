@@ -302,4 +302,28 @@ public class LoincService {
     }
     labRepository.saveAll(labs);
   }
+
+  private List<Lab> reduceLabs(List<Lab> labs, List<LoincStaging> loincs) {
+    List<String> codes = new ArrayList<>();
+    List<Lab> labsToSave = new ArrayList<>();
+
+    for (int i = 0; i < labs.size(); i++) {
+
+      String code = labs.get(i).getCode();
+      if (codes.contains(code)) {
+        continue;
+      }
+      codes.add(code);
+
+      Lab lab = labs.get(i);
+      for (int j = 0; j < labs.size(); j++) {
+        if (code.equals(labs.get(j).getCode())) {
+          lab.addCondition(loincs.get(j).getCondition());
+        }
+      }
+      labsToSave.add(lab);
+    }
+    return labsToSave;
+  }
+
 }
