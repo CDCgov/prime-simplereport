@@ -53,7 +53,8 @@ public class FhirConstants {
   public static final String LOINC_AOE_SYMPTOMATIC = "95419-8";
   public static final String LOINC_SYMPTOM_TIMING_PANEL = "99582-9";
   public static final String LOINC_SYMPTOM = "75325-1";
-  public static final String LOINC_AOE_SYMPTOM_ONSET = "11368-8";
+  public static final String LOINC_AOE_SYMPTOM_ONSET = "65222-2";
+  public static final String SYMPTOM_ONSET_AOE_DESCRIPTION = "Date and time of symptom onset";
   public static final String LOINC_AOE_PREGNANCY_STATUS = "82810-3";
   public static final String LOINC_AOE_EMPLOYED_IN_HEALTHCARE = "95418-0";
   public static final String AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY =

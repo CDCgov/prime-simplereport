@@ -59,6 +59,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSI
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SIMPLE_REPORT_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SYMPTOM_ONSET_AOE_DESCRIPTION;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TESTKIT_NAME_ID_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
@@ -834,8 +835,8 @@ public class FhirConverter {
               eventId + LOINC_AOE_SYMPTOM_ONSET,
               createLoincConcept(
                   LOINC_AOE_SYMPTOM_ONSET,
-                  "Illness or injury onset date and time",
-                  "Illness or injury onset date and time"),
+                  SYMPTOM_ONSET_AOE_DESCRIPTION,
+                  SYMPTOM_ONSET_AOE_DESCRIPTION),
               new DateTimeType(symptomOnsetDate.toString()),
               correctionStatus,
               correctionReason));

@@ -428,7 +428,7 @@ public class BulkUploadResultsToFhir {
                     .diseaseName(diseaseName)
                     .resultCode(testResultSnomed)
                     .correctionStatus(correctionStatus)
-                    .correctionReason(null)
+                    .correctionReason(correctionReason)
                     .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
                         resultConceptRecord == null ? null : resultConceptRecord.name())
