@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Radio } from "@trussworks/react-uswds";
 
 import MultiSelect from "../commonComponents/MultiSelect/MultiSelect";
@@ -9,9 +9,11 @@ import {
   SpecimenInput,
   TestDetailsInput,
   useGetConditionsQuery,
+  useGetFacilityQuery,
   useSubmitLabReportMutation,
 } from "../../generated/graphql";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
+import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import {
   buildConditionsOptionList,
@@ -26,52 +28,52 @@ import PatientFormSection from "./PatientFormSection";
 
 const LabReportForm = () => {
   const [patient, setPatient] = useState<PatientReportInput>({
-    city: undefined,
+    city: "",
     country: "USA",
-    county: undefined,
+    county: "",
     dateOfBirth: "",
-    email: undefined,
-    ethnicity: undefined,
+    email: "",
+    ethnicity: "",
     firstName: "",
     lastName: "",
-    middleName: undefined,
-    phone: undefined,
-    race: undefined,
-    sex: undefined,
-    state: undefined,
-    street: undefined,
-    streetTwo: undefined,
-    suffix: undefined,
-    tribalAffiliation: undefined,
-    zipCode: undefined,
+    middleName: "",
+    phone: "",
+    race: "",
+    sex: "",
+    state: "",
+    street: "",
+    streetTwo: "",
+    suffix: "",
+    tribalAffiliation: "",
+    zipCode: "",
   });
   const [provider, setProvider] = useState<ProviderReportInput>({
-    city: undefined,
-    county: undefined,
-    email: undefined,
+    city: "",
+    county: "",
+    email: "",
     firstName: "",
     lastName: "",
-    middleName: undefined,
+    middleName: "",
     npi: "",
-    phone: undefined,
-    state: undefined,
-    street: undefined,
-    streetTwo: undefined,
-    suffix: undefined,
-    zipCode: undefined,
+    phone: "",
+    state: "",
+    street: "",
+    streetTwo: "",
+    suffix: "",
+    zipCode: "",
     country: "USA",
   });
   const [facility, setFacility] = useState<FacilityReportInput>({
-    city: undefined,
+    city: "",
     clia: "",
-    county: undefined,
-    email: undefined,
+    county: "",
+    email: "",
     name: "",
-    phone: undefined,
-    state: undefined,
-    street: undefined,
-    streetTwo: undefined,
-    zipCode: undefined,
+    phone: "",
+    state: "",
+    street: "",
+    streetTwo: "",
+    zipCode: "",
     country: "USA",
   });
   const [specimen, setSpecimen] = useState<SpecimenInput>({
@@ -89,8 +91,50 @@ const LabReportForm = () => {
 
   const [submitLabReport] = useSubmitLabReportMutation();
 
+  const [activeFacility] = useSelectedFacility();
+  const { data: facilityData } = useGetFacilityQuery({
+    variables: {
+      id: activeFacility?.id ?? "",
+    },
+  });
+
   const { data: conditionsData, loading: conditionsLoading } =
     useGetConditionsQuery();
+
+  useEffect(() => {
+    setProvider({
+      ...provider,
+      city: facilityData?.facility?.orderingProvider?.address?.city,
+      county: facilityData?.facility?.orderingProvider?.address?.county,
+      firstName: facilityData?.facility?.orderingProvider?.firstName ?? "",
+      lastName: facilityData?.facility?.orderingProvider?.lastName ?? "",
+      middleName: facilityData?.facility?.orderingProvider?.middleName ?? "",
+      npi: facilityData?.facility?.orderingProvider?.NPI ?? "",
+      phone: facilityData?.facility?.orderingProvider?.phone ?? "",
+      state: facilityData?.facility?.orderingProvider?.address?.state ?? "",
+      street:
+        facilityData?.facility?.orderingProvider?.address?.streetOne ?? "",
+      streetTwo:
+        facilityData?.facility?.orderingProvider?.address?.streetTwo ?? "",
+      suffix: facilityData?.facility?.orderingProvider?.suffix ?? "",
+      zipCode:
+        facilityData?.facility?.orderingProvider?.address?.postalCode ?? "",
+    });
+    setFacility({
+      ...facility,
+      city: facilityData?.facility?.address?.city ?? "",
+      clia: facilityData?.facility?.cliaNumber ?? "",
+      county: facilityData?.facility?.address?.county ?? "",
+      email: facilityData?.facility?.email ?? "",
+      name: facilityData?.facility?.name ?? "",
+      phone: facilityData?.facility?.phone ?? "",
+      state: facilityData?.facility?.address?.state ?? "",
+      street: facilityData?.facility?.address?.streetOne ?? "",
+      streetTwo: facilityData?.facility?.address?.streetTwo ?? "",
+      zipCode: facilityData?.facility?.address?.postalCode ?? "",
+      country: "USA",
+    });
+  }, [facilityData]);
 
   const conditionOptions = buildConditionsOptionList(
     conditionsData?.conditions ?? []
