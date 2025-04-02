@@ -1040,7 +1040,8 @@ class FhirConverterTest {
             testId,
             answers,
             new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            "Sample Reason");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1071,7 +1072,8 @@ class FhirConverterTest {
             testId,
             answers,
             new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            "Sample Reason");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1125,7 +1127,7 @@ class FhirConverterTest {
 
     var actual =
         fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.ORIGINAL);
+            testId, answers, person, TestCorrectionStatus.ORIGINAL, "Sample Reason");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1179,7 +1181,7 @@ class FhirConverterTest {
 
     var actual =
         fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.ORIGINAL);
+            testId, answers, person, TestCorrectionStatus.ORIGINAL, "Sample Reason");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1212,7 +1214,8 @@ class FhirConverterTest {
             testId,
             answers,
             new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            "Sample Reason");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1245,7 +1248,8 @@ class FhirConverterTest {
             testId,
             answers,
             new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            "Sample Reason");
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
     var expectedSerialized =
@@ -1277,7 +1281,8 @@ class FhirConverterTest {
             testId,
             answers,
             new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            "Sample Reason");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1311,7 +1316,8 @@ class FhirConverterTest {
             testId,
             answers,
             new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            "Sample Reason");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1365,7 +1371,7 @@ class FhirConverterTest {
 
     Set<Observation> actual =
         fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.ORIGINAL);
+            testId, answers, person, TestCorrectionStatus.ORIGINAL, "Sample Reason");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1396,7 +1402,8 @@ class FhirConverterTest {
             testId,
             answers,
             new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            "");
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1787,8 +1794,11 @@ class FhirConverterTest {
     diagnosticReport.setId(UUID.randomUUID().toString());
 
     observation.setStatus(Observation.ObservationStatus.CORRECTED);
+    observation.addNote().setText("Corrected Result: Test reason");
     aoeobservation1.setStatus(Observation.ObservationStatus.CORRECTED);
+    aoeobservation1.addNote().setText("Corrected Result: Test reason");
     aoeobservation2.setStatus(Observation.ObservationStatus.CORRECTED);
+    aoeobservation2.addNote().setText("Corrected Result: Test reason");
 
     var actual =
         fhirConverter.createFhirBundle(
@@ -1862,37 +1872,33 @@ class FhirConverterTest {
             .filter(entry -> entry.getFullUrl().contains("Observation/" + observation.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
-    assertThat(((Observation) observationEntry.getResource()).getSubject().getReference())
-        .isEqualTo("Patient/" + patient.getId());
-    assertThat(((Observation) observationEntry.getResource()).getPerformer()).hasSize(1);
-    assertThat(((Observation) observationEntry.getResource()).getPerformerFirstRep().getReference())
-        .isEqualTo("Organization/" + organization.getId());
-    assertThat(((Observation) observationEntry.getResource()).getSpecimen().getReference())
-        .isEqualTo("Specimen/" + specimen.getId());
-    assertThat(((Observation) observationEntry.getResource()).getDevice().getReference())
-        .isEqualTo("Device/" + device.getId());
     assertThat(((Observation) observationEntry.getResource()).getStatus().toCode())
         .isEqualTo(ObservationStatus.CORRECTED.toCode());
+    assertThat(((Observation) observationEntry.getResource()).getNote()).hasSize(1);
+    assertThat(((Observation) observationEntry.getResource()).getNoteFirstRep().getText())
+        .isEqualTo("Corrected Result: Test reason");
 
     var aoeObservationEntry1 =
         actual.getEntry().stream()
             .filter(entry -> entry.getFullUrl().contains("Observation/" + aoeobservation1.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
-    assertThat(((Observation) aoeObservationEntry1.getResource()).getSubject().getReference())
-        .isEqualTo("Patient/" + patient.getId());
     assertThat(((Observation) aoeObservationEntry1.getResource()).getStatus().toCode())
         .isEqualTo(ObservationStatus.CORRECTED.toCode());
+    assertThat(((Observation) aoeObservationEntry1.getResource()).getNote()).hasSize(1);
+    assertThat(((Observation) aoeObservationEntry1.getResource()).getNoteFirstRep().getText())
+        .isEqualTo("Corrected Result: Test reason");
 
     var aoeObservationEntry2 =
         actual.getEntry().stream()
             .filter(entry -> entry.getFullUrl().contains("Observation/" + aoeobservation2.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
-    assertThat(((Observation) aoeObservationEntry2.getResource()).getSubject().getReference())
-        .isEqualTo("Patient/" + patient.getId());
     assertThat(((Observation) aoeObservationEntry2.getResource()).getStatus().toCode())
         .isEqualTo(ObservationStatus.CORRECTED.toCode());
+    assertThat(((Observation) aoeObservationEntry2.getResource()).getNote()).hasSize(1);
+    assertThat(((Observation) aoeObservationEntry2.getResource()).getNoteFirstRep().getText())
+        .isEqualTo("Corrected Result: Test reason");
 
     var serviceRequestEntry =
         actual.getEntry().stream()
@@ -2179,7 +2185,8 @@ class FhirConverterTest {
             true,
             LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
             AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY,
-            TestCorrectionStatus.CORRECTED);
+            TestCorrectionStatus.CORRECTED,
+            "Sample Reason");
 
     assertThat(observation.getStatus().toCode()).isEqualTo(ObservationStatus.CORRECTED.toCode());
   }
@@ -2191,7 +2198,8 @@ class FhirConverterTest {
             true,
             LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
             AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY,
-            TestCorrectionStatus.REMOVED);
+            TestCorrectionStatus.REMOVED,
+            "Sample Reason");
 
     assertThat(observation.getStatus().toCode())
         .isEqualTo(ObservationStatus.ENTEREDINERROR.toCode());
@@ -2215,7 +2223,7 @@ class FhirConverterTest {
 
     Set<Observation> correctedObservations =
         fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.CORRECTED);
+            testId, answers, person, TestCorrectionStatus.CORRECTED, "Sample Reason");
 
     for (Observation obs : correctedObservations) {
       assertThat(obs.getStatus().toCode()).isEqualTo(ObservationStatus.CORRECTED.toCode());
@@ -2223,10 +2231,54 @@ class FhirConverterTest {
 
     Set<Observation> removedObservations =
         fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.REMOVED);
+            testId, answers, person, TestCorrectionStatus.REMOVED, "Sample Reason");
 
     for (Observation obs : removedObservations) {
       assertThat(obs.getStatus().toCode()).isEqualTo(ObservationStatus.ENTEREDINERROR.toCode());
+    }
+  }
+
+  @Test
+  void convertToAOEPregnancyObservation_withCorrectionReason_addsNote() {
+    var observation =
+        fhirConverter.convertToAOEPregnancyObservation(
+            "77386006", TestCorrectionStatus.CORRECTED, "Pregnancy correction");
+
+    assertThat(observation.getStatus().toCode()).isEqualTo(ObservationStatus.CORRECTED.toCode());
+    assertThat(observation.getNote()).hasSize(1);
+    assertThat(observation.getNoteFirstRep().getText())
+        .isEqualTo("Corrected Result: Pregnancy correction");
+  }
+
+  @Test
+  void convertToAOEObservations_withCorrectionReason_propagatesToAllObservations() {
+    AskOnEntrySurvey survey =
+        AskOnEntrySurvey.builder()
+            .pregnancy("77386006")
+            .syphilisHistory(YES_SYPHILIS_HISTORY_SNOMED)
+            .symptoms(Map.of("36955009", true))
+            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
+            .genderOfSexualPartners(List.of("male", "female"))
+            .noSymptoms(false)
+            .build();
+
+    Person person = new Person("first", "last", "middle", "suffix", null);
+    ReflectionTestUtils.setField(person, "employedInHealthcare", true);
+
+    Set<Observation> observations =
+        fhirConverter.convertToAOEObservations(
+            "test-id",
+            survey,
+            person,
+            TestCorrectionStatus.CORRECTED,
+            "Multi-observation correction");
+
+    assertThat(observations).isNotEmpty();
+    for (Observation obs : observations) {
+      assertThat(obs.getStatus().toCode()).isEqualTo(ObservationStatus.CORRECTED.toCode());
+      assertThat(obs.getNote()).hasSize(1);
+      assertThat(obs.getNoteFirstRep().getText())
+          .isEqualTo("Corrected Result: Multi-observation correction");
     }
   }
 

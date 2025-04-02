@@ -269,6 +269,7 @@ public class BulkUploadResultsToFhir {
 
     TestCorrectionStatus correctionStatus =
         mapTestResultStatusToSRValue(row.getTestResultStatus().getValue());
+    String correctionReason = null;
 
     var patient =
         fhirConverter.convertToPatient(
@@ -458,13 +459,14 @@ public class BulkUploadResultsToFhir {
 
     aoeObservations.addAll(
         fhirConverter.convertToAOESymptomaticObservation(
-            testEventId, symptomatic, symptomOnsetDate, correctionStatus));
+            testEventId, symptomatic, symptomOnsetDate, correctionStatus, correctionReason));
 
     String pregnancyValue = row.getPregnant().getValue();
     if (StringUtils.isNotBlank(pregnancyValue)) {
       String pregnancySnomed = getPregnancyStatusSnomed(pregnancyValue);
       aoeObservations.add(
-          fhirConverter.convertToAOEPregnancyObservation(pregnancySnomed, correctionStatus));
+          fhirConverter.convertToAOEPregnancyObservation(
+              pregnancySnomed, correctionStatus, correctionReason));
     }
 
     String employedInHealthcareValue = row.getEmployedInHealthcare().getValue();
@@ -475,7 +477,8 @@ public class BulkUploadResultsToFhir {
               employedInHealthcare,
               LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
               AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY,
-              correctionStatus));
+              correctionStatus,
+              correctionReason));
     }
 
     String syphilisHistory = row.getSyphilisHistory().getValue();
@@ -483,7 +486,7 @@ public class BulkUploadResultsToFhir {
       String syphilisHistorySnomed = getSyphilisHistorySnomed(syphilisHistory);
       aoeObservations.add(
           fhirConverter.convertToAOESyphilisHistoryObservation(
-              syphilisHistorySnomed, correctionStatus));
+              syphilisHistorySnomed, correctionStatus, correctionReason));
     }
 
     String hospitalizedValue = row.getHospitalized().getValue();
@@ -494,7 +497,8 @@ public class BulkUploadResultsToFhir {
               hospitalized,
               LOINC_AOE_HOSPITALIZED,
               "Hospitalized for condition",
-              correctionStatus));
+              correctionStatus,
+              correctionReason));
     }
 
     String icuValue = row.getIcu().getValue();
@@ -502,7 +506,11 @@ public class BulkUploadResultsToFhir {
       Boolean hospitalized = yesNoToBooleanMap.get(icuValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
-              hospitalized, LOINC_AOE_ICU, "Admitted to ICU for condition", correctionStatus));
+              hospitalized,
+              LOINC_AOE_ICU,
+              "Admitted to ICU for condition",
+              correctionStatus,
+              correctionReason));
     }
 
     String residentCongregateSettingValue = row.getResidentCongregateSetting().getValue();
@@ -516,7 +524,7 @@ public class BulkUploadResultsToFhir {
       }
       aoeObservations.addAll(
           fhirConverter.convertToAOEResidenceObservation(
-              residesInCongregateSetting, residenceTypeSnomed, correctionStatus));
+              residesInCongregateSetting, residenceTypeSnomed, correctionStatus, correctionReason));
     }
 
     String gendersOfSexualPartnersValue = row.getGendersOfSexualPartners().getValue();
@@ -531,7 +539,7 @@ public class BulkUploadResultsToFhir {
               .collect(Collectors.toSet());
       aoeObservations.addAll(
           fhirConverter.convertToAOEGenderOfSexualPartnersObservation(
-              abbrConvertedGenders, correctionStatus));
+              abbrConvertedGenders, correctionStatus, correctionReason));
     }
 
     String patientGenderIdentity = row.getPatientGenderIdentity().getValue();
@@ -541,7 +549,7 @@ public class BulkUploadResultsToFhir {
           genderAbbreviationMap.get(patientGenderIdentity.toUpperCase());
       aoeObservations.addAll(
           fhirConverter.convertToAOEGenderIdentityObservation(
-              testEventId, abbrConvertedGenderIdentity, correctionStatus));
+              testEventId, abbrConvertedGenderIdentity, correctionStatus, correctionReason));
     }
 
     var serviceRequest =
