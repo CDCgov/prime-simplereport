@@ -24,6 +24,19 @@ const DEFAULT_SPECIMENS: Specimen[] = [
   },
 ];
 
+export const mapScaleDisplayToResultScaleType = (scaleDisplay: string) => {
+  switch (scaleDisplay) {
+    case "Nom":
+      return ResultScaleType.Nominal;
+    case "Ord":
+      return ResultScaleType.Ordinal;
+    case "Qn":
+      return ResultScaleType.Quantitative;
+    default:
+      return ResultScaleType.Ordinal;
+  }
+};
+
 export const useSpecimenTypeOptionList = () => {
   const options = DEFAULT_SPECIMENS.map((specimen) => {
     return {

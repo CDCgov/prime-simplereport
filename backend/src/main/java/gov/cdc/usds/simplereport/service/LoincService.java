@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
+import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
@@ -16,10 +17,14 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -42,9 +47,26 @@ public class LoincService {
   private final LoincFhirClient loincFhirClient;
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
+  private final ConditionRepository conditionRepository;
+  private final ConditionService conditionService;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
   private static final int PAGE_SIZE = 20;
+
+  public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
+    List<Condition> conditions = conditionRepository.findAllByCodeIn(codes);
+    Set<Lab> labs = new HashSet<>();
+    List<String> acceptedScaleDisplays = List.of("Nom", "Qn", "Ord");
+    for (var condition : conditions) {
+      Set<Lab> testOrderLabs =
+          condition.getLabs().stream()
+              .filter(lab -> lab.getOrderOrObservation().equals("Both"))
+              .filter(lab -> acceptedScaleDisplays.contains(lab.getScaleDisplay()))
+              .collect(Collectors.toSet());
+      labs.addAll(testOrderLabs);
+    }
+    return labs.stream().toList();
+  }
 
   // TODO: standardize how we authenticate REST endpoints
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -134,6 +156,7 @@ public class LoincService {
     // TODO does it make sense to have the insert into this table be smarter, so we dont have to
     // empty it
     clearLoincStaging();
+    conditionService.syncHasLabs();
     Instant stopTime = Instant.now();
     Duration elapsedTime = Duration.between(startTime, stopTime);
     log.info(
