@@ -103,6 +103,9 @@ public class LoincService {
       log.info("Data written to lab table.");
       log.info("Completed page: {}", loincPage.getNumber());
       futures.clear();
+      labs.clear();
+      successLoincs.clear();
+      failedLoincs.clear();
       pageRequest = pageRequest.next();
       loincPage = loincStagingRepository.findAll(pageRequest);
     }
