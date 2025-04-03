@@ -12,21 +12,29 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter
 @Setter
 public class Condition extends EternalAuditedEntity {
 
+  @Getter
   @Column(nullable = false)
   private String code;
 
+  @Getter
   @Column(nullable = false)
   private String display;
+
+  @Column private boolean hasLabs;
+
+  public boolean getHasLabs() {
+    return hasLabs;
+  }
 
   @JoinTable(
       name = "condition_lab_join",
       joinColumns = @JoinColumn(name = "condition_id"),
       inverseJoinColumns = @JoinColumn(name = "lab_id"))
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
+  @Getter
   private Set<Lab> labs = new HashSet<>();
 
   public Condition(String code, String display) {

@@ -10,4 +10,6 @@ public interface ConditionRepository extends EternalAuditedEntityRepository<Cond
   Condition findConditionByCode(String code);
 
   List<Condition> findAllByCodeIn(Collection<String> codes);
+
+  List<Condition> findAllByHasLabsIsTrue();
 }
