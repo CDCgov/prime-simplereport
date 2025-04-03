@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Radio } from "@trussworks/react-uswds";
+import { Button } from "@trussworks/react-uswds";
 
 import MultiSelect from "../commonComponents/MultiSelect/MultiSelect";
 import {
@@ -15,7 +15,6 @@ import {
   useGetSpecimensByLoincLazyQuery,
   useSubmitLabReportMutation,
 } from "../../generated/graphql";
-import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import {
@@ -32,6 +31,7 @@ import TestDetailSection from "./TestDetailSection";
 import FacilityFormSection from "./FacilityFormSection";
 import ProviderFormSection from "./ProviderFormSection";
 import PatientFormSection from "./PatientFormSection";
+import TestOrderFormSection from "./TestOrderFormSection";
 
 const LabReportForm = () => {
   const [patient, setPatient] = useState<PatientReportInput>(
@@ -49,8 +49,6 @@ const LabReportForm = () => {
   const [testDetailList, setTestDetailList] = useState<TestDetailsInput[]>([]);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [testOrderLoinc, setTestOrderLoinc] = useState<string>("");
-  const [testOrderSearchString, setTestOrderSearchString] =
-    useState<string>("");
   const [submissionResponse, setSubmissionResponse] = useState("");
 
   const [submitLabReport] = useSubmitLabReportMutation();
@@ -180,15 +178,6 @@ const LabReportForm = () => {
     conditionsData?.conditions ?? []
   );
 
-  const filteredLabData: Lab[] = labData?.labs
-    ? [...labData?.labs].filter(
-        (lab) =>
-          lab.display.toLowerCase().includes(testOrderSearchString) ||
-          lab.description?.toLowerCase().includes(testOrderSearchString) ||
-          lab.longCommonName.includes(testOrderSearchString)
-      )
-    : [];
-
   return (
     <div className="prime-home flex-1">
       <div className="grid-container padding-bottom-10">
@@ -250,78 +239,13 @@ const LabReportForm = () => {
         </div>
         <div className="prime-container card-container">
           <div className="usa-card__body">
-            <div className="grid-row">
-              <div className="grid-col-auto">
-                <h2 className={"font-sans-lg"}>Test Order</h2>
-              </div>
-            </div>
-            <div className="grid-row grid-gap">
-              <div className="grid-col-10">
-                {selectedConditions.length === 0 && (
-                  <div>
-                    Please select a condition before selecting a test order.
-                  </div>
-                )}
-                {selectedConditions.length > 0 && labDataLoading && (
-                  <div>Loading test orders from selected condition...</div>
-                )}
-                {selectedConditions.length > 0 &&
-                  !labDataLoading &&
-                  labData?.labs.length === 0 && (
-                    <div>
-                      No test orders found for selected condition. Please
-                      contact support for assistance.
-                    </div>
-                  )}
-                {selectedConditions.length > 0 && !labDataLoading && (
-                  <fieldset className={"usa-fieldset"}>
-                    <div className="grid-row flex-justify">
-                      <div className="grid-col-auto">
-                        <legend className="usa-legend margin-top-1">
-                          Select the test ordered below
-                        </legend>
-                      </div>
-                      <div className="grid-col-5">
-                        <SearchInput
-                          onInputChange={(e) =>
-                            setTestOrderSearchString(e.target.value)
-                          }
-                          queryString={testOrderSearchString}
-                          placeholder={`Filter test orders`}
-                          showSubmitButton={false}
-                        />
-                      </div>
-                    </div>
-                    {filteredLabData?.length === 0 && !labDataLoading && (
-                      <>
-                        <div className="grid-row grid-gap">
-                          <div className="grid-col-auto padding-y-6">
-                            No results found.
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    {filteredLabData?.map((lab) => {
-                      return (
-                        <Radio
-                          id={`test-order-lab-${lab.code}`}
-                          key={lab.code}
-                          name={`input-test-order-lab`}
-                          label={lab.display}
-                          labelDescription={
-                            lab.description ?? lab.longCommonName
-                          }
-                          value={lab.code}
-                          checked={lab.code === testOrderLoinc}
-                          onChange={() => updateTestOrderLoinc(lab)}
-                          tile={true}
-                        />
-                      );
-                    })}
-                  </fieldset>
-                )}
-              </div>
-            </div>
+            <TestOrderFormSection
+              hasSelectedCondition={selectedConditions.length > 0}
+              labDataLoading={labDataLoading}
+              labs={labData?.labs ?? []}
+              testOrderLoinc={testOrderLoinc}
+              updateTestOrderLoinc={updateTestOrderLoinc}
+            />
           </div>
         </div>
         {testDetailList
