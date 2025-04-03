@@ -1903,23 +1903,23 @@ public class FhirConverter {
     if (testDetailsInput.getResultType().equals(ResultScaleType.ORDINAL)) {
       SnomedConceptRecord snomedConceptRecord =
           Translators.getSnomedConceptByCode(testDetailsInput.getResultValue());
+
       if (snomedConceptRecord != null) {
-        addSNOMEDValue(
-            snomedConceptRecord.code(),
-            observation,
-            String.valueOf(snomedConceptRecord.displayName()));
+        addSNOMEDValue(snomedConceptRecord.code(), observation, snomedConceptRecord.name());
       } else {
         addSNOMEDValue(
-            testDetailsInput.getResultValue(),
-            observation,
-            testDetailsInput.getResultInterpretation());
+            testDetailsInput.getResultValue(), observation, testDetailsInput.getCondition());
+      }
+
+      Coding abnormalFlagCode =
+          convertToAbnormalFlagInterpretation(testDetailsInput.getResultValue());
+      if (abnormalFlagCode != null) {
+        observation.addInterpretation().addCoding(abnormalFlagCode);
       }
     }
     if (testDetailsInput.getResultType().equals(ResultScaleType.NOMINAL)) {
       addSNOMEDValue(
-          testDetailsInput.getResultValue(),
-          observation,
-          testDetailsInput.getResultInterpretation());
+          testDetailsInput.getResultValue(), observation, testDetailsInput.getCondition());
     }
     if (testDetailsInput.getResultType().equals(ResultScaleType.QUANTITATIVE)) {
       Quantity quantity = new Quantity(Double.parseDouble(testDetailsInput.getResultValue()));
