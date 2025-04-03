@@ -21,6 +21,14 @@ query GetLabsByConditions($conditionCodes: [String!]) {
   }
 }
 
+query GetSpecimensByLoinc($loinc: String!) {
+  specimens(loinc: $loinc) {
+    loincSystemCode
+    snomedCode
+    snomedDisplay
+  }
+}
+
 query GetFacility($id: ID!) {
   facility(id: $id) {
     id
