@@ -6108,3 +6108,21 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: condition_lab_join
+  - changeSet:
+      id: add-has-labs-to-condition-table
+      author: ggs2@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-has-labs-to-condition-table
+        - addColumn:
+            tableName: condition
+            columns:
+              - column:
+                  name: has_labs
+                  type: boolean
+                  remarks: Flag for whether the condition has any labs associated with it instead of having to check the entire join table.
+                  defaultValueBoolean: false
+      rollback:
+        - dropColumn:
+            tableName: condition
+            columnName: has_labs

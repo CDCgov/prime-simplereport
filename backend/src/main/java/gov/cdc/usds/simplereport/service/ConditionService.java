@@ -34,6 +34,23 @@ public class ConditionService {
   private final ConditionRepository conditionRepository;
   private final LoincStagingRepository loincStagingRepository;
 
+  public List<Condition> syncHasLabs() {
+    List<Condition> allConditions = conditionRepository.findAll();
+    List<Condition> conditionsToUpdate = new ArrayList<>();
+    allConditions.forEach(
+        condition -> {
+          boolean hasLabs = !condition.getLabs().isEmpty();
+          if (condition.getHasLabs() != hasLabs) {
+            condition.setHasLabs(hasLabs);
+            conditionsToUpdate.add(condition);
+          }
+        });
+    List<Condition> updatedConditions =
+        (List<Condition>) conditionRepository.saveAll(conditionsToUpdate);
+    log.info("Updated has_labs column on {} conditions.", updatedConditions.size());
+    return updatedConditions;
+  }
+
   public List<Condition> syncConditions() {
     List<Condition> conditionList = new ArrayList<>();
 

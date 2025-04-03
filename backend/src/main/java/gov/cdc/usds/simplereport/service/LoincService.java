@@ -11,6 +11,16 @@ import gov.cdc.usds.simplereport.db.model.LoincStaging;
 import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -23,17 +33,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,6 +42,7 @@ public class LoincService {
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
   private final ConditionRepository conditionRepository;
+  private final ConditionService conditionService;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
 
@@ -114,6 +114,7 @@ public class LoincService {
       pageRequest = pageRequest.next();
       loincPage = loincStagingRepository.findAll(pageRequest);
     }
+    conditionService.syncHasLabs();
     return labs;
   }
 
