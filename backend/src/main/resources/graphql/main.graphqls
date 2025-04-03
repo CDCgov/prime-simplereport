@@ -535,6 +535,13 @@ type Lab {
   panel: Boolean!
 }
 
+# specimen for universal reporting
+type Specimen {
+  loincSystemCode: String!
+  snomedCode: String!
+  snomedDisplay: String!
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -663,8 +670,9 @@ type Query {
     pageSize: Int
   ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
-  conditions: [Condition!]
-  labs(conditionCodes: [String!]): [Lab!]
+  conditions: [Condition!]!
+  labs(conditionCodes: [String!]): [Lab!]!
+  specimens(loinc: String!): [Specimen!]!
 }
 
 type Mutation {

@@ -830,7 +830,7 @@ export type ProviderReportInput = {
 
 export type Query = {
   __typename?: "Query";
-  conditions?: Maybe<Array<Condition>>;
+  conditions: Array<Condition>;
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType: Array<DeviceType>;
   deviceTypes: Array<DeviceType>;
@@ -838,7 +838,7 @@ export type Query = {
   facility?: Maybe<Facility>;
   facilityStats?: Maybe<FacilityStats>;
   getOrgAdminUserIds?: Maybe<Array<Maybe<Scalars["ID"]["output"]>>>;
-  labs?: Maybe<Array<Lab>>;
+  labs: Array<Lab>;
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
@@ -853,6 +853,7 @@ export type Query = {
   resultsPage?: Maybe<ResultsPage>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
+  specimens: Array<Specimen>;
   supportedDiseases: Array<SupportedDisease>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
@@ -958,6 +959,10 @@ export type QueryResultsPageArgs = {
   result?: InputMaybe<Scalars["String"]["input"]>;
   role?: InputMaybe<Scalars["String"]["input"]>;
   startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type QuerySpecimensArgs = {
+  loinc: Scalars["String"]["input"];
 };
 
 export type QueryTestResultArgs = {
@@ -1067,6 +1072,13 @@ export enum Role {
   TestResultUploadUser = "TEST_RESULT_UPLOAD_USER",
   User = "USER",
 }
+
+export type Specimen = {
+  __typename?: "Specimen";
+  loincSystemCode: Scalars["String"]["output"];
+  snomedCode: Scalars["String"]["output"];
+  snomedDisplay: Scalars["String"]["output"];
+};
 
 export type SpecimenInput = {
   collectionDate?: InputMaybe<Scalars["DateTime"]["input"]>;
@@ -3081,11 +3093,11 @@ export type GetConditionsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetConditionsQuery = {
   __typename?: "Query";
-  conditions?: Array<{
+  conditions: Array<{
     __typename?: "Condition";
     code: string;
     display: string;
-  }> | null;
+  }>;
 };
 
 export type GetLabsByConditionsQueryVariables = Exact<{
@@ -3096,7 +3108,7 @@ export type GetLabsByConditionsQueryVariables = Exact<{
 
 export type GetLabsByConditionsQuery = {
   __typename?: "Query";
-  labs?: Array<{
+  labs: Array<{
     __typename?: "Lab";
     code: string;
     display: string;
@@ -3109,7 +3121,21 @@ export type GetLabsByConditionsQuery = {
     answerList?: string | null;
     orderOrObservation: string;
     panel: boolean;
-  }> | null;
+  }>;
+};
+
+export type GetSpecimensByLoincQueryVariables = Exact<{
+  loinc: Scalars["String"]["input"];
+}>;
+
+export type GetSpecimensByLoincQuery = {
+  __typename?: "Query";
+  specimens: Array<{
+    __typename?: "Specimen";
+    loincSystemCode: string;
+    snomedCode: string;
+    snomedDisplay: string;
+  }>;
 };
 
 export type GetFacilityQueryVariables = Exact<{
@@ -9953,6 +9979,90 @@ export type GetLabsByConditionsSuspenseQueryHookResult = ReturnType<
 export type GetLabsByConditionsQueryResult = Apollo.QueryResult<
   GetLabsByConditionsQuery,
   GetLabsByConditionsQueryVariables
+>;
+export const GetSpecimensByLoincDocument = gql`
+  query GetSpecimensByLoinc($loinc: String!) {
+    specimens(loinc: $loinc) {
+      loincSystemCode
+      snomedCode
+      snomedDisplay
+    }
+  }
+`;
+
+/**
+ * __useGetSpecimensByLoincQuery__
+ *
+ * To run a query within a React component, call `useGetSpecimensByLoincQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSpecimensByLoincQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetSpecimensByLoincQuery({
+ *   variables: {
+ *      loinc: // value for 'loinc'
+ *   },
+ * });
+ */
+export function useGetSpecimensByLoincQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetSpecimensByLoincQuery,
+    GetSpecimensByLoincQueryVariables
+  > &
+    (
+      | { variables: GetSpecimensByLoincQueryVariables; skip?: boolean }
+      | { skip: boolean }
+    )
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetSpecimensByLoincQuery,
+    GetSpecimensByLoincQueryVariables
+  >(GetSpecimensByLoincDocument, options);
+}
+export function useGetSpecimensByLoincLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetSpecimensByLoincQuery,
+    GetSpecimensByLoincQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetSpecimensByLoincQuery,
+    GetSpecimensByLoincQueryVariables
+  >(GetSpecimensByLoincDocument, options);
+}
+export function useGetSpecimensByLoincSuspenseQuery(
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetSpecimensByLoincQuery,
+        GetSpecimensByLoincQueryVariables
+      >
+) {
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<
+    GetSpecimensByLoincQuery,
+    GetSpecimensByLoincQueryVariables
+  >(GetSpecimensByLoincDocument, options);
+}
+export type GetSpecimensByLoincQueryHookResult = ReturnType<
+  typeof useGetSpecimensByLoincQuery
+>;
+export type GetSpecimensByLoincLazyQueryHookResult = ReturnType<
+  typeof useGetSpecimensByLoincLazyQuery
+>;
+export type GetSpecimensByLoincSuspenseQueryHookResult = ReturnType<
+  typeof useGetSpecimensByLoincSuspenseQuery
+>;
+export type GetSpecimensByLoincQueryResult = Apollo.QueryResult<
+  GetSpecimensByLoincQuery,
+  GetSpecimensByLoincQueryVariables
 >;
 export const GetFacilityDocument = gql`
   query GetFacility($id: ID!) {

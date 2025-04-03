@@ -12,6 +12,7 @@ import {
   useGetConditionsQuery,
   useGetFacilityQuery,
   useGetLabsByConditionsLazyQuery,
+  useGetSpecimensByLoincLazyQuery,
   useSubmitLabReportMutation,
 } from "../../generated/graphql";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
@@ -19,7 +20,12 @@ import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import {
   buildConditionsOptionList,
+  defaultFacilityReportInputState,
+  defaultPatientReportInputState,
+  defaultProviderReportInputState,
+  defaultSpecimenReportInputState,
   mapScaleDisplayToResultScaleType,
+  PLACEHOLDER_SPECIMENS,
 } from "./LabReportFormUtils";
 import SpecimenFormSection from "./SpecimenFormSection";
 import TestDetailSection from "./TestDetailSection";
@@ -28,66 +34,23 @@ import ProviderFormSection from "./ProviderFormSection";
 import PatientFormSection from "./PatientFormSection";
 
 const LabReportForm = () => {
-  const [patient, setPatient] = useState<PatientReportInput>({
-    city: "",
-    country: "USA",
-    county: "",
-    dateOfBirth: "",
-    email: "",
-    ethnicity: "",
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    phone: "",
-    race: "",
-    sex: "",
-    state: "",
-    street: "",
-    streetTwo: "",
-    suffix: "",
-    tribalAffiliation: "",
-    zipCode: "",
-  });
-  const [provider, setProvider] = useState<ProviderReportInput>({
-    city: "",
-    county: "",
-    email: "",
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    npi: "",
-    phone: "",
-    state: "",
-    street: "",
-    streetTwo: "",
-    suffix: "",
-    zipCode: "",
-    country: "USA",
-  });
-  const [facility, setFacility] = useState<FacilityReportInput>({
-    city: "",
-    clia: "",
-    county: "",
-    email: "",
-    name: "",
-    phone: "",
-    state: "",
-    street: "",
-    streetTwo: "",
-    zipCode: "",
-    country: "USA",
-  });
-  const [specimen, setSpecimen] = useState<SpecimenInput>({
-    snomedTypeCode: "",
-    collectionDate: "",
-    receivedDate: "",
-    collectionLocationCode: "",
-    collectionLocationName: "",
-  });
-  const [conditions, setConditions] = useState<string[]>([]);
-  const [searchQueryTestOrder, setSearchQueryTestOrder] = useState<string>("");
-  const [testOrderLoinc, setTestOrderLoinc] = useState<string>("");
+  const [patient, setPatient] = useState<PatientReportInput>(
+    defaultPatientReportInputState
+  );
+  const [provider, setProvider] = useState<ProviderReportInput>(
+    defaultProviderReportInputState
+  );
+  const [facility, setFacility] = useState<FacilityReportInput>(
+    defaultFacilityReportInputState
+  );
+  const [specimen, setSpecimen] = useState<SpecimenInput>(
+    defaultSpecimenReportInputState
+  );
   const [testDetailList, setTestDetailList] = useState<TestDetailsInput[]>([]);
+  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+  const [testOrderLoinc, setTestOrderLoinc] = useState<string>("");
+  const [testOrderSearchString, setTestOrderSearchString] =
+    useState<string>("");
   const [submissionResponse, setSubmissionResponse] = useState("");
 
   const [submitLabReport] = useSubmitLabReportMutation();
@@ -99,21 +62,13 @@ const LabReportForm = () => {
     },
   });
 
-  const [getLabsByConditions, { data: labData }] =
-    useGetLabsByConditionsLazyQuery();
-
-  const filteredLabData =
-    searchQueryTestOrder.length > 0
-      ? labData?.labs?.filter(
-          (lab) =>
-            lab.display.toLowerCase().includes(searchQueryTestOrder) ||
-            lab.description?.toLowerCase().includes(searchQueryTestOrder) ||
-            lab.longCommonName.includes(searchQueryTestOrder)
-        )
-      : labData?.labs;
-
   const { data: conditionsData, loading: conditionsLoading } =
     useGetConditionsQuery();
+
+  const [getSpecimensByLoinc, { data: specimenListData }] =
+    useGetSpecimensByLoincLazyQuery();
+  const [getLabsByConditions, { data: labData }] =
+    useGetLabsByConditionsLazyQuery();
 
   useEffect(() => {
     setProvider((prevProvider) => {
@@ -154,11 +109,7 @@ const LabReportForm = () => {
     });
   }, [facilityData]);
 
-  const conditionOptions = buildConditionsOptionList(
-    conditionsData?.conditions ?? []
-  );
-
-  const updateTestOrderLoinc = (lab: Lab) => {
+  const updateTestOrderLoinc = async (lab: Lab) => {
     const updatedList = [] as TestDetailsInput[];
     updatedList.push({
       testOrderLoinc: lab.code,
@@ -171,6 +122,14 @@ const LabReportForm = () => {
     } as TestDetailsInput);
     setTestDetailList(updatedList);
     setTestOrderLoinc(lab.code);
+
+    if (lab.code) {
+      await getSpecimensByLoinc({
+        variables: {
+          loinc: lab.code,
+        },
+      });
+    }
   };
 
   const updateTestDetails = (details: TestDetailsInput) => {
@@ -180,6 +139,17 @@ const LabReportForm = () => {
     );
     updatedList = [...updatedList, details];
     setTestDetailList(updatedList);
+  };
+
+  const updateConditions = async (selectedConditions: string[]) => {
+    setSelectedConditions(selectedConditions);
+    if (selectedConditions.length > 0) {
+      await getLabsByConditions({
+        variables: {
+          conditionCodes: selectedConditions,
+        },
+      });
+    }
   };
 
   const submitForm = async () => {
@@ -197,16 +167,18 @@ const LabReportForm = () => {
     );
   };
 
-  const updateConditions = async (selectedConditions: string[]) => {
-    setConditions(selectedConditions);
-    if (selectedConditions.length > 0) {
-      await getLabsByConditions({
-        variables: {
-          conditionCodes: selectedConditions,
-        },
-      });
-    }
-  };
+  const conditionOptions = buildConditionsOptionList(
+    conditionsData?.conditions ?? []
+  );
+
+  const filteredLabData: Lab[] = labData?.labs
+    ? [...labData?.labs].filter(
+        (lab) =>
+          lab.display.toLowerCase().includes(testOrderSearchString) ||
+          lab.description?.toLowerCase().includes(testOrderSearchString) ||
+          lab.longCommonName.includes(testOrderSearchString)
+      )
+    : [];
 
   return (
     <div className="prime-home flex-1">
@@ -251,7 +223,7 @@ const LabReportForm = () => {
                     name={"selected-conditions"}
                     options={conditionOptions}
                     onChange={(e) => updateConditions(e)}
-                    initialSelectedValues={conditions}
+                    initialSelectedValues={selectedConditions}
                     label={
                       <>
                         Conditions to report{" "}
@@ -265,14 +237,6 @@ const LabReportForm = () => {
                 )}
               </div>
             </div>
-          </div>
-        </div>
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
-            <SpecimenFormSection
-              specimen={specimen}
-              setSpecimen={setSpecimen}
-            />
           </div>
         </div>
         <div className="prime-container card-container">
@@ -294,9 +258,9 @@ const LabReportForm = () => {
                     <div className="grid-col-5">
                       <SearchInput
                         onInputChange={(e) =>
-                          setSearchQueryTestOrder(e.target.value)
+                          setTestOrderSearchString(e.target.value)
                         }
-                        queryString={searchQueryTestOrder}
+                        queryString={testOrderSearchString}
                         placeholder={`Filter test orders`}
                         showSubmitButton={false}
                       />
@@ -350,6 +314,17 @@ const LabReportForm = () => {
               </div>
             );
           })}
+        <div className="prime-container card-container">
+          <div className="usa-card__body">
+            <SpecimenFormSection
+              specimen={specimen}
+              setSpecimen={setSpecimen}
+              specimenList={
+                specimenListData?.specimens ?? PLACEHOLDER_SPECIMENS
+              }
+            />
+          </div>
+        </div>
         <div className="padding-bottom-10">
           <Button onClick={() => submitForm()} type={"button"}>
             Submit results

@@ -1,28 +1,95 @@
-import { Condition, ResultScaleType } from "../../generated/graphql";
+import {
+  Condition,
+  FacilityReportInput,
+  PatientReportInput,
+  ProviderReportInput,
+  ResultScaleType,
+  Specimen,
+  SpecimenInput,
+} from "../../generated/graphql";
 
-type Specimen = {
-  name: string;
-  type_code: string;
+export const defaultPatientReportInputState: PatientReportInput = {
+  city: "",
+  country: "USA",
+  county: "",
+  dateOfBirth: "",
+  email: "",
+  ethnicity: "",
+  firstName: "",
+  lastName: "",
+  middleName: "",
+  phone: "",
+  race: "",
+  sex: "",
+  state: "",
+  street: "",
+  streetTwo: "",
+  suffix: "",
+  tribalAffiliation: "",
+  zipCode: "",
 };
 
-const DEFAULT_SPECIMENS: Specimen[] = [
+export const defaultProviderReportInputState: ProviderReportInput = {
+  city: "",
+  county: "",
+  email: "",
+  firstName: "",
+  lastName: "",
+  middleName: "",
+  npi: "",
+  phone: "",
+  state: "",
+  street: "",
+  streetTwo: "",
+  suffix: "",
+  zipCode: "",
+  country: "USA",
+};
+
+export const defaultFacilityReportInputState: FacilityReportInput = {
+  city: "",
+  clia: "",
+  county: "",
+  email: "",
+  name: "",
+  phone: "",
+  state: "",
+  street: "",
+  streetTwo: "",
+  zipCode: "",
+  country: "USA",
+};
+
+export const defaultSpecimenReportInputState: SpecimenInput = {
+  snomedTypeCode: "",
+  collectionDate: "",
+  receivedDate: "",
+  collectionLocationCode: "",
+  collectionLocationName: "",
+};
+
+export const PLACEHOLDER_SPECIMENS: Specimen[] = [
   {
-    name: "Swab of internal nose",
-    type_code: "445297001",
+    loincSystemCode: "",
+    snomedDisplay: "Swab of internal nose",
+    snomedCode: "445297001",
   },
   {
-    name: "Nasopharyngeal swab",
-    type_code: "258500001",
+    loincSystemCode: "",
+    snomedDisplay: "Nasopharyngeal swab",
+    snomedCode: "258500001",
   },
   {
-    name: "Venous blood specimen",
-    type_code: "122555007",
+    loincSystemCode: "",
+    snomedDisplay: "Venous blood specimen",
+    snomedCode: "122555007",
   },
   {
-    name: "Oral fluid specimen",
-    type_code: "441620008",
+    loincSystemCode: "",
+    snomedDisplay: "Oral fluid specimen",
+    snomedCode: "441620008",
   },
-];
+] as Specimen[];
 
 export const mapScaleDisplayToResultScaleType = (scaleDisplay: string) => {
   switch (scaleDisplay) {
@@ -37,11 +104,11 @@ export const mapScaleDisplayToResultScaleType = (scaleDisplay: string) => {
   }
 };
 
-export const useSpecimenTypeOptionList = () => {
-  const options = DEFAULT_SPECIMENS.map((specimen) => {
+export const buildSpecimenOptionList = (specimens: Specimen[]) => {
+  const options = specimens.map((specimen) => {
     return {
-      value: specimen.type_code,
-      label: `${specimen.name} - ${specimen.type_code}`,
+      value: specimen.snomedCode,
+      label: `${specimen.snomedDisplay} - ${specimen.snomedCode}`,
     };
   });
   options.sort((a, b) => (a.label > b.label ? 1 : -1));

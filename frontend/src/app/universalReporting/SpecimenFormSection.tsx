@@ -4,20 +4,22 @@ import React, { Dispatch } from "react";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import { formatDate } from "../utils/date";
-import { SpecimenInput } from "../../generated/graphql";
+import { Specimen, SpecimenInput } from "../../generated/graphql";
 
-import { useSpecimenTypeOptionList } from "./LabReportFormUtils";
+import { buildSpecimenOptionList } from "./LabReportFormUtils";
 
 type SpecimenFormSectionProps = {
   specimen: SpecimenInput;
   setSpecimen: Dispatch<SpecimenInput>;
+  specimenList: Specimen[];
 };
 
 const SpecimenFormSection = ({
+  specimenList,
   specimen,
   setSpecimen,
 }: SpecimenFormSectionProps) => {
-  const specimenOption = useSpecimenTypeOptionList();
+  const specimenOption = buildSpecimenOptionList(specimenList);
 
   const handleCollectionDateUpdate = (value: string) => {
     if (value) {
