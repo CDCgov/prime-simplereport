@@ -5,6 +5,22 @@ query GetConditions {
   }
 }
 
+query GetLabsByConditions($conditionCodes: [String!]) {
+  labs(conditionCodes: $conditionCodes) {
+    code
+    display
+    description
+    longCommonName
+    scaleCode
+    scaleDisplay
+    systemCode
+    systemDisplay
+    answerList
+    orderOrObservation
+    panel
+  }
+}
+
 query GetFacility($id: ID!) {
   facility(id: $id) {
     id

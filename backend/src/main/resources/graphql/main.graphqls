@@ -455,7 +455,7 @@ input PatientReportInput {
   zipCode: String
   country: String
   sex: String
-  dateOfBirth: LocalDate
+  dateOfBirth: LocalDate!
   race: String
   ethnicity: String
   tribalAffiliation: String
@@ -519,6 +519,20 @@ enum ResultScaleType {
 type Condition {
   code: String!
   display: String!
+}
+
+type Lab {
+  code: String!
+  display: String!
+  description: String
+  longCommonName: String!
+  scaleCode: String
+  scaleDisplay: String
+  systemCode: String
+  systemDisplay: String
+  answerList: String
+  orderOrObservation: String!
+  panel: Boolean!
 }
 
 # Queries and mutations for everyday use
@@ -650,6 +664,7 @@ type Query {
   ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
   conditions: [Condition!]
+  labs(conditionCodes: [String!]): [Lab!]
 }
 
 type Mutation {

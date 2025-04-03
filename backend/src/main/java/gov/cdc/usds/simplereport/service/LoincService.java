@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -44,8 +45,14 @@ public class LoincService {
   public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
     List<Condition> conditions = conditionRepository.findAllByCodeIn(codes);
     Set<Lab> labs = new HashSet<>();
+    List<String> acceptedScaleDisplays = List.of("Nom", "Qn", "Ord");
     for (var condition : conditions) {
-      labs.addAll(condition.getLabs());
+      Set<Lab> testOrderLabs =
+          condition.getLabs().stream()
+              .filter(lab -> lab.getOrderOrObservation().equals("Both"))
+              .filter(lab -> acceptedScaleDisplays.contains(lab.getScaleDisplay()))
+              .collect(Collectors.toSet());
+      labs.addAll(testOrderLabs);
     }
     return labs.stream().toList();
   }

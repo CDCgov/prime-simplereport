@@ -26,7 +26,7 @@ public class Condition extends EternalAuditedEntity {
       name = "condition_lab_join",
       joinColumns = @JoinColumn(name = "condition_id"),
       inverseJoinColumns = @JoinColumn(name = "lab_id"))
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   private Set<Lab> labs = new HashSet<>();
 
   public Condition(String code, String display) {

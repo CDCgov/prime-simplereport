@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.service.LoincService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +22,7 @@ public class LoincController {
   }
 
   @QueryMapping
-  public List<Lab> labs(List<String> conditionCodes) {
+  public List<Lab> labs(@Argument List<String> conditionCodes) {
     return loincService.getLabsByConditionCodes(conditionCodes);
   }
 }
