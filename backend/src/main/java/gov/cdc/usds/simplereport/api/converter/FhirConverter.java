@@ -1618,6 +1618,8 @@ public class FhirConverter {
     categoryCoding.setCode(LAB_STRING_LITERAL);
     diagnosticReport.setCategory(List.of(categoryCodeableConcept));
 
+    diagnosticReport.setStatus(DiagnosticReportStatus.FINAL);
+
     var diagnosticCodeableConcept = new CodeableConcept();
     var diagnosticCoding = diagnosticCodeableConcept.addCoding();
 
