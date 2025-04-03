@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import feign.Response;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
@@ -55,6 +56,7 @@ public class LoincService {
     return labs.stream().toList();
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Lab> syncLabs() {
     log.info("Sync Labs");
     PageRequest pageRequest = PageRequest.of(0, 1000);
