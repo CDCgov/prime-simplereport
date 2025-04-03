@@ -44,7 +44,9 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TRE
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.*;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.hasTimezoneSubstring;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.timezoneAbbreviationZoneIdMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
 
@@ -460,7 +462,7 @@ public class CsvValidatorUtils {
       if (hasTimezoneSubstring(value)) {
         errors.addAll(validateDateTimeZoneCode(input));
       }
-    } catch (Exception e) {
+    } catch (DateTimeParseException | StringIndexOutOfBoundsException e) {
       errors.add(
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
