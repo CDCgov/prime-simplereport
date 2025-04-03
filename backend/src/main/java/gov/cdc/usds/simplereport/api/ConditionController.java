@@ -18,4 +18,9 @@ public class ConditionController {
   public List<Condition> syncConditions() {
     return conditionService.syncConditions();
   }
+
+  @GetMapping("/universal/conditions/syncHasLabs")
+  public List<Condition> syncHasLabs() {
+    return conditionService.syncHasLabs();
+  }
 }
