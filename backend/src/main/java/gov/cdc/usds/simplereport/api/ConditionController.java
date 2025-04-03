@@ -1,8 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.service.ConditionService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +13,12 @@ public class ConditionController {
   private final ConditionService conditionService;
 
   @GetMapping("/universal/conditions/sync")
-  public List<Condition> syncConditions() {
+  public String syncConditions() {
     return conditionService.syncConditions();
   }
 
   @GetMapping("/universal/conditions/syncHasLabs")
-  public List<Condition> syncHasLabs() {
+  public String syncHasLabs() {
     return conditionService.syncHasLabs();
   }
 }
