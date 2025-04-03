@@ -65,9 +65,11 @@ const LabReportForm = () => {
   const { data: conditionsData, loading: conditionsLoading } =
     useGetConditionsQuery();
 
-  const [getSpecimensByLoinc, { data: specimenListData }] =
-    useGetSpecimensByLoincLazyQuery();
-  const [getLabsByConditions, { data: labData }] =
+  const [
+    getSpecimensByLoinc,
+    { data: specimenListData, loading: specimenListLoading },
+  ] = useGetSpecimensByLoincLazyQuery();
+  const [getLabsByConditions, { data: labData, loading: labDataLoading }] =
     useGetLabsByConditionsLazyQuery();
 
   useEffect(() => {
@@ -143,6 +145,13 @@ const LabReportForm = () => {
 
   const updateConditions = async (selectedConditions: string[]) => {
     setSelectedConditions(selectedConditions);
+
+    if (selectedConditions.length === 0) {
+      setTestDetailList([]);
+      setTestOrderLoinc("");
+      setSpecimen(defaultSpecimenReportInputState);
+    }
+
     if (selectedConditions.length > 0) {
       await getLabsByConditions({
         variables: {
@@ -248,49 +257,69 @@ const LabReportForm = () => {
             </div>
             <div className="grid-row grid-gap">
               <div className="grid-col-10">
-                <fieldset className={"usa-fieldset"}>
-                  <div className="grid-row flex-justify">
-                    <div className="grid-col-auto">
-                      <legend className="usa-legend margin-top-1">
-                        Select the test ordered below
-                      </legend>
-                    </div>
-                    <div className="grid-col-5">
-                      <SearchInput
-                        onInputChange={(e) =>
-                          setTestOrderSearchString(e.target.value)
-                        }
-                        queryString={testOrderSearchString}
-                        placeholder={`Filter test orders`}
-                        showSubmitButton={false}
-                      />
-                    </div>
+                {selectedConditions.length === 0 && (
+                  <div>
+                    Please select a condition before selecting a test order.
                   </div>
-                  {filteredLabData?.map((lab) => {
-                    return (
-                      <Radio
-                        id={`test-order-lab-${lab.code}`}
-                        key={lab.code}
-                        name={`input-test-order-lab`}
-                        label={lab.display}
-                        labelDescription={lab.description ?? lab.longCommonName}
-                        value={lab.code}
-                        checked={lab.code === testOrderLoinc}
-                        onChange={() => updateTestOrderLoinc(lab)}
-                        tile={true}
-                      />
-                    );
-                  })}
-                  {filteredLabData?.length === 0 ? (
-                    <>
-                      <div className="grid-row grid-gap">
-                        <div className="grid-col-auto padding-y-6">
-                          No results found.
-                        </div>
+                )}
+                {selectedConditions.length > 0 && labDataLoading && (
+                  <div>Loading test orders from selected condition...</div>
+                )}
+                {selectedConditions.length > 0 &&
+                  !labDataLoading &&
+                  labData?.labs.length === 0 && (
+                    <div>
+                      No test orders found for selected condition. Please
+                      contact support for assistance.
+                    </div>
+                  )}
+                {selectedConditions.length > 0 && !labDataLoading && (
+                  <fieldset className={"usa-fieldset"}>
+                    <div className="grid-row flex-justify">
+                      <div className="grid-col-auto">
+                        <legend className="usa-legend margin-top-1">
+                          Select the test ordered below
+                        </legend>
                       </div>
-                    </>
-                  ) : undefined}
-                </fieldset>
+                      <div className="grid-col-5">
+                        <SearchInput
+                          onInputChange={(e) =>
+                            setTestOrderSearchString(e.target.value)
+                          }
+                          queryString={testOrderSearchString}
+                          placeholder={`Filter test orders`}
+                          showSubmitButton={false}
+                        />
+                      </div>
+                    </div>
+                    {filteredLabData?.length === 0 && !labDataLoading && (
+                      <>
+                        <div className="grid-row grid-gap">
+                          <div className="grid-col-auto padding-y-6">
+                            No results found.
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    {filteredLabData?.map((lab) => {
+                      return (
+                        <Radio
+                          id={`test-order-lab-${lab.code}`}
+                          key={lab.code}
+                          name={`input-test-order-lab`}
+                          label={lab.display}
+                          labelDescription={
+                            lab.description ?? lab.longCommonName
+                          }
+                          value={lab.code}
+                          checked={lab.code === testOrderLoinc}
+                          onChange={() => updateTestOrderLoinc(lab)}
+                          tile={true}
+                        />
+                      );
+                    })}
+                  </fieldset>
+                )}
               </div>
             </div>
           </div>
@@ -319,6 +348,8 @@ const LabReportForm = () => {
             <SpecimenFormSection
               specimen={specimen}
               setSpecimen={setSpecimen}
+              loading={specimenListLoading}
+              isTestOrderSelected={testOrderLoinc.length > 0}
               specimenList={
                 specimenListData?.specimens ?? PLACEHOLDER_SPECIMENS
               }
