@@ -20,6 +20,11 @@ public class ConditionController {
     return conditionService.syncConditions();
   }
 
+  @GetMapping("/universal/conditions/syncHasLabs")
+  public List<Condition> syncHasLabs() {
+    return conditionService.syncHasLabs();
+  }
+
   @QueryMapping
   public List<Condition> conditions() {
     return conditionService.getConditions();

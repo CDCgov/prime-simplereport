@@ -39,6 +39,7 @@ public class LoincService {
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
   private final ConditionRepository conditionRepository;
+  private final ConditionService conditionService;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
 
@@ -116,6 +117,7 @@ public class LoincService {
       pageRequest = pageRequest.next();
       loincPage = loincStagingRepository.findAll(pageRequest);
     }
+    conditionService.syncHasLabs();
     return labs;
   }
 
