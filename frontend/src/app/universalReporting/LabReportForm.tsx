@@ -163,7 +163,7 @@ const LabReportForm = () => {
     updatedList.push({
       testOrderLoinc: lab.code,
       testPerformedLoinc: lab.code,
-      testPerformedLoincShortName: lab.longCommonName,
+      testPerformedLoincLongCommonName: lab.longCommonName,
       resultType: mapScaleDisplayToResultScaleType(lab.scaleDisplay ?? ""),
       resultValue: "",
       resultDate: "",

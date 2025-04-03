@@ -734,7 +734,7 @@ export type PatientReportInput = {
   city?: InputMaybe<Scalars["String"]["input"]>;
   country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
-  dateOfBirth?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  dateOfBirth: Scalars["LocalDate"]["input"];
   email?: InputMaybe<Scalars["String"]["input"]>;
   ethnicity?: InputMaybe<Scalars["String"]["input"]>;
   firstName: Scalars["String"]["input"];
@@ -1128,7 +1128,7 @@ export type TestDetailsInput = {
   resultValue: Scalars["String"]["input"];
   testOrderLoinc: Scalars["String"]["input"];
   testPerformedLoinc: Scalars["String"]["input"];
-  testPerformedLoincShortName?: InputMaybe<Scalars["String"]["input"]>;
+  testPerformedLoincLongCommonName?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type TestOrder = {

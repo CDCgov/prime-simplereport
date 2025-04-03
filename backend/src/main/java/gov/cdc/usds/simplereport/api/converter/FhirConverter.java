@@ -86,6 +86,7 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -166,6 +167,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Provenance;
+import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -1504,8 +1506,7 @@ public class FhirConverter {
     return bundle;
   }
 
-  // This separate bundle method was created during rapdi prototyping of universal reporting
-  //
+  // This separate bundle method was created during rapid prototyping of universal reporting
   public Bundle createUniversalFhirBundle(UniversalCreateFhirBundleProps props) {
     var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
     var orderingFacilityFullUrl =
@@ -1640,12 +1641,8 @@ public class FhirConverter {
       List<TestDetailsInput> testDetailsInputList,
       GitProperties gitProperties,
       String processingId) {
-    // will have to replace these UUIDs if we pull this data from db
-    UUID facilityId = UUID.randomUUID();
-    UUID providerId = UUID.randomUUID();
-    UUID specimenId = UUID.randomUUID();
 
-    Patient patient =
+    var patient =
         convertToPatient(
             ConvertToPatientProps.builder()
                 .id(String.valueOf(UUID.randomUUID()))
@@ -1683,6 +1680,16 @@ public class FhirConverter {
             facility.getZipCode(),
             facility.getCounty());
 
+    var testingLab =
+        convertToOrganization(
+            facility.getInternalId().toString(),
+            facility.getName(),
+            facility.getClia(),
+            facility.getPhone(),
+            facility.getEmail(),
+            facilityAddress,
+            facility.getCountry());
+
     StreetAddress providerAddress =
         new StreetAddress(
             providerInput.getStreet(),
@@ -1692,15 +1699,43 @@ public class FhirConverter {
             providerInput.getZipCode(),
             providerInput.getCounty());
 
+    var practitioner =
+        convertToPractitioner(
+            providerInput.getInternalId().toString(),
+            new PersonName(
+                providerInput.getFirstName(),
+                providerInput.getMiddleName(),
+                providerInput.getFirstName(),
+                providerInput.getSuffix()),
+            providerInput.getPhone(),
+            providerAddress,
+            providerInput.getCountry(),
+            providerInput.getNpi());
+
     ZonedDateTime specimenCollectionDate =
         specimenInput.getCollectionDate() == null
             ? null
             : ZonedDateTime.ofInstant(
                 specimenInput.getCollectionDate().toInstant(), ZoneOffset.UTC);
+
     ZonedDateTime specimenReceivedDate =
         specimenInput.getReceivedDate() == null
             ? null
             : ZonedDateTime.ofInstant(specimenInput.getReceivedDate().toInstant(), ZoneOffset.UTC);
+
+    UUID specimenId = UUID.randomUUID();
+    var specimen =
+        convertToSpecimen(
+            ConvertToSpecimenProps.builder()
+                .specimenCode(specimenInput.getTypeSnomed())
+                .specimenName(null)
+                .collectionCode(specimenInput.getCollectionLocationCode())
+                .collectionName(specimenInput.getCollectionLocationName())
+                .collectionDate(specimenCollectionDate)
+                .receivedTime(specimenReceivedDate)
+                .id(specimenId.toString())
+                .identifier(specimenId.toString())
+                .build());
 
     List<Observation> observationList = new ArrayList<>();
     for (var testDetailsInput : testDetailsInputList) {
@@ -1715,40 +1750,10 @@ public class FhirConverter {
     return createUniversalFhirBundle(
         UniversalCreateFhirBundleProps.builder()
             .patient(patient)
-            .testingLab(
-                convertToOrganization(
-                    facilityId.toString(),
-                    facility.getName(),
-                    facility.getClia(),
-                    facility.getPhone(),
-                    facility.getEmail(),
-                    facilityAddress,
-                    facility.getCountry()))
+            .testingLab(testingLab)
             .orderingFacility(null)
-            .practitioner(
-                convertToPractitioner(
-                    providerId.toString(),
-                    new PersonName(
-                        providerInput.getFirstName(),
-                        providerInput.getMiddleName(),
-                        providerInput.getFirstName(),
-                        providerInput.getSuffix()),
-                    providerInput.getPhone(),
-                    providerAddress,
-                    providerInput.getCountry(),
-                    providerInput.getNpi()))
-            .specimen(
-                convertToSpecimen(
-                    ConvertToSpecimenProps.builder()
-                        .specimenCode(specimenInput.getTypeSnomed())
-                        .specimenName(null)
-                        .collectionCode(specimenInput.getCollectionLocationCode())
-                        .collectionName(specimenInput.getCollectionLocationName())
-                        .collectionDate(specimenCollectionDate)
-                        .receivedTime(specimenReceivedDate)
-                        .id(specimenId.toString())
-                        .identifier(specimenId.toString())
-                        .build()))
+            .practitioner(practitioner)
+            .specimen(specimen)
             .resultObservations(observationList)
             .serviceRequest(null)
             .diagnosticReport(diagnosticReport)
@@ -1890,16 +1895,36 @@ public class FhirConverter {
     observation.setCode(
         createLoincConcept(
             testDetailsInput.getTestPerformedLoinc(),
-            // TODO: need to update this to loinc long name
-            testDetailsInput.getTestPerformedLoincShortName(),
+            testDetailsInput.getTestPerformedLoincLongCommonName(),
             testDetailsInput.getCondition()));
-    // TODO: have to convert string to result snomed
-    addSNOMEDValue(
-        testDetailsInput.getResultValue(), observation, testDetailsInput.getResultInterpretation());
-    // TODO: handle different result types
+
+    if (testDetailsInput.getResultType().equals(ResultScaleType.ORDINAL)) {
+      SnomedConceptRecord snomedConceptRecord =
+          Translators.getSnomedConceptByCode(testDetailsInput.getResultValue());
+      if (snomedConceptRecord != null) {
+        addSNOMEDValue(
+            snomedConceptRecord.code(),
+            observation,
+            String.valueOf(snomedConceptRecord.displayName()));
+      } else {
+        addSNOMEDValue(
+            testDetailsInput.getResultValue(),
+            observation,
+            testDetailsInput.getResultInterpretation());
+      }
+    }
+    if (testDetailsInput.getResultType().equals(ResultScaleType.NOMINAL)) {
+      addSNOMEDValue(
+          testDetailsInput.getResultValue(),
+          observation,
+          testDetailsInput.getResultInterpretation());
+    }
+    if (testDetailsInput.getResultType().equals(ResultScaleType.QUANTITATIVE)) {
+      Quantity quantity = new Quantity(Double.parseDouble(testDetailsInput.getResultValue()));
+      observation.setValue(quantity);
+    }
 
     observation.setIssued(testDetailsInput.getResultDate());
-    // TODO: may need to set the issued element to time zone zulu
 
     String observationId = uuidGenerator.randomUUID().toString();
     observation.setId(observationId);
