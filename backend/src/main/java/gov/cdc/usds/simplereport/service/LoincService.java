@@ -45,7 +45,7 @@ public class LoincService {
 
   public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
     List<Condition> conditions = conditionRepository.findAllByCodeIn(codes);
-    Set<Lab> labs = new HashSet<>();
+    List<Lab> foundLabs = new ArrayList<>();
     List<String> acceptedScaleDisplays = List.of("Nom", "Qn", "Ord");
     for (var condition : conditions) {
       Set<Lab> testOrderLabs =
@@ -53,9 +53,16 @@ public class LoincService {
               .filter(lab -> lab.getOrderOrObservation().equals("Both"))
               .filter(lab -> acceptedScaleDisplays.contains(lab.getScaleDisplay()))
               .collect(Collectors.toSet());
-      labs.addAll(testOrderLabs);
+
+      testOrderLabs.forEach(
+          lab -> {
+            if (!foundLabs.contains(lab)) {
+              foundLabs.add(lab);
+            }
+          });
     }
-    return labs.stream().toList();
+    foundLabs.sort(Comparator.comparing(Lab::getDisplay));
+    return foundLabs;
   }
 
   public List<Lab> syncLabs() {
