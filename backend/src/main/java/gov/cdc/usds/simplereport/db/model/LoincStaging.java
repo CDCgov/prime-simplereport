@@ -19,7 +19,7 @@ public class LoincStaging extends IdentifiedEntity {
   @Column(nullable = false)
   private String display;
 
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn(name = "condition_id")
   private Condition condition;
 
