@@ -218,6 +218,21 @@ export type FeedbackMessage = {
   scope?: Maybe<Scalars["String"]["output"]>;
 };
 
+export type Lab = {
+  __typename?: "Lab";
+  answerList?: Maybe<Scalars["String"]["output"]>;
+  code: Scalars["String"]["output"];
+  description?: Maybe<Scalars["String"]["output"]>;
+  display: Scalars["String"]["output"];
+  longCommonName: Scalars["String"]["output"];
+  orderOrObservation: Scalars["String"]["output"];
+  panel: Scalars["Boolean"]["output"];
+  scaleCode?: Maybe<Scalars["String"]["output"]>;
+  scaleDisplay?: Maybe<Scalars["String"]["output"]>;
+  systemCode?: Maybe<Scalars["String"]["output"]>;
+  systemDisplay?: Maybe<Scalars["String"]["output"]>;
+};
+
 export type MultiplexResult = {
   __typename?: "MultiplexResult";
   disease: SupportedDisease;
@@ -823,6 +838,7 @@ export type Query = {
   facility?: Maybe<Facility>;
   facilityStats?: Maybe<FacilityStats>;
   getOrgAdminUserIds?: Maybe<Array<Maybe<Scalars["ID"]["output"]>>>;
+  labs?: Maybe<Array<Lab>>;
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
@@ -866,6 +882,10 @@ export type QueryFacilityStatsArgs = {
 
 export type QueryGetOrgAdminUserIdsArgs = {
   orgId: Scalars["ID"]["input"];
+};
+
+export type QueryLabsArgs = {
+  conditionCodes?: InputMaybe<Array<Scalars["String"]["input"]>>;
 };
 
 export type QueryOrganizationArgs = {
@@ -3065,6 +3085,30 @@ export type GetConditionsQuery = {
     __typename?: "Condition";
     code: string;
     display: string;
+  }> | null;
+};
+
+export type GetLabsByConditionsQueryVariables = Exact<{
+  conditionCodes?: InputMaybe<
+    Array<Scalars["String"]["input"]> | Scalars["String"]["input"]
+  >;
+}>;
+
+export type GetLabsByConditionsQuery = {
+  __typename?: "Query";
+  labs?: Array<{
+    __typename?: "Lab";
+    code: string;
+    display: string;
+    description?: string | null;
+    longCommonName: string;
+    scaleCode?: string | null;
+    scaleDisplay?: string | null;
+    systemCode?: string | null;
+    systemDisplay?: string | null;
+    answerList?: string | null;
+    orderOrObservation: string;
+    panel: boolean;
   }> | null;
 };
 
@@ -9821,6 +9865,94 @@ export type GetConditionsSuspenseQueryHookResult = ReturnType<
 export type GetConditionsQueryResult = Apollo.QueryResult<
   GetConditionsQuery,
   GetConditionsQueryVariables
+>;
+export const GetLabsByConditionsDocument = gql`
+  query GetLabsByConditions($conditionCodes: [String!]) {
+    labs(conditionCodes: $conditionCodes) {
+      code
+      display
+      description
+      longCommonName
+      scaleCode
+      scaleDisplay
+      systemCode
+      systemDisplay
+      answerList
+      orderOrObservation
+      panel
+    }
+  }
+`;
+
+/**
+ * __useGetLabsByConditionsQuery__
+ *
+ * To run a query within a React component, call `useGetLabsByConditionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetLabsByConditionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetLabsByConditionsQuery({
+ *   variables: {
+ *      conditionCodes: // value for 'conditionCodes'
+ *   },
+ * });
+ */
+export function useGetLabsByConditionsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetLabsByConditionsQuery,
+    GetLabsByConditionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetLabsByConditionsQuery,
+    GetLabsByConditionsQueryVariables
+  >(GetLabsByConditionsDocument, options);
+}
+export function useGetLabsByConditionsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetLabsByConditionsQuery,
+    GetLabsByConditionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetLabsByConditionsQuery,
+    GetLabsByConditionsQueryVariables
+  >(GetLabsByConditionsDocument, options);
+}
+export function useGetLabsByConditionsSuspenseQuery(
+  baseOptions?:
+    | Apollo.SkipToken
+    | Apollo.SuspenseQueryHookOptions<
+        GetLabsByConditionsQuery,
+        GetLabsByConditionsQueryVariables
+      >
+) {
+  const options =
+    baseOptions === Apollo.skipToken
+      ? baseOptions
+      : { ...defaultOptions, ...baseOptions };
+  return Apollo.useSuspenseQuery<
+    GetLabsByConditionsQuery,
+    GetLabsByConditionsQueryVariables
+  >(GetLabsByConditionsDocument, options);
+}
+export type GetLabsByConditionsQueryHookResult = ReturnType<
+  typeof useGetLabsByConditionsQuery
+>;
+export type GetLabsByConditionsLazyQueryHookResult = ReturnType<
+  typeof useGetLabsByConditionsLazyQuery
+>;
+export type GetLabsByConditionsSuspenseQueryHookResult = ReturnType<
+  typeof useGetLabsByConditionsSuspenseQuery
+>;
+export type GetLabsByConditionsQueryResult = Apollo.QueryResult<
+  GetLabsByConditionsQuery,
+  GetLabsByConditionsQueryVariables
 >;
 export const GetFacilityDocument = gql`
   query GetFacility($id: ID!) {

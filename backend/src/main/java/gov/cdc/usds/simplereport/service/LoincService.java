@@ -9,15 +9,20 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
+import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -38,9 +43,26 @@ public class LoincService {
   private final LoincFhirClient loincFhirClient;
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
+  private final ConditionRepository conditionRepository;
+  private final ConditionService conditionService;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
   private static final int PAGE_SIZE = 20;
+
+  public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
+    List<Condition> conditions = conditionRepository.findAllByCodeIn(codes);
+    Set<Lab> labs = new HashSet<>();
+    List<String> acceptedScaleDisplays = List.of("Nom", "Qn", "Ord");
+    for (var condition : conditions) {
+      Set<Lab> testOrderLabs =
+          condition.getLabs().stream()
+              .filter(lab -> lab.getOrderOrObservation().equals("Both"))
+              .filter(lab -> acceptedScaleDisplays.contains(lab.getScaleDisplay()))
+              .collect(Collectors.toSet());
+      labs.addAll(testOrderLabs);
+    }
+    return labs.stream().toList();
+  }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
@@ -105,6 +127,7 @@ public class LoincService {
       // Remove the already processed loincs from the table
       loincStagingRepository.deleteAll(loincs);
     }
+    conditionService.syncHasLabs();
     log.info("Lab sync completed successfully");
   }
 

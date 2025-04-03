@@ -4,12 +4,14 @@ import { Button, Radio } from "@trussworks/react-uswds";
 import MultiSelect from "../commonComponents/MultiSelect/MultiSelect";
 import {
   FacilityReportInput,
+  Lab,
   PatientReportInput,
   ProviderReportInput,
   SpecimenInput,
   TestDetailsInput,
   useGetConditionsQuery,
   useGetFacilityQuery,
+  useGetLabsByConditionsLazyQuery,
   useSubmitLabReportMutation,
 } from "../../generated/graphql";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
@@ -17,8 +19,7 @@ import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 
 import {
   buildConditionsOptionList,
-  TestOrderLoinc,
-  useFilteredTestOrderLoincListQueryStub,
+  mapScaleDisplayToResultScaleType,
 } from "./LabReportFormUtils";
 import SpecimenFormSection from "./SpecimenFormSection";
 import TestDetailSection from "./TestDetailSection";
@@ -98,41 +99,58 @@ const LabReportForm = () => {
     },
   });
 
+  const [getLabsByConditions, { data: labData }] =
+    useGetLabsByConditionsLazyQuery();
+
+  const filteredLabData =
+    searchQueryTestOrder.length > 0
+      ? labData?.labs?.filter(
+          (lab) =>
+            lab.display.toLowerCase().includes(searchQueryTestOrder) ||
+            lab.description?.toLowerCase().includes(searchQueryTestOrder) ||
+            lab.longCommonName.includes(searchQueryTestOrder)
+        )
+      : labData?.labs;
+
   const { data: conditionsData, loading: conditionsLoading } =
     useGetConditionsQuery();
 
   useEffect(() => {
-    setProvider({
-      ...provider,
-      city: facilityData?.facility?.orderingProvider?.address?.city,
-      county: facilityData?.facility?.orderingProvider?.address?.county,
-      firstName: facilityData?.facility?.orderingProvider?.firstName ?? "",
-      lastName: facilityData?.facility?.orderingProvider?.lastName ?? "",
-      middleName: facilityData?.facility?.orderingProvider?.middleName ?? "",
-      npi: facilityData?.facility?.orderingProvider?.NPI ?? "",
-      phone: facilityData?.facility?.orderingProvider?.phone ?? "",
-      state: facilityData?.facility?.orderingProvider?.address?.state ?? "",
-      street:
-        facilityData?.facility?.orderingProvider?.address?.streetOne ?? "",
-      streetTwo:
-        facilityData?.facility?.orderingProvider?.address?.streetTwo ?? "",
-      suffix: facilityData?.facility?.orderingProvider?.suffix ?? "",
-      zipCode:
-        facilityData?.facility?.orderingProvider?.address?.postalCode ?? "",
+    setProvider((prevProvider) => {
+      return {
+        ...prevProvider,
+        city: facilityData?.facility?.orderingProvider?.address?.city,
+        county: facilityData?.facility?.orderingProvider?.address?.county,
+        firstName: facilityData?.facility?.orderingProvider?.firstName ?? "",
+        lastName: facilityData?.facility?.orderingProvider?.lastName ?? "",
+        middleName: facilityData?.facility?.orderingProvider?.middleName ?? "",
+        npi: facilityData?.facility?.orderingProvider?.NPI ?? "",
+        phone: facilityData?.facility?.orderingProvider?.phone ?? "",
+        state: facilityData?.facility?.orderingProvider?.address?.state ?? "",
+        street:
+          facilityData?.facility?.orderingProvider?.address?.streetOne ?? "",
+        streetTwo:
+          facilityData?.facility?.orderingProvider?.address?.streetTwo ?? "",
+        suffix: facilityData?.facility?.orderingProvider?.suffix ?? "",
+        zipCode:
+          facilityData?.facility?.orderingProvider?.address?.postalCode ?? "",
+      };
     });
-    setFacility({
-      ...facility,
-      city: facilityData?.facility?.address?.city ?? "",
-      clia: facilityData?.facility?.cliaNumber ?? "",
-      county: facilityData?.facility?.address?.county ?? "",
-      email: facilityData?.facility?.email ?? "",
-      name: facilityData?.facility?.name ?? "",
-      phone: facilityData?.facility?.phone ?? "",
-      state: facilityData?.facility?.address?.state ?? "",
-      street: facilityData?.facility?.address?.streetOne ?? "",
-      streetTwo: facilityData?.facility?.address?.streetTwo ?? "",
-      zipCode: facilityData?.facility?.address?.postalCode ?? "",
-      country: "USA",
+    setFacility((prevFacility) => {
+      return {
+        ...prevFacility,
+        city: facilityData?.facility?.address?.city ?? "",
+        clia: facilityData?.facility?.cliaNumber ?? "",
+        county: facilityData?.facility?.address?.county ?? "",
+        email: facilityData?.facility?.email ?? "",
+        name: facilityData?.facility?.name ?? "",
+        phone: facilityData?.facility?.phone ?? "",
+        state: facilityData?.facility?.address?.state ?? "",
+        street: facilityData?.facility?.address?.streetOne ?? "",
+        streetTwo: facilityData?.facility?.address?.streetTwo ?? "",
+        zipCode: facilityData?.facility?.address?.postalCode ?? "",
+        country: "USA",
+      };
     });
   }, [facilityData]);
 
@@ -140,22 +158,19 @@ const LabReportForm = () => {
     conditionsData?.conditions ?? []
   );
 
-  const testOrderLoincList = useFilteredTestOrderLoincListQueryStub();
-
-  const updateTestOrderLoinc = (loinc: TestOrderLoinc) => {
+  const updateTestOrderLoinc = (lab: Lab) => {
     const updatedList = [] as TestDetailsInput[];
-    loinc.performedTests.forEach((value) => {
-      updatedList.push({
-        testOrderLoinc: loinc.code,
-        testPerformedLoinc: value.code,
-        testPerformedLoincShortName: value.shortName,
-        resultType: value.resultType.toUpperCase(),
-        resultValue: "",
-        resultDate: "",
-      } as TestDetailsInput);
-    });
+    updatedList.push({
+      testOrderLoinc: lab.code,
+      testPerformedLoinc: lab.code,
+      testPerformedLoincShortName: lab.longCommonName,
+      resultType: mapScaleDisplayToResultScaleType(lab.scaleDisplay ?? ""),
+      resultValue: "",
+      resultDate: "",
+      resultInterpretation: "",
+    } as TestDetailsInput);
     setTestDetailList(updatedList);
-    setTestOrderLoinc(loinc.code);
+    setTestOrderLoinc(lab.code);
   };
 
   const updateTestDetails = (details: TestDetailsInput) => {
@@ -182,11 +197,16 @@ const LabReportForm = () => {
     );
   };
 
-  const filteredTestOrderLoincList = testOrderLoincList.filter(
-    (x) =>
-      x.title.toLowerCase().includes(searchQueryTestOrder.toLowerCase()) ||
-      x.description.toLowerCase().includes(searchQueryTestOrder.toLowerCase())
-  );
+  const updateConditions = async (selectedConditions: string[]) => {
+    setConditions(selectedConditions);
+    if (selectedConditions.length > 0) {
+      await getLabsByConditions({
+        variables: {
+          conditionCodes: selectedConditions,
+        },
+      });
+    }
+  };
 
   return (
     <div className="prime-home flex-1">
@@ -230,7 +250,7 @@ const LabReportForm = () => {
                   <MultiSelect
                     name={"selected-conditions"}
                     options={conditionOptions}
-                    onChange={(e) => setConditions(e)}
+                    onChange={(e) => updateConditions(e)}
                     initialSelectedValues={conditions}
                     label={
                       <>
@@ -282,22 +302,22 @@ const LabReportForm = () => {
                       />
                     </div>
                   </div>
-                  {filteredTestOrderLoincList.map((loinc) => {
+                  {filteredLabData?.map((lab) => {
                     return (
                       <Radio
-                        id={`test-order-loinc-${loinc.code}`}
-                        key={loinc.code}
-                        name={`input-test-order-loinc`}
-                        label={loinc.title}
-                        labelDescription={loinc.description}
-                        value={loinc.code}
-                        checked={loinc.code === testOrderLoinc}
-                        onChange={() => updateTestOrderLoinc(loinc)}
+                        id={`test-order-lab-${lab.code}`}
+                        key={lab.code}
+                        name={`input-test-order-lab`}
+                        label={lab.display}
+                        labelDescription={lab.description ?? lab.longCommonName}
+                        value={lab.code}
+                        checked={lab.code === testOrderLoinc}
+                        onChange={() => updateTestOrderLoinc(lab)}
                         tile={true}
                       />
                     );
                   })}
-                  {filteredTestOrderLoincList.length === 0 ? (
+                  {filteredLabData?.length === 0 ? (
                     <>
                       <div className="grid-row grid-gap">
                         <div className="grid-col-auto padding-y-6">
