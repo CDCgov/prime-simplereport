@@ -182,7 +182,7 @@ public class CsvValidatorUtils {
           ASK_LITERAL,
           UNKNOWN_CODE,
           UNKNOWN_LITERAL);
-  private static final Set<String> YES_NO_VALUES =
+  private static final Set<String> YES_NO_UNKNOWN_VALUES =
       Set.of(
           "y", "yes",
           "n", "no",
@@ -340,8 +340,8 @@ public class CsvValidatorUtils {
     return validateInSet(input, RESIDENCE_VALUES);
   }
 
-  public static List<FeedbackMessage> validateYesNoAnswer(ValueOrError input) {
-    return validateInSet(input, YES_NO_VALUES);
+  public static List<FeedbackMessage> validateYesNoUnknownAnswer(ValueOrError input) {
+    return validateInSet(input, YES_NO_UNKNOWN_VALUES);
   }
 
   public static List<FeedbackMessage> validateEthnicity(ValueOrError input) {
