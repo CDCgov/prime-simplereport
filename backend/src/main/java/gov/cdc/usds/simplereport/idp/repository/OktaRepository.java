@@ -99,4 +99,6 @@ public interface OktaRepository {
   PartialOktaUser findUser(String username);
 
   String getApplicationStatusForHealthCheck();
+
+  Integer getUniqueFacilityUserCount(Facility facility);
 }
