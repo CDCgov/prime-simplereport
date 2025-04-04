@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Entity
 @Setter
 public class Specimen extends EternalAuditedEntity {
@@ -25,8 +24,8 @@ public class Specimen extends EternalAuditedEntity {
   @Column(nullable = false)
   private String snomedDisplay;
 
-
-  public Specimen(String loincSystemCode, String loincSystemDisplay, String snomedCode, String snomedDisplay) {
+  public Specimen(
+      String loincSystemCode, String loincSystemDisplay, String snomedCode, String snomedDisplay) {
     super();
     this.loincSystemCode = loincSystemCode;
     this.loincSystemDisplay = loincSystemDisplay;
