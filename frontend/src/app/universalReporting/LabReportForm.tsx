@@ -24,7 +24,6 @@ import {
   defaultProviderReportInputState,
   defaultSpecimenReportInputState,
   mapScaleDisplayToResultScaleType,
-  PLACEHOLDER_SPECIMENS,
 } from "./LabReportFormUtils";
 import SpecimenFormSection from "./SpecimenFormSection";
 import TestDetailSection from "./TestDetailSection";
@@ -49,6 +48,8 @@ const LabReportForm = () => {
   const [testDetailList, setTestDetailList] = useState<TestDetailsInput[]>([]);
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [testOrderLoinc, setTestOrderLoinc] = useState<string>("");
+  const [testOrderSearchString, setTestOrderSearchString] =
+    useState<string>("");
   const [submissionResponse, setSubmissionResponse] = useState("");
 
   const [submitLabReport] = useSubmitLabReportMutation();
@@ -123,12 +124,15 @@ const LabReportForm = () => {
     setTestDetailList(updatedList);
     setTestOrderLoinc(lab.code);
 
-    if (lab.code) {
+    if (lab.systemCode) {
       await getSpecimensByLoinc({
         variables: {
-          loinc: lab.code,
+          loinc: lab.systemCode,
         },
       });
+    } else {
+      // currently filtering out labs with no system code on the backend
+      console.error("No LOINC system code to look up specimen.");
     }
   };
 
@@ -147,6 +151,7 @@ const LabReportForm = () => {
     if (selectedConditions.length === 0) {
       setTestDetailList([]);
       setTestOrderLoinc("");
+      setTestOrderSearchString("");
       setSpecimen(defaultSpecimenReportInputState);
     }
 
@@ -245,6 +250,19 @@ const LabReportForm = () => {
               labs={labData?.labs ?? []}
               testOrderLoinc={testOrderLoinc}
               updateTestOrderLoinc={updateTestOrderLoinc}
+              testOrderSearchString={testOrderSearchString}
+              setTestOrderSearchString={setTestOrderSearchString}
+            />
+          </div>
+        </div>
+        <div className="prime-container card-container">
+          <div className="usa-card__body">
+            <SpecimenFormSection
+              specimen={specimen}
+              setSpecimen={setSpecimen}
+              loading={specimenListLoading}
+              isTestOrderSelected={testOrderLoinc.length > 0}
+              specimenList={specimenListData?.specimens ?? []}
             />
           </div>
         </div>
@@ -267,19 +285,6 @@ const LabReportForm = () => {
               </div>
             );
           })}
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
-            <SpecimenFormSection
-              specimen={specimen}
-              setSpecimen={setSpecimen}
-              loading={specimenListLoading}
-              isTestOrderSelected={testOrderLoinc.length > 0}
-              specimenList={
-                specimenListData?.specimens ?? PLACEHOLDER_SPECIMENS
-              }
-            />
-          </div>
-        </div>
         <div className="padding-bottom-10">
           <Button onClick={() => submitForm()} type={"button"}>
             Submit results
