@@ -18,7 +18,7 @@ public class Specimen extends EternalAuditedEntity {
   private String loincSystemDisplay;
 
   @Getter
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String snomedCode;
 
   @Getter

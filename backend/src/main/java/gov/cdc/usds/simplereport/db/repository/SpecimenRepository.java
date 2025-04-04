@@ -8,4 +8,6 @@ import java.util.List;
 public interface SpecimenRepository extends EternalAuditedEntityRepository<Specimen> {
 
   List<Specimen> findByLoincSystemCode(String loincCode);
+
+  Specimen findBySnomedCode(String snomedCode);
 }
