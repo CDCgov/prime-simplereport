@@ -18,7 +18,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,6 +61,7 @@ public class LoincService {
           condition.getLabs().stream()
               .filter(lab -> lab.getOrderOrObservation().equals("Both"))
               .filter(lab -> acceptedScaleDisplays.contains(lab.getScaleDisplay()))
+              .filter(lab -> !lab.getSystemCode().isEmpty())
               .collect(Collectors.toSet());
 
       testOrderLabs.forEach(

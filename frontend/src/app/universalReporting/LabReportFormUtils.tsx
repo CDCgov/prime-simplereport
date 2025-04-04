@@ -111,7 +111,7 @@ export const buildSpecimenOptionList = (specimens: Specimen[]) => {
       label: `${specimen.snomedDisplay} - ${specimen.snomedCode}`,
     };
   });
-  options.sort((a, b) => (a.label > b.label ? 1 : -1));
+  options.sort((a, b) => a.label.localeCompare(b.label));
   return options;
 };
 
@@ -153,7 +153,7 @@ export const buildConditionsOptionList = (conditions: Condition[]) => {
       label: `${condition.display} - ${condition.code}`,
     };
   });
-  options.sort((a, b) => (a.label > b.label ? 1 : -1));
+  options.sort((a, b) => a.label.localeCompare(b.label));
   return options;
 };
 

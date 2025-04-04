@@ -39,6 +39,10 @@ public class SpecimenService {
 
   private final LabRepository labRepository;
 
+  public List<Specimen> getSpecimens(String loinc) {
+    return specimenRepository.findByLoincSystemCode(loinc);
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   // TODO: Test LOINC to SNOMED conversion with mock HTTP responses
