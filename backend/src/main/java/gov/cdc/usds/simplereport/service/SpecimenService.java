@@ -28,6 +28,10 @@ public class SpecimenService {
 
   private final LabRepository labRepository;
 
+  public List<Specimen> getSpecimens(String loinc) {
+    return specimenRepository.findByLoincSystemCode(loinc);
+  }
+
   public String syncSpecimens() {
     Optional<HttpClient> optionalClient = getHttpClient();
     if (optionalClient.isEmpty()) {

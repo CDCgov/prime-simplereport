@@ -52,6 +52,7 @@ public class LoincService {
           condition.getLabs().stream()
               .filter(lab -> lab.getOrderOrObservation().equals("Both"))
               .filter(lab -> acceptedScaleDisplays.contains(lab.getScaleDisplay()))
+              .filter(lab -> !lab.getSystemCode().isEmpty())
               .collect(Collectors.toSet());
 
       testOrderLabs.forEach(
