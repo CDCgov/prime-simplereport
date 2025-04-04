@@ -1,5 +1,5 @@
 import { Radio } from "@trussworks/react-uswds";
-import React, { useState } from "react";
+import React, { Dispatch } from "react";
 
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { Lab } from "../../generated/graphql";
@@ -10,6 +10,8 @@ type TestOrderFormSectionProps = {
   labs: Lab[];
   testOrderLoinc: string;
   updateTestOrderLoinc: (lab: Lab) => void;
+  testOrderSearchString: string;
+  setTestOrderSearchString: Dispatch<string>;
 };
 
 const TestOrderFormSection = ({
@@ -18,10 +20,9 @@ const TestOrderFormSection = ({
   labs,
   testOrderLoinc,
   updateTestOrderLoinc,
+  testOrderSearchString,
+  setTestOrderSearchString,
 }: TestOrderFormSectionProps) => {
-  const [testOrderSearchString, setTestOrderSearchString] =
-    useState<string>("");
-
   const filteredLabData = labs.filter(
     (lab) =>
       lab.display.toLowerCase().includes(testOrderSearchString) ||
