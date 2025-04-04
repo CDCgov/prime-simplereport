@@ -2,7 +2,9 @@ package gov.cdc.usds.simplereport.service;
 
 
 
+import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Slf4j
 public class SpecimenService {
+    private final SpecimenRepository specimenRepository;
     @Value("${umls.api-key}")
     private String umlsApiKey;
 
@@ -62,9 +65,9 @@ public class SpecimenService {
 
      sendInitialSnomedRelationsRequests(snomedsByLoinc, client);
      List<Map<String, String>> specimens = processInitialSnomedRelations(snomedsByLoinc);
-
-
-
+     log.info("Saving specimens to the specimen table.");
+     saveSpecimens(specimens);
+     log.info("Specimens saved.");
     return "Specimen sync completed successfully";
     }
 
@@ -162,12 +165,42 @@ public class SpecimenService {
                         specimen.put("loincSystemDisplay", loincSystemDisplay);
                         specimen.put("snomedCode", relatedIdParts[relatedIdParts.length - 1]);
                         specimen.put("snomedDisplay", result.get("relatedIdName").toString());
-
                         specimens.add(specimen);
                     }
                 }
             }
         }
         return specimens;
+    }
+
+    private void saveSpecimens(List<Map<String, String>> rawSpecimens) {
+        //List<Specimen> specimens = new ArrayList<>();
+        for (Map<String, String> rawSpecimen : rawSpecimens) {
+            Specimen foundSpecimen = specimenRepository.findBySnomedCode(rawSpecimen.get("snomedCode"));
+            /*
+            if (foundSpecimen != null) {
+                specimens.add(foundSpecimen);
+            }
+            specimens.add( new Specimen(
+                    rawSpecimen.get("loincSystemCode"),
+                    rawSpecimen.get("loincSystemDisplay"),
+                    rawSpecimen.get("snomedCode"),
+                    rawSpecimen.get("snomedDisplay")
+                )
+            );
+            */
+            if (foundSpecimen != null) {
+                continue;
+            }
+            specimenRepository.save(
+                    new Specimen(
+                        rawSpecimen.get("loincSystemCode"),
+                        rawSpecimen.get("loincSystemDisplay"),
+                        rawSpecimen.get("snomedCode"),
+                        rawSpecimen.get("snomedDisplay")
+                    )
+            );
+        }
+        //specimenRepository.saveAll(specimens);
     }
 }
