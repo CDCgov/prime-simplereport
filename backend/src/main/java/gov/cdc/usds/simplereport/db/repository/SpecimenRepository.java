@@ -9,4 +9,6 @@ public interface SpecimenRepository extends EternalAuditedEntityRepository<Speci
   List<Specimen> findByLoincSystemCode(String loincCode);
 
   Specimen findBySnomedCode(String snomedCode);
+
+  boolean existsByLoincSystemCode(String loincCode);
 }

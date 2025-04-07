@@ -39,6 +39,10 @@ public class SpecimenService {
     return specimenRepository.findByLoincSystemCode(loinc);
   }
 
+  public boolean hasAnySpecimen(String loinc) {
+    return specimenRepository.existsByLoincSystemCode(loinc);
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   public void syncSpecimens() {
