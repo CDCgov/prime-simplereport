@@ -594,19 +594,17 @@ public class FhirConverter {
   private Specimen setCollectionCodingAndName(Specimen specimen, ConvertToSpecimenProps props) {
     boolean collectionCodeProvided = StringUtils.isNotBlank(props.getCollectionCode());
     boolean collectionLocationNameProvided = StringUtils.isNotBlank(props.getCollectionName());
-
-    String collectionCodeToSet = DEFAULT_LOCATION_CODE;
+    String collectionCodeToSet;
     String collectionLocationNameToSet = null;
-
-    if (collectionCodeProvided && !collectionLocationNameProvided) {
+    if (collectionCodeProvided) {
       collectionCodeToSet = props.getCollectionCode();
-    } else if (collectionCodeProvided && collectionLocationNameProvided) {
-      collectionCodeToSet = props.getCollectionCode();
-      collectionLocationNameToSet = props.getCollectionName();
+      if (collectionLocationNameProvided) {
+        collectionLocationNameToSet = props.getCollectionName();
+      }
     } else {
+      collectionCodeToSet = DEFAULT_LOCATION_CODE;
       collectionLocationNameToSet = DEFAULT_LOCATION_NAME;
     }
-
     Specimen.SpecimenCollectionComponent collection = specimen.getCollection();
     CodeableConcept collectionCodeableConcept = collection.getBodySite();
     Coding collectionCoding = collectionCodeableConcept.addCoding();

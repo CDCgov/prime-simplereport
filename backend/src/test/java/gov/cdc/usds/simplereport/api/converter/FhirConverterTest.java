@@ -875,6 +875,56 @@ class FhirConverterTest {
   }
 
   @Test
+  void convertToSpecimen_withBronchoalveolarLavageCode_usesProvidedCode() {
+    String bronchoalveolarLavageCode = "258607008";
+
+    ConvertToSpecimenProps props =
+        ConvertToSpecimenProps.builder().collectionCode(bronchoalveolarLavageCode).build();
+
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo(bronchoalveolarLavageCode);
+    assertThat(specimen.getCollection().getBodySite().getText()).isNull();
+  }
+
+  @Test
+  void convertToSpecimen_withSnomedCode_doesNotReplaceWithDefault() {
+    String snomedCode = "123456789";
+
+    ConvertToSpecimenProps props =
+        ConvertToSpecimenProps.builder().collectionCode(snomedCode).build();
+
+    Specimen specimen = fhirConverter.convertToSpecimen(props);
+
+    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo(snomedCode)
+        .isNotEqualTo(DEFAULT_LOCATION_CODE);
+  }
+
+  @Test
+  void convertToSpecimen_fromCSVUpload_withNumericCode_preservesCode() {
+    String snomedCode = "258607008";
+    SpecimenType specimenType = new SpecimenType("Bronchoalveolar lavage fluid", "40001");
+
+    specimenType.setCollectionLocationCode(snomedCode);
+
+    var internalId = UUID.randomUUID();
+    ReflectionTestUtils.setField(specimenType, "internalId", internalId);
+
+    var collectionDate = ZonedDateTime.now();
+    var receivedTime = ZonedDateTime.now().plusHours(1);
+
+    var actual =
+        fhirConverter.convertToSpecimen(
+            specimenType, UUID.randomUUID(), collectionDate, receivedTime);
+
+    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
+        .isEqualTo(snomedCode)
+        .isNotEqualTo(DEFAULT_LOCATION_CODE);
+  }
+
+  @Test
   void convertToObservation_Result_nullDisease() {
     Result result = new Result(null, TestResult.POSITIVE);
 
@@ -2085,13 +2135,13 @@ class FhirConverterTest {
   void convertToSpecimen_withCollectionCodeAndName_useProvided() {
     ConvertToSpecimenProps props =
         ConvertToSpecimenProps.builder()
-            .collectionCode("Some collection code")
+            .collectionCode("258607008")
             .collectionName("Some collection name")
             .build();
 
     Specimen specimen = fhirConverter.convertToSpecimen(props);
     assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo("Some collection code");
+        .isEqualTo("258607008");
     assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo("Some collection name");
   }
 
