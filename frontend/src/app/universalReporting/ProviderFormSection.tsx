@@ -172,10 +172,10 @@ const ProviderFormSection = ({
             onChange={(country) => setProvider({ ...provider, country })}
           />
         </div>
-        {provider.country === "USA" || provider.country === "CAN" ? (
+        {(provider.country === "USA" || provider.country === "CAN") && (
           <>
             <div className="grid-col-2">
-              {provider.country === "USA" ? (
+              {provider.country === "USA" && (
                 <Select<string>
                   label={"Provider state"}
                   name="provider-state"
@@ -185,8 +185,8 @@ const ProviderFormSection = ({
                   defaultSelect
                   onChange={(state) => setProvider({ ...provider, state })}
                 />
-              ) : undefined}
-              {provider.country === "CAN" ? (
+              )}
+              {provider.country === "CAN" && (
                 <Select<string>
                   label={"Provider province"}
                   name="provider-state"
@@ -199,7 +199,7 @@ const ProviderFormSection = ({
                   defaultSelect
                   onChange={(state) => setProvider({ ...provider, state })}
                 />
-              ) : undefined}
+              )}
             </div>
             <div className="grid-col-2">
               <TextInput
@@ -212,7 +212,7 @@ const ProviderFormSection = ({
               ></TextInput>
             </div>
           </>
-        ) : undefined}
+        )}
       </div>
     </>
   );
