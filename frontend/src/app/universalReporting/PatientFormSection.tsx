@@ -164,48 +164,47 @@ const PatientFormSection = ({
             onChange={(country) => setPatient({ ...patient, country })}
           />
         </div>
-        {patient.country === "USA" ||
-          (patient.country === "CAN" && (
-            <>
-              <div className="grid-col-2">
-                {patient.country === "USA" && (
-                  <Select<string>
-                    label={"Patient state"}
-                    name="patient-state"
-                    value={patient.state ?? ""}
-                    options={stateCodes.map((c) => ({ label: c, value: c }))}
-                    defaultOption={t("common.defaultDropdownOption")}
-                    defaultSelect
-                    onChange={(state) => setPatient({ ...patient, state })}
-                  />
-                )}
-                {patient.country === "CAN" && (
-                  <Select<string>
-                    label={"Patient province"}
-                    name="patient-state"
-                    value={patient.state || ""}
-                    options={canadianProvinceCodes.map((c) => ({
-                      label: c,
-                      value: c,
-                    }))}
-                    defaultOption={t("common.defaultDropdownOption")}
-                    defaultSelect
-                    onChange={(state) => setPatient({ ...patient, state })}
-                  />
-                )}
-              </div>
-              <div className="grid-col-2">
-                <TextInput
-                  name={"patient-zip-code"}
-                  label={"Patient ZIP code"}
-                  value={patient.zipCode ?? ""}
-                  onChange={(e) =>
-                    setPatient({ ...patient, zipCode: e.target.value })
-                  }
-                ></TextInput>
-              </div>
-            </>
-          ))}
+        {(patient.country === "USA" || patient.country === "CAN") && (
+          <>
+            <div className="grid-col-2">
+              {patient.country === "USA" && (
+                <Select<string>
+                  label={"Patient state"}
+                  name="patient-state"
+                  value={patient.state ?? ""}
+                  options={stateCodes.map((c) => ({ label: c, value: c }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={(state) => setPatient({ ...patient, state })}
+                />
+              )}
+              {patient.country === "CAN" && (
+                <Select<string>
+                  label={"Patient province"}
+                  name="patient-state"
+                  value={patient.state || ""}
+                  options={canadianProvinceCodes.map((c) => ({
+                    label: c,
+                    value: c,
+                  }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={(state) => setPatient({ ...patient, state })}
+                />
+              )}
+            </div>
+            <div className="grid-col-2">
+              <TextInput
+                name={"patient-zip-code"}
+                label={"Patient ZIP code"}
+                value={patient.zipCode ?? ""}
+                onChange={(e) =>
+                  setPatient({ ...patient, zipCode: e.target.value })
+                }
+              ></TextInput>
+            </div>
+          </>
+        )}
       </div>
       <div className="grid-row">
         <div className="grid-col-auto">
