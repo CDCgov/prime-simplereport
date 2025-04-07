@@ -186,6 +186,8 @@ loinc-fhir:
   username: ${LOINC_FHIR_API_USERNAME:simple-report-user}
   password: ${LOINC_FHIR_API_PASSWORD:super-secret-password}
   url: "https://fhir.loinc.org"
+umls:
+  api-key: ${UMLS_API_KEY:super-secret-api-key}
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true
