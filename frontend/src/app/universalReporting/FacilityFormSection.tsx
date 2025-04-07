@@ -133,47 +133,48 @@ const FacilityFormSection = ({
             onChange={(country) => setFacility({ ...facility, country })}
           />
         </div>
-        {facility.country === "USA" || facility.country === "CAN" ? (
-          <>
-            <div className="grid-col-2">
-              {facility.country === "USA" ? (
-                <Select<string>
-                  label={"Facility state"}
-                  name="facility-state"
-                  value={facility.state ?? ""}
-                  options={stateCodes.map((c) => ({ label: c, value: c }))}
-                  defaultOption={t("common.defaultDropdownOption")}
-                  defaultSelect
-                  onChange={(state) => setFacility({ ...facility, state })}
-                />
-              ) : undefined}
-              {facility.country === "CAN" ? (
-                <Select<string>
-                  label={"Facility province"}
-                  name="facility-state"
-                  value={facility.state || ""}
-                  options={canadianProvinceCodes.map((c) => ({
-                    label: c,
-                    value: c,
-                  }))}
-                  defaultOption={t("common.defaultDropdownOption")}
-                  defaultSelect
-                  onChange={(state) => setFacility({ ...facility, state })}
-                />
-              ) : undefined}
-            </div>
-            <div className="grid-col-2">
-              <TextInput
-                name={"facility-zip-code"}
-                label={"Facility ZIP code"}
-                value={facility.zipCode ?? ""}
-                onChange={(e) =>
-                  setFacility({ ...facility, zipCode: e.target.value })
-                }
-              ></TextInput>
-            </div>
-          </>
-        ) : undefined}
+        {facility.country === "USA" ||
+          (facility.country === "CAN" && (
+            <>
+              <div className="grid-col-2">
+                {facility.country === "USA" && (
+                  <Select<string>
+                    label={"Facility state"}
+                    name="facility-state"
+                    value={facility.state ?? ""}
+                    options={stateCodes.map((c) => ({ label: c, value: c }))}
+                    defaultOption={t("common.defaultDropdownOption")}
+                    defaultSelect
+                    onChange={(state) => setFacility({ ...facility, state })}
+                  />
+                )}
+                {facility.country === "CAN" && (
+                  <Select<string>
+                    label={"Facility province"}
+                    name="facility-state"
+                    value={facility.state || ""}
+                    options={canadianProvinceCodes.map((c) => ({
+                      label: c,
+                      value: c,
+                    }))}
+                    defaultOption={t("common.defaultDropdownOption")}
+                    defaultSelect
+                    onChange={(state) => setFacility({ ...facility, state })}
+                  />
+                )}
+              </div>
+              <div className="grid-col-2">
+                <TextInput
+                  name={"facility-zip-code"}
+                  label={"Facility ZIP code"}
+                  value={facility.zipCode ?? ""}
+                  onChange={(e) =>
+                    setFacility({ ...facility, zipCode: e.target.value })
+                  }
+                ></TextInput>
+              </div>
+            </>
+          ))}
       </div>
     </>
   );

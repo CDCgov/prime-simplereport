@@ -51,6 +51,7 @@ const PatientFormSection = ({
               setPatient({ ...patient, firstName: e.target.value })
             }
             value={patient.firstName}
+            required={true}
           ></TextInput>
         </div>
         <div className="grid-col-4">
@@ -75,6 +76,7 @@ const PatientFormSection = ({
               setPatient({ ...patient, lastName: e.target.value })
             }
             value={patient.lastName}
+            required={true}
           ></TextInput>
         </div>
         <div className="grid-col-4">
@@ -162,47 +164,48 @@ const PatientFormSection = ({
             onChange={(country) => setPatient({ ...patient, country })}
           />
         </div>
-        {patient.country === "USA" || patient.country === "CAN" ? (
-          <>
-            <div className="grid-col-2">
-              {patient.country === "USA" ? (
-                <Select<string>
-                  label={"Patient state"}
-                  name="patient-state"
-                  value={patient.state ?? ""}
-                  options={stateCodes.map((c) => ({ label: c, value: c }))}
-                  defaultOption={t("common.defaultDropdownOption")}
-                  defaultSelect
-                  onChange={(state) => setPatient({ ...patient, state })}
-                />
-              ) : undefined}
-              {patient.country === "CAN" ? (
-                <Select<string>
-                  label={"Patient province"}
-                  name="patient-state"
-                  value={patient.state || ""}
-                  options={canadianProvinceCodes.map((c) => ({
-                    label: c,
-                    value: c,
-                  }))}
-                  defaultOption={t("common.defaultDropdownOption")}
-                  defaultSelect
-                  onChange={(state) => setPatient({ ...patient, state })}
-                />
-              ) : undefined}
-            </div>
-            <div className="grid-col-2">
-              <TextInput
-                name={"patient-zip-code"}
-                label={"Patient ZIP code"}
-                value={patient.zipCode ?? ""}
-                onChange={(e) =>
-                  setPatient({ ...patient, zipCode: e.target.value })
-                }
-              ></TextInput>
-            </div>
-          </>
-        ) : undefined}
+        {patient.country === "USA" ||
+          (patient.country === "CAN" && (
+            <>
+              <div className="grid-col-2">
+                {patient.country === "USA" && (
+                  <Select<string>
+                    label={"Patient state"}
+                    name="patient-state"
+                    value={patient.state ?? ""}
+                    options={stateCodes.map((c) => ({ label: c, value: c }))}
+                    defaultOption={t("common.defaultDropdownOption")}
+                    defaultSelect
+                    onChange={(state) => setPatient({ ...patient, state })}
+                  />
+                )}
+                {patient.country === "CAN" && (
+                  <Select<string>
+                    label={"Patient province"}
+                    name="patient-state"
+                    value={patient.state || ""}
+                    options={canadianProvinceCodes.map((c) => ({
+                      label: c,
+                      value: c,
+                    }))}
+                    defaultOption={t("common.defaultDropdownOption")}
+                    defaultSelect
+                    onChange={(state) => setPatient({ ...patient, state })}
+                  />
+                )}
+              </div>
+              <div className="grid-col-2">
+                <TextInput
+                  name={"patient-zip-code"}
+                  label={"Patient ZIP code"}
+                  value={patient.zipCode ?? ""}
+                  onChange={(e) =>
+                    setPatient({ ...patient, zipCode: e.target.value })
+                  }
+                ></TextInput>
+              </div>
+            </>
+          ))}
       </div>
       <div className="grid-row">
         <div className="grid-col-auto">
@@ -226,6 +229,7 @@ const PatientFormSection = ({
                 dateOfBirth: e.target.value,
               });
             }}
+            required={true}
           ></TextInput>
         </div>
       </div>

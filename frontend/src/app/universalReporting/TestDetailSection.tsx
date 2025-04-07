@@ -111,7 +111,7 @@ const TestDetailSection = ({
             required={true}
           />
         </div>
-        {testDetails.resultType === ResultScaleType.Ordinal ? (
+        {testDetails.resultType === ResultScaleType.Ordinal && (
           <div className="grid-col-4">
             <RadioGroup<string>
               legend={`Test result`}
@@ -124,25 +124,25 @@ const TestDetailSection = ({
               }
             />
           </div>
-        ) : undefined}
+        )}
         {testDetails.resultType === ResultScaleType.Quantitative ||
-        testDetails.resultType === ResultScaleType.Nominal ? (
-          <div className="grid-col-4">
-            <TextInput
-              name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
-              type={"text"}
-              label={`Test result`}
-              onChange={(e) =>
-                updateTestDetails({
-                  ...testDetails,
-                  resultValue: e.target.value,
-                })
-              }
-              value={testDetails.resultValue}
-              required={true}
-            ></TextInput>
-          </div>
-        ) : undefined}
+          (testDetails.resultType === ResultScaleType.Nominal && (
+            <div className="grid-col-4">
+              <TextInput
+                name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
+                type={"text"}
+                label={`Test result`}
+                onChange={(e) =>
+                  updateTestDetails({
+                    ...testDetails,
+                    resultValue: e.target.value,
+                  })
+                }
+                value={testDetails.resultValue}
+                required={true}
+              ></TextInput>
+            </div>
+          ))}
       </div>
       <div className="grid-row grid-gap">
         <div className="grid-col-8">
