@@ -1,6 +1,9 @@
 .sr-single-file-input {
   position: relative;
-  max-width: 30rem;
+  display: flex;
+  min-width: 33.5rem;
+  width: 100%;
+  max-width: 33.5rem;
 
   input[type="file"] {
     cursor: pointer;
@@ -9,9 +12,23 @@
     z-index: 2;
     position: relative;
     display: block;
+    min-width: 33.5rem;
     width: 100%;
+    max-width: 33.5rem;
     margin: 0;
     font-size: 0.88rem;
+
+    // start of styles needed to hide default input[type="file"] text
+    color: rgba(0, 0, 0, 0);
+
+    &::-webkit-file-upload-button {
+      visibility: hidden;
+    }
+
+    &::after {
+      visibility: hidden;
+    }
+    // end of styles needed to hide default input[type="file"] text
   }
 
   input::file-selector-button {
@@ -23,7 +40,7 @@
     font-weight: normal;
   }
 
-  span {
+  #file-input-specific-hint {
     position: absolute;
     top: 0;
     z-index: 1;
@@ -32,28 +49,61 @@
     text-align: center;
     padding: 2rem 1rem 2rem 1rem;
   }
-}
 
-.sr-single-file-input.selected {
-  background-color: #d9e8f6;
+  .close-button {
+    color: #005ea2;
+    cursor: pointer;
+    width: 2rem;
+    margin: 0 0.5rem;
+    height: 2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+    right: 4rem;
+    z-index: 2;
+  }
 
-  input[type="file"] {
-    font-weight: bold;
-    padding-left: 4.4rem;
+  img {
+    max-width: 2rem;
+  }
 
-    &::after {
-      content: "\2611";
-      margin-left: 0.25rem;
+  .selected,
+  &:hover {
+    background-color: #d9e8f6;
+
+    input[type="file"] {
+      font-weight: bold;
+      padding-left: 4.4rem;
+
+      &::after {
+        content: "\2611";
+        margin-left: 0.25rem;
+      }
     }
   }
+
+  //.sr-single-file-input.selected,  {
+  //  background-color: #d9e8f6;
+  //
+  //  input[type="file"] {
+  //    font-weight: bold;
+  //    padding-left: 4.4rem;
+  //
+  //    &::after {
+  //      content: "\2611";
+  //      margin-left: 0.25rem;
+  //    }
+  //  }
 }
 
 .sr-single-file-input.invalid {
-  background-color: transparent;
+  //background-color: transparent;
+  background-color: #f4e3db;
 
   span {
     font-weight: bold;
-    color: #b50909;
+    //color: #b50909;
   }
 
   input[type="file"] {
