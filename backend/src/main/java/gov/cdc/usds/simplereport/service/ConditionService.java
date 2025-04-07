@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import feign.Response;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
 import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
@@ -38,6 +39,7 @@ public class ConditionService {
     return conditionRepository.findAllByHasLabsIsTrue();
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Condition> syncHasLabs() {
     List<Condition> allConditions = conditionRepository.findAll();
     List<Condition> conditionsToUpdate = new ArrayList<>();
@@ -55,6 +57,7 @@ public class ConditionService {
     return updatedConditions;
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Condition> syncConditions() {
     List<Condition> conditionList = new ArrayList<>();
 
