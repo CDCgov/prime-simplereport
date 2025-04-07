@@ -32,6 +32,10 @@ public class SpecimenService {
     return specimenRepository.findByLoincSystemCode(loinc);
   }
 
+  public boolean hasAnySpecimen(String loinc) {
+    return specimenRepository.existsByLoincSystemCode(loinc);
+  }
+
   public String syncSpecimens() {
     Optional<HttpClient> optionalClient = getHttpClient();
     if (optionalClient.isEmpty()) {

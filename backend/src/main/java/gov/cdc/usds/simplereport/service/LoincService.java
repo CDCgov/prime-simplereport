@@ -40,6 +40,7 @@ public class LoincService {
   private final LabRepository labRepository;
   private final ConditionRepository conditionRepository;
   private final ConditionService conditionService;
+  private final SpecimenService specimenService;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
 
@@ -57,7 +58,7 @@ public class LoincService {
 
       testOrderLabs.forEach(
           lab -> {
-            if (!foundLabs.contains(lab)) {
+            if (!foundLabs.contains(lab) && specimenService.hasAnySpecimen(lab.getSystemCode())) {
               foundLabs.add(lab);
             }
           });
