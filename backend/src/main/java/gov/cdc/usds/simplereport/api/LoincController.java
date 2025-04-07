@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoincController {
   private final LoincService loincService;
 
-  @GetMapping("universal/syncLabs")
+  @GetMapping("universal/labs/sync")
   public List<Lab> syncLabs() {
     return loincService.syncLabs();
   }
