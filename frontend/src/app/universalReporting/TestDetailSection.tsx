@@ -125,24 +125,24 @@ const TestDetailSection = ({
             />
           </div>
         )}
-        {testDetails.resultType === ResultScaleType.Quantitative ||
-          (testDetails.resultType === ResultScaleType.Nominal && (
-            <div className="grid-col-4">
-              <TextInput
-                name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
-                type={"text"}
-                label={`Test result`}
-                onChange={(e) =>
-                  updateTestDetails({
-                    ...testDetails,
-                    resultValue: e.target.value,
-                  })
-                }
-                value={testDetails.resultValue}
-                required={true}
-              ></TextInput>
-            </div>
-          ))}
+        {(testDetails.resultType === ResultScaleType.Quantitative ||
+          testDetails.resultType === ResultScaleType.Nominal) && (
+          <div className="grid-col-4">
+            <TextInput
+              name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
+              type={"text"}
+              label={`Test result`}
+              onChange={(e) =>
+                updateTestDetails({
+                  ...testDetails,
+                  resultValue: e.target.value,
+                })
+              }
+              value={testDetails.resultValue}
+              required={true}
+            ></TextInput>
+          </div>
+        )}
       </div>
       <div className="grid-row grid-gap">
         <div className="grid-col-8">
