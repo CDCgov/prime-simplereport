@@ -290,11 +290,11 @@ const LabReportForm = () => {
             Submit results
           </Button>
         </div>
-        {submissionResponse.length > 0 ? (
+        {submissionResponse.length > 0 && (
           <div className="prime-container card-container">
             <div className="usa-card__body">{submissionResponse}</div>
           </div>
-        ) : undefined}
+        )}
       </div>
     </div>
   );

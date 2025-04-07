@@ -133,10 +133,10 @@ const FacilityFormSection = ({
             onChange={(country) => setFacility({ ...facility, country })}
           />
         </div>
-        {facility.country === "USA" || facility.country === "CAN" ? (
+        {(facility.country === "USA" || facility.country === "CAN") && (
           <>
             <div className="grid-col-2">
-              {facility.country === "USA" ? (
+              {facility.country === "USA" && (
                 <Select<string>
                   label={"Facility state"}
                   name="facility-state"
@@ -146,8 +146,8 @@ const FacilityFormSection = ({
                   defaultSelect
                   onChange={(state) => setFacility({ ...facility, state })}
                 />
-              ) : undefined}
-              {facility.country === "CAN" ? (
+              )}
+              {facility.country === "CAN" && (
                 <Select<string>
                   label={"Facility province"}
                   name="facility-state"
@@ -160,7 +160,7 @@ const FacilityFormSection = ({
                   defaultSelect
                   onChange={(state) => setFacility({ ...facility, state })}
                 />
-              ) : undefined}
+              )}
             </div>
             <div className="grid-col-2">
               <TextInput
@@ -173,7 +173,7 @@ const FacilityFormSection = ({
               ></TextInput>
             </div>
           </>
-        ) : undefined}
+        )}
       </div>
     </>
   );
