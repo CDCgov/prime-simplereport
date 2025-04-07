@@ -62,7 +62,9 @@ public class ConditionService {
 
     boolean hasNext = true;
 
+    log.info("Starting sync conditions");
     while (hasNext) {
+      log.info("Requesting TES condition page with offset {}", pageOffset);
       Response response = tesClient.getConditions(count, pageOffset);
 
       String responseBody;
@@ -73,6 +75,7 @@ public class ConditionService {
       }
 
       Bundle bundle = parseResponseToBundle(responseBody);
+      log.info("TES response parsed to bundle.");
 
       for (var entry : bundle.getEntry()) {
         ValueSet valueSet = (ValueSet) entry.getResource();
@@ -87,6 +90,7 @@ public class ConditionService {
       hasNext = bundle.getLink().stream().anyMatch(link -> link.getRelation().equals("next"));
       pageOffset = pageOffset + count;
     }
+    log.info("Finished sync conditions");
 
     return conditionList;
   }
@@ -100,6 +104,10 @@ public class ConditionService {
 
       loincStagingList.add(new LoincStaging(code, display, condition));
     }
+    log.info(
+        "Saving {} records to loinc staging for condition {}",
+        loincStagingList.size(),
+        condition.getDisplay());
     loincStagingRepository.saveAll(loincStagingList);
   }
 
@@ -141,8 +149,10 @@ public class ConditionService {
     Condition foundCondition = conditionRepository.findConditionByCode(code);
 
     if (foundCondition == null) {
-      foundCondition = (conditionRepository.save(new Condition(code, display)));
+      log.info("Saving new condition {}", display);
+      return conditionRepository.save(new Condition(code, display));
     }
+    log.info("Found existing condition {}", display);
     return foundCondition;
   }
 }
