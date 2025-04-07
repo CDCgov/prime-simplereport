@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConditionController {
   private final ConditionService conditionService;
 
-  @GetMapping("/universal/conditions")
+  @GetMapping("/universal/conditions/sync")
   public List<Condition> syncConditions() {
     return conditionService.syncConditions();
   }
