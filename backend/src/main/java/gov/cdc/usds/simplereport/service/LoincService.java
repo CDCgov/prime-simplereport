@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,6 +48,7 @@ public class LoincService {
   private final LabRepository labRepository;
   private final ConditionRepository conditionRepository;
   private final ConditionService conditionService;
+  private final SpecimenService specimenService;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
   private static final int PAGE_SIZE = 20;
@@ -65,7 +67,7 @@ public class LoincService {
 
       testOrderLabs.forEach(
           lab -> {
-            if (!foundLabs.contains(lab)) {
+            if (!foundLabs.contains(lab) && specimenService.hasAnySpecimen(lab.getSystemCode())) {
               foundLabs.add(lab);
             }
           });
