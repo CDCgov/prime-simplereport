@@ -51,6 +51,7 @@ const PatientFormSection = ({
               setPatient({ ...patient, firstName: e.target.value })
             }
             value={patient.firstName}
+            required={true}
           ></TextInput>
         </div>
         <div className="grid-col-4">
@@ -75,6 +76,7 @@ const PatientFormSection = ({
               setPatient({ ...patient, lastName: e.target.value })
             }
             value={patient.lastName}
+            required={true}
           ></TextInput>
         </div>
         <div className="grid-col-4">
@@ -162,10 +164,10 @@ const PatientFormSection = ({
             onChange={(country) => setPatient({ ...patient, country })}
           />
         </div>
-        {patient.country === "USA" || patient.country === "CAN" ? (
+        {(patient.country === "USA" || patient.country === "CAN") && (
           <>
             <div className="grid-col-2">
-              {patient.country === "USA" ? (
+              {patient.country === "USA" && (
                 <Select<string>
                   label={"Patient state"}
                   name="patient-state"
@@ -175,8 +177,8 @@ const PatientFormSection = ({
                   defaultSelect
                   onChange={(state) => setPatient({ ...patient, state })}
                 />
-              ) : undefined}
-              {patient.country === "CAN" ? (
+              )}
+              {patient.country === "CAN" && (
                 <Select<string>
                   label={"Patient province"}
                   name="patient-state"
@@ -189,7 +191,7 @@ const PatientFormSection = ({
                   defaultSelect
                   onChange={(state) => setPatient({ ...patient, state })}
                 />
-              ) : undefined}
+              )}
             </div>
             <div className="grid-col-2">
               <TextInput
@@ -202,7 +204,7 @@ const PatientFormSection = ({
               ></TextInput>
             </div>
           </>
-        ) : undefined}
+        )}
       </div>
       <div className="grid-row">
         <div className="grid-col-auto">
@@ -226,6 +228,7 @@ const PatientFormSection = ({
                 dateOfBirth: e.target.value,
               });
             }}
+            required={true}
           ></TextInput>
         </div>
       </div>
