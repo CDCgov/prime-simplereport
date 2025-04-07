@@ -14,7 +14,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePho
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRole;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoAnswer;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoUnknownAnswer;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -136,8 +136,8 @@ public class PatientUploadRow implements FileRow {
     errors.addAll(validateGenderIdentity(genderIdentity));
 
     // housing, work, and role
-    errors.addAll(validateYesNoAnswer(residentCongregateSetting));
-    errors.addAll(validateYesNoAnswer(employedInHealthcare));
+    errors.addAll(validateYesNoUnknownAnswer(residentCongregateSetting));
+    errors.addAll(validateYesNoUnknownAnswer(employedInHealthcare));
     errors.addAll(validateRole(role));
 
     if (!isAddressUnknown(state.getValue(), zipCode.getValue(), street.getValue())) {
