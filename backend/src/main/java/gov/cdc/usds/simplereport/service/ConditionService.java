@@ -40,7 +40,7 @@ public class ConditionService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<Condition> syncHasLabs() {
+  public String syncHasLabs() {
     List<Condition> allConditions = conditionRepository.findAll();
     List<Condition> conditionsToUpdate = new ArrayList<>();
     allConditions.forEach(
@@ -54,11 +54,11 @@ public class ConditionService {
     List<Condition> updatedConditions =
         (List<Condition>) conditionRepository.saveAll(conditionsToUpdate);
     log.info("Updated has_labs column on {} conditions.", updatedConditions.size());
-    return updatedConditions;
+    return String.format("Updated has_labs column on %s conditions.", updatedConditions.size());
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<Condition> syncConditions() {
+  public String syncConditions() {
     List<Condition> conditionList = new ArrayList<>();
 
     int count = 20;
@@ -96,7 +96,8 @@ public class ConditionService {
     }
     log.info("Finished sync conditions");
 
-    return conditionList;
+    return String.format(
+        "Condition sync completed successfully with %s conditions", conditionList.size());
   }
 
   private void saveLoincList(

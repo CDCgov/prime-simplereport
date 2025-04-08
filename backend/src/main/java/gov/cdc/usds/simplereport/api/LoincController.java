@@ -17,7 +17,7 @@ public class LoincController {
   private final LoincService loincService;
 
   @GetMapping("universal/labs/sync")
-  public List<Lab> syncLabs() {
+  public String syncLabs() {
     return loincService.syncLabs();
   }
 

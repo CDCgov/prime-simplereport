@@ -69,7 +69,7 @@ public class LoincService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<Lab> syncLabs() {
+  public String syncLabs() {
     log.info("Sync Labs");
     PageRequest pageRequest = PageRequest.of(0, 1000);
     List<CompletableFuture<Response>> futures = new ArrayList<>();
@@ -129,7 +129,7 @@ public class LoincService {
       loincPage = loincStagingRepository.findAll(pageRequest);
     }
     conditionService.syncHasLabs();
-    return labs;
+    return "Lab sync completed successfully";
   }
 
   private Optional<Parameters> parseResponseToParameters(Response response) {

@@ -16,12 +16,12 @@ public class ConditionController {
   private final ConditionService conditionService;
 
   @GetMapping("/universal/conditions/sync")
-  public List<Condition> syncConditions() {
+  public String syncConditions() {
     return conditionService.syncConditions();
   }
 
   @GetMapping("/universal/conditions/syncHasLabs")
-  public List<Condition> syncHasLabs() {
+  public String syncHasLabs() {
     return conditionService.syncHasLabs();
   }
 
