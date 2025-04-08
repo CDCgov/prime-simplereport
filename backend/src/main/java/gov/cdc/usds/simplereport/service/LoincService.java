@@ -71,7 +71,7 @@ public class LoincService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String syncLabs() {
     log.info("Sync Labs");
-    PageRequest pageRequest = PageRequest.of(0, 100);
+    PageRequest pageRequest = PageRequest.of(0, 20);
     List<CompletableFuture<Response>> futures = new ArrayList<>();
     List<Lab> labs = new ArrayList<>();
     List<LoincStaging> failedLoincs = new ArrayList<>();
