@@ -20,6 +20,11 @@ public class LoincController {
     return loincService.syncLabs();
   }
 
+  @GetMapping("universal/loinc-staging/clear")
+  public String clearLoincStaging() {
+    return loincService.clearLoincStaging();
+  }
+
   @QueryMapping
   public List<Lab> labs(List<String> conditionCodes) {
     return loincService.getLabsByConditionCodes(conditionCodes);
