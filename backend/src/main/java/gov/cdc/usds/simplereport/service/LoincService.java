@@ -319,4 +319,10 @@ public class LoincService {
     }
     return labsToSave;
   }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public String clearLoincStaging() {
+    loincStagingRepository.deleteAll();
+    return "Cleared loinc staging table";
+  }
 }
