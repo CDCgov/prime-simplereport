@@ -14,7 +14,8 @@ public class ConditionController {
 
   @GetMapping("/universal/conditions/sync")
   public String syncConditions() {
-    return conditionService.syncConditions();
+    conditionService.syncConditions();
+    return "Condition sync has been started successfully.";
   }
 
   @GetMapping("/universal/conditions/syncHasLabs")
