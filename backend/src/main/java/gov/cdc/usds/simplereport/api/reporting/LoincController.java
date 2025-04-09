@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.reporting;
 
 import gov.cdc.usds.simplereport.service.LoincService;
 import lombok.RequiredArgsConstructor;
