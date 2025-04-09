@@ -24,6 +24,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -53,7 +54,8 @@ public class ConditionService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String syncConditions() {
+  @Async
+  public void syncConditions() {
     List<Condition> conditionList = new ArrayList<>();
 
     int count = 20;
@@ -89,10 +91,8 @@ public class ConditionService {
       hasNext = bundle.getLink().stream().anyMatch(link -> link.getRelation().equals("next"));
       pageOffset = pageOffset + count;
     }
-    log.info("Finished sync conditions");
 
-    return String.format(
-        "Condition sync completed successfully with %s conditions", conditionList.size());
+    log.info("Condition sync completed successfully with {} conditions", conditionList.size());
   }
 
   private void saveLoincList(

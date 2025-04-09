@@ -14,6 +14,7 @@ public class SpecimenController {
 
   @GetMapping("/universal/specimen/sync")
   public String syncConditions() {
-    return specimenService.syncSpecimens();
+    specimenService.syncSpecimens();
+    return "Specimen sync completed successfully";
   }
 }
