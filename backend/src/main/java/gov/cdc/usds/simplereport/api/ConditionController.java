@@ -17,12 +17,14 @@ public class ConditionController {
 
   @GetMapping("/universal/conditions/sync")
   public String syncConditions() {
-    return conditionService.syncConditions();
+    conditionService.syncConditions();
+    return "Condition sync has been started successfully.";
   }
 
   @GetMapping("/universal/conditions/syncHasLabs")
   public String syncHasLabs() {
-    return conditionService.syncHasLabs();
+    conditionService.syncHasLabs();
+    return "Condition has_labs sync has been started successfully.";
   }
 
   @QueryMapping

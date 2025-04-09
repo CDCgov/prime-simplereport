@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -69,7 +70,8 @@ public class LoincService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String syncLabs() {
+  @Async
+  public void syncLabs() {
     log.info("Sync Labs");
     PageRequest pageRequest = PageRequest.of(0, 20);
     List<CompletableFuture<Response>> futures = new ArrayList<>();
@@ -131,7 +133,7 @@ public class LoincService {
       loincStagingRepository.deleteAll(loincs);
     }
     conditionService.syncHasLabs();
-    return "Lab sync completed successfully";
+    log.info("Lab sync completed successfully");
   }
 
   private Optional<Parameters> parseResponseToParameters(Response response) {

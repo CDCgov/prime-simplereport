@@ -18,7 +18,8 @@ public class LoincController {
 
   @GetMapping("universal/labs/sync")
   public String syncLabs() {
-    return loincService.syncLabs();
+    loincService.syncLabs();
+    return "Lab sync has been started successfully.";
   }
 
   @GetMapping("universal/loinc-staging/clear")

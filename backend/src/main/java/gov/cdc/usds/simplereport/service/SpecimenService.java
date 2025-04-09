@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,17 +39,20 @@ public class SpecimenService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String syncSpecimens() {
+  @Async
+  public void syncSpecimens() {
     Optional<HttpClient> optionalClient = getHttpClient();
     if (optionalClient.isEmpty()) {
-      return "Specimen sync failed: unable to create HttpClient.";
+      log.error("Specimen sync failed: unable to create HttpClient.");
+      return;
     }
     HttpClient client = optionalClient.get();
     log.info("HttpClient created.");
 
     Optional<List<List<String>>> optionalSystemCodes = labRepository.findDistinctSystemCodes();
     if (optionalSystemCodes.isEmpty()) {
-      return "Specimen sync failed: unable to read LOINC system codes from the lab table.";
+      log.error("Specimen sync failed: unable to read LOINC system codes from the lab table.");
+      return;
     }
     List<List<String>> systemCodes = optionalSystemCodes.get();
     log.info("LOINC System codes read from lab table.");
@@ -82,7 +86,6 @@ public class SpecimenService {
     log.info("Saving specimens to the specimen table.");
     saveSpecimens(specimens);
     log.info("Specimens saved.");
-    return "Specimen sync completed successfully";
   }
 
   private Optional<HttpClient> getHttpClient() {
