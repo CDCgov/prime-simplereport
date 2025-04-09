@@ -115,6 +115,8 @@ public class LoincService {
       failedLoincs.clear();
       pageRequest = pageRequest.next();
       loincPage = loincStagingRepository.findAll(pageRequest);
+      // Remove the already processed loincs from the table
+      loincStagingRepository.deleteAll(loincs);
     }
     conditionService.syncHasLabs();
     return "Lab sync completed successfully";
@@ -310,7 +312,7 @@ public class LoincService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String clearLoincStaging() {
-    loincStagingRepository.deleteAll();
+    loincStagingRepository.deleteAllLoincStaging();
     return "Cleared loinc staging table";
   }
 }
