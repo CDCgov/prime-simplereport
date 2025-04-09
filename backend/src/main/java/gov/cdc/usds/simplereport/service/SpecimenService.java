@@ -163,7 +163,7 @@ public class SpecimenService {
           JSONObject result = (JSONObject) results.get(i);
           boolean saveSnomed = false;
           String relationLable = result.get("additionalRelationLabel").toString();
-          if (snomedDisplay.contains("Specimen") | snomedDisplay.contains("specimen")) {
+          if (snomedDisplay.contains("Specimen") || snomedDisplay.contains("specimen")) {
             if (relationLable.equals("inverse_isa")) {
               saveSnomed = true;
               Map<String, String> specimen = new HashMap<>();
@@ -174,7 +174,7 @@ public class SpecimenService {
               specimens.add(specimen);
             }
           } else if (relationLable.equals("specimen_source_topography_of")
-              | relationLable.equals("specimen_substance_of")) {
+              || relationLable.equals("specimen_substance_of")) {
             saveSnomed = true;
           }
           if (saveSnomed) {
