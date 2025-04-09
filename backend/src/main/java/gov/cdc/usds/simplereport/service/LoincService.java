@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
-import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
@@ -43,19 +42,8 @@ public class LoincService {
   private final LoincFhirClient loincFhirClient;
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
-  private final ConditionRepository conditionRepository;
-  private final ConditionService conditionService;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
-
-  public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
-    List<Condition> conditions = conditionRepository.findAllByCodeIn(codes);
-    Set<Lab> labs = new HashSet<>();
-    for (var condition : conditions) {
-      labs.addAll(condition.getLabs());
-    }
-    return labs.stream().toList();
-  }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
@@ -120,7 +108,6 @@ public class LoincService {
       // Remove the already processed loincs from the table
       loincStagingRepository.deleteAll(loincs);
     }
-    conditionService.syncHasLabs();
     log.info("Lab sync completed successfully");
   }
 
