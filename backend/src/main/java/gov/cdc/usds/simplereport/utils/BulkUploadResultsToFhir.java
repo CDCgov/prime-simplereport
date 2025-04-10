@@ -545,7 +545,7 @@ public class BulkUploadResultsToFhir {
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
-            testPerformedCode,
+            testOrderedCode,
             testOrderedLoincLongName,
             testEventId,
             testResultDate,
