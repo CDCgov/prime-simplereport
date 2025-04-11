@@ -166,9 +166,9 @@ public class SpecimenService {
         for (int i = 0; i < results.length(); i++) {
           JSONObject result = (JSONObject) results.get(i);
           boolean saveSnomed = false;
-          String relationLable = result.get("additionalRelationLabel").toString();
+          String relationLabel = result.get("additionalRelationLabel").toString();
           if (snomedDisplay.contains("Specimen") || snomedDisplay.contains("specimen")) {
-            if (relationLable.equals("inverse_isa")) {
+            if (relationLabel.equals("inverse_isa")) {
               saveSnomed = true;
               Map<String, String> specimen = new HashMap<>();
               specimen.put("loincSystemCode", loincSystemCode);
@@ -177,8 +177,8 @@ public class SpecimenService {
               specimen.put("snomedDisplay", snomedDisplay);
               specimens.add(specimen);
             }
-          } else if (relationLable.equals("specimen_source_topography_of")
-              || relationLable.equals("specimen_substance_of")) {
+          } else if (relationLabel.equals("specimen_source_topography_of")
+              || relationLabel.equals("specimen_substance_of")) {
             saveSnomed = true;
           }
           if (saveSnomed) {
