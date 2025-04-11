@@ -36,6 +36,8 @@ public class ConditionService {
   private final ConditionRepository conditionRepository;
   private final LoincStagingRepository loincStagingRepository;
 
+  private static final int PAGE_SIZE = 20;
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String syncHasLabs() {
     List<Condition> allConditions = conditionRepository.findAll();
@@ -58,7 +60,6 @@ public class ConditionService {
   public void syncConditions() {
     List<Condition> conditionList = new ArrayList<>();
 
-    int count = 20;
     int pageOffset = 0;
 
     boolean hasNext = true;
@@ -66,7 +67,7 @@ public class ConditionService {
     log.info("Starting sync conditions");
     while (hasNext) {
       log.info("Requesting TES condition page with offset {}", pageOffset);
-      Response response = tesClient.getConditions(count, pageOffset);
+      Response response = tesClient.getConditions(PAGE_SIZE, pageOffset);
 
       String responseBody;
       try {
@@ -89,7 +90,7 @@ public class ConditionService {
       }
 
       hasNext = bundle.getLink().stream().anyMatch(link -> link.getRelation().equals("next"));
-      pageOffset = pageOffset + count;
+      pageOffset = pageOffset + PAGE_SIZE;
     }
 
     log.info("Condition sync completed successfully with {} conditions", conditionList.size());

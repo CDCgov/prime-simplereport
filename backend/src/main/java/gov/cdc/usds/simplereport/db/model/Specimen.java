@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
