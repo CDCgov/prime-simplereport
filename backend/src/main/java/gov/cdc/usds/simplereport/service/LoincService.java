@@ -13,13 +13,10 @@ import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +25,8 @@ import org.apache.http.HttpStatus;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Type;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -234,40 +229,6 @@ public class LoincService {
             answerList,
             orderOrObservation,
             panel));
-  }
-
-  @Autowired private JdbcTemplate jdbcTemplate;
-
-  public void bulkInsertLabs(List<Lab> labs) {
-    // SQL query for bulk insert
-    String sql =
-        "INSERT INTO simple_report.lab "
-            + "(internal_id, code, display, description, long_common_name, scale_code, scale_display, system_code, system_display, answer_list, order_or_observation, panel, created_at, updated_at, is_deleted) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-            + "ON CONFLICT (code) DO NOTHING;";
-
-    // We use batchUpdate to handle the bulk insertion
-    jdbcTemplate.batchUpdate(
-        sql,
-        labs,
-        labs.size(),
-        (ps, lab) -> {
-          ps.setObject(1, UUID.randomUUID());
-          ps.setString(2, lab.getCode());
-          ps.setString(3, lab.getDisplay());
-          ps.setString(4, lab.getDescription());
-          ps.setString(5, lab.getLongCommonName());
-          ps.setString(6, lab.getScaleCode());
-          ps.setString(7, lab.getScaleDisplay());
-          ps.setString(8, lab.getSystemCode());
-          ps.setString(9, lab.getSystemDisplay());
-          ps.setString(10, lab.getAnswerList());
-          ps.setString(11, lab.getOrderOrObservation());
-          ps.setBoolean(12, lab.getPanel());
-          ps.setTimestamp(13, Timestamp.valueOf(LocalDateTime.now()));
-          ps.setTimestamp(14, Timestamp.valueOf(LocalDateTime.now()));
-          ps.setBoolean(15, false);
-        });
   }
 
   private List<Lab> reduceLabs(List<Lab> labs, List<LoincStaging> loincs) {
