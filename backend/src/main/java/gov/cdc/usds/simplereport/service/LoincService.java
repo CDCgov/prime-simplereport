@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpStatus;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Parameters;
 import org.hl7.fhir.r4.model.Type;
@@ -44,12 +45,13 @@ public class LoincService {
   private final LabRepository labRepository;
   private final FhirContext context = FhirContext.forR4();
   private IParser parser = context.newJsonParser();
+  private static final int PAGE_SIZE = 20;
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   public void syncLabs() {
     log.info("Sync Labs");
-    PageRequest pageRequest = PageRequest.of(0, 20);
+    PageRequest pageRequest = PageRequest.of(0, PAGE_SIZE);
     List<CompletableFuture<Response>> futures = new ArrayList<>();
     List<Lab> labs = new ArrayList<>();
     List<LoincStaging> failedLoincs = new ArrayList<>();
@@ -72,7 +74,7 @@ public class LoincService {
       for (int i = 0; i < futures.size(); i++) {
         Response response = futures.get(i).getNow(null);
         LoincStaging loinc = loincs.get(i);
-        if (response.status() != 200) {
+        if (response.status() != HttpStatus.SC_OK) {
           failedLoincs.add(loinc);
           log.error(
               "Received a {} status code from the LOINC API response for: {}",

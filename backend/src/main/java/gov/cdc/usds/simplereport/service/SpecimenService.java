@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
@@ -168,7 +169,7 @@ public class SpecimenService {
           boolean saveSnomed = false;
           String relationLabel = result.get("additionalRelationLabel").toString();
           if (snomedDisplay.contains("Specimen") || snomedDisplay.contains("specimen")) {
-            if (relationLabel.equals("inverse_isa")) {
+            if (Objects.equals(relationLabel, "inverse_isa")) {
               saveSnomed = true;
               Map<String, String> specimen = new HashMap<>();
               specimen.put("loincSystemCode", loincSystemCode);
@@ -177,8 +178,8 @@ public class SpecimenService {
               specimen.put("snomedDisplay", snomedDisplay);
               specimens.add(specimen);
             }
-          } else if (relationLabel.equals("specimen_source_topography_of")
-              || relationLabel.equals("specimen_substance_of")) {
+          } else if (Objects.equals(relationLabel, "specimen_source_topography_of")
+              || Objects.equals(relationLabel, "specimen_substance_of")) {
             saveSnomed = true;
           }
           if (saveSnomed) {
