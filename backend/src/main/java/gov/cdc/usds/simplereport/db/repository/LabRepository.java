@@ -11,7 +11,7 @@ public interface LabRepository extends EternalAuditedEntityRepository<Lab> {
 
   @Query(
       value =
-          "SELECT DISTINCT ON (system_code) system_code, system_display FROM simple_report.lab WHERE system_code <> '' ORDER BY system_code",
+          "SELECT DISTINCT ON (system_code) system_code, system_display FROM #{#entityName} WHERE system_code <> '' ORDER BY system_code",
       nativeQuery = true)
   Optional<List<List<String>>> findDistinctSystemCodes();
 }
