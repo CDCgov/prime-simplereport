@@ -253,6 +253,41 @@ public class LiveOktaRepository implements OktaRepository {
     return allUsers;
   }
 
+  private List<User> getAllUniqueUsersForFacility(Facility facility) {
+    PagedList<User> pagedUserList = new PagedList<>();
+    List<User> allUsers = new ArrayList<>();
+    String facilityAccessGroupName =
+        generateFacilityGroupName(
+            facility.getOrganization().getExternalId(), facility.getInternalId());
+    do {
+      pagedUserList =
+          (PagedList<User>)
+              groupApi.listGroupUsers(
+                  facilityAccessGroupName, pagedUserList.getAfter(), OKTA_PAGE_SIZE);
+      pagedUserList.stream()
+          .filter(
+              user -> {
+                List<Group> usersGroups = userApi.listUserGroups(user.getId());
+                List<Group> facilityGroupsOnly =
+                    usersGroups.stream()
+                        .filter(
+                            group ->
+                                group
+                                    .getId()
+                                    .contains(OrganizationExtractor.FACILITY_ACCESS_MARKER))
+                        .toList();
+                if (facilityGroupsOnly.size() == 1
+                    && facilityGroupsOnly.get(0).getId().equals(facilityAccessGroupName)) {
+                  return true;
+                } else {
+                  return false;
+                }
+              })
+          .forEach(allUsers::add);
+    } while (pagedUserList.hasMoreItems());
+    return allUsers;
+  }
+
   private Group getDefaultOktaGroup(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
@@ -690,11 +725,17 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public Integer getUsersCountInSingleFacility(Facility facility) {
+    // problem is as here
     String facilityAccessGroupName =
         generateFacilityGroupName(
             facility.getOrganization().getExternalId(), facility.getInternalId());
-
     return getUsersCountInOktaGroup(facilityAccessGroupName);
+  }
+
+  @Override
+  public Integer getUniqueFacilityUserCount(Facility facility) {
+    List<User> users = getAllUniqueUsersForFacility(facility);
+    return users.size();
   }
 
   @Override
