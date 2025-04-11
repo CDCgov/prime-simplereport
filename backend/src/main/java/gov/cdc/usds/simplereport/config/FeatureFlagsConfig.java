@@ -33,6 +33,7 @@ public class FeatureFlagsConfig {
   private boolean agnosticEnabled;
   private boolean agnosticBulkUploadEnabled;
   private boolean bulkUploadDisabled; // inverting logic because bulk uploader is enabled by default
+  private boolean universalReportingEnabled;
 
   @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
@@ -51,6 +52,7 @@ public class FeatureFlagsConfig {
       case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
       case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);
       case "bulkUploadDisabled" -> setBulkUploadDisabled(flagValue);
+      case "universalReportingEnabled" -> setUniversalReportingEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }

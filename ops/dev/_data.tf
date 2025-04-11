@@ -245,3 +245,23 @@ data "azurerm_key_vault_secret" "simple_report_prod_devices_token" {
   name         = "simple-report-prod-devices-token"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
+
+data "azurerm_key_vault_secret" "aphl_tes_api_key" {
+  name         = "aphl-tes-api-key-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "loinc_fhir_api_username" {
+  name         = "loinc-fhir-api-username-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "loinc_fhir_api_password" {
+  name         = "loinc-fhir-api-password-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "umls_api_key" {
+  name         = "umls-api-key-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
