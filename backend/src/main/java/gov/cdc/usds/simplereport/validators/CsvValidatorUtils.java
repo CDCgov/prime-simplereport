@@ -467,6 +467,7 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
