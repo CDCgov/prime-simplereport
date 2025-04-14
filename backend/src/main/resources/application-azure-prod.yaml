@@ -33,3 +33,4 @@ features:
   hivEnabled: false
   agnosticEnabled: false
   agnosticBulkUploadEnabled: false
+  universalReportingEnabled: false

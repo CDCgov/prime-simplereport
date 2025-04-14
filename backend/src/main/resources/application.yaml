@@ -179,6 +179,16 @@ datahub:
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
   csv-upload-api-client: "simple_report.csvuploader"
   csv-upload-api-fhir-client: "simple_report.fullelr-bulkuploader"
+aphl:
+  tes:
+    api-key: ${APHL_TES_API_KEY:super-secret-api-key}
+    url: "https://tes.tools.aimsplatform.org/api/fhir"
+loinc-fhir:
+  username: ${LOINC_FHIR_API_USERNAME:simple-report-user}
+  password: ${LOINC_FHIR_API_PASSWORD:super-secret-password}
+  url: "https://fhir.loinc.org"
+umls:
+  api-key: ${UMLS_API_KEY:super-secret-api-key}
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true
@@ -188,6 +198,7 @@ features:
   hivEnabled: true
   agnosticEnabled: true
   agnosticBulkUploadEnabled: true
+  universalReportingEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}
