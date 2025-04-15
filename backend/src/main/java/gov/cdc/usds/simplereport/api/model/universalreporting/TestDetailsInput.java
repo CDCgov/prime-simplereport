@@ -10,8 +10,8 @@ public class TestDetailsInput {
   private String condition;
   private String testOrderLoinc;
   private String testPerformedLoinc;
-  private String testPerformedLoincShortName;
-  private String resultType;
+  private String testPerformedLoincLongCommonName;
+  private ResultScaleType resultType;
   private String resultValue;
   private Date resultDate;
   private String resultInterpretation;

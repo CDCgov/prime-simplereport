@@ -503,7 +503,7 @@ input SpecimenInput {
 input TestDetailsInput {
   testOrderLoinc: String!
   testPerformedLoinc: String!
-  testPerformedLoincShortName: String
+  testPerformedLoincLongCommonName: String
   resultType: ResultScaleType!
   resultValue: String!
   resultDate: DateTime

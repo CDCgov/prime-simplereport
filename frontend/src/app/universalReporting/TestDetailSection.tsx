@@ -4,7 +4,7 @@ import { Label, Textarea } from "@trussworks/react-uswds";
 
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup, { RadioGroupOptions } from "../commonComponents/RadioGroup";
-import { TEST_RESULTS } from "../testResults/constants";
+import { TEST_RESULTS_SNOMED } from "../testResults/constants";
 import { formatDate } from "../utils/date";
 import "./TestDetailSection.scss";
 import { ResultScaleType, TestDetailsInput } from "../../generated/graphql";
@@ -18,15 +18,15 @@ type TestDetailSectionProps = {
 
 const ordinalResultButtons: RadioGroupOptions<string> = [
   {
-    value: TEST_RESULTS.POSITIVE,
+    value: TEST_RESULTS_SNOMED.POSITIVE,
     label: `Positive (+)`,
   },
   {
-    value: TEST_RESULTS.NEGATIVE,
+    value: TEST_RESULTS_SNOMED.NEGATIVE,
     label: `Negative (-)`,
   },
   {
-    value: TEST_RESULTS.UNDETERMINED,
+    value: TEST_RESULTS_SNOMED.UNDETERMINED,
     label: `Undetermined`,
   },
 ];
@@ -68,7 +68,7 @@ const TestDetailSection = ({
       <div className="grid-row grid-gap flex-justify">
         <div className="grid-col-auto">
           <h3 className={"font-sans-lg"}>
-            Test Details - {testDetails.testPerformedLoincShortName}
+            Test Details - {testDetails.testPerformedLoincLongCommonName}
           </h3>
         </div>
       </div>
