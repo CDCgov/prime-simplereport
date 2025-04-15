@@ -37,6 +37,13 @@ public class SpecimenService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
+  // TODO: Test LOINC to SNOMED conversion with mock HTTP responses
+  // TODO: Test syncSpecimens fails gracefully when HttpClient cannot be created
+  // TODO: Test syncSpecimens fails gracefully when no system codes are found or system unable to
+  // read codes
+  // TODO: Test concurrent HTTP request handling with simulated delays
+  // TODO: Test error handling when UMLS API returns error responses
+  // TODO: Test behavior when UMLS API returns empty or malformed responses
   public void syncSpecimens() {
     Optional<HttpClient> optionalClient = getHttpClient();
     if (optionalClient.isEmpty()) {
@@ -95,6 +102,7 @@ public class SpecimenService {
     }
   }
 
+  // TODO: Test getLoinctoSnomedRequest creates correct URL and request
   private HttpRequest getLoinctoSnomedRequest(String loinc) {
     String uriString =
         String.format(
@@ -104,6 +112,7 @@ public class SpecimenService {
     return HttpRequest.newBuilder().uri(uri).GET().build();
   }
 
+  // TODO: Test getSnomedRelationsRequest creates correct URL and request
   private HttpRequest getSnomedRelationsRequest(String snomed) {
     String uriString =
         String.format(
@@ -113,6 +122,7 @@ public class SpecimenService {
     return HttpRequest.newBuilder().uri(uri).GET().build();
   }
 
+  // TODO: Test parseCodeDisplayPairsFromUmlsResponse correctly parses API response
   private List<Map<String, Object>> parseCodeDisplayPairsFromUmlsResponse(
       HttpResponse<String> response, String loincSystemCode, String loincSystemDisplay) {
     JSONObject body = new JSONObject(response.body());
@@ -130,6 +140,8 @@ public class SpecimenService {
     return codes;
   }
 
+  // TODO: Test processing of SNOMED relations with mock HTTP responses
+  // TODO: Test sendInitialSnomedRelationsRequests correctly processes all SNOMED codes
   private void sendInitialSnomedRelationsRequests(
       Map<String, List<Map<String, Object>>> snomedsByLoinc, HttpClient client) {
     List<CompletableFuture<HttpResponse<String>>> futures = new ArrayList<>();
@@ -148,6 +160,8 @@ public class SpecimenService {
     log.info("Snomed initial relation requests completed.");
   }
 
+  // TODO: Test processInitialSnomedRelations correctly identifies specimens
+  // TODO: Test handling of different relation types in processInitialSnomedRelations
   private List<Map<String, String>> processInitialSnomedRelations(
       Map<String, List<Map<String, Object>>> snomedsByLoinc) {
     List<Map<String, String>> specimens = new ArrayList<>();
@@ -197,6 +211,8 @@ public class SpecimenService {
     return specimens;
   }
 
+  // TODO: Test saveSpecimens skips existing specimens
+  // TODO: Test saveSpecimens correctly saves new specimens
   private void saveSpecimens(List<Map<String, String>> rawSpecimens) {
     // List<Specimen> specimens = new ArrayList<>();
     for (Map<String, String> rawSpecimen : rawSpecimens) {
