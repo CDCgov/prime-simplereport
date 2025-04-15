@@ -58,15 +58,18 @@ public class ConditionService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   public void syncConditions() {
+    // TODO let's track a count of conditions instead of all the conditions if all we are doing is aggregating for the response
+    // TODO add handling for HTTP 429 in case we get into a rate limiting situation.
     List<Condition> conditionList = new ArrayList<>();
 
     int pageOffset = 0;
 
     boolean hasNext = true;
-
+    // TODO add something here to ensure this doesn't turn into an infinite by mistake e.g. max 1k iterations.
     log.info("Starting sync conditions");
     while (hasNext) {
       log.info("Requesting TES condition page with offset {}", pageOffset);
+      //TODO: Add error handling for this network call.
       Response response = tesClient.getConditions(PAGE_SIZE, pageOffset);
 
       String responseBody;
@@ -126,6 +129,7 @@ public class ConditionService {
     try {
       bundle = (Bundle) parser.parseResource(responseString);
     } catch (ConfigurationException | DataFormatException exception) {
+      //TODO: Let's make our logs explicitly state the process stopped. We should also move error handling into the syncLabs allowing us to lab page information about where we encountered a problem.
       log.error("Failed to parse TES response string.");
       throw exception;
     }
