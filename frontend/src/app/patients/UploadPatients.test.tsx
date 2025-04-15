@@ -338,7 +338,7 @@ describe("Upload Patient", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "values.csv has too many rows for SimpleReport to process. Please limit each upload to less than 10,000 rows."
+        "values.csv has too many rows for SimpleReport to process. Please limit each upload to less than 4,000 rows."
       )
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
