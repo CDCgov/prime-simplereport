@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class SpecimenService {
   private final SpecimenRepository specimenRepository;
+  private final SpecimenBodySiteRepository specimenBodySiteRepository;
 
   @Value("${umls.api-key}")
   private String umlsApiKey;
@@ -260,6 +261,8 @@ public class SpecimenService {
 
   // TODO: Test saveSpecimens skips existing specimens
   // TODO: Test saveSpecimens correctly saves new specimens
+  // TODO:  We don't want to skip records that have the snomed specimen, but 
+  //  a combination of the loinc system AND the snomed Specimen
   private void saveSpecimens(List<Map<String, String>> rawSpecimens) {
     // List<Specimen> specimens = new ArrayList<>();
     for (Map<String, String> rawSpecimen : rawSpecimens) {
@@ -292,10 +295,24 @@ public class SpecimenService {
     // specimenRepository.saveAll(specimens);
   }
 
+  // TODO: Test saveSpecimenBodySites saves new bodySites
   private void saveSpecimenBodySites() {
 
     if (!bodySites.isEmpty()) {
-      SpecimenBodySiteRepository.saveAll(bodySites);
+      // TODO: We may want to move this duplicate check into the process
+      //  of populating the list of bodySites
+      for (SpecimenBodySite specimenBodySite : bodySites) {
+        SpecimenBodySite foundBodySite = specimenBodySiteRepository.findBySnomedSpecimenAndSiteCodes(
+                                                            specimenBodySite.snomedSpecimenCode,
+                                                            specimentBodySite.snomedSiteCode);
+        if (foundBodySite != null) {
+          try {
+            specimenBodySiteRepository.save(specimenBodySite);
+          } catch (Exception exception) {
+            log.error(exception);
+          }
+        }
+      }
     }
 
   }

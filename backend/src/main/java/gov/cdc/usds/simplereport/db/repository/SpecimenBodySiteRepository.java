@@ -8,5 +8,7 @@ public interface SpecimenBodySiteRepository extends EternalAuditedEntityReposito
 
   List<SpecimenBodySite> findBySnomedSpecimenCode(String snomedSpecimenCode);
 
-  Specimen findBySnomedSiteCode(String snomedSiteCode);
+  List<SpecimenBodySite> findBySnomedSiteCode(String snomedSiteCode);
+
+  SpecimenBodySite findBySnomedSpecimenAndSiteCodes(String snomedSpecimenCode, String snomedSiteCode);
 }

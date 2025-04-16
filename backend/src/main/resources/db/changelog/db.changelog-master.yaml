@@ -6332,6 +6332,10 @@ databaseChangeLog:
             columns:
               - column:
                   name: snomed_site_code
+        - addUniqueConstraint:
+            tableName: specimen_bodysite
+            columnNames: snomed_specimen_code, snomed_site_code
+            constraintName: uk__snomed_spec_code__snomed_site_code
       rollback:
         - dropTable:
             tableName: specimen_bodysite
