@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+// TODO: rename LoincService to something like LabService to be more accurate
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -42,6 +43,7 @@ public class LoincService {
   private IParser parser = context.newJsonParser();
   private static final int PAGE_SIZE = 20;
 
+  // TODO: standardize how we authenticate REST endpoints
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   public void syncLabs() {
@@ -56,6 +58,8 @@ public class LoincService {
     while (loincPage.hasNext()) {
       List<LoincStaging> loincs = loincPage.getContent();
       log.info("Found {} Labs", loincs.size());
+      // TODO: use a Map to map loinc -> future instead of relying on parallel indices. ex, a
+      // hashmap like Map<LoincStaging, CompletableFuture<Response>>
       loincs.forEach(
           loinc ->
               futures.add(
@@ -69,6 +73,8 @@ public class LoincService {
       for (int i = 0; i < futures.size(); i++) {
         Response response = futures.get(i).getNow(null);
         LoincStaging loinc = loincs.get(i);
+        // TODO: DanS: we should probably consider accounting for service disruptions and short
+        // circuiting these syncs when appropriate.
         if (response.status() != HttpStatus.SC_OK) {
           failedLoincs.add(loinc);
           log.error(
@@ -101,6 +107,10 @@ public class LoincService {
       successLoincs.clear();
       failedLoincs.clear();
       pageRequest = pageRequest.next();
+      // TODO: DanS: We do currently save duplicate loincs (many to many relationship with
+      // condition)
+      //  it would be ideal if we can update the data model / findAll query to reduce duplicates
+      // where possible
       loincPage = loincStagingRepository.findAll(pageRequest);
       // Remove the already processed loincs from the table
       loincStagingRepository.deleteAll(loincs);
