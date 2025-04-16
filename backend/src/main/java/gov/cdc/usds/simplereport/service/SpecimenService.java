@@ -296,6 +296,7 @@ public class SpecimenService {
   }
 
   // TODO: Test saveSpecimenBodySites saves new bodySites
+  // TODO: Test saveSpecimenBodySites skips existing specimens  
   private void saveSpecimenBodySites() {
 
     if (!bodySites.isEmpty()) {
