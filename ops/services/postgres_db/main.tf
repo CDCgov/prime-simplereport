@@ -78,5 +78,5 @@ resource "azurerm_postgresql_flexible_server_configuration" "postgresql_shared_p
 resource "azurerm_postgresql_flexible_server_configuration" "postgresql_extensions" {
   name      = "azure.extensions"
   server_id = azurerm_postgresql_flexible_server.db.id
-  value     = "PG_STAT_STATEMENTS,PGCRYPTO,PLPGSQL"
+  value     = "PG_STAT_STATEMENTS,PGCRYPTO"
 }
