@@ -6162,7 +6162,7 @@ databaseChangeLog:
                   type: text
                   remarks: The SNOMED code for this specimen
                   constraints:
-                    unique: true
+                    unique: false
                     nullable: false
               - column:
                   name: snomed_display
@@ -6220,3 +6220,118 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: specimen
+  - changeSet:
+    id: update-specimen-unique-constraint
+    author: tlx4@cdc.gov
+    changes:
+      - tagDatabase:
+          tag: update-specimen-unique-constraint
+      - dropUniqueConstraint:
+          tableName: specimen
+          constraintName: specimen_snomed_code_key
+      - addUniqueConstraint:
+          tableName: specimen
+          columnNames: loinc_system_code, snomed_code
+          constraintName: uk__loinc_system_code__snomed_code
+    rollback:
+      - addUniqueConstraint:
+          tableName: specimen
+          columnNames: snomed_code
+          constraintName: specimen_snomed_code_key
+      - dropUniqueConstraint:
+          tableName: specimen
+          constraintName: uk__loinc_system_code__snomed_code
+  - changeSet:
+      id: add-specimen-bodysite-table
+      author: ubz8@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-specimen-bodysite-table
+        - createTable:
+            tableName: specimen_bodysite
+            remarks: Specific body sites or locations for specimens identified by SNOMED code and mapped to SNOMED specimen codes.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: snomed_specimen_code
+                  type: text
+                  remarks: SNOMED specimen code.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: snomed_specimen_display
+                  type: text
+                  remarks: The display name of the SNOMED specimen.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: snomed_site_code
+                  type: text
+                  remarks: The SNOMED code for this body site.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: snomed_site_display
+                  type: text
+                  remarks: The SNOMED display for this body site.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: specimen_bodysite
+            indexName: ix__bodysite_snomed_specimen_code
+            columns:
+              - column:
+                  name: snomed_specimen_code
+        - createIndex:
+            tableName: specimen
+            indexName: ix__bodysite_snomed_site_code
+            columns:
+              - column:
+                  name: snomed_site_code
+      rollback:
+        - dropTable:
+            tableName: specimen_bodysite

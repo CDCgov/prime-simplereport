@@ -2,8 +2,10 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Specimen;
+import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenBodySiteRepository;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -34,6 +36,8 @@ public class SpecimenService {
   private String umlsApiKey;
 
   private final LabRepository labRepository;
+
+  private List<SpecimenBodySite> bodySites = new ArrayList<SpecimenBodySite>();
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
@@ -83,6 +87,8 @@ public class SpecimenService {
     log.info("Saving specimens to the specimen table.");
     saveSpecimens(specimens);
     log.info("Specimens saved.");
+    saveSpecimenBodySites();
+    log.info("Specimen Body Sites saved.");
   }
 
   private Optional<HttpClient> getHttpClient() {
@@ -105,6 +111,9 @@ public class SpecimenService {
   }
 
   private HttpRequest getSnomedRelationsRequest(String snomed) {
+    /* TODO:
+      Not sure the 'additionalRelationLabel' provides any changes to the results from the API.  We may just want to remove it
+      */
     String uriString =
         String.format(
             "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/%s/relations?apiKey=%s&pageSize=500&additionalRelationLabel=specimen_source_topography_of",
@@ -151,6 +160,7 @@ public class SpecimenService {
   private List<Map<String, String>> processInitialSnomedRelations(
       Map<String, List<Map<String, Object>>> snomedsByLoinc) {
     List<Map<String, String>> specimens = new ArrayList<>();
+    SpecimenBodySite bodySite;
     for (String loinc : snomedsByLoinc.keySet()) {
       for (Map<String, Object> snomed : snomedsByLoinc.get(loinc)) {
         CompletableFuture<HttpResponse<String>> responseFuture =
@@ -164,11 +174,17 @@ public class SpecimenService {
         String snomedCode = snomed.get("snomedCode").toString();
         String snomedDisplay = snomed.get("snomedDisplay").toString();
 
+        // Looping through all relationships (of all types) for the snomed specimen
         for (int i = 0; i < results.length(); i++) {
           JSONObject result = (JSONObject) results.get(i);
           boolean saveSnomed = false;
           String relationLabel = result.get("additionalRelationLabel").toString();
+          // Ensure the snomed specimen is an actual specimen
+          // TODO: Could possibly use an ancestor hierarchy query for the Specimen Concept
+          //    to ensure the snomed specimen concept is a descedant 
           if (snomedDisplay.contains("Specimen") || snomedDisplay.contains("specimen")) {
+            // Here we are including also all the children specimens of the
+            //  snomed specimen concept in question
             if (Objects.equals(relationLabel, "inverse_isa")) {
               saveSnomed = true;
               Map<String, String> specimen = new HashMap<>();
@@ -177,10 +193,41 @@ public class SpecimenService {
               specimen.put("snomedCode", snomedCode);
               specimen.put("snomedDisplay", snomedDisplay);
               specimens.add(specimen);
+              // TODO: we could potentiall make another call here or later
+              //  to get the details of the 'children' specimens to gather
+              //  the body site for them as well - for now will skip this
             }
+
+            // if there is an associated body site, store that now as well
+            if (Objects.equals(relationLabel, "has_specimen_source_topography")) {
+              String[] relatedIdParts = result.get("relatedId").toString().split("/");
+              bodySite = new SpecimenBodySite(
+                                    snomedCode,
+                                    snomedDisplay,
+                                    relatedIdParts[relatedIdParts.length - 1],
+                                    result.get("relatedIdName").toString());
+              bodySites.add(bodySite);
+
+            }
+          // otherwise if the concept isn't a specimen but is a body site
+          // due to the crosswalk finding a body site instead of a specimen in snomed
+          // then grab the specimens that relate to the body site and store those
           } else if (Objects.equals(relationLabel, "specimen_source_topography_of")
               || Objects.equals(relationLabel, "specimen_substance_of")) {
             saveSnomed = true;
+
+            // this also provides us the ability to get the body site and specimens
+            // and store them in the bodysite table as well
+            if (Objects.equals(relationLabel, "specimen_source_topography_of")) {
+              String[] relatedIdParts = result.get("relatedId").toString().split("/");
+              bodySite = new SpecimenBodySite(
+                                    relatedIdParts[relatedIdParts.length - 1],
+                                    result.get("relatedIdName").toString(),
+                                    snomedCode,
+                                    snomedDisplay);
+              bodySites.add(bodySite);
+
+            }
           }
           if (saveSnomed) {
             Map<String, String> specimen = new HashMap<>();
@@ -213,6 +260,9 @@ public class SpecimenService {
           )
       );
       */
+     // TODO: Do we want to filter a record in Specimens if the snomedCode already exists?
+     //   It seems we would want to make sure we don't have duplicates based upon the
+     //   loincSystemCode AND the snomedCode
       if (foundSpecimen != null) {
         continue;
       }
@@ -224,5 +274,13 @@ public class SpecimenService {
               rawSpecimen.get("snomedDisplay")));
     }
     // specimenRepository.saveAll(specimens);
+  }
+
+  private void saveSpecimenBodySites() {
+
+    if (!bodySites.isEmpty()) {
+      SpecimenBodySiteRepository.saveAll(bodySites);
+    }
+
   }
 }
