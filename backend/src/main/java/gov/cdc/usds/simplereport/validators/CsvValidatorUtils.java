@@ -44,8 +44,7 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TRE
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.hasTimezoneSubstring;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.timezoneAbbreviationZoneIdMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
@@ -449,31 +448,12 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    String value = parseString(input.getValue());
-    List<FeedbackMessage> errors = new ArrayList<>();
-
-    if (value == null) {
-      return errors;
+    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
+    if (input.getValue() != null
+        && errors.isEmpty()
+        && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
+      errors.addAll(validateDateTimeZoneCode(input));
     }
-
-    try {
-      convertToZonedDateTime(value);
-
-      if (hasTimezoneSubstring(value)) {
-        errors.addAll(validateDateTimeZoneCode(input));
-      }
-    } catch (DateTimeParseException | StringIndexOutOfBoundsException e) {
-      errors.add(
-          FeedbackMessage.builder()
-              .scope(ITEM_SCOPE)
-              .fieldHeader(input.getHeader())
-              .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(ResultUploadErrorType.INVALID_DATA)
-              .fieldRequired(input.isRequired())
-              .build());
-    }
-
     return errors;
   }
 
