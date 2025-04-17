@@ -149,6 +149,8 @@ public class ConditionService {
     List<UsageContext> useContext = valueSet.getUseContext();
     for (UsageContext context : useContext) {
       Coding code = context.getCode();
+      // TODO extract 'focus' into a variable whose variable name captures the
+      //  significance of the word 'focus'
       if (code.getCode().equals("focus")) {
         return context.getValueCodeableConcept();
       }
