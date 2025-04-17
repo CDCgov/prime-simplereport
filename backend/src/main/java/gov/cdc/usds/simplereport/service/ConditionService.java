@@ -47,12 +47,10 @@ public class ConditionService {
           boolean hasLabs = !condition.getLabs().isEmpty();
           if (condition.getHasLabs() != hasLabs) {
             // TODO if we want to future-proof this a bit, we could create new condition objects to
-            // add to the
-            //  conditionsToUpdate list so that we aren't modifying the objects in the original
-            // allConditions
-            //  list. This would guard against any future operations where someone may wrongfully
-            // assume that
-            //  the allConditions list's objects have not been modified.
+            //  add to the conditionsToUpdate list so that we aren't modifying the objects in the
+            //  original allConditions list. This would guard against any future operations where
+            //  someone may wrongfully assume that the allConditions list's objects have not been
+            //  modified.
             condition.setHasLabs(hasLabs);
             conditionsToUpdate.add(condition);
           }
