@@ -6300,7 +6300,7 @@ databaseChangeLog:
               - column:
                   name: snomed_specimen_code
         - createIndex:
-            tableName: specimen
+            tableName: specimen_bodysite
             indexName: ix__bodysite_snomed_site_code
             columns:
               - column:
