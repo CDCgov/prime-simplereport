@@ -145,6 +145,7 @@ public class ConditionService {
     return bundle;
   }
 
+  // TODO rename to extractCondition? I'm seeing more searching/extracting than parsing
   private CodeableConcept parseCondition(ValueSet valueSet) {
     List<UsageContext> useContext = valueSet.getUseContext();
     for (UsageContext context : useContext) {
@@ -158,6 +159,7 @@ public class ConditionService {
     return new CodeableConcept();
   }
 
+  // TODO rename to something like findOrSaveCondition
   private Condition saveCondition(CodeableConcept conditionConcept) {
     String code = conditionConcept.getCoding().get(0).getCode();
     String display = conditionConcept.getText();
