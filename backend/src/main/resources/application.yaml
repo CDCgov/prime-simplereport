@@ -97,6 +97,7 @@ smarty-streets:
   id: ${SMARTY_AUTH_ID}
   token: ${SMARTY_AUTH_TOKEN}
 simple-report:
+  processing-mode-code: T
   id-verification-reminders:
     enabled: false
   authorization:
