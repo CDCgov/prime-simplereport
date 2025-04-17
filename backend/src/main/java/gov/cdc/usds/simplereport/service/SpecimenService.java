@@ -312,7 +312,7 @@ public class SpecimenService {
         try {
           specimenBodySiteRepository.save(specimenBodySite);
         } catch (Exception exception) {
-          log.error(exception);
+          log.error(exception.getMessage());
         }
       }
     }
