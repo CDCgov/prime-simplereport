@@ -3,8 +3,8 @@ package gov.cdc.usds.simplereport.db.repository;
 import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import java.util.List;
 
-/** Specification of EternalAuditedEntityRepository for {@link SpecimenBodySite} manipulation. */
-public interface SpecimenBodySiteRepository extends EternalAuditedEntityRepository<SpecimenBodySite> {
+/** Specification of AuditedEntityRepository for {@link SpecimenBodySite} manipulation. */
+public interface SpecimenBodySiteRepository extends AuditedEntityRepository<SpecimenBodySite> {
 
   List<SpecimenBodySite> findBySnomedSpecimenCode(String snomedSpecimenCode);
 
