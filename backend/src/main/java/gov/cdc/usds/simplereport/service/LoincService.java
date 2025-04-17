@@ -13,6 +13,8 @@ import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -46,14 +48,21 @@ public class LoincService {
   // TODO: standardize how we authenticate REST endpoints
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
+  // todo mark as transactional / account for a sync that fails halfway - how do we want to recover
+  // from that?
   public void syncLabs() {
-    log.info("Sync Labs");
+    log.info("Lab sync started");
+    Instant startTime = Instant.now();
     PageRequest pageRequest = PageRequest.of(0, PAGE_SIZE);
+    // todo rename `futures` to be clearer - what is it a future of
     List<CompletableFuture<Response>> futures = new ArrayList<>();
     List<Lab> labs = new ArrayList<>();
+    // todo update db to skip failed loincs next time?
     List<LoincStaging> failedLoincs = new ArrayList<>();
     List<LoincStaging> successLoincs = new ArrayList<>();
     Page<LoincStaging> loincPage = loincStagingRepository.findAll(pageRequest);
+    // todo distinguish when a lab is actually brand new to the database
+    int labsAmount = 0;
 
     while (loincPage.hasNext()) {
       List<LoincStaging> loincs = loincPage.getContent();
@@ -71,11 +80,13 @@ public class LoincService {
       allFutures.join();
       log.info("Futures completed");
       for (int i = 0; i < futures.size(); i++) {
+        // TODO: create an object / map / pair so we don't have to rely on index matching
         Response response = futures.get(i).getNow(null);
         LoincStaging loinc = loincs.get(i);
         // TODO: DanS: we should probably consider accounting for service disruptions and short
         // circuiting these syncs when appropriate.
         if (response.status() != HttpStatus.SC_OK) {
+          // todo account for 404s vs 5xx errors
           failedLoincs.add(loinc);
           log.error(
               "Received a {} status code from the LOINC API response for: {}",
@@ -85,37 +96,49 @@ public class LoincService {
         }
         Optional<Parameters> parameters = parseResponseToParameters(response);
         if (parameters.isEmpty()) {
+          // todo: what does this mean (@dan p)
           failedLoincs.add(loinc);
           continue;
         }
         Optional<Lab> lab = parametersToLab(loinc, parameters.get());
         if (lab.isEmpty()) {
+          // is this the only time that we should mark a loinc as "to-skip"?
+          // or all failedLoincs?
           failedLoincs.add(loinc);
           continue;
         }
         labs.add(lab.get());
         successLoincs.add(loinc);
       }
-      log.info("LOINC API response parsed.");
+      log.info("LOINC API response parsed to {} labs", labs.size());
       labs = reduceLabs(labs, successLoincs);
-      log.info("Labs reduced.");
+      log.info("Labs reduced to {} labs", labs.size());
+      // todo bulk operation on saveAll (this function is saving them sequentially)
+      // todo once bulk saveAll in place, move this db operation out of the loop?
       labRepository.saveAll(labs);
       log.info("Data written to lab table.");
       log.info("Completed page: {}", loincPage.getNumber());
+      labsAmount += labs.size();
       futures.clear();
       labs.clear();
       successLoincs.clear();
-      failedLoincs.clear();
       pageRequest = pageRequest.next();
       // TODO: DanS: We do currently save duplicate loincs (many to many relationship with
       // condition)
       //  it would be ideal if we can update the data model / findAll query to reduce duplicates
       // where possible
       loincPage = loincStagingRepository.findAll(pageRequest);
-      // Remove the already processed loincs from the table
-      loincStagingRepository.deleteAll(loincs);
     }
-    log.info("Lab sync completed successfully");
+    // todo does it make sense to have the insert into this table be smarter, so we dont have to
+    // empty it
+    clearLoincStaging();
+    Instant stopTime = Instant.now();
+    Duration elapsedTime = Duration.between(startTime, stopTime);
+    log.info(
+        "Lab sync completed {} labs in {} minutes with {} failed LOINCs",
+        labsAmount,
+        elapsedTime.toMinutes(),
+        failedLoincs.size());
   }
 
   private Optional<Parameters> parseResponseToParameters(Response response) {
@@ -138,6 +161,7 @@ public class LoincService {
     return Optional.of(parameters);
   }
 
+  // todo write a unit test
   private Optional<Lab> parametersToLab(LoincStaging loinc, Parameters parameters) {
     List<Parameters.ParametersParameterComponent> parameter = parameters.getParameter();
 
@@ -150,6 +174,8 @@ public class LoincService {
       display = displayParam.get().getValue().toString();
     }
 
+    // todo are any of these required to build a valid fhir bundle? are all of these defaults
+    // correct / safe
     String description = null;
     String longCommonName = "";
     String scaleCode = "";
@@ -241,6 +267,7 @@ public class LoincService {
             panel));
   }
 
+  // todo write a unit test
   private List<Lab> reduceLabs(List<Lab> labs, List<LoincStaging> loincs) {
     List<String> codes = new ArrayList<>();
     List<Lab> labsToSave = new ArrayList<>();
@@ -275,6 +302,8 @@ public class LoincService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String clearLoincStaging() {
     loincStagingRepository.deleteAllLoincStaging();
-    return "Cleared loinc staging table";
+    String clearLoincStagingMsg = "Cleared loinc staging table";
+    log.info(clearLoincStagingMsg);
+    return clearLoincStagingMsg;
   }
 }

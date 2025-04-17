@@ -46,6 +46,11 @@ public class ConditionService {
         condition -> {
           boolean hasLabs = !condition.getLabs().isEmpty();
           if (condition.getHasLabs() != hasLabs) {
+            // TODO if we want to future-proof this a bit, we could create new condition objects to
+            //  add to the conditionsToUpdate list so that we aren't modifying the objects in the
+            //  original allConditions list. This would guard against any future operations where
+            //  someone may wrongfully assume that the allConditions list's objects have not been
+            //  modified.
             condition.setHasLabs(hasLabs);
             conditionsToUpdate.add(condition);
           }
@@ -58,18 +63,20 @@ public class ConditionService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   public void syncConditions() {
-    // TODO let's track a count of conditions instead of all the conditions if all we are doing is aggregating for the response
+    // TODO let's track a count of conditions instead of all the conditions if all we are doing is
+    // aggregating for the response
     // TODO add handling for HTTP 429 in case we get into a rate limiting situation.
     List<Condition> conditionList = new ArrayList<>();
 
     int pageOffset = 0;
 
     boolean hasNext = true;
-    // TODO add something here to ensure this doesn't turn into an infinite by mistake e.g. max 1k iterations.
+    // TODO add something here to ensure this doesn't turn into an infinite by mistake e.g. max 1k
+    // iterations.
     log.info("Starting sync conditions");
     while (hasNext) {
       log.info("Requesting TES condition page with offset {}", pageOffset);
-      //TODO: Add error handling for this network call.
+      // TODO: Add error handling for this network call.
       Response response = tesClient.getConditions(PAGE_SIZE, pageOffset);
 
       String responseBody;
@@ -129,7 +136,9 @@ public class ConditionService {
     try {
       bundle = (Bundle) parser.parseResource(responseString);
     } catch (ConfigurationException | DataFormatException exception) {
-      //TODO: Let's make our logs explicitly state the process stopped. We should also move error handling into the syncLabs allowing us to lab page information about where we encountered a problem.
+      // TODO: Let's make our logs explicitly state the process stopped. We should also move error
+      // handling into the syncLabs allowing us to lab page information about where we encountered a
+      // problem.
       log.error("Failed to parse TES response string.");
       throw exception;
     }
@@ -140,6 +149,8 @@ public class ConditionService {
     List<UsageContext> useContext = valueSet.getUseContext();
     for (UsageContext context : useContext) {
       Coding code = context.getCode();
+      // TODO extract 'focus' into a variable whose variable name captures the
+      //  significance of the word 'focus'
       if (code.getCode().equals("focus")) {
         return context.getValueCodeableConcept();
       }
