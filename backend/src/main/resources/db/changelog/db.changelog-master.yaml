@@ -6162,7 +6162,7 @@ databaseChangeLog:
                   type: text
                   remarks: The SNOMED code for this specimen
                   constraints:
-                    unique: false
+                    unique: true
                     nullable: false
               - column:
                   name: snomed_display

@@ -307,11 +307,12 @@ public class SpecimenService {
                                                             specimenBodySite.snomedSpecimenCode,
                                                             specimentBodySite.snomedSiteCode);
         if (foundBodySite != null) {
-          try {
-            specimenBodySiteRepository.save(specimenBodySite);
-          } catch (Exception exception) {
-            log.error(exception);
-          }
+          continue;
+        }
+        try {
+          specimenBodySiteRepository.save(specimenBodySite);
+        } catch (Exception exception) {
+          log.error(exception);
         }
       }
     }

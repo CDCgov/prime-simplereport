@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Entity
 @Setter
-public class SpecimenBodySite extends EternalAuditedEntity {
+public class SpecimenBodySite extends AuditedEntity {
 
   @Getter
   @Column(nullable = false)
