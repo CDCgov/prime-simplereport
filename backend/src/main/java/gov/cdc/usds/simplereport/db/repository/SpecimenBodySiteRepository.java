@@ -10,5 +10,6 @@ public interface SpecimenBodySiteRepository extends AuditedEntityRepository<Spec
 
   List<SpecimenBodySite> findBySnomedSiteCode(String snomedSiteCode);
 
-  SpecimenBodySite findBySnomedSpecimenAndSiteCodes(String snomedSpecimenCode, String snomedSiteCode);
+  SpecimenBodySite findBySnomedSpecimenAndSiteCodes(
+      String snomedSpecimenCode, String snomedSiteCode);
 }

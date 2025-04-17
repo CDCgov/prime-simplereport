@@ -4,8 +4,8 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
-import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenBodySiteRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -122,8 +122,8 @@ public class SpecimenService {
   // TODO: Test getSnomedRelationsRequest creates correct URL and request
   private HttpRequest getSnomedRelationsRequest(String snomed) {
     /* TODO:
-      Not sure the 'additionalRelationLabel' provides any changes to the results from the API.  We may just want to remove it
-      */
+    Not sure the 'additionalRelationLabel' provides any changes to the results from the API.  We may just want to remove it
+    */
     String uriString =
         String.format(
             "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/%s/relations?apiKey=%s&pageSize=500&additionalRelationLabel=specimen_source_topography_of",
@@ -196,7 +196,7 @@ public class SpecimenService {
           String relationLabel = result.get("additionalRelationLabel").toString();
           // Ensure the snomed specimen is an actual specimen
           // TODO: Could possibly use an ancestor hierarchy query for the Specimen Concept
-          //    to ensure the snomed specimen concept is a descedant 
+          //    to ensure the snomed specimen concept is a descedant
           if (snomedDisplay.contains("Specimen") || snomedDisplay.contains("specimen")) {
             // Here we are including also all the children specimens of the
             //  snomed specimen concept in question
@@ -216,17 +216,17 @@ public class SpecimenService {
             // if there is an associated body site, store that now as well
             if (Objects.equals(relationLabel, "has_specimen_source_topography")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
-              bodySite = new SpecimenBodySite(
-                                    snomedCode,
-                                    snomedDisplay,
-                                    relatedIdParts[relatedIdParts.length - 1],
-                                    result.get("relatedIdName").toString());
+              bodySite =
+                  new SpecimenBodySite(
+                      snomedCode,
+                      snomedDisplay,
+                      relatedIdParts[relatedIdParts.length - 1],
+                      result.get("relatedIdName").toString());
               bodySites.add(bodySite);
-
             }
-          // otherwise if the concept isn't a specimen but is a body site
-          // due to the crosswalk finding a body site instead of a specimen in snomed
-          // then grab the specimens that relate to the body site and store those
+            // otherwise if the concept isn't a specimen but is a body site
+            // due to the crosswalk finding a body site instead of a specimen in snomed
+            // then grab the specimens that relate to the body site and store those
           } else if (Objects.equals(relationLabel, "specimen_source_topography_of")
               || Objects.equals(relationLabel, "specimen_substance_of")) {
             saveSnomed = true;
@@ -235,13 +235,13 @@ public class SpecimenService {
             // and store them in the bodysite table as well
             if (Objects.equals(relationLabel, "specimen_source_topography_of")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
-              bodySite = new SpecimenBodySite(
-                                    relatedIdParts[relatedIdParts.length - 1],
-                                    result.get("relatedIdName").toString(),
-                                    snomedCode,
-                                    snomedDisplay);
+              bodySite =
+                  new SpecimenBodySite(
+                      relatedIdParts[relatedIdParts.length - 1],
+                      result.get("relatedIdName").toString(),
+                      snomedCode,
+                      snomedDisplay);
               bodySites.add(bodySite);
-
             }
           }
           if (saveSnomed) {
@@ -261,7 +261,7 @@ public class SpecimenService {
 
   // TODO: Test saveSpecimens skips existing specimens
   // TODO: Test saveSpecimens correctly saves new specimens
-  /* TODO:  
+  /* TODO:
     Add this code into the db.changelog-master.yaml file to add the proper constraint
     but the code below to search for both the specimen and loinc system has been added:
     - changeSet:
@@ -289,9 +289,9 @@ public class SpecimenService {
   private void saveSpecimens(List<Map<String, String>> rawSpecimens) {
     // List<Specimen> specimens = new ArrayList<>();
     for (Map<String, String> rawSpecimen : rawSpecimens) {
-      Specimen foundSpecimen = specimenRepository.findByLoincSystemAndSnomedCodes(
-                                                          rawSpecimen.get("loincSystemCode"),
-                                                          rawSpecimen.get("snomedCode"));
+      Specimen foundSpecimen =
+          specimenRepository.findByLoincSystemAndSnomedCodes(
+              rawSpecimen.get("loincSystemCode"), rawSpecimen.get("snomedCode"));
       /*
       if (foundSpecimen != null) {
           specimens.add(foundSpecimen);
@@ -318,16 +318,16 @@ public class SpecimenService {
   }
 
   // TODO: Test saveSpecimenBodySites saves new bodySites
-  // TODO: Test saveSpecimenBodySites skips existing specimens  
+  // TODO: Test saveSpecimenBodySites skips existing specimens
   private void saveSpecimenBodySites() {
 
     if (!bodySites.isEmpty()) {
       // TODO: We may want to move this duplicate check into the process
       //  of populating the list of bodySites
       for (SpecimenBodySite specimenBodySite : bodySites) {
-        SpecimenBodySite foundBodySite = specimenBodySiteRepository.findBySnomedSpecimenAndSiteCodes(
-                                                            specimenBodySite.getSnomedSpecimenCode(),
-                                                            specimenBodySite.getSnomedSiteCode());
+        SpecimenBodySite foundBodySite =
+            specimenBodySiteRepository.findBySnomedSpecimenAndSiteCodes(
+                specimenBodySite.getSnomedSpecimenCode(), specimenBodySite.getSnomedSiteCode());
         if (foundBodySite != null) {
           continue;
         }
@@ -338,6 +338,5 @@ public class SpecimenService {
         }
       }
     }
-
   }
 }

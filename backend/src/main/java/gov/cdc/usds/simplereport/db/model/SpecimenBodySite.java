@@ -26,7 +26,10 @@ public class SpecimenBodySite extends AuditedEntity {
   private String snomedSiteDisplay;
 
   public SpecimenBodySite(
-      String snomedSpecimenCode, String snomedSpecimenDisplay, String snomedSiteCode, String snomedSiteDisplay) {
+      String snomedSpecimenCode,
+      String snomedSpecimenDisplay,
+      String snomedSiteCode,
+      String snomedSiteDisplay) {
     super();
     this.snomedSpecimenCode = snomedSpecimenCode;
     this.snomedSpecimenDisplay = snomedSpecimenDisplay;
