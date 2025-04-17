@@ -13,6 +13,8 @@ import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -49,14 +51,18 @@ public class LoincService {
   // todo mark as transactional / account for a sync that fails halfway - how do we want to recover
   // from that?
   public void syncLabs() {
-    log.info("Sync Labs");
+    log.info("Lab sync started");
+    Instant startTime = Instant.now();
     PageRequest pageRequest = PageRequest.of(0, PAGE_SIZE);
     // todo rename `futures` to be clearer - what is it a future of
     List<CompletableFuture<Response>> futures = new ArrayList<>();
     List<Lab> labs = new ArrayList<>();
+    // todo update db to skip failed loincs next time?
     List<LoincStaging> failedLoincs = new ArrayList<>();
     List<LoincStaging> successLoincs = new ArrayList<>();
     Page<LoincStaging> loincPage = loincStagingRepository.findAll(pageRequest);
+    // todo distinguish when a lab is actually brand new to the database
+    int labsAmount = 0;
 
     while (loincPage.hasNext()) {
       List<LoincStaging> loincs = loincPage.getContent();
@@ -104,33 +110,35 @@ public class LoincService {
         labs.add(lab.get());
         successLoincs.add(loinc);
       }
-      log.info("LOINC API response parsed.");
+      log.info("LOINC API response parsed to {} labs", labs.size());
       labs = reduceLabs(labs, successLoincs);
-      // todo log metadata on the update?
-      log.info("Labs reduced.");
+      log.info("Labs reduced to {} labs", labs.size());
       // todo bulk operation on saveAll (this function is saving them sequentially)
       // todo once bulk saveAll in place, move this db operation out of the loop?
       labRepository.saveAll(labs);
       log.info("Data written to lab table.");
       log.info("Completed page: {}", loincPage.getNumber());
+      labsAmount += labs.size();
       futures.clear();
       labs.clear();
       successLoincs.clear();
-      // todo update db to skip failed loincs next time?
-      failedLoincs.clear();
       pageRequest = pageRequest.next();
       // TODO: DanS: We do currently save duplicate loincs (many to many relationship with
       // condition)
       //  it would be ideal if we can update the data model / findAll query to reduce duplicates
       // where possible
       loincPage = loincStagingRepository.findAll(pageRequest);
-      // Remove the already processed loincs from the table
-      // todo does it make sense to have the insert into this table be smarter, so we dont have to
-      // empty it
-      loincStagingRepository.deleteAll(loincs);
     }
-    // todo log a final summary, metadata: how many new labs? elasped time? # of labs reduced?
-    log.info("Lab sync completed successfully");
+    // todo does it make sense to have the insert into this table be smarter, so we dont have to
+    // empty it
+    clearLoincStaging();
+    Instant stopTime = Instant.now();
+    Duration elapsedTime = Duration.between(startTime, stopTime);
+    log.info(
+        "Lab sync completed {} labs in {} minutes with {} failed LOINCs",
+        labsAmount,
+        elapsedTime.toMinutes(),
+        failedLoincs.size());
   }
 
   private Optional<Parameters> parseResponseToParameters(Response response) {
@@ -294,6 +302,8 @@ public class LoincService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String clearLoincStaging() {
     loincStagingRepository.deleteAllLoincStaging();
-    return "Cleared loinc staging table";
+    String clearLoincStagingMsg = "Cleared loinc staging table";
+    log.info(clearLoincStagingMsg);
+    return clearLoincStagingMsg;
   }
 }
