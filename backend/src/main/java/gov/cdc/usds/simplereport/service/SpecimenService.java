@@ -261,12 +261,37 @@ public class SpecimenService {
 
   // TODO: Test saveSpecimens skips existing specimens
   // TODO: Test saveSpecimens correctly saves new specimens
-  // TODO:  We don't want to skip records that have the snomed specimen, but 
-  //  a combination of the loinc system AND the snomed Specimen
+  /* TODO:  
+    Add this code into the db.changelog-master.yaml file to add the proper constraint
+    but the code below to search for both the specimen and loinc system has been added:
+    - changeSet:
+    id: update-specimen-unique-constraint
+    author: tlx4@cdc.gov
+    changes:
+      - tagDatabase:
+          tag: update-specimen-unique-constraint
+      - dropUniqueConstraint:
+          tableName: specimen
+          constraintName: specimen_snomed_code_key
+      - addUniqueConstraint:
+          tableName: specimen
+          columnNames: loinc_system_code, snomed_code
+          constraintName: uk__loinc_system_code__snomed_code
+    rollback:
+      - addUniqueConstraint:
+          tableName: specimen
+          columnNames: snomed_code
+          constraintName: specimen_snomed_code_key
+      - dropUniqueConstraint:
+          tableName: specimen
+          constraintName: uk__loinc_system_code__snomed_code
+  */
   private void saveSpecimens(List<Map<String, String>> rawSpecimens) {
     // List<Specimen> specimens = new ArrayList<>();
     for (Map<String, String> rawSpecimen : rawSpecimens) {
-      Specimen foundSpecimen = specimenRepository.findBySnomedCode(rawSpecimen.get("snomedCode"));
+      Specimen foundSpecimen = specimenRepository.findByLoincSystemAndSnomedCodes(
+                                                          rawSpecimen.get("loincSystemCode"),
+                                                          rawSpecimen.get("snomedCode"));
       /*
       if (foundSpecimen != null) {
           specimens.add(foundSpecimen);
@@ -279,9 +304,6 @@ public class SpecimenService {
           )
       );
       */
-     // TODO: Do we want to filter a record in Specimens if the snomedCode already exists?
-     //   It seems we would want to make sure we don't have duplicates based upon the
-     //   loincSystemCode AND the snomedCode
       if (foundSpecimen != null) {
         continue;
       }
