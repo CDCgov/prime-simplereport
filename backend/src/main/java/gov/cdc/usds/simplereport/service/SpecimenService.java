@@ -304,8 +304,8 @@ public class SpecimenService {
       //  of populating the list of bodySites
       for (SpecimenBodySite specimenBodySite : bodySites) {
         SpecimenBodySite foundBodySite = specimenBodySiteRepository.findBySnomedSpecimenAndSiteCodes(
-                                                            specimenBodySite.getSnomedSpecimenCode,
-                                                            specimenBodySite.getSnomedSiteCode);
+                                                            specimenBodySite.getSnomedSpecimenCode(),
+                                                            specimenBodySite.getSnomedSiteCode());
         if (foundBodySite != null) {
           continue;
         }
