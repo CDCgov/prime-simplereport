@@ -28,7 +28,7 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
       script.src =
         process.env.PUBLIC_URL && urlPrefix.includes(process.env.PUBLIC_URL)
           ? `${urlPrefix}static/touchpoints.js`
-          : "touchpoints.js";
+          : `${urlPrefix}touchpoints.js`;
       script.async = true;
 
       document.body.appendChild(script);
