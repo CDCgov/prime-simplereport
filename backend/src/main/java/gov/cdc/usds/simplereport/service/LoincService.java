@@ -117,7 +117,7 @@ public class LoincService {
       // todo once bulk saveAll in place, move this db operation out of the loop?
       labRepository.saveAll(labs);
       log.info("Data written to lab table.");
-      log.info("Completed page: {}", loincPage.getNumber());
+      log.info("Completed page: {} of {}", loincPage.getNumber(), loincPage.getTotalPages());
       labsAmount += labs.size();
       futures.clear();
       labs.clear();
