@@ -14,7 +14,7 @@ import { RootState } from "../../store";
 import SingleFileInput from "../../commonComponents/SingleFileInput";
 import {
   MAX_CSV_UPLOAD_BYTES,
-  MAX_CSV_UPLOAD_ROW_COUNT,
+  MAX_CSV_BULK_UPLOAD_ROW_COUNT,
 } from "../../../config/constants";
 import { HashLink } from "../../commonComponents/HashLink";
 
@@ -258,10 +258,10 @@ const UploadForm: React.FC<UploadFormProps> = ({
 
       const fileText = await currentFile.text();
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
-      if (lineCount > MAX_CSV_UPLOAD_ROW_COUNT) {
+      if (lineCount > MAX_CSV_BULK_UPLOAD_ROW_COUNT) {
         setFileValid(false);
         showError(
-          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${MAX_CSV_UPLOAD_ROW_COUNT}.`,
+          `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${MAX_CSV_BULK_UPLOAD_ROW_COUNT}.`,
           "Invalid file"
         );
         return;
