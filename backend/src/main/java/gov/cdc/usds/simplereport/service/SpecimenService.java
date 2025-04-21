@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings({"checkstyle:TodoComment"})
 public class SpecimenService {
   private final SpecimenRepository specimenRepository;
   private final SpecimenBodySiteRepository specimenBodySiteRepository;
@@ -319,6 +320,7 @@ public class SpecimenService {
 
   // TODO: Test saveSpecimenBodySites saves new bodySites
   // TODO: Test saveSpecimenBodySites skips existing specimens
+  @SuppressWarnings({"checkstyle:illegalcatch"})
   private void saveSpecimenBodySites() {
 
     if (!bodySites.isEmpty()) {

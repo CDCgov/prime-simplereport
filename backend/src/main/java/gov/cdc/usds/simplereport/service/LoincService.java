@@ -32,11 +32,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-// TODO: rename LoincService to something like LabService to be more accurate
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings({"checkstyle:TodoComment"})
 public class LoincService {
+  // TODO: rename LoincService to something like LabService to be more accurate
 
   private final LoincFhirClient loincFhirClient;
   private final LoincStagingRepository loincStagingRepository;
@@ -48,20 +49,21 @@ public class LoincService {
   // TODO: standardize how we authenticate REST endpoints
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
-  // todo mark as transactional / account for a sync that fails halfway - how do we want to recover
+  // TODO mark as transactional / account for a sync that fails halfway - how do we want to
+  // recover
   // from that?
   public void syncLabs() {
     log.info("Lab sync started");
     Instant startTime = Instant.now();
     PageRequest pageRequest = PageRequest.of(0, PAGE_SIZE);
-    // todo rename `futures` to be clearer - what is it a future of
+    // TODO rename `futures` to be clearer - what is it a future of
     List<CompletableFuture<Response>> futures = new ArrayList<>();
     List<Lab> labs = new ArrayList<>();
-    // todo update db to skip failed loincs next time?
+    // TODO update db to skip failed loincs next time?
     List<LoincStaging> failedLoincs = new ArrayList<>();
     List<LoincStaging> successLoincs = new ArrayList<>();
     Page<LoincStaging> loincPage = loincStagingRepository.findAll(pageRequest);
-    // todo distinguish when a lab is actually brand new to the database
+    // TODO distinguish when a lab is actually brand new to the database
     int labsAmount = 0;
 
     while (loincPage.hasNext()) {
@@ -86,7 +88,7 @@ public class LoincService {
         // TODO: DanS: we should probably consider accounting for service disruptions and short
         // circuiting these syncs when appropriate.
         if (response.status() != HttpStatus.SC_OK) {
-          // todo account for 404s vs 5xx errors
+          // TODO account for 404s vs 5xx errors
           failedLoincs.add(loinc);
           log.error(
               "Received a {} status code from the LOINC API response for: {}",
@@ -96,7 +98,7 @@ public class LoincService {
         }
         Optional<Parameters> parameters = parseResponseToParameters(response);
         if (parameters.isEmpty()) {
-          // todo: what does this mean (@dan p)
+          // TODO: what does this mean (@dan p)
           failedLoincs.add(loinc);
           continue;
         }
@@ -113,8 +115,8 @@ public class LoincService {
       log.info("LOINC API response parsed to {} labs", labs.size());
       labs = reduceLabs(labs, successLoincs);
       log.info("Labs reduced to {} labs", labs.size());
-      // todo bulk operation on saveAll (this function is saving them sequentially)
-      // todo once bulk saveAll in place, move this db operation out of the loop?
+      // TODO bulk operation on saveAll (this function is saving them sequentially)
+      // TODO once bulk saveAll in place, move this db operation out of the loop?
       labRepository.saveAll(labs);
       log.info("Data written to lab table.");
       log.info("Completed page: {}", loincPage.getNumber());
@@ -129,7 +131,7 @@ public class LoincService {
       // where possible
       loincPage = loincStagingRepository.findAll(pageRequest);
     }
-    // todo does it make sense to have the insert into this table be smarter, so we dont have to
+    // TODO does it make sense to have the insert into this table be smarter, so we dont have to
     // empty it
     clearLoincStaging();
     Instant stopTime = Instant.now();
@@ -161,7 +163,7 @@ public class LoincService {
     return Optional.of(parameters);
   }
 
-  // todo write a unit test
+  // TODO write a unit test
   private Optional<Lab> parametersToLab(LoincStaging loinc, Parameters parameters) {
     List<Parameters.ParametersParameterComponent> parameter = parameters.getParameter();
 
@@ -174,7 +176,7 @@ public class LoincService {
       display = displayParam.get().getValue().toString();
     }
 
-    // todo are any of these required to build a valid fhir bundle? are all of these defaults
+    // TODO are any of these required to build a valid fhir bundle? are all of these defaults
     // correct / safe
     String description = null;
     String longCommonName = "";
@@ -267,7 +269,7 @@ public class LoincService {
             panel));
   }
 
-  // todo write a unit test
+  // TODO write a unit test
   private List<Lab> reduceLabs(List<Lab> labs, List<LoincStaging> loincs) {
     List<String> codes = new ArrayList<>();
     List<Lab> labsToSave = new ArrayList<>();
