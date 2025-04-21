@@ -196,7 +196,6 @@ class CsvValidatorUtilsTest {
     invalidDates.add(new ValueOrError("00/01/2023", "date"));
     invalidDates.add(new ValueOrError("1/32/2023", "date"));
     invalidDates.add(new ValueOrError("1/1/23", "date"));
-    invalidDates.add(new ValueOrError("1/1/23", "date"));
     invalidDates.add(new ValueOrError("11/00/2023", "date"));
     invalidDates.add(new ValueOrError("0/31/2023", "date"));
     invalidDates.add(new ValueOrError("10/0/2023", "date"));
