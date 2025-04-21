@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Entity
 @Setter
-public class SpecimenBodySite extends AuditedEntity {
+public class SpecimenBodysite extends AuditedEntity {
 
   @Getter
   @Column(nullable = false)
@@ -25,7 +25,7 @@ public class SpecimenBodySite extends AuditedEntity {
   @Column(nullable = false)
   private String snomedSiteDisplay;
 
-  public SpecimenBodySite(
+  public SpecimenBodysite(
       String snomedSpecimenCode,
       String snomedSpecimenDisplay,
       String snomedSiteCode,
@@ -37,7 +37,7 @@ public class SpecimenBodySite extends AuditedEntity {
     this.snomedSiteDisplay = snomedSiteDisplay;
   }
 
-  protected SpecimenBodySite() {
+  protected SpecimenBodysite() {
     /* for hibernate */
   }
 }

@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Specimen;
-import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
+import gov.cdc.usds.simplereport.db.model.SpecimenBodysite;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
-import gov.cdc.usds.simplereport.db.repository.SpecimenBodySiteRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenBodysiteRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import java.io.UncheckedIOException;
 import java.net.URI;
@@ -32,14 +32,14 @@ import org.springframework.stereotype.Service;
 @SuppressWarnings({"checkstyle:TodoComment"})
 public class SpecimenService {
   private final SpecimenRepository specimenRepository;
-  private final SpecimenBodySiteRepository specimenBodySiteRepository;
+  private final SpecimenBodysiteRepository specimenBodySiteRepository;
 
   @Value("${umls.api-key}")
   private String umlsApiKey;
 
   private final LabRepository labRepository;
 
-  private List<SpecimenBodySite> bodySites = new ArrayList<SpecimenBodySite>();
+  private List<SpecimenBodysite> bodySites = new ArrayList<SpecimenBodysite>();
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
@@ -176,7 +176,7 @@ public class SpecimenService {
   private List<Map<String, String>> processInitialSnomedRelations(
       Map<String, List<Map<String, Object>>> snomedsByLoinc) {
     List<Map<String, String>> specimens = new ArrayList<>();
-    SpecimenBodySite bodySite;
+    SpecimenBodysite bodySite;
     for (String loinc : snomedsByLoinc.keySet()) {
       for (Map<String, Object> snomed : snomedsByLoinc.get(loinc)) {
         CompletableFuture<HttpResponse<String>> responseFuture =
@@ -218,7 +218,7 @@ public class SpecimenService {
             if (Objects.equals(relationLabel, "has_specimen_source_topography")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
               bodySite =
-                  new SpecimenBodySite(
+                  new SpecimenBodysite(
                       snomedCode,
                       snomedDisplay,
                       relatedIdParts[relatedIdParts.length - 1],
@@ -237,7 +237,7 @@ public class SpecimenService {
             if (Objects.equals(relationLabel, "specimen_source_topography_of")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
               bodySite =
-                  new SpecimenBodySite(
+                  new SpecimenBodysite(
                       relatedIdParts[relatedIdParts.length - 1],
                       result.get("relatedIdName").toString(),
                       snomedCode,
@@ -290,9 +290,10 @@ public class SpecimenService {
   private void saveSpecimens(List<Map<String, String>> rawSpecimens) {
     // List<Specimen> specimens = new ArrayList<>();
     for (Map<String, String> rawSpecimen : rawSpecimens) {
-      Specimen foundSpecimen =
-          specimenRepository.findByLoincSystemAndSnomedCodes(
-              rawSpecimen.get("loincSystemCode"), rawSpecimen.get("snomedCode"));
+
+      Specimen foundSpecimen = null;
+      //          specimenRepository.findByLoincSystemAndSnomedCodes(
+      //              rawSpecimen.get("loincSystemCode"), rawSpecimen.get("snomedCode"));
       /*
       if (foundSpecimen != null) {
           specimens.add(foundSpecimen);
@@ -326,9 +327,9 @@ public class SpecimenService {
     if (!bodySites.isEmpty()) {
       // TODO: We may want to move this duplicate check into the process
       //  of populating the list of bodySites
-      for (SpecimenBodySite specimenBodySite : bodySites) {
-        SpecimenBodySite foundBodySite =
-            specimenBodySiteRepository.findBySnomedSpecimenAndSiteCodes(
+      for (SpecimenBodysite specimenBodySite : bodySites) {
+        SpecimenBodysite foundBodySite =
+            specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
                 specimenBodySite.getSnomedSpecimenCode(), specimenBodySite.getSnomedSiteCode());
         if (foundBodySite != null) {
           continue;
