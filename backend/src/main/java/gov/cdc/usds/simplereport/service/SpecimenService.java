@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Specimen;
-import gov.cdc.usds.simplereport.db.model.SpecimenBodysite;
+import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
-import gov.cdc.usds.simplereport.db.repository.SpecimenBodysiteRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenBodySiteRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import java.io.UncheckedIOException;
 import java.net.URI;
@@ -32,14 +32,12 @@ import org.springframework.stereotype.Service;
 @SuppressWarnings({"checkstyle:TodoComment"})
 public class SpecimenService {
   private final SpecimenRepository specimenRepository;
-  private final SpecimenBodysiteRepository specimenBodySiteRepository;
+  private final SpecimenBodySiteRepository specimenBodySiteRepository;
 
   @Value("${umls.api-key}")
   private String umlsApiKey;
 
   private final LabRepository labRepository;
-
-  private List<SpecimenBodysite> bodySites = new ArrayList<SpecimenBodysite>();
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
@@ -92,12 +90,7 @@ public class SpecimenService {
     }
 
     sendInitialSnomedRelationsRequests(snomedsByLoinc, client);
-    List<Map<String, String>> specimens = processInitialSnomedRelations(snomedsByLoinc);
-    log.info("Saving specimens to the specimen table.");
-    saveSpecimens(specimens);
-    log.info("Specimens saved.");
-    saveSpecimenBodySites();
-    log.info("Specimen Body Sites saved.");
+    processAndSaveInitialSnomedRelations(snomedsByLoinc);
   }
 
   private Optional<HttpClient> getHttpClient() {
@@ -142,6 +135,7 @@ public class SpecimenService {
     for (int i = 0; i < results.length(); i++) {
       Map<String, Object> code = new HashMap<>();
       JSONObject result = (JSONObject) results.get(i);
+      // TODO: Refactor to use Specimen.java object and return List<Specimen>?
       code.put("loincSystemCode", loincSystemCode);
       code.put("loincSystemDisplay", loincSystemDisplay);
       code.put("snomedCode", result.get("ui").toString());
@@ -173,10 +167,11 @@ public class SpecimenService {
 
   // TODO: Test processInitialSnomedRelations correctly identifies specimens
   // TODO: Test handling of different relation types in processInitialSnomedRelations
-  private List<Map<String, String>> processInitialSnomedRelations(
+  private void processAndSaveInitialSnomedRelations(
       Map<String, List<Map<String, Object>>> snomedsByLoinc) {
     List<Map<String, String>> specimens = new ArrayList<>();
-    SpecimenBodysite bodySite;
+    List<SpecimenBodySite> bodySites = new ArrayList<>();
+
     for (String loinc : snomedsByLoinc.keySet()) {
       for (Map<String, Object> snomed : snomedsByLoinc.get(loinc)) {
         CompletableFuture<HttpResponse<String>> responseFuture =
@@ -217,13 +212,13 @@ public class SpecimenService {
             // if there is an associated body site, store that now as well
             if (Objects.equals(relationLabel, "has_specimen_source_topography")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
-              bodySite =
-                  new SpecimenBodysite(
-                      snomedCode,
-                      snomedDisplay,
-                      relatedIdParts[relatedIdParts.length - 1],
-                      result.get("relatedIdName").toString());
-              bodySites.add(bodySite);
+              bodySites.add(
+                  SpecimenBodySite.builder()
+                      .snomedSpecimenCode(snomedCode)
+                      .snomedSpecimenDisplay(snomedDisplay)
+                      .snomedSiteCode(relatedIdParts[relatedIdParts.length - 1])
+                      .snomedSiteDisplay(result.get("relatedIdName").toString())
+                      .build());
             }
             // otherwise if the concept isn't a specimen but is a body site
             // due to the crosswalk finding a body site instead of a specimen in snomed
@@ -236,13 +231,13 @@ public class SpecimenService {
             // and store them in the bodysite table as well
             if (Objects.equals(relationLabel, "specimen_source_topography_of")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
-              bodySite =
-                  new SpecimenBodysite(
-                      relatedIdParts[relatedIdParts.length - 1],
-                      result.get("relatedIdName").toString(),
-                      snomedCode,
-                      snomedDisplay);
-              bodySites.add(bodySite);
+              bodySites.add(
+                  SpecimenBodySite.builder()
+                      .snomedSpecimenCode(relatedIdParts[relatedIdParts.length - 1])
+                      .snomedSpecimenDisplay(result.get("relatedIdName").toString())
+                      .snomedSiteCode(snomedCode)
+                      .snomedSiteDisplay(snomedDisplay)
+                      .build());
             }
           }
           if (saveSnomed) {
@@ -257,7 +252,11 @@ public class SpecimenService {
         }
       }
     }
-    return specimens;
+    log.info("Saving specimens to the specimen table.");
+    saveSpecimens(specimens);
+    log.info("Specimens saved.");
+    saveNewSpecimenBodySites(bodySites);
+    log.info("Specimen Body Sites saved.");
   }
 
   // TODO: Test saveSpecimens skips existing specimens
@@ -322,13 +321,13 @@ public class SpecimenService {
   // TODO: Test saveSpecimenBodySites saves new bodySites
   // TODO: Test saveSpecimenBodySites skips existing specimens
   @SuppressWarnings({"checkstyle:illegalcatch"})
-  private void saveSpecimenBodySites() {
+  private void saveNewSpecimenBodySites(List<SpecimenBodySite> bodySites) {
 
     if (!bodySites.isEmpty()) {
       // TODO: We may want to move this duplicate check into the process
       //  of populating the list of bodySites
-      for (SpecimenBodysite specimenBodySite : bodySites) {
-        SpecimenBodysite foundBodySite =
+      for (SpecimenBodySite specimenBodySite : bodySites) {
+        SpecimenBodySite foundBodySite =
             specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
                 specimenBodySite.getSnomedSpecimenCode(), specimenBodySite.getSnomedSiteCode());
         if (foundBodySite != null) {

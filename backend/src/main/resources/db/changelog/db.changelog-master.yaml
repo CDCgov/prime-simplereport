@@ -6221,13 +6221,13 @@ databaseChangeLog:
         - dropTable:
             tableName: specimen
   - changeSet:
-      id: add-specimen-bodysite-table
+      id: add-specimen-body-site-table
       author: ubz8@cdc.gov
       changes:
         - tagDatabase:
-            tag: add-specimen-bodysite-table
+            tag: add-specimen-body-site-table
         - createTable:
-            tableName: specimen_bodysite
+            tableName: specimen_body_site
             remarks: Specific body sites or locations for specimens identified by SNOMED code and mapped to SNOMED specimen codes.
             columns:
               - column:
@@ -6294,21 +6294,21 @@ databaseChangeLog:
                     references: api_user
                     foreignKeyName: fk__anyentity__updated_by
         - createIndex:
-            tableName: specimen_bodysite
-            indexName: ix__bodysite_snomed_specimen_code
+            tableName: specimen_body_site
+            indexName: ix__body_site_snomed_specimen_code
             columns:
               - column:
                   name: snomed_specimen_code
         - createIndex:
-            tableName: specimen_bodysite
-            indexName: ix__bodysite_snomed_site_code
+            tableName: specimen_body_site
+            indexName: ix__body_site_snomed_site_code
             columns:
               - column:
                   name: snomed_site_code
         - addUniqueConstraint:
-            tableName: specimen_bodysite
+            tableName: specimen_body_site
             columnNames: snomed_specimen_code, snomed_site_code
             constraintName: uk__snomed_spec_code__snomed_site_code
       rollback:
         - dropTable:
-            tableName: specimen_bodysite
+            tableName: specimen_body_site
