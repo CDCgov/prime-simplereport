@@ -297,7 +297,7 @@ public class SpecimenService {
         specimens.stream()
             .filter(
                 specimen ->
-                    specimenRepository.findByLoincSystemAndSnomedCodes(
+                    specimenRepository.findByloincSystemCodeAndSnomedCode(
                             specimen.getLoincSystemCode(), specimen.getSnomedCode())
                         == null)
             .toList();
