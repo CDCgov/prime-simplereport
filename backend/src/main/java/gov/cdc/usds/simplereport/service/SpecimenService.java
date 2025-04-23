@@ -259,7 +259,7 @@ public class SpecimenService {
       }
     }
     log.info("Saving specimens to the specimen table.");
-    saveSpecimens(specimensToSave);
+    saveNewSpecimens(specimensToSave);
     log.info("Specimens saved.");
     saveNewSpecimenBodySites(bodySitesToSave);
     log.info("Specimen Body Sites saved.");
@@ -292,8 +292,8 @@ public class SpecimenService {
           tableName: specimen
           constraintName: uk__loinc_system_code__snomed_code
   */
-  private void saveSpecimens(List<Specimen> specimens) {
-    List<Specimen> specimensToSave =
+  private void saveNewSpecimens(List<Specimen> specimens) {
+    List<Specimen> newSpecimensToSave =
         specimens.stream()
             .filter(
                 specimen ->
@@ -302,7 +302,7 @@ public class SpecimenService {
                         == null)
             .toList();
 
-    specimenRepository.saveAll(specimensToSave);
+    specimenRepository.saveAll(newSpecimensToSave);
   }
 
   // TODO: Test saveSpecimenBodySites saves new bodySites
@@ -311,7 +311,7 @@ public class SpecimenService {
   private void saveNewSpecimenBodySites(List<SpecimenBodySite> bodySites) {
     // TODO: We may want to move this duplicate check into the process
     //  of populating the list of bodySites
-    List<SpecimenBodySite> bodySitesToSave =
+    List<SpecimenBodySite> newBodySitesToSave =
         bodySites.stream()
             .filter(
                 specimenBodySite ->
@@ -322,7 +322,7 @@ public class SpecimenService {
             .toList();
 
     try {
-      specimenBodySiteRepository.saveAll(bodySitesToSave);
+      specimenBodySiteRepository.saveAll(newBodySitesToSave);
     } catch (Exception exception) {
       log.error(exception.getMessage());
     }
