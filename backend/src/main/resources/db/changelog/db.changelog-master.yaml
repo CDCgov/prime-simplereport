@@ -6312,3 +6312,24 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: specimen_body_site
+  - changeSet:
+      id: update-specimen-unique-constraint
+      author: tlx4@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: update-specimen-unique-constraint
+        - dropUniqueConstraint:
+            tableName: specimen
+            constraintName: specimen_snomed_code_key
+        - addUniqueConstraint:
+            tableName: specimen
+            columnNames: loinc_system_code, snomed_code
+            constraintName: uk__loinc_system_code__snomed_code
+      rollback:
+        - addUniqueConstraint:
+            tableName: specimen
+            columnNames: snomed_code
+            constraintName: specimen_snomed_code_key
+        - dropUniqueConstraint:
+            tableName: specimen
+            constraintName: uk__loinc_system_code__snomed_code

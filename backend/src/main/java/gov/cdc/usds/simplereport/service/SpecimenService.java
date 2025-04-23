@@ -15,11 +15,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,40 +57,41 @@ public class SpecimenService {
     HttpClient client = optionalClient.get();
     log.info("HttpClient created.");
 
-    Optional<List<List<String>>> optionalSystemCodes = labRepository.findDistinctSystemCodes();
-    if (optionalSystemCodes.isEmpty()) {
+    Optional<List<List<String>>> optionalLoincSystemCodes = labRepository.findDistinctSystemCodes();
+    if (optionalLoincSystemCodes.isEmpty()) {
       log.error("Specimen sync failed: unable to read LOINC system codes from the lab table.");
       return;
     }
-    List<List<String>> systemCodes = optionalSystemCodes.get();
+    List<List<String>> loincSystemCodes = optionalLoincSystemCodes.get();
     log.info("LOINC System codes read from lab table.");
 
     List<CompletableFuture<HttpResponse<String>>> loincToSnomedResponses = new ArrayList<>();
-    systemCodes.forEach(
+    loincSystemCodes.forEach(
         code ->
             loincToSnomedResponses.add(
                 client.sendAsync(
                     getLoinctoSnomedRequest(code.get(0)), HttpResponse.BodyHandlers.ofString())));
     log.info("Async batch of LOINC to SNOMED conversions sent.");
     CompletableFuture.allOf(
-            loincToSnomedResponses.toArray(new CompletableFuture[systemCodes.size()]))
+            loincToSnomedResponses.toArray(new CompletableFuture[loincSystemCodes.size()]))
         .join();
     log.info("Async batch of LOINC to SNOMED conversions completed.");
 
     HttpResponse<String> response;
-    Map<String, List<Map<String, Object>>> snomedsByLoinc = new HashMap<>();
-    for (int i = 0; i < systemCodes.size(); i++) {
+    Map<String, List<Specimen>> specimensByLoincSystemCode = new HashMap<>();
+    for (int i = 0; i < loincSystemCodes.size(); i++) {
       response = loincToSnomedResponses.get(i).getNow(null);
       log.info(response.body());
-      String loincSystemCode = systemCodes.get(i).get(0);
-      String loincSystemDisplay = systemCodes.get(i).get(1);
-      snomedsByLoinc.put(
+      String loincSystemCode = loincSystemCodes.get(i).get(0);
+      String loincSystemDisplay = loincSystemCodes.get(i).get(1);
+      specimensByLoincSystemCode.put(
           loincSystemCode,
           parseCodeDisplayPairsFromUmlsResponse(response, loincSystemCode, loincSystemDisplay));
     }
 
-    sendInitialSnomedRelationsRequests(snomedsByLoinc, client);
-    processAndSaveInitialSnomedRelations(snomedsByLoinc);
+    Map<String, CompletableFuture<HttpResponse<String>>> loincSnomedResponses =
+        sendInitialSnomedRelationsRequests(specimensByLoincSystemCode, client);
+    processAndSaveInitialSnomedRelations(specimensByLoincSystemCode, loincSnomedResponses);
   }
 
   private Optional<HttpClient> getHttpClient() {
@@ -127,63 +128,72 @@ public class SpecimenService {
   }
 
   // TODO: Test parseCodeDisplayPairsFromUmlsResponse correctly parses API response
-  private List<Map<String, Object>> parseCodeDisplayPairsFromUmlsResponse(
+  private List<Specimen> parseCodeDisplayPairsFromUmlsResponse(
       HttpResponse<String> response, String loincSystemCode, String loincSystemDisplay) {
     JSONObject body = new JSONObject(response.body());
     JSONArray results = (JSONArray) body.get("result");
-    List<Map<String, Object>> codes = new ArrayList<>();
+    List<Specimen> codes = new ArrayList<>();
     for (int i = 0; i < results.length(); i++) {
-      Map<String, Object> code = new HashMap<>();
       JSONObject result = (JSONObject) results.get(i);
-      // TODO: Refactor to use Specimen.java object and return List<Specimen>?
-      code.put("loincSystemCode", loincSystemCode);
-      code.put("loincSystemDisplay", loincSystemDisplay);
-      code.put("snomedCode", result.get("ui").toString());
-      code.put("snomedDisplay", result.get("name").toString());
-      codes.add(code);
+      codes.add(
+          new Specimen(
+              loincSystemCode,
+              loincSystemDisplay,
+              result.get("ui").toString(),
+              result.get("name").toString()));
     }
     return codes;
   }
 
   // TODO: Test processing of SNOMED relations with mock HTTP responses
   // TODO: Test sendInitialSnomedRelationsRequests correctly processes all SNOMED codes
-  private void sendInitialSnomedRelationsRequests(
-      Map<String, List<Map<String, Object>>> snomedsByLoinc, HttpClient client) {
+  private Map<String, CompletableFuture<HttpResponse<String>>> sendInitialSnomedRelationsRequests(
+      Map<String, List<Specimen>> specimensByLoincSystemCode, HttpClient client) {
     List<CompletableFuture<HttpResponse<String>>> futures = new ArrayList<>();
-    for (String loinc : snomedsByLoinc.keySet()) {
-      for (Map<String, Object> snomed : snomedsByLoinc.get(loinc)) {
+    Map<String, CompletableFuture<HttpResponse<String>>> loincSnomedResponses = new HashMap<>();
+    for (String loincSystemCode : specimensByLoincSystemCode.keySet()) {
+      for (Specimen specimen : specimensByLoincSystemCode.get(loincSystemCode)) {
         CompletableFuture<HttpResponse<String>> future =
             client.sendAsync(
-                getSnomedRelationsRequest(snomed.get("snomedCode").toString()),
+                getSnomedRelationsRequest(specimen.getSnomedCode()),
                 HttpResponse.BodyHandlers.ofString());
         futures.add(future);
-        snomed.put("initialRelationRequest", future);
+        loincSnomedResponses.put(
+            "initialRelationRequest-loinc:"
+                + loincSystemCode
+                + "-snomed:"
+                + specimen.getSnomedCode(),
+            future);
       }
     }
     log.info("Snomed initial relation requests sent.");
     CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     log.info("Snomed initial relation requests completed.");
+    return loincSnomedResponses;
   }
 
   // TODO: Test processInitialSnomedRelations correctly identifies specimens
   // TODO: Test handling of different relation types in processInitialSnomedRelations
   private void processAndSaveInitialSnomedRelations(
-      Map<String, List<Map<String, Object>>> snomedsByLoinc) {
-    List<Map<String, String>> specimens = new ArrayList<>();
-    List<SpecimenBodySite> bodySites = new ArrayList<>();
+      Map<String, List<Specimen>> specimensByLoincSystemCode,
+      Map<String, CompletableFuture<HttpResponse<String>>> loincSnomedResponses) {
+    List<Specimen> specimensToSave = new ArrayList<>();
+    List<SpecimenBodySite> bodySitesToSave = new ArrayList<>();
 
-    for (String loinc : snomedsByLoinc.keySet()) {
-      for (Map<String, Object> snomed : snomedsByLoinc.get(loinc)) {
+    // In specimensByLoincSystemCode, each loincSystemCode has a list of specimens due to the
+    // many-to-many relationship
+    // of loincSystemCode to snomedCode for specimens
+    for (String loincSystemCode : specimensByLoincSystemCode.keySet()) {
+      for (Specimen specimen : specimensByLoincSystemCode.get(loincSystemCode)) {
         CompletableFuture<HttpResponse<String>> responseFuture =
-            (CompletableFuture<HttpResponse<String>>) snomed.get("initialRelationRequest");
+            loincSnomedResponses.get(
+                "initialRelationRequest-loinc:"
+                    + loincSystemCode
+                    + "-snomed:"
+                    + specimen.getSnomedCode());
         HttpResponse<String> response = responseFuture.getNow(null);
         JSONObject body = new JSONObject(response.body());
         JSONArray results = (JSONArray) body.get("result");
-
-        String loincSystemCode = snomed.get("loincSystemCode").toString();
-        String loincSystemDisplay = snomed.get("loincSystemDisplay").toString();
-        String snomedCode = snomed.get("snomedCode").toString();
-        String snomedDisplay = snomed.get("snomedDisplay").toString();
 
         // Looping through all relationships (of all types) for the snomed specimen
         for (int i = 0; i < results.length(); i++) {
@@ -193,29 +203,25 @@ public class SpecimenService {
           // Ensure the snomed specimen is an actual specimen
           // TODO: Could possibly use an ancestor hierarchy query for the Specimen Concept
           //    to ensure the snomed specimen concept is a descedant
-          if (snomedDisplay.contains("Specimen") || snomedDisplay.contains("specimen")) {
+          if (specimen.getSnomedDisplay().contains("Specimen")
+              || specimen.getSnomedDisplay().contains("specimen")) {
             // Here we are including also all the children specimens of the
             //  snomed specimen concept in question
-            if (Objects.equals(relationLabel, "inverse_isa")) {
+            if (StringUtils.equals(relationLabel, "inverse_isa")) {
               saveSnomed = true;
-              Map<String, String> specimen = new HashMap<>();
-              specimen.put("loincSystemCode", loincSystemCode);
-              specimen.put("loincSystemDisplay", loincSystemDisplay);
-              specimen.put("snomedCode", snomedCode);
-              specimen.put("snomedDisplay", snomedDisplay);
-              specimens.add(specimen);
+              specimensToSave.add(specimen);
               // TODO: we could potentiall make another call here or later
               //  to get the details of the 'children' specimens to gather
               //  the body site for them as well - for now will skip this
             }
 
             // if there is an associated body site, store that now as well
-            if (Objects.equals(relationLabel, "has_specimen_source_topography")) {
+            if (StringUtils.equals(relationLabel, "has_specimen_source_topography")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
-              bodySites.add(
+              bodySitesToSave.add(
                   SpecimenBodySite.builder()
-                      .snomedSpecimenCode(snomedCode)
-                      .snomedSpecimenDisplay(snomedDisplay)
+                      .snomedSpecimenCode(specimen.getSnomedCode())
+                      .snomedSpecimenDisplay(specimen.getSnomedDisplay())
                       .snomedSiteCode(relatedIdParts[relatedIdParts.length - 1])
                       .snomedSiteDisplay(result.get("relatedIdName").toString())
                       .build());
@@ -223,39 +229,39 @@ public class SpecimenService {
             // otherwise if the concept isn't a specimen but is a body site
             // due to the crosswalk finding a body site instead of a specimen in snomed
             // then grab the specimens that relate to the body site and store those
-          } else if (Objects.equals(relationLabel, "specimen_source_topography_of")
-              || Objects.equals(relationLabel, "specimen_substance_of")) {
+          } else if (StringUtils.equals(relationLabel, "specimen_source_topography_of")
+              || StringUtils.equals(relationLabel, "specimen_substance_of")) {
             saveSnomed = true;
 
             // this also provides us the ability to get the body site and specimens
             // and store them in the bodysite table as well
-            if (Objects.equals(relationLabel, "specimen_source_topography_of")) {
+            if (StringUtils.equals(relationLabel, "specimen_source_topography_of")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
-              bodySites.add(
+              bodySitesToSave.add(
                   SpecimenBodySite.builder()
                       .snomedSpecimenCode(relatedIdParts[relatedIdParts.length - 1])
                       .snomedSpecimenDisplay(result.get("relatedIdName").toString())
-                      .snomedSiteCode(snomedCode)
-                      .snomedSiteDisplay(snomedDisplay)
+                      .snomedSiteCode(specimen.getSnomedCode())
+                      .snomedSiteDisplay(specimen.getSnomedDisplay())
                       .build());
             }
           }
           if (saveSnomed) {
-            Map<String, String> specimen = new HashMap<>();
             String[] relatedIdParts = result.get("relatedId").toString().split("/");
-            specimen.put("loincSystemCode", loincSystemCode);
-            specimen.put("loincSystemDisplay", loincSystemDisplay);
-            specimen.put("snomedCode", relatedIdParts[relatedIdParts.length - 1]);
-            specimen.put("snomedDisplay", result.get("relatedIdName").toString());
-            specimens.add(specimen);
+            specimensToSave.add(
+                new Specimen(
+                    specimen.getLoincSystemCode(),
+                    specimen.getLoincSystemDisplay(),
+                    relatedIdParts[relatedIdParts.length - 1],
+                    result.get("relatedIdName").toString()));
           }
         }
       }
     }
     log.info("Saving specimens to the specimen table.");
-    saveSpecimens(specimens);
+    saveSpecimens(specimensToSave);
     log.info("Specimens saved.");
-    saveNewSpecimenBodySites(bodySites);
+    saveNewSpecimenBodySites(bodySitesToSave);
     log.info("Specimen Body Sites saved.");
   }
 
@@ -286,59 +292,39 @@ public class SpecimenService {
           tableName: specimen
           constraintName: uk__loinc_system_code__snomed_code
   */
-  private void saveSpecimens(List<Map<String, String>> rawSpecimens) {
-    // List<Specimen> specimens = new ArrayList<>();
-    for (Map<String, String> rawSpecimen : rawSpecimens) {
+  private void saveSpecimens(List<Specimen> specimens) {
+    List<Specimen> specimensToSave =
+        specimens.stream()
+            .filter(
+                specimen ->
+                    specimenRepository.findByLoincSystemAndSnomedCodes(
+                            specimen.getLoincSystemCode(), specimen.getSnomedCode())
+                        == null)
+            .toList();
 
-      Specimen foundSpecimen = null;
-      //          specimenRepository.findByLoincSystemAndSnomedCodes(
-      //              rawSpecimen.get("loincSystemCode"), rawSpecimen.get("snomedCode"));
-      /*
-      if (foundSpecimen != null) {
-          specimens.add(foundSpecimen);
-      }
-      specimens.add( new Specimen(
-              rawSpecimen.get("loincSystemCode"),
-              rawSpecimen.get("loincSystemDisplay"),
-              rawSpecimen.get("snomedCode"),
-              rawSpecimen.get("snomedDisplay")
-          )
-      );
-      */
-      if (foundSpecimen != null) {
-        continue;
-      }
-      specimenRepository.save(
-          new Specimen(
-              rawSpecimen.get("loincSystemCode"),
-              rawSpecimen.get("loincSystemDisplay"),
-              rawSpecimen.get("snomedCode"),
-              rawSpecimen.get("snomedDisplay")));
-    }
-    // specimenRepository.saveAll(specimens);
+    specimenRepository.saveAll(specimensToSave);
   }
 
   // TODO: Test saveSpecimenBodySites saves new bodySites
   // TODO: Test saveSpecimenBodySites skips existing specimens
   @SuppressWarnings({"checkstyle:illegalcatch"})
   private void saveNewSpecimenBodySites(List<SpecimenBodySite> bodySites) {
+    // TODO: We may want to move this duplicate check into the process
+    //  of populating the list of bodySites
+    List<SpecimenBodySite> bodySitesToSave =
+        bodySites.stream()
+            .filter(
+                specimenBodySite ->
+                    specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
+                            specimenBodySite.getSnomedSpecimenCode(),
+                            specimenBodySite.getSnomedSiteCode())
+                        == null)
+            .toList();
 
-    if (!bodySites.isEmpty()) {
-      // TODO: We may want to move this duplicate check into the process
-      //  of populating the list of bodySites
-      for (SpecimenBodySite specimenBodySite : bodySites) {
-        SpecimenBodySite foundBodySite =
-            specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
-                specimenBodySite.getSnomedSpecimenCode(), specimenBodySite.getSnomedSiteCode());
-        if (foundBodySite != null) {
-          continue;
-        }
-        try {
-          specimenBodySiteRepository.save(specimenBodySite);
-        } catch (Exception exception) {
-          log.error(exception.getMessage());
-        }
-      }
+    try {
+      specimenBodySiteRepository.saveAll(bodySitesToSave);
+    } catch (Exception exception) {
+      log.error(exception.getMessage());
     }
   }
 }
