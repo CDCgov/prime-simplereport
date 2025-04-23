@@ -216,6 +216,7 @@ class CsvValidatorUtilsTest {
     validDateTimes.add(new ValueOrError("01/1/2023 00:00", "datetime"));
     validDateTimes.add(new ValueOrError("1/31/2023 05:50", "datetime"));
     validDateTimes.add(new ValueOrError("12/01/2023 1:01", "datetime"));
+    validDateTimes.add(new ValueOrError("12/01/2023", "datetime"));
     for (var datetime : validDateTimes) {
       assertThat(validateDateTime(datetime)).isEmpty();
     }
@@ -233,6 +234,7 @@ class CsvValidatorUtilsTest {
     invalidDateTimes.add(new ValueOrError("00/00/2023 07:30", "datetime"));
     invalidDateTimes.add(new ValueOrError("0/0/2023 10:23", "datetime"));
     invalidDateTimes.add(new ValueOrError("0/0/202 11:11", "datetime"));
+    invalidDateTimes.add(new ValueOrError("12/1/23", "datetime"));
     for (var datetime : invalidDateTimes) {
       assertThat(validateDateTime(datetime)).hasSize(1);
     }

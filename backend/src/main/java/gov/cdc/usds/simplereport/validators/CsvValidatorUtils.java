@@ -44,7 +44,9 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TRE
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.hasTimezoneSubstring;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.parseLocalDateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.timezoneAbbreviationZoneIdMap;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Stream.concat;
@@ -89,16 +91,6 @@ public class CsvValidatorUtils {
   // Days are limited to values between 1 and 31
   private static final String DATE_REGEX =
       "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}$";
-
-  /**
-   * Validates MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
-   *
-   * <p>Optional timezone code suffix which is checked as a valid timezone separately
-   *
-   * @see gov.cdc.usds.simplereport.utils.DateTimeUtils
-   */
-  private static final String DATE_TIME_REGEX =
-      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$";
 
   private static final String LOINC_CODE_REGEX = "([0-9]{5})-[0-9]";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
@@ -448,12 +440,30 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
-    if (input.getValue() != null
-        && errors.isEmpty()
-        && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
-      errors.addAll(validateDateTimeZoneCode(input));
+    String value = parseString(input.getValue());
+    List<FeedbackMessage> errors = new ArrayList<>();
+
+    if (value == null) {
+      return errors;
     }
+
+    try {
+      parseLocalDateTime(value, DATE_TIME_FORMATTER);
+
+      if (hasTimezoneSubstring(value)) {
+        errors.addAll(validateDateTimeZoneCode(input));
+      }
+    } catch (DateTimeParseException | StringIndexOutOfBoundsException e) {
+      errors.add(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(ResultUploadErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
+    }
+
     return errors;
   }
 
