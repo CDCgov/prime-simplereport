@@ -92,16 +92,6 @@ public class CsvValidatorUtils {
   private static final String DATE_REGEX =
       "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}$";
 
-  /**
-   * Validates MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
-   *
-   * <p>Optional timezone code suffix which is checked as a valid timezone separately
-   *
-   * @see gov.cdc.usds.simplereport.utils.DateTimeUtils
-   */
-  private static final String DATE_TIME_REGEX =
-      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$";
-
   private static final String LOINC_CODE_REGEX = "([0-9]{5})-[0-9]";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
