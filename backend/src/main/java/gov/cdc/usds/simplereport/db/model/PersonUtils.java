@@ -709,7 +709,7 @@ public class PersonUtils {
           "not_hispanic", not_hispanic,
           "not hispanic or latino", not_hispanic,
           "2186-5", not_hispanic,
-          "refused", List.of("U", "unknown"));
+          "refused", List.of(MappingConstants.UNK_CODE, MappingConstants.UNKNOWN_STRING));
 
   public static final String HOSPITAL_LITERAL = "hospital";
   public static final String HOSPITAL_SNOMED = "22232009";
