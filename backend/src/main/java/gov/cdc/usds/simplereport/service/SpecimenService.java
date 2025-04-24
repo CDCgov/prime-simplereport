@@ -177,8 +177,9 @@ public class SpecimenService {
   private void processAndSaveInitialSnomedRelations(
       Map<String, List<Specimen>> specimensByLoincSystemCode,
       Map<String, CompletableFuture<HttpResponse<String>>> loincSnomedResponses) {
-    List<Specimen> specimensToSave = new ArrayList<>();
-    List<SpecimenBodySite> bodySitesToSave = new ArrayList<>();
+    Map<String, Specimen> deduplicatedLoincSnomedToSpecimen = new HashMap<>();
+    Map<String, SpecimenBodySite> deduplicatedSpecimenCodeSiteCodeToSpecimenBodySite =
+        new HashMap<>();
 
     // In specimensByLoincSystemCode, each loincSystemCode has a list of specimens due to the
     // many-to-many relationship
@@ -197,6 +198,11 @@ public class SpecimenService {
 
         // Looping through all relationships (of all types) for the snomed specimen
         for (int i = 0; i < results.length(); i++) {
+          // sometimes there are duplicates within results itself, see this endpoint using snomed
+          // 65216001
+          // https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/65216001/relations?apiKey=%s&pageSize=500&additionalRelationLabel=specimen_source_topography_of
+          // and compare the objects where "ui": "R126619655" and "ui": "R123156468"
+          // due to this, we have to deduplicate our loincSystemCode-snomedCode combinations
           JSONObject result = (JSONObject) results.get(i);
           boolean saveSnomed = false;
           String relationLabel = result.get("additionalRelationLabel").toString();
@@ -209,7 +215,8 @@ public class SpecimenService {
             //  snomed specimen concept in question
             if (StringUtils.equals(relationLabel, "inverse_isa")) {
               saveSnomed = true;
-              specimensToSave.add(specimen);
+              deduplicatedLoincSnomedToSpecimen.put(
+                  specimen.getLoincSystemCode() + specimen.getSnomedCode(), specimen);
               // TODO: we could potentiall make another call here or later
               //  to get the details of the 'children' specimens to gather
               //  the body site for them as well - for now will skip this
@@ -218,7 +225,8 @@ public class SpecimenService {
             // if there is an associated body site, store that now as well
             if (StringUtils.equals(relationLabel, "has_specimen_source_topography")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
-              bodySitesToSave.add(
+              deduplicatedSpecimenCodeSiteCodeToSpecimenBodySite.put(
+                  specimen.getSnomedCode() + relatedIdParts[relatedIdParts.length - 1],
                   SpecimenBodySite.builder()
                       .snomedSpecimenCode(specimen.getSnomedCode())
                       .snomedSpecimenDisplay(specimen.getSnomedDisplay())
@@ -237,7 +245,8 @@ public class SpecimenService {
             // and store them in the bodysite table as well
             if (StringUtils.equals(relationLabel, "specimen_source_topography_of")) {
               String[] relatedIdParts = result.get("relatedId").toString().split("/");
-              bodySitesToSave.add(
+              deduplicatedSpecimenCodeSiteCodeToSpecimenBodySite.put(
+                  relatedIdParts[relatedIdParts.length - 1] + specimen.getSnomedCode(),
                   SpecimenBodySite.builder()
                       .snomedSpecimenCode(relatedIdParts[relatedIdParts.length - 1])
                       .snomedSpecimenDisplay(result.get("relatedIdName").toString())
@@ -248,7 +257,8 @@ public class SpecimenService {
           }
           if (saveSnomed) {
             String[] relatedIdParts = result.get("relatedId").toString().split("/");
-            specimensToSave.add(
+            deduplicatedLoincSnomedToSpecimen.put(
+                specimen.getLoincSystemCode() + relatedIdParts[relatedIdParts.length - 1],
                 new Specimen(
                     specimen.getLoincSystemCode(),
                     specimen.getLoincSystemDisplay(),
@@ -259,39 +269,15 @@ public class SpecimenService {
       }
     }
     log.info("Saving specimens to the specimen table.");
-    saveNewSpecimens(specimensToSave);
+    saveNewSpecimens(new ArrayList<>(deduplicatedLoincSnomedToSpecimen.values()));
     log.info("Specimens saved.");
-    saveNewSpecimenBodySites(bodySitesToSave);
+    saveNewSpecimenBodySites(
+        new ArrayList<>(deduplicatedSpecimenCodeSiteCodeToSpecimenBodySite.values()));
     log.info("Specimen Body Sites saved.");
   }
 
   // TODO: Test saveSpecimens skips existing specimens
   // TODO: Test saveSpecimens correctly saves new specimens
-  /* TODO:
-    Add this code into the db.changelog-master.yaml file to add the proper constraint
-    but the code below to search for both the specimen and loinc system has been added:
-    - changeSet:
-    id: update-specimen-unique-constraint
-    author: tlx4@cdc.gov
-    changes:
-      - tagDatabase:
-          tag: update-specimen-unique-constraint
-      - dropUniqueConstraint:
-          tableName: specimen
-          constraintName: specimen_snomed_code_key
-      - addUniqueConstraint:
-          tableName: specimen
-          columnNames: loinc_system_code, snomed_code
-          constraintName: uk__loinc_system_code__snomed_code
-    rollback:
-      - addUniqueConstraint:
-          tableName: specimen
-          columnNames: snomed_code
-          constraintName: specimen_snomed_code_key
-      - dropUniqueConstraint:
-          tableName: specimen
-          constraintName: uk__loinc_system_code__snomed_code
-  */
   private void saveNewSpecimens(List<Specimen> specimens) {
     List<Specimen> newSpecimensToSave =
         specimens.stream()
@@ -321,10 +307,6 @@ public class SpecimenService {
                         == null)
             .toList();
 
-    try {
-      specimenBodySiteRepository.saveAll(newBodySitesToSave);
-    } catch (Exception exception) {
-      log.error(exception.getMessage());
-    }
+    specimenBodySiteRepository.saveAll(newBodySitesToSave);
   }
 }
