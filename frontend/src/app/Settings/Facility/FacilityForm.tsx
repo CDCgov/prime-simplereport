@@ -97,6 +97,7 @@ const getDefaultValues = (facility: Facility) => {
     devices: facility.deviceTypes.length
       ? facility.deviceTypes.map((device) => device.internalId)
       : [],
+    testOrders: [],
   };
 };
 const FacilityForm: React.FC<Props> = (props) => {
