@@ -127,10 +127,10 @@ const Header: React.FC<{}> = () => {
     },
     {
       url: "/queue",
-      displayText: "Conduct tests",
+      displayText: "Report tests",
       displayPermissions: canViewTestQueue,
       className: getNavItemClassName,
-      key: "conduct-test-nav-link",
+      key: "report-test-nav-link",
     },
     {
       url: "/results",

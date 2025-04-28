@@ -632,7 +632,7 @@ describe("Admin manage users", () => {
 
       await screen.findByText(/user role/i);
       const roleRadioBtn = await screen.findByRole("radio", {
-        name: /standard user conduct tests, bulk upload results, manage test results, and patient profiles/i,
+        name: /standard user report tests, bulk upload results, manage test results, and patient profiles/i,
       });
       await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
     });
@@ -656,7 +656,7 @@ describe("Admin manage users", () => {
       await user.click(orgAccessTab);
 
       const roleRadioBtn = await screen.findByRole("radio", {
-        name: /standard user conduct tests, bulk upload results, manage test results, and patient profiles/i,
+        name: /standard user report tests, bulk upload results, manage test results, and patient profiles/i,
       });
       await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
 

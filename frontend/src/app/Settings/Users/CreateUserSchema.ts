@@ -3,12 +3,12 @@ import { Role } from "../../permissions";
 export const ROLE_OPTIONS: { value: Role; label: string }[] = [
   {
     value: "ENTRY_ONLY",
-    label: "Testing only (conduct tests)",
+    label: "Testing only (report tests)",
   },
   {
     value: "USER",
     label:
-      "Standard user (conduct tests, manage test results and patient profiles)",
+      "Standard user (report tests, manage test results and patient profiles)",
   },
   {
     value: "ADMIN",
