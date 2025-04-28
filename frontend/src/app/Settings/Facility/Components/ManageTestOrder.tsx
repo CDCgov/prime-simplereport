@@ -37,27 +37,32 @@ const CardBody = ({
 }: {
   className?: string;
   children?: React.ReactNode;
-}) => <div className={classNames("usa-card__body", className)}>{children}</div>;
+}) => {
+  return (
+    <div className={classNames("usa-card__body", className)}>{children}</div>
+  );
+};
 
 const LabSearchResults = (props: {
+  dropDownRef: React.RefObject<HTMLDivElement>;
   items: { label: string; value: string }[];
-  setSelectedItem: (item: any) => void;
+  // setSelectedItem: (item: any) => void;
   loading: boolean;
-  headers: string[];
-  resultCount: number;
   children: React.ReactNode;
 }) => {
-  const { headers, loading, items } = props;
-  console.log({ loading });
+  const { loading, items, dropDownRef, ...rest } = props;
+  const headers = ["Name", "LOINC Code", "Action"];
 
   return (
     <SearchResults
       headers={headers}
       loading={loading}
       resultCount={items.length}
+      dropDownRef={dropDownRef}
+      {...rest}
     >
       {items.map((item, idx) => (
-        <tr key={item.value} aria-label={`lab-${idx}`}>
+        <tr key={`${item.value}-${idx}`} aria-label={`lab-${idx}`}>
           <td>{item.label}</td>
           <td>{item.value}</td>
           <td>
@@ -75,9 +80,11 @@ const LabSearchResults = (props: {
 
 const ManageTestOrder = () => {
   const [conditions, setConditions] = useState<string[]>([]);
+  const [labs, setLabs] = useState<string[]>([]);
 
   const { data: conditionsData, loading: conditionsLoading } =
     useGetConditionsQuery();
+
   const conditionsOptions = buildConditionsOptionList(
     conditionsData?.conditions ?? []
   );
@@ -89,12 +96,21 @@ const ManageTestOrder = () => {
   const { data: labsData, loading: labsLoading } = useGetLabsByConditionsQuery({
     variables: { conditionCodes: conditions },
   });
+
   const labsDataOptions = labsData?.labs
     ? labsData.labs.map((lab) => ({
         label: lab.display,
         value: lab.systemCode ?? "",
       }))
     : [];
+
+  const searchLabs = (inputValue: string) => {
+    if (!inputValue.trim()) return labsDataOptions;
+    const results = labs.filter((lab) =>
+      lab.toLowerCase().includes(inputValue)
+    );
+    return results;
+  };
 
   return (
     <CardContainer
@@ -126,16 +142,15 @@ const ManageTestOrder = () => {
                   placeholder="Enter a LOINC display name, long name or short name"
                   name="labs"
                   options={labsDataOptions}
-                  initialSelectedValues={[]}
-                  getFilteredDropdownComponentItems={() => []}
-                  DropdownComponent={(props) => (
-                    <LabSearchResults
-                      headers={["Name", "LOINC Code", "Action"]}
-                      loading={labsLoading}
-                      {...props}
-                    />
-                  )}
-                  onChange={() => {}}
+                  initialSelectedValues={labs}
+                  getFilteredDropdownComponentItems={searchLabs}
+                  // DropdownComponent={(props) =>
+                  //   <LabSearchResults
+                  //     loading={labsLoading}
+                  //     {...props}
+                  //   />
+                  // }
+                  onChange={(selected) => setLabs(selected)}
                 />
               </div>
             </div>
