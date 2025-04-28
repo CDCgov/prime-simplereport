@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@SuppressWarnings({"checkstyle:TodoComment"})
 public class SpecimenController {
   private final SpecimenService specimenService;
 
