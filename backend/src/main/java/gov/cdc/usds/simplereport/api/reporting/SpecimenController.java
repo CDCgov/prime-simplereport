@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.reporting;
 
 import gov.cdc.usds.simplereport.db.model.Specimen;
+import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import gov.cdc.usds.simplereport.service.SpecimenService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,5 +28,10 @@ public class SpecimenController {
   @QueryMapping
   public List<Specimen> specimens(@Argument String loinc) {
     return specimenService.getSpecimens(loinc);
+  }
+
+  @QueryMapping
+  public List<SpecimenBodySite> specimenBodySites(@Argument String specimenSnomedCode) {
+    return specimenService.getSpecimenBodySiteBySpecimenSnomed(specimenSnomedCode);
   }
 }

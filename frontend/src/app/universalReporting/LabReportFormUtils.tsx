@@ -5,6 +5,7 @@ import {
   ProviderReportInput,
   ResultScaleType,
   Specimen,
+  SpecimenBodySite,
   SpecimenInput,
 } from "../../generated/graphql";
 
@@ -151,6 +152,19 @@ export const buildConditionsOptionList = (conditions: Condition[]) => {
     return {
       value: condition.code,
       label: `${condition.display} - ${condition.code}`,
+    };
+  });
+  options.sort((a, b) => a.label.localeCompare(b.label));
+  return options;
+};
+
+export const buildBodySiteOptionsList = (
+  specimenBodySites: SpecimenBodySite[]
+) => {
+  const options = specimenBodySites.map((bodySite) => {
+    return {
+      value: bodySite.snomedSiteCode,
+      label: bodySite.snomedSiteDisplay,
     };
   });
   options.sort((a, b) => a.label.localeCompare(b.label));

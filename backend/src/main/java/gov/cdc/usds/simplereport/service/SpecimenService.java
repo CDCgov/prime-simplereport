@@ -43,6 +43,10 @@ public class SpecimenService {
     return specimenRepository.findByLoincSystemCode(loinc);
   }
 
+  public List<SpecimenBodySite> getSpecimenBodySiteBySpecimenSnomed(String specimenSnomedCode) {
+    return specimenBodySiteRepository.findBySnomedSpecimenCode(specimenSnomedCode);
+  }
+
   public boolean hasAnySpecimen(String loinc) {
     return specimenRepository.existsByLoincSystemCode(loinc);
   }

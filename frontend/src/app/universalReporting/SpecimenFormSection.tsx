@@ -4,9 +4,16 @@ import React, { Dispatch } from "react";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import { formatDate } from "../utils/date";
-import { Specimen, SpecimenInput } from "../../generated/graphql";
+import {
+  Specimen,
+  SpecimenInput,
+  useGetSpecimenBodySitesBySpecimenSnomedLazyQuery,
+} from "../../generated/graphql";
 
-import { buildSpecimenOptionList } from "./LabReportFormUtils";
+import {
+  buildBodySiteOptionsList,
+  buildSpecimenOptionList,
+} from "./LabReportFormUtils";
 
 type SpecimenFormSectionProps = {
   specimen: SpecimenInput;
@@ -23,7 +30,25 @@ const SpecimenFormSection = ({
   loading,
   isTestOrderSelected,
 }: SpecimenFormSectionProps) => {
+  const [getSpecimenBodySiteBySpecimenSnomedCode, { data: bodySiteData }] =
+    useGetSpecimenBodySitesBySpecimenSnomedLazyQuery();
+
   const specimenOption = buildSpecimenOptionList(specimenList);
+  const bodySiteOptions = buildBodySiteOptionsList(
+    bodySiteData?.specimenBodySites ?? []
+  );
+
+  const handleSpecimenSelect = async (specimenSnomedCode: string) => {
+    setSpecimen({
+      ...specimen,
+      snomedTypeCode: specimenSnomedCode,
+    });
+    await getSpecimenBodySiteBySpecimenSnomedCode({
+      variables: {
+        specimenSnomedCode: specimenSnomedCode,
+      },
+    });
+  };
 
   const handleCollectionDateUpdate = (value: string) => {
     if (value) {
@@ -53,6 +78,17 @@ const SpecimenFormSection = ({
     }
   };
 
+  const handleBodySiteChange = (selectedBodySiteCode: string) => {
+    setSpecimen({
+      ...specimen,
+      collectionLocationCode: selectedBodySiteCode,
+      collectionLocationName:
+        bodySiteOptions.find(
+          (bodySite) => bodySite.value === selectedBodySiteCode
+        )?.label ?? "",
+    });
+  };
+
   return (
     <>
       <div className="grid-row">
@@ -77,12 +113,7 @@ const SpecimenFormSection = ({
                 label="Specimen type"
                 name="specimen-type"
                 selectedValue={specimen.snomedTypeCode}
-                onChange={(e) =>
-                  setSpecimen({
-                    ...specimen,
-                    snomedTypeCode: e.target.value,
-                  })
-                }
+                onChange={(e) => handleSpecimenSelect(e.target.value)}
                 className="card-dropdown"
                 required={true}
                 options={specimenOption}
@@ -130,32 +161,15 @@ const SpecimenFormSection = ({
           </div>
           <div className="grid-row grid-gap">
             <div className="grid-col-4">
-              <TextInput
-                name={"specimen-collection-location-name"}
-                type={"text"}
-                label={"Specimen collection location name"}
-                onChange={(e) =>
-                  setSpecimen({
-                    ...specimen,
-                    collectionLocationName: e.target.value,
-                  })
-                }
-                value={specimen.collectionLocationName ?? ""}
-              ></TextInput>
-            </div>
-            <div className="grid-col-4">
-              <TextInput
-                name={"specimen-collection-location-code"}
-                type={"text"}
-                label={"Specimen collection location code"}
-                onChange={(e) =>
-                  setSpecimen({
-                    ...specimen,
-                    collectionLocationCode: e.target.value,
-                  })
-                }
-                value={specimen.collectionLocationCode ?? ""}
-              ></TextInput>
+              <Dropdown
+                label="Specimen collection location"
+                name="specimen-collection-location"
+                selectedValue={specimen.collectionLocationCode ?? ""}
+                onChange={(e) => handleBodySiteChange(e.target.value)}
+                className="card-dropdown"
+                required={true}
+                options={bodySiteOptions}
+              />
             </div>
           </div>
         </>

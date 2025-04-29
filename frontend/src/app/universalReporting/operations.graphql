@@ -29,6 +29,13 @@ query GetSpecimensByLoinc($loinc: String!) {
   }
 }
 
+query GetSpecimenBodySitesBySpecimenSnomed($specimenSnomedCode: String!) {
+  specimenBodySites(specimenSnomedCode: $specimenSnomedCode) {
+    snomedSiteCode
+    snomedSiteDisplay
+  }
+}
+
 query GetFacility($id: ID!) {
   facility(id: $id) {
     id

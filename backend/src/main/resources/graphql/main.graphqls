@@ -542,6 +542,13 @@ type Specimen {
   snomedDisplay: String!
 }
 
+type SpecimenBodySite {
+  snomedSpecimenCode: String
+  snomedSpecimenDisplay: String
+  snomedSiteCode: String!
+  snomedSiteDisplay: String!
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -673,6 +680,7 @@ type Query {
   conditions: [Condition!]!
   labs(conditionCodes: [String!]): [Lab!]!
   specimens(loinc: String!): [Specimen!]!
+  specimenBodySites(specimenSnomedCode: String!): [SpecimenBodySite!]!
 }
 
 type Mutation {
