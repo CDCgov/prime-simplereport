@@ -40,7 +40,7 @@ public class ConditionService {
   private static final int PAGE_SIZE = 20;
 
   public List<Condition> getConditions() {
-    return conditionRepository.findAll();
+    return conditionRepository.findAllByHasLabsIsTrue();
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
