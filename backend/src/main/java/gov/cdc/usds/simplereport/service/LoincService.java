@@ -165,7 +165,6 @@ public class LoincService {
     // TODO does it make sense to have the insert into this table be smarter, so we dont have to
     // empty it
     clearLoincStaging();
-    conditionService.syncHasLabs();
     Instant stopTime = Instant.now();
     Duration elapsedTime = Duration.between(startTime, stopTime);
     log.info(
