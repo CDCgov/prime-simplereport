@@ -172,6 +172,7 @@ public class ConditionService {
       return conditionRepository.save(new Condition(code, display));
     }
     log.info("Found existing condition {}", display);
+    // TODO: if we already have this condition, would we want to still update the display?
     return foundCondition;
   }
 }
