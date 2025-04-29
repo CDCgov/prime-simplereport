@@ -53,7 +53,7 @@ public class LoincService {
     log.info("Lab sync started");
     Instant startTime = Instant.now();
     PageRequest pageRequest = PageRequest.of(0, PAGE_SIZE);
-    List<Lab> labsToSync = new ArrayList<>();
+    Set<Lab> labsToSync = new HashSet<>();
     // TODO update db to skip failed loincs next time?
     List<String> failedLoincs = new ArrayList<>();
     Page<String> loincCodePage;
