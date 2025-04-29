@@ -18,6 +18,11 @@ public interface LoincStagingRepository extends CrudRepository<LoincStaging, UUI
 
   Page<LoincStaging> findAll(Pageable p);
 
+  @Query(value = "SELECT DISTINCT l.code FROM LoincStaging l")
+  Page<String> findDistinctCodes(Pageable p);
+
+  List<LoincStaging> findByCode(String code);
+
   @Query(value = "DELETE FROM simple_report.loinc_staging", nativeQuery = true)
   @Modifying
   @Transactional
