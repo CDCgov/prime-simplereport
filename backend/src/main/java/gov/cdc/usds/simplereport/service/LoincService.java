@@ -56,10 +56,11 @@ public class LoincService {
     List<Lab> labsToSync = new ArrayList<>();
     // TODO update db to skip failed loincs next time?
     List<String> failedLoincs = new ArrayList<>();
-    Page<String> loincCodePage = loincStagingRepository.findDistinctCodes(pageRequest);
+    Page<String> loincCodePage;
     int newLabs = 0;
 
-    while (loincCodePage.hasNext()) {
+    do {
+      loincCodePage = loincStagingRepository.findDistinctCodes(pageRequest);
       Map<String, CompletableFuture<Response>> codeToLoincLookupFutureMap = new HashMap<>();
       List<String> loincCodes = loincCodePage.getContent();
       log.info(
@@ -118,8 +119,7 @@ public class LoincService {
       log.info(
           "Completed page: {} of {}", loincCodePage.getNumber(), loincCodePage.getTotalPages());
       pageRequest = pageRequest.next();
-      loincCodePage = loincStagingRepository.findDistinctCodes(pageRequest);
-    }
+    } while (loincCodePage.hasNext());
 
     for (Lab lab : labsToSync) {
       List<LoincStaging> loincStagings = loincStagingRepository.findByCode(lab.getCode());
