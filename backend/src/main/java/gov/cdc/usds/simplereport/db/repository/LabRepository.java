@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface LabRepository extends EternalAuditedEntityRepository<Lab> {
   Optional<Lab> findByCode(String code);
 
+  // TODO: in some environments, #{#entityName} fails to find the relation `lab`, and the schema
+  // needs to be explicitly prepended. investigate why this happens
   @Query(
       value =
           "SELECT DISTINCT ON (system_code) system_code, system_display FROM #{#entityName} WHERE system_code <> '' ORDER BY system_code",
