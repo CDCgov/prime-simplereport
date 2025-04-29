@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState, useMemo } from "react";
 import classNames from "classnames";
+import keyBy from "lodash/keyBy";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import Button from "../../../commonComponents/Button/Button";
@@ -8,8 +9,9 @@ import {
   useGetLabsByConditionsQuery,
 } from "../../../../generated/graphql";
 import { buildConditionsOptionList } from "../../../universalReporting/LabReportFormUtils";
+import Card from "../../../commonComponents/Card/Card";
 
-import SearchResults from "./SearchResults";
+// import SearchResults from "./SearchResults";
 
 const CardContainer = ({
   className,
@@ -43,44 +45,44 @@ const CardBody = ({
   );
 };
 
-const LabSearchResults = (props: {
-  dropDownRef: React.RefObject<HTMLDivElement>;
-  items: { label: string; value: string }[];
-  // setSelectedItem: (item: any) => void;
-  loading: boolean;
-  children: React.ReactNode;
-}) => {
-  const { loading, items, dropDownRef, ...rest } = props;
-  const headers = ["Name", "LOINC Code", "Action"];
+// const LabSearchResults = (props: {
+//   dropDownRef: React.RefObject<HTMLDivElement>;
+//   items: { label: string; value: string }[];
+//   // setSelectedItem: (item: any) => void;
+//   loading: boolean;
+//   children: React.ReactNode;
+// }) => {
+//   const { loading, items, dropDownRef, ...rest } = props;
+//   const headers = ["Name", "LOINC Code", "Action"];
 
-  return (
-    <SearchResults
-      headers={headers}
-      loading={loading}
-      resultCount={items.length}
-      dropDownRef={dropDownRef}
-      {...rest}
-    >
-      {items.map((item, idx) => (
-        <tr key={`${item.value}-${idx}`} aria-label={`lab-${idx}`}>
-          <td>{item.label}</td>
-          <td>{item.value}</td>
-          <td>
-            <Button
-              label="Add test order"
-              ariaLabel={`Select ${item.label} ${item.value}`}
-              onClick={() => {}}
-            />
-          </td>
-        </tr>
-      ))}
-    </SearchResults>
-  );
-};
+//   return (
+//     <SearchResults
+//       headers={headers}
+//       loading={loading}
+//       resultCount={items.length}
+//       dropDownRef={dropDownRef}
+//       {...rest}
+//     >
+//       {items.map((item, idx) => (
+//         <tr key={`${item.value}-${idx}`} aria-label={`lab-${idx}`}>
+//           <td>{item.label}</td>
+//           <td>{item.value}</td>
+//           <td>
+//             <Button
+//               label="Add test order"
+//               ariaLabel={`Select ${item.label} ${item.value}`}
+//               onClick={() => {}}
+//             />
+//           </td>
+//         </tr>
+//       ))}
+//     </SearchResults>
+//   );
+// };
 
 const ManageTestOrder = () => {
-  const [conditions, setConditions] = useState<string[]>([]);
-  const [labs, setLabs] = useState<string[]>([]);
+  const [conditionCodes, setConditionCodes] = useState<string[]>([]);
+  const [labCodes, setLabCodes] = useState<string[]>([]);
 
   const { data: conditionsData, loading: conditionsLoading } =
     useGetConditionsQuery();
@@ -90,27 +92,36 @@ const ManageTestOrder = () => {
   );
 
   const onChangeConditions = (selected: string[]) => {
-    setConditions(selected);
+    setConditionCodes(selected);
   };
 
   const { data: labsData, loading: labsLoading } = useGetLabsByConditionsQuery({
-    variables: { conditionCodes: conditions },
+    variables: { conditionCodes },
   });
 
   const labsDataOptions = labsData?.labs
     ? labsData.labs.map((lab) => ({
         label: lab.display,
-        value: lab.systemCode ?? "",
+        value: lab.code ?? "",
+        ...lab,
       }))
     : [];
 
-  const searchLabs = (inputValue: string) => {
-    if (!inputValue.trim()) return labsDataOptions;
-    const results = labs.filter((lab) =>
-      lab.toLowerCase().includes(inputValue)
-    );
-    return results;
-  };
+  const labsMap = useMemo(() => {
+    console.log("recalc");
+    if (!labsData || !labsData.labs) return {};
+
+    // create map of lab objects using the `code` as the key
+    return keyBy(labsData.labs, (lab) => lab.code);
+  }, [labsData?.labs]);
+
+  // const searchLabs = (inputValue: string) => {
+  //   if (!inputValue.trim()) return labsDataOptions;
+  //   const results = labs.filter((lab) =>
+  //     lab.toLowerCase().includes(inputValue)
+  //   );
+  //   return results;
+  // };
 
   return (
     <CardContainer
@@ -129,7 +140,7 @@ const ManageTestOrder = () => {
                     name="conditions"
                     onChange={onChangeConditions}
                     options={conditionsOptions}
-                    initialSelectedValues={conditions}
+                    initialSelectedValues={conditionCodes}
                   />
                 )}
               </div>
@@ -137,28 +148,31 @@ const ManageTestOrder = () => {
 
             <div className="grid-row">
               <div className="grid-col-12">
-                <MultiSelect
-                  label="Search by LOINC name"
-                  placeholder="Enter a LOINC display name, long name or short name"
-                  name="labs"
-                  options={labsDataOptions}
-                  initialSelectedValues={labs}
-                  getFilteredDropdownComponentItems={searchLabs}
-                  // DropdownComponent={(props) =>
-                  //   <LabSearchResults
-                  //     loading={labsLoading}
-                  //     {...props}
-                  //   />
-                  // }
-                  onChange={(selected) => setLabs(selected)}
-                />
+                {!labsLoading && (
+                  <MultiSelect
+                    label="Search by LOINC name"
+                    placeholder="Enter a LOINC display name, long name or short name"
+                    name="labs"
+                    options={labsDataOptions}
+                    initialSelectedValues={labCodes}
+                    // getFilteredDropdownComponentItems={searchLabs}
+                    onChange={(selected) => setLabCodes(selected)}
+                    showPills={false}
+                  />
+                )}
               </div>
             </div>
           </CardBody>
         </div>
       </div>
 
-      <CardBody>test</CardBody>
+      <CardBody>
+        {labCodes.map((labCode) => {
+          const lab = labsMap[labCode];
+
+          return <Card>sup</Card>;
+        })}
+      </CardBody>
     </CardContainer>
   );
 };

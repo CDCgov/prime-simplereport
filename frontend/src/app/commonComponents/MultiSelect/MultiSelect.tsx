@@ -37,6 +37,7 @@ export type MultiSelectProps = {
   registrationProps?: RegistrationProps;
   DropdownComponent?: (props: any) => JSX.Element;
   getFilteredDropdownComponentItems?: (inputValue: string) => any[];
+  showPills?: boolean;
 };
 
 type PillProps = {
@@ -82,6 +83,7 @@ export const MultiSelect = ({
   registrationProps,
   DropdownComponent,
   getFilteredDropdownComponentItems,
+  showPills = true,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -207,29 +209,31 @@ export const MultiSelect = ({
               getFilteredDropdownComponentItems
             }
           />
-          <fieldset
-            className={`fieldset--unstyled pill-container${
-              selectedItems && selectedItems.length < 1
-                ? " pill-container--hidden"
-                : ""
-            }`}
-            data-testid="pill-container"
-          >
-            <legend className="usa-sr-only">{`Selected ${label}`}</legend>
-            {selectedItems &&
-              selectedItems.map((value) => {
-                const option = options.find((item) => item.value === value);
-                return (
-                  option && (
-                    <Pill
-                      key={option.value}
-                      option={option}
-                      onDelete={onItemUnSelected}
-                    />
-                  )
-                );
-              })}
-          </fieldset>
+          {showPills && (
+            <fieldset
+              className={`fieldset--unstyled pill-container${
+                selectedItems && selectedItems.length < 1
+                  ? " pill-container--hidden"
+                  : ""
+              }`}
+              data-testid="pill-container"
+            >
+              <legend className="usa-sr-only">{`Selected ${label}`}</legend>
+              {selectedItems &&
+                selectedItems.map((value) => {
+                  const option = options.find((item) => item.value === value);
+                  return (
+                    option && (
+                      <Pill
+                        key={option.value}
+                        option={option}
+                        onDelete={onItemUnSelected}
+                      />
+                    )
+                  );
+                })}
+            </fieldset>
+          )}
         </div>
       )}
     </UIDConsumer>

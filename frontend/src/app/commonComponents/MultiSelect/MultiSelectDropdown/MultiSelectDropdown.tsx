@@ -296,7 +296,6 @@ export const MultiSelectDropdown = ({
   );
   const listID = `multi-select-${name}-list`;
   const dropDownRef = useRef(null);
-  console.log({ foo: dropDownRef.current });
   const hideOnOutsideClick = useCallback(() => {
     dispatch({
       type: state.isOpen ? ActionTypes.CLOSE_LIST : ActionTypes.OPEN_LIST,
