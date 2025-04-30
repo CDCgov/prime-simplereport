@@ -107,7 +107,7 @@ public class LoincService {
         if (lab.isEmpty()) {
           // is this the only time that we should mark a loinc as "to-skip"?
           // or all failedLoincs?
-          log.info("Staged loinc {} is not a lab", code);
+          log.info("Staged loinc {} is not a valid lab", code);
           failedLoincs.add(code);
           continue;
         }
@@ -277,5 +277,11 @@ public class LoincService {
     String clearLoincStagingMsg = "Cleared loinc staging table";
     log.info(clearLoincStagingMsg);
     return clearLoincStagingMsg;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void clearLabs() {
+    labRepository.deleteAll();
+    log.info("All labs deleted.");
   }
 }

@@ -175,4 +175,10 @@ public class ConditionService {
     // TODO: if we already have this condition, would we want to still update the display?
     return foundCondition;
   }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void clearConditions() {
+    conditionRepository.deleteAll();
+    log.info("All conditions deleted.");
+  }
 }

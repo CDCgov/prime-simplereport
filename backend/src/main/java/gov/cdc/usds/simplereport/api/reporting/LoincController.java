@@ -22,4 +22,11 @@ public class LoincController {
   public String clearLoincStaging() {
     return loincService.clearLoincStaging();
   }
+
+  @GetMapping("universal/labs/clear")
+  public String clearLabs() {
+    // todo can we make this harder to do accidentally?
+    loincService.clearLabs();
+    return "Completed attempting to delete all labs.";
+  }
 }
