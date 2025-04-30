@@ -64,7 +64,9 @@ public class LoincService {
       Map<String, CompletableFuture<Response>> codeToLoincLookupFutureMap = new HashMap<>();
       List<String> loincCodes = loincCodePage.getContent();
       log.info(
-          "Found {} staged loinc codes on page {}", loincCodes.size(), loincCodePage.getNumber());
+          "Found {} staged loinc codes on page {}",
+          loincCodes.size(),
+          loincCodePage.getNumber() + 1);
 
       loincCodes.forEach(
           code -> {
