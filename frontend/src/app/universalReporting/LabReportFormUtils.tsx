@@ -161,6 +161,14 @@ export const buildConditionsOptionList = (conditions: Condition[]) => {
 export const buildBodySiteOptionsList = (
   specimenBodySites: SpecimenBodySite[]
 ) => {
+  if (specimenBodySites.length === 0) {
+    return [
+      {
+        value: "",
+        label: "No collection location available",
+      },
+    ];
+  }
   const options = specimenBodySites.map((bodySite) => {
     return {
       value: bodySite.snomedSiteCode,

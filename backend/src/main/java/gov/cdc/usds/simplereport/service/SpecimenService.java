@@ -40,7 +40,12 @@ public class SpecimenService {
   private final LabRepository labRepository;
 
   public List<Specimen> getSpecimens(String loinc) {
-    return specimenRepository.findByLoincSystemCode(loinc);
+    List<Specimen> specimenList = specimenRepository.findByLoincSystemCode(loinc);
+    specimenList.forEach(
+        specimen -> {
+          specimen.setBodySiteList(getSpecimenBodySiteBySpecimenSnomed(specimen.getSnomedCode()));
+        });
+    return specimenList;
   }
 
   public List<SpecimenBodySite> getSpecimenBodySiteBySpecimenSnomed(String specimenSnomedCode) {

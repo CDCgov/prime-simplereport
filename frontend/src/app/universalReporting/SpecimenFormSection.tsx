@@ -4,11 +4,7 @@ import React, { Dispatch } from "react";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import { formatDate } from "../utils/date";
-import {
-  Specimen,
-  SpecimenInput,
-  useGetSpecimenBodySitesBySpecimenSnomedLazyQuery,
-} from "../../generated/graphql";
+import { Specimen, SpecimenInput } from "../../generated/graphql";
 
 import {
   buildBodySiteOptionsList,
@@ -30,23 +26,21 @@ const SpecimenFormSection = ({
   loading,
   isTestOrderSelected,
 }: SpecimenFormSectionProps) => {
-  const [getSpecimenBodySiteBySpecimenSnomedCode, { data: bodySiteData }] =
-    useGetSpecimenBodySitesBySpecimenSnomedLazyQuery();
-
   const specimenOption = buildSpecimenOptionList(specimenList);
   const bodySiteOptions = buildBodySiteOptionsList(
-    bodySiteData?.specimenBodySites ?? []
+    specimenList.find((s) => s.snomedCode === specimen.snomedTypeCode)
+      ?.bodySiteList ?? []
   );
 
-  const handleSpecimenSelect = async (specimenSnomedCode: string) => {
+  const handleSpecimenSelect = async (selectedSnomedCode: string) => {
+    const specimenBodySiteList =
+      specimenList.find((s) => s.snomedCode === selectedSnomedCode)
+        ?.bodySiteList ?? [];
     setSpecimen({
       ...specimen,
-      snomedTypeCode: specimenSnomedCode,
-    });
-    await getSpecimenBodySiteBySpecimenSnomedCode({
-      variables: {
-        specimenSnomedCode: specimenSnomedCode,
-      },
+      snomedTypeCode: selectedSnomedCode,
+      collectionLocationCode: specimenBodySiteList[0]?.snomedSiteCode ?? "",
+      collectionLocationName: specimenBodySiteList[0]?.snomedSiteDisplay ?? "",
     });
   };
 

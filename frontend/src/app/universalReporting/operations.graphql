@@ -26,13 +26,10 @@ query GetSpecimensByLoinc($loinc: String!) {
     loincSystemCode
     snomedCode
     snomedDisplay
-  }
-}
-
-query GetSpecimenBodySitesBySpecimenSnomed($specimenSnomedCode: String!) {
-  specimenBodySites(specimenSnomedCode: $specimenSnomedCode) {
-    snomedSiteCode
-    snomedSiteDisplay
+    bodySiteList {
+      snomedSiteCode
+      snomedSiteDisplay
+    }
   }
 }
 

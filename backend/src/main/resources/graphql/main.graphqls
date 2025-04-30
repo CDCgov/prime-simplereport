@@ -540,6 +540,7 @@ type Specimen {
   loincSystemCode: String!
   snomedCode: String!
   snomedDisplay: String!
+  bodySiteList: [SpecimenBodySite!]!
 }
 
 type SpecimenBodySite {

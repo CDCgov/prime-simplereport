@@ -1080,6 +1080,7 @@ export enum Role {
 
 export type Specimen = {
   __typename?: "Specimen";
+  bodySiteList: Array<SpecimenBodySite>;
   loincSystemCode: Scalars["String"]["output"];
   snomedCode: Scalars["String"]["output"];
   snomedDisplay: Scalars["String"]["output"];
@@ -3148,19 +3149,11 @@ export type GetSpecimensByLoincQuery = {
     loincSystemCode: string;
     snomedCode: string;
     snomedDisplay: string;
-  }>;
-};
-
-export type GetSpecimenBodySitesBySpecimenSnomedQueryVariables = Exact<{
-  specimenSnomedCode: Scalars["String"]["input"];
-}>;
-
-export type GetSpecimenBodySitesBySpecimenSnomedQuery = {
-  __typename?: "Query";
-  specimenBodySites: Array<{
-    __typename?: "SpecimenBodySite";
-    snomedSiteCode: string;
-    snomedSiteDisplay: string;
+    bodySiteList: Array<{
+      __typename?: "SpecimenBodySite";
+      snomedSiteCode: string;
+      snomedSiteDisplay: string;
+    }>;
   }>;
 };
 
@@ -10012,6 +10005,10 @@ export const GetSpecimensByLoincDocument = gql`
       loincSystemCode
       snomedCode
       snomedDisplay
+      bodySiteList {
+        snomedSiteCode
+        snomedSiteDisplay
+      }
     }
   }
 `;
@@ -10090,91 +10087,6 @@ export type GetSpecimensByLoincQueryResult = Apollo.QueryResult<
   GetSpecimensByLoincQuery,
   GetSpecimensByLoincQueryVariables
 >;
-export const GetSpecimenBodySitesBySpecimenSnomedDocument = gql`
-  query GetSpecimenBodySitesBySpecimenSnomed($specimenSnomedCode: String!) {
-    specimenBodySites(specimenSnomedCode: $specimenSnomedCode) {
-      snomedSiteCode
-      snomedSiteDisplay
-    }
-  }
-`;
-
-/**
- * __useGetSpecimenBodySitesBySpecimenSnomedQuery__
- *
- * To run a query within a React component, call `useGetSpecimenBodySitesBySpecimenSnomedQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSpecimenBodySitesBySpecimenSnomedQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetSpecimenBodySitesBySpecimenSnomedQuery({
- *   variables: {
- *      specimenSnomedCode: // value for 'specimenSnomedCode'
- *   },
- * });
- */
-export function useGetSpecimenBodySitesBySpecimenSnomedQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetSpecimenBodySitesBySpecimenSnomedQuery,
-    GetSpecimenBodySitesBySpecimenSnomedQueryVariables
-  > &
-    (
-      | {
-          variables: GetSpecimenBodySitesBySpecimenSnomedQueryVariables;
-          skip?: boolean;
-        }
-      | { skip: boolean }
-    )
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetSpecimenBodySitesBySpecimenSnomedQuery,
-    GetSpecimenBodySitesBySpecimenSnomedQueryVariables
-  >(GetSpecimenBodySitesBySpecimenSnomedDocument, options);
-}
-export function useGetSpecimenBodySitesBySpecimenSnomedLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetSpecimenBodySitesBySpecimenSnomedQuery,
-    GetSpecimenBodySitesBySpecimenSnomedQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetSpecimenBodySitesBySpecimenSnomedQuery,
-    GetSpecimenBodySitesBySpecimenSnomedQueryVariables
-  >(GetSpecimenBodySitesBySpecimenSnomedDocument, options);
-}
-export function useGetSpecimenBodySitesBySpecimenSnomedSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetSpecimenBodySitesBySpecimenSnomedQuery,
-        GetSpecimenBodySitesBySpecimenSnomedQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetSpecimenBodySitesBySpecimenSnomedQuery,
-    GetSpecimenBodySitesBySpecimenSnomedQueryVariables
-  >(GetSpecimenBodySitesBySpecimenSnomedDocument, options);
-}
-export type GetSpecimenBodySitesBySpecimenSnomedQueryHookResult = ReturnType<
-  typeof useGetSpecimenBodySitesBySpecimenSnomedQuery
->;
-export type GetSpecimenBodySitesBySpecimenSnomedLazyQueryHookResult =
-  ReturnType<typeof useGetSpecimenBodySitesBySpecimenSnomedLazyQuery>;
-export type GetSpecimenBodySitesBySpecimenSnomedSuspenseQueryHookResult =
-  ReturnType<typeof useGetSpecimenBodySitesBySpecimenSnomedSuspenseQuery>;
-export type GetSpecimenBodySitesBySpecimenSnomedQueryResult =
-  Apollo.QueryResult<
-    GetSpecimenBodySitesBySpecimenSnomedQuery,
-    GetSpecimenBodySitesBySpecimenSnomedQueryVariables
-  >;
 export const GetFacilityDocument = gql`
   query GetFacility($id: ID!) {
     facility(id: $id) {
