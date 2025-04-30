@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 
+@SuppressWarnings({"checkstyle:TodoComment"})
 /** Specification of EternalAuditedEntityRepository for {@link Lab} manipulation. */
 public interface LabRepository extends EternalAuditedEntityRepository<Lab> {
   Optional<Lab> findByCode(String code);
