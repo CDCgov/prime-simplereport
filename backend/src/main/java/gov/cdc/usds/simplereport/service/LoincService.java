@@ -117,7 +117,7 @@ public class LoincService {
       }
 
       log.info(
-          "Completed page: {} of {}", loincCodePage.getNumber(), loincCodePage.getTotalPages());
+          "Completed page: {} of {}", loincCodePage.getNumber() + 1, loincCodePage.getTotalPages());
       pageRequest = pageRequest.next();
     } while (loincCodePage.hasNext());
 
