@@ -43,13 +43,10 @@ public class SpecimenService {
     List<Specimen> specimenList = specimenRepository.findByLoincSystemCode(loinc);
     specimenList.forEach(
         specimen -> {
-          specimen.setBodySiteList(getSpecimenBodySiteBySpecimenSnomed(specimen.getSnomedCode()));
+          specimen.setBodySiteList(
+              specimenBodySiteRepository.findBySnomedSpecimenCode(specimen.getSnomedCode()));
         });
     return specimenList;
-  }
-
-  public List<SpecimenBodySite> getSpecimenBodySiteBySpecimenSnomed(String specimenSnomedCode) {
-    return specimenBodySiteRepository.findBySnomedSpecimenCode(specimenSnomedCode);
   }
 
   public boolean hasAnySpecimen(String loinc) {
