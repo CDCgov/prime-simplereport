@@ -27,6 +27,6 @@ public class LoincController {
   public String clearLabs() {
     // todo can we make this harder to do accidentally?
     loincService.clearLabs();
-    return "Completed attempting to delete all labs.";
+    return "Completed deleting all labs.";
   }
 }

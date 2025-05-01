@@ -29,6 +29,6 @@ public class ConditionController {
   public String clearConditions() {
     // todo can we make this harder to do accidentally?
     conditionService.clearConditions();
-    return "Completed attempting to delete all conditions.";
+    return "Completed deleting all conditions.";
   }
 }

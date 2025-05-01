@@ -26,6 +26,6 @@ public class SpecimenController {
   public String clearSpecimensAndBodySites() {
     // todo can we make this harder to do accidentally?
     specimenService.clearSpecimensAndBodySites();
-    return "Completed attempting to delete all specimens and specimen body sites.";
+    return "Completed deleting all specimens and specimen body sites.";
   }
 }
