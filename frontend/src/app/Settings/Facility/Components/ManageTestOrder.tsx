@@ -10,6 +10,9 @@ import {
 } from "../../../../generated/graphql";
 import { buildConditionsOptionList } from "../../../universalReporting/LabReportFormUtils";
 import Card from "../../../commonComponents/Card/Card";
+import Modal from "../../../commonComponents/Modal";
+import TextInput from "../../../commonComponents/TextInput";
+import SpecimenSelect from "./SpecimenSelect";
 
 // import SearchResults from "./SearchResults";
 
@@ -81,6 +84,7 @@ const CardBody = ({
 // };
 
 const ManageTestOrder = () => {
+  const [showModal, setShowModal] = useState(false);
   const [conditionCodes, setConditionCodes] = useState<string[]>([]);
   const [labCodes, setLabCodes] = useState<string[]>([]);
 
@@ -166,11 +170,61 @@ const ManageTestOrder = () => {
         </div>
       </div>
 
+      <Modal
+        showModal={true}
+        onClose={() => {}}
+        contentLabel="Edit Description"
+      >
+        <Modal.Header styleClassNames="margin-bottom-0">
+          Edit Description
+        </Modal.Header>
+
+        <TextInput
+          className="margin-top-0"
+          label="Display"
+          labelSrOnly={true}
+          name="display"
+          hintText="This text is what reporters will see as they select the test order for their report."
+        />
+        <div>
+          <Button variant="unstyled" className="padding-right-1">Save</Button>
+          <Button variant="unstyled">Reset</Button>
+        </div>
+
+        <TextInput
+          label="Description"
+          labelSrOnly={true}
+          name="description"
+        />
+        <div>
+          <Button variant="unstyled" className="padding-right-1">Save</Button>
+          <Button variant="unstyled">Reset</Button>
+        </div>
+
+        <SpecimenSelect
+          specimenOptions={[]}
+          onChange={()=>{}}
+        />
+
+
+        <div className="margin-y-2">
+          <Button>Confirm</Button>
+          <Button variant="outline">Cancel</Button>
+        </div>
+      </Modal>
+
       <CardBody>
         {labCodes.map((labCode) => {
           const lab = labsMap[labCode];
 
-          return <Card>sup</Card>;
+          return <Card bodyKicker={lab.display}>
+            {lab.description && <p>{lab.description}</p>}
+
+            <div className="margin-bottom-2">
+              <Button variant="outline">Edit Description</Button>
+              <Button variant="outline">Add Specimen Type</Button>
+            </div>
+          </Card>;
         })}
       </CardBody>
     </CardContainer>
