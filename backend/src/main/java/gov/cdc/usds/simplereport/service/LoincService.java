@@ -275,7 +275,6 @@ public class LoincService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String clearLoincStaging() {
-    //    loincStagingRepository.deleteAll();
     loincStagingRepository.deleteAllLoincStaging();
     String clearLoincStagingMsg = "Cleared loinc staging table";
     log.info(clearLoincStagingMsg);
