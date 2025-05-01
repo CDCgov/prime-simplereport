@@ -31,7 +31,7 @@ export const DownloadResultsCsvModal = ({
   totalEntries,
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
-  const rowsMaxLimit = 20000;
+  const rowsMaxLimit = 100000000000;
   const [results, setResults] = useState<ResultCsvRow[]>([]);
   const csvLink = useRef<
     CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
