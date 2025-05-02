@@ -6223,6 +6223,12 @@ databaseChangeLog:
   - changeSet:
       id: add-specimen-body-site-table
       author: ubz8@cdc.gov
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: specimen_body_site
+                schemaName: simple_report
       changes:
         - tagDatabase:
             tag: add-specimen-body-site-table
