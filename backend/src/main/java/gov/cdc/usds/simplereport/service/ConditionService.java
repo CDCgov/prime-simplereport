@@ -12,18 +12,11 @@ import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.UsageContext;
-import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.r4.model.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +30,13 @@ public class ConditionService {
   private final ConditionRepository conditionRepository;
   private final LoincStagingRepository loincStagingRepository;
 
+  //  This is a safety check to ensure we don't get stuck in an infinite loop
+  private static final int MAX_PAGES = 1000;
+
   private static final int PAGE_SIZE = 20;
+  //  Instead of hard-coding the code names, we can use a set of code names to extract the focus
+  //  context.
+  private final HashSet<String> codeNames = new HashSet<>(List.of("focus"));
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String syncHasLabs() {
@@ -64,18 +63,16 @@ public class ConditionService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   public void syncConditions() {
-    // TODO let's track a count of conditions instead of all the conditions if all we are doing is
-    // aggregating for the response
     // TODO add handling for HTTP 429 in case we get into a rate limiting situation.
-    List<Condition> conditionList = new ArrayList<>();
+    int conditionsLoaded = 0;
 
     int pageOffset = 0;
 
     boolean hasNext = true;
-    // TODO add something here to ensure this doesn't turn into an infinite by mistake e.g. max 1k
-    // iterations.
+    int pagesLoaded = 0;
     log.info("Starting sync conditions");
-    while (hasNext) {
+    while (hasNext && pagesLoaded < MAX_PAGES) {
+      pagesLoaded++;
       log.info("Requesting TES condition page with offset {}", pageOffset);
       // TODO: Add error handling for this network call.
       Response response = tesClient.getConditions(PAGE_SIZE, pageOffset);
@@ -94,7 +91,7 @@ public class ConditionService {
         ValueSet valueSet = (ValueSet) entry.getResource();
         CodeableConcept conditionConcept = parseCondition(valueSet);
         Condition condition = saveCondition(conditionConcept);
-        conditionList.add(condition);
+        conditionsLoaded++;
         var loincList = parseLoinc(valueSet);
         loincList.ifPresent(
             conceptSetComponent -> saveLoincList(conceptSetComponent.getConcept(), condition));
@@ -104,7 +101,7 @@ public class ConditionService {
       pageOffset = pageOffset + PAGE_SIZE;
     }
 
-    log.info("Condition sync completed successfully with {} conditions", conditionList.size());
+    log.info("Condition sync completed successfully with {} conditions", conditionsLoaded);
   }
 
   private void saveLoincList(
@@ -151,9 +148,8 @@ public class ConditionService {
     List<UsageContext> useContext = valueSet.getUseContext();
     for (UsageContext context : useContext) {
       Coding code = context.getCode();
-      // TODO extract 'focus' into a variable whose variable name captures the
-      //  significance of the word 'focus'
-      if (code.getCode().equals("focus")) {
+
+      if (codeNames.contains(code.getCode())) {
         return context.getValueCodeableConcept();
       }
     }
