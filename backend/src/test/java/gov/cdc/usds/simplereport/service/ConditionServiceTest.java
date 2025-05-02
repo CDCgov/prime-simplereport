@@ -12,7 +12,6 @@ import ca.uhn.fhir.parser.IParser;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
-import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.ByteArrayInputStream;
@@ -74,8 +73,7 @@ class ConditionServiceTest {
     when(this.conditionRepository.save(any()))
         .thenAnswer(
             invocation -> {
-              Condition condition = invocation.getArgument(0);
-              return condition;
+              return invocation.getArgument(0);
             });
     when(this.conditionRepository.saveAll(any())).thenReturn(new ArrayList<>());
     when(this.loincStagingRepository.saveAll(any())).thenReturn(new ArrayList<>());
@@ -155,7 +153,7 @@ class ConditionServiceTest {
 
   @Test
   @Transactional
-  void syncConditions_handlesParseError() throws Exception {
+  void syncConditions_handlesParseError() {
     // Arrange
     String invalidResponse = "invalid json";
     Response mockResponse = createMockResponse(invalidResponse);
