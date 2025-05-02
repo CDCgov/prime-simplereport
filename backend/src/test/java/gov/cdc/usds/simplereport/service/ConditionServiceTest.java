@@ -94,11 +94,7 @@ class ConditionServiceTest {
     CompletableFuture<Void> future =
         CompletableFuture.runAsync(
             () -> {
-              try {
-                this.conditionService.syncConditions();
-              } catch (RuntimeException e) {
-                throw e;
-              }
+              this.conditionService.syncConditions();
             });
     future.get();
 
@@ -125,38 +121,13 @@ class ConditionServiceTest {
     CompletableFuture<Void> future =
         CompletableFuture.runAsync(
             () -> {
-              try {
-                this.conditionService.syncConditions();
-              } catch (RuntimeException e) {
-                throw e;
-              }
+              this.conditionService.syncConditions();
             });
     future.get();
 
     // Assert
     verify(this.conditionRepository, times(2)).save(any());
     verify(this.loincStagingRepository, times(2)).saveAll(any());
-  }
-
-  @Test
-  @Transactional
-  void syncConditions_handlesParseError() throws Exception {
-    // Arrange
-    String invalidResponse = "invalid json";
-    Response mockResponse = createMockResponse(invalidResponse);
-    when(tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
-
-    // Act & Assert
-    CompletableFuture<Void> future =
-        CompletableFuture.runAsync(
-            () -> {
-              try {
-                conditionService.syncConditions();
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
-    assertThrows(ExecutionException.class, future::get);
   }
 
   @Test
@@ -173,17 +144,30 @@ class ConditionServiceTest {
     CompletableFuture<Void> future =
         CompletableFuture.runAsync(
             () -> {
-              try {
-                this.conditionService.syncConditions();
-              } catch (RuntimeException e) {
-                throw e;
-              }
+              this.conditionService.syncConditions();
             });
     future.get();
 
     // Assert
     verify(this.conditionRepository, times(1000)).save(any());
     verify(this.loincStagingRepository, times(1000)).saveAll(any());
+  }
+
+  @Test
+  @Transactional
+  void syncConditions_handlesParseError() throws Exception {
+    // Arrange
+    String invalidResponse = "invalid json";
+    Response mockResponse = createMockResponse(invalidResponse);
+    when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
+
+    // Act & Assert
+    CompletableFuture<Void> future =
+        CompletableFuture.runAsync(
+            () -> {
+              this.conditionService.syncConditions();
+            });
+    assertThrows(ExecutionException.class, future::get);
   }
 
   private Response createMockResponse(String responseBody) {
@@ -379,10 +363,5 @@ class ConditionServiceTest {
 
     IParser parser = fhirContext.newJsonParser();
     return parser.encodeResourceToString(bundle);
-  }
-
-  private Bundle parseResponseToBundle(String responseString) {
-    IParser parser = fhirContext.newJsonParser();
-    return (Bundle) parser.parseResource(responseString);
   }
 }
