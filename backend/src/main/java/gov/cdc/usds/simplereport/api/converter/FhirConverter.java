@@ -652,6 +652,7 @@ public class FhirConverter {
     return specimen;
   }
 
+  // TODO: Test convertToSpecimen with complete and partial inputs
   public Specimen convertToSpecimen(
       @NotNull SpecimenType specimenType,
       UUID specimenIdentifier,
@@ -1506,6 +1507,7 @@ public class FhirConverter {
     return bundle;
   }
 
+  // TODO: Test createUniversalFhirBundle creates a valid FHIR bundle using existing FHIR resources
   // This separate bundle method was created during rapid prototyping of universal reporting
   public Bundle createUniversalFhirBundle(UniversalCreateFhirBundleProps props) {
     var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
@@ -1635,6 +1637,7 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
+  // TODO: Test createUniversalFhirBundle creates a valid FHIR bundle from raw resources
   public Bundle createUniversalFhirBundle(
       PatientReportInput patientInput,
       ProviderReportInput providerInput,
@@ -1726,6 +1729,7 @@ public class FhirConverter {
             : ZonedDateTime.ofInstant(specimenInput.getReceivedDate().toInstant(), ZoneOffset.UTC);
 
     UUID specimenId = UUID.randomUUID();
+    // TODO: Pass bodysite with specimen resource
     var specimen =
         convertToSpecimen(
             ConvertToSpecimenProps.builder()

@@ -27,6 +27,11 @@ public class UniversalReportService {
   private final FhirContext fhirContext;
   private final OrganizationService organizationService;
 
+  // TODO: Maybe not right away but at some point we could have a service that generates an audit
+  // trail of the bundle.We can track the bundle creation and keep a log of why the report is
+  // failing w.o store the data in the bundle
+  // TODO: Add validation layer + error handling to ensure relationships between resources exist and
+  // check missing specimen types loinc codes
   public String processLabReport(
       PatientReportInput patientInput,
       ProviderReportInput providerInput,
@@ -35,13 +40,13 @@ public class UniversalReportService {
       List<TestDetailsInput> testDetailsInputList) {
     Organization currentOrg = organizationService.getCurrentOrganization();
     List<Facility> orgFacilities = organizationService.getFacilities(currentOrg);
-
+    // TODO: Test facility and provider matching logic
     UUID matchedFacilityId = findMatchingFacilityId(facilityInput, orgFacilities);
     facilityInput.setInternalId(matchedFacilityId != null ? matchedFacilityId : UUID.randomUUID());
 
     UUID matchedProviderId = findMatchingProviderId(providerInput, orgFacilities);
     providerInput.setInternalId(matchedProviderId != null ? matchedProviderId : UUID.randomUUID());
-
+    // TODO: test for error handling
     Bundle bundle =
         fhirConverter.createUniversalFhirBundle(
             patientInput,
