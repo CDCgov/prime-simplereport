@@ -19,7 +19,7 @@ public class SpecimenController {
   // TODO: Test that syncConditions returns the expected success message
   public String syncConditions() {
     specimenService.syncSpecimens();
-    return "Specimen sync completed successfully";
+    return "Specimen sync has been started successfully";
   }
 
   @GetMapping("/clear")
