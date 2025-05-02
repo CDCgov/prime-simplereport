@@ -263,7 +263,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
-        <h1 className="font-sans-lg">Conduct tests</h1>
+        <h1 className="font-sans-lg">Report tests</h1>
         <div className="position-relative">
           <AddToQueueSearch
             refetchQueue={refetch}
