@@ -1,4 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useReducer, useCallback } from "react";
+import mergeWith from "lodash/mergeWith";
+
+type PartialState<T> = {
+  [P in keyof T]?: T[P] extends object ? PartialState<T[P]> : T[P];
+};
 
 const useOutsideClick = (
   ref: React.RefObject<HTMLDivElement>,
@@ -41,4 +46,17 @@ const useDocumentTitle = (title: string, retainOnUnmount = false) => {
   }, [retainOnUnmount, title]);
 };
 
-export { useOutsideClick, useDocumentTitle };
+function mergeWithCustomizer<T>(obj: unknown, src: unknown) {
+  return (Array.isArray(obj) ? src : undefined) as T;
+}
+
+function useMergeReducer<T extends object>(initialState: T) {
+  const reducer = useCallback((state: T, patch: PartialState<T>) => {
+    return mergeWith({}, state, patch, mergeWithCustomizer) as T;
+  }, []);
+
+  return useReducer(reducer, initialState);
+}
+
+export type { PartialState };
+export { useOutsideClick, useDocumentTitle, useMergeReducer };

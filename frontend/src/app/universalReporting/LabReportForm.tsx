@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@trussworks/react-uswds";
 
+import { useMergeReducer } from "../utils/hooks";
 import MultiSelect from "../commonComponents/MultiSelect/MultiSelect";
 import {
   FacilityReportInput,
@@ -32,20 +33,25 @@ import ProviderFormSection from "./ProviderFormSection";
 import PatientFormSection from "./PatientFormSection";
 import TestOrderFormSection from "./TestOrderFormSection";
 
+interface FormState {
+  patient: PatientReportInput;
+  provider: ProviderReportInput;
+  facility: FacilityReportInput;
+  specimen: SpecimenInput;
+  testDetailList: TestDetailsInput[];
+}
+
+const initialFormState = {
+  patient: defaultPatientReportInputState,
+  provider: defaultProviderReportInputState,
+  facility: defaultFacilityReportInputState,
+  specimen: defaultSpecimenReportInputState,
+  testDetailList: [],
+};
+
 const LabReportForm = () => {
-  const [patient, setPatient] = useState<PatientReportInput>(
-    defaultPatientReportInputState
-  );
-  const [provider, setProvider] = useState<ProviderReportInput>(
-    defaultProviderReportInputState
-  );
-  const [facility, setFacility] = useState<FacilityReportInput>(
-    defaultFacilityReportInputState
-  );
-  const [specimen, setSpecimen] = useState<SpecimenInput>(
-    defaultSpecimenReportInputState
-  );
-  const [testDetailList, setTestDetailList] = useState<TestDetailsInput[]>([]);
+  const [state, dispatch] = useMergeReducer<FormState>(initialFormState);
+
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [testOrderLoinc, setTestOrderLoinc] = useState<string>("");
   const [testOrderSearchString, setTestOrderSearchString] =
@@ -72,41 +78,39 @@ const LabReportForm = () => {
     useGetLabsByConditionsLazyQuery();
 
   useEffect(() => {
-    setProvider((prevProvider) => {
-      return {
-        ...prevProvider,
-        city: facilityData?.facility?.orderingProvider?.address?.city,
-        county: facilityData?.facility?.orderingProvider?.address?.county,
-        firstName: facilityData?.facility?.orderingProvider?.firstName ?? "",
-        lastName: facilityData?.facility?.orderingProvider?.lastName ?? "",
-        middleName: facilityData?.facility?.orderingProvider?.middleName ?? "",
-        npi: facilityData?.facility?.orderingProvider?.NPI ?? "",
-        phone: facilityData?.facility?.orderingProvider?.phone ?? "",
-        state: facilityData?.facility?.orderingProvider?.address?.state ?? "",
-        street:
-          facilityData?.facility?.orderingProvider?.address?.streetOne ?? "",
-        streetTwo:
-          facilityData?.facility?.orderingProvider?.address?.streetTwo ?? "",
-        suffix: facilityData?.facility?.orderingProvider?.suffix ?? "",
-        zipCode:
-          facilityData?.facility?.orderingProvider?.address?.postalCode ?? "",
-      };
-    });
-    setFacility((prevFacility) => {
-      return {
-        ...prevFacility,
-        city: facilityData?.facility?.address?.city ?? "",
-        clia: facilityData?.facility?.cliaNumber ?? "",
-        county: facilityData?.facility?.address?.county ?? "",
-        email: facilityData?.facility?.email ?? "",
-        name: facilityData?.facility?.name ?? "",
-        phone: facilityData?.facility?.phone ?? "",
-        state: facilityData?.facility?.address?.state ?? "",
-        street: facilityData?.facility?.address?.streetOne ?? "",
-        streetTwo: facilityData?.facility?.address?.streetTwo ?? "",
-        zipCode: facilityData?.facility?.address?.postalCode ?? "",
+    const facilityInfo = facilityData?.facility;
+    const facilityAddress = facilityInfo?.address ?? {};
+    const orderingProvider = facilityInfo?.orderingProvider ?? {};
+    const providerAddress = orderingProvider?.address ?? {};
+
+    dispatch({
+      provider: {
+        city: providerAddress.city,
+        county: providerAddress.county,
+        state: providerAddress.state ?? "",
+        street: providerAddress.streetOne ?? "",
+        streetTwo: providerAddress.streetTwo ?? "",
+        zipCode: providerAddress.postalCode ?? "",
+        firstName: orderingProvider.firstName ?? "",
+        lastName: orderingProvider.lastName ?? "",
+        middleName: orderingProvider.middleName ?? "",
+        npi: orderingProvider.NPI ?? "",
+        phone: orderingProvider.phone ?? "",
+        suffix: orderingProvider.suffix ?? "",
+      },
+      facility: {
+        city: facilityAddress?.city ?? "",
+        state: facilityAddress?.state ?? "",
+        street: facilityAddress?.streetOne ?? "",
+        streetTwo: facilityAddress?.streetTwo ?? "",
+        zipCode: facilityAddress?.postalCode ?? "",
+        county: facilityAddress?.county ?? "",
+        clia: facilityInfo?.cliaNumber ?? "",
+        email: facilityInfo?.email ?? "",
+        name: facilityInfo?.name ?? "",
+        phone: facilityInfo?.phone ?? "",
         country: "USA",
-      };
+      },
     });
   }, [facilityData]);
 
@@ -121,7 +125,11 @@ const LabReportForm = () => {
       resultDate: "",
       resultInterpretation: "",
     } as TestDetailsInput);
-    setTestDetailList(updatedList);
+
+    dispatch({
+      testDetailList: updatedList,
+    });
+
     setTestOrderLoinc(lab.code);
 
     if (lab.systemCode) {
@@ -138,11 +146,12 @@ const LabReportForm = () => {
         (a, b) => a.snomedSiteDisplay.localeCompare(b.snomedSiteDisplay)
       );
 
-      setSpecimen({
-        ...specimen,
-        snomedTypeCode: sortedSpecimenData[0].snomedCode,
-        collectionLocationCode: sortedBodySiteList[0].snomedSiteCode ?? "",
-        collectionLocationName: sortedBodySiteList[0].snomedSiteDisplay ?? "",
+      dispatch({
+        specimen: {
+          snomedTypeCode: sortedSpecimenData[0].snomedCode,
+          collectionLocationCode: sortedBodySiteList[0].snomedSiteCode ?? "",
+          collectionLocationName: sortedBodySiteList[0].snomedSiteDisplay ?? "",
+        },
       });
     } else {
       // currently filtering out labs with no system code on the backend
@@ -151,22 +160,24 @@ const LabReportForm = () => {
   };
 
   const updateTestDetails = (details: TestDetailsInput) => {
-    let updatedList = [...testDetailList];
+    let updatedList = [...state.testDetailList];
     updatedList = updatedList.filter(
       (x) => x.testPerformedLoinc !== details.testPerformedLoinc
     );
     updatedList = [...updatedList, details];
-    setTestDetailList(updatedList);
+    dispatch({ testDetailList: updatedList });
   };
 
   const updateConditions = async (selectedConditions: string[]) => {
     setSelectedConditions(selectedConditions);
 
     if (selectedConditions.length === 0) {
-      setTestDetailList([]);
+      dispatch({
+        testDetailList: [],
+        specimen: defaultSpecimenReportInputState,
+      });
       setTestOrderLoinc("");
       setTestOrderSearchString("");
-      setSpecimen(defaultSpecimenReportInputState);
     }
 
     if (selectedConditions.length > 0) {
@@ -181,11 +192,11 @@ const LabReportForm = () => {
   const submitForm = async () => {
     const submissionResponse = await submitLabReport({
       variables: {
-        patient: { ...patient },
-        provider: { ...provider },
-        facility: { ...facility },
-        specimen: { ...specimen },
-        testDetailsList: [...testDetailList],
+        patient: { ...state.patient },
+        provider: { ...state.provider },
+        facility: { ...state.facility },
+        specimen: { ...state.specimen },
+        testDetailsList: [...state.testDetailList],
       },
     });
     setSubmissionResponse(
@@ -205,22 +216,31 @@ const LabReportForm = () => {
             <h1 className={"font-sans-lg"}>Universal Lab Reporting Form</h1>
           </div>
           <div className="usa-card__body">
-            <PatientFormSection patient={patient} setPatient={setPatient} />
+            <PatientFormSection
+              patient={state.patient}
+              setPatient={(patient: PatientReportInput) =>
+                dispatch({ patient })
+              }
+            />
           </div>
         </div>
         <div className="prime-container card-container">
           <div className="usa-card__body">
             <ProviderFormSection
-              provider={provider}
-              setProvider={setProvider}
+              provider={state.provider}
+              setProvider={(provider: ProviderReportInput) =>
+                dispatch({ provider })
+              }
             />
           </div>
         </div>
         <div className="prime-container card-container">
           <div className="usa-card__body">
             <FacilityFormSection
-              facility={facility}
-              setFacility={setFacility}
+              facility={state.facility}
+              setFacility={(facility: FacilityReportInput) =>
+                dispatch({ facility })
+              }
             />
           </div>
         </div>
@@ -272,15 +292,15 @@ const LabReportForm = () => {
         <div className="prime-container card-container">
           <div className="usa-card__body">
             <SpecimenFormSection
-              specimen={specimen}
-              setSpecimen={setSpecimen}
+              specimen={state.specimen}
+              setSpecimen={(specimen: SpecimenInput) => dispatch({ specimen })}
               loading={specimenListLoading}
               isTestOrderSelected={testOrderLoinc.length > 0}
               specimenList={specimenListData?.specimens ?? []}
             />
           </div>
         </div>
-        {testDetailList
+        {state.testDetailList
           .sort((a, b) =>
             a.testPerformedLoinc.localeCompare(b.testPerformedLoinc)
           )
