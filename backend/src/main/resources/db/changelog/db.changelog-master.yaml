@@ -6333,3 +6333,66 @@ databaseChangeLog:
         - dropUniqueConstraint:
             tableName: specimen
             constraintName: uk__loinc_system_code__snomed_code
+  - changeSet:
+      id: add-facility-lab-test-order
+      author: az01@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-facility-lab-test-order
+        - createTable:
+            tableName: facility_lab_testorder
+            remarks: Table to store facility-specific descriptions and names for test orders
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: facility_id
+                  type: uuid
+                  remarks: Internal Id of a facility in the facility table.
+                  constraints:
+                    unique: false
+                    foreignKeyName: fk__facility__facility_id
+                    references: facility
+                    deleteCascade: true
+              - column:
+                  name: lab_id
+                  type: uuid
+                  remarks: Internal Id of a lab in the lab table.
+                  constraints:
+                    unique: false
+                    foreignKeyName: fk__lab__lab_id
+                    references: lab
+                    deleteCascade: true
+              - column:
+                  name: name
+                  type: text
+                  remarks: Facility-specific name for test order
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  remarks: Facility-specific description for test order
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            constraintName: uk_facility_lab_testorder_facility_lab
+            tableName: facility_lab_testorder
+            columnNames: facility_id, lab_id
