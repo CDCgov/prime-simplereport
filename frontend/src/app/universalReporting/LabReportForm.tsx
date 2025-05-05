@@ -133,15 +133,16 @@ const LabReportForm = () => {
       const sortedSpecimenData = specimenData.toSorted((a, b) =>
         a.snomedDisplay.localeCompare(b.snomedDisplay)
       );
-      const sortedBodySiteList = sortedSpecimenData[0].bodySiteList?.toSorted(
-        (a, b) => a.snomedSiteDisplay.localeCompare(b.snomedSiteDisplay)
-      );
+      const sortedBodySiteList =
+        sortedSpecimenData[0].bodySiteList?.toSorted((a, b) =>
+          a.snomedSiteDisplay.localeCompare(b.snomedSiteDisplay)
+        ) ?? [];
 
       setSpecimen({
         ...specimen,
         snomedTypeCode: sortedSpecimenData[0].snomedCode,
-        collectionLocationCode: sortedBodySiteList[0].snomedSiteCode ?? "",
-        collectionLocationName: sortedBodySiteList[0].snomedSiteDisplay ?? "",
+        collectionLocationCode: sortedBodySiteList[0]?.snomedSiteCode ?? "",
+        collectionLocationName: sortedBodySiteList[0]?.snomedSiteDisplay ?? "",
       });
     } else {
       // currently filtering out labs with no system code on the backend
