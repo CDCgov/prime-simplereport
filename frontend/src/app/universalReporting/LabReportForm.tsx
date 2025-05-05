@@ -112,6 +112,8 @@ const LabReportForm = () => {
   const updateTestOrderLoinc = async (lab: Lab) => {
     const updatedList = [] as TestDetailsInput[];
     updatedList.push({
+      // TODO: update this when we start handling multiple conditions. this currently just sends the condition code
+      condition: selectedConditions[0],
       testOrderLoinc: lab.code,
       testPerformedLoinc: lab.code,
       testPerformedLoincLongCommonName: lab.longCommonName,

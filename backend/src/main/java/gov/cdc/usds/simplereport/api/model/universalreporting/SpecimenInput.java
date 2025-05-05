@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class SpecimenInput {
-  private String typeSnomed;
+  private String snomedTypeCode;
   private Date collectionDate;
   private Date receivedDate;
   private String collectionLocationName;
