@@ -112,7 +112,7 @@ const LabReportForm = () => {
         country: "USA",
       },
     });
-  }, [facilityData]);
+  }, [facilityData, dispatch]);
 
   const updateTestOrderLoinc = async (lab: Lab) => {
     const updatedList = [] as TestDetailsInput[];
