@@ -1,14 +1,11 @@
 package gov.cdc.usds.simplereport.api.model.universalreporting;
 
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Builder
 public class ProviderReportInput {
-  @Setter private UUID internalId;
   private String firstName;
   private String middleName;
   private String lastName;

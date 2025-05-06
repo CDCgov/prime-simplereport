@@ -1687,7 +1687,7 @@ public class FhirConverter {
 
     var testingLab =
         convertToOrganization(
-            facility.getInternalId().toString(),
+            UUID.randomUUID().toString(),
             facility.getName(),
             facility.getClia(),
             facility.getPhone(),
@@ -1706,7 +1706,7 @@ public class FhirConverter {
 
     var practitioner =
         convertToPractitioner(
-            providerInput.getInternalId().toString(),
+            UUID.randomUUID().toString(),
             new PersonName(
                 providerInput.getFirstName(),
                 providerInput.getMiddleName(),
@@ -1733,7 +1733,7 @@ public class FhirConverter {
     var specimen =
         convertToSpecimen(
             ConvertToSpecimenProps.builder()
-                .specimenCode(specimenInput.getTypeSnomed())
+                .specimenCode(specimenInput.getSnomedTypeCode())
                 .specimenName(null)
                 .collectionCode(specimenInput.getCollectionLocationCode())
                 .collectionName(specimenInput.getCollectionLocationName())
