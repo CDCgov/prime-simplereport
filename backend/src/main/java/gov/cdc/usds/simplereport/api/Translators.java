@@ -1,5 +1,11 @@
 package gov.cdc.usds.simplereport.api;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.INVALID_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NEGATIVE_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
+
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -486,9 +492,6 @@ public class Translators {
           Map.entry(OTHER, "Other"));
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
 
-  private static final String DETECTED_SNOMED = "260373001";
-  private static final String NOT_DETECTED_SNOMED = "260415000";
-  private static final String INVALID_SNOMED = "455371000124106";
   public static final Map<String, SnomedConceptRecord> ABNORMAL_SNOMEDS =
       Map.ofEntries(
           Map.entry(
@@ -498,7 +501,8 @@ public class Translators {
               "720735008",
               new SnomedConceptRecord("Presumptive positive", "720735008", TestResult.POSITIVE)),
           Map.entry(
-              "10828004", new SnomedConceptRecord("Positive", "10828004", TestResult.POSITIVE)),
+              POSITIVE_SNOMED,
+              new SnomedConceptRecord("Positive", POSITIVE_SNOMED, TestResult.POSITIVE)),
           Map.entry(
               "11214006", new SnomedConceptRecord("Reactive", "11214006", TestResult.POSITIVE)));
 
@@ -508,7 +512,8 @@ public class Translators {
               NOT_DETECTED_SNOMED,
               new SnomedConceptRecord("Not detected", NOT_DETECTED_SNOMED, TestResult.NEGATIVE)),
           Map.entry(
-              "260385009", new SnomedConceptRecord("Negative", "260385009", TestResult.NEGATIVE)),
+              NEGATIVE_SNOMED,
+              new SnomedConceptRecord("Negative", NEGATIVE_SNOMED, TestResult.NEGATIVE)),
           Map.entry(
               "895231008",
               new SnomedConceptRecord(

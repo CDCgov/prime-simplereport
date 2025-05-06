@@ -66,6 +66,12 @@ public class FhirConstants {
   public static final String LOINC_AOE_RESIDENCE_TYPE = "75617-1";
   public static final String LOINC_GENDER_IDENTITY = "76691-5";
 
+  public static final String POSITIVE_SNOMED = "10828004";
+  public static final String DETECTED_SNOMED = "260373001";
+  public static final String NEGATIVE_SNOMED = "260385009";
+  public static final String NOT_DETECTED_SNOMED = "260415000";
+  public static final String INVALID_SNOMED = "455371000124106";
+
   public static final String SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS = "SR0001";
 
   public static final String PROCESSING_ID_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0103";

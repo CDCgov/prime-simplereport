@@ -54,6 +54,7 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import gov.cdc.usds.simplereport.api.converter.FhirConstants;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
@@ -143,13 +144,15 @@ public class CsvValidatorUtils {
   private static final String NOT_HISPANIC_DB_VALUE = "not_hispanic";
   private static final String POSITIVE_LITERAL = "positive";
   private static final String NEGATIVE_LITERAL = "negative";
-  private static final String POSITIVE_CODE = "10828004";
   private static final String DETECTED_LITERAL = "detected";
   private static final String NOT_DETECTED_LITERAL = "not detected";
-  private static final String DETECTED_CODE = "260373001";
   private static final String INVALID_RESULT_LITERAL = "invalid result";
   private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
-      Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_CODE, DETECTED_CODE);
+      Set.of(
+          POSITIVE_LITERAL,
+          DETECTED_LITERAL,
+          FhirConstants.POSITIVE_SNOMED,
+          FhirConstants.DETECTED_SNOMED);
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "m", MALE_LITERAL,

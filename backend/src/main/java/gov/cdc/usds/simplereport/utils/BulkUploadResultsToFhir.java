@@ -1,10 +1,6 @@
 package gov.cdc.usds.simplereport.utils;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_HOSPITALIZED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ICU;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.*;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
@@ -12,9 +8,7 @@ import static gov.cdc.usds.simplereport.db.model.PersonUtils.syphilisHistorySnom
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.ResultUtils.mapTestResultStatusToSRValue;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.extractSubstringsGenderOfSexualPartners;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.*;
 import static java.util.Collections.emptyList;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -95,11 +89,11 @@ public class BulkUploadResultsToFhir {
 
   private final Map<String, String> testResultToSnomedMap =
       Map.of(
-          "Positive".toLowerCase(), "10828004",
-          "Negative".toLowerCase(), "260385009",
-          "Detected".toLowerCase(), "260373001",
-          "Not Detected".toLowerCase(), "260415000",
-          "Invalid Result".toLowerCase(), "455371000124106");
+          "Positive".toLowerCase(), POSITIVE_SNOMED,
+          "Negative".toLowerCase(), NEGATIVE_SNOMED,
+          "Detected".toLowerCase(), DETECTED_SNOMED,
+          "Not Detected".toLowerCase(), NOT_DETECTED_SNOMED,
+          "Invalid Result".toLowerCase(), INVALID_SNOMED);
 
   private static final Map<String, Boolean> yesNoUnknownToBooleanMap = new HashMap<>();
 
