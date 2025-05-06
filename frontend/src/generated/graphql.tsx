@@ -1148,6 +1148,7 @@ export enum TestCorrectionStatus {
 }
 
 export type TestDetailsInput = {
+  condition: Scalars["String"]["input"];
   resultDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   resultInterpretation?: InputMaybe<Scalars["String"]["input"]>;
   resultType: ResultScaleType;

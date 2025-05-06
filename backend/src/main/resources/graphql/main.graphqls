@@ -501,6 +501,7 @@ input SpecimenInput {
 }
 
 input TestDetailsInput {
+  condition: String!
   testOrderLoinc: String!
   testPerformedLoinc: String!
   testPerformedLoincLongCommonName: String
