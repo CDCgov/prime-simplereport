@@ -626,6 +626,7 @@ public class FhirConverter {
     return specimen;
   }
 
+  // TODO: Test convertToSpecimen with complete and partial inputs
   public Specimen convertToSpecimen(ConvertToSpecimenProps props) {
     Specimen specimen = new Specimen();
     specimen.setId(props.getId());
@@ -652,7 +653,6 @@ public class FhirConverter {
     return specimen;
   }
 
-  // TODO: Test convertToSpecimen with complete and partial inputs
   public Specimen convertToSpecimen(
       @NotNull SpecimenType specimenType,
       UUID specimenIdentifier,
