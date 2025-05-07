@@ -1,10 +1,9 @@
 package gov.cdc.usds.simplereport.validators;
 
-import static gov.cdc.usds.simplereport.api.Translators.ABNORMAL_SNOMEDS;
+import static gov.cdc.usds.simplereport.api.Translators.ALL_ACCEPTED_RESULT_SNOMED_RECORDS;
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
-import static gov.cdc.usds.simplereport.api.Translators.NORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
@@ -195,11 +194,10 @@ public class CsvValidatorUtils {
           DETECTED_LITERAL,
           INVALID_RESULT_LITERAL);
 
-  private static final Set<String> ACCEPTED_TEST_RESULT_SNOMEDS =
-      concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream()).collect(toSet());
-
   private static final Set<String> ALL_ACCEPTED_TEST_RESULT_VALUES =
-      concat(ACCEPTED_LITERAL_TEST_RESULT_VALUES.stream(), ACCEPTED_TEST_RESULT_SNOMEDS.stream())
+      concat(
+              ACCEPTED_LITERAL_TEST_RESULT_VALUES.stream(),
+              ALL_ACCEPTED_RESULT_SNOMED_RECORDS.keySet().stream())
           .collect(toSet());
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(

@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -542,6 +543,9 @@ public class Translators {
               "125154007",
               new SnomedConceptRecord(
                   "Specimen unsatisfactory for evaluation", "125154007", TestResult.UNDETERMINED)));
+  public static final Map<String, SnomedConceptRecord> ALL_ACCEPTED_RESULT_SNOMED_RECORDS =
+      Stream.concat(ABNORMAL_SNOMEDS.entrySet().stream(), NORMAL_SNOMEDS.entrySet().stream())
+          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
   public static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =
       ABNORMAL_SNOMEDS.get(DETECTED_SNOMED);
@@ -571,15 +575,6 @@ public class Translators {
     }
   }
 
-  public static TestResult convertSnomedToResult(String snomed) {
-    SnomedConceptRecord concept =
-        RESULTS_SNOMED_CONCEPTS.stream()
-            .filter(snomedConcept -> snomed.equals(snomedConcept.code()))
-            .findFirst()
-            .orElse(INVALID_SNOMED_CONCEPT);
-    return concept.displayName();
-  }
-
   public static String convertTestResultToSnomed(TestResult result) {
     SnomedConceptRecord concept =
         RESULTS_SNOMED_CONCEPTS.stream()
@@ -590,7 +585,7 @@ public class Translators {
   }
 
   public static SnomedConceptRecord getSnomedConceptByCode(String snomedCode) {
-    return RESULTS_SNOMED_CONCEPTS.stream()
+    return ALL_ACCEPTED_RESULT_SNOMED_RECORDS.values().stream()
         .filter(snomedConcept -> snomedCode.equals(snomedConcept.code()))
         .findFirst()
         .orElse(null);
