@@ -7,6 +7,8 @@ import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
 import static gov.cdc.usds.simplereport.api.Translators.NORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOMELESS_LITERAL;
@@ -54,7 +56,6 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import gov.cdc.usds.simplereport.api.converter.FhirConstants;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
@@ -148,11 +149,7 @@ public class CsvValidatorUtils {
   private static final String NOT_DETECTED_LITERAL = "not detected";
   private static final String INVALID_RESULT_LITERAL = "invalid result";
   private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
-      Set.of(
-          POSITIVE_LITERAL,
-          DETECTED_LITERAL,
-          FhirConstants.POSITIVE_SNOMED,
-          FhirConstants.DETECTED_SNOMED);
+      Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_SNOMED, DETECTED_SNOMED);
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "m", MALE_LITERAL,
