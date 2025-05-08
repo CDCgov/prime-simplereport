@@ -10,6 +10,6 @@ public class SpecimenInput {
   private String snomedTypeCode;
   private Date collectionDate;
   private Date receivedDate;
-  private String collectionLocationName;
-  private String collectionLocationCode;
+  private String collectionBodySiteName;
+  private String collectionBodySiteCode;
 }

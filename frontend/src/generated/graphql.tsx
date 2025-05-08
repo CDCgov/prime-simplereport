@@ -1093,9 +1093,9 @@ export type SpecimenBodySite = {
 };
 
 export type SpecimenInput = {
+  collectionBodySiteCode?: InputMaybe<Scalars["String"]["input"]>;
+  collectionBodySiteName?: InputMaybe<Scalars["String"]["input"]>;
   collectionDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
-  collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
   receivedDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   snomedTypeCode: Scalars["String"]["input"];
 };

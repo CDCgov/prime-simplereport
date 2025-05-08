@@ -142,9 +142,9 @@ const LabReportForm = () => {
       setSpecimen({
         ...specimen,
         snomedTypeCode: sortedSpecimenData[0].snomedCode,
-        collectionLocationCode: sortedBodySiteList[0]?.snomedSiteCode ?? "",
-        collectionLocationName: sortedBodySiteList[0]?.snomedSiteDisplay ?? "",
-      });
+        collectionBodySiteCode: sortedBodySiteList[0]?.snomedSiteCode ?? "",
+        collectionBodySiteName: sortedBodySiteList[0]?.snomedSiteDisplay ?? "",
+      } as SpecimenInput);
     } else {
       // currently filtering out labs with no system code on the backend
       console.error("No LOINC system code to look up specimen.");

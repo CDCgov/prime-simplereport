@@ -63,8 +63,8 @@ export const defaultSpecimenReportInputState: SpecimenInput = {
   snomedTypeCode: "",
   collectionDate: "",
   receivedDate: "",
-  collectionLocationCode: "",
-  collectionLocationName: "",
+  collectionBodySiteCode: "",
+  collectionBodySiteName: "",
 };
 
 export const mapScaleDisplayToResultScaleType = (scaleDisplay: string) => {

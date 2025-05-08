@@ -494,8 +494,8 @@ input SpecimenInput {
   snomedTypeCode: String!
   collectionDate: DateTime
   receivedDate: DateTime
-  collectionLocationName: String
-  collectionLocationCode: String
+  collectionBodySiteName: String
+  collectionBodySiteCode: String
 }
 
 input TestDetailsInput {
