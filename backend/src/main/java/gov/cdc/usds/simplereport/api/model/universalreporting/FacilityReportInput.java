@@ -1,19 +1,19 @@
 package gov.cdc.usds.simplereport.api.model.universalreporting;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@Builder
+@AllArgsConstructor
 public class FacilityReportInput {
-  private String name;
-  private String clia;
-  private String street;
-  private String streetTwo;
-  private String city;
-  private String county;
-  private String state;
-  private String zipCode;
-  private String phone;
-  private String email;
+  private final String name;
+  private final String clia;
+  private final String street;
+  private final String streetTwo;
+  private final String city;
+  private final String county;
+  private final String state;
+  private final String zipCode;
+  private final String phone;
+  private final String email;
 }
