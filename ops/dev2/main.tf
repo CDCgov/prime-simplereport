@@ -20,7 +20,7 @@ resource "azurerm_storage_account" "app" {
   name                             = "simplereport${local.env}app"
   resource_group_name              = data.azurerm_resource_group.rg.name
   location                         = data.azurerm_resource_group.rg.location
-  enable_https_traffic_only        = true
+  https_traffic_only_enabled       = true
   min_tls_version                  = "TLS1_2"
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
