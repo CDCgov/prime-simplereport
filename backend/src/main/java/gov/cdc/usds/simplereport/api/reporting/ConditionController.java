@@ -24,4 +24,11 @@ public class ConditionController {
   public String syncHasLabs() {
     return conditionService.syncHasLabs();
   }
+
+  @GetMapping("/clear")
+  public String clearConditions() {
+    // todo can we make this harder to do accidentally?
+    conditionService.clearConditions();
+    return "Completed deleting all conditions.";
+  }
 }
