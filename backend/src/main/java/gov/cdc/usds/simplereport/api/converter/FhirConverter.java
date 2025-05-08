@@ -1693,7 +1693,7 @@ public class FhirConverter {
             facility.getPhone(),
             facility.getEmail(),
             facilityAddress,
-            facility.getCountry());
+            DEFAULT_COUNTRY);
 
     StreetAddress providerAddress =
         new StreetAddress(
@@ -1714,7 +1714,7 @@ public class FhirConverter {
                 providerInput.getSuffix()),
             providerInput.getPhone(),
             providerAddress,
-            providerInput.getCountry(),
+            DEFAULT_COUNTRY,
             providerInput.getNpi());
 
     ZonedDateTime specimenCollectionDate =
@@ -1735,8 +1735,8 @@ public class FhirConverter {
             ConvertToSpecimenProps.builder()
                 .specimenCode(specimenInput.getSnomedTypeCode())
                 .specimenName(null)
-                .collectionCode(specimenInput.getCollectionLocationCode())
-                .collectionName(specimenInput.getCollectionLocationName())
+                .collectionCode(specimenInput.getCollectionBodySiteCode())
+                .collectionName(specimenInput.getCollectionBodySiteName())
                 .collectionDate(specimenCollectionDate)
                 .receivedTime(specimenReceivedDate)
                 .id(specimenId.toString())
