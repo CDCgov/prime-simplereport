@@ -105,7 +105,6 @@ const LabReportForm = () => {
       email: facilityInfo?.email ?? "",
       name: facilityInfo?.name ?? "",
       phone: facilityInfo?.phone ?? "",
-      country: "USA",
     }));
   }, [facilityData]);
 

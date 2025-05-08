@@ -14,7 +14,6 @@ public class FacilityReportInput {
   private String county;
   private String state;
   private String zipCode;
-  private String country;
   private String phone;
   private String email;
 }

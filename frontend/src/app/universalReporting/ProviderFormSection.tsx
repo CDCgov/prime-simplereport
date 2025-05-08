@@ -4,11 +4,7 @@ import { useTranslation } from "react-i18next";
 import TextInput from "../commonComponents/TextInput";
 import { ProviderReportInput } from "../../generated/graphql";
 import Select from "../commonComponents/Select";
-import {
-  canadianProvinceCodes,
-  countryOptions,
-  stateCodes,
-} from "../../config/constants";
+import { stateCodes } from "../../config/constants";
 
 type ProviderFormSectionProps = {
   provider: ProviderReportInput;
@@ -165,54 +161,25 @@ const ProviderFormSection = ({
       <div className="grid-row grid-gap">
         <div className="grid-col-4">
           <Select<string>
-            label={"Provider country"}
-            name="provider-country"
-            value={provider.country || "USA"}
-            options={countryOptions}
-            onChange={(country) => setProvider({ ...provider, country })}
+            label={"Provider state"}
+            name="provider-state"
+            value={provider.state ?? ""}
+            options={stateCodes.map((c) => ({ label: c, value: c }))}
+            defaultOption={t("common.defaultDropdownOption")}
+            defaultSelect
+            onChange={(state) => setProvider({ ...provider, state })}
           />
         </div>
-        {(provider.country === "USA" || provider.country === "CAN") && (
-          <>
-            <div className="grid-col-2">
-              {provider.country === "USA" && (
-                <Select<string>
-                  label={"Provider state"}
-                  name="provider-state"
-                  value={provider.state ?? ""}
-                  options={stateCodes.map((c) => ({ label: c, value: c }))}
-                  defaultOption={t("common.defaultDropdownOption")}
-                  defaultSelect
-                  onChange={(state) => setProvider({ ...provider, state })}
-                />
-              )}
-              {provider.country === "CAN" && (
-                <Select<string>
-                  label={"Provider province"}
-                  name="provider-state"
-                  value={provider.state || ""}
-                  options={canadianProvinceCodes.map((c) => ({
-                    label: c,
-                    value: c,
-                  }))}
-                  defaultOption={t("common.defaultDropdownOption")}
-                  defaultSelect
-                  onChange={(state) => setProvider({ ...provider, state })}
-                />
-              )}
-            </div>
-            <div className="grid-col-2">
-              <TextInput
-                name={"provider-zip-code"}
-                label={"Provider ZIP code"}
-                value={provider.zipCode ?? ""}
-                onChange={(e) =>
-                  setProvider({ ...provider, zipCode: e.target.value })
-                }
-              ></TextInput>
-            </div>
-          </>
-        )}
+        <div className="grid-col-4">
+          <TextInput
+            name={"provider-zip-code"}
+            label={"Provider ZIP code"}
+            value={provider.zipCode ?? ""}
+            onChange={(e) =>
+              setProvider({ ...provider, zipCode: e.target.value })
+            }
+          ></TextInput>
+        </div>
       </div>
     </>
   );

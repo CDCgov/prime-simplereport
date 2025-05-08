@@ -473,7 +473,6 @@ input ProviderReportInput {
   county: String
   state: String
   zipCode: String
-  country: String
   email: String
   phone: String
 }
@@ -488,7 +487,6 @@ input FacilityReportInput {
   county: String
   state: String
   zipCode: String
-  country: String
   clia: String!
 }
 
