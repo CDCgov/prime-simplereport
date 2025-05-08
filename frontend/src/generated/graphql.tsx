@@ -185,7 +185,6 @@ export type FacilityAddressInput = {
 export type FacilityReportInput = {
   city?: InputMaybe<Scalars["String"]["input"]>;
   clia: Scalars["String"]["input"];
-  country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   name: Scalars["String"]["input"];
@@ -813,7 +812,6 @@ export type ProviderInput = {
 
 export type ProviderReportInput = {
   city?: InputMaybe<Scalars["String"]["input"]>;
-  country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   firstName: Scalars["String"]["input"];
@@ -1095,9 +1093,9 @@ export type SpecimenBodySite = {
 };
 
 export type SpecimenInput = {
+  collectionBodySiteCode?: InputMaybe<Scalars["String"]["input"]>;
+  collectionBodySiteName?: InputMaybe<Scalars["String"]["input"]>;
   collectionDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
-  collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
   receivedDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   snomedTypeCode: Scalars["String"]["input"];
 };

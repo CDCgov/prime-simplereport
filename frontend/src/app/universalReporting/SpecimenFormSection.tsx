@@ -39,8 +39,8 @@ const SpecimenFormSection = ({
     setSpecimen({
       ...specimen,
       snomedTypeCode: selectedSnomedCode,
-      collectionLocationCode: specimenBodySiteList[0]?.snomedSiteCode ?? "",
-      collectionLocationName: specimenBodySiteList[0]?.snomedSiteDisplay ?? "",
+      collectionBodySiteCode: specimenBodySiteList[0]?.snomedSiteCode ?? "",
+      collectionBodySiteName: specimenBodySiteList[0]?.snomedSiteDisplay ?? "",
     });
   };
 
@@ -75,8 +75,8 @@ const SpecimenFormSection = ({
   const handleBodySiteChange = (selectedBodySiteCode: string) => {
     setSpecimen({
       ...specimen,
-      collectionLocationCode: selectedBodySiteCode,
-      collectionLocationName:
+      collectionBodySiteCode: selectedBodySiteCode,
+      collectionBodySiteName:
         bodySiteOptions.find(
           (bodySite) => bodySite.value === selectedBodySiteCode
         )?.label ?? "",
@@ -156,9 +156,9 @@ const SpecimenFormSection = ({
           <div className="grid-row grid-gap">
             <div className="grid-col-4">
               <Dropdown
-                label="Specimen collection location"
-                name="specimen-collection-location"
-                selectedValue={specimen.collectionLocationCode ?? ""}
+                label="Specimen collection body site"
+                name="specimen-collection-body-site"
+                selectedValue={specimen.collectionBodySiteCode ?? ""}
                 onChange={(e) => handleBodySiteChange(e.target.value)}
                 className="card-dropdown"
                 required={true}

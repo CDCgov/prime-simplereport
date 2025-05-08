@@ -44,7 +44,6 @@ export const defaultProviderReportInputState: ProviderReportInput = {
   streetTwo: "",
   suffix: "",
   zipCode: "",
-  country: "USA",
 };
 
 export const defaultFacilityReportInputState: FacilityReportInput = {
@@ -58,15 +57,14 @@ export const defaultFacilityReportInputState: FacilityReportInput = {
   street: "",
   streetTwo: "",
   zipCode: "",
-  country: "USA",
 };
 
 export const defaultSpecimenReportInputState: SpecimenInput = {
   snomedTypeCode: "",
   collectionDate: "",
   receivedDate: "",
-  collectionLocationCode: "",
-  collectionLocationName: "",
+  collectionBodySiteCode: "",
+  collectionBodySiteName: "",
 };
 
 export const mapScaleDisplayToResultScaleType = (scaleDisplay: string) => {
