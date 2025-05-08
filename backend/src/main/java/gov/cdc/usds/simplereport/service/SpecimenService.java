@@ -49,10 +49,6 @@ public class SpecimenService {
     return specimenList;
   }
 
-  public boolean hasAnySpecimen(String loinc) {
-    return specimenRepository.existsByLoincSystemCode(loinc);
-  }
-
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   // TODO: Test LOINC to SNOMED conversion with mock HTTP responses
