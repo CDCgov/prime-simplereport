@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -131,5 +132,11 @@ public class OrganizationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<UUID> getOrgAdminUserIds(@Argument UUID orgId) {
     return _organizationService.getOrgAdminUserIds(orgId);
+  }
+
+  @QueryMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<FacilityLabTestOrder> facilityLabTestOrders(@Argument UUID facilityId) {
+    return _organizationService.getFacilityLabTestOrders(facilityId);
   }
 }

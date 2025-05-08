@@ -440,6 +440,16 @@ type FeatureFlag {
   value: Boolean!
 }
 
+type FacilityLabTestOrder {
+  internalId: ID!
+  facilityId: ID!
+  labId: ID!
+  name: String!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -568,6 +578,7 @@ type Query {
     pageSize: Int
   ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
+  facilityLabTestOrders(facilityId: ID): [FacilityLabTestOrder]
 }
 
 type Mutation {
@@ -731,4 +742,15 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  updateFacilityLabTestOrder(
+    internalId: ID!
+    name: String!
+    description: String!
+  ): Int
+  addFacilityLabTestOrder(
+    facilityId: ID!
+    labId: ID!
+    name: String!
+    description: String!
+  ): FacilityLabTestOrder
 }

@@ -6340,7 +6340,7 @@ databaseChangeLog:
         - tagDatabase:
             tag: add-facility-lab-test-order
         - createTable:
-            tableName: facility_lab_testorder
+            tableName: facility_lab_test_order
             remarks: Table to store facility-specific descriptions and names for test orders
             columns:
               - column:
@@ -6356,6 +6356,7 @@ databaseChangeLog:
                   remarks: Internal Id of a facility in the facility table.
                   constraints:
                     unique: false
+                    nullable: false
                     foreignKeyName: fk__facility__facility_id
                     references: facility
                     deleteCascade: true
@@ -6365,6 +6366,7 @@ databaseChangeLog:
                   remarks: Internal Id of a lab in the lab table.
                   constraints:
                     unique: false
+                    nullable: false
                     foreignKeyName: fk__lab__lab_id
                     references: lab
                     deleteCascade: true
@@ -6392,7 +6394,32 @@ databaseChangeLog:
                   remarks: The timestamp for the most recent update of this entity.
                   constraints:
                     nullable: false
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
         - addUniqueConstraint:
-            constraintName: uk_facility_lab_testorder_facility_lab
-            tableName: facility_lab_testorder
+            constraintName: uk_facility_lab_test_order_facility_lab
+            tableName: facility_lab_test_order
             columnNames: facility_id, lab_id
+      rollback:
+        - dropTable:
+            tableName: facility_lab_test_order

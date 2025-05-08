@@ -12,12 +12,14 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
+import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityLabTestOrderRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -28,6 +30,7 @@ import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -62,6 +65,7 @@ public class OrganizationService {
   private final DbAuthorizationService dbAuthorizationService;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
+  private final FacilityLabTestOrderRepository facilityLabTestOrderRepository;
   private final EmailService emailService;
   private final FeatureFlagsConfig featureFlagsConfig;
 
@@ -618,5 +622,32 @@ public class OrganizationService {
             .orElseThrow(NonexistentOrgException::new);
     oktaRepository.deleteOrganization(orgToDelete);
     return orgToDelete;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<FacilityLabTestOrder> getFacilityLabTestOrders(@Argument UUID facilityId) {
+    return facilityLabTestOrderRepository.findByFacility(facilityId);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public int updateFacilityLabTestOrder(
+      @Argument UUID internalId, @Argument String name, @Argument String description) {
+    return facilityLabTestOrderRepository.updateByInternalId(internalId, name, description);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public FacilityLabTestOrder createFacilityLabTestOrder(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    FacilityLabTestOrder testOrder = new FacilityLabTestOrder();
+    testOrder.setFacilityId(facilityId);
+    testOrder.setLabId(labId);
+    testOrder.setName(name);
+    testOrder.setDescription(description);
+    testOrder.setCreatedAt(new Date());
+    testOrder.setUpdatedAt(new Date());
+    return facilityLabTestOrderRepository.save(testOrder);
   }
 }
