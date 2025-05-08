@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings({"checkstyle:TodoComment"})
 public class UniversalReportService {
   private final FhirConverter fhirConverter;
   private final GitProperties gitProperties;

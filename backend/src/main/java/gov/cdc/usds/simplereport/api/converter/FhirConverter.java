@@ -186,6 +186,7 @@ import org.springframework.util.CollectionUtils;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@SuppressWarnings({"checkstyle:TodoComment"})
 public class FhirConverter {
 
   private final UUIDGenerator uuidGenerator;
