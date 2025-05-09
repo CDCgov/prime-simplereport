@@ -136,6 +136,13 @@ type SpecimenType {
   collectionLocationCode: String
 }
 
+type Specimen {
+  loincSystemCode: String!
+  loincSystemDisplay: String!
+  snomedCode: String!
+  snomedDisplay: String!
+}
+
 type PhoneNumber {
   type: PhoneType
   number: String
@@ -579,6 +586,7 @@ type Query {
   ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
   facilityLabTestOrders(facilityId: ID): [FacilityLabTestOrder]
+  facilityLabTestOrderSpecimens(facilityId: ID, labId: ID): [Specimen]
 }
 
 type Mutation {
@@ -753,4 +761,7 @@ type Mutation {
     name: String!
     description: String!
   ): FacilityLabTestOrder
+  removeFacilityLabTestOrder(internalId: ID!): Boolean
+  addFacilityLabTestOrderSpecimen(facilityLabTestOrderId: ID!, specimenId: ID!): ID!
+  removeFacilityLabTestOrderSpecimen(internalId: ID!): Boolean
 }

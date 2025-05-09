@@ -42,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,7 @@ public class OrganizationService {
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
   private final FacilityLabTestOrderRepository facilityLabTestOrderRepository;
+  private final FacilityLabTestOrderSpecimenRepository facilityLabTestOrderSpecimenRepository;
   private final EmailService emailService;
   private final FeatureFlagsConfig featureFlagsConfig;
 
@@ -630,12 +632,6 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public int updateFacilityLabTestOrder(
-      @Argument UUID internalId, @Argument String name, @Argument String description) {
-    return facilityLabTestOrderRepository.updateByInternalId(internalId, name, description);
-  }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public FacilityLabTestOrder createFacilityLabTestOrder(
       @Argument UUID facilityId,
       @Argument UUID labId,
@@ -649,5 +645,49 @@ public class OrganizationService {
     testOrder.setCreatedAt(new Date());
     testOrder.setUpdatedAt(new Date());
     return facilityLabTestOrderRepository.save(testOrder);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public int updateFacilityLabTestOrder(
+      @Argument UUID internalId, @Argument String name, @Argument String description) {
+    return facilityLabTestOrderRepository.updateByInternalId(internalId, name, description);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public boolean deleteFacilityLabTestOrder(@Argument UUID internalId) {
+    try {
+      facilityLabTestOrderRepository.deleteById(internalId);
+      return true;
+    } catch (DataAccessException | IllegalArgumentException e) {
+      return false;
+    }
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<Specimen> getFacilityLabTestOrderSpecimens(
+      @Argument UUID facilityId, @Argument UUID labId) {
+    return facilityLabTestOrderSpecimenRepository.findByFacilityIdAndLabId(facilityId, labId);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public UUID addFacilityLabTestOrderSpecimen(
+      @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
+    FacilityLabTestOrderSpecimen testOrderSpecimen = new FacilityLabTestOrderSpecimen();
+    testOrderSpecimen.setFacilityLabTestOrderId(facilityLabTestOrderId);
+    testOrderSpecimen.setSpecimenId(specimenId);
+    testOrderSpecimen.setCreatedAt(new Date());
+    testOrderSpecimen.setUpdatedAt(new Date());
+    facilityLabTestOrderSpecimenRepository.save(testOrderSpecimen);
+    return testOrderSpecimen.getInternalId();
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public boolean deleteFacilityLabTestOrderSpecimen(@Argument UUID internalId) {
+    try {
+      facilityLabTestOrderSpecimenRepository.deleteById(internalId);
+      return true;
+    } catch (DataAccessException | IllegalArgumentException e) {
+      return false;
+    }
   }
 }
