@@ -397,6 +397,20 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
     target_url           = "https://www.simplereport.gov"
   }
 
+  rewrite_rule_set {
+    name = "HSTS_ReWrite"
+
+    rewrite_rule {
+      name = "HSTS_Rewrite"
+      rule_sequence = "100"
+
+      request_header_configuration {
+        header_name = "Strict-Transport-Security"
+        header_value = "31536000"
+      }
+    }
+  }
+
   depends_on = [
     azurerm_key_vault_access_policy.cdc_gov_redirect
   ]
