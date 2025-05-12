@@ -406,7 +406,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
 
       request_header_configuration {
         header_name  = "Strict-Transport-Security"
-        header_value = "31536000"
+        header_value = "31536000; includeSubDomains"
       }
     }
   }
