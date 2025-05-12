@@ -401,11 +401,11 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
     name = "HSTS_ReWrite"
 
     rewrite_rule {
-      name = "HSTS_Rewrite"
+      name          = "HSTS_Rewrite"
       rule_sequence = "100"
 
       request_header_configuration {
-        header_name = "Strict-Transport-Security"
+        header_name  = "Strict-Transport-Security"
         header_value = "31536000"
       }
     }
