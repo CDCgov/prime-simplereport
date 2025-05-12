@@ -184,6 +184,7 @@ resource "azurerm_application_gateway" "www_redirect" {
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-http"
     redirect_configuration_name = "httpsRedirect"
+    rewrite_rule_set_name       = "HSTS_ReWrite"
   }
 
   redirect_configuration {
@@ -202,6 +203,7 @@ resource "azurerm_application_gateway" "www_redirect" {
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-https"
     redirect_configuration_name = "wwwRedirect"
+    rewrite_rule_set_name       = "HSTS_ReWrite"
   }
 
   redirect_configuration {
@@ -368,6 +370,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-http"
     redirect_configuration_name = "httpsRedirect"
+    rewrite_rule_set_name       = "HSTS_ReWrite"
   }
 
   redirect_configuration {
@@ -386,6 +389,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-https"
     redirect_configuration_name = "wwwRedirect"
+    rewrite_rule_set_name       = "HSTS_ReWrite"
   }
 
   redirect_configuration {
