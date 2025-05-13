@@ -35,8 +35,8 @@ const VerifyPendingOrganizationConfirmationModal: React.FC<
         Are you sure you want to verify <strong>{organization?.name}</strong>?
       </p>
       <p>
-        Doing so will allow the organization to create an account and conduct
-        and submit tests.
+        Doing so will allow the organization to create an account and report
+        tests.
       </p>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       <Modal.Footer

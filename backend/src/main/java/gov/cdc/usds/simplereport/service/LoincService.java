@@ -17,9 +17,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,89 +66,96 @@ public class LoincService {
     log.info("Lab sync started");
     Instant startTime = Instant.now();
     PageRequest pageRequest = PageRequest.of(0, PAGE_SIZE);
-    // TODO rename `futures` to be clearer - what is it a future of
-    List<CompletableFuture<Response>> futures = new ArrayList<>();
-    List<Lab> labs = new ArrayList<>();
+    Set<Lab> labsToSync = new HashSet<>();
     // TODO update db to skip failed loincs next time?
-    List<LoincStaging> failedLoincs = new ArrayList<>();
-    List<LoincStaging> successLoincs = new ArrayList<>();
-    Page<LoincStaging> loincPage = loincStagingRepository.findAll(pageRequest);
-    // TODO distinguish when a lab is actually brand new to the database
-    int labsAmount = 0;
+    List<String> failedLoincs = new ArrayList<>();
+    Page<String> loincCodePage;
+    int newLabs = 0;
 
-    while (loincPage.hasNext()) {
-      List<LoincStaging> loincs = loincPage.getContent();
-      log.info("Found {} Labs", loincs.size());
-      // TODO: use a Map to map loinc -> future instead of relying on parallel indices. ex, a
-      // hashmap like Map<LoincStaging, CompletableFuture<Response>>
-      loincs.forEach(
-          loinc ->
-              futures.add(
-                  CompletableFuture.supplyAsync(
-                      () -> loincFhirClient.getCodeSystemLookup(loinc.getCode()))));
+    do {
+      loincCodePage = loincStagingRepository.findDistinctCodes(pageRequest);
+      Map<String, CompletableFuture<Response>> codeToLoincLookupFutureMap = new HashMap<>();
+      List<String> loincCodes = loincCodePage.getContent();
+      log.info(
+          "Found {} staged loinc codes on page {}",
+          loincCodes.size(),
+          loincCodePage.getNumber() + 1);
+
+      loincCodes.forEach(
+          code -> {
+            Optional<Lab> repoLab = labRepository.findByCode(code);
+            if (repoLab.isPresent()) {
+              labsToSync.add(repoLab.get());
+            } else {
+              codeToLoincLookupFutureMap.put(
+                  code,
+                  CompletableFuture.supplyAsync(() -> loincFhirClient.getCodeSystemLookup(code)));
+            }
+          });
       log.info("Futures created");
       CompletableFuture<Void> allFutures =
-          CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+          CompletableFuture.allOf(
+              codeToLoincLookupFutureMap.values().toArray(new CompletableFuture[0]));
       allFutures.join();
       log.info("Futures completed");
-      for (int i = 0; i < futures.size(); i++) {
-        // TODO: create an object / map / pair so we don't have to rely on index matching
-        Response response = futures.get(i).getNow(null);
-        LoincStaging loinc = loincs.get(i);
+
+      for (String code : codeToLoincLookupFutureMap.keySet()) {
+        Response response = codeToLoincLookupFutureMap.get(code).getNow(null);
         // TODO: DanS: we should probably consider accounting for service disruptions and short
         // circuiting these syncs when appropriate.
         if (response.status() != HttpStatus.SC_OK) {
           // TODO account for 404s vs 5xx errors
-          failedLoincs.add(loinc);
+          failedLoincs.add(code);
           log.error(
               "Received a {} status code from the LOINC API response for: {}",
               response.status(),
-              loinc.getCode());
+              code);
           continue;
         }
         Optional<Parameters> parameters = parseResponseToParameters(response);
         if (parameters.isEmpty()) {
           // TODO: what does this mean (@dan p)
-          failedLoincs.add(loinc);
+          failedLoincs.add(code);
           continue;
         }
-        Optional<Lab> lab = parametersToLab(loinc, parameters.get());
+        Optional<Lab> lab = parametersToLab(code, parameters.get());
         if (lab.isEmpty()) {
           // is this the only time that we should mark a loinc as "to-skip"?
           // or all failedLoincs?
-          failedLoincs.add(loinc);
+          log.info("Staged loinc {} is not a valid lab", code);
+          failedLoincs.add(code);
           continue;
         }
-        labs.add(lab.get());
-        successLoincs.add(loinc);
+
+        labsToSync.add(lab.get());
+        newLabs++;
       }
-      log.info("LOINC API response parsed to {} labs", labs.size());
-      labs = reduceLabs(labs, successLoincs);
-      log.info("Labs reduced to {} labs", labs.size());
-      // TODO bulk operation on saveAll (this function is saving them sequentially)
-      // TODO once bulk saveAll in place, move this db operation out of the loop?
-      labRepository.saveAll(labs);
-      log.info("Data written to lab table.");
-      log.info("Completed page: {} of {}", loincPage.getNumber(), loincPage.getTotalPages());
-      labsAmount += labs.size();
-      futures.clear();
-      labs.clear();
-      successLoincs.clear();
+
+      log.info(
+          "Completed page: {} of {}", loincCodePage.getNumber() + 1, loincCodePage.getTotalPages());
       pageRequest = pageRequest.next();
-      // TODO: DanS: We do currently save duplicate loincs (many to many relationship with
-      // condition)
-      //  it would be ideal if we can update the data model / findAll query to reduce duplicates
-      // where possible
-      loincPage = loincStagingRepository.findAll(pageRequest);
+    } while (loincCodePage.hasNext());
+
+    for (Lab lab : labsToSync) {
+      List<LoincStaging> loincStagings = loincStagingRepository.findByCode(lab.getCode());
+      for (LoincStaging loincStaging : loincStagings) {
+        Condition conditionToAdd = loincStaging.getCondition();
+        lab.addCondition(conditionToAdd);
+      }
     }
+
+    labRepository.saveAll(labsToSync);
+    log.info("Data written to lab table.");
+
     // TODO does it make sense to have the insert into this table be smarter, so we dont have to
     // empty it
     clearLoincStaging();
     Instant stopTime = Instant.now();
     Duration elapsedTime = Duration.between(startTime, stopTime);
     log.info(
-        "Lab sync completed {} labs in {} minutes with {} failed LOINCs",
-        labsAmount,
+        "Lab sync completed {} labs with {} new labs in {} minutes with {} failed LOINCs",
+        labsToSync.size(),
+        newLabs,
         elapsedTime.toMinutes(),
         failedLoincs.size());
   }
@@ -170,7 +181,7 @@ public class LoincService {
   }
 
   // TODO write a unit test
-  private Optional<Lab> parametersToLab(LoincStaging loinc, Parameters parameters) {
+  private Optional<Lab> parametersToLab(String loincCode, Parameters parameters) {
     List<Parameters.ParametersParameterComponent> parameter = parameters.getParameter();
 
     String display = "";
@@ -262,7 +273,7 @@ public class LoincService {
 
     return Optional.of(
         new Lab(
-            loinc.getCode(),
+            loincCode,
             display,
             description,
             longCommonName,
@@ -275,43 +286,17 @@ public class LoincService {
             panel));
   }
 
-  // TODO write a unit test
-  private List<Lab> reduceLabs(List<Lab> labs, List<LoincStaging> loincs) {
-    List<String> codes = new ArrayList<>();
-    List<Lab> labsToSave = new ArrayList<>();
-
-    for (int i = 0; i < labs.size(); i++) {
-
-      String code = labs.get(i).getCode();
-      if (codes.contains(code)) {
-        continue;
-      }
-      codes.add(code);
-
-      Lab lab = labs.get(i);
-      Optional<Lab> foundLab = labRepository.findByCode(lab.getCode());
-      if (foundLab.isPresent()) {
-        lab = foundLab.get();
-      }
-
-      for (int j = 0; j < labs.size(); j++) {
-        if (code.equals(labs.get(j).getCode())) {
-          Condition conditionToAdd = loincs.get(j).getCondition();
-          if (!lab.getConditions().contains(conditionToAdd)) {
-            lab.addCondition(conditionToAdd);
-          }
-        }
-      }
-      labsToSave.add(lab);
-    }
-    return labsToSave;
-  }
-
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String clearLoincStaging() {
     loincStagingRepository.deleteAllLoincStaging();
     String clearLoincStagingMsg = "Cleared loinc staging table";
     log.info(clearLoincStagingMsg);
     return clearLoincStagingMsg;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void clearLabs() {
+    labRepository.deleteAll();
+    log.info("All labs deleted.");
   }
 }

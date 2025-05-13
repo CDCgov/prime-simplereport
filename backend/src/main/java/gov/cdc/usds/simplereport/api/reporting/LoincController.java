@@ -31,4 +31,11 @@ public class LoincController {
   public List<Lab> labs(@Argument List<String> conditionCodes) {
     return loincService.getLabsByConditionCodes(conditionCodes);
   }
+
+  @GetMapping("universal/labs/clear")
+  public String clearLabs() {
+    // todo can we make this harder to do accidentally?
+    loincService.clearLabs();
+    return "Completed deleting all labs.";
+  }
 }

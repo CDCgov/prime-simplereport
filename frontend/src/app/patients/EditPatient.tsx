@@ -305,7 +305,7 @@ const EditPatient = (props: Props) => {
               to={`/queue?facility=${props.facilityId}`}
               className="margin-left-05"
             >
-              Conduct tests
+              Report tests
             </NavLink>
           ) : (
             <LinkWithQuery to={`/patients`} className="margin-left-05">
