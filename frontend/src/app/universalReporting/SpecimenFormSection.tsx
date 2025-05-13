@@ -6,7 +6,10 @@ import TextInput from "../commonComponents/TextInput";
 import { formatDate } from "../utils/date";
 import { Specimen, SpecimenInput } from "../../generated/graphql";
 
-import { buildSpecimenOptionList } from "./LabReportFormUtils";
+import {
+  buildBodySiteOptionsList,
+  buildSpecimenOptionList,
+} from "./LabReportFormUtils";
 
 type SpecimenFormSectionProps = {
   specimen: SpecimenInput;
@@ -24,6 +27,22 @@ const SpecimenFormSection = ({
   isTestOrderSelected,
 }: SpecimenFormSectionProps) => {
   const specimenOption = buildSpecimenOptionList(specimenList);
+  const bodySiteOptions = buildBodySiteOptionsList(
+    specimenList.find((s) => s.snomedCode === specimen.snomedTypeCode)
+      ?.bodySiteList ?? []
+  );
+
+  const handleSpecimenSelect = async (selectedSnomedCode: string) => {
+    const specimenBodySiteList =
+      specimenList.find((s) => s.snomedCode === selectedSnomedCode)
+        ?.bodySiteList ?? [];
+    setSpecimen({
+      ...specimen,
+      snomedTypeCode: selectedSnomedCode,
+      collectionBodySiteCode: specimenBodySiteList[0]?.snomedSiteCode ?? "",
+      collectionBodySiteName: specimenBodySiteList[0]?.snomedSiteDisplay ?? "",
+    });
+  };
 
   const handleCollectionDateUpdate = (value: string) => {
     if (value) {
@@ -53,6 +72,17 @@ const SpecimenFormSection = ({
     }
   };
 
+  const handleBodySiteChange = (selectedBodySiteCode: string) => {
+    setSpecimen({
+      ...specimen,
+      collectionBodySiteCode: selectedBodySiteCode,
+      collectionBodySiteName:
+        bodySiteOptions.find(
+          (bodySite) => bodySite.value === selectedBodySiteCode
+        )?.label ?? "",
+    });
+  };
+
   return (
     <>
       <div className="grid-row">
@@ -77,12 +107,7 @@ const SpecimenFormSection = ({
                 label="Specimen type"
                 name="specimen-type"
                 selectedValue={specimen.snomedTypeCode}
-                onChange={(e) =>
-                  setSpecimen({
-                    ...specimen,
-                    snomedTypeCode: e.target.value,
-                  })
-                }
+                onChange={(e) => handleSpecimenSelect(e.target.value)}
                 className="card-dropdown"
                 required={true}
                 options={specimenOption}
@@ -130,32 +155,15 @@ const SpecimenFormSection = ({
           </div>
           <div className="grid-row grid-gap">
             <div className="grid-col-4">
-              <TextInput
-                name={"specimen-collection-location-name"}
-                type={"text"}
-                label={"Specimen collection location name"}
-                onChange={(e) =>
-                  setSpecimen({
-                    ...specimen,
-                    collectionLocationName: e.target.value,
-                  })
-                }
-                value={specimen.collectionLocationName ?? ""}
-              ></TextInput>
-            </div>
-            <div className="grid-col-4">
-              <TextInput
-                name={"specimen-collection-location-code"}
-                type={"text"}
-                label={"Specimen collection location code"}
-                onChange={(e) =>
-                  setSpecimen({
-                    ...specimen,
-                    collectionLocationCode: e.target.value,
-                  })
-                }
-                value={specimen.collectionLocationCode ?? ""}
-              ></TextInput>
+              <Dropdown
+                label="Specimen collection body site"
+                name="specimen-collection-body-site"
+                selectedValue={specimen.collectionBodySiteCode ?? ""}
+                onChange={(e) => handleBodySiteChange(e.target.value)}
+                className="card-dropdown"
+                required={true}
+                options={bodySiteOptions}
+              />
             </div>
           </div>
         </>

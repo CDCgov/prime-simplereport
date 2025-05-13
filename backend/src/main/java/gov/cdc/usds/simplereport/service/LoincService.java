@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
-import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
@@ -18,13 +17,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -37,62 +33,43 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-// TODO: rename LoincService to something like LabService to be more accurate
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@SuppressWarnings({"checkstyle:TodoComment"})
 public class LoincService {
+  // TODO: rename LoincService to something like LabService to be more accurate
 
   private final LoincFhirClient loincFhirClient;
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
-  private final ConditionRepository conditionRepository;
-  private final ConditionService conditionService;
-  private final SpecimenService specimenService;
+
   private final FhirContext context = FhirContext.forR4();
-  private IParser parser = context.newJsonParser();
+  private final IParser parser = context.newJsonParser();
   private static final int PAGE_SIZE = 20;
 
   public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
-    List<Condition> conditions = conditionRepository.findAllByCodeIn(codes);
-    List<Lab> foundLabs = new ArrayList<>();
-    List<String> acceptedScaleDisplays = List.of("Nom", "Qn", "Ord");
-    for (var condition : conditions) {
-      Set<Lab> testOrderLabs =
-          condition.getLabs().stream()
-              .filter(lab -> lab.getOrderOrObservation().equals("Both"))
-              .filter(lab -> acceptedScaleDisplays.contains(lab.getScaleDisplay()))
-              .filter(lab -> !lab.getSystemCode().isEmpty())
-              .collect(Collectors.toSet());
-
-      testOrderLabs.forEach(
-          lab -> {
-            if (!foundLabs.contains(lab) && specimenService.hasAnySpecimen(lab.getSystemCode())) {
-              foundLabs.add(lab);
-            }
-          });
-    }
-    foundLabs.sort(Comparator.comparing(Lab::getDisplay));
-    return foundLabs;
+    return labRepository.getFilteredLabsByConditionCodes(codes);
   }
 
   // TODO: standardize how we authenticate REST endpoints
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
-  // todo mark as transactional / account for a sync that fails halfway - how do we want to recover
+  // TODO mark as transactional / account for a sync that fails halfway - how do we want to
+  // recover
   // from that?
   public void syncLabs() {
     log.info("Lab sync started");
     Instant startTime = Instant.now();
     PageRequest pageRequest = PageRequest.of(0, PAGE_SIZE);
-    // todo rename `futures` to be clearer - what is it a future of
+    // TODO rename `futures` to be clearer - what is it a future of
     List<CompletableFuture<Response>> futures = new ArrayList<>();
     List<Lab> labs = new ArrayList<>();
-    // todo update db to skip failed loincs next time?
+    // TODO update db to skip failed loincs next time?
     List<LoincStaging> failedLoincs = new ArrayList<>();
     List<LoincStaging> successLoincs = new ArrayList<>();
     Page<LoincStaging> loincPage = loincStagingRepository.findAll(pageRequest);
-    // todo distinguish when a lab is actually brand new to the database
+    // TODO distinguish when a lab is actually brand new to the database
     int labsAmount = 0;
 
     while (loincPage.hasNext()) {
@@ -117,7 +94,7 @@ public class LoincService {
         // TODO: DanS: we should probably consider accounting for service disruptions and short
         // circuiting these syncs when appropriate.
         if (response.status() != HttpStatus.SC_OK) {
-          // todo account for 404s vs 5xx errors
+          // TODO account for 404s vs 5xx errors
           failedLoincs.add(loinc);
           log.error(
               "Received a {} status code from the LOINC API response for: {}",
@@ -127,7 +104,7 @@ public class LoincService {
         }
         Optional<Parameters> parameters = parseResponseToParameters(response);
         if (parameters.isEmpty()) {
-          // todo: what does this mean (@dan p)
+          // TODO: what does this mean (@dan p)
           failedLoincs.add(loinc);
           continue;
         }
@@ -144,8 +121,8 @@ public class LoincService {
       log.info("LOINC API response parsed to {} labs", labs.size());
       labs = reduceLabs(labs, successLoincs);
       log.info("Labs reduced to {} labs", labs.size());
-      // todo bulk operation on saveAll (this function is saving them sequentially)
-      // todo once bulk saveAll in place, move this db operation out of the loop?
+      // TODO bulk operation on saveAll (this function is saving them sequentially)
+      // TODO once bulk saveAll in place, move this db operation out of the loop?
       labRepository.saveAll(labs);
       log.info("Data written to lab table.");
       log.info("Completed page: {} of {}", loincPage.getNumber(), loincPage.getTotalPages());
@@ -160,10 +137,9 @@ public class LoincService {
       // where possible
       loincPage = loincStagingRepository.findAll(pageRequest);
     }
-    // todo does it make sense to have the insert into this table be smarter, so we dont have to
+    // TODO does it make sense to have the insert into this table be smarter, so we dont have to
     // empty it
     clearLoincStaging();
-    conditionService.syncHasLabs();
     Instant stopTime = Instant.now();
     Duration elapsedTime = Duration.between(startTime, stopTime);
     log.info(
@@ -193,7 +169,7 @@ public class LoincService {
     return Optional.of(parameters);
   }
 
-  // todo write a unit test
+  // TODO write a unit test
   private Optional<Lab> parametersToLab(LoincStaging loinc, Parameters parameters) {
     List<Parameters.ParametersParameterComponent> parameter = parameters.getParameter();
 
@@ -206,7 +182,7 @@ public class LoincService {
       display = displayParam.get().getValue().toString();
     }
 
-    // todo are any of these required to build a valid fhir bundle? are all of these defaults
+    // TODO are any of these required to build a valid fhir bundle? are all of these defaults
     // correct / safe
     String description = null;
     String longCommonName = "";
@@ -299,7 +275,7 @@ public class LoincService {
             panel));
   }
 
-  // todo write a unit test
+  // TODO write a unit test
   private List<Lab> reduceLabs(List<Lab> labs, List<LoincStaging> loincs) {
     List<String> codes = new ArrayList<>();
     List<Lab> labsToSave = new ArrayList<>();

@@ -6,9 +6,7 @@ import java.util.List;
 /** Specification of EternalAuditedEntityRepository for {@link Specimen} manipulation. */
 public interface SpecimenRepository extends EternalAuditedEntityRepository<Specimen> {
 
-  List<Specimen> findByLoincSystemCode(String loincCode);
+  List<Specimen> findByLoincSystemCode(String loincSystemCode);
 
-  Specimen findBySnomedCode(String snomedCode);
-
-  boolean existsByLoincSystemCode(String loincCode);
+  Specimen findByLoincSystemCodeAndSnomedCode(String loincSystemCode, String snomedCode);
 }

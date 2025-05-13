@@ -26,6 +26,10 @@ query GetSpecimensByLoinc($loinc: String!) {
     loincSystemCode
     snomedCode
     snomedDisplay
+    bodySiteList {
+      snomedSiteCode
+      snomedSiteDisplay
+    }
   }
 }
 

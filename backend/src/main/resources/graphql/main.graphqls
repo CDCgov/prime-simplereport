@@ -473,7 +473,6 @@ input ProviderReportInput {
   county: String
   state: String
   zipCode: String
-  country: String
   email: String
   phone: String
 }
@@ -488,7 +487,6 @@ input FacilityReportInput {
   county: String
   state: String
   zipCode: String
-  country: String
   clia: String!
 }
 
@@ -496,11 +494,12 @@ input SpecimenInput {
   snomedTypeCode: String!
   collectionDate: DateTime
   receivedDate: DateTime
-  collectionLocationName: String
-  collectionLocationCode: String
+  collectionBodySiteName: String
+  collectionBodySiteCode: String
 }
 
 input TestDetailsInput {
+  condition: String!
   testOrderLoinc: String!
   testPerformedLoinc: String!
   testPerformedLoincLongCommonName: String
@@ -540,6 +539,14 @@ type Specimen {
   loincSystemCode: String!
   snomedCode: String!
   snomedDisplay: String!
+  bodySiteList: [SpecimenBodySite!]!
+}
+
+type SpecimenBodySite {
+  snomedSpecimenCode: String
+  snomedSpecimenDisplay: String
+  snomedSiteCode: String!
+  snomedSiteDisplay: String!
 }
 
 # Queries and mutations for everyday use
@@ -673,6 +680,7 @@ type Query {
   conditions: [Condition!]!
   labs(conditionCodes: [String!]): [Lab!]!
   specimens(loinc: String!): [Specimen!]!
+  specimenBodySites(specimenSnomedCode: String!): [SpecimenBodySite!]!
 }
 
 type Mutation {

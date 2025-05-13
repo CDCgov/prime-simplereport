@@ -126,12 +126,13 @@ public class DateTimeUtils {
   private static ZoneId parseDateStringZoneId(String dateString) {
     ZoneId zoneId;
 
-    var timezoneCode = dateString.substring(dateString.lastIndexOf(" ")).trim();
     try {
+      var timezoneCode = dateString.substring(dateString.lastIndexOf(" ")).trim();
       zoneId = parseZoneId(timezoneCode);
-    } catch (DateTimeException e) {
+    } catch (DateTimeException | StringIndexOutOfBoundsException e) {
       zoneId = FALLBACK_TIMEZONE_ID;
     }
+
     return zoneId;
   }
 

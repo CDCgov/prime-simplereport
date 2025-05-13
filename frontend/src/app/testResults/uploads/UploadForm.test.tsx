@@ -95,7 +95,7 @@ describe("Uploads", () => {
 
     expect(
       await screen.findByText(
-        "The file 'values.csv' has too many rows. The maximum number of rows is 10000."
+        "The file 'values.csv' has too many rows. The maximum number of rows is 4000."
       )
     ).toBeInTheDocument();
     expect(screen.getByTestId("button")).toBeDisabled();

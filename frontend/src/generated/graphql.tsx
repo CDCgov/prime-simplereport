@@ -185,7 +185,6 @@ export type FacilityAddressInput = {
 export type FacilityReportInput = {
   city?: InputMaybe<Scalars["String"]["input"]>;
   clia: Scalars["String"]["input"];
-  country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   name: Scalars["String"]["input"];
@@ -229,7 +228,7 @@ export type Lab = {
   panel: Scalars["Boolean"]["output"];
   scaleCode?: Maybe<Scalars["String"]["output"]>;
   scaleDisplay?: Maybe<Scalars["String"]["output"]>;
-  systemCode?: Maybe<Scalars["String"]["output"]>;
+  systemCode: Scalars["String"]["output"];
   systemDisplay?: Maybe<Scalars["String"]["output"]>;
 };
 
@@ -813,7 +812,6 @@ export type ProviderInput = {
 
 export type ProviderReportInput = {
   city?: InputMaybe<Scalars["String"]["input"]>;
-  country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
   email?: InputMaybe<Scalars["String"]["input"]>;
   firstName: Scalars["String"]["input"];
@@ -851,6 +849,7 @@ export type Query = {
   pendingOrganizations: Array<PendingOrganization>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
   resultsPage?: Maybe<ResultsPage>;
+  specimenBodySites: Array<SpecimenBodySite>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
   specimens: Array<Specimen>;
@@ -959,6 +958,10 @@ export type QueryResultsPageArgs = {
   result?: InputMaybe<Scalars["String"]["input"]>;
   role?: InputMaybe<Scalars["String"]["input"]>;
   startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+};
+
+export type QuerySpecimenBodySitesArgs = {
+  specimenSnomedCode: Scalars["String"]["input"];
 };
 
 export type QuerySpecimensArgs = {
@@ -1075,15 +1078,24 @@ export enum Role {
 
 export type Specimen = {
   __typename?: "Specimen";
+  bodySiteList: Array<SpecimenBodySite>;
   loincSystemCode: Scalars["String"]["output"];
   snomedCode: Scalars["String"]["output"];
   snomedDisplay: Scalars["String"]["output"];
 };
 
+export type SpecimenBodySite = {
+  __typename?: "SpecimenBodySite";
+  snomedSiteCode: Scalars["String"]["output"];
+  snomedSiteDisplay: Scalars["String"]["output"];
+  snomedSpecimenCode?: Maybe<Scalars["String"]["output"]>;
+  snomedSpecimenDisplay?: Maybe<Scalars["String"]["output"]>;
+};
+
 export type SpecimenInput = {
+  collectionBodySiteCode?: InputMaybe<Scalars["String"]["input"]>;
+  collectionBodySiteName?: InputMaybe<Scalars["String"]["input"]>;
   collectionDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
-  collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
   receivedDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   snomedTypeCode: Scalars["String"]["input"];
 };
@@ -1134,6 +1146,7 @@ export enum TestCorrectionStatus {
 }
 
 export type TestDetailsInput = {
+  condition: Scalars["String"]["input"];
   resultDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   resultInterpretation?: InputMaybe<Scalars["String"]["input"]>;
   resultType: ResultScaleType;
@@ -3116,7 +3129,7 @@ export type GetLabsByConditionsQuery = {
     longCommonName: string;
     scaleCode?: string | null;
     scaleDisplay?: string | null;
-    systemCode?: string | null;
+    systemCode: string;
     systemDisplay?: string | null;
     answerList?: string | null;
     orderOrObservation: string;
@@ -3135,6 +3148,11 @@ export type GetSpecimensByLoincQuery = {
     loincSystemCode: string;
     snomedCode: string;
     snomedDisplay: string;
+    bodySiteList: Array<{
+      __typename?: "SpecimenBodySite";
+      snomedSiteCode: string;
+      snomedSiteDisplay: string;
+    }>;
   }>;
 };
 
@@ -9986,6 +10004,10 @@ export const GetSpecimensByLoincDocument = gql`
       loincSystemCode
       snomedCode
       snomedDisplay
+      bodySiteList {
+        snomedSiteCode
+        snomedSiteDisplay
+      }
     }
   }
 `;

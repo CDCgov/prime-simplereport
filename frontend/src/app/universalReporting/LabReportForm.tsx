@@ -72,47 +72,47 @@ const LabReportForm = () => {
     useGetLabsByConditionsLazyQuery();
 
   useEffect(() => {
-    setProvider((prevProvider) => {
-      return {
-        ...prevProvider,
-        city: facilityData?.facility?.orderingProvider?.address?.city,
-        county: facilityData?.facility?.orderingProvider?.address?.county,
-        firstName: facilityData?.facility?.orderingProvider?.firstName ?? "",
-        lastName: facilityData?.facility?.orderingProvider?.lastName ?? "",
-        middleName: facilityData?.facility?.orderingProvider?.middleName ?? "",
-        npi: facilityData?.facility?.orderingProvider?.NPI ?? "",
-        phone: facilityData?.facility?.orderingProvider?.phone ?? "",
-        state: facilityData?.facility?.orderingProvider?.address?.state ?? "",
-        street:
-          facilityData?.facility?.orderingProvider?.address?.streetOne ?? "",
-        streetTwo:
-          facilityData?.facility?.orderingProvider?.address?.streetTwo ?? "",
-        suffix: facilityData?.facility?.orderingProvider?.suffix ?? "",
-        zipCode:
-          facilityData?.facility?.orderingProvider?.address?.postalCode ?? "",
-      };
-    });
-    setFacility((prevFacility) => {
-      return {
-        ...prevFacility,
-        city: facilityData?.facility?.address?.city ?? "",
-        clia: facilityData?.facility?.cliaNumber ?? "",
-        county: facilityData?.facility?.address?.county ?? "",
-        email: facilityData?.facility?.email ?? "",
-        name: facilityData?.facility?.name ?? "",
-        phone: facilityData?.facility?.phone ?? "",
-        state: facilityData?.facility?.address?.state ?? "",
-        street: facilityData?.facility?.address?.streetOne ?? "",
-        streetTwo: facilityData?.facility?.address?.streetTwo ?? "",
-        zipCode: facilityData?.facility?.address?.postalCode ?? "",
-        country: "USA",
-      };
-    });
+    const facilityInfo = facilityData?.facility;
+    const facilityAddress = facilityInfo?.address ?? {};
+    const orderingProvider = facilityInfo?.orderingProvider ?? {};
+    const providerAddress = orderingProvider?.address ?? {};
+
+    setProvider((prevProvider) => ({
+      ...prevProvider,
+      city: providerAddress.city ?? "",
+      county: providerAddress.county ?? "",
+      state: providerAddress.state ?? "",
+      street: providerAddress.streetOne ?? "",
+      streetTwo: providerAddress.streetTwo ?? "",
+      zipCode: providerAddress.postalCode ?? "",
+      firstName: orderingProvider.firstName ?? "",
+      lastName: orderingProvider.lastName ?? "",
+      middleName: orderingProvider.middleName ?? "",
+      npi: orderingProvider.NPI ?? "",
+      phone: orderingProvider.phone ?? "",
+      suffix: orderingProvider.suffix ?? "",
+    }));
+
+    setFacility((prevFacility) => ({
+      ...prevFacility,
+      city: facilityAddress?.city ?? "",
+      state: facilityAddress?.state ?? "",
+      street: facilityAddress?.streetOne ?? "",
+      streetTwo: facilityAddress?.streetTwo ?? "",
+      zipCode: facilityAddress?.postalCode ?? "",
+      county: facilityAddress?.county ?? "",
+      clia: facilityInfo?.cliaNumber ?? "",
+      email: facilityInfo?.email ?? "",
+      name: facilityInfo?.name ?? "",
+      phone: facilityInfo?.phone ?? "",
+    }));
   }, [facilityData]);
 
   const updateTestOrderLoinc = async (lab: Lab) => {
     const updatedList = [] as TestDetailsInput[];
     updatedList.push({
+      // TODO: update this when we start handling multiple conditions. this currently just sends the condition code
+      condition: selectedConditions[0],
       testOrderLoinc: lab.code,
       testPerformedLoinc: lab.code,
       testPerformedLoincLongCommonName: lab.longCommonName,
@@ -125,11 +125,26 @@ const LabReportForm = () => {
     setTestOrderLoinc(lab.code);
 
     if (lab.systemCode) {
-      await getSpecimensByLoinc({
+      const response = await getSpecimensByLoinc({
         variables: {
           loinc: lab.systemCode,
         },
       });
+      const specimenData = response.data?.specimens ?? [];
+      const sortedSpecimenData = specimenData.toSorted((a, b) =>
+        a.snomedDisplay.localeCompare(b.snomedDisplay)
+      );
+      const sortedBodySiteList =
+        sortedSpecimenData[0].bodySiteList?.toSorted((a, b) =>
+          a.snomedSiteDisplay.localeCompare(b.snomedSiteDisplay)
+        ) ?? [];
+
+      setSpecimen({
+        ...specimen,
+        snomedTypeCode: sortedSpecimenData[0].snomedCode,
+        collectionBodySiteCode: sortedBodySiteList[0]?.snomedSiteCode ?? "",
+        collectionBodySiteName: sortedBodySiteList[0]?.snomedSiteDisplay ?? "",
+      } as SpecimenInput);
     } else {
       // currently filtering out labs with no system code on the backend
       console.error("No LOINC system code to look up specimen.");

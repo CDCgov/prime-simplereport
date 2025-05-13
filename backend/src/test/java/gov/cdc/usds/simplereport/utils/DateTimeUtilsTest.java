@@ -58,6 +58,15 @@ public class DateTimeUtilsTest {
   }
 
   @Test
+  void testConvertToZonedDateTime_withFallbackWithoutTimeOrZoneId() {
+    String dateString = "6/28/2023";
+
+    var actualZonedDateTime = convertToZonedDateTime(dateString);
+    var expectedZonedDateTime = ZonedDateTime.of(2023, 6, 28, 12, 0, 0, 0, ZoneId.of("US/Eastern"));
+    assertThat(actualZonedDateTime).hasToString(expectedZonedDateTime.toString());
+  }
+
+  @Test
   void testConvertToZonedDateTime_withFallbackWithJustString() {
     String dateString = "6/28/2023 14:00";
 
