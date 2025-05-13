@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -16,6 +17,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@EqualsAndHashCode(
+    of = {"loincSystemCode", "snomedCode"},
+    callSuper = false)
 public class Specimen extends EternalAuditedEntity {
 
   @Column(nullable = false)

@@ -8,11 +8,15 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Setter
+@EqualsAndHashCode(
+    of = {"code"},
+    callSuper = false)
 public class Condition extends EternalAuditedEntity {
 
   @Getter

@@ -12,7 +12,7 @@ exports[`TestQueue should render the test queue 1`] = `
       <h1
         class="font-sans-lg"
       >
-        Conduct tests
+        Report tests
       </h1>
       <div
         class="position-relative"

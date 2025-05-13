@@ -217,7 +217,7 @@ describe("EditPatient", () => {
       );
     });
 
-    it("redirects to test queue on save when coming from Conduct tests page", async () => {
+    it("redirects to test queue on save when coming from Report tests page", async () => {
       const { user } = renderWithRoutes(mockFacilityID, mockPatientID, true);
       await screen.findByText(/Loading/i);
       await waitFor(() =>
@@ -649,11 +649,11 @@ describe("EditPatient", () => {
       expect(
         await screen.findByText("Franecki, Eugenia", { exact: false })
       ).toBeInTheDocument();
-      expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
+      expect(await screen.findByText("Report tests")).toBeInTheDocument();
     });
   });
 
-  describe("edit patient from conduct tests page", () => {
+  describe("edit patient from report tests page", () => {
     let elementToRender: React.ReactElement;
     beforeEach(async () => {
       elementToRender = createGQLWrappedMemoryRouterWithDataApis(
@@ -667,9 +667,9 @@ describe("EditPatient", () => {
         false
       );
     });
-    it("shows Conduct tests link and hides Save and start test button", async () => {
+    it("shows Report tests link and hides Save and start test button", async () => {
       render(elementToRender);
-      expect(await screen.findByText("Conduct tests")).toBeInTheDocument();
+      expect(await screen.findByText("Report tests")).toBeInTheDocument();
       expect(screen.queryByText(PATIENT_TERM_CAP)).not.toBeInTheDocument();
       expect(screen.queryByText("Save and start test")).not.toBeInTheDocument();
       expect(screen.queryByText("Start test")).not.toBeInTheDocument();
