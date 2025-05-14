@@ -56,6 +56,12 @@ const Header: React.FC<{}> = () => {
     setIsComponentVisible: setStaffDetailsVisible,
   } = useComponentVisible(false);
 
+  const {
+    ref: reportTestDetailsRef,
+    isComponentVisible: reportTestDetailsVisible,
+    setIsComponentVisible: setReportTestDetailsVisible,
+  } = useComponentVisible(false);
+
   const onFacilitySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = facilities.find((f) => f.id === e.target.value);
     if (selected) {
@@ -124,6 +130,7 @@ const Header: React.FC<{}> = () => {
       displayPermissions: canViewSettings,
       className: getNavItemClassName,
       key: "dashboard-nav-link",
+      hasSubmenu: false,
     },
     {
       url: "/queue",
@@ -131,6 +138,7 @@ const Header: React.FC<{}> = () => {
       displayPermissions: canViewTestQueue,
       className: getNavItemClassName,
       key: "report-test-nav-link",
+      hasSubmenu: true,
     },
     {
       url: "/results",
@@ -138,6 +146,7 @@ const Header: React.FC<{}> = () => {
       displayPermissions: canViewResults,
       className: getNavItemClassName,
       key: "results-nav-link",
+      hasSubmenu: false,
     },
     {
       url: "/patients",
@@ -145,6 +154,7 @@ const Header: React.FC<{}> = () => {
       displayPermissions: canViewPeople,
       className: getNavItemClassName,
       key: "patient-nav-link",
+      hasSubmenu: false,
     },
   ];
   const mainNavList = (deviceType: "desktop" | "mobile") => {
@@ -152,7 +162,14 @@ const Header: React.FC<{}> = () => {
       .map((item) => {
         return (
           item.displayPermissions && (
-            <li key={item.key} className="usa-nav__primary-item">
+            <li
+              key={item.key}
+              className="usa-nav__primary-item"
+              onMouseEnter={() =>
+                item.hasSubmenu ? setReportTestDetailsVisible(true) : null
+              }
+              onMouseLeave={() => setReportTestDetailsVisible(false)}
+            >
               <LinkWithQuery
                 to={item.url}
                 onClick={() => setMenuVisible(false)}
@@ -162,6 +179,20 @@ const Header: React.FC<{}> = () => {
               >
                 {item.displayText}
               </LinkWithQuery>
+              {item.hasSubmenu && deviceType === "desktop" ? (
+                <div
+                  id={`${deviceType}-${item.key}-submenu`}
+                  ref={reportTestDetailsRef}
+                  aria-label="Account navigation"
+                  className={classNames("prime-staff-infobox", {
+                    "is-prime-staff-infobox-visible": reportTestDetailsVisible,
+                  })}
+                >
+                  {reportTestsDetailsNavSublist("desktop")}
+                </div>
+              ) : (
+                <></>
+              )}
             </li>
           )
         );
@@ -178,14 +209,35 @@ const Header: React.FC<{}> = () => {
     }
   };
 
+  const reportTestsDetailsNavSublist = (deviceType: string) => (
+    <ul className="usa-sidenav__sublist">
+      <li className="usa-sidenav__item navlink__support">
+        <a
+          href="https://www.simplereport.gov/support"
+          target="none"
+          onClick={() => handleSupportClick()}
+          data-testid={`${deviceType}-support-link`}
+        >
+          Enter individual test results
+        </a>
+      </li>
+      <li className="usa-sidenav__item navlink__support">
+        <a
+          href="https://www.simplereport.gov/support"
+          target="none"
+          onClick={() => handleSupportClick()}
+          data-testid={`${deviceType}-support-link`}
+        >
+          Upload multiple test results (CSV upload)
+        </a>
+      </li>
+    </ul>
+  );
+
   const secondaryNavContent = [
     {
       url: "#",
       displayPermissions: true,
-      onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault();
-        setStaffDetailsVisible(!staffDetailsVisible);
-      },
       className: staffDetailsVisible ? activeNavItem : inactiveNavItem,
       dataTestId: "user-button",
       hasSubmenu: true,
@@ -221,7 +273,7 @@ const Header: React.FC<{}> = () => {
       hasSubmenu: false,
     },
   ];
-  const secondaryNavSublist = (deviceType: string) => (
+  const accountDetailsNavSublist = (deviceType: string) => (
     <ul className="usa-sidenav__sublist">
       <li className="usa-sidenav__item span-full-name">
         {formatFullName(user)}
@@ -272,10 +324,13 @@ const Header: React.FC<{}> = () => {
         <li
           key={`${deviceType}-${item.dataTestId}`}
           className="usa-nav__primary-item nav__primary-item-icon"
+          onMouseEnter={() =>
+            item.hasSubmenu ? setStaffDetailsVisible(true) : null
+          }
+          onMouseLeave={() => setStaffDetailsVisible(false)}
         >
           <LinkWithQuery
             to={item.url}
-            onClick={item.onClick}
             className={item.className}
             data-testid={`${deviceType}-${item.dataTestId}`}
             id={`${deviceType}-${item.dataTestId}`}
@@ -289,9 +344,7 @@ const Header: React.FC<{}> = () => {
           >
             {deviceType === "desktop" ? item.icon : item.mobileDisplayText}
           </LinkWithQuery>
-          {item.hasSubmenu &&
-          staffDetailsVisible &&
-          deviceType === "desktop" ? (
+          {item.hasSubmenu && deviceType === "desktop" ? (
             <div
               id={`${deviceType}-${item.dataTestId}-submenu`}
               ref={staffDefailsRef}
@@ -300,7 +353,7 @@ const Header: React.FC<{}> = () => {
                 "is-prime-staff-infobox-visible": staffDetailsVisible,
               })}
             >
-              {secondaryNavSublist("desktop")}
+              {accountDetailsNavSublist("desktop")}
             </div>
           ) : (
             <></>
@@ -355,7 +408,7 @@ const Header: React.FC<{}> = () => {
             {secondaryNav("mobile")}
           </ul>
           <div className="usa-nav__primary mobile-sublist-container">
-            {secondaryNavSublist("mobile")}
+            {accountDetailsNavSublist("mobile")}
             <label id="mobile-facility-label" className="usa-label ">
               Facility
             </label>

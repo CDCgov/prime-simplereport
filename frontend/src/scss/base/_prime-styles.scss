@@ -687,18 +687,15 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   .usa-nav__primary {
     > .usa-nav__primary-item {
       > a {
-        border-right: 1px solid $theme-color-prime-gray-light;
         font-size: size("heading", "lg");
         font-weight: normal;
+        color: #d9e8f6;
         padding: units(3) units(2);
 
         &.active-nav-item {
           font-weight: font-weight("bold");
+          color: #f0f0f0;
         }
-      }
-
-      &:first-child > a {
-        border-left: 1px solid $theme-color-prime-gray-light;
       }
     }
 
@@ -728,7 +725,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .active-nav-item {
   background-color: color($theme-color-primary-darker);
-  color: white !important;
+  color: #f0f0f0 !important;
 }
 
 .prime-nav-close-button {

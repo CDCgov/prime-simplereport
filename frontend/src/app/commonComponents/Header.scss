@@ -2,6 +2,8 @@
 
 .usa-nav-container.prime-header {
   max-width: settings.$site-max-width;
+  background-color: #162e51;
+
 
   .prime-nav-link {
     font-size: 1.2rem;
@@ -77,10 +79,6 @@
     margin-left: 0.5rem;
   }
 
-  .nav__primary-item-icon:last-child {
-    border-bottom: 1px solid #dfe1e2;
-  }
-
   .mobile-secondary-nav-container {
     margin-top: 0;
     font-size: 1.2rem;
@@ -132,4 +130,8 @@
   .facility-select-mobile-container {
     padding-bottom: 2rem;
   }
+}
+
+#desktop-report-test-nav-link-submenu.prime-staff-infobox {
+  width: 21rem;
 }
