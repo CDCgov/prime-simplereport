@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -219,7 +221,7 @@ class SpecimenServiceTest {
       verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
 
       List<Specimen> savedSpecimens = specimenCaptor.getValue();
-      assertTrue(!savedSpecimens.isEmpty());
+      assertFalse(savedSpecimens.isEmpty());
 
       boolean foundBloodSpecimen = false;
       boolean foundSerumSpecimen = false;
@@ -340,7 +342,7 @@ class SpecimenServiceTest {
       verify(specimenRepository, times(1)).saveAll(specimenCaptor.capture());
       verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
       List<Specimen> savedSpecimens = specimenCaptor.getValue();
-      assertTrue(!savedSpecimens.isEmpty());
+      assertFalse(savedSpecimens.isEmpty());
 
       boolean foundLoinc1Specimens = false;
       boolean foundLoinc2Specimens = false;
@@ -495,6 +497,7 @@ class SpecimenServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void saveNewSpecimenBodySites_shouldSkipExistingBodySites() throws Exception {
     SpecimenBodySite existingBodySite =
         SpecimenBodySite.builder()
