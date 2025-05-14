@@ -13,7 +13,6 @@ import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,9 +41,8 @@ public class ConditionService {
   private static final int MAX_PAGES = 1000;
 
   private static final int PAGE_SIZE = 20;
-  //  Instead of hard-coding the code names, we can use a set of code names to extract the focus
-  //  context.
-  private final HashSet<String> codeNames = new HashSet<>(List.of("focus"));
+
+  public static final String CODEABLE_CONCEPT_CODE = "focus";
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String syncHasLabs() {
@@ -157,7 +155,7 @@ public class ConditionService {
     for (UsageContext context : useContext) {
       Coding code = context.getCode();
 
-      if (codeNames.contains(code.getCode())) {
+      if (code.getCode().equals(CODEABLE_CONCEPT_CODE)) {
         return context.getValueCodeableConcept();
       }
     }
