@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -145,22 +144,7 @@ class SpecimenServiceTest {
     String loincSystemCode = "12345-6";
     String loincSystemDisplay = "Test LOINC";
 
-    JSONObject jsonResponse = new JSONObject();
-    JSONArray resultsArray = new JSONArray();
-
-    JSONObject result1 = new JSONObject();
-    result1.put("ui", "123456789");
-    result1.put("name", "Test Specimen 1");
-    resultsArray.put(result1);
-
-    JSONObject result2 = new JSONObject();
-    result2.put("ui", "987654321");
-    result2.put("name", "Test Specimen 2");
-    resultsArray.put(result2);
-
-    jsonResponse.put("result", resultsArray);
-
-    when(mockResponse.body()).thenReturn(jsonResponse.toString());
+    when(mockResponse.body()).thenReturn(createLoincToSnomedJson());
 
     java.lang.reflect.Method method =
         SpecimenService.class.getDeclaredMethod(
@@ -180,13 +164,13 @@ class SpecimenServiceTest {
     assertEquals(loincSystemCode, specimen1.getLoincSystemCode());
     assertEquals(loincSystemDisplay, specimen1.getLoincSystemDisplay());
     assertEquals("123456789", specimen1.getSnomedCode());
-    assertEquals("Test Specimen 1", specimen1.getSnomedDisplay());
+    assertEquals("Blood specimen", specimen1.getSnomedDisplay());
 
     Specimen specimen2 = results.get(1);
     assertEquals(loincSystemCode, specimen2.getLoincSystemCode());
     assertEquals(loincSystemDisplay, specimen2.getLoincSystemDisplay());
     assertEquals("987654321", specimen2.getSnomedCode());
-    assertEquals("Test Specimen 2", specimen2.getSnomedDisplay());
+    assertEquals("Serum specimen", specimen2.getSnomedDisplay());
   }
 
   @Test
@@ -222,15 +206,65 @@ class SpecimenServiceTest {
 
       when(specimenRepository.findByLoincSystemCodeAndSnomedCode(anyString(), anyString()))
           .thenReturn(null);
-
       when(specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
               anyString(), anyString()))
           .thenReturn(null);
 
+      ArgumentCaptor<List<Specimen>> specimenCaptor = ArgumentCaptor.forClass(List.class);
+      ArgumentCaptor<List<SpecimenBodySite>> bodySiteCaptor = ArgumentCaptor.forClass(List.class);
+
       specimenService.syncSpecimens();
 
-      verify(specimenRepository, times(1)).saveAll(any());
-      verify(specimenBodySiteRepository, times(1)).saveAll(any());
+      verify(specimenRepository, times(1)).saveAll(specimenCaptor.capture());
+      verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
+
+      List<Specimen> savedSpecimens = specimenCaptor.getValue();
+      assertTrue(!savedSpecimens.isEmpty());
+
+      boolean foundBloodSpecimen = false;
+      boolean foundSerumSpecimen = false;
+
+      for (Specimen savedSpecimen : savedSpecimens) {
+        if ("123456789".equals(savedSpecimen.getSnomedCode())) {
+          foundBloodSpecimen = true;
+          assertEquals("Blood specimen", savedSpecimen.getSnomedDisplay());
+          assertEquals("12345-6", savedSpecimen.getLoincSystemCode());
+          assertEquals("Test LOINC", savedSpecimen.getLoincSystemDisplay());
+        } else if ("987654321".equals(savedSpecimen.getSnomedCode())) {
+          foundSerumSpecimen = true;
+          assertEquals("Serum specimen", savedSpecimen.getSnomedDisplay());
+          assertEquals("12345-6", savedSpecimen.getLoincSystemCode());
+          assertEquals("Test LOINC", savedSpecimen.getLoincSystemDisplay());
+        }
+      }
+
+      assertTrue(foundBloodSpecimen, "Blood specimen not found");
+      assertTrue(foundSerumSpecimen, "Serum specimen not found");
+
+      boolean foundVenousBloodSpecimen = false;
+      for (Specimen savedSpecimen : savedSpecimens) {
+        if ("444555666".equals(savedSpecimen.getSnomedCode())) {
+          foundVenousBloodSpecimen = true;
+          assertEquals("Venous blood specimen", savedSpecimen.getSnomedDisplay());
+          assertEquals("12345-6", savedSpecimen.getLoincSystemCode());
+          assertEquals("Test LOINC", savedSpecimen.getLoincSystemDisplay());
+          break;
+        }
+      }
+      assertTrue(foundVenousBloodSpecimen, "Venous blood specimen not found");
+
+      List<SpecimenBodySite> savedBodySites = bodySiteCaptor.getValue();
+      assertFalse(savedBodySites.isEmpty());
+
+      boolean foundVenousStructure = false;
+      for (SpecimenBodySite bodySite : savedBodySites) {
+        if ("333222111".equals(bodySite.getSnomedSiteCode())) {
+          foundVenousStructure = true;
+          assertEquals("Venous structure", bodySite.getSnomedSiteDisplay());
+          break;
+        }
+      }
+      assertTrue(foundVenousStructure, "Venous structure body site not found");
     }
   }
 
@@ -256,6 +290,7 @@ class SpecimenServiceTest {
       HttpResponse<String> loincToSnomedResponse2 = mock(HttpResponse.class);
       when(loincToSnomedResponse2.body()).thenReturn(loincToSnomedJson2);
 
+      // Create futures with different delays
       CompletableFuture<HttpResponse<String>> loincToSnomedFuture1 =
           CompletableFuture.supplyAsync(
               () -> {
@@ -281,12 +316,12 @@ class SpecimenServiceTest {
       String snomedRelationsJson = createSnomedRelationsJson();
       HttpResponse<String> snomedRelationsResponse = mock(HttpResponse.class);
       when(snomedRelationsResponse.body()).thenReturn(snomedRelationsJson);
-
       CompletableFuture<HttpResponse<String>> snomedRelationsFuture =
           CompletableFuture.completedFuture(snomedRelationsResponse);
 
       doReturn(loincToSnomedFuture1)
           .doReturn(loincToSnomedFuture2)
+          .doReturn(snomedRelationsFuture)
           .doReturn(snomedRelationsFuture)
           .when(mockHttpClient)
           .sendAsync(any(), any());
@@ -297,10 +332,32 @@ class SpecimenServiceTest {
               anyString(), anyString()))
           .thenReturn(null);
 
+      ArgumentCaptor<List<Specimen>> specimenCaptor = ArgumentCaptor.forClass(List.class);
+      ArgumentCaptor<List<SpecimenBodySite>> bodySiteCaptor = ArgumentCaptor.forClass(List.class);
+
       specimenService.syncSpecimens();
 
-      verify(specimenRepository, times(1)).saveAll(any());
-      verify(specimenBodySiteRepository, times(1)).saveAll(any());
+      verify(specimenRepository, times(1)).saveAll(specimenCaptor.capture());
+      verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
+      List<Specimen> savedSpecimens = specimenCaptor.getValue();
+      assertTrue(!savedSpecimens.isEmpty());
+
+      boolean foundLoinc1Specimens = false;
+      boolean foundLoinc2Specimens = false;
+
+      for (Specimen savedSpecimen : savedSpecimens) {
+        if ("12345-6".equals(savedSpecimen.getLoincSystemCode())) {
+          foundLoinc1Specimens = true;
+        } else if ("67890-1".equals(savedSpecimen.getLoincSystemCode())) {
+          foundLoinc2Specimens = true;
+        }
+      }
+
+      assertTrue(foundLoinc1Specimens, "Specimens from first LOINC code not found");
+      assertTrue(foundLoinc2Specimens, "Specimens from second LOINC code not found");
+
+      List<SpecimenBodySite> savedBodySites = bodySiteCaptor.getValue();
+      assertFalse(savedBodySites.isEmpty());
     }
   }
 
@@ -322,10 +379,17 @@ class SpecimenServiceTest {
     specimensMap.put("12345-6", specimens1);
     specimensMap.put("67890-1", specimens2);
 
-    HttpResponse<String> mockResponse = mock(HttpResponse.class);
-    CompletableFuture<HttpResponse<String>> mockFuture =
-        CompletableFuture.completedFuture(mockResponse);
-    doReturn(mockFuture).when(mockClient).sendAsync(any(), any());
+    HttpResponse<String> mockResponse1 = mock(HttpResponse.class);
+    when(mockResponse1.body()).thenReturn(createSnomedRelationsJson());
+    CompletableFuture<HttpResponse<String>> mockFuture1 =
+        CompletableFuture.completedFuture(mockResponse1);
+
+    HttpResponse<String> mockResponse2 = mock(HttpResponse.class);
+    when(mockResponse2.body()).thenReturn(createSpecimenRelationJson());
+    CompletableFuture<HttpResponse<String>> mockFuture2 =
+        CompletableFuture.completedFuture(mockResponse2);
+
+    doReturn(mockFuture1).doReturn(mockFuture2).when(mockClient).sendAsync(any(), any());
 
     java.lang.reflect.Method method =
         SpecimenService.class.getDeclaredMethod(
@@ -337,13 +401,27 @@ class SpecimenServiceTest {
             method.invoke(specimenService, specimensMap, mockClient);
 
     assertEquals(2, results.size());
+
+    assertTrue((results.containsKey("initialRelationRequest-loinc:12345-6-snomed:111")));
+    assertTrue((results.containsKey("initialRelationRequest-loinc:67890-1-snomed:222")));
+
+    HttpResponse<String> response1 =
+        results.get("initialRelationRequest-loinc:12345-6-snomed:111").get();
+    assertEquals(mockResponse1, response1);
+    assertEquals(createSnomedRelationsJson(), response1.body());
+
+    HttpResponse<String> response2 =
+        results.get("initialRelationRequest-loinc:67890-1-snomed:222").get();
+    assertEquals(mockResponse2, response2);
+    assertEquals(createSpecimenRelationJson(), response2.body());
+
     verify(mockClient, times(2)).sendAsync(any(), any());
   }
 
   @Test
   @SuppressWarnings("unchecked")
   void processInitialSnomedRelations_shouldIdentifySpecimensCorrectly() throws Exception {
-    Specimen specimen = new Specimen("12345-6", "Test LOINC", "111", "Test Specimen");
+    Specimen specimen = new Specimen("12345-6", "Test LOINC", "111", "Test Blood Specimen");
 
     List<Specimen> specimens = new ArrayList<>();
     specimens.add(specimen);
@@ -358,7 +436,6 @@ class SpecimenServiceTest {
     CompletableFuture<HttpResponse<String>> specimenFuture =
         CompletableFuture.completedFuture(specimenResponse);
 
-    // map from req keys to futures.
     java.util.Map<String, CompletableFuture<HttpResponse<String>>> responseMap =
         new java.util.HashMap<>();
     responseMap.put("initialRelationRequest-loinc:12345-6-snomed:111", specimenFuture);
@@ -369,7 +446,6 @@ class SpecimenServiceTest {
             anyString(), anyString()))
         .thenReturn(null);
 
-    // captures specimen + bodySite
     ArgumentCaptor<List<Specimen>> specimenCaptor = ArgumentCaptor.forClass(List.class);
     ArgumentCaptor<List<SpecimenBodySite>> bodySiteCaptor = ArgumentCaptor.forClass(List.class);
 
@@ -384,10 +460,38 @@ class SpecimenServiceTest {
     verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
 
     List<Specimen> savedSpecimens = specimenCaptor.getValue();
-    Assertions.assertTrue((!savedSpecimens.isEmpty()));
+    assertFalse(savedSpecimens.isEmpty());
+
+    assertTrue(
+        savedSpecimens.size() >= 2,
+        "Expected at least 2 specimens, but got " + savedSpecimens.size());
+
+    boolean foundArterialBloodSpecimen = false;
+    for (Specimen savedSpecimen : savedSpecimens) {
+      if ("555666777".equals(savedSpecimen.getSnomedCode())
+          && "Arterial blood specimen".equals(savedSpecimen.getSnomedDisplay())) {
+        foundArterialBloodSpecimen = true;
+        assertEquals("12345-6", savedSpecimen.getLoincSystemCode());
+        assertEquals("Test LOINC", savedSpecimen.getLoincSystemDisplay());
+        break;
+      }
+    }
+    assertTrue(foundArterialBloodSpecimen, "Arterial blood specimen not found");
 
     List<SpecimenBodySite> savedBodySites = bodySiteCaptor.getValue();
-    Assertions.assertTrue((!savedBodySites.isEmpty()));
+    assertFalse(savedBodySites.isEmpty());
+
+    boolean foundArterialStructure = false;
+    for (SpecimenBodySite bodySite : savedBodySites) {
+      if ("777888999".equals(bodySite.getSnomedSiteCode())
+          && "Arterial structure".equals(bodySite.getSnomedSiteDisplay())) {
+        foundArterialStructure = true;
+        assertEquals("111", bodySite.getSnomedSpecimenCode());
+        assertEquals("Test Blood Specimen", bodySite.getSnomedSpecimenDisplay());
+        break;
+      }
+    }
+    assertTrue(foundArterialStructure, "Arterial structure body site not found");
   }
 
   @Test
@@ -433,57 +537,78 @@ class SpecimenServiceTest {
   // Create the loinc response
   private String createLoincToSnomedJson() {
     JSONObject json = new JSONObject();
-    JSONArray results = new JSONArray();
+    JSONArray resultArray = new JSONArray();
 
-    JSONObject result = new JSONObject();
-    result.put("ui", "123456");
-    result.put("name", "Test Specimen Name");
-    results.put(result);
+    JSONObject result1 = new JSONObject();
+    result1.put("ui", "123456789");
+    result1.put("name", "Blood specimen");
+    resultArray.put(result1);
 
-    json.put("result", results);
+    JSONObject result2 = new JSONObject();
+    result2.put("ui", "987654321");
+    result2.put("name", "Serum specimen");
+    resultArray.put(result2);
+
+    json.put("result", resultArray);
     return json.toString();
   }
 
-  // create snomed mock response
+  // create snomed response
   private String createSnomedRelationsJson() {
     JSONObject json = new JSONObject();
-    JSONArray results = new JSONArray();
+    JSONArray resultArray = new JSONArray();
 
+    // A specimen relationship
     JSONObject specimenRelation = new JSONObject();
     specimenRelation.put("additionalRelationLabel", "inverse_isa");
-    specimenRelation.put("relatedId", "http://snomed.info/sct/123456");
-    specimenRelation.put("relatedIdName", "Child Specimen");
-    results.put(specimenRelation);
+    specimenRelation.put(
+        "relatedId",
+        "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/444555666");
+    specimenRelation.put("relatedIdName", "Venous blood specimen");
+    resultArray.put(specimenRelation);
 
+    // A body site relationship
     JSONObject bodySiteRelation = new JSONObject();
     bodySiteRelation.put("additionalRelationLabel", "has_specimen_source_topography");
-    bodySiteRelation.put("relatedId", "http://snomed.info/sct/789012");
-    bodySiteRelation.put("relatedIdName", "Test Body Site");
-    results.put(bodySiteRelation);
+    bodySiteRelation.put(
+        "relatedId",
+        "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/333222111");
+    bodySiteRelation.put("relatedIdName", "Venous structure");
+    resultArray.put(bodySiteRelation);
 
-    json.put("result", results);
+    json.put("result", resultArray);
     return json.toString();
   }
 
   private String createSpecimenRelationJson() {
     JSONObject json = new JSONObject();
-    JSONArray results = new JSONArray();
+    JSONArray resultArray = new JSONArray();
 
-    // Add specimen relation
-    JSONObject relation = new JSONObject();
-    relation.put("additionalRelationLabel", "inverse_isa");
-    relation.put("relatedId", "http://snomed.info/sct/999999");
-    relation.put("relatedIdName", "Test Child Specimen");
-    results.put(relation);
+    JSONObject specimenRelation = new JSONObject();
+    specimenRelation.put("additionalRelationLabel", "inverse_isa");
+    specimenRelation.put(
+        "relatedId",
+        "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/555666777");
+    specimenRelation.put("relatedIdName", "Arterial blood specimen");
+    resultArray.put(specimenRelation);
 
-    // Add body site relation
     JSONObject bodySiteRelation = new JSONObject();
     bodySiteRelation.put("additionalRelationLabel", "has_specimen_source_topography");
-    bodySiteRelation.put("relatedId", "http://snomed.info/sct/888888");
-    bodySiteRelation.put("relatedIdName", "Test Body Site");
-    results.put(bodySiteRelation);
+    bodySiteRelation.put(
+        "relatedId",
+        "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/777888999");
+    bodySiteRelation.put("relatedIdName", "Arterial structure");
+    resultArray.put(bodySiteRelation);
 
-    json.put("result", results);
+    JSONObject bodySiteWithSpecimenRelation = new JSONObject();
+    bodySiteWithSpecimenRelation.put("additionalRelationLabel", "specimen_source_topography_of");
+    bodySiteWithSpecimenRelation.put(
+        "relatedId",
+        "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/888999000");
+    bodySiteWithSpecimenRelation.put("relatedIdName", "Tissue specimen from body site");
+    resultArray.put(bodySiteWithSpecimenRelation);
+
+    json.put("result", resultArray);
     return json.toString();
   }
 }
