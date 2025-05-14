@@ -206,6 +206,20 @@ resource "azurerm_application_gateway" "www_redirect" {
     rewrite_rule_set_name       = "HSTS_ReWrite"
   }
 
+  rewrite_rule_set {
+    name = "HSTS_ReWrite"
+
+    rewrite_rule {
+      name          = "HSTS_Rewrite"
+      rule_sequence = "100"
+
+      request_header_configuration {
+        header_name  = "Strict-Transport-Security"
+        header_value = "31536000; includeSubDomains"
+      }
+    }
+  }
+
   redirect_configuration {
     name = "wwwRedirect"
 
