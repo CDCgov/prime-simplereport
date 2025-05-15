@@ -140,7 +140,7 @@ const SpecimenFormSection = ({
               <TextInput
                 name="specimen-received-date"
                 type="date"
-                label="Specimen received_date"
+                label="Specimen received date"
                 min={formatDate(new Date("Jan 1, 2020"))}
                 max={formatDate(moment().toDate())}
                 value={formatDate(moment(specimen.receivedDate).toDate())}

@@ -82,6 +82,7 @@ const TestDetailSection = ({
             max={formatDate(moment().toDate())}
             value={formatDate(moment(testDetails.resultDate).toDate())}
             onChange={(e) => handleResultDateUpdate(e.target.value)}
+            required={true}
           ></TextInput>
         </div>
         <div className="grid-col-4">
@@ -92,6 +93,7 @@ const TestDetailSection = ({
             step="60"
             value={moment(testDetails.resultDate).format("HH:mm")}
             onChange={(e) => handleResultTimeUpdate(e.target.value)}
+            required={true}
           ></TextInput>
         </div>
       </div>
