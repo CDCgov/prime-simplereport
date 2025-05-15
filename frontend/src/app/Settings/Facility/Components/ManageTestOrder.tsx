@@ -3,6 +3,7 @@ import classNames from "classnames";
 import keyBy from "lodash/keyBy";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
+import MultiSelectList, { type DropdownProps } from "./MultiSelectList";
 import Button from "../../../commonComponents/Button/Button";
 import {
   useGetConditionsQuery,
@@ -14,7 +15,7 @@ import Modal from "../../../commonComponents/Modal";
 import TextInput from "../../../commonComponents/TextInput";
 import SpecimenSelect from "./SpecimenSelect";
 
-// import SearchResults from "./SearchResults";
+import SearchResults from "./SearchResults";
 
 const CardContainer = ({
   className,
@@ -48,40 +49,34 @@ const CardBody = ({
   );
 };
 
-// const LabSearchResults = (props: {
-//   dropDownRef: React.RefObject<HTMLDivElement>;
-//   items: { label: string; value: string }[];
-//   // setSelectedItem: (item: any) => void;
-//   loading: boolean;
-//   children: React.ReactNode;
-// }) => {
-//   const { loading, items, dropDownRef, ...rest } = props;
-//   const headers = ["Name", "LOINC Code", "Action"];
+const LabSearchResults = (props: DropdownProps & { loading: boolean }) => {
+  const { items, dropdownRef, loading, shouldShowSuggestions, ...rest } = props;
+  if (!shouldShowSuggestions) return null;
 
-//   return (
-//     <SearchResults
-//       headers={headers}
-//       loading={loading}
-//       resultCount={items.length}
-//       dropDownRef={dropDownRef}
-//       {...rest}
-//     >
-//       {items.map((item, idx) => (
-//         <tr key={`${item.value}-${idx}`} aria-label={`lab-${idx}`}>
-//           <td>{item.label}</td>
-//           <td>{item.value}</td>
-//           <td>
-//             <Button
-//               label="Add test order"
-//               ariaLabel={`Select ${item.label} ${item.value}`}
-//               onClick={() => {}}
-//             />
-//           </td>
-//         </tr>
-//       ))}
-//     </SearchResults>
-//   );
-// };
+  return (
+    <SearchResults
+      headers={["Name", "LOINC Code", "Action"]}
+      loading={loading}
+      resultCount={items.length}
+      dropdownRef={dropdownRef}
+      {...rest}
+    >
+      {items.map((item, idx) => (
+        <tr key={`${item.value}-${idx}`} aria-label={`lab-${idx}`}>
+          <td>{item.label}</td>
+          <td>{item.value}</td>
+          <td>
+            <Button
+              label="Add test order"
+              ariaLabel={`Select ${item.label} ${item.value}`}
+              onClick={() => {}}
+            />
+          </td>
+        </tr>
+      ))}
+    </SearchResults>
+  );
+};
 
 const ManageTestOrder = () => {
   const [showModal, setShowModal] = useState(false);
@@ -103,29 +98,32 @@ const ManageTestOrder = () => {
     variables: { conditionCodes },
   });
 
-  const labsDataOptions = labsData?.labs
-    ? labsData.labs.map((lab) => ({
-        label: lab.display,
-        value: lab.code ?? "",
-        ...lab,
-      }))
-    : [];
+  const allLabs = labsData?.labs ?? [];
 
+  const labsDataOptions = allLabs.map((lab) => ({
+    label: lab.display,
+    value: lab.code ?? "",
+    ...lab,
+  }));
+
+  // create map of lab objects using the `code` as the key
+  // for efficient lab lookup
   const labsMap = useMemo(() => {
-    console.log("recalc");
     if (!labsData || !labsData.labs) return {};
-
-    // create map of lab objects using the `code` as the key
     return keyBy(labsData.labs, (lab) => lab.code);
   }, [labsData?.labs]);
 
-  // const searchLabs = (inputValue: string) => {
-  //   if (!inputValue.trim()) return labsDataOptions;
-  //   const results = labs.filter((lab) =>
-  //     lab.toLowerCase().includes(inputValue)
-  //   );
-  //   return results;
-  // };
+  const searchLabs = (inputValue: string) => {
+    if (!inputValue.trim()) return labsDataOptions;
+
+    const results = labsDataOptions.filter((lab) =>
+      lab.display.toLowerCase().includes(inputValue)
+    );
+
+    debugger;
+
+    return results;
+  };
 
   return (
     <CardContainer
@@ -153,16 +151,26 @@ const ManageTestOrder = () => {
             <div className="grid-row">
               <div className="grid-col-12">
                 {!labsLoading && (
-                  <MultiSelect
-                    label="Search by LOINC name"
-                    placeholder="Enter a LOINC display name, long name or short name"
-                    name="labs"
+                  <MultiSelectList
                     options={labsDataOptions}
-                    initialSelectedValues={labCodes}
-                    // getFilteredDropdownComponentItems={searchLabs}
-                    onChange={(selected) => setLabCodes(selected)}
-                    showPills={false}
+                    getItems={searchLabs}
+                    onOptionSelect={(option) =>
+                      setLabCodes((prev) => [...prev, option.value])
+                    }
+                    DropdownComponent={(props: DropdownProps) => (
+                      <LabSearchResults loading={labsLoading} {...props} />
+                    )}
                   />
+                  // <MultiSelect
+                  //   label="Search by LOINC name"
+                  //   placeholder="Enter a LOINC display name, long name or short name"
+                  //   name="labs"
+                  //   options={labsDataOptions}
+                  //   initialSelectedValues={labCodes}
+                  //   // getFilteredDropdownComponentItems={searchLabs}
+                  //   onChange={(selected) => setLabCodes(selected)}
+                  //   showPills={false}
+                  // />
                 )}
               </div>
             </div>
@@ -171,7 +179,7 @@ const ManageTestOrder = () => {
       </div>
 
       <Modal
-        showModal={true}
+        showModal={showModal}
         onClose={() => {}}
         contentLabel="Edit Description"
       >
@@ -187,25 +195,21 @@ const ManageTestOrder = () => {
           hintText="This text is what reporters will see as they select the test order for their report."
         />
         <div>
-          <Button variant="unstyled" className="padding-right-1">Save</Button>
+          <Button variant="unstyled" className="padding-right-1">
+            Save
+          </Button>
           <Button variant="unstyled">Reset</Button>
         </div>
 
-        <TextInput
-          label="Description"
-          labelSrOnly={true}
-          name="description"
-        />
+        <TextInput label="Description" labelSrOnly={true} name="description" />
         <div>
-          <Button variant="unstyled" className="padding-right-1">Save</Button>
+          <Button variant="unstyled" className="padding-right-1">
+            Save
+          </Button>
           <Button variant="unstyled">Reset</Button>
         </div>
 
-        <SpecimenSelect
-          specimenOptions={[]}
-          onChange={()=>{}}
-        />
-
+        <SpecimenSelect specimenOptions={[]} onChange={() => {}} />
 
         <div className="margin-y-2">
           <Button>Confirm</Button>
@@ -217,14 +221,16 @@ const ManageTestOrder = () => {
         {labCodes.map((labCode) => {
           const lab = labsMap[labCode];
 
-          return <Card bodyKicker={lab.display}>
-            {lab.description && <p>{lab.description}</p>}
+          return (
+            <Card bodyKicker={lab.display}>
+              {lab.description && <p>{lab.description}</p>}
 
-            <div className="margin-bottom-2">
-              <Button variant="outline">Edit Description</Button>
-              <Button variant="outline">Add Specimen Type</Button>
-            </div>
-          </Card>;
+              <div className="margin-bottom-2">
+                <Button variant="outline">Edit Description</Button>
+                <Button variant="outline">Add Specimen Type</Button>
+              </div>
+            </Card>
+          );
         })}
       </CardBody>
     </CardContainer>

@@ -1,7 +1,7 @@
 import React from "react";
 
 interface SearchResultsProps {
-  dropDownRef: React.RefObject<HTMLDivElement>;
+  dropdownRef: React.RefObject<any>;
   resultCount: number;
   headers: string[];
   children: React.ReactNode;
@@ -9,13 +9,13 @@ interface SearchResultsProps {
 }
 
 const SearchResults = (props: SearchResultsProps) => {
-  const { loading, dropDownRef, headers, resultCount, children } = props;
+  const { loading, dropdownRef, headers, resultCount, children } = props;
   const showEmptyMessage = !loading && resultCount === 0;
   const showSuggestions = !loading && resultCount > 0;
 
   return (
     <div
-      ref={dropDownRef}
+      ref={dropdownRef}
       className="card-container shadow-3 results-dropdown"
       aria-live="polite"
       aria-atomic="true"
