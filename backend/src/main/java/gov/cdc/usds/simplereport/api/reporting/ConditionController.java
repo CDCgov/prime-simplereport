@@ -32,4 +32,11 @@ public class ConditionController {
   public List<Condition> conditions() {
     return conditionService.getConditions();
   }
+
+  @GetMapping("/clear")
+  public String clearConditions() {
+    // todo can we make this harder to do accidentally?
+    conditionService.clearConditions();
+    return "Completed deleting all conditions.";
+  }
 }
