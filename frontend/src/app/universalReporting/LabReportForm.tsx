@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@trussworks/react-uswds";
+import { Button, ComboBox } from "@trussworks/react-uswds";
 
-import MultiSelect from "../commonComponents/MultiSelect/MultiSelect";
 import {
   FacilityReportInput,
   Lab,
@@ -16,6 +15,7 @@ import {
   useSubmitLabReportMutation,
 } from "../../generated/graphql";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import "./LabReportForm.scss";
 
 import {
   buildConditionsOptionList,
@@ -46,7 +46,7 @@ const LabReportForm = () => {
     defaultSpecimenReportInputState
   );
   const [testDetailList, setTestDetailList] = useState<TestDetailsInput[]>([]);
-  const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+  const [selectedCondition, setSelectedCondition] = useState<string>("");
   const [testOrderLoinc, setTestOrderLoinc] = useState<string>("");
   const [testOrderSearchString, setTestOrderSearchString] =
     useState<string>("");
@@ -111,8 +111,7 @@ const LabReportForm = () => {
   const updateTestOrderLoinc = async (lab: Lab) => {
     const updatedList = [] as TestDetailsInput[];
     updatedList.push({
-      // TODO: update this when we start handling multiple conditions. this currently just sends the condition code
-      condition: selectedConditions[0],
+      condition: selectedCondition,
       testOrderLoinc: lab.code,
       testPerformedLoinc: lab.code,
       testPerformedLoincLongCommonName: lab.longCommonName,
@@ -160,22 +159,22 @@ const LabReportForm = () => {
     setTestDetailList(updatedList);
   };
 
-  const updateConditions = async (selectedConditions: string[]) => {
-    setSelectedConditions(selectedConditions);
+  const updateCondition = async (selectedCondition: string) => {
+    setSelectedCondition(selectedCondition);
 
-    if (selectedConditions.length === 0) {
+    if (selectedCondition) {
+      // until we implement multiplex testing, for now we are restricting the frontend to handling one condition at a time
+      // even though the backend query can still support retrieving labs by multiple condition codes
+      await getLabsByConditions({
+        variables: {
+          conditionCodes: [selectedCondition],
+        },
+      });
+    } else {
       setTestDetailList([]);
       setTestOrderLoinc("");
       setTestOrderSearchString("");
       setSpecimen(defaultSpecimenReportInputState);
-    }
-
-    if (selectedConditions.length > 0) {
-      await getLabsByConditions({
-        variables: {
-          conditionCodes: selectedConditions,
-        },
-      });
     }
   };
 
@@ -229,7 +228,7 @@ const LabReportForm = () => {
           <div className="usa-card__body">
             <div className="grid-row grid-gap">
               <div className="grid-col-auto">
-                <h2 className={"font-sans-lg"}>Conditions Tested</h2>
+                <h2 className={"font-sans-lg"}>Condition Tested</h2>
               </div>
             </div>
             <div className="grid-row margin-bottom-5">
@@ -237,21 +236,20 @@ const LabReportForm = () => {
                 {conditionsLoading ? (
                   <div>Loading condition list...</div>
                 ) : (
-                  <MultiSelect
-                    name={"selected-conditions"}
-                    options={conditionOptions}
-                    onChange={(e) => updateConditions(e)}
-                    initialSelectedValues={selectedConditions}
-                    label={
-                      <>
-                        Conditions to report{" "}
-                        <span className={"text-base-dark"}>
-                          (Select all that apply.)
-                        </span>
-                      </>
-                    }
-                    required={true}
-                  />
+                  <>
+                    <label className="usa-legend" htmlFor="selected-condition">
+                      Condition to report
+                    </label>
+                    <ComboBox
+                      id="selected-condition"
+                      name="selected-condition"
+                      options={conditionOptions}
+                      onChange={(e) => updateCondition(e ?? "")}
+                      defaultValue={selectedCondition}
+                      aria-required={true}
+                      className={"condition-combo-box"}
+                    />
+                  </>
                 )}
               </div>
             </div>
@@ -260,7 +258,7 @@ const LabReportForm = () => {
         <div className="prime-container card-container">
           <div className="usa-card__body">
             <TestOrderFormSection
-              hasSelectedCondition={selectedConditions.length > 0}
+              hasSelectedCondition={!!selectedCondition}
               labDataLoading={labDataLoading}
               labs={labData?.labs ?? []}
               testOrderLoinc={testOrderLoinc}
