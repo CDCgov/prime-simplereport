@@ -53,7 +53,8 @@ public class FhirConstants {
   public static final String LOINC_AOE_SYMPTOMATIC = "95419-8";
   public static final String LOINC_SYMPTOM_TIMING_PANEL = "99582-9";
   public static final String LOINC_SYMPTOM = "75325-1";
-  public static final String LOINC_AOE_SYMPTOM_ONSET = "11368-8";
+  public static final String LOINC_AOE_SYMPTOM_ONSET = "65222-2";
+  public static final String SYMPTOM_ONSET_AOE_DESCRIPTION = "Date and time of symptom onset";
   public static final String LOINC_AOE_PREGNANCY_STATUS = "82810-3";
   public static final String LOINC_AOE_EMPLOYED_IN_HEALTHCARE = "95418-0";
   public static final String AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY =
@@ -64,6 +65,12 @@ public class FhirConstants {
   public static final String LOINC_AOE_RESIDENT_CONGREGATE_SETTING = "95421-4";
   public static final String LOINC_AOE_RESIDENCE_TYPE = "75617-1";
   public static final String LOINC_GENDER_IDENTITY = "76691-5";
+
+  public static final String POSITIVE_SNOMED = "10828004";
+  public static final String DETECTED_SNOMED = "260373001";
+  public static final String NEGATIVE_SNOMED = "260385009";
+  public static final String NOT_DETECTED_SNOMED = "260415000";
+  public static final String INVALID_SNOMED = "455371000124106";
 
   public static final String SIMPLE_REPORT_GENDER_OF_SEXUAL_PARTNERS = "SR0001";
 
