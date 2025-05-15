@@ -161,7 +161,9 @@ const PatientFormSection = ({
             name="patient-country"
             value={patient.country || "USA"}
             options={countryOptions}
-            onChange={(country) => setPatient({ ...patient, country })}
+            onChange={(country) =>
+              setPatient({ ...patient, country, state: "", zipCode: "" })
+            }
           />
         </div>
         {(patient.country === "USA" || patient.country === "CAN") && (
