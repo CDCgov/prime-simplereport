@@ -3,19 +3,24 @@ import classNames from "classnames";
 import keyBy from "lodash/keyBy";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
-import MultiSelectList, { type DropdownProps } from "./MultiSelectList";
 import Button from "../../../commonComponents/Button/Button";
+import ComboBox from "../../../commonComponents/ComboBox";
+import Card from "../../../commonComponents/Card/Card";
+import Modal from "../../../commonComponents/Modal";
+import TextInput from "../../../commonComponents/TextInput";
+
+import SpecimenSelect from "./SpecimenSelect";
+import MultiSelectList, {
+  MultiSelectDropdownOption,
+  type DropdownProps,
+} from "./MultiSelectList";
+import SearchResults from "./SearchResults";
+
 import {
   useGetConditionsQuery,
   useGetLabsByConditionsQuery,
 } from "../../../../generated/graphql";
 import { buildConditionsOptionList } from "../../../universalReporting/LabReportFormUtils";
-import Card from "../../../commonComponents/Card/Card";
-import Modal from "../../../commonComponents/Modal";
-import TextInput from "../../../commonComponents/TextInput";
-import SpecimenSelect from "./SpecimenSelect";
-
-import SearchResults from "./SearchResults";
 
 const CardContainer = ({
   className,
@@ -80,31 +85,27 @@ const LabSearchResults = (props: DropdownProps & { loading: boolean }) => {
 
 const ManageTestOrder = () => {
   const [showModal, setShowModal] = useState(false);
-  const [conditionCodes, setConditionCodes] = useState<string[]>([]);
+  const [conditionCode, setConditionCode] = useState("");
   const [labCodes, setLabCodes] = useState<string[]>([]);
 
   const { data: conditionsData, loading: conditionsLoading } =
     useGetConditionsQuery();
 
-  const conditionsOptions = buildConditionsOptionList(
+  const { data: labsData, loading: labsLoading } = useGetLabsByConditionsQuery({
+    variables: { conditionCodes: [conditionCode] },
+  });
+
+  const conditionOptions = buildConditionsOptionList(
     conditionsData?.conditions ?? []
   );
 
-  const onChangeConditions = (selected: string[]) => {
-    setConditionCodes(selected);
-  };
-
-  const { data: labsData, loading: labsLoading } = useGetLabsByConditionsQuery({
-    variables: { conditionCodes },
-  });
-
-  const allLabs = labsData?.labs ?? [];
-
-  const labsDataOptions = allLabs.map((lab) => ({
-    label: lab.display,
-    value: lab.code ?? "",
-    ...lab,
-  }));
+  const labOptions = labsData?.labs
+    ? labsData.labs.map((lab) => ({
+        label: lab.display,
+        value: lab.code ?? "",
+        ...lab,
+      }))
+    : [];
 
   // create map of lab objects using the `code` as the key
   // for efficient lab lookup
@@ -113,14 +114,20 @@ const ManageTestOrder = () => {
     return keyBy(labsData.labs, (lab) => lab.code);
   }, [labsData?.labs]);
 
-  const searchLabs = (inputValue: string) => {
-    if (!inputValue.trim()) return labsDataOptions;
+  const onChangeCondition = (selected?: string) => {
+    setConditionCode(selected ?? "");
+  };
 
-    const results = labsDataOptions.filter((lab) =>
+  const onChangeLab = (option: MultiSelectDropdownOption) => {
+    setLabCodes((prev) => [...prev, option.value]);
+  };
+
+  const filterLabOptions = (inputValue: string) => {
+    if (!inputValue.trim()) return labOptions;
+
+    const results = labOptions.filter((lab) =>
       lab.display.toLowerCase().includes(inputValue)
     );
-
-    debugger;
 
     return results;
   };
@@ -132,17 +139,17 @@ const ManageTestOrder = () => {
     >
       <div className="position-relative bg-base-lightest">
         <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-bottom-3">
-          <CardBody className="padding-y-0">
+          <CardBody className="padding-y-2">
             <div className="grid-row">
               <div className="grid-col-12 tablet:grid-col-6">
                 {!conditionsLoading && (
-                  <MultiSelect
-                    label="Search by conditions"
-                    placeholder="Enter name of condition"
-                    name="conditions"
-                    onChange={onChangeConditions}
-                    options={conditionsOptions}
-                    initialSelectedValues={conditionCodes}
+                  <ComboBox
+                    id="selected-condition"
+                    name="Filter by condition"
+                    options={conditionOptions}
+                    onChange={onChangeCondition}
+                    defaultValue={conditionCode}
+                    aria-required={true}
                   />
                 )}
               </div>
@@ -152,25 +159,16 @@ const ManageTestOrder = () => {
               <div className="grid-col-12">
                 {!labsLoading && (
                   <MultiSelectList
-                    options={labsDataOptions}
-                    getItems={searchLabs}
-                    onOptionSelect={(option) =>
-                      setLabCodes((prev) => [...prev, option.value])
-                    }
+                    id="lab-select"
+                    label="Search by LOINC name"
+                    placeholder="Enter a LOINC display name, long name or short name"
+                    options={labOptions}
+                    getItems={filterLabOptions}
+                    onOptionSelect={onChangeLab}
                     DropdownComponent={(props: DropdownProps) => (
                       <LabSearchResults loading={labsLoading} {...props} />
                     )}
                   />
-                  // <MultiSelect
-                  //   label="Search by LOINC name"
-                  //   placeholder="Enter a LOINC display name, long name or short name"
-                  //   name="labs"
-                  //   options={labsDataOptions}
-                  //   initialSelectedValues={labCodes}
-                  //   // getFilteredDropdownComponentItems={searchLabs}
-                  //   onChange={(selected) => setLabCodes(selected)}
-                  //   showPills={false}
-                  // />
                 )}
               </div>
             </div>

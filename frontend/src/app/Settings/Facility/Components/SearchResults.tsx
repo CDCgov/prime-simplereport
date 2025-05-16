@@ -16,7 +16,7 @@ const SearchResults = (props: SearchResultsProps) => {
   return (
     <div
       ref={dropdownRef}
-      className="card-container shadow-3 results-dropdown"
+      className="card-container shadow-3 results-dropdown width-full"
       aria-live="polite"
       aria-atomic="true"
       role="region"
@@ -38,7 +38,9 @@ const SearchResults = (props: SearchResultsProps) => {
             <thead>
               <tr>
                 {headers.map((header) => (
-                  <th scope="col">{header}</th>
+                  <th scope="col" key={header}>
+                    {header}
+                  </th>
                 ))}
               </tr>
             </thead>

@@ -6,6 +6,15 @@ export interface MultiSelectDropdownOption {
   label: string;
 }
 
+export interface DropdownProps {
+  items: any[];
+  setSelectedItem: (option: MultiSelectDropdownOption) => void;
+  shouldShowSuggestions: boolean;
+  queryString: string;
+  multiSelect: boolean;
+  dropdownRef: React.MutableRefObject<any>;
+}
+
 enum FocusMode {
   None = "none",
   Input = "input",
@@ -21,16 +30,9 @@ interface State {
   inputValue: string;
 }
 
-export interface DropdownProps {
-  items: any[];
-  setSelectedItem: (option: MultiSelectDropdownOption) => void;
-  shouldShowSuggestions: boolean;
-  queryString: string;
-  multiSelect: boolean;
-  dropdownRef: React.MutableRefObject<any>;
-}
-
 interface Props {
+  id: string;
+  label: string;
   options: MultiSelectDropdownOption[];
   DropdownComponent: (props: DropdownProps) => JSX.Element;
   getItems: (queryString: string) => any[];
@@ -58,7 +60,7 @@ const createInitialState = (options: MultiSelectDropdownOption[]): State => {
 };
 
 const MultiSelectList = (props: Props) => {
-  const { disabled, options, placeholder, getItems, DropdownComponent } = props;
+  const { options, DropdownComponent } = props;
   const [state, dispatch] = useMergeReducer<State>(options, createInitialState);
 
   const dropdownRef = useRef(null);
@@ -66,8 +68,6 @@ const MultiSelectList = (props: Props) => {
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const filteredOptions = options.filter(isPartialMatch(value));
-
-    debugger;
 
     dispatch({
       inputValue: value,
@@ -137,41 +137,48 @@ const MultiSelectList = (props: Props) => {
   useOutsideClick(dropdownRef, onOutsideClick);
 
   return (
-    <div className="usa-combo-box usa-combo-box--pristine">
-      <input
-        type="text"
-        className="usa-combo-box__input"
-        autoCapitalize="off"
-        autoComplete="off"
-        role="combobox"
-        placeholder={placeholder}
-        value={state.inputValue}
-        disabled={disabled}
-        onChange={onInputChange}
-        onClick={onInputClick}
-      />
+    <div className="usa-form-group">
+      <label className="usa-label" htmlFor={props.id}>
+        {props.label}
+      </label>
 
-      <span className="usa-combo-box__input-button-separator">&nbsp;</span>
-      <span className="usa-combo-box__toggle-list__wrapper" tabIndex={-1}>
-        <button
-          type="button"
-          className="usa-combo-box__toggle-list"
-          tabIndex={-1}
-          aria-hidden={"true"}
-          onClick={onToggleClick}
-          disabled={disabled}
-        >
-          &nbsp;
-        </button>
-      </span>
-      <DropdownComponent
-        items={getItems(state.inputValue)}
-        setSelectedItem={onSelectOption}
-        shouldShowSuggestions={state.isOpen}
-        queryString={state.inputValue}
-        multiSelect={true}
-        dropdownRef={dropdownRef}
-      />
+      <div className="usa-combo-box usa-combo-box--pristine maxw-none">
+        <input
+          id={props.id}
+          type="text"
+          className="usa-combo-box__input"
+          autoCapitalize="off"
+          autoComplete="off"
+          role="combobox"
+          placeholder={props.placeholder}
+          value={state.inputValue}
+          disabled={props.disabled}
+          onChange={onInputChange}
+          onClick={onInputClick}
+        />
+
+        <span className="usa-combo-box__input-button-separator">&nbsp;</span>
+        <span className="usa-combo-box__toggle-list__wrapper" tabIndex={-1}>
+          <button
+            type="button"
+            className="usa-combo-box__toggle-list"
+            tabIndex={-1}
+            aria-hidden={"true"}
+            onClick={onToggleClick}
+            disabled={props.disabled}
+          >
+            &nbsp;
+          </button>
+        </span>
+        <DropdownComponent
+          items={props.getItems(state.inputValue)}
+          setSelectedItem={onSelectOption}
+          shouldShowSuggestions={state.isOpen}
+          queryString={state.inputValue}
+          multiSelect={true}
+          dropdownRef={dropdownRef}
+        />
+      </div>
     </div>
   );
 };
