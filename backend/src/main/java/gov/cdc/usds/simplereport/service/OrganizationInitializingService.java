@@ -20,13 +20,16 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.errors.UserFacilityNotInitializedException;
@@ -63,6 +66,9 @@ public class OrganizationInitializingService {
   private final PersonRepository _personRepository;
   private final PatientRegistrationLinkRepository _prlRepository;
   private final DiseaseService diseaseService;
+  private final ConditionRepository conditionRepository;
+  private final LabRepository labRepository;
+  private final SpecimenRepository specimenRepository;
 
   public void initAll() {
 
@@ -133,6 +139,24 @@ public class OrganizationInitializingService {
     // users are in the org.
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
     configureDemoUsers(users, facilitiesByName);
+
+    conditionRepository.saveAll(
+        _props.getConditions().stream()
+            .filter(
+                condition -> conditionRepository.findConditionByCode(condition.getCode()) == null)
+            .collect(Collectors.toCollection(ArrayList::new)));
+    labRepository.saveAll(
+        _props.getLabs().stream()
+            .filter(lab -> labRepository.findByCode(lab.getCode()).isEmpty())
+            .collect(Collectors.toCollection(ArrayList::new)));
+    specimenRepository.saveAll(
+        _props.getSpecimens().stream()
+            .filter(
+                specimen ->
+                    specimenRepository.findByLoincSystemCodeAndSnomedCode(
+                            specimen.getLoincSystemCode(), specimen.getSnomedCode())
+                        == null)
+            .collect(Collectors.toCollection(ArrayList::new)));
   }
 
   public void initCurrentUser() {
