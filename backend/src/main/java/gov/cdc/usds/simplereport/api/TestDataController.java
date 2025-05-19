@@ -93,9 +93,9 @@ public class TestDataController {
   private static final int ZIP_MAX = 100000;
   private static final int COUNTY_MAX = 50;
 
-  @GetMapping(value = "/api/test/large-csv")
+  @GetMapping(value = "/csv/export")
   public ResponseEntity<StreamingResponseBody> generateLargeCsv(
-      @RequestParam(defaultValue = "100") int rows) {
+      @RequestParam(defaultValue = "10") int rows) {
 
     log.info("Generating test CSV with {} rows", rows);
 
