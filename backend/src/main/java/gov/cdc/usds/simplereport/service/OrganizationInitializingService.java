@@ -29,6 +29,7 @@ import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenBodySiteRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -69,6 +70,7 @@ public class OrganizationInitializingService {
   private final ConditionRepository conditionRepository;
   private final LabRepository labRepository;
   private final SpecimenRepository specimenRepository;
+  private final SpecimenBodySiteRepository specimenBodySiteRepository;
 
   public void initAll() {
 
@@ -140,23 +142,7 @@ public class OrganizationInitializingService {
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
     configureDemoUsers(users, facilitiesByName);
 
-    conditionRepository.saveAll(
-        _props.getConditions().stream()
-            .filter(
-                condition -> conditionRepository.findConditionByCode(condition.getCode()) == null)
-            .collect(Collectors.toCollection(ArrayList::new)));
-    labRepository.saveAll(
-        _props.getLabs().stream()
-            .filter(lab -> labRepository.findByCode(lab.getCode()).isEmpty())
-            .collect(Collectors.toCollection(ArrayList::new)));
-    specimenRepository.saveAll(
-        _props.getSpecimens().stream()
-            .filter(
-                specimen ->
-                    specimenRepository.findByLoincSystemCodeAndSnomedCode(
-                            specimen.getLoincSystemCode(), specimen.getSnomedCode())
-                        == null)
-            .collect(Collectors.toCollection(ArrayList::new)));
+    initUELRExampleData();
   }
 
   public void initCurrentUser() {
@@ -447,5 +433,42 @@ public class OrganizationInitializingService {
         }
       }
     }
+  }
+
+  public void initUELRExampleData() {
+    conditionRepository.saveAll(
+        _props.getConditions().stream()
+            .filter(
+                condition -> conditionRepository.findConditionByCode(condition.getCode()) == null)
+            .collect(Collectors.toCollection(ArrayList::new)));
+
+    labRepository.saveAll(
+        _props.getConditions().stream()
+            .flatMap(condition -> condition.getLabs().stream())
+            .filter(
+                lab ->
+                    labRepository
+                        .findByCode(lab.getCode())
+                        .isEmpty()) // problematic when first run, need to fix
+            .collect(Collectors.toCollection(ArrayList::new)));
+
+    specimenRepository.saveAll(
+        _props.getSpecimens().stream()
+            .filter(
+                specimen ->
+                    specimenRepository.findByLoincSystemCodeAndSnomedCode(
+                            specimen.getLoincSystemCode(), specimen.getSnomedCode())
+                        == null)
+            .collect(Collectors.toCollection(ArrayList::new)));
+
+    specimenBodySiteRepository.saveAll(
+        _props.getSpecimens().stream()
+            .flatMap(specimen -> specimen.getBodySiteList().stream())
+            .filter(
+                specimen ->
+                    specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
+                            specimen.getSnomedSpecimenCode(), specimen.getSnomedSiteCode())
+                        == null)
+            .collect(Collectors.toCollection(ArrayList::new)));
   }
 }

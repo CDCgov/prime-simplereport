@@ -208,33 +208,153 @@ simple-report-initialization:
     - code: 407152001
       display: "Lead in Blood"
       has-labs: true
+      labs:
+        - code: "17698-2"
+          display: "Tetraethyl lead [Mass/volume] in Blood"
+          description: null
+          long-common-name: "Tetraethyl lead [Mass/volume] in Blood"
+          scale-code: "LP7753-9"
+          scale-display: "Qn"
+          system-code: "LP7057-5"
+          system-display: "Bld"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
     - code: 105629000
       display: "Chlamydia"
       has-labs: true
+      labs:
+        - code: "87949-4"
+          display: "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection"
+          description: null
+          long-common-name: "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection"
+          scale-code: "LP7751-3"
+          scale-display: "Ord"
+          system-code: "LP7641-6"
+          system-display: "Tiss"
+          answer-list: "LL744-4"
+          order-or-observation: "Both"
+          panel: false
     - code: 15628003
       display: "Gonorrhea"
       has-labs: true
+      labs:
+        - code: "14318-0"
+          display: "Microscopic observation [Identifier] in Cervix by Wet preparation"
+          description: null
+          long-common-name: "Microscopic observation [Identifier] in Cervix by Wet preparation"
+          scale-code: "LP7750-5"
+          scale-display: "Nom"
+          system-code: "LP7162-3"
+          system-display: "Cvx"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
     - code: 76272004
       display: "Syphilis"
-      has-labs: true 
+      has-labs: true
+      labs:
+        - code: "51839-9"
+          display: "Treponema pallidum IgM Ab [Units/volume] in Serum by Immunoassay"
+          description: null
+          long-common-name: "Treponema pallidum IgM Ab [Units/volume] in Serum by Immunoassay"
+          scale-code: "LP7753-9"
+          scale-display: "Qn"
+          system-code: "LP7567-3"
+          system-display: "Ser"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
     - code: 186747009
       display: "COVID-19"
       has-labs: true
+      labs:
+        - code: "14451-9"
+          display: "Virus identified in Eye by Culture"
+          description: null
+          long-common-name: "Virus identified in Eye by Culture"
+          scale-code: "LP7750-5"
+          scale-display: "Nom"
+          system-code: "LP7218-3"
+          system-display: "Eye"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
     - code: 541131000124102
       display: "Novel Influenza A Virus Infection"
       has-labs: true
+      labs:
+        - code: "628-8"
+          display: "Bacteria identified in Tissue by Anaerobe culture"
+          description: null
+          long-common-name: "Bacteria identified in Tissue by Anaerobe culture"
+          scale-code: "LP7750-5"
+          scale-display: "Nom"
+          system-code: "LP7641-6"
+          system-display: "Tiss"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
     - code: 43692000
       display: "Influenza"
       has-labs: true
+      labs:
+        - code: "626-2"
+          display: "Bacteria identified in Throat by Culture"
+          description: null
+          long-common-name: "Bacteria identified in Throat by Culture"
+          scale-code: "LP7750-5"
+          scale-display: "Nom"
+          system-code: "LP7633-3"
+          system-display: "Thrt"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
     - code: 6415009
       display: "Respiratory Syncytial Virus (RSV)"
       has-labs: true
+      labs:
+        - code: "597-5"
+          display: "Bacteria identified in Aspirate by Aerobe culture"
+          description: null
+          long-common-name: "Bacteria identified in Aspirate by Aerobe culture"
+          scale-code: "LP7750-5"
+          scale-display: "Nom"
+          system-code: "LP7037-7"
+          system-display: "Asp"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
     - code: 86406008
       display: "HIV Infection or AIDS"
       has-labs: true
+      labs:
+        - code: "608-0"
+          display: "Bacteria identified in Ear by Aerobe culture"
+          description: null
+          long-common-name: "Bacteria identified in Ear by Aerobe culture"
+          scale-code: "LP7750-5"
+          scale-display: "Nom"
+          system-code: "LP7188-8"
+          system-display: "Ear"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
     - code: 50711007
       display: "Hepatitis C Virus Infection"
       has-labs: true
+      labs:
+        - code: "51655-9"
+          display: "Hepatitis C virus RNA [Presence] in Body fluid by NAA with probe detection"
+          description: null
+          long-common-name: "Hepatitis C virus RNA [Presence] in Body fluid by NAA with probe detection"
+          scale-code: "LP7751-3"
+          scale-display: "Ord"
+          system-code: "LP7238-1"
+          system-display: "Body fld"
+          answer-list: ""
+          order-or-observation: "Both"
+          panel: false
   labs:
     - code: "17698-2"
       display: "Tetraethyl lead [Mass/volume] in Blood"
@@ -351,14 +471,15 @@ simple-report-initialization:
       loinc-system-display: "Bld"
       snomed-code: "878861003"
       snomed-display: "Blood specimen in blood culture bottle"
-#    - loinc-system-code: "LP7641-6"
-#      loinc-system-display: "Tiss"
-#      snomed-code: "258479004"
-#      snomed-display: "Interstitial fluid specimen"
     - loinc-system-code: "LP7162-3"
       loinc-system-display: "Cvx"
       snomed-code: "258524009"
       snomed-display: "Cervical swab"
+      body-site-list:
+        - snomed-specimen-code: "258524009"
+          snomed-specimen-display: "Cervical swab"
+          snomed-site-code: "71252005"
+          snomed-site-display: "Cervix uteri structure"
     - loinc-system-code": "LP7567-3"
       loinc-system-display": "Ser"
       snomed-code": "122591000"
@@ -367,22 +488,47 @@ simple-report-initialization:
       loinc-system-display: "Eye"
       snomed-code: "399735000"
       snomed-display: "Specimen from eye obtained by limited exenteration"
+      body-site-list:
+        - snomed-specimen-code: "399735000"
+          snomed-specimen-display: "Specimen from eye obtained by limited exenteration"
+          snomed-site-code: "81745001"
+          snomed-site-display: "Eye structure"
     - loinc-system-code: "LP7641-6"
       loinc-system-display: "Tiss"
       snomed-code: "258479004"
       snomed-display: "Interstitial fluid specimen"
+      body-site-list: 
+        - snomed-specimen-code: "258479004"
+          snomed-specimen-display: "Interstitial fluid specimen"
+          snomed-site-code: "85756007"
+          snomed-site-display: "Body tissue structure"
     - loinc-system-code: "LP7633-3"
       loinc-system-display: "Thrt"
       snomed-code: "472881004"
       snomed-display: "Swab from pharynx"
+      body-site-list:
+        - snomed-specimen-code: "472881004"
+          snomed-specimen-display: "Swab from pharynx"
+          snomed-site-code: "54066008"
+          snomed-site-display: "Pharyngeal structure"
     - loinc-system-code: "LP7037-7"
       loinc-system-display: "Asp"
-      snomed-code: "16216171000119108"
-      snomed-display: "Specimen from liver obtained by aspiration"
+      snomed-code: "734425002"
+      snomed-display: "Specimen from ear obtained by aspiration"
+      body-site-list:
+        - snomed-specimen-code: "734425002"
+          snomed-specimen-display: "Specimen from ear obtained by aspiration"
+          snomed-site-code: "117590005"
+          snomed-site-display: "Ear structure"
     - loinc-system-code: "LP7188-8"
       loinc-system-display: "Ear"
       snomed-code: "128162003"
       snomed-display: "Tissue specimen from ear"
+      body-site-list:
+        - snomed-specimen-code: "128162003"
+          snomed-specimen-display: "Tissue specimen from ear"
+          snomed-site-code: "117590005"
+          snomed-site-display: "Ear structure"
     - loinc-system-code: "LP7238-1"
       loinc-system-display: "Body fld"
       snomed-code: "362861000009108"
