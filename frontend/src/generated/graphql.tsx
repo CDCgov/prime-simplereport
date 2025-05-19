@@ -849,7 +849,6 @@ export type Query = {
   pendingOrganizations: Array<PendingOrganization>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
   resultsPage?: Maybe<ResultsPage>;
-  specimenBodySites: Array<SpecimenBodySite>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
   specimens: Array<Specimen>;
@@ -958,10 +957,6 @@ export type QueryResultsPageArgs = {
   result?: InputMaybe<Scalars["String"]["input"]>;
   role?: InputMaybe<Scalars["String"]["input"]>;
   startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type QuerySpecimenBodySitesArgs = {
-  specimenSnomedCode: Scalars["String"]["input"];
 };
 
 export type QuerySpecimensArgs = {

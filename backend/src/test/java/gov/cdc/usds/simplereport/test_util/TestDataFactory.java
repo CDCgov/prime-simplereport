@@ -828,7 +828,7 @@ public class TestDataFactory {
       List<String> conditionCodes) {
     return createLab(
         code,
-        "Lab display",
+        "Lab display " + code,
         "",
         "Long common name",
         "",
