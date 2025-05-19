@@ -39,6 +39,10 @@ public class ConditionService {
 
   private static final int PAGE_SIZE = 20;
 
+  public List<Condition> getConditions() {
+    return conditionRepository.findAllByHasLabsIsTrue();
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String syncHasLabs() {
     List<Condition> allConditions = conditionRepository.findAll();
@@ -173,5 +177,11 @@ public class ConditionService {
     }
     log.info("Found existing condition {}", display);
     return foundCondition;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void clearConditions() {
+    conditionRepository.deleteAll();
+    log.info("All conditions deleted.");
   }
 }

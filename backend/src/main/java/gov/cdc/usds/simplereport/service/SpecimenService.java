@@ -39,6 +39,16 @@ public class SpecimenService {
 
   private final LabRepository labRepository;
 
+  public List<Specimen> getSpecimens(String loinc) {
+    List<Specimen> specimenList = specimenRepository.findByLoincSystemCode(loinc);
+    specimenList.forEach(
+        specimen -> {
+          specimen.setBodySiteList(
+              specimenBodySiteRepository.findBySnomedSpecimenCode(specimen.getSnomedCode()));
+        });
+    return specimenList;
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   // TODO: Test LOINC to SNOMED conversion with mock HTTP responses
@@ -308,5 +318,13 @@ public class SpecimenService {
             .toList();
 
     specimenBodySiteRepository.saveAll(newBodySitesToSave);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void clearSpecimensAndBodySites() {
+    specimenRepository.deleteAll();
+    log.info("All specimens deleted.");
+    specimenBodySiteRepository.deleteAll();
+    log.info("All body sites deleted.");
   }
 }

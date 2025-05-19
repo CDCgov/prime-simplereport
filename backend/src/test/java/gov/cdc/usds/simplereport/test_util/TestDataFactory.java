@@ -4,12 +4,14 @@ import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
+import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
+import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -20,6 +22,7 @@ import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -36,10 +39,12 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
@@ -48,6 +53,7 @@ import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -107,6 +113,9 @@ public class TestDataFactory {
   @Autowired private TestResultUploadRepository testResultUploadRepository;
   @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
+  @Autowired private ConditionRepository conditionRepository;
+  @Autowired private LabRepository labRepository;
+  @Autowired private SpecimenRepository specimenRepository;
 
   @Autowired private ResultService resultService;
   @Autowired private ApiUserService apiUserService;
@@ -760,5 +769,85 @@ public class TestDataFactory {
 
   public static List<PhoneNumberInput> getListOfOnePhoneNumberInput() {
     return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
+  }
+
+  public Condition createCondition(String code, String display) {
+    return conditionRepository.save(new Condition(code, display));
+  }
+
+  public Condition createCondition(String code) {
+    return createCondition(code, "Lorem ipsumosis");
+  }
+
+  public List<Condition> createConditions(List<String> codes) {
+    List<Condition> conditionList = new ArrayList<>();
+    for (var code : codes) {
+      conditionList.add(createCondition(code));
+    }
+    return conditionList;
+  }
+
+  public Lab createLab(
+      String code,
+      String display,
+      String description,
+      String longCommonName,
+      String scaleCode,
+      String scaleDisplay,
+      String systemCode,
+      String systemDisplay,
+      String answerList,
+      String orderOrObservation,
+      Boolean panel,
+      List<String> conditionCodes) {
+    Lab lab =
+        new Lab(
+            code,
+            display,
+            description,
+            longCommonName,
+            scaleCode,
+            scaleDisplay,
+            systemCode,
+            systemDisplay,
+            answerList,
+            orderOrObservation,
+            panel);
+    List<Condition> conditionList = conditionRepository.findAllByCodeIn(conditionCodes);
+    for (Condition condition : conditionList) {
+      lab.addCondition(condition);
+    }
+    return labRepository.save(lab);
+  }
+
+  public Lab createLab(
+      String code,
+      String scale_display,
+      String system_code,
+      String orderOrObservation,
+      List<String> conditionCodes) {
+    return createLab(
+        code,
+        "Lab display " + code,
+        "",
+        "Long common name",
+        "",
+        scale_display,
+        system_code,
+        "",
+        "",
+        orderOrObservation,
+        false,
+        conditionCodes);
+  }
+
+  public Specimen createSpecimen(
+      String loincSystemCode, String loincSystemDisplay, String snomedCode, String snomedDisplay) {
+    return specimenRepository.save(
+        new Specimen(loincSystemCode, loincSystemDisplay, snomedCode, snomedDisplay));
+  }
+
+  public Specimen createSpecimen(String loincSystemCode, String snomedCode) {
+    return createSpecimen(loincSystemCode, "system_display", snomedCode, "snomed_display");
   }
 }
