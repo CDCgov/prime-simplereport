@@ -440,6 +440,115 @@ type FeatureFlag {
   value: Boolean!
 }
 
+input PatientReportInput {
+  firstName: String!
+  middleName: String
+  lastName: String!
+  suffix: String
+  email: String
+  phone: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  country: String
+  sex: String
+  dateOfBirth: LocalDate!
+  race: String
+  ethnicity: String
+  tribalAffiliation: String
+}
+
+input ProviderReportInput {
+  firstName: String!
+  middleName: String
+  lastName: String!
+  suffix: String
+  npi: String!
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  email: String
+  phone: String
+}
+
+input FacilityReportInput {
+  name: String!
+  phone: String
+  email: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  clia: String!
+}
+
+input SpecimenInput {
+  snomedTypeCode: String!
+  collectionDate: DateTime
+  receivedDate: DateTime
+  collectionBodySiteName: String
+  collectionBodySiteCode: String
+}
+
+input TestDetailsInput {
+  condition: String!
+  testOrderLoinc: String!
+  testPerformedLoinc: String!
+  testPerformedLoincLongCommonName: String
+  resultType: ResultScaleType!
+  resultValue: String!
+  resultDate: DateTime
+  resultInterpretation: String
+}
+
+enum ResultScaleType {
+  QUANTITATIVE
+  ORDINAL
+  NOMINAL
+}
+
+type Condition {
+  code: String!
+  display: String!
+}
+
+type Lab {
+  code: String!
+  display: String!
+  description: String
+  longCommonName: String!
+  scaleCode: String
+  scaleDisplay: String
+  systemCode: String!
+  systemDisplay: String
+  answerList: String
+  orderOrObservation: String!
+  panel: Boolean!
+}
+
+# specimen for universal reporting
+type Specimen {
+  loincSystemCode: String!
+  snomedCode: String!
+  snomedDisplay: String!
+  bodySiteList: [SpecimenBodySite!]!
+}
+
+type SpecimenBodySite {
+  snomedSpecimenCode: String
+  snomedSpecimenDisplay: String
+  snomedSiteCode: String!
+  snomedSiteDisplay: String!
+}
+
 # Queries and mutations for everyday use
 
 type Query {
@@ -568,6 +677,9 @@ type Query {
     pageSize: Int
   ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
+  conditions: [Condition!]!
+  labs(conditionCodes: [String!]): [Lab!]!
+  specimens(loinc: String!): [Specimen!]!
 }
 
 type Mutation {
@@ -731,4 +843,11 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
+  submitLabReport(
+    patient: PatientReportInput
+    provider: ProviderReportInput,
+    facility: FacilityReportInput,
+    specimen: SpecimenInput,
+    testDetailsList: [TestDetailsInput]
+  ): String
 }
