@@ -19,7 +19,7 @@ public interface LabRepository extends EternalAuditedEntityRepository<Lab> {
 
   @Query(
       value =
-          "SELECT lab.* "
+          "SELECT DISTINCT lab.* "
               + "FROM {h-schema}condition cond "
               + "JOIN {h-schema}condition_lab_join clj ON cond.internal_id = clj.condition_id "
               + "JOIN {h-schema}lab ON lab.internal_id = clj.lab_id "
