@@ -95,7 +95,7 @@ public class TestDataController {
 
   @GetMapping(value = "/csv/export")
   public ResponseEntity<StreamingResponseBody> generateLargeCsv(
-      @RequestParam(defaultValue = "10") int rows) {
+      @RequestParam(defaultValue = "20") int rows) {
 
     log.info("Generating test CSV with {} rows", rows);
 
