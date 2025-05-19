@@ -1,4 +1,5 @@
 import React, { useCallback, useRef } from "react";
+
 import { useMergeReducer, useOutsideClick } from "../../../utils/hooks";
 
 export interface MultiSelectDropdownOption {
@@ -41,10 +42,8 @@ interface Props {
   disabled?: boolean;
 }
 
-const isPartialMatch = (
-  needle: string
-): ((event: MultiSelectDropdownOption) => boolean) => {
-  return (option: MultiSelectDropdownOption): boolean =>
+const isPartialMatch = (needle: string) => {
+  return (option: MultiSelectDropdownOption) =>
     option.label.toLowerCase().includes(needle.toLowerCase());
 };
 

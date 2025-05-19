@@ -16,7 +16,7 @@ const SearchResults = (props: SearchResultsProps) => {
   return (
     <div
       ref={dropdownRef}
-      className="card-container shadow-3 results-dropdown width-full"
+      className="card-container shadow-3 width-full results-dropdown maxh-card-lg"
       aria-live="polite"
       aria-atomic="true"
       role="region"
