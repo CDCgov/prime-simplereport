@@ -17,7 +17,7 @@ import {
 const specRunName = "spec04";
 const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
-describe("Conducting a COVID test from:", () => {
+describe("Reporting a COVID test from:", () => {
   const patient = generatePatient();
   const patientName = patient.fullName;
   const lastName = patient.lastName;
@@ -59,10 +59,10 @@ describe("Conducting a COVID test from:", () => {
     cleanUpPreviousRunSetupData(currentSpecRunVersionName);
   });
 
-  it("conducts a test from the result page", () => {
+  it("reports a test from the result page", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
-    cy.get("#desktop-conduct-test-nav-link").click();
+    cy.get("#desktop-report-test-nav-link").click();
     cy.get("#search-field-small").type(lastName);
     cy.get(".results-dropdown").contains(lastName);
 

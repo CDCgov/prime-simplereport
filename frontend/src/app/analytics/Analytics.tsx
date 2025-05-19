@@ -273,7 +273,7 @@ export const Analytics = (props: Props) => {
                   <div className="grid-row grid-gap">
                     <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-row">
-                        <h3>Tests conducted</h3>
+                        <h3>Tests reported</h3>
                         <span className="font-sans-3xl text-bold margin-y-auto">
                           {totalTests}
                         </span>

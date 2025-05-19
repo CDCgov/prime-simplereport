@@ -32,7 +32,7 @@ export function formatTestResultAriaLabel(result: Result) {
     result.correctionStatus === "ORIGINAL"
       ? moment(result.dateTested).format(TEST_RESULT_ARIA_TIME_FORMAT)
       : moment(result.dateUpdated).format(TEST_RESULT_ARIA_TIME_FORMAT);
-  return `Click for more detailed results information for ${patientFullName} conducted on ${displayPatientDate}`;
+  return `Click for more detailed results information for ${patientFullName} reported on ${displayPatientDate}`;
 }
 
 export const generateTableHeaders = (hasFacility: boolean) => (

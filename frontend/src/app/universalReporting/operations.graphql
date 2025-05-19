@@ -1,0 +1,84 @@
+query GetConditions {
+  conditions {
+    code
+    display
+  }
+}
+
+query GetLabsByConditions($conditionCodes: [String!]) {
+  labs(conditionCodes: $conditionCodes) {
+    code
+    display
+    description
+    longCommonName
+    scaleCode
+    scaleDisplay
+    systemCode
+    systemDisplay
+    answerList
+    orderOrObservation
+    panel
+  }
+}
+
+query GetSpecimensByLoinc($loinc: String!) {
+  specimens(loinc: $loinc) {
+    loincSystemCode
+    snomedCode
+    snomedDisplay
+    bodySiteList {
+      snomedSiteCode
+      snomedSiteDisplay
+    }
+  }
+}
+
+query GetFacility($id: ID!) {
+  facility(id: $id) {
+    id
+    address {
+      streetOne
+      streetTwo
+      city
+      county
+      state
+      postalCode
+    }
+    name
+    cliaNumber
+    email
+    phone
+    orderingProvider {
+      firstName
+      middleName
+      lastName
+      suffix
+      address {
+        streetOne
+        streetTwo
+        city
+        county
+        state
+        postalCode
+      }
+      phone
+      NPI
+    }
+  }
+}
+
+mutation SubmitLabReport(
+  $patient: PatientReportInput
+  $provider: ProviderReportInput
+  $facility: FacilityReportInput
+  $specimen: SpecimenInput
+  $testDetailsList: [TestDetailsInput]
+) {
+  submitLabReport(
+    patient: $patient
+    provider: $provider
+    facility: $facility
+    specimen: $specimen
+    testDetailsList: $testDetailsList
+  )
+}

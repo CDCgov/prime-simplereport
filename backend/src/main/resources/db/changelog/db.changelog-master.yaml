@@ -5839,3 +5839,497 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: facility
             columnName: ordering_provider_id
+  - changeSet:
+      id: add-condition-table
+      author: ggs2@cdc.gov
+      changes:
+        - tagDatabase:
+              tag: add-condition-table
+        - createTable:
+            tableName: condition
+            remarks: Any reportable public health condition.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: text
+                  remarks: The SNOMED code that represents this reportable condition.
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: display
+                  type: text
+                  remarks: The display name of this reportable condition.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: condition
+  - changeSet:
+      id: add-loinc-staging-table
+      author: ggs2@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-loinc-staging-table
+        - createTable:
+            tableName: loinc_staging
+            remarks: Staging table for LOINC ETL process
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: condition_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__loinc_staging__condition_id
+                    references: condition
+              - column:
+                  name: code
+                  type: text
+                  remarks: The LOINC code.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: display
+                  type: text
+                  remarks: The display name of the LOINC.
+                  constraints:
+                    unique: false
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: loinc_staging
+  - changeSet:
+      id: add-lab-table
+      author: tlx4@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-lab-table
+        - createTable:
+            tableName: lab
+            remarks: Table to hold all labs for universal reporting
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: code
+                  type: text
+                  remarks: The LOINC code.
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: display
+                  type: text
+                  remarks: The display name of the LOINC.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  remarks: The description of the LOINC.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: long_common_name
+                  type: text
+                  remarks: The long common name for the lab.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: scale_code
+                  type: text
+                  remarks: The scale code for the LOINC indicating the kind of result e.g. qualitative, quantiative, etc.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: scale_display
+                  type: text
+                  remarks: The display value for the LOINC's scale indicating the kind of result e.g. qualitative, quantiative, etc.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: system_code
+                  type: text
+                  remarks: The code for the LOINC's system indicating the specimen type.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: system_display
+                  type: text
+                  remarks: The display value for the LOINC's system indicating the specimen type.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: answer_list
+                  type: text
+                  remarks: The code value for the LOINC's answer list, when available.
+                  constraints:
+                    unique: false
+                    nullable: true
+              - column:
+                  name: order_or_observation
+                  type: text
+                  remarks: Indicates if the LOINC is an order, observation, or both.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: panel
+                  type: bool
+                  remarks: Does the LOINC represent a panel?
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+      rollback:
+        - dropTable:
+            tableName: lab
+  - changeSet:
+      id: add-condition-lab-join-table
+      author: tlx4@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-condition-lab-join-table
+        - createTable:
+            tableName: condition_lab_join
+            remarks: Table to model the many to many relationship between conditions and labs.
+            columns:
+              - column:
+                  name: condition_id
+                  type: uuid
+                  remarks: Internal Id of a condition in the condition table.
+                  constraints:
+                    unique: false
+                    foreignKeyName: fk__lab__condition_id
+                    references: condition
+              - column:
+                  name: lab_id
+                  type: uuid
+                  remarks: Internal Id of a lab in the lab tbale
+                  constraints:
+                    unique: false
+                    foreignKeyName: fk__lab__lab_id
+                    references: lab
+      rollback:
+        - dropTable:
+            tableName: condition_lab_join
+  - changeSet:
+      id: add-has-labs-to-condition-table
+      author: ggs2@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-has-labs-to-condition-table
+        - addColumn:
+            tableName: condition
+            columns:
+              - column:
+                  name: has_labs
+                  type: boolean
+                  remarks: Flag for whether the condition has any labs associated with it instead of having to check the entire join table.
+                  defaultValueBoolean: false
+      rollback:
+        - dropColumn:
+            tableName: condition
+            columnName: has_labs
+  - changeSet:
+      id: add-specimen-table
+      author: tlx4@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-specimen-table
+        - createTable:
+            tableName: specimen
+            remarks: Specific specimens identified by SNOMED code and mapped to LOINC system codes.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: loinc_system_code
+                  type: text
+                  remarks: LOINC system code
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: loinc_system_display
+                  type: text
+                  remarks: The display name of the LOINC system code.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: snomed_code
+                  type: text
+                  remarks: The SNOMED code for this specimen
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: snomed_display
+                  type: text
+                  remarks: The SNOMED display for this specimen
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column: &soft_delete_column
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: specimen
+            indexName: ix__specimen_loinc_system_code
+            columns:
+              - column:
+                  name: loinc_system_code
+        - createIndex:
+            tableName: specimen
+            indexName: ix__specimen_snomed_code
+            columns:
+              - column:
+                  name: snomed_code
+      rollback:
+        - dropTable:
+            tableName: specimen
+  - changeSet:
+      id: add-specimen-body-site-table
+      author: ubz8@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-specimen-body-site-table
+        - createTable:
+            tableName: specimen_body_site
+            remarks: Specific body sites or locations for specimens identified by SNOMED code and mapped to SNOMED specimen codes.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: snomed_specimen_code
+                  type: text
+                  remarks: SNOMED specimen code.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: snomed_specimen_display
+                  type: text
+                  remarks: The display name of the SNOMED specimen.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: snomed_site_code
+                  type: text
+                  remarks: The SNOMED code for this body site.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: snomed_site_display
+                  type: text
+                  remarks: The SNOMED display for this body site.
+                  constraints:
+                    unique: false
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__created_by
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: true
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+        - createIndex:
+            tableName: specimen_body_site
+            indexName: ix__body_site_snomed_specimen_code
+            columns:
+              - column:
+                  name: snomed_specimen_code
+        - createIndex:
+            tableName: specimen_body_site
+            indexName: ix__body_site_snomed_site_code
+            columns:
+              - column:
+                  name: snomed_site_code
+        - addUniqueConstraint:
+            tableName: specimen_body_site
+            columnNames: snomed_specimen_code, snomed_site_code
+            constraintName: uk__snomed_spec_code__snomed_site_code
+      rollback:
+        - dropTable:
+            tableName: specimen_body_site
+  - changeSet:
+      id: update-specimen-unique-constraint
+      author: tlx4@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: update-specimen-unique-constraint
+        - dropUniqueConstraint:
+            tableName: specimen
+            constraintName: specimen_snomed_code_key
+        - addUniqueConstraint:
+            tableName: specimen
+            columnNames: loinc_system_code, snomed_code
+            constraintName: uk__loinc_system_code__snomed_code
+      rollback:
+        - addUniqueConstraint:
+            tableName: specimen
+            columnNames: snomed_code
+            constraintName: specimen_snomed_code_key
+        - dropUniqueConstraint:
+            tableName: specimen
+            constraintName: uk__loinc_system_code__snomed_code
