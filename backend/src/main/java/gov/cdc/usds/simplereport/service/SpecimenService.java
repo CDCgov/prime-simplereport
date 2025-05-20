@@ -295,4 +295,12 @@ public class SpecimenService {
 
     specimenBodySiteRepository.saveAll(newBodySitesToSave);
   }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void clearSpecimensAndBodySites() {
+    specimenRepository.deleteAll();
+    log.info("All specimens deleted.");
+    specimenBodySiteRepository.deleteAll();
+    log.info("All body sites deleted.");
+  }
 }
