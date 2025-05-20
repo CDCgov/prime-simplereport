@@ -57,17 +57,24 @@ jobs:
           OKTA_TESTING_DISABLEHTTPS: true
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-        run: ./gradlew jacocoTestReport -PtestDbPort=5432 --console=plain --stacktrace
-               - name: Print failed testcases (JUnit XML)
-               if: failure()
-               run: |
-                 grep -r "<failure" backend/build/test-results/test/ || true
-                 - name: Upload Test Report
-                   if: always()
-                   uses: actions/upload-artifact@v4
-                   with:
-                     name: test-report
-                     path: backend/build/reports/tests/test/
+        run: ./gradlew jacocoTestReport -PtestDbPort=5432 --console=plain --info --stacktrace
+      - name: Print failed testcases (JUnit XML)
+        if: failure()
+        run: |
+          grep -r "<failure" backend/build/test-results/test/ || true
+      - name: Cache backend coverage results
+        uses: actions/cache@v4
+        with:
+          path: backend/build/**
+          key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Archive failed test results
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: backend-test-report
+          path: backend/build/reports/tests/test
+          retention-days: 7
       - name: Cache backend coverage results
         uses: actions/cache@v4
         with:
@@ -131,7 +138,7 @@ jobs:
           name: function-coverage
           path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
   sonar:
-    needs: [ backend-tests, frontend-tests, function-tests ]
+    needs: [backend-tests, frontend-tests, function-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
