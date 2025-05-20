@@ -39,6 +39,16 @@ public class SpecimenService {
 
   private final LabRepository labRepository;
 
+  public List<Specimen> getSpecimens(String loinc) {
+    List<Specimen> specimenList = specimenRepository.findByLoincSystemCode(loinc);
+    specimenList.forEach(
+        specimen -> {
+          specimen.setBodySiteList(
+              specimenBodySiteRepository.findBySnomedSpecimenCode(specimen.getSnomedCode()));
+        });
+    return specimenList;
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   // read codes
