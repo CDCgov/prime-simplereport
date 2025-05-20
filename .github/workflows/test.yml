@@ -57,7 +57,7 @@ jobs:
           OKTA_TESTING_DISABLEHTTPS: true
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-        run: ./gradlew jacocoTestReport -PtestDbPort=5432
+        run: ./gradlew jacocoTestReport -PtestDbPort=5432 --console=plain --info --stacktrace
       - name: Cache backend coverage results
         uses: actions/cache@v4
         with:
