@@ -225,11 +225,18 @@ class SpecimenServiceTest {
 
       boolean foundBloodSpecimen = false;
       boolean foundSerumSpecimen = false;
+      boolean foundVenousBloodSpecimen = false;
 
       for (Specimen savedSpecimen : savedSpecimens) {
         if ("123456789".equals(savedSpecimen.getSnomedCode())) {
           foundBloodSpecimen = true;
           assertEquals("Blood specimen", savedSpecimen.getSnomedDisplay());
+          assertEquals("12345-6", savedSpecimen.getLoincSystemCode());
+          assertEquals("Test LOINC", savedSpecimen.getLoincSystemDisplay());
+        }
+        if ("444555666".equals(savedSpecimen.getSnomedCode())) {
+          foundVenousBloodSpecimen = true;
+          assertEquals("Venous blood specimen", savedSpecimen.getSnomedDisplay());
           assertEquals("12345-6", savedSpecimen.getLoincSystemCode());
           assertEquals("Test LOINC", savedSpecimen.getLoincSystemDisplay());
         } else if ("987654321".equals(savedSpecimen.getSnomedCode())) {
@@ -243,16 +250,6 @@ class SpecimenServiceTest {
       assertTrue(foundBloodSpecimen, "Blood specimen not found");
       assertTrue(foundSerumSpecimen, "Serum specimen not found");
 
-      boolean foundVenousBloodSpecimen = false;
-      for (Specimen savedSpecimen : savedSpecimens) {
-        if ("444555666".equals(savedSpecimen.getSnomedCode())) {
-          foundVenousBloodSpecimen = true;
-          assertEquals("Venous blood specimen", savedSpecimen.getSnomedDisplay());
-          assertEquals("12345-6", savedSpecimen.getLoincSystemCode());
-          assertEquals("Test LOINC", savedSpecimen.getLoincSystemDisplay());
-          break;
-        }
-      }
       assertTrue(foundVenousBloodSpecimen, "Venous blood specimen not found");
 
       List<SpecimenBodySite> savedBodySites = bodySiteCaptor.getValue();
@@ -494,6 +491,138 @@ class SpecimenServiceTest {
       }
     }
     assertTrue(foundArterialStructure, "Arterial structure body site not found");
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void saveNewSpecimens_shouldCorrectlySaveNewSpecimens() throws Exception {
+    Specimen specimen1 = new Specimen("12345-6", "Test LOINC 1", "111", "Test Specimen 1");
+    Specimen specimen2 = new Specimen("67890-1", "Test LOINC 2", "222", "Test Specimen 2");
+
+    List<Specimen> specimens = Arrays.asList(specimen1, specimen2);
+
+    when(specimenRepository.findByLoincSystemCodeAndSnomedCode(anyString(), anyString()))
+        .thenReturn(null);
+
+    ArgumentCaptor<List<Specimen>> specimenCaptor = ArgumentCaptor.forClass(List.class);
+
+    java.lang.reflect.Method method =
+        SpecimenService.class.getDeclaredMethod("saveNewSpecimens", List.class);
+    method.setAccessible(true);
+
+    method.invoke(specimenService, specimens);
+
+    verify(specimenRepository, times(1)).saveAll(specimenCaptor.capture());
+
+    List<Specimen> savedSpecimens = specimenCaptor.getValue();
+    assertEquals(2, savedSpecimens.size());
+
+    boolean foundSpecimen1 = false;
+    boolean foundSpecimen2 = false;
+
+    for (Specimen savedSpecimen : savedSpecimens) {
+      if ("12345-6".equals(savedSpecimen.getLoincSystemCode())
+          && "111".equals(savedSpecimen.getSnomedCode())) {
+        foundSpecimen1 = true;
+        assertEquals("Test Specimen 1", savedSpecimen.getSnomedDisplay());
+      } else if ("67890-1".equals(savedSpecimen.getLoincSystemCode())
+          && "222".equals(savedSpecimen.getSnomedCode())) {
+        foundSpecimen2 = true;
+        assertEquals("Test Specimen 2", savedSpecimen.getSnomedDisplay());
+      }
+    }
+
+    assertTrue(foundSpecimen1, "First specimen not found in saved specimens");
+    assertTrue(foundSpecimen2, "Second specimen not found in saved specimens");
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void saveNewSpecimens_shouldSkipExistingSpecimens() throws Exception {
+
+    Specimen existingSpecimen = new Specimen("12345-6", "Test LOINC 1", "111", "Test Specimen 1");
+    Specimen newSpecimen = new Specimen("67890-1", "Test LOINC 2", "222", "Test Specimen 2");
+
+    List<Specimen> specimens = Arrays.asList(existingSpecimen, newSpecimen);
+
+    when(specimenRepository.findByLoincSystemCodeAndSnomedCode("12345-6", "111"))
+        .thenReturn(existingSpecimen);
+    when(specimenRepository.findByLoincSystemCodeAndSnomedCode("67890-1", "222")).thenReturn(null);
+
+    ArgumentCaptor<List<Specimen>> specimenCaptor = ArgumentCaptor.forClass(List.class);
+
+    java.lang.reflect.Method method =
+        SpecimenService.class.getDeclaredMethod("saveNewSpecimens", List.class);
+    method.setAccessible(true);
+
+    method.invoke(specimenService, specimens);
+
+    verify(specimenRepository, times(1)).saveAll(specimenCaptor.capture());
+
+    List<Specimen> savedSpecimens = specimenCaptor.getValue();
+    assertEquals(1, savedSpecimens.size());
+    assertEquals("67890-1", savedSpecimens.get(0).getLoincSystemCode());
+    assertEquals("222", savedSpecimens.get(0).getSnomedCode());
+    assertEquals("Test Specimen 2", savedSpecimens.get(0).getSnomedDisplay());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void saveNewSpecimenBodySites_shouldSaveNewBodySites() throws Exception {
+    SpecimenBodySite bodySite1 =
+        SpecimenBodySite.builder()
+            .snomedSpecimenCode("111")
+            .snomedSpecimenDisplay("Test Specimen 1")
+            .snomedSiteCode("A111")
+            .snomedSiteDisplay("Test Site 1")
+            .build();
+
+    SpecimenBodySite bodySite2 =
+        SpecimenBodySite.builder()
+            .snomedSpecimenCode("222")
+            .snomedSpecimenDisplay("Test Specimen 2")
+            .snomedSiteCode("A222")
+            .snomedSiteDisplay("Test Site 2")
+            .build();
+
+    List<SpecimenBodySite> bodySites = Arrays.asList(bodySite1, bodySite2);
+
+    when(specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
+            anyString(), anyString()))
+        .thenReturn(null);
+
+    ArgumentCaptor<List<SpecimenBodySite>> bodySiteCaptor = ArgumentCaptor.forClass(List.class);
+
+    java.lang.reflect.Method method =
+        SpecimenService.class.getDeclaredMethod("saveNewSpecimenBodySites", List.class);
+    method.setAccessible(true);
+
+    method.invoke(specimenService, bodySites);
+
+    verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
+
+    List<SpecimenBodySite> savedBodySites = bodySiteCaptor.getValue();
+    assertEquals(2, savedBodySites.size());
+
+    boolean foundBodySite1 = false;
+    boolean foundBodySite2 = false;
+
+    for (SpecimenBodySite savedBodySite : savedBodySites) {
+      if ("111".equals(savedBodySite.getSnomedSpecimenCode())
+          && "A111".equals(savedBodySite.getSnomedSiteCode())) {
+        foundBodySite1 = true;
+        assertEquals("Test Specimen 1", savedBodySite.getSnomedSpecimenDisplay());
+        assertEquals("Test Site 1", savedBodySite.getSnomedSiteDisplay());
+      } else if ("222".equals(savedBodySite.getSnomedSpecimenCode())
+          && "A222".equals(savedBodySite.getSnomedSiteCode())) {
+        foundBodySite2 = true;
+        assertEquals("Test Specimen 2", savedBodySite.getSnomedSpecimenDisplay());
+        assertEquals("Test Site 2", savedBodySite.getSnomedSiteDisplay());
+      }
+    }
+
+    assertTrue(foundBodySite1, "First body site not found in saved body sites");
+    assertTrue(foundBodySite2, "Second body site not found in saved body sites");
   }
 
   @Test
