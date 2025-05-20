@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,9 +47,14 @@ public class LoincService {
   private final LoincFhirClient loincFhirClient;
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
+
   private final FhirContext context = FhirContext.forR4();
-  private IParser parser = context.newJsonParser();
+  private final IParser parser = context.newJsonParser();
   private static final int PAGE_SIZE = 20;
+
+  public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
+    return labRepository.getFilteredLabsByConditionCodes(codes);
+  }
 
   // TODO: standardize how we authenticate REST endpoints
   @AuthorizationConfiguration.RequireGlobalAdminUser
