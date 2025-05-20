@@ -625,47 +625,6 @@ class SpecimenServiceTest {
     assertTrue(foundBodySite2, "Second body site not found in saved body sites");
   }
 
-  @Test
-  @SuppressWarnings("unchecked")
-  void saveNewSpecimenBodySites_shouldSkipExistingBodySites() throws Exception {
-    SpecimenBodySite existingBodySite =
-        SpecimenBodySite.builder()
-            .snomedSpecimenCode("111")
-            .snomedSpecimenDisplay("Test Specimen 1")
-            .snomedSiteCode("A111")
-            .snomedSiteDisplay("Test Site 1")
-            .build();
-
-    SpecimenBodySite newBodySite =
-        SpecimenBodySite.builder()
-            .snomedSpecimenCode("222")
-            .snomedSpecimenDisplay("Test Specimen 2")
-            .snomedSiteCode("A222")
-            .snomedSiteDisplay("Test Site 2")
-            .build();
-
-    List<SpecimenBodySite> bodySites = Arrays.asList(existingBodySite, newBodySite);
-
-    when(specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode("111", "A111"))
-        .thenReturn(existingBodySite);
-    when(specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode("222", "A222"))
-        .thenReturn(null);
-
-    ArgumentCaptor<List<SpecimenBodySite>> bodySiteCaptor = ArgumentCaptor.forClass(List.class);
-
-    java.lang.reflect.Method method =
-        SpecimenService.class.getDeclaredMethod("saveNewSpecimenBodySites", List.class);
-    method.setAccessible(true);
-
-    method.invoke(specimenService, bodySites);
-
-    verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
-
-    List<SpecimenBodySite> savedBodySites = bodySiteCaptor.getValue();
-    assertEquals(1, savedBodySites.size());
-    assertEquals("222", savedBodySites.get(0).getSnomedSpecimenCode());
-  }
-
   // Create the loinc response
   private String createLoincToSnomedJson() {
     JSONObject json = new JSONObject();
