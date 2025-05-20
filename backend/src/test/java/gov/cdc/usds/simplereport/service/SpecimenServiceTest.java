@@ -289,7 +289,7 @@ class SpecimenServiceTest {
       HttpResponse<String> loincToSnomedResponse2 = mock(HttpResponse.class);
       when(loincToSnomedResponse2.body()).thenReturn(loincToSnomedJson2);
 
-      // Create futures with different delays
+      // Create futures to test the effect of different delays
       CompletableFuture<HttpResponse<String>> loincToSnomedFuture1 =
           CompletableFuture.supplyAsync(
               () -> {
