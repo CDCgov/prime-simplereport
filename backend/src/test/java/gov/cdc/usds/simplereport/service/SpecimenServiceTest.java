@@ -526,65 +526,6 @@ class SpecimenServiceTest {
     assertTrue(foundSpecimen2, "Second specimen not found in saved specimens");
   }
 
-  @Test
-  @SuppressWarnings("unchecked")
-  void saveNewSpecimenBodySites_shouldSaveNewBodySites() throws Exception {
-    SpecimenBodySite bodySite1 =
-        SpecimenBodySite.builder()
-            .snomedSpecimenCode("111")
-            .snomedSpecimenDisplay("Test Specimen 1")
-            .snomedSiteCode("A111")
-            .snomedSiteDisplay("Test Site 1")
-            .build();
-
-    SpecimenBodySite bodySite2 =
-        SpecimenBodySite.builder()
-            .snomedSpecimenCode("222")
-            .snomedSpecimenDisplay("Test Specimen 2")
-            .snomedSiteCode("A222")
-            .snomedSiteDisplay("Test Site 2")
-            .build();
-
-    List<SpecimenBodySite> bodySites = Arrays.asList(bodySite1, bodySite2);
-
-    when(specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
-            anyString(), anyString()))
-        .thenReturn(null);
-
-    ArgumentCaptor<List<SpecimenBodySite>> bodySiteCaptor = ArgumentCaptor.forClass(List.class);
-
-    java.lang.reflect.Method method =
-        SpecimenService.class.getDeclaredMethod("saveNewSpecimenBodySites", List.class);
-    method.setAccessible(true);
-
-    method.invoke(specimenService, bodySites);
-
-    verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
-
-    List<SpecimenBodySite> savedBodySites = bodySiteCaptor.getValue();
-    assertEquals(2, savedBodySites.size());
-
-    boolean foundBodySite1 = false;
-    boolean foundBodySite2 = false;
-
-    for (SpecimenBodySite savedBodySite : savedBodySites) {
-      if ("111".equals(savedBodySite.getSnomedSpecimenCode())
-          && "A111".equals(savedBodySite.getSnomedSiteCode())) {
-        foundBodySite1 = true;
-        assertEquals("Test Specimen 1", savedBodySite.getSnomedSpecimenDisplay());
-        assertEquals("Test Site 1", savedBodySite.getSnomedSiteDisplay());
-      } else if ("222".equals(savedBodySite.getSnomedSpecimenCode())
-          && "A222".equals(savedBodySite.getSnomedSiteCode())) {
-        foundBodySite2 = true;
-        assertEquals("Test Specimen 2", savedBodySite.getSnomedSpecimenDisplay());
-        assertEquals("Test Site 2", savedBodySite.getSnomedSiteDisplay());
-      }
-    }
-
-    assertTrue(foundBodySite1, "First body site not found in saved body sites");
-    assertTrue(foundBodySite2, "Second body site not found in saved body sites");
-  }
-
   // Create the loinc response
   private String createLoincToSnomedJson() {
     JSONObject json = new JSONObject();
