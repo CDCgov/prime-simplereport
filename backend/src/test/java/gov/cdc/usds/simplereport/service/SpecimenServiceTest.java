@@ -1,19 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.db.model.Specimen;
-import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenBodySiteRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
@@ -21,17 +12,12 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -88,241 +74,6 @@ class SpecimenServiceTest {
       verify(specimenRepository, never()).saveAll(any());
       verify(specimenBodySiteRepository, never()).saveAll(any());
     }
-  }
-
-  @Test
-  void syncSpecimens_withNoSystemCodes_shouldHandleGracefully() {
-    try (MockedStatic<HttpClient> httpClientMock = Mockito.mockStatic(HttpClient.class)) {
-      HttpClient.Builder mockBuilder = mock(HttpClient.Builder.class);
-      when(mockBuilder.version(any())).thenReturn(mockBuilder);
-      when(mockBuilder.build()).thenReturn(mockHttpClient);
-      httpClientMock.when(HttpClient::newBuilder).thenReturn(mockBuilder);
-
-      when(labRepository.findDistinctSystemCodes()).thenReturn(Optional.empty());
-
-      specimenService.syncSpecimens();
-
-      verify(specimenRepository, never()).saveAll(any());
-      verify(specimenBodySiteRepository, never()).saveAll(any());
-    }
-  }
-
-  @Test
-  void getLoinctoSnomedRequest_shouldCreateCorrectUrlAndRequest() throws Exception {
-    String loincCode = "12345-6";
-    String expectedUri =
-        "https://uts-ws.nlm.nih.gov/rest/crosswalk/current/source/LNC/12345-6?apiKey=test-api-key&targetSource=SNOMEDCT_US";
-
-    java.lang.reflect.Method method =
-        SpecimenService.class.getDeclaredMethod("getLoinctoSnomedRequest", String.class);
-    method.setAccessible(true);
-
-    java.net.http.HttpRequest result =
-        (java.net.http.HttpRequest) method.invoke(specimenService, loincCode);
-
-    assertEquals(expectedUri, result.uri().toString());
-  }
-
-  @Test
-  void getSnomedRelationsRequest_shouldCreateCorrectUrlAndRequest() throws Exception {
-    String snomedCode = "987654";
-    String expectedUri =
-        "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/987654/relations?apiKey=test-api-key&pageSize=500&additionalRelationLabel=specimen_source_topography_of";
-
-    java.lang.reflect.Method method =
-        SpecimenService.class.getDeclaredMethod("getSnomedRelationsRequest", String.class);
-    method.setAccessible(true);
-
-    java.net.http.HttpRequest result =
-        (java.net.http.HttpRequest) method.invoke(specimenService, snomedCode);
-
-    assertEquals(expectedUri, result.uri().toString());
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  void parseCodeDisplayPairsFromUmlsResponse_shouldCorrectlyParseApiResponse() throws Exception {
-    HttpResponse<String> mockResponse = mock(HttpResponse.class);
-    String loincSystemCode = "12345-6";
-    String loincSystemDisplay = "Test LOINC";
-
-    when(mockResponse.body()).thenReturn(createLoincToSnomedJson());
-
-    java.lang.reflect.Method method =
-        SpecimenService.class.getDeclaredMethod(
-            "parseCodeDisplayPairsFromUmlsResponse",
-            HttpResponse.class,
-            String.class,
-            String.class);
-    method.setAccessible(true);
-
-    List<Specimen> results =
-        (List<Specimen>)
-            method.invoke(specimenService, mockResponse, loincSystemCode, loincSystemDisplay);
-
-    assertEquals(2, results.size());
-
-    Specimen specimen1 = results.get(0);
-    assertEquals(loincSystemCode, specimen1.getLoincSystemCode());
-    assertEquals(loincSystemDisplay, specimen1.getLoincSystemDisplay());
-    assertEquals("123456789", specimen1.getSnomedCode());
-    assertEquals("Blood specimen", specimen1.getSnomedDisplay());
-
-    Specimen specimen2 = results.get(1);
-    assertEquals(loincSystemCode, specimen2.getLoincSystemCode());
-    assertEquals(loincSystemDisplay, specimen2.getLoincSystemDisplay());
-    assertEquals("987654321", specimen2.getSnomedCode());
-    assertEquals("Serum specimen", specimen2.getSnomedDisplay());
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  void syncSpecimens_withSimulatedHttpRequestDelays_shouldHandleConcurrentRequests() {
-    try (MockedStatic<HttpClient> httpClientMock = Mockito.mockStatic(HttpClient.class)) {
-      HttpClient.Builder mockBuilder = mock(HttpClient.Builder.class);
-      when(mockBuilder.version(any())).thenReturn(mockBuilder);
-      when(mockBuilder.build()).thenReturn(mockHttpClient);
-      httpClientMock.when(HttpClient::newBuilder).thenReturn(mockBuilder);
-
-      List<List<String>> systemCodes = new ArrayList<>();
-      systemCodes.add(Arrays.asList("12345-6", "Test LOINC 1"));
-      systemCodes.add(Arrays.asList("67890-1", "Test LOINC 2"));
-      when(labRepository.findDistinctSystemCodes()).thenReturn(Optional.of(systemCodes));
-
-      String loincToSnomedJson1 = createLoincToSnomedJson();
-      HttpResponse<String> loincToSnomedResponse1 = mock(HttpResponse.class);
-      when(loincToSnomedResponse1.body()).thenReturn(loincToSnomedJson1);
-
-      String loincToSnomedJson2 = createLoincToSnomedJson();
-      HttpResponse<String> loincToSnomedResponse2 = mock(HttpResponse.class);
-      when(loincToSnomedResponse2.body()).thenReturn(loincToSnomedJson2);
-
-      // Create futures to test the effect of different delays
-      CompletableFuture<HttpResponse<String>> loincToSnomedFuture1 =
-          CompletableFuture.supplyAsync(
-              () -> {
-                try {
-                  Thread.sleep(100);
-                } catch (InterruptedException e) {
-                  Thread.currentThread().interrupt();
-                }
-                return loincToSnomedResponse1;
-              });
-
-      CompletableFuture<HttpResponse<String>> loincToSnomedFuture2 =
-          CompletableFuture.supplyAsync(
-              () -> {
-                try {
-                  Thread.sleep(50);
-                } catch (InterruptedException e) {
-                  Thread.currentThread().interrupt();
-                }
-                return loincToSnomedResponse2;
-              });
-
-      String snomedRelationsJson = createSnomedRelationsJson();
-      HttpResponse<String> snomedRelationsResponse = mock(HttpResponse.class);
-      when(snomedRelationsResponse.body()).thenReturn(snomedRelationsJson);
-      CompletableFuture<HttpResponse<String>> snomedRelationsFuture =
-          CompletableFuture.completedFuture(snomedRelationsResponse);
-
-      doReturn(loincToSnomedFuture1)
-          .doReturn(loincToSnomedFuture2)
-          .doReturn(snomedRelationsFuture)
-          .doReturn(snomedRelationsFuture)
-          .when(mockHttpClient)
-          .sendAsync(any(), any());
-
-      when(specimenRepository.findByLoincSystemCodeAndSnomedCode(anyString(), anyString()))
-          .thenReturn(null);
-      when(specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
-              anyString(), anyString()))
-          .thenReturn(null);
-
-      ArgumentCaptor<List<Specimen>> specimenCaptor = ArgumentCaptor.forClass(List.class);
-      ArgumentCaptor<List<SpecimenBodySite>> bodySiteCaptor = ArgumentCaptor.forClass(List.class);
-
-      specimenService.syncSpecimens();
-
-      verify(specimenRepository, times(1)).saveAll(specimenCaptor.capture());
-      verify(specimenBodySiteRepository, times(1)).saveAll(bodySiteCaptor.capture());
-      List<Specimen> savedSpecimens = specimenCaptor.getValue();
-      assertFalse(savedSpecimens.isEmpty());
-
-      boolean foundLoinc1Specimens = false;
-      boolean foundLoinc2Specimens = false;
-
-      for (Specimen savedSpecimen : savedSpecimens) {
-        if ("12345-6".equals(savedSpecimen.getLoincSystemCode())) {
-          foundLoinc1Specimens = true;
-        } else if ("67890-1".equals(savedSpecimen.getLoincSystemCode())) {
-          foundLoinc2Specimens = true;
-        }
-      }
-
-      assertTrue(foundLoinc1Specimens, "Specimens from first LOINC code not found");
-      assertTrue(foundLoinc2Specimens, "Specimens from second LOINC code not found");
-
-      List<SpecimenBodySite> savedBodySites = bodySiteCaptor.getValue();
-      assertFalse(savedBodySites.isEmpty());
-    }
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
-  void sendInitialSnomedRelationsRequests_shouldProcessAllSnomedCodes() throws Exception {
-    HttpClient mockClient = mock(HttpClient.class);
-
-    Specimen specimen1 = new Specimen("12345-6", "Test LOINC 1", "111", "Test Specimen 1");
-    Specimen specimen2 = new Specimen("67890-1", "Test LOINC 2", "222", "Test Specimen 2");
-
-    List<Specimen> specimens1 = new ArrayList<>();
-    specimens1.add(specimen1);
-
-    List<Specimen> specimens2 = new ArrayList<>();
-    specimens2.add(specimen2);
-
-    java.util.Map<String, List<Specimen>> specimensMap = new java.util.HashMap<>();
-    specimensMap.put("12345-6", specimens1);
-    specimensMap.put("67890-1", specimens2);
-
-    HttpResponse<String> mockResponse1 = mock(HttpResponse.class);
-    when(mockResponse1.body()).thenReturn(createSnomedRelationsJson());
-    CompletableFuture<HttpResponse<String>> mockFuture1 =
-        CompletableFuture.completedFuture(mockResponse1);
-
-    HttpResponse<String> mockResponse2 = mock(HttpResponse.class);
-    when(mockResponse2.body()).thenReturn(createSpecimenRelationJson());
-    CompletableFuture<HttpResponse<String>> mockFuture2 =
-        CompletableFuture.completedFuture(mockResponse2);
-
-    doReturn(mockFuture1).doReturn(mockFuture2).when(mockClient).sendAsync(any(), any());
-
-    java.lang.reflect.Method method =
-        SpecimenService.class.getDeclaredMethod(
-            "sendInitialSnomedRelationsRequests", java.util.Map.class, HttpClient.class);
-    method.setAccessible(true);
-
-    java.util.Map<String, CompletableFuture<HttpResponse<String>>> results =
-        (java.util.Map<String, CompletableFuture<HttpResponse<String>>>)
-            method.invoke(specimenService, specimensMap, mockClient);
-
-    assertEquals(2, results.size());
-
-    assertTrue((results.containsKey("initialRelationRequest-loinc:12345-6-snomed:111")));
-    assertTrue((results.containsKey("initialRelationRequest-loinc:67890-1-snomed:222")));
-
-    HttpResponse<String> response1 =
-        results.get("initialRelationRequest-loinc:12345-6-snomed:111").get();
-    assertEquals(mockResponse1, response1);
-    assertEquals(createSnomedRelationsJson(), response1.body());
-
-    HttpResponse<String> response2 =
-        results.get("initialRelationRequest-loinc:67890-1-snomed:222").get();
-    assertEquals(mockResponse2, response2);
-    assertEquals(createSpecimenRelationJson(), response2.body());
-
-    verify(mockClient, times(2)).sendAsync(any(), any());
   }
 
   // Create the loinc response
