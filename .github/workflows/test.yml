@@ -57,17 +57,7 @@ jobs:
           OKTA_TESTING_DISABLEHTTPS: true
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-        run: ./gradlew jacocoTestReport -PtestDbPort=5432 --console=plain --stacktrace
-      - name: Print failed testcases (JUnit XML)
-        if: failure()
-        run: |
-          grep -r "<failure" backend/build/test-results/test/ || true
-      - name: Upload Test Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report
-          path: backend/build/reports/tests/test/
+        run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Cache backend coverage results
         uses: actions/cache@v4
         with:
