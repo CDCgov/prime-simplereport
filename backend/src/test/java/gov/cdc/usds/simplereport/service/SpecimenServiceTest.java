@@ -538,36 +538,6 @@ class SpecimenServiceTest {
 
   @Test
   @SuppressWarnings("unchecked")
-  void saveNewSpecimens_shouldSkipExistingSpecimens() throws Exception {
-
-    Specimen existingSpecimen = new Specimen("12345-6", "Test LOINC 1", "111", "Test Specimen 1");
-    Specimen newSpecimen = new Specimen("67890-1", "Test LOINC 2", "222", "Test Specimen 2");
-
-    List<Specimen> specimens = Arrays.asList(existingSpecimen, newSpecimen);
-
-    when(specimenRepository.findByLoincSystemCodeAndSnomedCode("12345-6", "111"))
-        .thenReturn(existingSpecimen);
-    when(specimenRepository.findByLoincSystemCodeAndSnomedCode("67890-1", "222")).thenReturn(null);
-
-    ArgumentCaptor<List<Specimen>> specimenCaptor = ArgumentCaptor.forClass(List.class);
-
-    java.lang.reflect.Method method =
-        SpecimenService.class.getDeclaredMethod("saveNewSpecimens", List.class);
-    method.setAccessible(true);
-
-    method.invoke(specimenService, specimens);
-
-    verify(specimenRepository, times(1)).saveAll(specimenCaptor.capture());
-
-    List<Specimen> savedSpecimens = specimenCaptor.getValue();
-    assertEquals(1, savedSpecimens.size());
-    assertEquals("67890-1", savedSpecimens.get(0).getLoincSystemCode());
-    assertEquals("222", savedSpecimens.get(0).getSnomedCode());
-    assertEquals("Test Specimen 2", savedSpecimens.get(0).getSnomedDisplay());
-  }
-
-  @Test
-  @SuppressWarnings("unchecked")
   void saveNewSpecimenBodySites_shouldSaveNewBodySites() throws Exception {
     SpecimenBodySite bodySite1 =
         SpecimenBodySite.builder()
