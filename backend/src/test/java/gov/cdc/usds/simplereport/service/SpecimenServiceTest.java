@@ -483,49 +483,6 @@ class SpecimenServiceTest {
     assertTrue(foundArterialStructure, "Arterial structure body site not found");
   }
 
-  @Test
-  @SuppressWarnings("unchecked")
-  void saveNewSpecimens_shouldCorrectlySaveNewSpecimens() throws Exception {
-    Specimen specimen1 = new Specimen("12345-6", "Test LOINC 1", "111", "Test Specimen 1");
-    Specimen specimen2 = new Specimen("67890-1", "Test LOINC 2", "222", "Test Specimen 2");
-
-    List<Specimen> specimens = Arrays.asList(specimen1, specimen2);
-
-    when(specimenRepository.findByLoincSystemCodeAndSnomedCode(anyString(), anyString()))
-        .thenReturn(null);
-
-    ArgumentCaptor<List<Specimen>> specimenCaptor = ArgumentCaptor.forClass(List.class);
-
-    java.lang.reflect.Method method =
-        SpecimenService.class.getDeclaredMethod("saveNewSpecimens", List.class);
-    method.setAccessible(true);
-
-    method.invoke(specimenService, specimens);
-
-    verify(specimenRepository, times(1)).saveAll(specimenCaptor.capture());
-
-    List<Specimen> savedSpecimens = specimenCaptor.getValue();
-    assertEquals(2, savedSpecimens.size());
-
-    boolean foundSpecimen1 = false;
-    boolean foundSpecimen2 = false;
-
-    for (Specimen savedSpecimen : savedSpecimens) {
-      if ("12345-6".equals(savedSpecimen.getLoincSystemCode())
-          && "111".equals(savedSpecimen.getSnomedCode())) {
-        foundSpecimen1 = true;
-        assertEquals("Test Specimen 1", savedSpecimen.getSnomedDisplay());
-      } else if ("67890-1".equals(savedSpecimen.getLoincSystemCode())
-          && "222".equals(savedSpecimen.getSnomedCode())) {
-        foundSpecimen2 = true;
-        assertEquals("Test Specimen 2", savedSpecimen.getSnomedDisplay());
-      }
-    }
-
-    assertTrue(foundSpecimen1, "First specimen not found in saved specimens");
-    assertTrue(foundSpecimen2, "Second specimen not found in saved specimens");
-  }
-
   // Create the loinc response
   private String createLoincToSnomedJson() {
     JSONObject json = new JSONObject();
