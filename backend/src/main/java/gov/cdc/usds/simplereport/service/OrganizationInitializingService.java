@@ -449,11 +449,7 @@ public class OrganizationInitializingService {
     List<Lab> newLabsToSave =
         _props.getConditions().stream()
             .flatMap(condition -> condition.getLabs().stream())
-            .filter(
-                lab ->
-                    labRepository
-                        .findByCode(lab.getCode())
-                        .isEmpty()) // problematic when first run, need to fix
+            .filter(lab -> labRepository.findByCode(lab.getCode()).isEmpty())
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<Specimen> newSpecimensToSave =
