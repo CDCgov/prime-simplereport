@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,7 +38,9 @@ public class Condition extends EternalAuditedEntity {
       name = "condition_lab_join",
       joinColumns = @JoinColumn(name = "condition_id"),
       inverseJoinColumns = @JoinColumn(name = "lab_id"))
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany(
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @Getter
   private Set<Lab> labs = new HashSet<>();
 

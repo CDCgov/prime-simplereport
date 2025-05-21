@@ -11,13 +11,17 @@ import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoAuthorization;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.Specimen;
+import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
@@ -436,13 +440,13 @@ public class OrganizationInitializingService {
   }
 
   public void initUELRExampleData() {
-    conditionRepository.saveAll(
+    List<Condition> newConditionsToSave =
         _props.getConditions().stream()
             .filter(
                 condition -> conditionRepository.findConditionByCode(condition.getCode()) == null)
-            .collect(Collectors.toCollection(ArrayList::new)));
+            .collect(Collectors.toCollection(ArrayList::new));
 
-    labRepository.saveAll(
+    List<Lab> newLabsToSave =
         _props.getConditions().stream()
             .flatMap(condition -> condition.getLabs().stream())
             .filter(
@@ -450,18 +454,18 @@ public class OrganizationInitializingService {
                     labRepository
                         .findByCode(lab.getCode())
                         .isEmpty()) // problematic when first run, need to fix
-            .collect(Collectors.toCollection(ArrayList::new)));
+            .collect(Collectors.toCollection(ArrayList::new));
 
-    specimenRepository.saveAll(
+    List<Specimen> newSpecimensToSave =
         _props.getSpecimens().stream()
             .filter(
                 specimen ->
                     specimenRepository.findByLoincSystemCodeAndSnomedCode(
                             specimen.getLoincSystemCode(), specimen.getSnomedCode())
                         == null)
-            .collect(Collectors.toCollection(ArrayList::new)));
+            .collect(Collectors.toCollection(ArrayList::new));
 
-    specimenBodySiteRepository.saveAll(
+    List<SpecimenBodySite> newSpecimenBodySitesToSave =
         _props.getSpecimens().stream()
             .flatMap(specimen -> specimen.getBodySiteList().stream())
             .filter(
@@ -469,6 +473,11 @@ public class OrganizationInitializingService {
                     specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
                             specimen.getSnomedSpecimenCode(), specimen.getSnomedSiteCode())
                         == null)
-            .collect(Collectors.toCollection(ArrayList::new)));
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    conditionRepository.saveAll(newConditionsToSave);
+    labRepository.saveAll(newLabsToSave);
+    specimenRepository.saveAll(newSpecimensToSave);
+    specimenBodySiteRepository.saveAll(newSpecimenBodySitesToSave);
   }
 }
