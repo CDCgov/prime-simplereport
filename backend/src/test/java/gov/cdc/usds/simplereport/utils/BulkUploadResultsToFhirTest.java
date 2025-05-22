@@ -13,6 +13,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartystreets.api.exceptions.SmartyException;
+import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
@@ -52,7 +53,7 @@ public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
   private static ResultsUploaderCachingService resultsUploaderCachingService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
-  final FhirContext ctx = FhirContext.forR4();
+  final FhirContext ctx = FhirContextProvider.get();
   final IParser parser = ctx.newJsonParser();
   private final UUIDGenerator uuidGenerator = new UUIDGenerator();
   private final DateGenerator dateGenerator = new DateGenerator();

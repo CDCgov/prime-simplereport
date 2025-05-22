@@ -21,15 +21,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.Translators;
-import gov.cdc.usds.simplereport.api.converter.ConditionAgnosticConvertToDiagnosticReportProps;
-import gov.cdc.usds.simplereport.api.converter.ConditionAgnosticConvertToObservationProps;
-import gov.cdc.usds.simplereport.api.converter.ConditionAgnosticConvertToPatientProps;
-import gov.cdc.usds.simplereport.api.converter.ConditionAgnosticCreateFhirBundleProps;
-import gov.cdc.usds.simplereport.api.converter.ConvertToObservationProps;
-import gov.cdc.usds.simplereport.api.converter.ConvertToPatientProps;
-import gov.cdc.usds.simplereport.api.converter.ConvertToSpecimenProps;
-import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
-import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.api.converter.*;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
@@ -89,7 +81,7 @@ public class BulkUploadResultsToFhir {
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
 
-  final FhirContext ctx = FhirContext.forR4();
+  final FhirContext ctx = FhirContextProvider.get();
   final IParser parser = ctx.newJsonParser();
 
   private final Map<String, String> testResultToSnomedMap =

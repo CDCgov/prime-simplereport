@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import feign.Response;
+import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
@@ -135,7 +136,7 @@ public class ConditionService {
   }
 
   private Bundle parseResponseToBundle(String responseString) {
-    FhirContext ctx = FhirContext.forR4();
+    FhirContext ctx = FhirContextProvider.get();
     IParser parser = ctx.newJsonParser();
     Bundle bundle;
     try {
