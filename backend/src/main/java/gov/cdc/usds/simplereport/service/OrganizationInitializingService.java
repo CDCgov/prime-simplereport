@@ -440,40 +440,43 @@ public class OrganizationInitializingService {
   }
 
   public void initUELRExampleData() {
-    List<Condition> newConditionsToSave =
-        _props.getConditions().stream()
-            .filter(
-                condition -> conditionRepository.findConditionByCode(condition.getCode()) == null)
-            .collect(Collectors.toCollection(ArrayList::new));
 
-    List<Lab> newLabsToSave =
-        _props.getConditions().stream()
-            .flatMap(condition -> condition.getLabs().stream())
-            .filter(lab -> labRepository.findByCode(lab.getCode()).isEmpty())
-            .collect(Collectors.toCollection(ArrayList::new));
+    if (_props.getConditions() != null && _props.getSpecimens() != null) {
+      List<Condition> newConditionsToSave =
+          _props.getConditions().stream()
+              .filter(
+                  condition -> conditionRepository.findConditionByCode(condition.getCode()) == null)
+              .collect(Collectors.toCollection(ArrayList::new));
 
-    List<Specimen> newSpecimensToSave =
-        _props.getSpecimens().stream()
-            .filter(
-                specimen ->
-                    specimenRepository.findByLoincSystemCodeAndSnomedCode(
-                            specimen.getLoincSystemCode(), specimen.getSnomedCode())
-                        == null)
-            .collect(Collectors.toCollection(ArrayList::new));
+      List<Lab> newLabsToSave =
+          _props.getConditions().stream()
+              .flatMap(condition -> condition.getLabs().stream())
+              .filter(lab -> labRepository.findByCode(lab.getCode()).isEmpty())
+              .collect(Collectors.toCollection(ArrayList::new));
 
-    List<SpecimenBodySite> newSpecimenBodySitesToSave =
-        _props.getSpecimens().stream()
-            .flatMap(specimen -> specimen.getBodySiteList().stream())
-            .filter(
-                specimen ->
-                    specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
-                            specimen.getSnomedSpecimenCode(), specimen.getSnomedSiteCode())
-                        == null)
-            .collect(Collectors.toCollection(ArrayList::new));
+      List<Specimen> newSpecimensToSave =
+          _props.getSpecimens().stream()
+              .filter(
+                  specimen ->
+                      specimenRepository.findByLoincSystemCodeAndSnomedCode(
+                              specimen.getLoincSystemCode(), specimen.getSnomedCode())
+                          == null)
+              .collect(Collectors.toCollection(ArrayList::new));
 
-    conditionRepository.saveAll(newConditionsToSave);
-    labRepository.saveAll(newLabsToSave);
-    specimenRepository.saveAll(newSpecimensToSave);
-    specimenBodySiteRepository.saveAll(newSpecimenBodySitesToSave);
+      List<SpecimenBodySite> newSpecimenBodySitesToSave =
+          _props.getSpecimens().stream()
+              .flatMap(specimen -> specimen.getBodySiteList().stream())
+              .filter(
+                  specimen ->
+                      specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
+                              specimen.getSnomedSpecimenCode(), specimen.getSnomedSiteCode())
+                          == null)
+              .collect(Collectors.toCollection(ArrayList::new));
+
+      conditionRepository.saveAll(newConditionsToSave);
+      labRepository.saveAll(newLabsToSave);
+      specimenRepository.saveAll(newSpecimensToSave);
+      specimenBodySiteRepository.saveAll(newSpecimenBodySitesToSave);
+    }
   }
 }
