@@ -20,6 +20,6 @@ class FeatureFlagsControllerTest {
 
   @Test
   void endpointReturnsFeatureFlagsConfigObj() {
-    assertEquals(this._mockFeatureFlagConfig, this.featureFlagsController.getFeatureFlags());
+    assertEquals(this._mockFeatureFlagConfig, this.featureFlagsController.getFeatureFlags(null));
   }
 }
