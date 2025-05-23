@@ -176,4 +176,10 @@ public class ConditionService {
     log.info("Found existing condition {}", display);
     return foundCondition;
   }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void clearConditions() {
+    conditionRepository.deleteAll();
+    log.info("All conditions deleted.");
+  }
 }

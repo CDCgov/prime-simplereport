@@ -8,7 +8,5 @@ public interface SpecimenRepository extends EternalAuditedEntityRepository<Speci
 
   List<Specimen> findByLoincSystemCode(String loincSystemCode);
 
-  List<Specimen> findBySnomedCode(String snomedCode);
-
   Specimen findByLoincSystemCodeAndSnomedCode(String loincSystemCode, String snomedCode);
 }
