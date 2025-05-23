@@ -6406,6 +6406,3 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: facility_feature_flag
-        - dropUniqueConstraint:
-            tableName: facility_feature_flag
-            constraintName: uk__facility_id__name

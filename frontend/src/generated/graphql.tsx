@@ -289,6 +289,7 @@ export type Mutation = {
   updateAoeQuestions?: Maybe<Scalars["String"]["output"]>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
+  updateFacilityFeatureFlag?: Maybe<FeatureFlag>;
   updateFeatureFlag?: Maybe<FeatureFlag>;
   updateOrganization?: Maybe<Scalars["String"]["output"]>;
   updatePatient?: Maybe<Patient>;
@@ -556,6 +557,12 @@ export type MutationUpdateDeviceTypeArgs = {
 
 export type MutationUpdateFacilityArgs = {
   facilityInfo: UpdateFacilityInput;
+};
+
+export type MutationUpdateFacilityFeatureFlagArgs = {
+  facilityId: Scalars["ID"]["input"];
+  name: Scalars["String"]["input"];
+  value: Scalars["Boolean"]["input"];
 };
 
 export type MutationUpdateFeatureFlagArgs = {
