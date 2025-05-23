@@ -2,9 +2,14 @@ package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.INVALID_SNOMED;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_HOSPITALIZED;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ICU;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NEGATIVE_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
@@ -43,6 +48,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SnomedConceptRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -95,23 +101,23 @@ public class BulkUploadResultsToFhir {
 
   private final Map<String, String> testResultToSnomedMap =
       Map.of(
-          "Positive".toLowerCase(), "260373001",
-          "Negative".toLowerCase(), "260415000",
-          "Detected".toLowerCase(), "260373001",
-          "Not Detected".toLowerCase(), "260415000",
-          "Invalid Result".toLowerCase(), "455371000124106");
+          "Positive".toLowerCase(), POSITIVE_SNOMED,
+          "Negative".toLowerCase(), NEGATIVE_SNOMED,
+          "Detected".toLowerCase(), DETECTED_SNOMED,
+          "Not Detected".toLowerCase(), NOT_DETECTED_SNOMED,
+          "Invalid Result".toLowerCase(), INVALID_SNOMED);
 
-  private static final Map<String, Boolean> yesNoToBooleanMap = new HashMap<>();
+  private static final Map<String, Boolean> yesNoUnknownToBooleanMap = new HashMap<>();
 
   static {
-    yesNoToBooleanMap.put("Y".toLowerCase(), Boolean.TRUE);
-    yesNoToBooleanMap.put("YES".toLowerCase(), Boolean.TRUE);
-    yesNoToBooleanMap.put("N".toLowerCase(), Boolean.FALSE);
-    yesNoToBooleanMap.put("NO".toLowerCase(), Boolean.FALSE);
-    yesNoToBooleanMap.put("U".toLowerCase(), null);
-    yesNoToBooleanMap.put("UNK".toLowerCase(), null);
-    yesNoToBooleanMap.put(null, null);
-    yesNoToBooleanMap.put("", null);
+    yesNoUnknownToBooleanMap.put("Y".toLowerCase(), Boolean.TRUE);
+    yesNoUnknownToBooleanMap.put("YES".toLowerCase(), Boolean.TRUE);
+    yesNoUnknownToBooleanMap.put("N".toLowerCase(), Boolean.FALSE);
+    yesNoUnknownToBooleanMap.put("NO".toLowerCase(), Boolean.FALSE);
+    yesNoUnknownToBooleanMap.put("U".toLowerCase(), null);
+    yesNoUnknownToBooleanMap.put("UNK".toLowerCase(), null);
+    yesNoUnknownToBooleanMap.put(null, null);
+    yesNoUnknownToBooleanMap.put("", null);
   }
 
   public FHIRBundleRecord convertToFhirBundles(InputStream csvStream, UUID orgId) {
@@ -266,6 +272,10 @@ public class BulkUploadResultsToFhir {
         StringUtils.isNotBlank(row.getPatientEmail().getValue())
             ? List.of(row.getPatientEmail().getValue())
             : emptyList();
+
+    TestCorrectionStatus correctionStatus =
+        mapTestResultStatusToSRValue(row.getTestResultStatus().getValue());
+    String correctionReason = null;
 
     var patient =
         fhirConverter.convertToPatient(
@@ -423,9 +433,8 @@ public class BulkUploadResultsToFhir {
                     .testPerformedLoinc(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
                     .resultCode(testResultSnomed)
-                    .correctionStatus(
-                        mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
-                    .correctionReason(null)
+                    .correctionStatus(correctionStatus)
+                    .correctionReason(correctionReason)
                     .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
                         resultConceptRecord == null ? null : resultConceptRecord.name())
@@ -449,58 +458,72 @@ public class BulkUploadResultsToFhir {
       }
     }
 
-    Boolean symptomatic = null;
-    if (StringUtils.isNotBlank(row.getSymptomaticForDisease().getValue())) {
-      symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().getValue().toLowerCase());
+    String symptomaticValue = row.getSymptomaticForDisease().getValue();
+    if (valueIsYesNoOrUnknown(symptomaticValue)) {
+      // symptomaticValue should be yes, no, or unknown, which correspond to true, false, or null
+      Boolean symptomatic = yesNoUnknownToBooleanMap.get(symptomaticValue.toLowerCase());
+      aoeObservations.addAll(
+          fhirConverter.convertToAOESymptomaticObservation(
+              testEventId, symptomatic, symptomOnsetDate, correctionStatus, correctionReason));
     }
-
-    aoeObservations.addAll(
-        fhirConverter.convertToAOESymptomaticObservation(
-            testEventId, symptomatic, symptomOnsetDate));
 
     String pregnancyValue = row.getPregnant().getValue();
     if (StringUtils.isNotBlank(pregnancyValue)) {
       String pregnancySnomed = getPregnancyStatusSnomed(pregnancyValue);
-      aoeObservations.add(fhirConverter.convertToAOEPregnancyObservation(pregnancySnomed));
+      aoeObservations.add(
+          fhirConverter.convertToAOEPregnancyObservation(
+              pregnancySnomed, correctionStatus, correctionReason));
     }
 
     String employedInHealthcareValue = row.getEmployedInHealthcare().getValue();
-    if (StringUtils.isNotBlank(employedInHealthcareValue)) {
-      Boolean employedInHealthcare = yesNoToBooleanMap.get(employedInHealthcareValue.toLowerCase());
+    if (valueIsYesNoOrUnknown(employedInHealthcareValue.toLowerCase())) {
+      Boolean employedInHealthcare =
+          yesNoUnknownToBooleanMap.get(employedInHealthcareValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
               employedInHealthcare,
               LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
-              AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
+              AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY,
+              correctionStatus,
+              correctionReason));
     }
 
     String syphilisHistory = row.getSyphilisHistory().getValue();
     if (StringUtils.isNotBlank(syphilisHistory)) {
       String syphilisHistorySnomed = getSyphilisHistorySnomed(syphilisHistory);
       aoeObservations.add(
-          fhirConverter.convertToAOESyphilisHistoryObservation(syphilisHistorySnomed));
+          fhirConverter.convertToAOESyphilisHistoryObservation(
+              syphilisHistorySnomed, correctionStatus, correctionReason));
     }
 
     String hospitalizedValue = row.getHospitalized().getValue();
-    if (StringUtils.isNotBlank(hospitalizedValue)) {
-      Boolean hospitalized = yesNoToBooleanMap.get(hospitalizedValue.toLowerCase());
+    if (valueIsYesNoOrUnknown(hospitalizedValue.toLowerCase())) {
+      Boolean hospitalized = yesNoUnknownToBooleanMap.get(hospitalizedValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
-              hospitalized, LOINC_AOE_HOSPITALIZED, "Hospitalized for condition"));
+              hospitalized,
+              LOINC_AOE_HOSPITALIZED,
+              "Hospitalized for condition",
+              correctionStatus,
+              correctionReason));
     }
 
     String icuValue = row.getIcu().getValue();
-    if (StringUtils.isNotBlank(icuValue)) {
-      Boolean hospitalized = yesNoToBooleanMap.get(icuValue.toLowerCase());
+    if (valueIsYesNoOrUnknown(icuValue.toLowerCase())) {
+      Boolean hospitalized = yesNoUnknownToBooleanMap.get(icuValue.toLowerCase());
       aoeObservations.add(
           fhirConverter.convertToAOEYesNoUnkObservation(
-              hospitalized, LOINC_AOE_ICU, "Admitted to ICU for condition"));
+              hospitalized,
+              LOINC_AOE_ICU,
+              "Admitted to ICU for condition",
+              correctionStatus,
+              correctionReason));
     }
 
     String residentCongregateSettingValue = row.getResidentCongregateSetting().getValue();
-    if (StringUtils.isNotBlank(residentCongregateSettingValue)) {
+    if (valueIsYesNoOrUnknown(residentCongregateSettingValue.toLowerCase())) {
       Boolean residesInCongregateSetting =
-          yesNoToBooleanMap.get(residentCongregateSettingValue.toLowerCase());
+          yesNoUnknownToBooleanMap.get(residentCongregateSettingValue.toLowerCase());
       String residenceTypeValue = row.getResidenceType().getValue();
       String residenceTypeSnomed = null;
       if (StringUtils.isNotBlank(residenceTypeValue)) {
@@ -508,7 +531,7 @@ public class BulkUploadResultsToFhir {
       }
       aoeObservations.addAll(
           fhirConverter.convertToAOEResidenceObservation(
-              residesInCongregateSetting, residenceTypeSnomed));
+              residesInCongregateSetting, residenceTypeSnomed, correctionStatus, correctionReason));
     }
 
     String gendersOfSexualPartnersValue = row.getGendersOfSexualPartners().getValue();
@@ -522,7 +545,8 @@ public class BulkUploadResultsToFhir {
               .map(genderAbbreviationMap::get)
               .collect(Collectors.toSet());
       aoeObservations.addAll(
-          fhirConverter.convertToAOEGenderOfSexualPartnersObservation(abbrConvertedGenders));
+          fhirConverter.convertToAOEGenderOfSexualPartnersObservation(
+              abbrConvertedGenders, correctionStatus, correctionReason));
     }
 
     String patientGenderIdentity = row.getPatientGenderIdentity().getValue();
@@ -532,7 +556,7 @@ public class BulkUploadResultsToFhir {
           genderAbbreviationMap.get(patientGenderIdentity.toUpperCase());
       aoeObservations.addAll(
           fhirConverter.convertToAOEGenderIdentityObservation(
-              testEventId, abbrConvertedGenderIdentity));
+              testEventId, abbrConvertedGenderIdentity, correctionStatus, correctionReason));
     }
 
     var serviceRequest =
@@ -546,7 +570,7 @@ public class BulkUploadResultsToFhir {
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
-            testPerformedCode,
+            testOrderedCode,
             testOrderedLoincLongName,
             testEventId,
             testResultDate,
@@ -757,5 +781,10 @@ public class BulkUploadResultsToFhir {
         null,
         orderingFacilityAddr,
         DEFAULT_COUNTRY);
+  }
+
+  private Boolean valueIsYesNoOrUnknown(String value) {
+    return StringUtils.isNotBlank(value)
+        && yesNoUnknownToBooleanMap.containsKey(value.toLowerCase());
   }
 }
