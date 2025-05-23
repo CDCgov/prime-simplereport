@@ -114,7 +114,7 @@ class FhirConverterTest {
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String snomedCode = "http://snomed.info/sct";
   public static final ZoneId DEFAULT_TIME_ZONE_ID = ZoneId.of("US/Eastern");
-  final FhirContext ctx = FhirContext.forR4();
+  final FhirContext ctx = FhirContextProvider.get();
   final IParser parser = ctx.newJsonParser();
   private static final Instant instant = (new Date(1675891986000L)).toInstant();
   private static final Date currentDate = Date.from(Instant.parse("2023-07-14T15:52:34.540Z"));
