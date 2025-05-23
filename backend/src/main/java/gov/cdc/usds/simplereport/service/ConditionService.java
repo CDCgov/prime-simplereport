@@ -44,6 +44,10 @@ public class ConditionService {
 
   public static final String CODEABLE_CONCEPT_CODE = "focus";
 
+  public List<Condition> getConditions() {
+    return conditionRepository.findAllByHasLabsIsTrue();
+  }
+
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public String syncHasLabs() {
     List<Condition> allConditions = conditionRepository.findAll();
