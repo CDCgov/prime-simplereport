@@ -146,7 +146,7 @@ public class OrganizationInitializingService {
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
     configureDemoUsers(users, facilitiesByName);
 
-    initUELRExampleData();
+    initUELRExampleData(_props.getConditions(), _props.getSpecimens());
   }
 
   public void initCurrentUser() {
@@ -439,23 +439,23 @@ public class OrganizationInitializingService {
     }
   }
 
-  public void initUELRExampleData() {
+  public void initUELRExampleData(List<Condition> conditions, List<Specimen> specimens) {
 
-    if (_props.getConditions() != null && _props.getSpecimens() != null) {
+    if (conditions != null && specimens != null) {
       List<Condition> newConditionsToSave =
-          _props.getConditions().stream()
+          conditions.stream()
               .filter(
                   condition -> conditionRepository.findConditionByCode(condition.getCode()) == null)
               .collect(Collectors.toCollection(ArrayList::new));
 
       List<Lab> newLabsToSave =
-          _props.getConditions().stream()
+          conditions.stream()
               .flatMap(condition -> condition.getLabs().stream())
               .filter(lab -> labRepository.findByCode(lab.getCode()).isEmpty())
               .collect(Collectors.toCollection(ArrayList::new));
 
       List<Specimen> newSpecimensToSave =
-          _props.getSpecimens().stream()
+          specimens.stream()
               .filter(
                   specimen ->
                       specimenRepository.findByLoincSystemCodeAndSnomedCode(
@@ -464,7 +464,7 @@ public class OrganizationInitializingService {
               .collect(Collectors.toCollection(ArrayList::new));
 
       List<SpecimenBodySite> newSpecimenBodySitesToSave =
-          _props.getSpecimens().stream()
+          specimens.stream()
               .flatMap(specimen -> specimen.getBodySiteList().stream())
               .filter(
                   specimen ->
