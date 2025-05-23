@@ -20,10 +20,11 @@ public interface FacilityLabTestOrderRepository extends CrudRepository<FacilityL
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   @Query(
       value =
-          "UPDATE simple_report.facility_lab_test_order SET name = :name, description = :description, updated_at = now() where internal_id = :internalId",
+          "UPDATE simple_report.facility_lab_test_order SET name = :name, description = :description where facility_id = :facilityId and lab_id = :labId",
       nativeQuery = true)
-  int updateByInternalId(
-      @Param("internalId") UUID internalId,
+  int updateByFacilityIdAndLabId(
+      @Param("facilityId") UUID facilityId,
+      @Param("labId") UUID labId,
       @Param("name") String name,
       @Param("description") String description);
 }

@@ -13,13 +13,16 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrder;
+import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrderSpecimen;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityLabTestOrderRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityLabTestOrderSpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -30,7 +33,6 @@ import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -642,15 +644,17 @@ public class OrganizationService {
     testOrder.setLabId(labId);
     testOrder.setName(name);
     testOrder.setDescription(description);
-    testOrder.setCreatedAt(new Date());
-    testOrder.setUpdatedAt(new Date());
     return facilityLabTestOrderRepository.save(testOrder);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public int updateFacilityLabTestOrder(
-      @Argument UUID internalId, @Argument String name, @Argument String description) {
-    return facilityLabTestOrderRepository.updateByInternalId(internalId, name, description);
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    return facilityLabTestOrderRepository.updateByFacilityIdAndLabId(
+        facilityId, labId, name, description);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -675,8 +679,6 @@ public class OrganizationService {
     FacilityLabTestOrderSpecimen testOrderSpecimen = new FacilityLabTestOrderSpecimen();
     testOrderSpecimen.setFacilityLabTestOrderId(facilityLabTestOrderId);
     testOrderSpecimen.setSpecimenId(specimenId);
-    testOrderSpecimen.setCreatedAt(new Date());
-    testOrderSpecimen.setUpdatedAt(new Date());
     facilityLabTestOrderSpecimenRepository.save(testOrderSpecimen);
     return testOrderSpecimen.getInternalId();
   }

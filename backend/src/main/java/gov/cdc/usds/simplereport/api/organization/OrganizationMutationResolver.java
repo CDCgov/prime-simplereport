@@ -264,8 +264,11 @@ public class OrganizationMutationResolver {
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public int updateFacilityLabTestOrder(
-      @Argument UUID internalId, @Argument String name, @Argument String description) {
-    return organizationService.updateFacilityLabTestOrder(internalId, name, description);
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    return organizationService.updateFacilityLabTestOrder(facilityId, labId, name, description);
   }
 
   @MutationMapping

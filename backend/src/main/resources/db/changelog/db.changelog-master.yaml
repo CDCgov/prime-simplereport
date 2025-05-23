@@ -6359,7 +6359,6 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__facility__facility_id
                     references: facility
-                    deleteCascade: true
               - column:
                   name: lab_id
                   type: uuid

@@ -2,16 +2,20 @@ package gov.cdc.usds.simplereport.db.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import java.util.Date;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class FacilityLabTestOrder extends EternalAuditedEntity {
   @Column(nullable = false)
   @NonNull
@@ -28,11 +32,4 @@ public class FacilityLabTestOrder extends EternalAuditedEntity {
   @Column(nullable = false)
   @NonNull
   private String description;
-
-  @Column(updatable = false)
-  @CreatedDate
-  private Date createdAt;
-
-  @Column(updatable = false)
-  private Date updatedAt;
 }

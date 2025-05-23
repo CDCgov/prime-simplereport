@@ -878,7 +878,8 @@ type Mutation {
     testDetailsList: [TestDetailsInput]
   ): String
   updateFacilityLabTestOrder(
-    internalId: ID!
+    facilityId: ID!
+    labId: ID!
     name: String!
     description: String!
   ): Int
