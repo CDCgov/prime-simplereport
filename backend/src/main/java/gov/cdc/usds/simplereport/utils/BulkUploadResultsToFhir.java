@@ -29,6 +29,7 @@ import gov.cdc.usds.simplereport.api.converter.ConvertToObservationProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToPatientProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToSpecimenProps;
 import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
+import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
@@ -89,7 +90,7 @@ public class BulkUploadResultsToFhir {
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
 
-  final FhirContext ctx = FhirContext.forR4();
+  final FhirContext ctx = FhirContextProvider.get();
   final IParser parser = ctx.newJsonParser();
 
   private final Map<String, String> testResultToSnomedMap =
