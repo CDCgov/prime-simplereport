@@ -8,5 +8,8 @@ public interface FacilityFeatureFlagRepository
     extends AuditedEntityRepository<FacilityFeatureFlag> {
   Optional<FacilityFeatureFlag> findFacilityFeatureFlagByName(String name);
 
+  Optional<FacilityFeatureFlag> findFacilityFeatureFlagByFacilityIdAndName(
+      UUID facilityId, String name);
+
   Iterable<FacilityFeatureFlag> findFacilityFeatureFlagsByFacilityId(UUID facilityId);
 }

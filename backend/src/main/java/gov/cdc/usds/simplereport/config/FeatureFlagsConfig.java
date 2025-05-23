@@ -55,8 +55,6 @@ public class FeatureFlagsConfig {
       case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);
       case "bulkUploadDisabled" -> setBulkUploadDisabled(flagValue);
       case "universalReportingEnabled" -> setUniversalReportingEnabled(flagValue);
-
-        // facility specific flags
       case "facilityFeatureFlagTest" -> setFacilityFeatureFlagTest(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
