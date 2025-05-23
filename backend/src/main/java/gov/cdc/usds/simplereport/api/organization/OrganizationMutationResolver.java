@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -248,5 +249,44 @@ public class OrganizationMutationResolver {
       throw new IllegalGraphqlArgumentException("type can be \"facilities\" or \"patients\"");
     }
     return organizationService.sendOrgAdminEmailCSV(type, state);
+  }
+
+  @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public FacilityLabTestOrder addFacilityLabTestOrder(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    return organizationService.createFacilityLabTestOrder(facilityId, labId, name, description);
+  }
+
+  @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public int updateFacilityLabTestOrder(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    return organizationService.updateFacilityLabTestOrder(facilityId, labId, name, description);
+  }
+
+  @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public boolean removeFacilityLabTestOrder(@Argument UUID internalId) {
+    return organizationService.deleteFacilityLabTestOrder(internalId);
+  }
+
+  @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public UUID addFacilityLabTestOrderSpecimen(
+      @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
+    return organizationService.addFacilityLabTestOrderSpecimen(facilityLabTestOrderId, specimenId);
+  }
+
+  @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public boolean removeFacilityLabTestOrderSpecimen(@Argument UUID internalId) {
+    return organizationService.deleteFacilityLabTestOrderSpecimen(internalId);
   }
 }

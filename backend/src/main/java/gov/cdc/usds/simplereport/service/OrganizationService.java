@@ -12,12 +12,17 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
+import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrder;
+import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrderSpecimen;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityLabTestOrderRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityLabTestOrderSpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -39,6 +44,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -62,6 +68,8 @@ public class OrganizationService {
   private final DbAuthorizationService dbAuthorizationService;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
+  private final FacilityLabTestOrderRepository facilityLabTestOrderRepository;
+  private final FacilityLabTestOrderSpecimenRepository facilityLabTestOrderSpecimenRepository;
   private final EmailService emailService;
   private final FeatureFlagsConfig featureFlagsConfig;
 
@@ -618,5 +626,70 @@ public class OrganizationService {
             .orElseThrow(NonexistentOrgException::new);
     oktaRepository.deleteOrganization(orgToDelete);
     return orgToDelete;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<FacilityLabTestOrder> getFacilityLabTestOrders(@Argument UUID facilityId) {
+    return facilityLabTestOrderRepository.findByFacility(facilityId);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public FacilityLabTestOrder createFacilityLabTestOrder(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    FacilityLabTestOrder testOrder = new FacilityLabTestOrder();
+    testOrder.setFacilityId(facilityId);
+    testOrder.setLabId(labId);
+    testOrder.setName(name);
+    testOrder.setDescription(description);
+    return facilityLabTestOrderRepository.save(testOrder);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public int updateFacilityLabTestOrder(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    return facilityLabTestOrderRepository.updateByFacilityIdAndLabId(
+        facilityId, labId, name, description);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public boolean deleteFacilityLabTestOrder(@Argument UUID internalId) {
+    try {
+      facilityLabTestOrderRepository.deleteById(internalId);
+      return true;
+    } catch (DataAccessException | IllegalArgumentException e) {
+      return false;
+    }
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<Specimen> getFacilityLabTestOrderSpecimens(
+      @Argument UUID facilityId, @Argument UUID labId) {
+    return facilityLabTestOrderSpecimenRepository.findByFacilityIdAndLabId(facilityId, labId);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public UUID addFacilityLabTestOrderSpecimen(
+      @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
+    FacilityLabTestOrderSpecimen testOrderSpecimen = new FacilityLabTestOrderSpecimen();
+    testOrderSpecimen.setFacilityLabTestOrderId(facilityLabTestOrderId);
+    testOrderSpecimen.setSpecimenId(specimenId);
+    facilityLabTestOrderSpecimenRepository.save(testOrderSpecimen);
+    return testOrderSpecimen.getInternalId();
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public boolean deleteFacilityLabTestOrderSpecimen(@Argument UUID internalId) {
+    try {
+      facilityLabTestOrderSpecimenRepository.deleteById(internalId);
+      return true;
+    } catch (DataAccessException | IllegalArgumentException e) {
+      return false;
+    }
   }
 }

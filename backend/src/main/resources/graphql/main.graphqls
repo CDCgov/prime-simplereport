@@ -136,6 +136,13 @@ type SpecimenType {
   collectionLocationCode: String
 }
 
+type Specimen {
+  loincSystemCode: String!
+  loincSystemDisplay: String!
+  snomedCode: String!
+  snomedDisplay: String!
+}
+
 type PhoneNumber {
   type: PhoneType
   number: String
@@ -440,6 +447,16 @@ type FeatureFlag {
   value: Boolean!
 }
 
+type FacilityLabTestOrder {
+  internalId: ID!
+  facilityId: ID!
+  labId: ID!
+  name: String!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 input PatientReportInput {
   firstName: String!
   middleName: String
@@ -680,6 +697,8 @@ type Query {
   conditions: [Condition!]!
   labs(conditionCodes: [String!]): [Lab!]!
   specimens(loinc: String!): [Specimen!]!
+  facilityLabTestOrders(facilityId: ID): [FacilityLabTestOrder]
+  facilityLabTestOrderSpecimens(facilityId: ID, labId: ID): [Specimen]
 }
 
 type Mutation {
@@ -850,4 +869,19 @@ type Mutation {
     specimen: SpecimenInput,
     testDetailsList: [TestDetailsInput]
   ): String
+  updateFacilityLabTestOrder(
+    facilityId: ID!
+    labId: ID!
+    name: String!
+    description: String!
+  ): Int
+  addFacilityLabTestOrder(
+    facilityId: ID!
+    labId: ID!
+    name: String!
+    description: String!
+  ): FacilityLabTestOrder
+  removeFacilityLabTestOrder(internalId: ID!): Boolean
+  addFacilityLabTestOrderSpecimen(facilityLabTestOrderId: ID!, specimenId: ID!): ID!
+  removeFacilityLabTestOrderSpecimen(internalId: ID!): Boolean
 }
