@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Button, ComboBox } from "@trussworks/react-uswds";
+import {
+  Button,
+  ComboBox,
+  StepIndicator,
+  StepIndicatorStep,
+} from "@trussworks/react-uswds";
 
 import {
   FacilityReportInput,
@@ -31,6 +36,7 @@ import FacilityFormSection from "./FacilityFormSection";
 import ProviderFormSection from "./ProviderFormSection";
 import PatientFormSection from "./PatientFormSection";
 import TestOrderFormSection from "./TestOrderFormSection";
+import ReviewFormSection from "./ReviewFormSection";
 
 const LabReportForm = () => {
   const [patient, setPatient] = useState<PatientReportInput>(
@@ -51,6 +57,8 @@ const LabReportForm = () => {
   const [testOrderSearchString, setTestOrderSearchString] =
     useState<string>("");
   const [submissionResponse, setSubmissionResponse] = useState("");
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 5;
 
   const [submitLabReport] = useSubmitLabReportMutation();
 
@@ -178,6 +186,24 @@ const LabReportForm = () => {
     }
   };
 
+  const nextStep = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep((prevStep) => prevStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep((prevStep) => prevStep - 1);
+    }
+  };
+
+  const getStepStatus = (step: number) => {
+    if (step < currentStep) return "complete";
+    if (step === currentStep) return "current";
+    return "incomplete";
+  };
+
   const submitForm = async () => {
     const submissionResponse = await submitLabReport({
       variables: {
@@ -199,115 +225,143 @@ const LabReportForm = () => {
 
   return (
     <div className="prime-home flex-1">
-      <div className="grid-container padding-bottom-10">
-        <div className="prime-container card-container">
-          <div className="usa-card__header">
-            <h1 className={"font-sans-lg"}>Universal Lab Reporting Form</h1>
-          </div>
-          <div className="usa-card__body">
-            <PatientFormSection patient={patient} setPatient={setPatient} />
-          </div>
-        </div>
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
-            <ProviderFormSection
-              provider={provider}
-              setProvider={setProvider}
-            />
-          </div>
-        </div>
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
-            <FacilityFormSection
-              facility={facility}
-              setFacility={setFacility}
-            />
-          </div>
-        </div>
+      <div className="grid-container padding-bottom-10 padding-top-4">
+        <StepIndicator headingLevel={"h4"} ofText={"of"} stepText={"Step"}>
+          <StepIndicatorStep
+            label={"Facility information"}
+            status={getStepStatus(1)}
+          />
+          <StepIndicatorStep
+            label={"Provider information"}
+            status={getStepStatus(2)}
+          />
+          <StepIndicatorStep
+            label={"Patient information"}
+            status={getStepStatus(3)}
+          />
+          <StepIndicatorStep label={"Lab results"} status={getStepStatus(4)} />
+          <StepIndicatorStep
+            label={"Review and submit"}
+            status={getStepStatus(5)}
+          />
+        </StepIndicator>
         <div className="prime-container card-container">
           <div className="usa-card__body">
-            <div className="grid-row grid-gap">
-              <div className="grid-col-auto">
-                <h2 className={"font-sans-lg"}>Condition Tested</h2>
-              </div>
-            </div>
-            <div className="grid-row margin-bottom-5">
-              <div className="grid-col-8">
-                {conditionsLoading ? (
-                  <div>Loading condition list...</div>
-                ) : (
-                  <>
-                    <label className="usa-legend" htmlFor="selected-condition">
-                      Condition to report
-                    </label>
-                    <ComboBox
-                      id="selected-condition"
-                      name="selected-condition"
-                      options={conditionOptions}
-                      onChange={(e) => updateCondition(e ?? "")}
-                      defaultValue={selectedCondition}
-                      aria-required={true}
-                      className={"condition-combo-box"}
-                    />
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
-            <TestOrderFormSection
-              hasSelectedCondition={!!selectedCondition}
-              labDataLoading={labDataLoading}
-              labs={labData?.labs ?? []}
-              testOrderLoinc={testOrderLoinc}
-              updateTestOrderLoinc={updateTestOrderLoinc}
-              testOrderSearchString={testOrderSearchString}
-              setTestOrderSearchString={setTestOrderSearchString}
-            />
-          </div>
-        </div>
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
-            <SpecimenFormSection
-              specimen={specimen}
-              setSpecimen={setSpecimen}
-              loading={specimenListLoading}
-              isTestOrderSelected={testOrderLoinc.length > 0}
-              specimenList={specimenListData?.specimens ?? []}
-            />
-          </div>
-        </div>
-        {testDetailList
-          .sort((a, b) =>
-            a.testPerformedLoinc.localeCompare(b.testPerformedLoinc)
-          )
-          .map((testDetails) => {
-            return (
-              <div
-                className="prime-container card-container"
-                key={testDetails.testPerformedLoinc}
-              >
-                <div className="usa-card__body">
-                  <TestDetailSection
-                    testDetails={testDetails}
-                    updateTestDetails={updateTestDetails}
-                  />
+            {currentStep === 1 && (
+              <FacilityFormSection
+                facility={facility}
+                setFacility={setFacility}
+              />
+            )}
+            {currentStep === 2 && (
+              <ProviderFormSection
+                provider={provider}
+                setProvider={setProvider}
+              />
+            )}
+            {currentStep === 3 && (
+              <PatientFormSection patient={patient} setPatient={setPatient} />
+            )}
+            {currentStep === 4 && (
+              <>
+                <div className="grid-row grid-gap">
+                  <div className="grid-col-auto">
+                    <h2 className={"font-sans-lg"}>Condition Tested</h2>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        <div className="padding-bottom-10">
-          <Button onClick={() => submitForm()} type={"button"}>
-            Submit results
-          </Button>
-        </div>
-        {submissionResponse.length > 0 && (
-          <div className="prime-container card-container">
-            <div className="usa-card__body">{submissionResponse}</div>
+                <div className="grid-row margin-bottom-2">
+                  <div className="grid-col-10">
+                    {conditionsLoading ? (
+                      <div>Loading condition list...</div>
+                    ) : (
+                      <>
+                        <label
+                          className="usa-legend margin-top-0"
+                          htmlFor="selected-condition"
+                        >
+                          Condition to report
+                        </label>
+                        <ComboBox
+                          id="selected-condition"
+                          name="selected-condition"
+                          options={conditionOptions}
+                          onChange={(e) => updateCondition(e ?? "")}
+                          defaultValue={selectedCondition}
+                          aria-required={true}
+                          className={"condition-combo-box"}
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
+                <TestOrderFormSection
+                  hasSelectedCondition={!!selectedCondition}
+                  labDataLoading={labDataLoading}
+                  labs={labData?.labs ?? []}
+                  testOrderLoinc={testOrderLoinc}
+                  updateTestOrderLoinc={updateTestOrderLoinc}
+                  testOrderSearchString={testOrderSearchString}
+                  setTestOrderSearchString={setTestOrderSearchString}
+                />
+                <SpecimenFormSection
+                  specimen={specimen}
+                  setSpecimen={setSpecimen}
+                  loading={specimenListLoading}
+                  isTestOrderSelected={testOrderLoinc.length > 0}
+                  specimenList={specimenListData?.specimens ?? []}
+                />
+                {testDetailList
+                  .sort((a, b) =>
+                    a.testPerformedLoinc.localeCompare(b.testPerformedLoinc)
+                  )
+                  .map((testDetails) => {
+                    return (
+                      <div
+                        className={"margin-top-2"}
+                        key={testDetails.testPerformedLoinc}
+                      >
+                        <TestDetailSection
+                          testDetails={testDetails}
+                          updateTestDetails={updateTestDetails}
+                        />
+                      </div>
+                    );
+                  })}
+              </>
+            )}
+            {currentStep === 5 && (
+              <>
+                <ReviewFormSection facility={facility} />
+                {submissionResponse.length > 0 && (
+                  <div>Submission response: {submissionResponse}</div>
+                )}
+              </>
+            )}
+            <div className="usa-form-group">
+              <Button
+                onClick={() => prevStep()}
+                disabled={currentStep === 1}
+                type={"button"}
+                className={"margin-right-2"}
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={() => nextStep()}
+                disabled={currentStep === totalSteps}
+                type={"button"}
+                className={"margin-right-2"}
+              >
+                Next
+              </Button>
+              {currentStep === 5 && (
+                <Button onClick={() => submitForm()} type={"button"}>
+                  Submit results
+                </Button>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
