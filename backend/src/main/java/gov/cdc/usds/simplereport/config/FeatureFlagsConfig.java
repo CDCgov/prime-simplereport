@@ -35,6 +35,8 @@ public class FeatureFlagsConfig {
   private boolean bulkUploadDisabled; // inverting logic because bulk uploader is enabled by default
   private boolean universalReportingEnabled;
 
+  private boolean facilityFeatureFlagTest;
+
   @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
     Iterable<FeatureFlag> flags = _repo.findAll();
@@ -53,7 +55,12 @@ public class FeatureFlagsConfig {
       case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);
       case "bulkUploadDisabled" -> setBulkUploadDisabled(flagValue);
       case "universalReportingEnabled" -> setUniversalReportingEnabled(flagValue);
+      case "facilityFeatureFlagTest" -> setFacilityFeatureFlagTest(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
+  }
+
+  public void setFlagValue(String flagName, Boolean flagValue) {
+    this.flagMapping(flagName, flagValue);
   }
 }
