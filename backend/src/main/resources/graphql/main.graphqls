@@ -564,14 +564,6 @@ type SpecimenBodySite {
   snomedSpecimenDisplay: String
   snomedSiteCode: String!
   snomedSiteDisplay: String!
-type FacilityLabTestOrder {
-  internalId: ID!
-  facilityId: ID!
-  labId: ID!
-  name: String!
-  description: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 # Queries and mutations for everyday use
