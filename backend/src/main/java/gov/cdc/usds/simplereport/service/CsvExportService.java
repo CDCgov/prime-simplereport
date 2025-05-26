@@ -1,0 +1,391 @@
+package gov.cdc.usds.simplereport.service;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultsListItem;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+@Service
+@Slf4j
+@RequiredArgsConstructor
+public class CsvExportService {
+  private final ResultService resultService;
+  private static final int BATCH_SIZE = 1000;
+
+  @Data
+  public static class QueryParameters {
+    private final UUID facilityId;
+    private final UUID patientId;
+    private final TestResult testResult;
+    private final PersonRole personRole;
+    private final SupportedDisease disease;
+    private final Date startDate;
+    private final Date endDate;
+    private final int pageNumber;
+    private final int pageSize;
+  }
+
+  public void streamResultsAsCsv(OutputStream outputStream, QueryParameters params) {
+    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
+
+      int totalElements = getTotalResultsCount(params);
+      int totalPages = (int) Math.ceil((double) totalElements / BATCH_SIZE);
+
+      log.info("Starting CSV export of {} records in {} batches", totalElements, totalPages);
+
+      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
+        Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
+        Page<TestResultsListItem> resultsPage = fetchResultsPage(params, pageable);
+
+        for (TestResultsListItem item : resultsPage.getContent()) {
+          writeCsvRow(csvPrinter, item);
+        }
+
+        csvPrinter.flush();
+        log.debug("Processed batch {}/{} for CSV export", (currentPage + 1), totalPages);
+      }
+
+      log.info("Completed streaming CSV export");
+    } catch (IOException e) {
+      log.error("Error streaming CSV data", e);
+      throw new RuntimeException("Failed to generate CSV file", e);
+    }
+  }
+
+  private CSVFormat createCsvFormat() {
+    return CSVFormat.DEFAULT.withHeader(
+        "Patient first name",
+        "Patient middle name",
+        "Patient last name",
+        "Patient full name",
+        "Patient date of birth",
+        "Test date",
+        "Condition",
+        "Result",
+        "Result reported date",
+        "Test correction status",
+        "Test correction reason",
+        "Device name",
+        "Device manufacturer",
+        "Device model",
+        "Device swab type",
+        "Has symptoms",
+        "Symptoms present",
+        "Symptom onset",
+        "Facility name",
+        "Submitter",
+        "Patient role",
+        "Patient ID (Student ID, Employee ID, etc.)",
+        "Patient preferred language",
+        "Patient phone number",
+        "Patient email",
+        "Patient street address",
+        "Patient street address 2",
+        "Patient city",
+        "Patient state",
+        "Patient zip code",
+        "Patient county",
+        "Patient country",
+        "Patient gender",
+        "Patient race",
+        "Patient ethnicity",
+        "Patient tribal affiliation",
+        "Patient is a resident in a congregate setting",
+        "Patient is employed in healthcare");
+  }
+
+  private int getTotalResultsCount(QueryParameters params) {
+    Page<TestResultsListItem> countPage;
+    if (params.getFacilityId() == null) {
+      countPage =
+          resultService
+              .getOrganizationResults(
+                  params.getPatientId(),
+                  params.getTestResult(),
+                  params.getPersonRole(),
+                  params.getDisease(),
+                  params.getStartDate(),
+                  params.getEndDate(),
+                  0,
+                  1)
+              .map(TestResultsListItem::new);
+    } else {
+      countPage =
+          resultService
+              .getFacilityResults(
+                  params.getFacilityId(),
+                  params.getPatientId(),
+                  params.getTestResult(),
+                  params.getPersonRole(),
+                  params.getDisease(),
+                  params.getStartDate(),
+                  params.getEndDate(),
+                  0,
+                  1)
+              .map(TestResultsListItem::new);
+    }
+
+    return (int) countPage.getTotalElements();
+  }
+
+  private Page<TestResultsListItem> fetchResultsPage(QueryParameters params, Pageable pageable) {
+    if (params.getFacilityId() == null) {
+      return resultService
+          .getOrganizationResults(
+              params.getPatientId(),
+              params.getTestResult(),
+              params.getPersonRole(),
+              params.getDisease(),
+              params.getStartDate(),
+              params.getEndDate(),
+              pageable.getPageNumber(),
+              pageable.getPageSize())
+          .map(TestResultsListItem::new);
+    } else {
+      return resultService
+          .getFacilityResults(
+              params.getFacilityId(),
+              params.getPatientId(),
+              params.getTestResult(),
+              params.getPersonRole(),
+              params.getDisease(),
+              params.getStartDate(),
+              params.getEndDate(),
+              pageable.getPageNumber(),
+              pageable.getPageSize())
+          .map(TestResultsListItem::new);
+    }
+  }
+
+  private void writeCsvRow(CSVPrinter csvPrinter, TestResultsListItem item) throws IOException {
+    Person patient = item.getPatient();
+    DeviceType deviceType = item.getDeviceType();
+    Facility facility = item.getFacility();
+    AskOnEntrySurvey surveyData = item.getSurveyData();
+    ApiUser createdBy = item.getCreatedBy();
+
+    String firstName = patient.getFirstName();
+    String middleName = patient.getMiddleName();
+    String lastName = patient.getLastName();
+    String fullName = formatFullName(firstName, middleName, lastName);
+
+    String submitterName = "";
+    if (createdBy != null && createdBy.getNameInfo() != null) {
+      submitterName =
+          formatFullName(
+              createdBy.getNameInfo().getFirstName(),
+              createdBy.getNameInfo().getMiddleName(),
+              createdBy.getNameInfo().getLastName());
+    }
+
+    String facilityName =
+        facility != null
+            ? formatFacilityName(facility.getFacilityName(), facility.getIsDeleted())
+            : "";
+
+    String hasSymptoms =
+        formatHasSymptoms(
+            surveyData != null && surveyData.getNoSymptoms() != null
+                ? surveyData.getNoSymptoms()
+                : false,
+            surveyData != null ? surveyData.getSymptomsJSON() : null);
+
+    String symptomsPresent =
+        formatSymptomsPresent(surveyData != null ? surveyData.getSymptomsJSON() : null);
+
+    String swabType = "";
+    if (deviceType != null
+        && deviceType.getSwabTypes() != null
+        && !deviceType.getSwabTypes().isEmpty()) {
+      swabType = deviceType.getSwabTypes().get(0).getName();
+    }
+
+    String phoneNumber = "";
+    if (patient.getPhoneNumbers() != null && !patient.getPhoneNumbers().isEmpty()) {
+      phoneNumber = patient.getPhoneNumbers().get(0).getNumber();
+    }
+
+    String tribalAffiliation = "";
+    if (patient.getTribalAffiliation() != null && !patient.getTribalAffiliation().isEmpty()) {
+      tribalAffiliation = String.join(", ", patient.getTribalAffiliation());
+    }
+
+    csvPrinter.printRecord(
+        firstName,
+        middleName,
+        lastName,
+        fullName,
+        formatAsDate(patient.getBirthDate()),
+        formatAsDateTime(item.getDateTested()),
+        item.getDisease(),
+        item.getTestResult(),
+        formatAsDateTime(item.getDateUpdated()),
+        item.getCorrectionStatus() != null ? item.getCorrectionStatus().toString() : "",
+        item.getReasonForCorrection(),
+        deviceType != null ? deviceType.getName() : "",
+        deviceType != null ? deviceType.getManufacturer() : "",
+        deviceType != null ? deviceType.getModel() : "",
+        swabType,
+        hasSymptoms,
+        symptomsPresent,
+        formatAsDate(surveyData != null ? surveyData.getSymptomOnsetDate() : null),
+        facilityName,
+        submitterName,
+        patient.getRole() != null ? patient.getRole().toString() : "",
+        patient.getLookupId(),
+        patient.getPreferredLanguage(),
+        phoneNumber,
+        patient.getEmail(),
+        patient.getStreet(),
+        patient.getStreetTwo(),
+        patient.getCity(),
+        patient.getState(),
+        patient.getZipCode(),
+        patient.getCounty(),
+        patient.getCountry(),
+        patient.getGender() != null ? patient.getGender().toString() : "",
+        patient.getRace() != null ? patient.getRace().toString() : "",
+        patient.getEthnicity() != null ? patient.getEthnicity().toString() : "",
+        tribalAffiliation,
+        patient.getResidentCongregateSetting(),
+        patient.getEmployedInHealthcare());
+  }
+
+  private String formatFullName(String firstName, String middleName, String lastName) {
+    StringBuilder fullName = new StringBuilder();
+
+    if (firstName != null && !firstName.isEmpty()) {
+      fullName.append(firstName);
+    }
+
+    if (middleName != null && !middleName.isEmpty()) {
+      if (fullName.length() > 0) {
+        fullName.append(" ");
+      }
+      fullName.append(middleName);
+    }
+
+    if (lastName != null && !lastName.isEmpty()) {
+      if (fullName.length() > 0) {
+        fullName.append(" ");
+      }
+      fullName.append(lastName);
+    }
+
+    return fullName.toString();
+  }
+
+  private String formatFacilityName(String name, boolean isDeleted) {
+    if (name == null) {
+      return "";
+    }
+
+    if (isDeleted) {
+      return name + " (deleted)";
+    }
+
+    return name;
+  }
+
+  private String formatHasSymptoms(boolean noSymptoms, String symptomsJson) {
+    if (noSymptoms) {
+      return "No";
+    }
+
+    if (symptomsJson == null || "{}".equals(symptomsJson) || symptomsJson.isEmpty()) {
+      return "No";
+    }
+
+    return "Yes";
+  }
+
+  private String formatSymptomsPresent(String symptomsJson) {
+    if (symptomsJson == null || "{}".equals(symptomsJson) || symptomsJson.isEmpty()) {
+      return "No symptoms";
+    }
+
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode symptoms = mapper.readTree(symptomsJson);
+
+      List<String> symptomList = new ArrayList<>();
+      symptoms
+          .fields()
+          .forEachRemaining(
+              entry -> {
+                if (entry.getValue().asBoolean()) {
+                  symptomList.add(entry.getKey());
+                }
+              });
+
+      if (symptomList.isEmpty()) {
+        return "No symptoms";
+      }
+
+      return String.join(", ", symptomList);
+    } catch (Exception e) { // NOPMD - allowed in this method for testing
+      log.error("Error parsing symptoms JSON", e);
+      return "Error parsing symptoms";
+    }
+  }
+
+  private String formatDateValue(Object dateObj, String pattern) {
+    if (dateObj == null) {
+      return "";
+    }
+
+    if (dateObj instanceof java.util.Date) {
+      SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+      return sdf.format((java.util.Date) dateObj);
+    } else if (dateObj instanceof LocalDate) {
+      DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+      return ((LocalDate) dateObj).format(dtf);
+    } else if (dateObj instanceof LocalDateTime) {
+      DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+      return ((LocalDateTime) dateObj).format(dtf);
+    } else if (dateObj instanceof ZonedDateTime) {
+      DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
+      return ((ZonedDateTime) dateObj).format(dtf);
+    } else {
+      return dateObj.toString();
+    }
+  }
+
+  private String formatAsDate(Object dateObj) {
+    return formatDateValue(dateObj, "MM/dd/yyyy");
+  }
+
+  private String formatAsDateTime(Object dateObj) {
+    return formatDateValue(dateObj, "MM/dd/yyyy h:mma");
+  }
+}
