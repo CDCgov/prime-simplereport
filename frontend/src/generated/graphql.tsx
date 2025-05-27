@@ -1129,7 +1129,6 @@ export type Specimen = {
   __typename?: "Specimen";
   bodySiteList: Array<SpecimenBodySite>;
   loincSystemCode: Scalars["String"]["output"];
-  loincSystemDisplay: Scalars["String"]["output"];
   snomedCode: Scalars["String"]["output"];
   snomedDisplay: Scalars["String"]["output"];
 };

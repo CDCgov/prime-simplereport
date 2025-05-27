@@ -136,13 +136,6 @@ type SpecimenType {
   collectionLocationCode: String
 }
 
-type Specimen {
-  loincSystemCode: String!
-  loincSystemDisplay: String!
-  snomedCode: String!
-  snomedDisplay: String!
-}
-
 type PhoneNumber {
   type: PhoneType
   number: String
