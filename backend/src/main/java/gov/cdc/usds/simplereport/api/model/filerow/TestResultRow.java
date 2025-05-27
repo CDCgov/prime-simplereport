@@ -23,7 +23,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpe
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResultStatus;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoAnswer;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoUnknownAnswer;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static java.util.Collections.emptyList;
 
@@ -641,12 +641,12 @@ public class TestResultRow implements FileRow {
     errors.addAll(validateBiologicalSex(patientGender));
     errors.addAll(validateEthnicity(patientEthnicity));
 
-    errors.addAll(validateYesNoAnswer(pregnant));
-    errors.addAll(validateYesNoAnswer(employedInHealthcare));
-    errors.addAll(validateYesNoAnswer(symptomaticForDisease));
-    errors.addAll(validateYesNoAnswer(residentCongregateSetting));
-    errors.addAll(validateYesNoAnswer(hospitalized));
-    errors.addAll(validateYesNoAnswer(icu));
+    errors.addAll(validateYesNoUnknownAnswer(pregnant));
+    errors.addAll(validateYesNoUnknownAnswer(employedInHealthcare));
+    errors.addAll(validateYesNoUnknownAnswer(symptomaticForDisease));
+    errors.addAll(validateYesNoUnknownAnswer(residentCongregateSetting));
+    errors.addAll(validateYesNoUnknownAnswer(hospitalized));
+    errors.addAll(validateYesNoUnknownAnswer(icu));
     errors.addAll(validateResidence(residenceType));
 
     errors.addAll(validateTestResult(testResult));
@@ -671,7 +671,7 @@ public class TestResultRow implements FileRow {
               testResult, DiseaseService.HIV_NAME, List.of(gendersOfSexualPartners, pregnant)));
     }
 
-    errors.addAll(validateYesNoAnswer(syphilisHistory));
+    errors.addAll(validateYesNoUnknownAnswer(syphilisHistory));
     if (isSyphilisResult()) {
       errors.addAll(
           validateRequiredFieldsForPositiveResult(
