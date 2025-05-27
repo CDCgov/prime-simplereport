@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.service.CsvExportService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
-import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 @Slf4j
 @RequiredArgsConstructor
 public class TestResultDataController {
-  private final ResultService resultService;
   private final DiseaseService diseaseService;
   private final CsvExportService csvExportService;
 
@@ -36,7 +34,7 @@ public class TestResultDataController {
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
       @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam(defaultValue = "20000") int pageSize) {
+      @RequestParam() int pageSize) {
 
     log.info("CSV download request received with facilityId={}, pageSize={}", facilityId, pageSize);
 
