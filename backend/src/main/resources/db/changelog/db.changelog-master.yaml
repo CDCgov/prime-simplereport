@@ -6471,6 +6471,22 @@ databaseChangeLog:
                   remarks: The timestamp for the most recent update of this entity.
                   constraints:
                     nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
         - addUniqueConstraint:
             constraintName: uk_facility_lab_test_order_specimen_facility_lab_test_order_specimen
             tableName: facility_lab_test_order_specimen
