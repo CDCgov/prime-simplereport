@@ -1,5 +1,11 @@
 package gov.cdc.usds.simplereport.api;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.INVALID_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NEGATIVE_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
+
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -25,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -486,9 +493,6 @@ public class Translators {
           Map.entry(OTHER, "Other"));
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
 
-  private static final String DETECTED_SNOMED = "260373001";
-  private static final String NOT_DETECTED_SNOMED = "260415000";
-  private static final String INVALID_SNOMED = "455371000124106";
   public static final Map<String, SnomedConceptRecord> ABNORMAL_SNOMEDS =
       Map.ofEntries(
           Map.entry(
@@ -498,7 +502,8 @@ public class Translators {
               "720735008",
               new SnomedConceptRecord("Presumptive positive", "720735008", TestResult.POSITIVE)),
           Map.entry(
-              "10828004", new SnomedConceptRecord("Positive", "10828004", TestResult.POSITIVE)),
+              POSITIVE_SNOMED,
+              new SnomedConceptRecord("Positive", POSITIVE_SNOMED, TestResult.POSITIVE)),
           Map.entry(
               "11214006", new SnomedConceptRecord("Reactive", "11214006", TestResult.POSITIVE)));
 
@@ -508,7 +513,8 @@ public class Translators {
               NOT_DETECTED_SNOMED,
               new SnomedConceptRecord("Not detected", NOT_DETECTED_SNOMED, TestResult.NEGATIVE)),
           Map.entry(
-              "260385009", new SnomedConceptRecord("Negative", "260385009", TestResult.NEGATIVE)),
+              NEGATIVE_SNOMED,
+              new SnomedConceptRecord("Negative", NEGATIVE_SNOMED, TestResult.NEGATIVE)),
           Map.entry(
               "895231008",
               new SnomedConceptRecord(
@@ -537,6 +543,9 @@ public class Translators {
               "125154007",
               new SnomedConceptRecord(
                   "Specimen unsatisfactory for evaluation", "125154007", TestResult.UNDETERMINED)));
+  public static final Map<String, SnomedConceptRecord> ALL_ACCEPTED_RESULT_SNOMED_RECORDS =
+      Stream.concat(ABNORMAL_SNOMEDS.entrySet().stream(), NORMAL_SNOMEDS.entrySet().stream())
+          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
   public static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =
       ABNORMAL_SNOMEDS.get(DETECTED_SNOMED);
@@ -566,15 +575,6 @@ public class Translators {
     }
   }
 
-  public static TestResult convertSnomedToResult(String snomed) {
-    SnomedConceptRecord concept =
-        RESULTS_SNOMED_CONCEPTS.stream()
-            .filter(snomedConcept -> snomed.equals(snomedConcept.code()))
-            .findFirst()
-            .orElse(INVALID_SNOMED_CONCEPT);
-    return concept.displayName();
-  }
-
   public static String convertTestResultToSnomed(TestResult result) {
     SnomedConceptRecord concept =
         RESULTS_SNOMED_CONCEPTS.stream()
@@ -585,7 +585,7 @@ public class Translators {
   }
 
   public static SnomedConceptRecord getSnomedConceptByCode(String snomedCode) {
-    return RESULTS_SNOMED_CONCEPTS.stream()
+    return ALL_ACCEPTED_RESULT_SNOMED_RECORDS.values().stream()
         .filter(snomedConcept -> snomedCode.equals(snomedConcept.code()))
         .findFirst()
         .orElse(null);

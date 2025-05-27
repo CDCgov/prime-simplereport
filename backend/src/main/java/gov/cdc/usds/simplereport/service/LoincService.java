@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import feign.Response;
+import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.Lab;
@@ -48,7 +49,7 @@ public class LoincService {
   private final LoincStagingRepository loincStagingRepository;
   private final LabRepository labRepository;
 
-  private final FhirContext context = FhirContext.forR4();
+  private final FhirContext context = FhirContextProvider.get();
   private final IParser parser = context.newJsonParser();
   private static final int PAGE_SIZE = 20;
 
