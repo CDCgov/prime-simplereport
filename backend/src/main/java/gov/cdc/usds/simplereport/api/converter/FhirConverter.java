@@ -2008,8 +2008,12 @@ public class FhirConverter {
           testDetailsInput.getResultValue(), observation, testDetailsInput.getCondition());
     }
     if (testDetailsInput.getResultType().equals(ResultScaleType.QUANTITATIVE)) {
-      Quantity quantity = new Quantity(Double.parseDouble(testDetailsInput.getResultValue()));
-      observation.setValue(quantity);
+      try {
+        Quantity quantity = new Quantity(Double.parseDouble(testDetailsInput.getResultValue()));
+        observation.setValue(quantity);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Invalid numeric value for result", e);
+      }
     }
 
     observation.setIssued(testDetailsInput.getResultDate());
