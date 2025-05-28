@@ -2,6 +2,10 @@ package gov.cdc.usds.simplereport.db.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,4 +36,11 @@ public class FacilityLabTestOrder extends EternalAuditedEntity {
   @Column(nullable = false)
   @NonNull
   private String description;
+
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "facility_lab_test_order_specimen",
+      joinColumns = @JoinColumn(name = "facility_lab_test_order_id"),
+      inverseJoinColumns = @JoinColumn(name = "specimen_id"))
+  private Set<Specimen> configuredSpecimens = new HashSet<>();
 }

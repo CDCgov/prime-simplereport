@@ -600,6 +600,10 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     verify(oktaRepository, times(1)).deleteOrganization(createdOrg);
   }
 
+  void getFacilityLabTestOrders_success() {
+    Organization createdOrg = _dataFactory.saveValidOrganization();
+  }
+
   @Nested
   @DisplayName("Sending org admin email CSV")
   class SendOrgAdminEmailCSVTest {

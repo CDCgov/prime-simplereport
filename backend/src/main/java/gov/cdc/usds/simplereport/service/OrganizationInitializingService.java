@@ -62,6 +62,8 @@ public class OrganizationInitializingService {
   private final DemoUserConfiguration _demoUserConfiguration;
   private final PersonRepository _personRepository;
   private final PatientRegistrationLinkRepository _prlRepository;
+  private final FacilityLabTestOrderRepository _facilityLabTestOrderRepository;
+  private final FacilityLabTestOrderSpecimenRepository _facilityLabTestOrderSpecimenRepository;
   private final DiseaseService diseaseService;
 
   public void initAll() {
