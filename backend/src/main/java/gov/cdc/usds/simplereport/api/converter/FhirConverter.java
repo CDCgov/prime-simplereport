@@ -84,6 +84,12 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
+import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -114,6 +120,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -160,6 +168,7 @@ import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.Provenance;
+import org.hl7.fhir.r4.model.Quantity;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.Resource;
 import org.hl7.fhir.r4.model.ResourceType;
@@ -178,6 +187,7 @@ import org.springframework.util.CollectionUtils;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@SuppressWarnings({"checkstyle:TodoComment"})
 public class FhirConverter {
 
   private final UUIDGenerator uuidGenerator;
@@ -618,6 +628,7 @@ public class FhirConverter {
     return specimen;
   }
 
+  // TODO: Test convertToSpecimen with complete and partial inputs
   public Specimen convertToSpecimen(ConvertToSpecimenProps props) {
     Specimen specimen = new Specimen();
     specimen.setId(props.getId());
@@ -1578,6 +1589,268 @@ public class FhirConverter {
     return bundle;
   }
 
+  // TODO: Test createUniversalFhirBundle creates a valid FHIR bundle using existing FHIR resources
+  // This separate bundle method was created during rapid prototyping of universal reporting
+  public Bundle createUniversalFhirBundle(UniversalCreateFhirBundleProps props) {
+    var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
+    var orderingFacilityFullUrl =
+        props.getOrderingFacility() == null
+            ? null
+            : ResourceType.Organization + "/" + props.getOrderingFacility().getId();
+    var testingLabOrganizationFullUrl =
+        ResourceType.Organization + "/" + props.getTestingLab().getId();
+    var practitionerFullUrl = ResourceType.Practitioner + "/" + props.getPractitioner().getId();
+    var specimenFullUrl = ResourceType.Specimen + "/" + props.getSpecimen().getId();
+    var diagnosticReportFullUrl =
+        ResourceType.DiagnosticReport + "/" + props.getDiagnosticReport().getId();
+
+    var practitionerRole =
+        createPractitionerRole(
+            orderingFacilityFullUrl == null
+                ? testingLabOrganizationFullUrl
+                : orderingFacilityFullUrl,
+            practitionerFullUrl,
+            uuidGenerator.randomUUID());
+    var provenance =
+        createProvenance(
+            testingLabOrganizationFullUrl, props.getCurrentDate(), uuidGenerator.randomUUID());
+    var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
+    var messageHeader =
+        createMessageHeader(
+            testingLabOrganizationFullUrl,
+            diagnosticReportFullUrl,
+            provenanceFullUrl,
+            props.getGitProperties(),
+            props.getProcessingId(),
+            uuidGenerator.randomUUID());
+    var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
+    var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
+
+    props.getPatient().setManagingOrganization(new Reference(testingLabOrganizationFullUrl));
+    props.getSpecimen().setSubject(new Reference(patientFullUrl));
+
+    props.getDiagnosticReport().setSubject(new Reference(patientFullUrl));
+    props.getDiagnosticReport().addSpecimen(new Reference(specimenFullUrl));
+
+    var entryList = new ArrayList<Pair<String, Resource>>();
+    entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
+    entryList.add(Pair.of(provenanceFullUrl, provenance));
+    entryList.add(Pair.of(diagnosticReportFullUrl, props.getDiagnosticReport()));
+    entryList.add(Pair.of(patientFullUrl, props.getPatient()));
+    entryList.add(Pair.of(testingLabOrganizationFullUrl, props.getTestingLab()));
+    if (orderingFacilityFullUrl != null) {
+      entryList.add(Pair.of(orderingFacilityFullUrl, props.getOrderingFacility()));
+    }
+    entryList.add(Pair.of(practitionerFullUrl, props.getPractitioner()));
+    entryList.add(Pair.of(specimenFullUrl, props.getSpecimen()));
+    entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
+    entryList.add(
+        Pair.of(
+            ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
+            new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
+
+    props
+        .getResultObservations()
+        .forEach(
+            observation -> {
+              var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+
+              observation.setSubject(new Reference(patientFullUrl));
+              observation.addPerformer(new Reference(testingLabOrganizationFullUrl));
+              observation.setSpecimen(new Reference(specimenFullUrl));
+
+              props.getDiagnosticReport().addResult(new Reference(observationFullUrl));
+              entryList.add(Pair.of(observationFullUrl, observation));
+            });
+
+    if (props.getAoeObservations() != null) {
+      props
+          .getAoeObservations()
+          .forEach(
+              observation -> {
+                var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+
+                observation.setSubject(new Reference(patientFullUrl));
+
+                entryList.add(Pair.of(observationFullUrl, observation));
+              });
+    }
+
+    var bundle =
+        new Bundle()
+            .setType(BundleType.MESSAGE)
+            .setTimestamp(props.getCurrentDate())
+            .setIdentifier(new Identifier().setValue(props.getDiagnosticReport().getId()));
+
+    bundle.getTimestampElement().setTimeZoneZulu(true);
+
+    entryList.forEach(
+        pair ->
+            bundle.addEntry(
+                new BundleEntryComponent()
+                    .setFullUrl(pair.getFirst())
+                    .setResource(pair.getSecond())));
+
+    return bundle;
+  }
+
+  public DiagnosticReport convertToDiagnosticReport(String testOrderCode, Date testEffectiveDate) {
+    DiagnosticReport diagnosticReport = new DiagnosticReport();
+    var categoryCodeableConcept = new CodeableConcept();
+    var categoryCoding = categoryCodeableConcept.addCoding();
+    categoryCoding.setSystem(DIAGNOSTIC_CODE_SYSTEM);
+    categoryCoding.setCode(LAB_STRING_LITERAL);
+    diagnosticReport.setCategory(List.of(categoryCodeableConcept));
+
+    diagnosticReport.setStatus(DiagnosticReportStatus.FINAL);
+
+    var diagnosticCodeableConcept = new CodeableConcept();
+    var diagnosticCoding = diagnosticCodeableConcept.addCoding();
+
+    diagnosticCoding.setSystem(LOINC_CODE_SYSTEM).setCode(testOrderCode);
+    diagnosticReport.setCode(diagnosticCodeableConcept);
+
+    var effectiveDateTime = ZonedDateTime.ofInstant(testEffectiveDate.toInstant(), ZoneOffset.UTC);
+    diagnosticReport.setEffective(convertToDateTimeType(effectiveDateTime));
+
+    String diagnosticReportId = uuidGenerator.randomUUID().toString();
+    diagnosticReport.setId(diagnosticReportId);
+
+    return diagnosticReport;
+  }
+
+  // TODO: Test createUniversalFhirBundle creates a valid FHIR bundle from raw resources
+  public Bundle createUniversalFhirBundle(
+      PatientReportInput patientInput,
+      ProviderReportInput providerInput,
+      FacilityReportInput facility,
+      SpecimenInput specimenInput,
+      List<TestDetailsInput> testDetailsInputList,
+      GitProperties gitProperties,
+      String processingId) {
+
+    var patient =
+        convertToPatient(
+            ConvertToPatientProps.builder()
+                .id(String.valueOf(UUID.randomUUID()))
+                .name(
+                    new PersonName(
+                        patientInput.getFirstName(),
+                        patientInput.getMiddleName(),
+                        patientInput.getLastName(),
+                        patientInput.getSuffix()))
+                .phoneNumbers(
+                    Collections.singletonList(
+                        new PhoneNumber(PhoneType.MOBILE, patientInput.getPhone())))
+                .emails(Collections.singletonList(patientInput.getEmail()))
+                .gender(patientInput.getSex())
+                .dob(patientInput.getDateOfBirth())
+                .address(
+                    new StreetAddress(
+                        Arrays.asList(patientInput.getStreet(), patientInput.getStreetTwo()),
+                        patientInput.getCity(),
+                        patientInput.getState(),
+                        patientInput.getZipCode(),
+                        patientInput.getCounty()))
+                .country(patientInput.getCountry())
+                .race(patientInput.getRace())
+                .ethnicity(patientInput.getEthnicity())
+                .tribalAffiliations(Collections.singletonList(patientInput.getTribalAffiliation()))
+                .build());
+
+    StreetAddress facilityAddress =
+        new StreetAddress(
+            facility.getStreet(),
+            facility.getStreetTwo(),
+            facility.getCity(),
+            facility.getState(),
+            facility.getZipCode(),
+            facility.getCounty());
+
+    var testingLab =
+        convertToOrganization(
+            UUID.randomUUID().toString(),
+            facility.getName(),
+            facility.getClia(),
+            facility.getPhone(),
+            facility.getEmail(),
+            facilityAddress,
+            DEFAULT_COUNTRY);
+
+    StreetAddress providerAddress =
+        new StreetAddress(
+            providerInput.getStreet(),
+            providerInput.getStreetTwo(),
+            providerInput.getCity(),
+            providerInput.getState(),
+            providerInput.getZipCode(),
+            providerInput.getCounty());
+
+    var practitioner =
+        convertToPractitioner(
+            UUID.randomUUID().toString(),
+            new PersonName(
+                providerInput.getFirstName(),
+                providerInput.getMiddleName(),
+                providerInput.getFirstName(),
+                providerInput.getSuffix()),
+            providerInput.getPhone(),
+            providerAddress,
+            DEFAULT_COUNTRY,
+            providerInput.getNpi());
+
+    ZonedDateTime specimenCollectionDate =
+        specimenInput.getCollectionDate() == null
+            ? null
+            : ZonedDateTime.ofInstant(
+                specimenInput.getCollectionDate().toInstant(), ZoneOffset.UTC);
+
+    ZonedDateTime specimenReceivedDate =
+        specimenInput.getReceivedDate() == null
+            ? null
+            : ZonedDateTime.ofInstant(specimenInput.getReceivedDate().toInstant(), ZoneOffset.UTC);
+
+    UUID specimenId = UUID.randomUUID();
+    // TODO: Pass bodysite with specimen resource
+    var specimen =
+        convertToSpecimen(
+            ConvertToSpecimenProps.builder()
+                .specimenCode(specimenInput.getSnomedTypeCode())
+                .specimenName(null)
+                .collectionCode(specimenInput.getCollectionBodySiteCode())
+                .collectionName(specimenInput.getCollectionBodySiteName())
+                .collectionDate(specimenCollectionDate)
+                .receivedTime(specimenReceivedDate)
+                .id(specimenId.toString())
+                .identifier(specimenId.toString())
+                .build());
+
+    List<Observation> observationList = new ArrayList<>();
+    for (var testDetailsInput : testDetailsInputList) {
+      observationList.add(convertToObservation(testDetailsInput));
+    }
+
+    DiagnosticReport diagnosticReport =
+        convertToDiagnosticReport(
+            testDetailsInputList.get(0).getTestOrderLoinc(),
+            testDetailsInputList.get(0).getResultDate());
+
+    return createUniversalFhirBundle(
+        UniversalCreateFhirBundleProps.builder()
+            .patient(patient)
+            .testingLab(testingLab)
+            .orderingFacility(null)
+            .practitioner(practitioner)
+            .specimen(specimen)
+            .resultObservations(observationList)
+            .serviceRequest(null)
+            .diagnosticReport(diagnosticReport)
+            .currentDate(dateGenerator.newDate())
+            .gitProperties(gitProperties)
+            .processingId(processingId)
+            .build());
+  }
+
   public Provenance createProvenance(
       String organizationFullUrl, Date dateTested, UUID provenanceId) {
     var provenance = new Provenance();
@@ -1697,6 +1970,53 @@ public class FhirConverter {
     observation.setCode(observationCodeableConcept);
 
     addSNOMEDValue(props.getResultValue(), observation, null);
+
+    String observationId = uuidGenerator.randomUUID().toString();
+    observation.setId(observationId);
+
+    return observation;
+  }
+
+  public Observation convertToObservation(TestDetailsInput testDetailsInput) {
+    var observation = new Observation();
+    setStatus(observation, TestCorrectionStatus.ORIGINAL);
+    observation.setCode(
+        createLoincConcept(
+            testDetailsInput.getTestPerformedLoinc(),
+            testDetailsInput.getTestPerformedLoincLongCommonName(),
+            testDetailsInput.getCondition()));
+
+    if (testDetailsInput.getResultType().equals(ResultScaleType.ORDINAL)) {
+      SnomedConceptRecord snomedConceptRecord =
+          Translators.getSnomedConceptByCode(testDetailsInput.getResultValue());
+
+      if (snomedConceptRecord != null) {
+        addSNOMEDValue(snomedConceptRecord.code(), observation, snomedConceptRecord.name());
+      } else {
+        addSNOMEDValue(
+            testDetailsInput.getResultValue(), observation, testDetailsInput.getCondition());
+      }
+
+      Coding abnormalFlagCode =
+          convertToAbnormalFlagInterpretation(testDetailsInput.getResultValue());
+      if (abnormalFlagCode != null) {
+        observation.addInterpretation().addCoding(abnormalFlagCode);
+      }
+    }
+    if (testDetailsInput.getResultType().equals(ResultScaleType.NOMINAL)) {
+      addSNOMEDValue(
+          testDetailsInput.getResultValue(), observation, testDetailsInput.getCondition());
+    }
+    if (testDetailsInput.getResultType().equals(ResultScaleType.QUANTITATIVE)) {
+      try {
+        Quantity quantity = new Quantity(Double.parseDouble(testDetailsInput.getResultValue()));
+        observation.setValue(quantity);
+      } catch (NumberFormatException e) {
+        throw new IllegalArgumentException("Invalid numeric value for result", e);
+      }
+    }
+
+    observation.setIssued(testDetailsInput.getResultDate());
 
     String observationId = uuidGenerator.randomUUID().toString();
     observation.setId(observationId);
