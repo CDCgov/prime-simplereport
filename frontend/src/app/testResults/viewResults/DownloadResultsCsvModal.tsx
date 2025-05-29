@@ -1,20 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Modal from "react-modal";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CSVLink } from "react-csv";
-import { ApolloError } from "@apollo/client";
 
 import { showError } from "../../utils/srToast";
 import Button from "../../commonComponents/Button/Button";
-import {
-  GetResultsForDownloadQuery,
-  useGetResultsForDownloadLazyQuery,
-} from "../../../generated/graphql";
-import { parseDataForCSV, ResultCsvRow } from "../../utils/testResultCSV";
-import { useDisabledFeatureDiseaseList } from "../../utils/disease";
+import FetchClient from "../../../app/utils/api"; // Adjust the import path to your FetchClient
 
-import { ALL_FACILITIES_ID, ResultsQueryVariables } from "./TestResultsList";
+import { ALL_FACILITIES_ID } from "./TestResultsList";
 
 interface DownloadResultsCsvModalProps {
   filterParams: FilterParams;
@@ -24,6 +17,35 @@ interface DownloadResultsCsvModalProps {
   activeFacilityId: string;
 }
 
+const apiClient = new FetchClient();
+
+function buildCsvDownloadPath({
+  filterParams,
+  activeFacilityId,
+}: {
+  filterParams: FilterParams;
+  activeFacilityId: string;
+}) {
+  const facilityId =
+    filterParams.filterFacilityId === ALL_FACILITIES_ID
+      ? activeFacilityId
+      : filterParams.filterFacilityId ?? activeFacilityId;
+
+  const basePath = `/facilities/${facilityId}/results/download`;
+
+  const params = new URLSearchParams();
+  if (filterParams.patientId)
+    params.append("patientId", filterParams.patientId);
+  if (filterParams.result) params.append("result", filterParams.result);
+  if (filterParams.role) params.append("role", filterParams.role);
+  if (filterParams.disease) params.append("disease", filterParams.disease);
+  if (filterParams.startDate)
+    params.append("startDate", filterParams.startDate);
+  if (filterParams.endDate) params.append("endDate", filterParams.endDate);
+
+  return params.toString() ? `${basePath}?${params.toString()}` : basePath;
+}
+
 export const DownloadResultsCsvModal = ({
   filterParams,
   modalIsOpen,
@@ -31,69 +53,64 @@ export const DownloadResultsCsvModal = ({
   totalEntries,
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
-  const rowsMaxLimit = 20000;
-  const [results, setResults] = useState<ResultCsvRow[]>([]);
-  const csvLink = useRef<
-    CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
-  >(null);
-  // Disable downloads because backend will hang on over 20k results (#3953)
-  const disableDownload = totalEntries > rowsMaxLimit;
-  const disabledFeatureDiseaseList = useDisabledFeatureDiseaseList();
-
+  const [downloading, setDownloading] = useState(false);
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
-    // active facility in the facility filter is the default
     if (key === "filterFacilityId") {
       return val !== activeFacilityId;
     }
     return val;
   });
 
-  const variables: ResultsQueryVariables = {
-    facilityId:
-      filterParams.filterFacilityId === ALL_FACILITIES_ID
-        ? null
-        : filterParams.filterFacilityId ?? activeFacilityId,
-    pageNumber: 0,
-    pageSize: totalEntries,
-    ...filterParams,
-  };
-
-  const [downloadTestResultsQuery, { loading }] =
-    useGetResultsForDownloadLazyQuery({
-      variables,
-      fetchPolicy: "no-cache",
-      onCompleted: (data: GetResultsForDownloadQuery) => handleComplete(data),
-      onError: (error: ApolloError) => handleError(error),
-    });
-
-  const handleComplete = (data: GetResultsForDownloadQuery) => {
-    if (data?.resultsPage?.content) {
-      try {
-        const csvResults = parseDataForCSV(
-          data.resultsPage.content,
-          disabledFeatureDiseaseList
-        );
-        setResults(csvResults);
-      } catch {
-        showError("Error creating results file to download");
-      }
-    } else {
-      showError("Unknown error downloading results");
-    }
-  };
-
-  const handleError = (error: ApolloError) => {
-    showError("Error downloading results", error.message);
-  };
-
-  // triggers the download of the file only after the csv data has been properly set
-  useEffect(() => {
-    csvLink?.current?.link.click();
-    closeModal();
-  }, [results]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const pluralizeRows = (entriesCount: number) => {
     return entriesCount > 1 ? "s" : "";
+  };
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      const downloadPath = buildCsvDownloadPath({
+        filterParams,
+        activeFacilityId,
+      });
+      const fullUrl = apiClient.getURL(downloadPath);
+
+      console.log("Download URL:", fullUrl);
+
+      const response = await fetch(fullUrl, {
+        method: "GET",
+        ...apiClient.defaultOptions,
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to download CSV: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = "simplereport-test-results.csv";
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename=(.+)/);
+        if (match) filename = match[1];
+      }
+
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+      closeModal();
+    } catch (e: any) {
+      console.error("Download error:", e);
+      showError("Error downloading results", e.message);
+    } finally {
+      setDownloading(false);
+    }
   };
 
   return (
@@ -114,9 +131,7 @@ export const DownloadResultsCsvModal = ({
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            {disableDownload
-              ? "Too many results selected"
-              : "Download test results"}
+            Download test results
           </h1>
           <button
             onClick={closeModal}
@@ -130,53 +145,32 @@ export const DownloadResultsCsvModal = ({
           </button>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
-        {disableDownload ? (
-          <div className="grid-row grid-gap">
-            <p>
-              Please filter test results and download again with 20,000 results
-              or fewer.
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="grid-row grid-gap">
-              <p>
-                {filtersPresent
-                  ? "Download results with current search filters applied?"
-                  : "Download results without any search filters applied?"}
-              </p>
-            </div>
-            <div className="grid-row grid-gap">
-              <p>
-                The CSV file will include {totalEntries} row
-                {pluralizeRows(totalEntries)}.
-              </p>
-            </div>
-          </>
-        )}
+        <div className="grid-row grid-gap">
+          <p>
+            {filtersPresent
+              ? "Download results with current search filters applied?"
+              : "Download results without any search filters applied?"}
+          </p>
+        </div>
+        <div className="grid-row grid-gap">
+          <p>
+            The CSV file will include {totalEntries} row
+            {pluralizeRows(totalEntries)}.
+          </p>
+        </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
             <Button
               className="margin-right-2"
               onClick={closeModal}
               variant="unstyled"
-              label={disableDownload ? "Go back" : "No, go back"}
+              label={"No, go back"}
             />
             <Button
-              onClick={() => downloadTestResultsQuery()}
-              disabled={disableDownload}
+              onClick={handleDownload}
+              disabled={downloading}
               icon={faDownload}
-              label={loading ? "Loading..." : "Download results"}
-            />
-            <CSVLink
-              data={results}
-              filename="simplereport-test-results.csv"
-              className="hidden"
-              ref={csvLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              tabIndex={-1}
-              aria-hidden={true}
+              label={downloading ? "Loading..." : "Download results"}
             />
           </div>
         </div>
