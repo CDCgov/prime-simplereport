@@ -56,7 +56,7 @@
   "scripts": {
     "prestart": "rm -rf .eslintcache && yarn",
     "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) SASS_PATH=$(cd ./node_modules && pwd):$(cd ./node_modules/@uswds && pwd):$(cd ./node_modules/@uswds/uswds/packages && pwd):$(cd ./src/scss && pwd) npm-run-all -p start-js",
-    "start-js": "react-scripts start",
+    "start-js": "DISABLE_ESLINT_PLUGIN=true react-scripts start",
     "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) SASS_PATH=$(cd ./node_modules && pwd):$(cd ./node_modules/@uswds && pwd):$(cd ./node_modules/@uswds/uswds/packages && pwd):$(cd ./src/scss && pwd) react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt && cd build && mv *touchpoints*.* static/",
     "codegen": "graphql-codegen --config codegen.yml && prettier --write 'src/generated/graphql.tsx' && eslint --fix 'src/generated/graphql.tsx' ",
