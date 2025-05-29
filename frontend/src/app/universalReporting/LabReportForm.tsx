@@ -5,6 +5,8 @@ import {
   StepIndicator,
   StepIndicatorStep,
 } from "@trussworks/react-uswds";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
   FacilityReportInput,
@@ -38,6 +40,24 @@ import PatientFormSection from "./PatientFormSection";
 import TestOrderFormSection from "./TestOrderFormSection";
 import ReviewFormSection from "./ReviewFormSection";
 
+const stepperData = [
+  {
+    label: "Facility information",
+  },
+  {
+    label: "Provider information",
+  },
+  {
+    label: "Patient information",
+  },
+  {
+    label: "Lab results",
+  },
+  {
+    label: "Review and submit",
+  },
+];
+
 const LabReportForm = () => {
   const [patient, setPatient] = useState<PatientReportInput>(
     defaultPatientReportInputState
@@ -57,8 +77,7 @@ const LabReportForm = () => {
   const [testOrderSearchString, setTestOrderSearchString] =
     useState<string>("");
   const [submissionResponse, setSubmissionResponse] = useState("");
-  const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 5;
+  const [currentStep, setCurrentStep] = useState(0);
 
   const [submitLabReport] = useSubmitLabReportMutation();
 
@@ -187,14 +206,20 @@ const LabReportForm = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < totalSteps) {
+    if (currentStep < stepperData.length) {
       setCurrentStep((prevStep) => prevStep + 1);
     }
   };
 
   const prevStep = () => {
-    if (currentStep > 1) {
+    if (currentStep > 0) {
       setCurrentStep((prevStep) => prevStep - 1);
+    }
+  };
+
+  const setStep = (step: number) => {
+    if (step >= 0 && step < stepperData.length) {
+      setCurrentStep(step);
     }
   };
 
@@ -227,42 +252,44 @@ const LabReportForm = () => {
     <div className="prime-home flex-1">
       <div className="grid-container padding-bottom-10 padding-top-4">
         <StepIndicator headingLevel={"h4"} ofText={"of"} stepText={"Step"}>
-          <StepIndicatorStep
-            label={"Facility information"}
-            status={getStepStatus(1)}
-          />
-          <StepIndicatorStep
-            label={"Provider information"}
-            status={getStepStatus(2)}
-          />
-          <StepIndicatorStep
-            label={"Patient information"}
-            status={getStepStatus(3)}
-          />
-          <StepIndicatorStep label={"Lab results"} status={getStepStatus(4)} />
-          <StepIndicatorStep
-            label={"Review and submit"}
-            status={getStepStatus(5)}
-          />
+          {stepperData.map((step, index) => (
+            <StepIndicatorStep
+              key={stepperData[index].label}
+              label={stepperData[index].label}
+              status={getStepStatus(index)}
+              onClick={() => setStep(index)}
+            />
+          ))}
         </StepIndicator>
+        {currentStep !== 0 && (
+          <Button
+            onClick={() => prevStep()}
+            type={"button"}
+            className={"margin-right-2 margin-bottom-3"}
+            unstyled={true}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="margin-left-1" />
+            Back to {stepperData[currentStep - 1].label.toLowerCase()}
+          </Button>
+        )}
         <div className="prime-container card-container">
           <div className="usa-card__body">
-            {currentStep === 1 && (
+            {currentStep === 0 && (
               <FacilityFormSection
                 facility={facility}
                 setFacility={setFacility}
               />
             )}
-            {currentStep === 2 && (
+            {currentStep === 1 && (
               <ProviderFormSection
                 provider={provider}
                 setProvider={setProvider}
               />
             )}
-            {currentStep === 3 && (
+            {currentStep === 2 && (
               <PatientFormSection patient={patient} setPatient={setPatient} />
             )}
-            {currentStep === 4 && (
+            {currentStep === 3 && (
               <>
                 <div className="grid-row grid-gap">
                   <div className="grid-col-auto">
@@ -329,7 +356,7 @@ const LabReportForm = () => {
                   })}
               </>
             )}
-            {currentStep === 5 && (
+            {currentStep === 4 && (
               <>
                 <ReviewFormSection facility={facility} />
                 {submissionResponse.length > 0 && (
@@ -338,25 +365,22 @@ const LabReportForm = () => {
               </>
             )}
             <div className="usa-form-group">
-              <Button
-                onClick={() => prevStep()}
-                disabled={currentStep === 1}
-                type={"button"}
-                className={"margin-right-2"}
-              >
-                Previous
-              </Button>
-              <Button
-                onClick={() => nextStep()}
-                disabled={currentStep === totalSteps}
-                type={"button"}
-                className={"margin-right-2"}
-              >
-                Next
-              </Button>
-              {currentStep === 5 && (
+              {currentStep === 4 ? (
                 <Button onClick={() => submitForm()} type={"button"}>
                   Submit results
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => nextStep()}
+                  disabled={currentStep === stepperData.length - 1}
+                  type={"button"}
+                  className={"margin-right-2"}
+                >
+                  Next: {stepperData[currentStep + 1].label}
+                  <FontAwesomeIcon
+                    icon={faArrowRight}
+                    className="margin-left-1"
+                  />
                 </Button>
               )}
             </div>
