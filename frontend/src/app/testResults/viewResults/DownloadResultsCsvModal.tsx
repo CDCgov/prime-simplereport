@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { showError } from "../../utils/srToast";
 import Button from "../../commonComponents/Button/Button";
 import FetchClient from "../../../app/utils/api"; // Adjust the import path to your FetchClient
+import { getAppInsightsHeaders } from "../../TelemetryService"; // Adjust import path
 
 import { ALL_FACILITIES_ID } from "./TestResultsList";
 
@@ -17,6 +18,7 @@ interface DownloadResultsCsvModalProps {
   activeFacilityId: string;
 }
 
+// Create an instance of FetchClient for API calls
 const apiClient = new FetchClient();
 
 function buildCsvDownloadPath({
@@ -55,6 +57,7 @@ export const DownloadResultsCsvModal = ({
 }: DownloadResultsCsvModalProps) => {
   const [downloading, setDownloading] = useState(false);
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
+    // active facility in the facility filter is the default
     if (key === "filterFacilityId") {
       return val !== activeFacilityId;
     }
@@ -74,11 +77,16 @@ export const DownloadResultsCsvModal = ({
       });
       const fullUrl = apiClient.getURL(downloadPath);
 
-      console.log("Download URL:", fullUrl);
+      console.log("Download URL:", fullUrl); // Debug logging
 
       const response = await fetch(fullUrl, {
         method: "GET",
-        ...apiClient.defaultOptions,
+        mode: "cors",
+        headers: {
+          "Access-Control-Request-Headers": "Authorization",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          ...getAppInsightsHeaders(),
+        },
       });
 
       if (!response.ok) {
@@ -106,7 +114,7 @@ export const DownloadResultsCsvModal = ({
       window.URL.revokeObjectURL(urlBlob);
       closeModal();
     } catch (e: any) {
-      console.error("Download error:", e);
+      console.error("Download error:", e); // Debug logging
       showError("Error downloading results", e.message);
     } finally {
       setDownloading(false);
