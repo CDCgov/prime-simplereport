@@ -194,9 +194,11 @@ public class CsvExportService {
     AskOnEntrySurvey surveyData = item.getSurveyData();
     ApiUser createdBy = item.getCreatedBy();
 
-    String firstName = patient.getFirstName();
-    String middleName = patient.getMiddleName();
-    String lastName = patient.getLastName();
+    String firstName =
+        patient != null && patient.getFirstName() != null ? patient.getFirstName() : "";
+    String middleName =
+        patient != null && patient.getMiddleName() != null ? patient.getMiddleName() : "";
+    String lastName = patient != null && patient.getLastName() != null ? patient.getLastName() : "";
     String fullName = formatFullName(firstName, middleName, lastName);
 
     String submitterName = "";
@@ -209,19 +211,22 @@ public class CsvExportService {
     }
 
     String facilityName =
-        facility != null
+        facility != null && facility.getFacilityName() != null
             ? formatFacilityName(facility.getFacilityName(), facility.getIsDeleted())
             : "";
 
-    String hasSymptoms =
-        formatHasSymptoms(
-            surveyData != null && surveyData.getNoSymptoms() != null
-                ? surveyData.getNoSymptoms()
-                : false,
-            surveyData != null ? surveyData.getSymptomsJSON() : null);
+    String hasSymptoms = "";
+    if (surveyData != null) {
+      hasSymptoms =
+          formatHasSymptoms(
+              surveyData.getNoSymptoms() != null ? surveyData.getNoSymptoms() : false,
+              surveyData.getSymptomsJSON());
+    }
 
-    String symptomsPresent =
-        formatSymptomsPresent(surveyData != null ? surveyData.getSymptomsJSON() : null);
+    String symptomsPresent = "";
+    if (surveyData != null) {
+      symptomsPresent = formatSymptomsPresent(surveyData.getSymptomsJSON());
+    }
 
     String swabType = "";
     if (deviceType != null
@@ -231,12 +236,16 @@ public class CsvExportService {
     }
 
     String phoneNumber = "";
-    if (patient.getPhoneNumbers() != null && !patient.getPhoneNumbers().isEmpty()) {
+    if (patient != null
+        && patient.getPhoneNumbers() != null
+        && !patient.getPhoneNumbers().isEmpty()) {
       phoneNumber = patient.getPhoneNumbers().get(0).getNumber();
     }
 
     String tribalAffiliation = "";
-    if (patient.getTribalAffiliation() != null && !patient.getTribalAffiliation().isEmpty()) {
+    if (patient != null
+        && patient.getTribalAffiliation() != null
+        && !patient.getTribalAffiliation().isEmpty()) {
       tribalAffiliation = String.join(", ", patient.getTribalAffiliation());
     }
 
@@ -245,7 +254,7 @@ public class CsvExportService {
         middleName,
         lastName,
         fullName,
-        formatAsDate(patient.getBirthDate()),
+        formatAsDate(patient != null ? patient.getBirthDate() : null),
         formatAsDateTime(item.getDateTested()),
         item.getDisease(),
         item.getTestResult(),
@@ -261,24 +270,24 @@ public class CsvExportService {
         formatAsDate(surveyData != null ? surveyData.getSymptomOnsetDate() : null),
         facilityName,
         submitterName,
-        patient.getRole() != null ? patient.getRole().toString() : "",
-        patient.getLookupId(),
-        patient.getPreferredLanguage(),
+        patient != null && patient.getRole() != null ? patient.getRole().toString() : "",
+        patient != null ? patient.getLookupId() : "",
+        patient != null ? patient.getPreferredLanguage() : "",
         phoneNumber,
-        patient.getEmail(),
-        patient.getStreet(),
-        patient.getStreetTwo(),
-        patient.getCity(),
-        patient.getState(),
-        patient.getZipCode(),
-        patient.getCounty(),
-        patient.getCountry(),
-        patient.getGender() != null ? patient.getGender().toString() : "",
-        patient.getRace() != null ? patient.getRace().toString() : "",
-        patient.getEthnicity() != null ? patient.getEthnicity().toString() : "",
+        patient != null ? patient.getEmail() : "",
+        patient != null ? patient.getStreet() : "",
+        patient != null ? patient.getStreetTwo() : "",
+        patient != null ? patient.getCity() : "",
+        patient != null ? patient.getState() : "",
+        patient != null ? patient.getZipCode() : "",
+        patient != null ? patient.getCounty() : "",
+        patient != null ? patient.getCountry() : "",
+        patient != null && patient.getGender() != null ? patient.getGender().toString() : "",
+        patient != null && patient.getRace() != null ? patient.getRace().toString() : "",
+        patient != null && patient.getEthnicity() != null ? patient.getEthnicity().toString() : "",
         tribalAffiliation,
-        patient.getResidentCongregateSetting(),
-        patient.getEmployedInHealthcare());
+        patient != null ? patient.getResidentCongregateSetting() : "",
+        patient != null ? patient.getEmployedInHealthcare() : "");
   }
 
   private String formatFullName(String firstName, String middleName, String lastName) {
@@ -289,14 +298,14 @@ public class CsvExportService {
     }
 
     if (middleName != null && !middleName.isEmpty()) {
-      if (fullName.length() > 0) {
+      if (!fullName.isEmpty()) {
         fullName.append(" ");
       }
       fullName.append(middleName);
     }
 
     if (lastName != null && !lastName.isEmpty()) {
-      if (fullName.length() > 0) {
+      if (!fullName.isEmpty()) {
         fullName.append(" ");
       }
       fullName.append(lastName);

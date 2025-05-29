@@ -34,7 +34,7 @@ public class TestResultDataController {
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
       @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam() int pageSize) {
+      @RequestParam(defaultValue = "100") int pageSize) {
 
     log.info("CSV download request received with facilityId={}, pageSize={}", facilityId, pageSize);
 
