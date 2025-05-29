@@ -6,16 +6,25 @@ import static gov.cdc.usds.simplereport.test_util.TestDataFactory.DEFAULT_ORG_ID
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.db.model.Condition;
+import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Specimen;
+import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
+import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenBodySiteRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +32,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 class OrganizationInitializingServiceTest extends BaseServiceTest<DiseaseService> {
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private PersonRepository _personRepository;
+  @Autowired private ConditionRepository conditionRepository;
+  @Autowired private LabRepository labRepository;
+  @Autowired private SpecimenRepository specimenRepository;
+  @Autowired private SpecimenBodySiteRepository specimenBodySiteRepository;
   @Autowired OrganizationInitializingService _organizationInitializingService;
 
   private Organization _org;
@@ -120,6 +133,45 @@ class OrganizationInitializingServiceTest extends BaseServiceTest<DiseaseService
     _organizationInitializingService.createPatients(List.of(patient));
     List<Person> patientLookup = _personRepository.findAll();
     assertEquals(0, patientLookup.size());
+  }
+
+  @Test
+  void initUELRExampleData_success_addsConditionsLabsSpecimensSpecimenBodySites() {
+    Condition testCondition = new Condition("conditionCode", "conditionDisplay");
+    testCondition.setLabs(
+        Set.of(
+            new Lab(
+                "labCode",
+                "labDisplay",
+                "labDescription",
+                "labLongCommonName",
+                "labScaleCode",
+                "labScaleDisplay",
+                "labSystemCode",
+                "labSystemDisplay",
+                "labAnswerList",
+                "labOrderOrObservation",
+                true)));
+
+    Specimen testSpecimen =
+        new Specimen("loincSystemCode", "loincSystemDisplay", "snomedCode", "snomedDisplay");
+
+    testSpecimen
+        .getBodySiteList()
+        .add(
+            new SpecimenBodySite(
+                "snomedSpecimenCode",
+                "snomedSpecimenDisplay",
+                "snomedSiteCode",
+                "snomedSiteDisplay"));
+
+    _organizationInitializingService.initUELRExampleData(
+        List.of(testCondition), List.of(testSpecimen));
+
+    assertEquals(1, conditionRepository.findAll().size());
+    assertEquals(1, labRepository.findAll().size());
+    assertEquals(1, specimenRepository.findAll().size());
+    assertEquals(1, specimenBodySiteRepository.count());
   }
 
   private LocalDate getBirthDate(String birthDate) {
