@@ -85,7 +85,7 @@ const SpecimenFormSection = ({
 
   return (
     <>
-      <div className="grid-row">
+      <div className="grid-row margin-top-2">
         <div className="grid-col-auto">
           <h2 className={"font-sans-lg"}>Specimen Info</h2>
         </div>
