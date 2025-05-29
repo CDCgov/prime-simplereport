@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -37,154 +37,129 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CsvExportService {
+public class FacilityCsvExportService {
   private final ResultService resultService;
   private static final int BATCH_SIZE = 1000;
 
-  @Data
-  public static class QueryParameters {
-    private final UUID facilityId;
-    private final UUID patientId;
-    private final TestResult testResult;
-    private final PersonRole personRole;
-    private final SupportedDisease disease;
-    private final Date startDate;
-    private final Date endDate;
-    private final int pageNumber;
-    private final int pageSize;
+  public record FacilityExportParameters(
+      UUID facilityId,
+      UUID patientId,
+      TestResult testResult,
+      PersonRole personRole,
+      SupportedDisease disease,
+      Date startDate,
+      Date endDate,
+      int pageNumber,
+      int pageSize) {
+    public void validate() {
+      if (facilityId == null) {
+        throw new IllegalArgumentException("facilityId is required for facility exports");
+      }
+    }
   }
 
-  public void streamResultsAsCsv(OutputStream outputStream, QueryParameters params) {
+  public void streamFacilityResultsAsCsv(
+      OutputStream outputStream, FacilityExportParameters params) {
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
 
-      int totalElements = getTotalResultsCount(params);
-      int totalPages = (int) Math.ceil((double) totalElements / BATCH_SIZE);
+      log.info(
+          "Starting facility CSV export for facilityId={} (streaming without count)",
+          params.facilityId);
 
-      log.info("Starting CSV export of {} records in {} batches", totalElements, totalPages);
-
-      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
+      int currentPage = 0;
+      int recordsProcessed = 0;
+      while (true) {
         Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
-        Page<TestResultsListItem> resultsPage = fetchResultsPage(params, pageable);
+        Page<TestResultsListItem> resultsPage = fetchFacilityResultsPage(params, pageable);
+
+        if (resultsPage.getContent().isEmpty()) {
+          break;
+        }
 
         for (TestResultsListItem item : resultsPage.getContent()) {
           writeCsvRow(csvPrinter, item);
+          recordsProcessed++;
         }
 
         csvPrinter.flush();
-        log.debug("Processed batch {}/{} for CSV export", (currentPage + 1), totalPages);
+        log.debug(
+            "Processed batch {} with {} records",
+            currentPage + 1,
+            resultsPage.getNumberOfElements());
+
+        if (resultsPage.getContent().size() < BATCH_SIZE) {
+          break;
+        }
+        currentPage++;
       }
 
-      log.info("Completed streaming CSV export");
+      log.info("Completed facility CSV export: {} records processed", recordsProcessed);
+
     } catch (IOException e) {
-      log.error("Error streaming CSV data", e);
-      throw new RuntimeException("Failed to generate CSV file", e);
+      log.error("Error streaming facility CSV data for facilityId={}", params.facilityId(), e);
+      throw new RuntimeException("Failed to generate facility CSV file", e);
     }
+  }
+
+  private Page<TestResultsListItem> fetchFacilityResultsPage(
+      FacilityExportParameters params, Pageable pageable) {
+    return resultService
+        .getFacilityResults(
+            params.facilityId(),
+            params.patientId(),
+            params.testResult(),
+            params.personRole(),
+            params.disease(),
+            params.startDate(),
+            params.endDate(),
+            pageable.getPageNumber(),
+            pageable.getPageSize())
+        .map(TestResultsListItem::new);
   }
 
   private CSVFormat createCsvFormat() {
-    return CSVFormat.DEFAULT.withHeader(
-        "Patient first name",
-        "Patient middle name",
-        "Patient last name",
-        "Patient full name",
-        "Patient date of birth",
-        "Test date",
-        "Condition",
-        "Result",
-        "Result reported date",
-        "Test correction status",
-        "Test correction reason",
-        "Device name",
-        "Device manufacturer",
-        "Device model",
-        "Device swab type",
-        "Has symptoms",
-        "Symptoms present",
-        "Symptom onset",
-        "Facility name",
-        "Submitter",
-        "Patient role",
-        "Patient ID (Student ID, Employee ID, etc.)",
-        "Patient preferred language",
-        "Patient phone number",
-        "Patient email",
-        "Patient street address",
-        "Patient street address 2",
-        "Patient city",
-        "Patient state",
-        "Patient zip code",
-        "Patient county",
-        "Patient country",
-        "Patient gender",
-        "Patient race",
-        "Patient ethnicity",
-        "Patient tribal affiliation",
-        "Patient is a resident in a congregate setting",
-        "Patient is employed in healthcare");
-  }
-
-  private int getTotalResultsCount(QueryParameters params) {
-    Page<TestResultsListItem> countPage;
-    if (params.getFacilityId() == null) {
-      countPage =
-          resultService
-              .getOrganizationResults(
-                  params.getPatientId(),
-                  params.getTestResult(),
-                  params.getPersonRole(),
-                  params.getDisease(),
-                  params.getStartDate(),
-                  params.getEndDate(),
-                  0,
-                  1)
-              .map(TestResultsListItem::new);
-    } else {
-      countPage =
-          resultService
-              .getFacilityResults(
-                  params.getFacilityId(),
-                  params.getPatientId(),
-                  params.getTestResult(),
-                  params.getPersonRole(),
-                  params.getDisease(),
-                  params.getStartDate(),
-                  params.getEndDate(),
-                  0,
-                  1)
-              .map(TestResultsListItem::new);
-    }
-
-    return (int) countPage.getTotalElements();
-  }
-
-  private Page<TestResultsListItem> fetchResultsPage(QueryParameters params, Pageable pageable) {
-    if (params.getFacilityId() == null) {
-      return resultService
-          .getOrganizationResults(
-              params.getPatientId(),
-              params.getTestResult(),
-              params.getPersonRole(),
-              params.getDisease(),
-              params.getStartDate(),
-              params.getEndDate(),
-              pageable.getPageNumber(),
-              pageable.getPageSize())
-          .map(TestResultsListItem::new);
-    } else {
-      return resultService
-          .getFacilityResults(
-              params.getFacilityId(),
-              params.getPatientId(),
-              params.getTestResult(),
-              params.getPersonRole(),
-              params.getDisease(),
-              params.getStartDate(),
-              params.getEndDate(),
-              pageable.getPageNumber(),
-              pageable.getPageSize())
-          .map(TestResultsListItem::new);
-    }
+    String[] headers = {
+      "Patient first name",
+      "Patient middle name",
+      "Patient last name",
+      "Patient full name",
+      "Patient date of birth",
+      "Test date",
+      "Condition",
+      "Result",
+      "Result reported date",
+      "Test correction status",
+      "Test correction reason",
+      "Device name",
+      "Device manufacturer",
+      "Device model",
+      "Device swab type",
+      "Has symptoms",
+      "Symptoms present",
+      "Symptom onset",
+      "Facility name",
+      "Submitter",
+      "Patient role",
+      "Patient ID (Student ID, Employee ID, etc.)",
+      "Patient preferred language",
+      "Patient phone number",
+      "Patient email",
+      "Patient street address",
+      "Patient street address 2",
+      "Patient city",
+      "Patient state",
+      "Patient zip code",
+      "Patient county",
+      "Patient country",
+      "Patient gender",
+      "Patient race",
+      "Patient ethnicity",
+      "Patient tribal affiliation",
+      "Patient is a resident in a congregate setting",
+      "Patient is employed in healthcare"
+    };
+    return CSVFormat.Builder.create().setHeader(headers).build();
   }
 
   private void writeCsvRow(CSVPrinter csvPrinter, TestResultsListItem item) throws IOException {
@@ -282,9 +257,9 @@ public class CsvExportService {
         patient != null ? patient.getZipCode() : "",
         patient != null ? patient.getCounty() : "",
         patient != null ? patient.getCountry() : "",
-        patient != null && patient.getGender() != null ? patient.getGender().toString() : "",
-        patient != null && patient.getRace() != null ? patient.getRace().toString() : "",
-        patient != null && patient.getEthnicity() != null ? patient.getEthnicity().toString() : "",
+        patient != null && patient.getGender() != null ? patient.getGender() : "",
+        patient != null && patient.getRace() != null ? patient.getRace() : "",
+        patient != null && patient.getEthnicity() != null ? patient.getEthnicity() : "",
         tribalAffiliation,
         patient != null ? patient.getResidentCongregateSetting() : "",
         patient != null ? patient.getEmployedInHealthcare() : "");
@@ -362,9 +337,12 @@ public class CsvExportService {
       }
 
       return String.join(", ", symptomList);
-    } catch (Exception e) { // NOPMD - allowed in this method for testing
-      log.error("Error parsing symptoms JSON", e);
+    } catch (JsonProcessingException e) {
+      log.error("Error parsing symptoms JSON: {}", symptomsJson, e);
       return "Error parsing symptoms";
+    } catch (IllegalArgumentException e) {
+      log.error("Invalid symptoms JSON format: {}", symptomsJson, e);
+      return "Invalid symptoms format";
     }
   }
 
