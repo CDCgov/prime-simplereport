@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 public class FacilityCsvExportService {
   private final ResultService resultService;
   private static final int BATCH_SIZE = 5000;
+  private static final int MAX_VALUE = 20000;
 
   public record FacilityExportParameters(
       UUID facilityId,
@@ -95,7 +96,7 @@ public class FacilityCsvExportService {
         }
         currentPage++;
 
-        if (currentPage > 100000) {
+        if (currentPage > MAX_VALUE) {
           log.error(
               "Safety valve triggered - too many pages processed. Stopping at page {}",
               currentPage);
