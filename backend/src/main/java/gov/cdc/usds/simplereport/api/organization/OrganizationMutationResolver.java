@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
+import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
@@ -263,7 +264,7 @@ public class OrganizationMutationResolver {
 
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public int updateFacilityLabTestOrder(
+  public FacilityLabTestOrder updateFacilityLabTestOrder(
       @Argument UUID facilityId,
       @Argument UUID labId,
       @Argument String name,
@@ -279,16 +280,15 @@ public class OrganizationMutationResolver {
 
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean addFacilityLabTestOrderSpecimen(
-      @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
-    return organizationService.addFacilityLabTestOrderSpecimen(facilityLabTestOrderId, specimenId);
+  public Set<Specimen> addFacilityLabTestOrderSpecimen(
+      @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
+    return organizationService.addFacilityLabTestOrderSpecimen(facilityId, labId, specimenId);
   }
 
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public boolean removeFacilityLabTestOrderSpecimen(
-      @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
-    return organizationService.deleteFacilityLabTestOrderSpecimen(
-        facilityLabTestOrderId, specimenId);
+      @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
+    return organizationService.deleteFacilityLabTestOrderSpecimen(facilityId, labId, specimenId);
   }
 }

@@ -867,14 +867,14 @@ type Mutation {
     labId: ID!
     name: String!
     description: String!
-  ): Int
+  ): FacilityLabTestOrder
   addFacilityLabTestOrder(
     facilityId: ID!
     labId: ID!
     name: String!
     description: String!
   ): FacilityLabTestOrder
-  removeFacilityLabTestOrder(internalId: ID!): Boolean
-  addFacilityLabTestOrderSpecimen(facilityLabTestOrderId: ID!, specimenId: ID!): ID!
-  removeFacilityLabTestOrderSpecimen(internalId: ID!): Boolean
+  removeFacilityLabTestOrder(facilityId: ID!, labId: ID!): Boolean
+  addFacilityLabTestOrderSpecimen(facilityId: ID!, labId: ID!, specimenId: ID!): [Specimen]
+  removeFacilityLabTestOrderSpecimen(facilityId: ID!, labId: ID!, specimenId: ID!): Boolean
 }

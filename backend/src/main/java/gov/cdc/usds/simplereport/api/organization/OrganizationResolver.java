@@ -143,7 +143,7 @@ public class OrganizationResolver {
 
   @QueryMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<Specimen> facilityLabTestOrderSpecimens(
+  public Set<Specimen> facilityLabTestOrderSpecimens(
       @Argument UUID facilityId, @Argument UUID labId) {
     return _organizationService.getFacilityLabTestOrderSpecimens(facilityId, labId);
   }

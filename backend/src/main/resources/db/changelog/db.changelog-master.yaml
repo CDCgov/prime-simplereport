@@ -6433,13 +6433,6 @@ databaseChangeLog:
             remarks: Table to store facility-specific test order specimens
             columns:
               - column:
-                  name: internal_id
-                  type: uuid
-                  remarks: The internal database identifier for this entity.
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
                   name: facility_lab_test_order_id
                   type: uuid
                   remarks: Internal Id of a test order in the facility_lab_test_order table.
@@ -6459,34 +6452,6 @@ databaseChangeLog:
                     foreignKeyName: fk__specimen__specimen_id
                     references: specimen
                     deleteCascade: true
-              - column:
-                  name: created_at
-                  type: DATETIME
-                  remarks: The creation timestamp for this entity.
-                  constraints:
-                    nullable: false
-              - column:
-                  name: updated_at
-                  type: DATETIME
-                  remarks: The timestamp for the most recent update of this entity.
-                  constraints:
-                    nullable: false
-              - column:
-                  name: created_by
-                  type: uuid
-                  remarks: The user who created this entity.
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk__anyentity__created_by
-                    references: api_user
-              - column:
-                  name: updated_by
-                  type: uuid
-                  remarks: The user who most recently updated this entity.
-                  constraints:
-                    nullable: false
-                    references: api_user
-                    foreignKeyName: fk__anyentity__updated_by
         - addUniqueConstraint:
             constraintName: uk_facility_lab_test_order_specimen_facility_lab_test_order_specimen
             tableName: facility_lab_test_order_specimen

@@ -60,7 +60,6 @@ public class OrganizationService {
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
   private final FacilityLabTestOrderRepository facilityLabTestOrderRepository;
-  private final FacilityLabTestOrderSpecimenRepository facilityLabTestOrderSpecimenRepository;
   private final EmailService emailService;
   private final FeatureFlagsConfig featureFlagsConfig;
   private final SpecimenRepository specimenRepository;
@@ -549,8 +548,8 @@ public class OrganizationService {
         .collect(Collectors.toList());
   }
 
-  private @AuthorizationConfiguration.RequireGlobalAdminUser public List<UUID> getOrgAdminUserIds(
-      UUID orgId) {
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<UUID> getOrgAdminUserIds(UUID orgId) {
     return getOrgAdminUsers(orgId).stream()
         .map(ApiUser::getInternalId)
         .collect(Collectors.toList());
@@ -623,7 +622,7 @@ public class OrganizationService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<FacilityLabTestOrder> getFacilityLabTestOrders(@Argument UUID facilityId) {
-    return facilityLabTestOrderRepository.findAllByFacilityId(facilityId);
+    return facilityLabTestOrderRepository.findAllByFacilityIdAndIsDeletedFalse(facilityId);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -632,13 +631,27 @@ public class OrganizationService {
       @Argument UUID labId,
       @Argument String name,
       @Argument String description) {
-    return facilityLabTestOrderRepository.save(
-        FacilityLabTestOrder.builder()
-            .facilityId(facilityId)
-            .labId(labId)
-            .name(name)
-            .description(description)
-            .build());
+    FacilityLabTestOrder facilityLabTestOrder;
+    Optional<FacilityLabTestOrder> testOrderOpt =
+        facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedTrue(
+            facilityId, labId);
+
+    if (testOrderOpt.isPresent()) {
+      facilityLabTestOrder = testOrderOpt.get();
+      facilityLabTestOrder.setName(name);
+      facilityLabTestOrder.setDescription(description);
+      facilityLabTestOrder.setIsDeleted(false);
+    } else {
+      facilityLabTestOrder =
+          FacilityLabTestOrder.builder()
+              .facilityId(facilityId)
+              .labId(labId)
+              .name(name)
+              .description(description)
+              .build();
+    }
+
+    return facilityLabTestOrderRepository.save(facilityLabTestOrder);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -648,7 +661,8 @@ public class OrganizationService {
       @Argument String name,
       @Argument String description) {
     Optional<FacilityLabTestOrder> testOrderOpt =
-        facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabId(facilityId, labId);
+        facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
 
     if (testOrderOpt.isEmpty()) {
       throw new IllegalArgumentException("Cannot find facility lab test order to update");
@@ -661,10 +675,12 @@ public class OrganizationService {
     return facilityLabTestOrderRepository.save(testOrder);
   }
 
+  @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public boolean deleteFacilityLabTestOrder(@Argument UUID facilityId, @Argument UUID labId) {
     Optional<FacilityLabTestOrder> testOrderOpt =
-        facilityLabTestOrderRepository.findById(facilityId);
+        facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
 
     if (testOrderOpt.isEmpty()) {
       throw new IllegalArgumentException("Cannot find facility lab test order for deletion");
@@ -675,20 +691,31 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<Specimen> getFacilityLabTestOrderSpecimens(
+  public Set<Specimen> getFacilityLabTestOrderSpecimens(
       @Argument UUID facilityId, @Argument UUID labId) {
-    return facilityLabTestOrderSpecimenRepository.findByFacilityIdAndLabId(facilityId, labId);
+    Optional<FacilityLabTestOrder> testOrderOpt =
+        facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
+
+    if (testOrderOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find facility lab test order");
+    }
+
+    return testOrderOpt.get().getConfiguredSpecimens();
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean addFacilityLabTestOrderSpecimen(
-      @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
+  public Set<Specimen> addFacilityLabTestOrderSpecimen(
+      @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
     Optional<FacilityLabTestOrder> testOrderOpt =
-        facilityLabTestOrderRepository.findById(facilityLabTestOrderId);
+        facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
     Optional<Specimen> specimenOpt = specimenRepository.findById(specimenId);
 
-    if (testOrderOpt.isEmpty() || specimenOpt.isEmpty()) {
-      return false;
+    if (testOrderOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find facility lab test order");
+    } else if (specimenOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find specimen");
     }
 
     FacilityLabTestOrder testOrder = testOrderOpt.get();
@@ -699,14 +726,15 @@ public class OrganizationService {
       facilityLabTestOrderRepository.save(testOrder);
     }
 
-    return true;
+    return testOrder.getConfiguredSpecimens();
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public boolean deleteFacilityLabTestOrderSpecimen(
-      @Argument UUID facilityLabTestOrderId, UUID specimenId) {
+      @Argument UUID facilityId, @Argument UUID labId, UUID specimenId) {
     Optional<FacilityLabTestOrder> testOrderOpt =
-        facilityLabTestOrderRepository.findById(facilityLabTestOrderId);
+        facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
     Optional<Specimen> specimenOpt = specimenRepository.findById(specimenId);
 
     if (testOrderOpt.isEmpty() || specimenOpt.isEmpty()) {
