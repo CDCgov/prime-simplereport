@@ -4483,6 +4483,13 @@
   dependencies:
     unplugin "^1.3.1"
 
+"@storybook/csf@^0.1.11":
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/@storybook/csf/-/csf-0.1.13.tgz#c8a9bea2ae518a3d9700546748fa30a8b07f7f80"
+  integrity sha512-7xOOwCLGB3ebM87eemep89MYRFTko+D8qE7EdAAq74lgdqRR5cOUtYWJLjO2dLtP94nqoOdHJo6MdLLKzg412Q==
+  dependencies:
+    type-fest "^2.19.0"
+
 "@storybook/global@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@storybook/global/-/global-5.0.0.tgz#b793d34b94f572c1d7d9e0f44fac4e0dbc9572ed"
@@ -8845,12 +8852,14 @@ eslint-plugin-react@^7.27.1:
     string.prototype.matchall "^4.0.11"
     string.prototype.repeat "^1.0.0"
 
-eslint-plugin-storybook@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-storybook/-/eslint-plugin-storybook-9.0.0.tgz#665690f845ae7323a836dd447020b3816315ba2b"
-  integrity sha512-rhw3abHBRGVtOb0utBi69AV4mQImM3Pz7ACF/gX5AtwZDMmTfueb2t5BnkqPqnZeBD69MBeEptc9pNkmSOl/UQ==
+eslint-plugin-storybook@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-storybook/-/eslint-plugin-storybook-0.12.0.tgz#09ae667a7c569787d961b6f83337b2deee9daea8"
+  integrity sha512-Lg5I0+npTgiYgZ4KSvGWGDFZi3eOCNJPaWX0c9rTEEXC5wvooOClsP9ZtbI4hhFKyKgYR877KiJxbRTSJq9gWA==
   dependencies:
+    "@storybook/csf" "^0.1.11"
     "@typescript-eslint/utils" "^8.8.1"
+    ts-dedent "^2.2.0"
 
 eslint-plugin-testing-library@^5.0.1:
   version "5.11.1"
