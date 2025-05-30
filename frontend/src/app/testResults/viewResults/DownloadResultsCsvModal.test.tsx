@@ -68,7 +68,7 @@ describe("DownloadResultsCsvModal with filters", () => {
     expect(await screen.findByText("No, go back")).toBeInTheDocument();
     expect(
       await screen.findByLabelText("Download test results")
-    ).toHaveTextContent("The CSV file will include 15 rows");
+    ).toHaveTextContent("The CSV file will include 15 rows.");
   });
 });
 
@@ -170,6 +170,6 @@ describe("DownloadResultsCsvModal with large dataset", () => {
     ).toBeInTheDocument();
     expect(
       await screen.findByLabelText("Download test results")
-    ).toHaveTextContent("The CSV file will include 50000 rows");
+    ).toHaveTextContent("The CSV file will include 50,000 rows.");
   });
 });

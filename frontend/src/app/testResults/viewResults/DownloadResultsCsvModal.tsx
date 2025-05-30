@@ -1,12 +1,16 @@
 import { useState } from "react";
 import Modal from "react-modal";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faDownload,
+  faCheck,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { showError } from "../../utils/srToast";
 import Button from "../../commonComponents/Button/Button";
-import FetchClient from "../../../app/utils/api"; // Adjust the import path to your FetchClient
-import { getAppInsightsHeaders } from "../../TelemetryService"; // Adjust import path
+import FetchClient from "../../../app/utils/api";
+import { getAppInsightsHeaders } from "../../TelemetryService";
 
 import { ALL_FACILITIES_ID } from "./TestResultsList";
 
@@ -18,6 +22,7 @@ interface DownloadResultsCsvModalProps {
   activeFacilityId: string;
 }
 
+type DownloadState = "idle" | "preparing" | "downloading" | "complete";
 const apiClient = new FetchClient();
 
 function buildCsvDownloadPath({
@@ -54,7 +59,7 @@ export const DownloadResultsCsvModal = ({
   totalEntries,
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
-  const [downloading, setDownloading] = useState(false);
+  const [downloadState, setDownloadState] = useState<DownloadState>("idle");
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
     if (key === "filterFacilityId") {
       return val !== activeFacilityId;
@@ -66,8 +71,57 @@ export const DownloadResultsCsvModal = ({
     return entriesCount > 1 ? "s" : "";
   };
 
+  const getDownloadMessage = () => {
+    const rowText = `${totalEntries.toLocaleString()} row${pluralizeRows(
+      totalEntries
+    )}`;
+
+    switch (downloadState) {
+      case "preparing":
+        return `Preparing your download of ${rowText}...`;
+      case "downloading":
+        if (totalEntries > 10000) {
+          return `Downloading ${rowText}... This may take a moment for large files.`;
+        }
+        return `Downloading ${rowText}...`;
+      case "complete":
+        return `Download complete! ${rowText} downloaded successfully.`;
+      default:
+        return `The CSV file will include ${rowText}.`;
+    }
+  };
+
+  const getButtonContent = () => {
+    switch (downloadState) {
+      case "preparing":
+        return {
+          icon: faSpinner,
+          label: "Preparing download...",
+          className: "fa-spin",
+        };
+      case "downloading":
+        return {
+          icon: faSpinner,
+          label: "Downloading...",
+          className: "fa-spin",
+        };
+      case "complete":
+        return {
+          icon: faCheck,
+          label: "Download complete",
+          className: "",
+        };
+      default:
+        return {
+          icon: faDownload,
+          label: "Download results",
+          className: "",
+        };
+    }
+  };
+
   const handleDownload = async () => {
-    setDownloading(true);
+    setDownloadState("preparing");
     try {
       const downloadPath = buildCsvDownloadPath({
         filterParams,
@@ -75,7 +129,8 @@ export const DownloadResultsCsvModal = ({
       });
       const fullUrl = apiClient.getURL(downloadPath);
 
-      console.log("Download URL:", fullUrl); // Debug logging
+      console.log("Download URL:", fullUrl);
+      setDownloadState("downloading");
 
       const response = await fetch(fullUrl, {
         method: "GET",
@@ -110,14 +165,30 @@ export const DownloadResultsCsvModal = ({
       a.click();
       a.remove();
       window.URL.revokeObjectURL(urlBlob);
-      closeModal();
+
+      setDownloadState("complete");
+
+      setTimeout(() => {
+        closeModal();
+        setDownloadState("idle");
+      }, 2000);
     } catch (e: any) {
-      console.error("Download error:", e); // Debug logging
+      console.error("Download error:", e);
       showError("Error downloading results", e.message);
-    } finally {
-      setDownloading(false);
+      setDownloadState("idle");
     }
   };
+  const handleClose = () => {
+    if (downloadState !== "downloading" && downloadState !== "preparing") {
+      closeModal();
+      setDownloadState("idle");
+    }
+  };
+
+  const buttonContent = getButtonContent();
+  const isDownloading =
+    downloadState === "preparing" || downloadState === "downloading";
+  const isComplete = downloadState === "complete";
 
   return (
     <Modal
@@ -132,17 +203,19 @@ export const DownloadResultsCsvModal = ({
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Download test results"
       ariaHideApp={process.env.NODE_ENV !== "test"}
-      onRequestClose={closeModal}
+      onRequestClose={handleClose}
     >
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Download test results
+            {isComplete ? "Download Complete" : "Download test results"}
           </h1>
           <button
-            onClick={closeModal}
+            onClick={handleClose}
             className="close-button"
             aria-label="Close"
+            disabled={isDownloading}
+            style={{ opacity: isDownloading ? 0.5 : 1 }}
           >
             <span className="fa-layers">
               <FontAwesomeIcon icon={"circle"} size="2x" inverse />
@@ -151,32 +224,54 @@ export const DownloadResultsCsvModal = ({
           </button>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+
+        {!isComplete && (
+          <div className="grid-row grid-gap">
+            <p>
+              {filtersPresent
+                ? "Download results with current search filters applied?"
+                : "Download results without any search filters applied?"}
+            </p>
+          </div>
+        )}
         <div className="grid-row grid-gap">
-          <p>
-            {filtersPresent
-              ? "Download results with current search filters applied?"
-              : "Download results without any search filters applied?"}
-          </p>
+          <p>{getDownloadMessage()}</p>
         </div>
-        <div className="grid-row grid-gap">
-          <p>
-            The CSV file will include {totalEntries} row
-            {pluralizeRows(totalEntries)}.
-          </p>
-        </div>
+
+        {isDownloading && totalEntries > 1000 && (
+          <div className="grid-row grid-gap">
+            <p
+              className="text-base margin-top-1"
+              style={{ fontStyle: "italic" }}
+            >
+              Large downloads may take several minutes. Please don't close this
+              window.
+            </p>
+          </div>
+        )}
+
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
+            {!isComplete && (
+              <Button
+                className="margin-right-2"
+                onClick={handleClose}
+                variant="unstyled"
+                label={"No, go back"}
+                disabled={isDownloading}
+              />
+            )}
             <Button
-              className="margin-right-2"
-              onClick={closeModal}
-              variant="unstyled"
-              label={"No, go back"}
-            />
-            <Button
-              onClick={handleDownload}
-              disabled={downloading}
-              icon={faDownload}
-              label={downloading ? "Loading..." : "Download results"}
+              onClick={isComplete ? handleClose : handleDownload}
+              disabled={isDownloading}
+              icon={
+                <FontAwesomeIcon
+                  icon={buttonContent.icon}
+                  className={buttonContent.className}
+                />
+              }
+              label={buttonContent.label}
+              variant={isComplete ? "accent-cool" : undefined}
             />
           </div>
         </div>
