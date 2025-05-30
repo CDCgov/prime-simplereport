@@ -39,7 +39,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FacilityCsvExportService {
   private final ResultService resultService;
-  private static final int BATCH_SIZE = 1000;
+  private static final int BATCH_SIZE = 5000;
 
   public record FacilityExportParameters(
       UUID facilityId,
@@ -50,13 +50,7 @@ public class FacilityCsvExportService {
       Date startDate,
       Date endDate,
       int pageNumber,
-      int pageSize) {
-    public void validate() {
-      if (facilityId == null) {
-        throw new IllegalArgumentException("facilityId is required for facility exports");
-      }
-    }
-  }
+      int pageSize) {}
 
   public void streamFacilityResultsAsCsv(
       OutputStream outputStream, FacilityExportParameters params) {
@@ -69,11 +63,15 @@ public class FacilityCsvExportService {
 
       int currentPage = 0;
       int recordsProcessed = 0;
-      while (true) {
+      boolean hasMoreData = true;
+      while (hasMoreData) {
         Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
         Page<TestResultsListItem> resultsPage = fetchFacilityResultsPage(params, pageable);
 
-        if (resultsPage.getContent().isEmpty()) {
+        List<TestResultsListItem> content = resultsPage.getContent();
+
+        if (content.isEmpty()) {
+          log.debug("Empty page {} encountered, ending export", currentPage);
           break;
         }
 
@@ -84,14 +82,25 @@ public class FacilityCsvExportService {
 
         csvPrinter.flush();
         log.debug(
-            "Processed batch {} with {} records",
+            "Processed batch {} with {} records (total so far: {})",
             currentPage + 1,
-            resultsPage.getNumberOfElements());
+            content.size(),
+            recordsProcessed);
 
-        if (resultsPage.getContent().size() < BATCH_SIZE) {
-          break;
+        hasMoreData = !resultsPage.isLast();
+
+        if (content.size() < BATCH_SIZE && resultsPage.isLast()) {
+          log.debug("Last page detected: {} records in final batch", content.size());
+          hasMoreData = false;
         }
         currentPage++;
+
+        if (currentPage > 100000) {
+          log.error(
+              "Safety valve triggered - too many pages processed. Stopping at page {}",
+              currentPage);
+          break;
+        }
       }
 
       log.info("Completed facility CSV export: {} records processed", recordsProcessed);
@@ -369,10 +378,10 @@ public class FacilityCsvExportService {
   }
 
   private String formatAsDate(Object dateObj) {
-    return formatDateValue(dateObj, "MM/dd/yyyy");
+    return formatDateValue(dateObj, "MM/DD/yyyy");
   }
 
   private String formatAsDateTime(Object dateObj) {
-    return formatDateValue(dateObj, "MM/dd/yyyy h:mma");
+    return formatDateValue(dateObj, "MM/DD/yyyy h:mma");
   }
 }

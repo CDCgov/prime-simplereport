@@ -18,7 +18,6 @@ interface DownloadResultsCsvModalProps {
   activeFacilityId: string;
 }
 
-// Create an instance of FetchClient for API calls
 const apiClient = new FetchClient();
 
 function buildCsvDownloadPath({
@@ -57,7 +56,6 @@ export const DownloadResultsCsvModal = ({
 }: DownloadResultsCsvModalProps) => {
   const [downloading, setDownloading] = useState(false);
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
-    // active facility in the facility filter is the default
     if (key === "filterFacilityId") {
       return val !== activeFacilityId;
     }

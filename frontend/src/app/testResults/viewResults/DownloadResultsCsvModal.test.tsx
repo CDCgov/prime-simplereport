@@ -1,140 +1,43 @@
 import { render, screen } from "@testing-library/react";
-import { MockedProvider } from "@apollo/client/testing";
 import ReactDOM from "react-dom";
-import userEvent from "@testing-library/user-event";
-
-import { GetResultsForDownloadDocument } from "../../../generated/graphql";
-import { QueriedTestResult } from "../../utils/testResultCSV";
 
 import { DownloadResultsCsvModal } from "./DownloadResultsCsvModal";
 
-const mockedQueriedTestResults: QueriedTestResult[] = [
-  {
-    id: "1259eb00-1ec6-4611-83ee-d6a988687c5f",
-    dateAdded: "2023-02-28T14:35:13.975Z",
-    patient: {},
-    createdBy: {
-      nameInfo: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-      },
-    },
-    facility: {
-      name: "1677594642-Russel - Mann",
-      isDeleted: null,
-      __typename: "Facility",
-    },
-    dateTested: "2023-02-28T14:35:13.975Z",
-    dateUpdated: "2023-02-28T14:35:13.975Z",
-    testResult: "UNDETERMINED",
-    disease: "COVID-19",
-    correctionStatus: "ORIGINAL",
-    reasonForCorrection: null,
-    surveyData: {
-      noSymptoms: false,
-      symptoms: '{"64531003":"false"}',
-    },
-    deviceType: {
-      name: "Abbott IDNow",
-      manufacturer: "Abbott",
-      model: "ID Now",
-      swabTypes: [
-        {
-          internalId: "445297001",
-          name: "445297001",
-        },
-      ],
-    },
-  },
-];
-
-const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
-const graphqlMocks = [
-  {
-    request: {
-      variables: {
-        facilityId: "b0d2041f-93c9-4192-b19a-dd99c0044a7e",
-        pageNumber: 0,
-        pageSize: 1,
-      },
-      query: GetResultsForDownloadDocument,
-      fetchPolicy: "no-cache",
-    },
-    result: {
-      data: {
-        resultsPage: {
-          content: mockedQueriedTestResults,
-          totalElements: 1,
-        },
-      },
-    },
-  },
-];
-
-describe("DownloadResultsCsvModal with no filters and under 20k results", () => {
-  const renderWithUser = () => ({
-    user: userEvent.setup(),
-    ...render(
-      <MockedProvider mocks={graphqlMocks}>
-        <DownloadResultsCsvModal
-          filterParams={{}}
-          modalIsOpen={true}
-          closeModal={closeModalMock}
-          totalEntries={1}
-          activeFacilityId={mockFacilityID}
-        />
-      </MockedProvider>
-    ),
-  });
-
-  const closeModalMock = jest.fn();
-
-  beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-  });
-
-  it("matches screenshot", () => {
-    const { container } = renderWithUser();
-    expect(container).toMatchSnapshot();
-  });
-
-  it("allows for downloading and has no filters applied", async () => {
-    const { user } = renderWithUser();
-    const downloadButton = await screen.findByText("Download results");
-    expect(downloadButton).toBeEnabled();
-    expect(
-      await screen.findByText("Download test results")
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText(
-        "Download results without any search filters applied?"
-      )
-    ).toBeInTheDocument();
-    expect(await screen.findByText("No, go back")).toBeInTheDocument();
-    expect(
-      await screen.findByLabelText("Download test results")
-    ).toHaveTextContent("The CSV file will include 1 row");
-
-    await user.click(screen.getByRole("button", { name: /download results/i }));
-    expect(closeModalMock).toHaveBeenCalled();
-  });
+jest.mock("../../../app/utils/api", () => {
+  return jest.fn().mockImplementation(() => ({
+    getURL: jest.fn((path) => `http://localhost:8080${path}`),
+  }));
 });
 
-describe("DownloadResultsCsvModal with filters and under 20k results", () => {
+jest.mock("../../TelemetryService", () => ({
+  getAppInsightsHeaders: jest.fn(() => ({})),
+}));
+
+jest.mock("../../utils/srToast", () => ({
+  showError: jest.fn(),
+}));
+
+const mockLocalStorage = {
+  getItem: jest.fn(() => "mock-access-token"),
+};
+Object.defineProperty(window, "localStorage", {
+  value: mockLocalStorage,
+});
+
+global.fetch = jest.fn();
+
+const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
+
+describe("DownloadResultsCsvModal with filters", () => {
   const renderComponent = () =>
     render(
-      <MockedProvider mocks={[]}>
-        <DownloadResultsCsvModal
-          filterParams={{ result: "POSITIVE" }}
-          modalIsOpen={true}
-          closeModal={() => {}}
-          totalEntries={15}
-          activeFacilityId={mockFacilityID}
-        />
-      </MockedProvider>
+      <DownloadResultsCsvModal
+        filterParams={{ result: "POSITIVE" }}
+        modalIsOpen={true}
+        closeModal={() => {}}
+        totalEntries={15}
+        activeFacilityId={mockFacilityID}
+      />
     );
 
   beforeEach(() => {
@@ -144,14 +47,16 @@ describe("DownloadResultsCsvModal with filters and under 20k results", () => {
   });
 
   it("matches screenshot", () => {
-    let view = renderComponent();
+    const view = renderComponent();
     expect(view).toMatchSnapshot();
   });
 
   it("allows for downloading and has filters applied", async () => {
     renderComponent();
+
     const downloadButton = await screen.findByText("Download results");
     expect(downloadButton).toBeEnabled();
+
     expect(
       await screen.findByText("Download test results")
     ).toBeInTheDocument();
@@ -167,18 +72,16 @@ describe("DownloadResultsCsvModal with filters and under 20k results", () => {
   });
 });
 
-describe("DownloadResultsCsvModal with disease filter and under 20k results", () => {
+describe("DownloadResultsCsvModal with disease filter", () => {
   const renderComponent = () =>
     render(
-      <MockedProvider mocks={[]}>
-        <DownloadResultsCsvModal
-          filterParams={{ disease: "Flu A" }}
-          modalIsOpen={true}
-          closeModal={() => {}}
-          totalEntries={15}
-          activeFacilityId={mockFacilityID}
-        />
-      </MockedProvider>
+      <DownloadResultsCsvModal
+        filterParams={{ disease: "Flu A" }}
+        modalIsOpen={true}
+        closeModal={() => {}}
+        totalEntries={15}
+        activeFacilityId={mockFacilityID}
+      />
     );
 
   beforeEach(() => {
@@ -202,18 +105,16 @@ describe("DownloadResultsCsvModal with disease filter and under 20k results", ()
   });
 });
 
-describe("DownloadResultsCsvModal with current facility filter and under 20k results", () => {
+describe("DownloadResultsCsvModal with current facility filter", () => {
   const renderComponent = () =>
     render(
-      <MockedProvider mocks={[]}>
-        <DownloadResultsCsvModal
-          filterParams={{ filterFacilityId: mockFacilityID }}
-          modalIsOpen={true}
-          closeModal={() => {}}
-          totalEntries={15}
-          activeFacilityId={mockFacilityID}
-        />
-      </MockedProvider>
+      <DownloadResultsCsvModal
+        filterParams={{ filterFacilityId: mockFacilityID }}
+        modalIsOpen={true}
+        closeModal={() => {}}
+        totalEntries={15}
+        activeFacilityId={mockFacilityID}
+      />
     );
 
   beforeEach(() => {
@@ -222,7 +123,7 @@ describe("DownloadResultsCsvModal with current facility filter and under 20k res
     }) as any;
   });
 
-  it("shows correct modal text", async () => {
+  it("shows correct modal text for current facility", async () => {
     renderComponent();
     const downloadButton = await screen.findByText("Download results");
     expect(downloadButton).toBeEnabled();
@@ -237,18 +138,16 @@ describe("DownloadResultsCsvModal with current facility filter and under 20k res
   });
 });
 
-describe("DownloadResultsCsvModal with over 20k results", () => {
+describe("DownloadResultsCsvModal with large dataset", () => {
   const renderComponent = () =>
     render(
-      <MockedProvider mocks={[]}>
-        <DownloadResultsCsvModal
-          filterParams={{}}
-          modalIsOpen={true}
-          closeModal={() => {}}
-          totalEntries={20001}
-          activeFacilityId={mockFacilityID}
-        />
-      </MockedProvider>
+      <DownloadResultsCsvModal
+        filterParams={{}}
+        modalIsOpen={true}
+        closeModal={() => {}}
+        totalEntries={50000}
+        activeFacilityId={mockFacilityID}
+      />
     );
 
   beforeEach(() => {
@@ -258,22 +157,19 @@ describe("DownloadResultsCsvModal with over 20k results", () => {
   });
 
   it("matches screenshot", () => {
-    let view = renderComponent();
+    const view = renderComponent();
     expect(view).toMatchSnapshot();
   });
 
-  it("disables downloading", async () => {
+  it("allows downloading large datasets", async () => {
     renderComponent();
     const downloadButton = await screen.findByText("Download results");
-    expect(downloadButton).toBeDisabled();
+    expect(downloadButton).toBeEnabled();
     expect(
-      await screen.findByText("Too many results selected")
+      await screen.findByText("Download test results")
     ).toBeInTheDocument();
-    expect(await screen.findByText("Go back")).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        "Please filter test results and download again with 20,000 results or fewer."
-      )
-    ).toBeInTheDocument();
+      await screen.findByLabelText("Download test results")
+    ).toHaveTextContent("The CSV file will include 50000 rows");
   });
 });
