@@ -51,65 +51,66 @@ public class FacilityCsvExportService {
       Date startDate,
       Date endDate,
       int pageNumber,
-      int pageSize) {}
+      int pageSize) {
+
+    public void validate() {
+      if (facilityId == null) {
+        throw new IllegalArgumentException("facilityId is required for facility exports");
+      }
+    }
+  }
 
   public void streamFacilityResultsAsCsv(
       OutputStream outputStream, FacilityExportParameters params) {
+    params.validate();
+
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
 
-      log.info(
-          "Starting facility CSV export for facilityId={} (streaming without count)",
-          params.facilityId);
+      int totalElements = getFacilityResultsCount(params);
+      int totalPages = (int) Math.ceil((double) totalElements / BATCH_SIZE);
 
-      int currentPage = 0;
-      int recordsProcessed = 0;
-      boolean hasMoreData = true;
-      while (hasMoreData) {
+      log.info(
+          "Starting facility CSV export for facilityId={}: {} records in {} batches",
+          params.facilityId(),
+          totalElements,
+          totalPages);
+
+      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
         Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
         Page<TestResultsListItem> resultsPage = fetchFacilityResultsPage(params, pageable);
 
-        List<TestResultsListItem> content = resultsPage.getContent();
-
-        if (content.isEmpty()) {
-          log.debug("Empty page {} encountered, ending export", currentPage);
-          break;
-        }
-
         for (TestResultsListItem item : resultsPage.getContent()) {
           writeCsvRow(csvPrinter, item);
-          recordsProcessed++;
         }
 
         csvPrinter.flush();
-        log.debug(
-            "Processed batch {} with {} records (total so far: {})",
-            currentPage + 1,
-            content.size(),
-            recordsProcessed);
-
-        hasMoreData = !resultsPage.isLast();
-
-        if (content.size() < BATCH_SIZE && resultsPage.isLast()) {
-          log.debug("Last page detected: {} records in final batch", content.size());
-          hasMoreData = false;
-        }
-        currentPage++;
-
-        if (currentPage > MAX_VALUE) {
-          log.error(
-              "Safety valve triggered - too many pages processed. Stopping at page {}",
-              currentPage);
-          break;
-        }
+        log.debug("Processed batch {}/{} for facility CSV export", (currentPage + 1), totalPages);
       }
 
-      log.info("Completed facility CSV export: {} records processed", recordsProcessed);
-
+      log.info("Completed facility CSV export for facilityId={}", params.facilityId());
     } catch (IOException e) {
       log.error("Error streaming facility CSV data for facilityId={}", params.facilityId(), e);
       throw new RuntimeException("Failed to generate facility CSV file", e);
     }
+  }
+
+  private int getFacilityResultsCount(FacilityExportParameters params) {
+    Page<TestResultsListItem> countPage =
+        resultService
+            .getFacilityResults(
+                params.facilityId(),
+                params.patientId(),
+                params.testResult(),
+                params.personRole(),
+                params.disease(),
+                params.startDate(),
+                params.endDate(),
+                0,
+                1)
+            .map(TestResultsListItem::new);
+
+    return (int) countPage.getTotalElements();
   }
 
   private Page<TestResultsListItem> fetchFacilityResultsPage(
