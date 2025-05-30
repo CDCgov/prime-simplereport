@@ -61,6 +61,7 @@
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt && cd build && mv *touchpoints*.* static/",
     "codegen": "graphql-codegen --config codegen.yml && prettier --write 'src/generated/graphql.tsx' && eslint --fix 'src/generated/graphql.tsx' ",
     "codegen:watch": "yarn codegen --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
     "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write lint:stylelint:write",
     "lint:eslint": "eslint --quiet 'src/**/*.{js,ts,jsx,tsx}'",
