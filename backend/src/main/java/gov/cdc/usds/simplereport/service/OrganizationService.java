@@ -677,7 +677,8 @@ public class OrganizationService {
 
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean deleteFacilityLabTestOrder(@Argument UUID facilityId, @Argument UUID labId) {
+  public boolean markFacilityLabTestOrderAsDeleted(
+      @Argument UUID facilityId, @Argument UUID labId) {
     Optional<FacilityLabTestOrder> testOrderOpt =
         facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
             facilityId, labId);

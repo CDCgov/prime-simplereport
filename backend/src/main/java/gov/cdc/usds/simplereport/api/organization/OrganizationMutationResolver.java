@@ -275,7 +275,7 @@ public class OrganizationMutationResolver {
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public boolean removeFacilityLabTestOrder(@Argument UUID facilityId, @Argument UUID labId) {
-    return organizationService.deleteFacilityLabTestOrder(facilityId, labId);
+    return organizationService.markFacilityLabTestOrderAsDeleted(facilityId, labId);
   }
 
   @MutationMapping
