@@ -45,4 +45,20 @@ public class FacilityLabTestOrder extends EternalAuditedEntity {
       joinColumns = @JoinColumn(name = "facility_lab_test_order_id"),
       inverseJoinColumns = @JoinColumn(name = "specimen_id"))
   private Set<Specimen> configuredSpecimens = new HashSet<>();
+
+  public Set<Specimen> getSpecimens() {
+    return this.configuredSpecimens;
+  }
+
+  public boolean addSpecimen(Specimen specimen) {
+    if (this.configuredSpecimens.contains(specimen)) {
+      return false;
+    }
+
+    return this.configuredSpecimens.add(specimen);
+  }
+
+  public boolean removeSpecimen(Specimen specimen) {
+    return this.configuredSpecimens.remove(specimen);
+  }
 }

@@ -702,7 +702,7 @@ public class OrganizationService {
       throw new IllegalArgumentException("Cannot find facility lab test order");
     }
 
-    return testOrderOpt.get().getConfiguredSpecimens();
+    return testOrderOpt.get().getSpecimens();
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -722,12 +722,8 @@ public class OrganizationService {
     FacilityLabTestOrder testOrder = testOrderOpt.get();
     Specimen specimen = specimenOpt.get();
 
-    if (!testOrder.getConfiguredSpecimens().contains(specimen)) {
-      testOrder.getConfiguredSpecimens().add(specimen);
-      facilityLabTestOrderRepository.save(testOrder);
-    }
-
-    return testOrder.getConfiguredSpecimens();
+    testOrder.addSpecimen(specimen);
+    return testOrder.getSpecimens();
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -745,7 +741,7 @@ public class OrganizationService {
     FacilityLabTestOrder testOrder = testOrderOpt.get();
     Specimen specimen = specimenOpt.get();
 
-    boolean isRemoved = testOrder.getConfiguredSpecimens().remove(specimen);
+    boolean isRemoved = testOrder.removeSpecimen(specimen);
     if (isRemoved) {
       facilityLabTestOrderRepository.save(testOrder);
     }
