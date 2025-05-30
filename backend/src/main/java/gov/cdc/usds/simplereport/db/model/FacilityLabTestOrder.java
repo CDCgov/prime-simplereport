@@ -50,12 +50,8 @@ public class FacilityLabTestOrder extends EternalAuditedEntity {
     return this.configuredSpecimens;
   }
 
-  public boolean addSpecimen(Specimen specimen) {
-    if (this.configuredSpecimens.contains(specimen)) {
-      return false;
-    }
-
-    return this.configuredSpecimens.add(specimen);
+  public void addSpecimen(Specimen specimen) {
+    this.configuredSpecimens.add(specimen);
   }
 
   public boolean removeSpecimen(Specimen specimen) {
