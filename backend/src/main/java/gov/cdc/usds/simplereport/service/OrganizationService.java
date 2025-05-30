@@ -18,13 +18,7 @@ import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.FacilityLabTestOrderRepository;
-import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
-import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
-import gov.cdc.usds.simplereport.db.repository.PersonRepository;
-import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.*;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -42,7 +36,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -70,6 +63,8 @@ public class OrganizationService {
   private final FacilityLabTestOrderSpecimenRepository facilityLabTestOrderSpecimenRepository;
   private final EmailService emailService;
   private final FeatureFlagsConfig featureFlagsConfig;
+  private final SpecimenRepository specimenRepository;
+  private final TestOrderRepository testOrderRepository;
 
   public void resetOrganizationRolesContext() {
     organizationRolesContext.reset();
@@ -554,8 +549,8 @@ public class OrganizationService {
         .collect(Collectors.toList());
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<UUID> getOrgAdminUserIds(UUID orgId) {
+  private @AuthorizationConfiguration.RequireGlobalAdminUser public List<UUID> getOrgAdminUserIds(
+      UUID orgId) {
     return getOrgAdminUsers(orgId).stream()
         .map(ApiUser::getInternalId)
         .collect(Collectors.toList());
@@ -628,7 +623,7 @@ public class OrganizationService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<FacilityLabTestOrder> getFacilityLabTestOrders(@Argument UUID facilityId) {
-    return facilityLabTestOrderRepository.findByFacility(facilityId);
+    return facilityLabTestOrderRepository.findAllByFacilityId(facilityId);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -637,8 +632,29 @@ public class OrganizationService {
       @Argument UUID labId,
       @Argument String name,
       @Argument String description) {
-    FacilityLabTestOrder testOrder = new FacilityLabTestOrder();
-    testOrder.setFacilityId(facilityId);
+    return facilityLabTestOrderRepository.save(
+        FacilityLabTestOrder.builder()
+            .facilityId(facilityId)
+            .labId(labId)
+            .name(name)
+            .description(description)
+            .build());
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public FacilityLabTestOrder updateFacilityLabTestOrder(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    Optional<FacilityLabTestOrder> testOrderOpt =
+        facilityLabTestOrderRepository.findDistinctFirstByFacilityIdAndLabId(facilityId, labId);
+
+    if (testOrderOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find facility lab test order to update");
+    }
+
+    FacilityLabTestOrder testOrder = testOrderOpt.get();
     testOrder.setLabId(labId);
     testOrder.setName(name);
     testOrder.setDescription(description);
@@ -646,23 +662,16 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public int updateFacilityLabTestOrder(
-      @Argument UUID facilityId,
-      @Argument UUID labId,
-      @Argument String name,
-      @Argument String description) {
-    return facilityLabTestOrderRepository.updateByFacilityIdAndLabId(
-        facilityId, labId, name, description);
-  }
+  public boolean deleteFacilityLabTestOrder(@Argument UUID facilityId, @Argument UUID labId) {
+    Optional<FacilityLabTestOrder> testOrderOpt =
+        facilityLabTestOrderRepository.findById(facilityId);
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean deleteFacilityLabTestOrder(@Argument UUID internalId) {
-    try {
-      facilityLabTestOrderRepository.deleteById(internalId);
-      return true;
-    } catch (DataAccessException | IllegalArgumentException e) {
-      return false;
+    if (testOrderOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find facility lab test order for deletion");
     }
+
+    facilityLabTestOrderRepository.delete(testOrderOpt.get());
+    return true;
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -672,22 +681,45 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public UUID addFacilityLabTestOrderSpecimen(
+  public boolean addFacilityLabTestOrderSpecimen(
       @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
-    FacilityLabTestOrderSpecimen testOrderSpecimen = new FacilityLabTestOrderSpecimen();
-    testOrderSpecimen.setFacilityLabTestOrderId(facilityLabTestOrderId);
-    testOrderSpecimen.setSpecimenId(specimenId);
-    facilityLabTestOrderSpecimenRepository.save(testOrderSpecimen);
-    return testOrderSpecimen.getInternalId();
+    Optional<FacilityLabTestOrder> testOrderOpt =
+        facilityLabTestOrderRepository.findById(facilityLabTestOrderId);
+    Optional<Specimen> specimenOpt = specimenRepository.findById(specimenId);
+
+    if (testOrderOpt.isEmpty() || specimenOpt.isEmpty()) {
+      return false;
+    }
+
+    FacilityLabTestOrder testOrder = testOrderOpt.get();
+    Specimen specimen = specimenOpt.get();
+
+    if (!testOrder.getConfiguredSpecimens().contains(specimen)) {
+      testOrder.getConfiguredSpecimens().add(specimen);
+      facilityLabTestOrderRepository.save(testOrder);
+    }
+
+    return true;
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean deleteFacilityLabTestOrderSpecimen(@Argument UUID internalId) {
-    try {
-      facilityLabTestOrderSpecimenRepository.deleteById(internalId);
-      return true;
-    } catch (DataAccessException | IllegalArgumentException e) {
+  public boolean deleteFacilityLabTestOrderSpecimen(
+      @Argument UUID facilityLabTestOrderId, UUID specimenId) {
+    Optional<FacilityLabTestOrder> testOrderOpt =
+        facilityLabTestOrderRepository.findById(facilityLabTestOrderId);
+    Optional<Specimen> specimenOpt = specimenRepository.findById(specimenId);
+
+    if (testOrderOpt.isEmpty() || specimenOpt.isEmpty()) {
       return false;
     }
+
+    FacilityLabTestOrder testOrder = testOrderOpt.get();
+    Specimen specimen = specimenOpt.get();
+
+    boolean isRemoved = testOrder.getConfiguredSpecimens().remove(specimen);
+    if (isRemoved) {
+      facilityLabTestOrderRepository.save(testOrder);
+    }
+    return isRemoved;
   }
 }

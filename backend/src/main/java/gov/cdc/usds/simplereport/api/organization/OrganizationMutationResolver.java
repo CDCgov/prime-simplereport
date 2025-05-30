@@ -273,20 +273,22 @@ public class OrganizationMutationResolver {
 
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean removeFacilityLabTestOrder(@Argument UUID internalId) {
-    return organizationService.deleteFacilityLabTestOrder(internalId);
+  public boolean removeFacilityLabTestOrder(@Argument UUID facilityId, @Argument UUID labId) {
+    return organizationService.deleteFacilityLabTestOrder(facilityId, labId);
   }
 
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public UUID addFacilityLabTestOrderSpecimen(
+  public boolean addFacilityLabTestOrderSpecimen(
       @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
     return organizationService.addFacilityLabTestOrderSpecimen(facilityLabTestOrderId, specimenId);
   }
 
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean removeFacilityLabTestOrderSpecimen(@Argument UUID internalId) {
-    return organizationService.deleteFacilityLabTestOrderSpecimen(internalId);
+  public boolean removeFacilityLabTestOrderSpecimen(
+      @Argument UUID facilityLabTestOrderId, @Argument UUID specimenId) {
+    return organizationService.deleteFacilityLabTestOrderSpecimen(
+        facilityLabTestOrderId, specimenId);
   }
 }
