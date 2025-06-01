@@ -8,7 +8,7 @@
     "cypress-localstorage-commands": "^2.2.7",
     "dayjs": "^1.11.13",
     "eslint": "^9.26.0",
-    "eslint-plugin-cypress": "^4.3.0",
+    "eslint-plugin-cypress": "^5.0.1",
     "otplib": "^12.0.1",
     "prettier": "3.5.3"
   },
