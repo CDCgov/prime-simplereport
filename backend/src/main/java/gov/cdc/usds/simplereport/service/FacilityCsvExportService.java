@@ -39,8 +39,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FacilityCsvExportService {
   private final ResultService resultService;
-  private static final int BATCH_SIZE = 5000;
-  private static final int MAX_VALUE = 20000;
+  private static final int BATCH_SIZE = 25000;
 
   public record FacilityExportParameters(
       UUID facilityId,
@@ -80,6 +79,13 @@ public class FacilityCsvExportService {
         Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
         Page<TestResultsListItem> resultsPage = fetchFacilityResultsPage(params, pageable);
 
+        log.info(
+            "Page {}/{}: Expected {} records, Got {} records, Total so far: {}",
+            (currentPage + 1),
+            totalPages,
+            BATCH_SIZE,
+            resultsPage.getContent().size(),
+            (currentPage * BATCH_SIZE) + resultsPage.getContent().size());
         for (TestResultsListItem item : resultsPage.getContent()) {
           writeCsvRow(csvPrinter, item);
         }
