@@ -37,9 +37,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,11 +58,6 @@ class ConditionServiceTest {
     fhirContext = FhirContext.forR4();
     fhirContext.getParserOptions().setStripVersionsFromReferences(false);
     fhirContext.getParserOptions().setOverrideResourceIdWithBundleEntryFullUrl(false);
-
-    SecurityContextHolder.getContext()
-        .setAuthentication(
-            new TestingAuthenticationToken(
-                "admin", null, List.of(new SimpleGrantedAuthority("ROLE_SITE_ADMIN"))));
   }
 
   private void setupRepositoryMocks() {
