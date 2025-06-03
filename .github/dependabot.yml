@@ -7,9 +7,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/backend"
@@ -17,9 +14,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/backend/db-setup"
@@ -27,9 +21,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/cypress"
@@ -37,9 +28,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/frontend"
@@ -47,9 +35,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/nginx"
@@ -57,9 +42,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "docker"
     directory: "/ops/services/container_instances/db_client/image"
@@ -67,9 +49,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -77,9 +56,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "gradle"
     directory: "/backend"
@@ -87,9 +63,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -97,9 +70,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "npm"
     directory: "/frontend"
@@ -107,9 +77,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
     groups:
       eslint:
         patterns:
@@ -138,9 +105,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "npm"
     directory: "/ops/services/app_functions/report_stream_batched_publisher/functions"
@@ -148,9 +112,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
-      - "cdcgov/simplereport-engineeringreviews"
 
   - package-ecosystem: "terraform"
     directory: "/ops/global"
@@ -158,8 +119,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
 
   - package-ecosystem: "terraform"
     directory: "/ops/services/okta-global"
@@ -167,8 +126,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
 
   - package-ecosystem: "terraform"
     directory: "/ops/test"
@@ -176,8 +133,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
 
   - package-ecosystem: "terraform"
     directory: "/ops/test/persistent"
@@ -185,5 +140,3 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-    reviewers:
-      - "cdcgov/simplereport-devsecops"
