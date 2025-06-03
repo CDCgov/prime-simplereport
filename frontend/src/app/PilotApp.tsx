@@ -22,6 +22,7 @@ import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import LabReportForm from "./universalReporting/LabReportForm";
 import PilotHeader from "./commonComponents/PilotHeader";
 import ReportLandingPage from "./universalReporting/ReportLandingPage";
+import PageNotFound from "./commonComponents/PageNotFound";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -154,7 +155,7 @@ const PilotApp = () => {
   const canViewResults = appPermissions.results.canView;
 
   if (!universalReportingEnabled) {
-    return <Navigate to={{ pathname: "/", search: location.search }} />;
+    return <PageNotFound />;
   }
 
   return (
