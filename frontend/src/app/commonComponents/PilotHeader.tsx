@@ -8,6 +8,7 @@ import siteLogo from "../../img/simplereport-logo-white.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { getAppInsights } from "../TelemetryService";
 import { formatFullName, formatRole } from "../utils/user";
+import TouchpointsButton from "../analytics/TouchpointsButton";
 
 import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
@@ -251,7 +252,7 @@ const PilotHeader: React.FC<{}> = () => {
   return (
     <div className="usa-nav-container prime-header">
       <div className="usa-navbar flex-align-self-center">
-        <div id="basic-logo">
+        <div className="usa-logo" id="basic-logo">
           <LinkWithQuery to={"/pilot/report"} title="Home" aria-label="Home">
             <img
               className="width-card desktop:width-full"
@@ -260,6 +261,41 @@ const PilotHeader: React.FC<{}> = () => {
             />
           </LinkWithQuery>
         </div>
+        <button
+          onClick={() => setMenuVisible(!menuVisible)}
+          className="usa-menu-btn"
+        >
+          Menu
+        </button>
+
+        <nav
+          aria-label="Primary mobile navigation"
+          className={classNames(
+            "usa-nav",
+            "prime-nav",
+            "desktop:display-none",
+            {
+              "is-visible": menuVisible,
+            },
+            "mobile-nav"
+          )}
+        >
+          <button
+            className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
+            onClick={() => setMenuVisible(false)}
+            title={"close menu"}
+          >
+            <FontAwesomeIcon icon={"window-close"} />
+          </button>
+          {mainNavList("mobile")}
+          <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
+            {secondaryNav("mobile")}
+          </ul>
+          <div className="usa-nav__primary mobile-sublist-container">
+            {secondaryNavSublist("mobile")}
+            <TouchpointsButton />
+          </div>
+        </nav>
       </div>
       <nav
         aria-label="Primary desktop navigation"
