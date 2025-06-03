@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultsListItem;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -98,6 +101,32 @@ public class FacilityCsvExportService {
     } catch (IOException e) {
       log.error("Error streaming facility CSV data for facilityId={}", params.facilityId(), e);
       throw new RuntimeException("Failed to generate facility CSV file", e);
+    }
+  }
+
+  public void streamFacilityResultsAsZippedCsv(
+      OutputStream rawOut, FacilityExportParameters params) {
+
+    class NonClosingOutputStream extends FilterOutputStream {
+      NonClosingOutputStream(OutputStream out) {
+        super(out);
+      }
+
+      @Override
+      public void close() throws IOException {
+        flush();
+      }
+    }
+
+    try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
+      zipOut.putNextEntry(new ZipEntry("facility-results.csv"));
+
+      streamFacilityResultsAsCsv(new NonClosingOutputStream(zipOut), params);
+
+      zipOut.closeEntry();
+    } catch (IOException ex) {
+      log.error("Error zipping CSV for facilityId={}", params.facilityId(), ex);
+      throw new RuntimeException("Failed to generate zipped facility CSV", ex);
     }
   }
 

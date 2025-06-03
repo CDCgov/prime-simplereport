@@ -64,16 +64,16 @@ public class TestResultDataController {
             pageSize);
 
     StreamingResponseBody responseBody =
-        outputStream -> {
-          csvExportService.streamFacilityResultsAsCsv(outputStream, params);
+        out -> {
+          csvExportService.streamFacilityResultsAsZippedCsv(out, params);
         };
 
     String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
-    String csvFileName = String.format("facility-%s-test-results-%s.csv", facilityId, timestamp);
+    String zipFileName = String.format("facility-%s-test-results-%s.zip", facilityId, timestamp);
 
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + csvFileName)
-        .header(HttpHeaders.CONTENT_TYPE, "text/csv;charset=UTF-8")
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zipFileName)
+        .header(HttpHeaders.CONTENT_TYPE, "application/zip")
         .body(responseBody);
   }
 }

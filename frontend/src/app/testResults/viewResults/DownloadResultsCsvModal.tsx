@@ -150,7 +150,7 @@ export const DownloadResultsCsvModal = ({
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("content-disposition");
-      let filename = "simplereport-test-results.csv";
+      let filename = "simplereport-test-results.zip";
 
       if (contentDisposition) {
         const match = contentDisposition.match(/filename=(.+)/);
