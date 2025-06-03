@@ -264,12 +264,8 @@ export const DownloadResultsCsvModal = ({
             <Button
               onClick={isComplete ? handleClose : handleDownload}
               disabled={isDownloading}
-              icon={
-                <FontAwesomeIcon
-                  icon={buttonContent.icon}
-                  className={buttonContent.className}
-                />
-              }
+              icon={buttonContent.icon}
+              iconClassName={buttonContent.className}
               label={buttonContent.label}
               variant={isComplete ? "accent-cool" : undefined}
             />

@@ -39,7 +39,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FacilityCsvExportService {
   private final ResultService resultService;
-  private static final int BATCH_SIZE = 25000;
+  private static final int BATCH_SIZE = 5000;
 
   public record FacilityExportParameters(
       UUID facilityId,
