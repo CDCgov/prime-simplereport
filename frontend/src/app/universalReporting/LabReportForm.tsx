@@ -7,6 +7,7 @@ import {
 } from "@trussworks/react-uswds";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useNavigate } from "react-router-dom";
 
 import {
   FacilityReportInput,
@@ -22,6 +23,7 @@ import {
   useSubmitLabReportMutation,
 } from "../../generated/graphql";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { showSuccess } from "../utils/srToast";
 import "./LabReportForm.scss";
 
 import {
@@ -76,8 +78,9 @@ const LabReportForm = () => {
   const [testOrderLoinc, setTestOrderLoinc] = useState<string>("");
   const [testOrderSearchString, setTestOrderSearchString] =
     useState<string>("");
-  const [submissionResponse, setSubmissionResponse] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
+
+  const navigate = useNavigate();
 
   const [submitLabReport] = useSubmitLabReportMutation();
 
@@ -99,47 +102,50 @@ const LabReportForm = () => {
     useGetLabsByConditionsLazyQuery();
 
   useEffect(() => {
-    const facilityInfo = facilityData?.facility;
-    const facilityAddress = facilityInfo?.address ?? {};
-    const orderingProvider = facilityInfo?.orderingProvider ?? {};
-    const providerAddress = orderingProvider?.address ?? {};
+    if (activeFacility?.id) {
+      const facilityInfo = facilityData?.facility;
+      const facilityAddress = facilityInfo?.address ?? {};
+      const orderingProvider = facilityInfo?.orderingProvider ?? {};
+      const providerAddress = orderingProvider?.address ?? {};
 
-    setProvider((prevProvider) => ({
-      ...prevProvider,
-      city: providerAddress.city ?? "",
-      county: providerAddress.county ?? "",
-      state: providerAddress.state ?? "",
-      street: providerAddress.streetOne ?? "",
-      streetTwo: providerAddress.streetTwo ?? "",
-      zipCode: providerAddress.postalCode ?? "",
-      firstName: orderingProvider.firstName ?? "",
-      lastName: orderingProvider.lastName ?? "",
-      middleName: orderingProvider.middleName ?? "",
-      npi: orderingProvider.NPI ?? "",
-      phone: orderingProvider.phone ?? "",
-      suffix: orderingProvider.suffix ?? "",
-    }));
+      setProvider((prevProvider) => ({
+        ...prevProvider,
+        city: providerAddress.city ?? "",
+        county: providerAddress.county ?? "",
+        state: providerAddress.state ?? "",
+        street: providerAddress.streetOne ?? "",
+        streetTwo: providerAddress.streetTwo ?? "",
+        zipCode: providerAddress.postalCode ?? "",
+        firstName: orderingProvider.firstName ?? "",
+        lastName: orderingProvider.lastName ?? "",
+        middleName: orderingProvider.middleName ?? "",
+        npi: orderingProvider.NPI ?? "",
+        phone: orderingProvider.phone ?? "",
+        suffix: orderingProvider.suffix ?? "",
+      }));
 
-    setFacility((prevFacility) => ({
-      ...prevFacility,
-      city: facilityAddress?.city ?? "",
-      state: facilityAddress?.state ?? "",
-      street: facilityAddress?.streetOne ?? "",
-      streetTwo: facilityAddress?.streetTwo ?? "",
-      zipCode: facilityAddress?.postalCode ?? "",
-      county: facilityAddress?.county ?? "",
-      clia: facilityInfo?.cliaNumber ?? "",
-      email: facilityInfo?.email ?? "",
-      name: facilityInfo?.name ?? "",
-      phone: facilityInfo?.phone ?? "",
-    }));
-  }, [facilityData]);
+      setFacility((prevFacility) => ({
+        ...prevFacility,
+        city: facilityAddress?.city ?? "",
+        state: facilityAddress?.state ?? "",
+        street: facilityAddress?.streetOne ?? "",
+        streetTwo: facilityAddress?.streetTwo ?? "",
+        zipCode: facilityAddress?.postalCode ?? "",
+        county: facilityAddress?.county ?? "",
+        clia: facilityInfo?.cliaNumber ?? "",
+        email: facilityInfo?.email ?? "",
+        name: facilityInfo?.name ?? "",
+        phone: facilityInfo?.phone ?? "",
+      }));
+    }
+  }, [facilityData, activeFacility]);
 
   const updateTestOrderLoinc = async (lab: Lab) => {
     const updatedList = [] as TestDetailsInput[];
     updatedList.push({
       condition: selectedCondition,
       testOrderLoinc: lab.code,
+      testOrderDisplayName: lab.display,
       testPerformedLoinc: lab.code,
       testPerformedLoincLongCommonName: lab.longCommonName,
       resultType: mapScaleDisplayToResultScaleType(lab.scaleDisplay ?? ""),
@@ -168,6 +174,7 @@ const LabReportForm = () => {
       setSpecimen({
         ...specimen,
         snomedTypeCode: sortedSpecimenData[0].snomedCode,
+        snomedDisplayName: sortedSpecimenData[0].snomedDisplay,
         collectionBodySiteCode: sortedBodySiteList[0]?.snomedSiteCode ?? "",
         collectionBodySiteName: sortedBodySiteList[0]?.snomedSiteDisplay ?? "",
       } as SpecimenInput);
@@ -230,18 +237,32 @@ const LabReportForm = () => {
   };
 
   const submitForm = async () => {
-    const submissionResponse = await submitLabReport({
-      variables: {
-        patient: { ...patient },
-        provider: { ...provider },
-        facility: { ...facility },
-        specimen: { ...specimen },
-        testDetailsList: [...testDetailList],
-      },
-    });
-    setSubmissionResponse(
-      submissionResponse.data?.submitLabReport ?? "Response was null"
-    );
+    // TODO: add form validation
+    try {
+      const submissionResponse = await submitLabReport({
+        variables: {
+          patient: { ...patient },
+          provider: { ...provider },
+          facility: { ...facility },
+          specimen: { ...specimen },
+          testDetailsList: [...testDetailList],
+        },
+      });
+      console.log(
+        "Submission response: ",
+        submissionResponse.data?.submitLabReport ?? "null"
+      );
+      showSuccess(
+        "An ELR has been sent to the required public health departments",
+        "Lab result successfully reported"
+      );
+      navigate({
+        pathname: "/pilot/report",
+      });
+    } catch (err: any) {
+      console.error(err);
+      // The generic "Something went wrong" error toast appears if the submitLabReport mutation fails.
+    }
   };
 
   const conditionOptions = buildConditionsOptionList(
@@ -358,10 +379,13 @@ const LabReportForm = () => {
             )}
             {currentStep === 4 && (
               <>
-                <ReviewFormSection facility={facility} />
-                {submissionResponse.length > 0 && (
-                  <div>Submission response: {submissionResponse}</div>
-                )}
+                <ReviewFormSection
+                  facility={facility}
+                  provider={provider}
+                  patient={patient}
+                  specimen={specimen}
+                  testDetailsList={testDetailList}
+                />
               </>
             )}
             <div className="usa-form-group">
