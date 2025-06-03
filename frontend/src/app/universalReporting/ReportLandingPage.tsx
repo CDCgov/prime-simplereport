@@ -9,7 +9,7 @@ const ReportLandingPage = () => {
         <h2 className={"font-sans-xl"}>Report lab results</h2>
         <div className="prime-container">
           <div className="grid-row grid-gap">
-            <div className="grid-col-6">
+            <div className="tablet:grid-col-6 margin-bottom-2">
               <div className="card-container">
                 <div className="usa-card__body">
                   <h3>I want to enter results individually</h3>
@@ -26,7 +26,7 @@ const ReportLandingPage = () => {
                 </div>
               </div>
             </div>
-            <div className="grid-col-6">
+            <div className="tablet:grid-col-6">
               <div className="card-container">
                 <div className="usa-card__body">
                   <h3>I want to enter upload multiple results</h3>
