@@ -63,8 +63,6 @@ public class FeatureFlagsConfig {
           facilityMap.put(flag.getName(), flag.getValue());
           allFacilitiesMap.put(flag.getFacilityId(), facilityMap);
         });
-
-    log.info("FeatureFlags loaded from database");
   }
 
   private void flagMapping(String flagName, Boolean flagValue) {
