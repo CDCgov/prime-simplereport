@@ -1,13 +1,13 @@
-.usa-nav-container.prime-header .nav__primary-item-icon:last-child {
+.desktop-nav * .usa-nav-container.prime-header .nav__primary-item-icon:last-child {
   border-bottom: none !important;
 }
 
-.pilot-header * > .usa-nav__primary > .usa-nav__primary-item > a {
+.pilot-header * .desktop-nav * > .usa-nav__primary > .usa-nav__primary-item > a {
   border-left: none !important;
   border-right: none !important;
 }
 
-.pilot-header * > a.active-nav-item {
+.pilot-header * .desktop-nav * > a.active-nav-item {
   padding-bottom: 1.15rem !important;
   font-weight: 400 !important;
 }
@@ -17,7 +17,7 @@
   padding-bottom: 0.25rem;
 }
 
-.pilot-header * > .prime-nav-link {
+.pilot-header * .desktop-nav * > .prime-nav-link {
   color: white !important;
 }
 
