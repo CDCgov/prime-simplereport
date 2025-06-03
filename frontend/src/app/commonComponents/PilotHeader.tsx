@@ -4,14 +4,14 @@ import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
 
-import siteLogo from "../../img/simplereport-logo-color.svg";
+import siteLogo from "../../img/simplereport-logo-white.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { getAppInsights } from "../TelemetryService";
 import { formatFullName, formatRole } from "../utils/user";
 
 import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
-import "./Header.scss";
+import "./PilotHeader.scss";
 import Button from "./Button/Button";
 import ChangeUser from "./ChangeUser";
 
@@ -71,7 +71,7 @@ const PilotHeader: React.FC<{}> = () => {
 
   const mainNavContent = [
     {
-      url: "/pilot/report/lab",
+      url: "/pilot/report",
       displayText: "Report lab results",
       displayPermissions: canViewTestQueue,
       className: getNavItemClassName,
@@ -92,7 +92,7 @@ const PilotHeader: React.FC<{}> = () => {
                 id={`${deviceType}-${item.key}`}
                 data-cy={`${deviceType}-${item.key}`}
               >
-                {item.displayText}
+                <span>{item.displayText}</span>
               </LinkWithQuery>
             </li>
           )
@@ -123,12 +123,13 @@ const PilotHeader: React.FC<{}> = () => {
       hasSubmenu: true,
       icon: (
         <FontAwesomeIcon
-          icon={"user-circle"}
+          icon={"user"}
           aria-hidden={false}
           aria-label={"My account"}
           role={"img"}
           style={{
             color: staffDetailsVisible && !menuVisible ? "white" : "",
+            fontSize: "1.2rem",
           }}
         />
       ),
@@ -146,6 +147,9 @@ const PilotHeader: React.FC<{}> = () => {
           aria-hidden={false}
           role={"img"}
           aria-label={"Settings"}
+          style={{
+            fontSize: "1.2rem",
+          }}
         />
       ),
       mobileDisplay: true,
@@ -262,7 +266,7 @@ const PilotHeader: React.FC<{}> = () => {
         className="usa-nav prime-nav desktop-nav flex-align-stretch"
       >
         {mainNavList("desktop")}
-        <ul className="usa-nav__primary usa-accordion">
+        <ul className="usa-nav__primary usa-accordion margin-top-0">
           {secondaryNav("desktop")}
         </ul>
       </nav>

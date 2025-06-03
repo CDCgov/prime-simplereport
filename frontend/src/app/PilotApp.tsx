@@ -164,6 +164,7 @@ const PilotApp = () => {
         <TrainingNotification />
       )}
       <Page
+        isPilotApp={true}
         header={<PilotHeader />}
         children={
           <Routes>

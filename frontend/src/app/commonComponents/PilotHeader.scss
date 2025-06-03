@@ -1,0 +1,22 @@
+.usa-nav-container.prime-header .nav__primary-item-icon:last-child {
+  border: none;
+}
+
+.usa-nav__primary > .usa-nav__primary-item > a {
+  border-left: none !important;
+  border-right: none !important;
+}
+
+a.active-nav-item {
+  padding-bottom: 1.15rem !important;
+  font-weight: 400 !important;
+}
+
+a.active-nav-item > span {
+  border-bottom: 3px solid #00bde3;
+  padding-bottom: 0.25rem;
+}
+
+.prime-nav-link {
+  color: white !important;
+}
