@@ -6,6 +6,7 @@ import static org.mockito.Mockito.doReturn;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.graphql.BaseGraphqlTest;
+import gov.cdc.usds.simplereport.db.model.FacilityFeatureFlag;
 import gov.cdc.usds.simplereport.db.model.FeatureFlag;
 import gov.cdc.usds.simplereport.db.repository.FacilityFeatureFlagRepository;
 import gov.cdc.usds.simplereport.db.repository.FeatureFlagRepository;
@@ -56,38 +57,44 @@ class FeatureFlagsMutationResolverTest extends BaseGraphqlTest {
     inOrder.verify(featureFlagRepository).save(any(FeatureFlag.class));
   }
 
-  //  @Test
-  //  void updateFacilityFeatureFlag_notAuthorizedError() {
-  //    useOrgAdmin();
-  //    Map<String, Object> variables = Map.of("name", "dummyFeatureEnabled", "value", true);
-  //    runQuery(
-  //        "update-facility-feature-flag",
-  //        "updateFacilityFeatureFlag",
-  //        variables,
-  //        "header: Unauthorized; body: Please check for errors and try again");
-  //  }
-  //
-  //  @Test
-  //  void updateFacilityFeatureFlag_newFlag_success() {
-  //    useSuperUser();
-  //
-  //    Map<String, Object> variables = Map.of("name", "dummyFeatureEnabled", "value", true);
-  //
-  //    FeatureFlag newFlag = new FeatureFlag("dummyFeatureEnabled", true);
-  //    UUID flagId = UUID.randomUUID();
-  //    ReflectionTestUtils.setField(newFlag, "internalId", flagId);
-  //
-  //    doReturn(Optional.empty())
-  //        .when(featureFlagRepository)
-  //        .findFeatureFlagByName("dummyFeatureEnabled");
-  //    doReturn(newFlag).when(featureFlagRepository).save(any());
-  //    ObjectNode response = runQuery("update-facility-feature-flag", "updateFacilityFeatureFlag",
-  // variables, null);
-  //    ObjectNode featureFlag = (ObjectNode) response.get("updateFacilityFeatureFlag");
-  //    assertEquals("dummyFeatureEnabled", featureFlag.get("name").asText());
-  //
-  //    InOrder inOrder = Mockito.inOrder(featureFlagRepository);
-  //    inOrder.verify(featureFlagRepository).findFeatureFlagByName("dummyFeatureEnabled");
-  //    inOrder.verify(featureFlagRepository).save(any(FeatureFlag.class));
-  //  }
+  @Test
+  void updateFacilityFeatureFlag_notAuthorizedError() {
+    useOrgAdmin();
+    UUID facilityId = UUID.randomUUID();
+    Map<String, Object> variables =
+        Map.of("facilityId", facilityId, "name", "dummyFeatureEnabled", "value", true);
+    runQuery(
+        "update-facility-feature-flag",
+        "updateFacilityFeatureFlag",
+        variables,
+        "header: Unauthorized; body: Please check for errors and try again");
+  }
+
+  @Test
+  void updateFacilityFeatureFlag_newFlag_success() {
+    useSuperUser();
+
+    UUID facilityId = UUID.randomUUID();
+    Map<String, Object> variables =
+        Map.of("facilityId", facilityId, "name", "dummyFeatureEnabled", "value", true);
+
+    FacilityFeatureFlag newFlag = new FacilityFeatureFlag(facilityId, "dummyFeatureEnabled", true);
+    UUID flagId = UUID.randomUUID();
+    ReflectionTestUtils.setField(newFlag, "internalId", flagId);
+
+    doReturn(Optional.empty())
+        .when(facilityFeatureFlagRepository)
+        .findFacilityFeatureFlagByFacilityIdAndName(facilityId, "dummyFeatureEnabled");
+    doReturn(newFlag).when(facilityFeatureFlagRepository).save(any());
+    ObjectNode response =
+        runQuery("update-facility-feature-flag", "updateFacilityFeatureFlag", variables, null);
+    ObjectNode featureFlag = (ObjectNode) response.get("updateFacilityFeatureFlag");
+    assertEquals("dummyFeatureEnabled", featureFlag.get("name").asText());
+
+    InOrder inOrder = Mockito.inOrder(facilityFeatureFlagRepository);
+    inOrder
+        .verify(facilityFeatureFlagRepository)
+        .findFacilityFeatureFlagByFacilityIdAndName(facilityId, "dummyFeatureEnabled");
+    inOrder.verify(facilityFeatureFlagRepository).save(any(FacilityFeatureFlag.class));
+  }
 }
