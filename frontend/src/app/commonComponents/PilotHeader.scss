@@ -1,6 +1,4 @@
 .pilot-header {
-  --pilot-background-color: #162e51;
-
   .usa-logo {
     margin-bottom: 0 !important;
   }
@@ -10,7 +8,7 @@
   }
 
   .usa-menu-btn {
-    background-color: var(--pilot-background-color);
+    background-color: #162e51;
   }
 
   .desktop-nav {
@@ -25,7 +23,7 @@
     }
 
     a.active-nav-item > span {
-      border-bottom: 3px solid var(--pilot-background-color);
+      border-bottom: 3px solid #00bde3;
       padding-bottom: 0.25rem;
     }
 
