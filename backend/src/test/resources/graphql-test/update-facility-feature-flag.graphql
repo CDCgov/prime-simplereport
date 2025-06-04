@@ -1,0 +1,6 @@
+mutation updateFacilityFeatureFlag($facilityId: ID!, $name: String!, $value: Boolean!){
+ updateFacilityFeatureFlag(facilityId: $facilityId, name: $name, value: $value){
+     name
+     value
+ }
+}
