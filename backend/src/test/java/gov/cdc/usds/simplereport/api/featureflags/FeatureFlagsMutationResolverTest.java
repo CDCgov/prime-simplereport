@@ -54,14 +54,14 @@ class FeatureFlagsMutationResolverTest extends BaseGraphqlTest {
     inOrder.verify(featureFlagRepository).save(any(FeatureFlag.class));
   }
 
-  //  @Test
-  //  void updateFacilityFeatureFlag_notAuthorizedError() {
-  //    useOrgAdmin();
-  //    Map<String, Object> variables = Map.of("name", "dummyFeatureEnabled", "value", true);
-  //    runQuery(
-  //        "update-facility-feature-flag",
-  //        "updateFacilityFeatureFlag",
-  //        variables,
-  //        "header: Unauthorized; body: Please check for errors and try again");
-  //  }
+  @Test
+  void updateFacilityFeatureFlag_notAuthorizedError() {
+    useOrgAdmin();
+    Map<String, Object> variables = Map.of("name", "dummyFeatureEnabled", "value", true);
+    runQuery(
+        "update-facility-feature-flag",
+        "updateFacilityFeatureFlag",
+        variables,
+        "header: Unauthorized; body: Please check for errors and try again");
+  }
 }
