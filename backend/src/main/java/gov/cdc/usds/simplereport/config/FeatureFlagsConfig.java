@@ -27,6 +27,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class FeatureFlagsConfig {
+  private static final String ONE_MINUTE = "60000";
+
   @Getter(AccessLevel.NONE)
   @Setter(AccessLevel.NONE)
   private final FeatureFlagRepository _repo;
@@ -48,7 +50,7 @@ public class FeatureFlagsConfig {
 
   private Map<UUID, Map<String, Boolean>> allFacilitiesMap = new HashMap<>();
 
-  @Scheduled(fixedRateString = "60000") // 1 min
+  @Scheduled(fixedRateString = ONE_MINUTE)
   private void loadFeatureFlagsFromDB() {
     Iterable<FeatureFlag> flags = _repo.findAll();
     Iterable<FacilityFeatureFlag> facilityFlags = _facilityFeatureFlagRepo.findAll();
