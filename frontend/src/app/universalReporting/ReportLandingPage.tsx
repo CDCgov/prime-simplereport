@@ -19,7 +19,7 @@ const ReportLandingPage = () => {
                   </p>
                   <LinkWithQuery
                     to={"lab"}
-                    className={"usa-button padding-y-2 margin-top-2"}
+                    className={"usa-button padding-y-2 margin-top-1"}
                   >
                     Enter lab results
                   </LinkWithQuery>
@@ -29,13 +29,13 @@ const ReportLandingPage = () => {
             <div className="tablet:grid-col-6">
               <div className="card-container">
                 <div className="usa-card__body">
-                  <h3>I want to enter upload multiple results</h3>
+                  <h3>I want to upload multiple results</h3>
                   <p>
                     This option works well if you have many results to report
                   </p>
                   <Button
                     type={"button"}
-                    className={"padding-y-2 margin-top-2"}
+                    className={"padding-y-2 margin-top-1"}
                     disabled={true}
                   >
                     Coming soon
