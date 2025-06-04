@@ -1,16 +1,11 @@
 import { useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
 import { useDispatch, connect } from "react-redux";
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  Location,
-} from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
 import { useFeature } from "flagged";
+
+import { useWhoAmIQuery } from "../generated/graphql";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Page from "./commonComponents/Page/Page";
@@ -23,47 +18,7 @@ import LabReportForm from "./universalReporting/LabReportForm";
 import PilotHeader from "./commonComponents/PilotHeader";
 import ReportLandingPage from "./universalReporting/ReportLandingPage";
 import PageNotFound from "./commonComponents/PageNotFound";
-
-export const WHOAMI_QUERY = gql`
-  query WhoAmI {
-    whoami {
-      id
-      firstName
-      middleName
-      lastName
-      suffix
-      email
-      isAdmin
-      permissions
-      roleDescription
-      organization {
-        name
-        testingFacility {
-          id
-          name
-        }
-      }
-    }
-  }
-`;
-
-const checkOktaLoginStatus = (
-  accessToken: string | null,
-  location: Location
-) => {
-  if (process.env.REACT_APP_OKTA_ENABLED === "true") {
-    if (!accessToken) {
-      // If Okta login has been attempted and returned to SR with an error, don't redirect back to Okta
-      const params = new URLSearchParams(location.hash.slice(1));
-      if (params.get("error")) {
-        throw new Error(
-          params.get("error_description") ?? "Unknown Okta error"
-        );
-      }
-      throw new Error("Not authenticated, redirecting to Okta...");
-    }
-  }
-};
+import { checkOktaLoginStatus } from "./ReportingApp";
 
 const PilotApp = () => {
   const universalReportingEnabled = useFeature("universalReportingEnabled");
@@ -75,7 +30,7 @@ const PilotApp = () => {
   // Check if the user is logged in, if not redirect to Okta
   checkOktaLoginStatus(accessToken, location);
 
-  const { data, loading, error } = useQuery(WHOAMI_QUERY, {
+  const { data, loading, error } = useWhoAmIQuery({
     fetchPolicy: "no-cache",
   });
 
@@ -183,7 +138,7 @@ const PilotApp = () => {
               element={
                 <ProtectedRoute
                   requiredPermissions={canViewResults}
-                  userPermissions={data.whoami.permissions}
+                  userPermissions={data?.whoami.permissions}
                   element={<LabReportForm />}
                 />
               }

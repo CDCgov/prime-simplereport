@@ -65,7 +65,7 @@ export const WHOAMI_QUERY = gql`
   }
 `;
 
-const checkOktaLoginStatus = (
+export const checkOktaLoginStatus = (
   accessToken: string | null,
   location: Location
 ) => {
