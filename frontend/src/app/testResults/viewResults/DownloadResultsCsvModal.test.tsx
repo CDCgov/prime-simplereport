@@ -28,7 +28,31 @@ global.fetch = jest.fn();
 
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
 
-describe("DownloadResultsCsvModal with filters", () => {
+describe("DownloadResultsCsvModal with large dataset and no filters", () => {
+  const renderComponent = () =>
+    render(
+      <DownloadResultsCsvModal
+        filterParams={{}}
+        modalIsOpen={true}
+        closeModal={() => {}}
+        totalEntries={50000}
+        activeFacilityId={mockFacilityID}
+      />
+    );
+
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
+  });
+
+  it("matches screenshot", () => {
+    const view = renderComponent();
+    expect(view).toMatchSnapshot();
+  });
+});
+
+describe("DownloadResultsCsvModal with result filters", () => {
   const renderComponent = () =>
     render(
       <DownloadResultsCsvModal
@@ -135,41 +159,5 @@ describe("DownloadResultsCsvModal with current facility filter", () => {
         "Download results without any search filters applied?"
       )
     ).toBeInTheDocument();
-  });
-});
-
-describe("DownloadResultsCsvModal with large dataset", () => {
-  const renderComponent = () =>
-    render(
-      <DownloadResultsCsvModal
-        filterParams={{}}
-        modalIsOpen={true}
-        closeModal={() => {}}
-        totalEntries={50000}
-        activeFacilityId={mockFacilityID}
-      />
-    );
-
-  beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-  });
-
-  it("matches screenshot", () => {
-    const view = renderComponent();
-    expect(view).toMatchSnapshot();
-  });
-
-  it("allows downloading large datasets", async () => {
-    renderComponent();
-    const downloadButton = await screen.findByText("Download results");
-    expect(downloadButton).toBeEnabled();
-    expect(
-      await screen.findByText("Download test results")
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByLabelText("Download test results")
-    ).toHaveTextContent("The CSV file will include 50,000 rows.");
   });
 });

@@ -528,6 +528,47 @@ describe("TestResultsList", () => {
       await screen.findByText("Email result?");
     });
 
+    it("closes the download test results modal after downloading", async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          blob: () => Promise.resolve(new Blob(["test data"])),
+          headers: { get: () => "attachment; filename=test-results.csv" },
+        })
+      ) as jest.Mock;
+      global.URL.createObjectURL = jest.fn(() => "mock-url");
+      global.URL.revokeObjectURL = jest.fn();
+      const realCreateElement = document.createElement.bind(document);
+      document.createElement = ((tagName: string) => {
+        if (tagName === "a") {
+          const a = realCreateElement("a");
+          a.click = jest.fn();
+          a.remove = jest.fn();
+          return a;
+        }
+        return realCreateElement(tagName);
+      }) as typeof document.createElement;
+
+      const { user } = renderWithUser();
+      await screen.findByText("Showing results for 1-3 of 3 tests");
+      const downloadButton = screen.getByText("Download results", {
+        exact: false,
+      });
+      await user.click(downloadButton);
+      const modalDownloadButton = within(screen.getByRole("dialog")).getByRole(
+        "button",
+        { name: /Download results/i }
+      );
+      await user.click(modalDownloadButton);
+      await waitFor(() => {
+        expect(
+          screen.queryByText(
+            /Download results without any search filters applied?/
+          )
+        ).not.toBeInTheDocument();
+      });
+    });
+
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
       const { user } = renderWithUser();
       expect(await screen.findByText("Showing results for 1-3 of 3 tests"));

@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration.RequirePermissionReadResultListAtFacility;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.FacilityCsvExportService;
@@ -26,7 +26,7 @@ public class TestResultDataController {
   private final DiseaseService diseaseService;
   private final FacilityCsvExportService csvExportService;
 
-  @RequirePermissionReadResultListAtFacility
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
   @GetMapping(value = "/facilities/{facilityId}/results/download")
   public ResponseEntity<StreamingResponseBody> downloadFacilityResultsAsCSV(
       @PathVariable UUID facilityId,

@@ -42,7 +42,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FacilityCsvExportService {
   private final ResultService resultService;
-  private static final int BATCH_SIZE = 5000;
 
   public record FacilityExportParameters(
       UUID facilityId,
@@ -68,9 +67,9 @@ public class FacilityCsvExportService {
 
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
-
+      int batchSize = params.pageSize();
       int totalElements = getFacilityResultsCount(params);
-      int totalPages = (int) Math.ceil((double) totalElements / BATCH_SIZE);
+      int totalPages = (int) Math.ceil((double) totalElements / batchSize);
 
       log.info(
           "Starting facility CSV export for facilityId={}: {} records in {} batches",
@@ -79,16 +78,16 @@ public class FacilityCsvExportService {
           totalPages);
 
       for (int currentPage = 0; currentPage < totalPages; currentPage++) {
-        Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
+        Pageable pageable = PageRequest.of(currentPage, batchSize);
         Page<TestResultsListItem> resultsPage = fetchFacilityResultsPage(params, pageable);
 
         log.info(
             "Page {}/{}: Expected {} records, Got {} records, Total so far: {}",
             (currentPage + 1),
             totalPages,
-            BATCH_SIZE,
+            batchSize,
             resultsPage.getContent().size(),
-            (currentPage * BATCH_SIZE) + resultsPage.getContent().size());
+            (currentPage * batchSize) + resultsPage.getContent().size());
         for (TestResultsListItem item : resultsPage.getContent()) {
           writeCsvRow(csvPrinter, item);
         }
