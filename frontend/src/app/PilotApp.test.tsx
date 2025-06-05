@@ -13,9 +13,7 @@ import jwtDecode from "jwt-decode";
 import MockDate from "mockdate";
 import * as flaggedMock from "flagged";
 
-import {
-  GetTopLevelDashboardMetricsNewDocument,
-} from "../generated/graphql";
+import { GetTopLevelDashboardMetricsNewDocument } from "../generated/graphql";
 
 import { WHOAMI_QUERY } from "./ReportingApp";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
