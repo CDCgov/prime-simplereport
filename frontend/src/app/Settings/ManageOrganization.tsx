@@ -28,9 +28,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   canEditOrganizationName,
 }: ManageOrganizationProps) => {
   const [downloadState, setDownloadState] = useState<DownloadState>("idle");
-  /**
-   * Form state setup
-   */
+
   const {
     register,
     handleSubmit,
@@ -42,9 +40,6 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   });
   const formCurrentValues = watch();
 
-  /**
-   * Submit organization data
-   */
   const onSubmit = async (orgData: Organization) => {
     const updatedOrganization = {
       ...organization,
@@ -53,11 +48,8 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
     };
     try {
       await onSave(updatedOrganization);
-      // update default values so the isDirty check applies to current updated data
       reset({ ...orgData });
-    } catch {
-      /* do nothing as the container component already displays error toast */
-    }
+    } catch {}
   };
 
   const handleDownloadTestResults = async () => {
@@ -140,9 +132,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   };
 
   const buttonContent = getDownloadButtonContent();
-  /**
-   * HTML
-   */
+
   return (
     <div className="grid-row position-relative">
       <div className="prime-container card-container settings-tab">
