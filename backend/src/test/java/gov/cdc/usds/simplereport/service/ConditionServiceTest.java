@@ -27,7 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Enumerations.PublicationStatus;
+import org.hl7.fhir.r4.model.UsageContext;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -239,7 +244,7 @@ class ConditionServiceTest {
     ValueSet valueSet = new ValueSet();
     valueSet.setId("covid-19");
     valueSet.setName("COVID-19");
-    valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
+    valueSet.setStatus(PublicationStatus.ACTIVE);
     valueSet.setCompose(
         new ValueSet.ValueSetComposeComponent()
             .setInclude(
@@ -273,25 +278,25 @@ class ConditionServiceTest {
     //    This just clones the other one, saves some reading of the structure. The only practical
     // difference one is retired
     var inactiveValueSet = valueSet.copy();
-    inactiveValueSet.setStatus(Enumerations.PublicationStatus.RETIRED);
+    inactiveValueSet.setStatus(PublicationStatus.RETIRED);
     Bundle.BundleEntryComponent inactiveEntry =
         new Bundle.BundleEntryComponent().setResource(inactiveValueSet);
     bundle.addEntry(inactiveEntry);
 
     var draftValueSet = valueSet.copy();
-    draftValueSet.setStatus(Enumerations.PublicationStatus.DRAFT);
+    draftValueSet.setStatus(PublicationStatus.DRAFT);
     Bundle.BundleEntryComponent draftEntry =
         new Bundle.BundleEntryComponent().setResource(draftValueSet);
     bundle.addEntry(draftEntry);
 
     var unknownValueSet = valueSet.copy();
-    unknownValueSet.setStatus(Enumerations.PublicationStatus.UNKNOWN);
+    unknownValueSet.setStatus(PublicationStatus.UNKNOWN);
     Bundle.BundleEntryComponent unknownEntry =
         new Bundle.BundleEntryComponent().setResource(unknownValueSet);
     bundle.addEntry(unknownEntry);
 
     var nullValueSet = valueSet.copy();
-    nullValueSet.setStatus(Enumerations.PublicationStatus.NULL);
+    nullValueSet.setStatus(PublicationStatus.NULL);
     Bundle.BundleEntryComponent nullEntry =
         new Bundle.BundleEntryComponent().setResource(nullValueSet);
     bundle.addEntry(nullEntry);
@@ -312,7 +317,7 @@ class ConditionServiceTest {
     ValueSet valueSet = new ValueSet();
     valueSet.setId("covid-19");
     valueSet.setName("COVID-19");
-    valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
+    valueSet.setStatus(PublicationStatus.ACTIVE);
     valueSet.setCompose(
         new ValueSet.ValueSetComposeComponent()
             .setInclude(
@@ -365,7 +370,7 @@ class ConditionServiceTest {
     ValueSet valueSet = new ValueSet();
     valueSet.setId("test-condition-1");
     valueSet.setName("Test Condition 1");
-    valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
+    valueSet.setStatus(PublicationStatus.ACTIVE);
     valueSet.setCompose(
         new ValueSet.ValueSetComposeComponent()
             .setInclude(
@@ -413,7 +418,7 @@ class ConditionServiceTest {
     ValueSet valueSet = new ValueSet();
     valueSet.setId("test-condition-2");
     valueSet.setName("Test Condition 2");
-    valueSet.setStatus(Enumerations.PublicationStatus.ACTIVE);
+    valueSet.setStatus(PublicationStatus.ACTIVE);
     valueSet.setCompose(
         new ValueSet.ValueSetComposeComponent()
             .setInclude(
