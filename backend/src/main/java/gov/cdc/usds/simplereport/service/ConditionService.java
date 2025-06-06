@@ -20,11 +20,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.Coding;
-import org.hl7.fhir.r4.model.UsageContext;
-import org.hl7.fhir.r4.model.ValueSet;
+import org.hl7.fhir.r4.model.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -100,6 +96,10 @@ public class ConditionService {
 
       for (var entry : bundle.getEntry()) {
         ValueSet valueSet = (ValueSet) entry.getResource();
+        //        We only want to grab the ACTIVE value sets
+        if (valueSet.getStatus() != Enumerations.PublicationStatus.ACTIVE) {
+          continue;
+        }
         CodeableConcept conditionConcept = parseCondition(valueSet);
         Condition condition = saveCondition(conditionConcept);
         conditionsLoaded++;
