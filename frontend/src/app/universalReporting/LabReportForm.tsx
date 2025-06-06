@@ -270,10 +270,7 @@ const LabReportForm = () => {
       specimenFieldsMissing ||
       testDetailFieldsMissing
     ) {
-      showError(
-        "Required fields are marked with an asterisk (*)",
-        "Missing required fields"
-      );
+      showError("Please fill out required fields", "Missing required fields");
       return false;
     }
     return true;
