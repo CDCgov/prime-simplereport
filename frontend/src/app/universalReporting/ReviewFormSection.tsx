@@ -1,12 +1,13 @@
 import React from "react";
 import { Table } from "@trussworks/react-uswds";
-import _ from "lodash";
 import moment from "moment/moment";
+import { startCase } from "lodash";
 
 import {
   FacilityReportInput,
   PatientReportInput,
   ProviderReportInput,
+  ResultScaleType,
   SpecimenInput,
   TestDetailsInput,
 } from "../../generated/graphql";
@@ -27,7 +28,28 @@ type ReviewFormSectionProps = {
 interface RowData {
   name: string;
   value: string | null | undefined;
+  required?: boolean;
 }
+
+const formatPatientEthnicity = (ethnicity: string) =>
+  startCase(ethnicity?.replaceAll("_", " ").toLowerCase());
+
+const formatPatientRace = (race: string) =>
+  RACE_VALUES.find((r) => r.value === race)?.label;
+
+const formatPatientTribalAffiliation = (tribalAffiliation: string) =>
+  TRIBAL_AFFILIATION_VALUES.find((tribe) => tribe.value === tribalAffiliation)
+    ?.label;
+
+const formatTestResultValue = (testDetail: TestDetailsInput) => {
+  if (testDetail.resultType === ResultScaleType.Ordinal) {
+    const ordinalLabel = ordinalResultOptions.find(
+      (option) => option.value === testDetail.resultValue
+    )?.label;
+    return ordinalLabel ?? "Unknown ordinal result";
+  }
+  return testDetail.resultValue;
+};
 
 const ReviewFormSection = ({
   facility,
@@ -40,10 +62,12 @@ const ReviewFormSection = ({
     {
       name: "Facility name",
       value: facility.name,
+      required: true,
     },
     {
       name: "CLIA number",
       value: facility.clia,
+      required: true,
     },
     {
       name: "Street address",
@@ -83,6 +107,7 @@ const ReviewFormSection = ({
     {
       name: "First name",
       value: provider.firstName,
+      required: true,
     },
     {
       name: "Middle name",
@@ -91,6 +116,7 @@ const ReviewFormSection = ({
     {
       name: "Last name",
       value: provider.lastName,
+      required: true,
     },
     {
       name: "Suffix",
@@ -99,6 +125,7 @@ const ReviewFormSection = ({
     {
       name: "NPI",
       value: provider.npi,
+      required: true,
     },
     {
       name: "Street address",
@@ -138,6 +165,7 @@ const ReviewFormSection = ({
     {
       name: "First name",
       value: patient.firstName,
+      required: true,
     },
     {
       name: "Middle name",
@@ -146,6 +174,7 @@ const ReviewFormSection = ({
     {
       name: "Last name",
       value: patient.lastName,
+      required: true,
     },
     {
       name: "Suffix",
@@ -154,24 +183,23 @@ const ReviewFormSection = ({
     {
       name: "Date of birth",
       value: patient.dateOfBirth,
+      required: true,
     },
     {
       name: "Sex",
-      value: _.startCase(patient.sex ?? ""),
+      value: startCase(patient.sex ?? ""),
     },
     {
       name: "Race",
-      value: RACE_VALUES.find((r) => r.value === patient.race)?.label,
+      value: formatPatientRace(patient.race ?? ""),
     },
     {
       name: "Ethnicity",
-      value: _.startCase(patient.ethnicity?.replaceAll("_", " ").toLowerCase()),
+      value: formatPatientEthnicity(patient.ethnicity ?? ""),
     },
     {
       name: "Tribal affiliation",
-      value: TRIBAL_AFFILIATION_VALUES.find(
-        (tribe) => tribe.value === patient.tribalAffiliation
-      )?.label,
+      value: formatPatientTribalAffiliation(patient.tribalAffiliation ?? ""),
     },
     {
       name: "Street address",
@@ -211,10 +239,12 @@ const ReviewFormSection = ({
     {
       name: "Test order",
       value: testDetailsList[0]?.testOrderDisplayName,
+      required: true,
     },
     {
       name: "Specimen type",
       value: specimen.snomedDisplayName,
+      required: true,
     },
     {
       name: "Collection date",
@@ -244,22 +274,22 @@ const ReviewFormSection = ({
         data: [
           {
             name: "Test result value",
-            value:
-              ordinalResultOptions.find(
-                (option) => option.value === testDetail.resultValue
-              )?.label ?? "Unknown ordinal result",
+            value: formatTestResultValue(testDetail),
+            required: true,
           },
           {
             name: "Result date",
             value: !!testDetail.resultDate
               ? formatDate(moment(testDetail.resultDate).toDate())
               : "",
+            required: true,
           },
           {
             name: "Result time",
             value: !!testDetail.resultDate
               ? moment(testDetail.resultDate).format("HH:mm")
               : "",
+            required: true,
           },
           {
             name: "Notes",
@@ -314,7 +344,12 @@ const ReviewFormSection = ({
               <tbody>
                 {data.map((row) => (
                   <tr key={`${keyPrefix}-data-row-${row.name}`}>
-                    <td className={"text-bold"}>{row.name}</td>
+                    <td className={"text-bold"}>
+                      {row.name}{" "}
+                      {row.required && (
+                        <span className={"usa-hint--required"}>*</span>
+                      )}
+                    </td>
                     <td>{row.value ?? ""}</td>
                   </tr>
                 ))}

@@ -8,6 +8,7 @@ import {
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
+import { isEmpty } from "lodash";
 
 import {
   FacilityReportInput,
@@ -23,8 +24,7 @@ import {
   useSubmitLabReportMutation,
 } from "../../generated/graphql";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
-import { showSuccess } from "../utils/srToast";
-import "./LabReportForm.scss";
+import { showError, showSuccess } from "../utils/srToast";
 
 import {
   buildConditionsOptionList,
@@ -41,6 +41,7 @@ import ProviderFormSection from "./ProviderFormSection";
 import PatientFormSection from "./PatientFormSection";
 import TestOrderFormSection from "./TestOrderFormSection";
 import ReviewFormSection from "./ReviewFormSection";
+import "./LabReportForm.scss";
 
 const stepperData = [
   {
@@ -236,8 +237,52 @@ const LabReportForm = () => {
     return "incomplete";
   };
 
+  const patientFieldsMissing =
+    isEmpty(patient.firstName) ||
+    isEmpty(patient.lastName) ||
+    isEmpty(patient.dateOfBirth);
+
+  const providerFieldsMissing =
+    isEmpty(provider.firstName) ||
+    isEmpty(provider.lastName) ||
+    isEmpty(provider.npi);
+
+  const facilityFieldsMissing =
+    isEmpty(facility.name) || isEmpty(facility.clia);
+
+  const specimenFieldsMissing = isEmpty(specimen.snomedTypeCode);
+
+  const testDetailFieldsMissing = testDetailList.some(
+    (testDetail) =>
+      isEmpty(testDetail.condition) ||
+      isEmpty(testDetail.testOrderLoinc) ||
+      isEmpty(testDetail.testPerformedLoinc) ||
+      isEmpty(testDetail.resultType) ||
+      isEmpty(testDetail.resultValue)
+  );
+
+  // TODO: use React Hook Form once we start adding in additional validation
+  const validateForm = () => {
+    if (
+      patientFieldsMissing ||
+      providerFieldsMissing ||
+      facilityFieldsMissing ||
+      specimenFieldsMissing ||
+      testDetailFieldsMissing
+    ) {
+      showError(
+        "Required fields are marked with an asterisk (*)",
+        "Missing required fields"
+      );
+      return false;
+    }
+    return true;
+  };
+
   const submitForm = async () => {
-    // TODO: add form validation
+    if (!validateForm()) {
+      return;
+    }
     try {
       const submissionResponse = await submitLabReport({
         variables: {

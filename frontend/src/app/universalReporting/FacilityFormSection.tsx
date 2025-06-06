@@ -35,6 +35,7 @@ const FacilityFormSection = ({
             label={"Facility name"}
             onChange={(e) => setFacility({ ...facility, name: e.target.value })}
             value={facility.name}
+            required
           ></TextInput>
         </div>
       </div>
@@ -45,6 +46,7 @@ const FacilityFormSection = ({
             label={"Facility CLIA number"}
             value={facility.clia}
             onChange={(e) => setFacility({ ...facility, clia: e.target.value })}
+            required
           ></TextInput>
         </div>
       </div>

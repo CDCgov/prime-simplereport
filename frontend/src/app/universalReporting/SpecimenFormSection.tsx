@@ -164,7 +164,6 @@ const SpecimenFormSection = ({
                 selectedValue={specimen.collectionBodySiteCode ?? ""}
                 onChange={(e) => handleBodySiteChange(e.target.value)}
                 className="card-dropdown"
-                required={true}
                 options={bodySiteOptions}
               />
             </div>
