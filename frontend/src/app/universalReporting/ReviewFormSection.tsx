@@ -28,7 +28,6 @@ type ReviewFormSectionProps = {
 interface RowData {
   name: string;
   value: string | null | undefined;
-  required?: boolean;
 }
 
 const formatPatientEthnicity = (ethnicity: string) =>
@@ -62,12 +61,10 @@ const ReviewFormSection = ({
     {
       name: "Facility name",
       value: facility.name,
-      required: true,
     },
     {
       name: "CLIA number",
       value: facility.clia,
-      required: true,
     },
     {
       name: "Street address",
@@ -107,7 +104,6 @@ const ReviewFormSection = ({
     {
       name: "First name",
       value: provider.firstName,
-      required: true,
     },
     {
       name: "Middle name",
@@ -116,7 +112,6 @@ const ReviewFormSection = ({
     {
       name: "Last name",
       value: provider.lastName,
-      required: true,
     },
     {
       name: "Suffix",
@@ -125,7 +120,6 @@ const ReviewFormSection = ({
     {
       name: "NPI",
       value: provider.npi,
-      required: true,
     },
     {
       name: "Street address",
@@ -165,7 +159,6 @@ const ReviewFormSection = ({
     {
       name: "First name",
       value: patient.firstName,
-      required: true,
     },
     {
       name: "Middle name",
@@ -174,7 +167,6 @@ const ReviewFormSection = ({
     {
       name: "Last name",
       value: patient.lastName,
-      required: true,
     },
     {
       name: "Suffix",
@@ -183,7 +175,6 @@ const ReviewFormSection = ({
     {
       name: "Date of birth",
       value: patient.dateOfBirth,
-      required: true,
     },
     {
       name: "Sex",
@@ -239,12 +230,10 @@ const ReviewFormSection = ({
     {
       name: "Test order",
       value: testDetailsList[0]?.testOrderDisplayName,
-      required: true,
     },
     {
       name: "Specimen type",
       value: specimen.snomedDisplayName,
-      required: true,
     },
     {
       name: "Collection date",
@@ -344,12 +333,7 @@ const ReviewFormSection = ({
               <tbody>
                 {data.map((row) => (
                   <tr key={`${keyPrefix}-data-row-${row.name}`}>
-                    <td className={"text-bold"}>
-                      {row.name}{" "}
-                      {row.required && (
-                        <span className={"usa-hint--required"}>*</span>
-                      )}
-                    </td>
+                    <td className={"text-bold"}>{row.name}</td>
                     <td>{row.value ?? ""}</td>
                   </tr>
                 ))}
