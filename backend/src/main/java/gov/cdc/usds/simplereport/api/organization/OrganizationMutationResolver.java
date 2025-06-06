@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.FacilityLabTestOrder;
+import gov.cdc.usds.simplereport.db.model.FacilityLab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.Specimen;
@@ -253,42 +253,42 @@ public class OrganizationMutationResolver {
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public FacilityLabTestOrder addFacilityLabTestOrder(
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public FacilityLab addFacilityLab(
       @Argument UUID facilityId,
       @Argument UUID labId,
       @Argument String name,
       @Argument String description) {
-    return organizationService.createFacilityLabTestOrder(facilityId, labId, name, description);
+    return organizationService.createFacilityLab(facilityId, labId, name, description);
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public FacilityLabTestOrder updateFacilityLabTestOrder(
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public FacilityLab updateFacilityLab(
       @Argument UUID facilityId,
       @Argument UUID labId,
       @Argument String name,
       @Argument String description) {
-    return organizationService.updateFacilityLabTestOrder(facilityId, labId, name, description);
+    return organizationService.updateFacilityLab(facilityId, labId, name, description);
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean removeFacilityLabTestOrder(@Argument UUID facilityId, @Argument UUID labId) {
-    return organizationService.markFacilityLabTestOrderAsDeleted(facilityId, labId);
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public boolean removeFacilityLab(@Argument UUID facilityId, @Argument UUID labId) {
+    return organizationService.markFacilityLabAsDeleted(facilityId, labId);
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Set<Specimen> addFacilityLabTestOrderSpecimen(
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public Set<Specimen> addFacilityLabSpecimen(
       @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
-    return organizationService.addFacilityLabTestOrderSpecimen(facilityId, labId, specimenId);
+    return organizationService.addFacilityLabSpecimen(facilityId, labId, specimenId);
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean removeFacilityLabTestOrderSpecimen(
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public boolean removeFacilityLabSpecimen(
       @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
-    return organizationService.deleteFacilityLabTestOrderSpecimen(facilityId, labId, specimenId);
+    return organizationService.deleteFacilityLabSpecimen(facilityId, labId, specimenId);
   }
 }

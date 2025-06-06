@@ -440,7 +440,7 @@ type FeatureFlag {
   value: Boolean!
 }
 
-type FacilityLabTestOrder {
+type FacilityLab {
   internalId: ID!
   facilityId: ID!
   labId: ID!
@@ -448,6 +448,7 @@ type FacilityLabTestOrder {
   description: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  specimens: [Specimen!]!
 }
 
 input PatientReportInput {
@@ -690,8 +691,7 @@ type Query {
   conditions: [Condition!]!
   labs(conditionCodes: [String!]): [Lab!]!
   specimens(loinc: String!): [Specimen!]!
-  facilityLabTestOrders(facilityId: ID): [FacilityLabTestOrder]
-  facilityLabTestOrderSpecimens(facilityId: ID, labId: ID): [Specimen]
+  facilityLabs(facilityId: ID): [FacilityLab]
 }
 
 type Mutation {
@@ -862,19 +862,19 @@ type Mutation {
     specimen: SpecimenInput,
     testDetailsList: [TestDetailsInput]
   ): String
-  updateFacilityLabTestOrder(
+  updateFacilityLab(
+    facilityId: ID!
+    labId: ID!
+    name: String
+    description: String
+  ): FacilityLab
+  addFacilityLab(
     facilityId: ID!
     labId: ID!
     name: String!
     description: String!
-  ): FacilityLabTestOrder
-  addFacilityLabTestOrder(
-    facilityId: ID!
-    labId: ID!
-    name: String!
-    description: String!
-  ): FacilityLabTestOrder
-  removeFacilityLabTestOrder(facilityId: ID!, labId: ID!): Boolean
-  addFacilityLabTestOrderSpecimen(facilityId: ID!, labId: ID!, specimenId: ID!): [Specimen]
-  removeFacilityLabTestOrderSpecimen(facilityId: ID!, labId: ID!, specimenId: ID!): Boolean
+  ): FacilityLab
+  removeFacilityLab(facilityId: ID!, labId: ID!): Boolean
+  addFacilityLabSpecimen(facilityId: ID!, labId: ID!, specimenId: ID!): [Specimen]
+  removeFacilityLabSpecimen(facilityId: ID!, labId: ID!, specimenId: ID!): Boolean
 }

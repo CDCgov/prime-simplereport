@@ -182,14 +182,15 @@ export type FacilityAddressInput = {
   zipCode: Scalars["String"]["input"];
 };
 
-export type FacilityLabTestOrder = {
-  __typename?: "FacilityLabTestOrder";
+export type FacilityLab = {
+  __typename?: "FacilityLab";
   createdAt: Scalars["DateTime"]["output"];
   description: Scalars["String"]["output"];
   facilityId: Scalars["ID"]["output"];
   internalId: Scalars["ID"]["output"];
   labId: Scalars["ID"]["output"];
   name: Scalars["String"]["output"];
+  specimens: Array<Specimen>;
   updatedAt: Scalars["DateTime"]["output"];
 };
 
@@ -257,8 +258,8 @@ export type MultiplexResultInput = {
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
-  addFacilityLabTestOrder?: Maybe<FacilityLabTestOrder>;
-  addFacilityLabTestOrderSpecimen: Scalars["ID"]["output"];
+  addFacilityLab?: Maybe<FacilityLab>;
+  addFacilityLabSpecimen?: Maybe<Array<Maybe<Specimen>>>;
   addPatient?: Maybe<Patient>;
   addPatientToQueue?: Maybe<Scalars["String"]["output"]>;
   addUser?: Maybe<User>;
@@ -281,8 +282,8 @@ export type Mutation = {
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]["output"]>;
   reactivateUser?: Maybe<User>;
   reactivateUserAndResetPassword?: Maybe<User>;
-  removeFacilityLabTestOrder?: Maybe<Scalars["Boolean"]["output"]>;
-  removeFacilityLabTestOrderSpecimen?: Maybe<Scalars["Boolean"]["output"]>;
+  removeFacilityLab?: Maybe<Scalars["Boolean"]["output"]>;
+  removeFacilityLabSpecimen?: Maybe<Scalars["Boolean"]["output"]>;
   removePatientFromQueue?: Maybe<Scalars["String"]["output"]>;
   resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]["output"]>;
@@ -304,7 +305,7 @@ export type Mutation = {
   updateAoeQuestions?: Maybe<Scalars["String"]["output"]>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
-  updateFacilityLabTestOrder?: Maybe<Scalars["Int"]["output"]>;
+  updateFacilityLab?: Maybe<FacilityLab>;
   updateFeatureFlag?: Maybe<FeatureFlag>;
   updateOrganization?: Maybe<Scalars["String"]["output"]>;
   updatePatient?: Maybe<Patient>;
@@ -321,15 +322,16 @@ export type MutationAddFacilityArgs = {
   facilityInfo: AddFacilityInput;
 };
 
-export type MutationAddFacilityLabTestOrderArgs = {
+export type MutationAddFacilityLabArgs = {
   description: Scalars["String"]["input"];
   facilityId: Scalars["ID"]["input"];
   labId: Scalars["ID"]["input"];
   name: Scalars["String"]["input"];
 };
 
-export type MutationAddFacilityLabTestOrderSpecimenArgs = {
-  facilityLabTestOrderId: Scalars["ID"]["input"];
+export type MutationAddFacilityLabSpecimenArgs = {
+  facilityId: Scalars["ID"]["input"];
+  labId: Scalars["ID"]["input"];
   specimenId: Scalars["ID"]["input"];
 };
 
@@ -480,12 +482,15 @@ export type MutationReactivateUserAndResetPasswordArgs = {
   id: Scalars["ID"]["input"];
 };
 
-export type MutationRemoveFacilityLabTestOrderArgs = {
-  internalId: Scalars["ID"]["input"];
+export type MutationRemoveFacilityLabArgs = {
+  facilityId: Scalars["ID"]["input"];
+  labId: Scalars["ID"]["input"];
 };
 
-export type MutationRemoveFacilityLabTestOrderSpecimenArgs = {
-  internalId: Scalars["ID"]["input"];
+export type MutationRemoveFacilityLabSpecimenArgs = {
+  facilityId: Scalars["ID"]["input"];
+  labId: Scalars["ID"]["input"];
+  specimenId: Scalars["ID"]["input"];
 };
 
 export type MutationRemovePatientFromQueueArgs = {
@@ -594,11 +599,11 @@ export type MutationUpdateFacilityArgs = {
   facilityInfo: UpdateFacilityInput;
 };
 
-export type MutationUpdateFacilityLabTestOrderArgs = {
-  description: Scalars["String"]["input"];
+export type MutationUpdateFacilityLabArgs = {
+  description?: InputMaybe<Scalars["String"]["input"]>;
   facilityId: Scalars["ID"]["input"];
   labId: Scalars["ID"]["input"];
-  name: Scalars["String"]["input"];
+  name?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationUpdateFeatureFlagArgs = {
@@ -877,8 +882,7 @@ export type Query = {
   deviceTypes: Array<DeviceType>;
   facilities?: Maybe<Array<Maybe<Facility>>>;
   facility?: Maybe<Facility>;
-  facilityLabTestOrderSpecimens?: Maybe<Array<Maybe<Specimen>>>;
-  facilityLabTestOrders?: Maybe<Array<Maybe<FacilityLabTestOrder>>>;
+  facilityLabs?: Maybe<Array<Maybe<FacilityLab>>>;
   facilityStats?: Maybe<FacilityStats>;
   getOrgAdminUserIds?: Maybe<Array<Maybe<Scalars["ID"]["output"]>>>;
   labs: Array<Lab>;
@@ -920,12 +924,7 @@ export type QueryFacilityArgs = {
   id: Scalars["ID"]["input"];
 };
 
-export type QueryFacilityLabTestOrderSpecimensArgs = {
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  labId?: InputMaybe<Scalars["ID"]["input"]>;
-};
-
-export type QueryFacilityLabTestOrdersArgs = {
+export type QueryFacilityLabsArgs = {
   facilityId?: InputMaybe<Scalars["ID"]["input"]>;
 };
 

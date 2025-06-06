@@ -22,7 +22,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FacilityLabTestOrder extends EternalAuditedEntity {
+public class FacilityLab extends EternalAuditedEntity {
   @Column(nullable = false)
   @NonNull
   private UUID facilityId;
@@ -39,22 +39,19 @@ public class FacilityLabTestOrder extends EternalAuditedEntity {
   @NonNull
   private String description;
 
+  @Getter
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-      name = "facility_lab_test_order_specimen",
-      joinColumns = @JoinColumn(name = "facility_lab_test_order_id"),
+      name = "facility_lab_specimen",
+      joinColumns = @JoinColumn(name = "facility_lab_id"),
       inverseJoinColumns = @JoinColumn(name = "specimen_id"))
-  private Set<Specimen> configuredSpecimens = new HashSet<>();
-
-  public Set<Specimen> getSpecimens() {
-    return this.configuredSpecimens;
-  }
+  private Set<Specimen> specimens = new HashSet<>();
 
   public void addSpecimen(Specimen specimen) {
-    this.configuredSpecimens.add(specimen);
+    this.specimens.add(specimen);
   }
 
   public boolean removeSpecimen(Specimen specimen) {
-    return this.configuredSpecimens.remove(specimen);
+    return this.specimens.remove(specimen);
   }
 }

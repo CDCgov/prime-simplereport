@@ -6334,13 +6334,13 @@ databaseChangeLog:
             tableName: specimen
             constraintName: uk__loinc_system_code__snomed_code
   - changeSet:
-      id: add-facility-lab-test-order
+      id: add-facility-lab
       author: az01@cdc.gov
       changes:
         - tagDatabase:
-            tag: add-facility-lab-test-order
+            tag: add-facility-lab
         - createTable:
-            tableName: facility_lab_test_order
+            tableName: facility_lab
             remarks: Table to store facility-specific descriptions and names for test orders
             columns:
               - column:
@@ -6416,31 +6416,31 @@ databaseChangeLog:
                     references: api_user
                     foreignKeyName: fk__anyentity__updated_by
         - addUniqueConstraint:
-            constraintName: uk_facility_lab_test_order_facility_lab
-            tableName: facility_lab_test_order
+            constraintName: uk__facility_id__lab_id
+            tableName: facility_lab
             columnNames: facility_id, lab_id
       rollback:
         - dropTable:
-            tableName: facility_lab_test_order
+            tableName: facility_lab
   - changeSet:
-      id: add-facility-lab-test-order-specimen
+      id: add-facility-lab-specimen
       author: az01@cdc.gov
       changes:
         - tagDatabase:
-            tag: add-facility-lab-test-order-specimen
+            tag: add-facility-lab-specimen
         - createTable:
-            tableName: facility_lab_test_order_specimen
+            tableName: facility_lab_specimen
             remarks: Table to store facility-specific test order specimens
             columns:
               - column:
-                  name: facility_lab_test_order_id
+                  name: facility_lab_id
                   type: uuid
-                  remarks: Internal Id of a test order in the facility_lab_test_order table.
+                  remarks: Internal Id of a test order in the facility_lab table.
                   constraints:
                     unique: false
                     nullable: false
-                    foreignKeyName: fk__facility_lab_test_order__facility_lab_test_order_id
-                    references: facility_lab_test_order
+                    foreignKeyName: fk__facility_lab__facility_lab_id
+                    references: facility_lab
                     deleteCascade: true
               - column:
                   name: specimen_id
@@ -6453,9 +6453,9 @@ databaseChangeLog:
                     references: specimen
                     deleteCascade: true
         - addUniqueConstraint:
-            constraintName: uk_facility_lab_test_order_specimen_facility_lab_test_order_specimen
-            tableName: facility_lab_test_order_specimen
-            columnNames: facility_lab_test_order_id, specimen_id
+            constraintName: uk__facility_lab_id__specimen_id
+            tableName: facility_lab__specimen
+            columnNames: facility_lab_id, specimen_id
       rollback:
         - dropTable:
-            tableName: facility_lab_test_order_specimen
+            tableName: facility_lab_specimen
