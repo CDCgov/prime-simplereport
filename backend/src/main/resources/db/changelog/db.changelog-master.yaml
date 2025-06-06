@@ -6454,7 +6454,7 @@ databaseChangeLog:
                     deleteCascade: true
         - addUniqueConstraint:
             constraintName: uk__facility_lab_id__specimen_id
-            tableName: facility_lab__specimen
+            tableName: facility_lab_specimen
             columnNames: facility_lab_id, specimen_id
       rollback:
         - dropTable:
