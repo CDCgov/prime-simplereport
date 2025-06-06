@@ -22,7 +22,7 @@ interface DownloadResultsCsvModalProps {
   activeFacilityId: string;
 }
 
-type DownloadState = "idle" | "preparing" | "downloading" | "complete";
+type DownloadState = "idle" | "downloading" | "complete";
 const apiClient = new FetchClient();
 
 function buildCsvDownloadPath({
@@ -32,14 +32,14 @@ function buildCsvDownloadPath({
   filterParams: FilterParams;
   activeFacilityId: string;
 }) {
-  const facilityId =
-    filterParams.filterFacilityId === ALL_FACILITIES_ID
-      ? activeFacilityId
-      : filterParams.filterFacilityId ?? activeFacilityId;
-
-  const basePath = `/facilities/${facilityId}/results/download`;
-
+  const basePath = `/results/download`;
   const params = new URLSearchParams();
+  if (filterParams.filterFacilityId === ALL_FACILITIES_ID) {
+    console.log("SKIP");
+  } else {
+    const facilityId = filterParams.filterFacilityId ?? activeFacilityId;
+    params.append("facilityId", facilityId);
+  }
   if (filterParams.patientId)
     params.append("patientId", filterParams.patientId);
   if (filterParams.result) params.append("result", filterParams.result);
@@ -49,7 +49,7 @@ function buildCsvDownloadPath({
     params.append("startDate", filterParams.startDate);
   if (filterParams.endDate) params.append("endDate", filterParams.endDate);
 
-  return params.toString() ? `${basePath}?${params.toString()}` : basePath;
+  return `${basePath}?${params.toString()}`;
 }
 
 export const DownloadResultsCsvModal = ({
@@ -77,8 +77,6 @@ export const DownloadResultsCsvModal = ({
     )}`;
 
     switch (downloadState) {
-      case "preparing":
-        return `Preparing your download of ${rowText}...`;
       case "downloading":
         if (totalEntries > 10000) {
           return `Downloading ${rowText}... This may take a moment for large files.`;
@@ -93,12 +91,6 @@ export const DownloadResultsCsvModal = ({
 
   const getButtonContent = () => {
     switch (downloadState) {
-      case "preparing":
-        return {
-          icon: faSpinner,
-          label: "Preparing download...",
-          className: "fa-spin",
-        };
       case "downloading":
         return {
           icon: faSpinner,
@@ -121,7 +113,7 @@ export const DownloadResultsCsvModal = ({
   };
 
   const handleDownload = async () => {
-    setDownloadState("preparing");
+    setDownloadState("downloading");
     try {
       const downloadPath = buildCsvDownloadPath({
         filterParams,
@@ -179,15 +171,14 @@ export const DownloadResultsCsvModal = ({
     }
   };
   const handleClose = () => {
-    if (downloadState !== "downloading" && downloadState !== "preparing") {
+    if (downloadState !== "downloading") {
       closeModal();
       setDownloadState("idle");
     }
   };
 
   const buttonContent = getButtonContent();
-  const isDownloading =
-    downloadState === "preparing" || downloadState === "downloading";
+  const isDownloading = downloadState === "downloading";
   const isComplete = downloadState === "complete";
 
   return (

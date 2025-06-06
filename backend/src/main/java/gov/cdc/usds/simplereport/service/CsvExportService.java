@@ -40,11 +40,12 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FacilityCsvExportService {
+public class CsvExportService {
   private final ResultService resultService;
 
-  public record FacilityExportParameters(
+  public record ExportParameters(
       UUID facilityId,
+      UUID organizationId,
       UUID patientId,
       TestResult testResult,
       PersonRole personRole,
@@ -55,31 +56,47 @@ public class FacilityCsvExportService {
       int pageSize) {
 
     public void validate() {
-      if (facilityId == null) {
-        throw new IllegalArgumentException("facilityId is required for facility exports");
+      if (facilityId == null && organizationId == null) {
+        throw new IllegalArgumentException(
+            "Either facilityId or organizationId is required for exports");
       }
+      if (facilityId != null && organizationId != null) {
+        throw new IllegalArgumentException("Cannot specify both facilityId and organizationId");
+      }
+    }
+
+    public boolean isFacilityExport() {
+      return facilityId != null;
+    }
+
+    public boolean isOrganizationExport() {
+      return organizationId != null;
     }
   }
 
-  public void streamFacilityResultsAsCsv(
-      OutputStream outputStream, FacilityExportParameters params) {
+  public void streamResultsAsCsv(OutputStream outputStream, ExportParameters params) {
     params.validate();
 
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
+
       int batchSize = params.pageSize();
-      int totalElements = getFacilityResultsCount(params);
+      int totalElements = getResultsCount(params);
       int totalPages = (int) Math.ceil((double) totalElements / batchSize);
 
+      String exportType = params.isFacilityExport() ? "facility" : "organization";
+      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
       log.info(
-          "Starting facility CSV export for facilityId={}: {} records in {} batches",
-          params.facilityId(),
+          "Starting {} CSV export for {}={}: {} records in {} batches",
+          exportType,
+          exportType + "Id",
+          exportId,
           totalElements,
           totalPages);
 
       for (int currentPage = 0; currentPage < totalPages; currentPage++) {
         Pageable pageable = PageRequest.of(currentPage, batchSize);
-        Page<TestResultsListItem> resultsPage = fetchFacilityResultsPage(params, pageable);
+        Page<TestResultsListItem> resultsPage = fetchResultsPage(params, pageable);
 
         log.info(
             "Page {}/{}: Expected {} records, Got {} records, Total so far: {}",
@@ -88,23 +105,27 @@ public class FacilityCsvExportService {
             batchSize,
             resultsPage.getContent().size(),
             (currentPage * batchSize) + resultsPage.getContent().size());
+
         for (TestResultsListItem item : resultsPage.getContent()) {
           writeCsvRow(csvPrinter, item);
         }
 
         csvPrinter.flush();
-        log.debug("Processed batch {}/{} for facility CSV export", (currentPage + 1), totalPages);
+        log.debug(
+            "Processed batch {}/{} for {} CSV export", (currentPage + 1), totalPages, exportType);
       }
 
-      log.info("Completed facility CSV export for facilityId={}", params.facilityId());
+      log.info("Completed {} CSV export for {}={}", exportType, exportType + "Id", exportId);
     } catch (IOException e) {
-      log.error("Error streaming facility CSV data for facilityId={}", params.facilityId(), e);
-      throw new RuntimeException("Failed to generate facility CSV file", e);
+      String exportType = params.isFacilityExport() ? "facility" : "organization";
+      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
+      log.error(
+          "Error streaming {} CSV data for {}={}", exportType, exportType + "Id", exportId, e);
+      throw new RuntimeException("Failed to generate CSV file", e);
     }
   }
 
-  public void streamFacilityResultsAsZippedCsv(
-      OutputStream rawOut, FacilityExportParameters params) {
+  public void streamResultsAsZippedCsv(OutputStream rawOut, ExportParameters params) {
 
     class NonClosingOutputStream extends FilterOutputStream {
       NonClosingOutputStream(OutputStream out) {
@@ -118,49 +139,82 @@ public class FacilityCsvExportService {
     }
 
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
-      zipOut.putNextEntry(new ZipEntry("facility-results.csv"));
+      zipOut.putNextEntry(new ZipEntry("test-results.csv"));
 
-      streamFacilityResultsAsCsv(new NonClosingOutputStream(zipOut), params);
+      streamResultsAsCsv(new NonClosingOutputStream(zipOut), params);
 
       zipOut.closeEntry();
     } catch (IOException ex) {
-      log.error("Error zipping CSV for facilityId={}", params.facilityId(), ex);
-      throw new RuntimeException("Failed to generate zipped facility CSV", ex);
+      String exportType = params.isFacilityExport() ? "facility" : "organization";
+      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
+      log.error("Error zipping CSV for {} {}", exportType, exportId, ex);
+      throw new RuntimeException("Failed to generate zipped CSV", ex);
     }
   }
 
-  private int getFacilityResultsCount(FacilityExportParameters params) {
-    Page<TestResultsListItem> countPage =
-        resultService
-            .getFacilityResults(
-                params.facilityId(),
-                params.patientId(),
-                params.testResult(),
-                params.personRole(),
-                params.disease(),
-                params.startDate(),
-                params.endDate(),
-                0,
-                1)
-            .map(TestResultsListItem::new);
+  private int getResultsCount(ExportParameters params) {
+    Page<TestResultsListItem> countPage;
+
+    if (params.isFacilityExport()) {
+      countPage =
+          resultService
+              .getFacilityResults(
+                  params.facilityId(),
+                  params.patientId(),
+                  params.testResult(),
+                  params.personRole(),
+                  params.disease(),
+                  params.startDate(),
+                  params.endDate(),
+                  0,
+                  1)
+              .map(TestResultsListItem::new);
+    } else {
+      countPage =
+          resultService
+              .getOrganizationResults(
+                  params.patientId(),
+                  params.testResult(),
+                  params.personRole(),
+                  params.disease(),
+                  params.startDate(),
+                  params.endDate(),
+                  0,
+                  1)
+              .map(TestResultsListItem::new);
+    }
 
     return (int) countPage.getTotalElements();
   }
 
-  private Page<TestResultsListItem> fetchFacilityResultsPage(
-      FacilityExportParameters params, Pageable pageable) {
-    return resultService
-        .getFacilityResults(
-            params.facilityId(),
-            params.patientId(),
-            params.testResult(),
-            params.personRole(),
-            params.disease(),
-            params.startDate(),
-            params.endDate(),
-            pageable.getPageNumber(),
-            pageable.getPageSize())
-        .map(TestResultsListItem::new);
+  private Page<TestResultsListItem> fetchResultsPage(ExportParameters params, Pageable pageable) {
+
+    if (params.isFacilityExport()) {
+      return resultService
+          .getFacilityResults(
+              params.facilityId(),
+              params.patientId(),
+              params.testResult(),
+              params.personRole(),
+              params.disease(),
+              params.startDate(),
+              params.endDate(),
+              pageable.getPageNumber(),
+              pageable.getPageSize())
+          .map(TestResultsListItem::new);
+    } else {
+      return resultService
+          .getOrganizationResults(
+              params.patientId(),
+              params.testResult(),
+              params.personRole(),
+              params.disease(),
+              params.startDate(),
+              params.endDate(),
+              pageable.getPageNumber(),
+              pageable.getPageSize())
+          .map(TestResultsListItem::new);
+    }
   }
 
   private CSVFormat createCsvFormat() {
