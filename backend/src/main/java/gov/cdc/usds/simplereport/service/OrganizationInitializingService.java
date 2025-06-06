@@ -70,6 +70,7 @@ public class OrganizationInitializingService {
   private final DemoUserConfiguration _demoUserConfiguration;
   private final PersonRepository _personRepository;
   private final PatientRegistrationLinkRepository _prlRepository;
+  //  private final FacilityLabTestOrderRepository _facilityLabTestOrderRepository;
   private final DiseaseService diseaseService;
   private final ConditionRepository conditionRepository;
   private final LabRepository labRepository;
