@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -21,6 +22,7 @@ import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredExcept
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityLab;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
@@ -30,21 +32,18 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityLabRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,7 +62,9 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @SpyBean private FacilityRepository facilityRepository;
+  @SpyBean private FacilityLabRepository facilityLabRepository;
   @SpyBean private OrganizationRepository organizationRepository;
+  @SpyBean private SpecimenRepository specimenRepository;
   @Autowired private DeviceTypeRepository deviceTypeRepository;
   @SpyBean private OktaRepository oktaRepository;
   @SpyBean private PersonRepository personRepository;
@@ -600,8 +601,89 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     verify(oktaRepository, times(1)).deleteOrganization(createdOrg);
   }
 
-  void getFacilityLabTestOrders_success() {
-    Organization createdOrg = _dataFactory.saveValidOrganization();
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilityLabs_shouldReturnAllNonDeletedFacilityLabs() {
+    // Given
+    UUID facilityId = UUID.randomUUID();
+    List<FacilityLab> expectedLabs =
+        Arrays.asList(
+            createMockFacilityLab(facilityId, UUID.randomUUID()),
+            createMockFacilityLab(facilityId, UUID.randomUUID()));
+    when(facilityLabRepository.findAllByFacilityIdAndIsDeletedFalse(facilityId))
+        .thenReturn(expectedLabs);
+
+    // When
+    List<FacilityLab> result = _service.getFacilityLabs(facilityId);
+
+    // Then
+    assertThat(result).hasSize(2);
+    assertThat(result).isEqualTo(expectedLabs);
+    verify(facilityLabRepository).findAllByFacilityIdAndIsDeletedFalse(facilityId);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void createFacilityLab_shouldCreateNewFacilityLab_whenNoneExists() {
+    // Given
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    String name = "Test Lab";
+    String description = "Test Description";
+
+    FacilityLab expectedLab =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(labId)
+            .name(name)
+            .description(description)
+            .build();
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedTrue(
+            facilityId, labId))
+        .thenReturn(Optional.empty());
+    //    when(facilityLabRepository.save(any(FacilityLab.class))).thenReturn(expectedLab);
+    doReturn(expectedLab).when(facilityLabRepository).save(any(FacilityLab.class));
+
+    // When
+    FacilityLab result = _service.createFacilityLab(facilityId, labId, name, description);
+
+    // Then
+    assertThat(result).isNotNull();
+    assertThat(result.getFacilityId()).isEqualTo(facilityId);
+    assertThat(result.getLabId()).isEqualTo(labId);
+    assertThat(result.getName()).isEqualTo(name);
+    assertThat(result.getDescription()).isEqualTo(description);
+    verify(facilityLabRepository).save(any(FacilityLab.class));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void createFacilityLab_shouldRestoreDeletedFacilityLab_whenDeletedOneExists() {
+    // Given
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    String name = "Updated Lab";
+    String description = "Updated Description";
+
+    FacilityLab deletedLab = createMockFacilityLab(facilityId, labId);
+    deletedLab.setIsDeleted(true);
+    deletedLab.setName("Old Name");
+    deletedLab.setDescription("Old Description");
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedTrue(
+            facilityId, labId))
+        .thenReturn(Optional.of(deletedLab));
+    doReturn(deletedLab).when(facilityLabRepository).save(any());
+
+    // When
+    FacilityLab result = _service.createFacilityLab(facilityId, labId, name, description);
+
+    // Then
+    assertThat(result.getName()).isEqualTo(name);
+    assertThat(result.getDescription()).isEqualTo(description);
+    assertThat(result.getIsDeleted()).isFalse();
+    verify(facilityLabRepository).save(deletedLab);
   }
 
   @Nested
@@ -814,5 +896,13 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     _dataFactory.createTestEvent(orgBPatient1, orgBFacility, TestResult.NEGATIVE);
 
     return Stream.of(orgAEmail, orgBEmail1).sorted().collect(Collectors.toList());
+  }
+
+  private FacilityLab createMockFacilityLab(UUID facilityId, UUID labId) {
+    FacilityLab facilityLab = mock(FacilityLab.class);
+    when(facilityLab.getFacilityId()).thenReturn(facilityId);
+    when(facilityLab.getLabId()).thenReturn(labId);
+    when(facilityLab.getIsDeleted()).thenReturn(false);
+    return facilityLab;
   }
 }
