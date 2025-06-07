@@ -11,12 +11,8 @@ import {
   mocksWithMultiplex,
   mockWithFacilityAndPositiveResult,
 } from "../mocks/queries.mock";
-import {
-  GetAllFacilitiesDocument,
-  GetResultsForDownloadDocument,
-} from "../../../generated/graphql";
+import { GetAllFacilitiesDocument } from "../../../generated/graphql";
 import { facilities } from "../mocks/facilities.mock";
-import testResultsMultiplex from "../mocks/resultsMultiplex.mock";
 
 import TestResultsList, { ALL_FACILITIES_ID } from "./TestResultsList";
 import * as UtilsMock from "./utils";
@@ -532,6 +528,47 @@ describe("TestResultsList", () => {
       await screen.findByText("Email result?");
     });
 
+    it("closes the download test results modal after downloading", async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          ok: true,
+          blob: () => Promise.resolve(new Blob(["test data"])),
+          headers: { get: () => "attachment; filename=test-results.csv" },
+        })
+      ) as jest.Mock;
+      global.URL.createObjectURL = jest.fn(() => "mock-url");
+      global.URL.revokeObjectURL = jest.fn();
+      const realCreateElement = document.createElement.bind(document);
+      document.createElement = ((tagName: string) => {
+        if (tagName === "a") {
+          const a = realCreateElement("a");
+          a.click = jest.fn();
+          a.remove = jest.fn();
+          return a;
+        }
+        return realCreateElement(tagName);
+      }) as typeof document.createElement;
+
+      const { user } = renderWithUser();
+      await screen.findByText("Showing results for 1-3 of 3 tests");
+      const downloadButton = screen.getByText("Download results", {
+        exact: false,
+      });
+      await user.click(downloadButton);
+      const modalDownloadButton = within(screen.getByRole("dialog")).getByRole(
+        "button",
+        { name: /Download results/i }
+      );
+      await user.click(modalDownloadButton);
+      await waitFor(() => {
+        expect(
+          screen.queryByText(
+            /Download results without any search filters applied?/
+          )
+        ).not.toBeInTheDocument();
+      });
+    });
+
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
       const { user } = renderWithUser();
       expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
@@ -550,64 +587,6 @@ describe("TestResultsList", () => {
       expect(
         screen.getByText("The CSV file will include 3 rows", { exact: false })
       ).toBeInTheDocument();
-    });
-
-    it("closes the download test results modal after downloading", async () => {
-      const localMocks = mocks.slice(1, 3).concat([
-        {
-          request: {
-            query: GetResultsForDownloadDocument,
-            variables: {
-              facilityId: "1",
-              pageNumber: 0,
-              pageSize: 3,
-            },
-          },
-          result: {
-            data: {
-              resultsPage: testResultsMultiplex,
-            },
-          },
-        },
-      ]);
-
-      const { user } = renderWithUser(localMocks);
-      // source of "navigation not implemented" error
-      expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
-      expect(
-        screen.getByText("Test Results", { exact: false })
-      ).toBeInTheDocument();
-      const downloadButton = screen.getByText("Download results", {
-        exact: false,
-      });
-      await user.click(downloadButton);
-      expect(
-        screen.getByText("Download results without any search filters", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText("The CSV file will include 3 rows", { exact: false })
-      ).toBeInTheDocument();
-      const downloadButton2 = within(screen.getByRole("dialog")).getByRole(
-        "button",
-        {
-          name: "Download results",
-        }
-      );
-
-      await user.click(downloadButton2);
-
-      await waitFor(() =>
-        expect(
-          screen.queryByText(
-            "Download results without any search filters applied?",
-            {
-              exact: true,
-            }
-          )
-        ).not.toBeInTheDocument()
-      );
     });
 
     it("opens the download test results modal after applying filters and shows how many rows the csv will have", async () => {
