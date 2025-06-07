@@ -213,7 +213,7 @@ resource "azurerm_application_gateway" "www_redirect" {
       name          = "HSTS_Rewrite"
       rule_sequence = "100"
 
-      request_header_configuration {
+      response_header_configuration {
         header_name  = "Strict-Transport-Security"
         header_value = "31536000; includeSubDomains"
       }
@@ -422,7 +422,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
       name          = "HSTS_Rewrite"
       rule_sequence = "100"
 
-      request_header_configuration {
+      response_header_configuration {
         header_name  = "Strict-Transport-Security"
         header_value = "31536000; includeSubDomains"
       }
