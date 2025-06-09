@@ -33,12 +33,15 @@ const SpecimenFormSection = ({
   );
 
   const handleSpecimenSelect = async (selectedSnomedCode: string) => {
-    const specimenBodySiteList =
-      specimenList.find((s) => s.snomedCode === selectedSnomedCode)
-        ?.bodySiteList ?? [];
+    const specimenListEntry = specimenList.find(
+      (s) => s.snomedCode === selectedSnomedCode
+    );
+    const specimenBodySiteList = specimenListEntry?.bodySiteList ?? [];
+
     setSpecimen({
       ...specimen,
       snomedTypeCode: selectedSnomedCode,
+      snomedDisplayName: specimenListEntry?.snomedDisplay ?? "",
       collectionBodySiteCode: specimenBodySiteList[0]?.snomedSiteCode ?? "",
       collectionBodySiteName: specimenBodySiteList[0]?.snomedSiteDisplay ?? "",
     });
@@ -85,7 +88,7 @@ const SpecimenFormSection = ({
 
   return (
     <>
-      <div className="grid-row">
+      <div className="grid-row margin-top-2">
         <div className="grid-col-auto">
           <h2 className={"font-sans-lg"}>Specimen Info</h2>
         </div>
@@ -161,7 +164,6 @@ const SpecimenFormSection = ({
                 selectedValue={specimen.collectionBodySiteCode ?? ""}
                 onChange={(e) => handleBodySiteChange(e.target.value)}
                 className="card-dropdown"
-                required={true}
                 options={bodySiteOptions}
               />
             </div>
