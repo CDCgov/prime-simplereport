@@ -639,11 +639,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             .description(description)
             .build();
 
+    expectedLab.setIsDeleted(true);
     when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedTrue(
             facilityId, labId))
-        .thenReturn(Optional.empty());
-    //    when(facilityLabRepository.save(any(FacilityLab.class))).thenReturn(expectedLab);
-    doReturn(expectedLab).when(facilityLabRepository).save(any(FacilityLab.class));
+        .thenReturn(Optional.of(expectedLab));
+    doReturn(expectedLab).when(facilityLabRepository).save(any());
 
     // When
     FacilityLab result = _service.createFacilityLab(facilityId, labId, name, description);
@@ -666,7 +666,14 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     String name = "Updated Lab";
     String description = "Updated Description";
 
-    FacilityLab deletedLab = createMockFacilityLab(facilityId, labId);
+    FacilityLab deletedLab =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(labId)
+            .name(name)
+            .description(description)
+            .build();
+
     deletedLab.setIsDeleted(true);
     deletedLab.setName("Old Name");
     deletedLab.setDescription("Old Description");
