@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DownloadResultsCsvModal with filters and under 20k results matches screenshot 1`] = `
+exports[`DownloadResultsCsvModal with filters matches screenshot 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body
@@ -37,6 +37,7 @@ Object {
               <button
                 aria-label="Close"
                 class="close-button"
+                style="opacity: 1;"
               >
                 <span
                   class="fa-layers"
@@ -88,11 +89,7 @@ Object {
               class="grid-row grid-gap"
             >
               <p>
-                The CSV file will include 
-                15
-                 row
-                s
-                .
+                The CSV file will include 15 rows.
               </p>
             </div>
             <div
@@ -102,6 +99,7 @@ Object {
                 class="display-flex flex-justify-end"
               >
                 <button
+                  aria-disabled="false"
                   class="usa-button usa-button--unstyled margin-right-2"
                   type="button"
                 >
@@ -112,32 +110,8 @@ Object {
                   class="usa-button"
                   type="button"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="svg-inline--fa fa-download margin-right-1"
-                    data-icon="download"
-                    data-prefix="fas"
-                    focusable="false"
-                    role="img"
-                    viewBox="0 0 512 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
-                      fill="currentColor"
-                    />
-                  </svg>
                   Download results
                 </button>
-                <a
-                  aria-hidden="true"
-                  class="hidden"
-                  download="simplereport-test-results.csv"
-                  href="data:text/csv;charset=utf-8,﻿"
-                  rel="noopener noreferrer"
-                  tabindex="-1"
-                  target="_self"
-                />
               </div>
             </div>
           </div>
@@ -179,6 +153,7 @@ Object {
             <button
               aria-label="Close"
               class="close-button"
+              style="opacity: 1;"
             >
               <span
                 class="fa-layers"
@@ -230,11 +205,7 @@ Object {
             class="grid-row grid-gap"
           >
             <p>
-              The CSV file will include 
-              15
-               row
-              s
-              .
+              The CSV file will include 15 rows.
             </p>
           </div>
           <div
@@ -244,6 +215,7 @@ Object {
               class="display-flex flex-justify-end"
             >
               <button
+                aria-disabled="false"
                 class="usa-button usa-button--unstyled margin-right-2"
                 type="button"
               >
@@ -254,32 +226,8 @@ Object {
                 class="usa-button"
                 type="button"
               >
-                <svg
-                  aria-hidden="true"
-                  class="svg-inline--fa fa-download margin-right-1"
-                  data-icon="download"
-                  data-prefix="fas"
-                  focusable="false"
-                  role="img"
-                  viewBox="0 0 512 512"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
-                    fill="currentColor"
-                  />
-                </svg>
                 Download results
               </button>
-              <a
-                aria-hidden="true"
-                class="hidden"
-                download="simplereport-test-results.csv"
-                href="data:text/csv;charset=utf-8,﻿"
-                rel="noopener noreferrer"
-                tabindex="-1"
-                target="_self"
-              />
             </div>
           </div>
         </div>
@@ -340,142 +288,7 @@ Object {
 }
 `;
 
-exports[`DownloadResultsCsvModal with no filters and under 20k results matches screenshot 1`] = `
-<div>
-  <div
-    class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
-  >
-    <div
-      aria-label="Download test results"
-      aria-modal="true"
-      class="ReactModal__Content"
-      role="dialog"
-      style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 1px solid #ccc; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px; max-height: 90vh; width: 40em;"
-      tabindex="-1"
-    >
-      <div
-        class="border-0 card-container"
-      >
-        <div
-          class="display-flex flex-justify"
-        >
-          <h1
-            class="font-heading-lg margin-top-05 margin-bottom-0"
-          >
-            Download test results
-          </h1>
-          <button
-            aria-label="Close"
-            class="close-button"
-          >
-            <span
-              class="fa-layers"
-            >
-              <svg
-                aria-hidden="true"
-                class="svg-inline--fa fa-circle fa-inverse fa-2x "
-                data-icon="circle"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                viewBox="0 0 512 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
-                  fill="currentColor"
-                />
-              </svg>
-              <svg
-                aria-hidden="true"
-                class="svg-inline--fa fa-circle-xmark fa-2x "
-                data-icon="circle-xmark"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                viewBox="0 0 512 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
-                  fill="currentColor"
-                />
-              </svg>
-            </span>
-          </button>
-        </div>
-        <div
-          class="border-top border-base-lighter margin-x-neg-205 margin-top-205"
-        />
-        <div
-          class="grid-row grid-gap"
-        >
-          <p>
-            Download results without any search filters applied?
-          </p>
-        </div>
-        <div
-          class="grid-row grid-gap"
-        >
-          <p>
-            The CSV file will include 
-            1
-             row
-            .
-          </p>
-        </div>
-        <div
-          class="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right"
-        >
-          <div
-            class="display-flex flex-justify-end"
-          >
-            <button
-              class="usa-button usa-button--unstyled margin-right-2"
-              type="button"
-            >
-              No, go back
-            </button>
-            <button
-              aria-disabled="false"
-              class="usa-button"
-              type="button"
-            >
-              <svg
-                aria-hidden="true"
-                class="svg-inline--fa fa-download margin-right-1"
-                data-icon="download"
-                data-prefix="fas"
-                focusable="false"
-                role="img"
-                viewBox="0 0 512 512"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
-                  fill="currentColor"
-                />
-              </svg>
-              Download results
-            </button>
-            <a
-              aria-hidden="true"
-              class="hidden"
-              download="simplereport-test-results.csv"
-              href="data:text/csv;charset=utf-8,﻿"
-              rel="noopener noreferrer"
-              tabindex="-1"
-              target="_self"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`DownloadResultsCsvModal with over 20k results matches screenshot 1`] = `
+exports[`DownloadResultsCsvModal with large dataset and no filters matches screenshot 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body
@@ -507,11 +320,12 @@ Object {
               <h1
                 class="font-heading-lg margin-top-05 margin-bottom-0"
               >
-                Too many results selected
+                Download test results
               </h1>
               <button
                 aria-label="Close"
                 class="close-button"
+                style="opacity: 1;"
               >
                 <span
                   class="fa-layers"
@@ -556,7 +370,14 @@ Object {
               class="grid-row grid-gap"
             >
               <p>
-                Please filter test results and download again with 20,000 results or fewer.
+                Download results without any search filters applied?
+              </p>
+            </div>
+            <div
+              class="grid-row grid-gap"
+            >
+              <p>
+                The CSV file will include 50,000 rows.
               </p>
             </div>
             <div
@@ -566,15 +387,15 @@ Object {
                 class="display-flex flex-justify-end"
               >
                 <button
+                  aria-disabled="false"
                   class="usa-button usa-button--unstyled margin-right-2"
                   type="button"
                 >
-                  Go back
+                  No, go back
                 </button>
                 <button
-                  aria-disabled="true"
-                  class="usa-button usa-button-disabled"
-                  disabled=""
+                  aria-disabled="false"
+                  class="usa-button"
                   type="button"
                 >
                   <svg
@@ -594,15 +415,6 @@ Object {
                   </svg>
                   Download results
                 </button>
-                <a
-                  aria-hidden="true"
-                  class="hidden"
-                  download="simplereport-test-results.csv"
-                  href="data:text/csv;charset=utf-8,﻿"
-                  rel="noopener noreferrer"
-                  tabindex="-1"
-                  target="_self"
-                />
               </div>
             </div>
           </div>
@@ -639,11 +451,12 @@ Object {
             <h1
               class="font-heading-lg margin-top-05 margin-bottom-0"
             >
-              Too many results selected
+              Download test results
             </h1>
             <button
               aria-label="Close"
               class="close-button"
+              style="opacity: 1;"
             >
               <span
                 class="fa-layers"
@@ -688,7 +501,14 @@ Object {
             class="grid-row grid-gap"
           >
             <p>
-              Please filter test results and download again with 20,000 results or fewer.
+              Download results without any search filters applied?
+            </p>
+          </div>
+          <div
+            class="grid-row grid-gap"
+          >
+            <p>
+              The CSV file will include 50,000 rows.
             </p>
           </div>
           <div
@@ -698,15 +518,15 @@ Object {
               class="display-flex flex-justify-end"
             >
               <button
+                aria-disabled="false"
                 class="usa-button usa-button--unstyled margin-right-2"
                 type="button"
               >
-                Go back
+                No, go back
               </button>
               <button
-                aria-disabled="true"
-                class="usa-button usa-button-disabled"
-                disabled=""
+                aria-disabled="false"
+                class="usa-button"
                 type="button"
               >
                 <svg
@@ -726,15 +546,612 @@ Object {
                 </svg>
                 Download results
               </button>
-              <a
-                aria-hidden="true"
-                class="hidden"
-                download="simplereport-test-results.csv"
-                href="data:text/csv;charset=utf-8,﻿"
-                rel="noopener noreferrer"
-                tabindex="-1"
-                target="_self"
-              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`DownloadResultsCsvModal with large dataset matches screenshot 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body
+    class="ReactModal__Body--open"
+  >
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div>
+      <div
+        class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      >
+        <div
+          aria-label="Download test results"
+          aria-modal="true"
+          class="ReactModal__Content"
+          role="dialog"
+          style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 1px solid #ccc; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px; max-height: 90vh; width: 40em;"
+          tabindex="-1"
+        >
+          <div
+            class="border-0 card-container"
+          >
+            <div
+              class="display-flex flex-justify"
+            >
+              <h1
+                class="font-heading-lg margin-top-05 margin-bottom-0"
+              >
+                Download test results
+              </h1>
+              <button
+                aria-label="Close"
+                class="close-button"
+                style="opacity: 1;"
+              >
+                <span
+                  class="fa-layers"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-circle fa-inverse fa-2x "
+                    data-icon="circle"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-circle-xmark fa-2x "
+                    data-icon="circle-xmark"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
+            <div
+              class="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+            />
+            <div
+              class="grid-row grid-gap"
+            >
+              <p>
+                Download results without any search filters applied?
+              </p>
+            </div>
+            <div
+              class="grid-row grid-gap"
+            >
+              <p>
+                The CSV file will include 50,000 rows.
+              </p>
+            </div>
+            <div
+              class="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right"
+            >
+              <div
+                class="display-flex flex-justify-end"
+              >
+                <button
+                  aria-disabled="false"
+                  class="usa-button usa-button--unstyled margin-right-2"
+                  type="button"
+                >
+                  No, go back
+                </button>
+                <button
+                  aria-disabled="false"
+                  class="usa-button"
+                  type="button"
+                >
+                  Download results
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div
+      class="ReactModalPortal"
+    />
+  </body>,
+  "container": <div>
+    <div
+      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+    >
+      <div
+        aria-label="Download test results"
+        aria-modal="true"
+        class="ReactModal__Content"
+        role="dialog"
+        style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 1px solid #ccc; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px; max-height: 90vh; width: 40em;"
+        tabindex="-1"
+      >
+        <div
+          class="border-0 card-container"
+        >
+          <div
+            class="display-flex flex-justify"
+          >
+            <h1
+              class="font-heading-lg margin-top-05 margin-bottom-0"
+            >
+              Download test results
+            </h1>
+            <button
+              aria-label="Close"
+              class="close-button"
+              style="opacity: 1;"
+            >
+              <span
+                class="fa-layers"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-circle fa-inverse fa-2x "
+                  data-icon="circle"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-circle-xmark fa-2x "
+                  data-icon="circle-xmark"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
+          <div
+            class="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+          />
+          <div
+            class="grid-row grid-gap"
+          >
+            <p>
+              Download results without any search filters applied?
+            </p>
+          </div>
+          <div
+            class="grid-row grid-gap"
+          >
+            <p>
+              The CSV file will include 50,000 rows.
+            </p>
+          </div>
+          <div
+            class="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right"
+          >
+            <div
+              class="display-flex flex-justify-end"
+            >
+              <button
+                aria-disabled="false"
+                class="usa-button usa-button--unstyled margin-right-2"
+                type="button"
+              >
+                No, go back
+              </button>
+              <button
+                aria-disabled="false"
+                class="usa-button"
+                type="button"
+              >
+                Download results
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`DownloadResultsCsvModal with result filters matches screenshot 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body
+    class="ReactModal__Body--open"
+  >
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div>
+      <div
+        class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      >
+        <div
+          aria-label="Download test results"
+          aria-modal="true"
+          class="ReactModal__Content"
+          role="dialog"
+          style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 1px solid #ccc; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px; max-height: 90vh; width: 40em;"
+          tabindex="-1"
+        >
+          <div
+            class="border-0 card-container"
+          >
+            <div
+              class="display-flex flex-justify"
+            >
+              <h1
+                class="font-heading-lg margin-top-05 margin-bottom-0"
+              >
+                Download test results
+              </h1>
+              <button
+                aria-label="Close"
+                class="close-button"
+                style="opacity: 1;"
+              >
+                <span
+                  class="fa-layers"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-circle fa-inverse fa-2x "
+                    data-icon="circle"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-circle-xmark fa-2x "
+                    data-icon="circle-xmark"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
+            <div
+              class="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+            />
+            <div
+              class="grid-row grid-gap"
+            >
+              <p>
+                Download results with current search filters applied?
+              </p>
+            </div>
+            <div
+              class="grid-row grid-gap"
+            >
+              <p>
+                The CSV file will include 15 rows.
+              </p>
+            </div>
+            <div
+              class="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right"
+            >
+              <div
+                class="display-flex flex-justify-end"
+              >
+                <button
+                  aria-disabled="false"
+                  class="usa-button usa-button--unstyled margin-right-2"
+                  type="button"
+                >
+                  No, go back
+                </button>
+                <button
+                  aria-disabled="false"
+                  class="usa-button"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-download margin-right-1"
+                    data-icon="download"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 512 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  Download results
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div
+      class="ReactModalPortal"
+    />
+  </body>,
+  "container": <div>
+    <div
+      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+    >
+      <div
+        aria-label="Download test results"
+        aria-modal="true"
+        class="ReactModal__Content"
+        role="dialog"
+        style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 1px solid #ccc; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px; max-height: 90vh; width: 40em;"
+        tabindex="-1"
+      >
+        <div
+          class="border-0 card-container"
+        >
+          <div
+            class="display-flex flex-justify"
+          >
+            <h1
+              class="font-heading-lg margin-top-05 margin-bottom-0"
+            >
+              Download test results
+            </h1>
+            <button
+              aria-label="Close"
+              class="close-button"
+              style="opacity: 1;"
+            >
+              <span
+                class="fa-layers"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-circle fa-inverse fa-2x "
+                  data-icon="circle"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-circle-xmark fa-2x "
+                  data-icon="circle-xmark"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM175 175c9.4-9.4 24.6-9.4 33.9 0l47 47 47-47c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-47 47 47 47c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-47-47-47 47c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l47-47-47-47c-9.4-9.4-9.4-24.6 0-33.9z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+            </button>
+          </div>
+          <div
+            class="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+          />
+          <div
+            class="grid-row grid-gap"
+          >
+            <p>
+              Download results with current search filters applied?
+            </p>
+          </div>
+          <div
+            class="grid-row grid-gap"
+          >
+            <p>
+              The CSV file will include 15 rows.
+            </p>
+          </div>
+          <div
+            class="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right"
+          >
+            <div
+              class="display-flex flex-justify-end"
+            >
+              <button
+                aria-disabled="false"
+                class="usa-button usa-button--unstyled margin-right-2"
+                type="button"
+              >
+                No, go back
+              </button>
+              <button
+                aria-disabled="false"
+                class="usa-button"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-download margin-right-1"
+                  data-icon="download"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Download results
+              </button>
             </div>
           </div>
         </div>
