@@ -21,7 +21,8 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
         "testEvent.deviceType",
         "testEvent.surveyData",
         "testEvent.order",
-        "createdBy"
+        "createdBy",
+        "disease"
       })
   Page<Result> findAll(Specification<Result> searchSpec, Pageable p);
 
