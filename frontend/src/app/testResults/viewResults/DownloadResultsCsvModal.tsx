@@ -71,15 +71,8 @@ const DownloadResultsCsvModal = ({
     return val;
   });
 
-  const pluralizeRows = (entriesCount: number) => {
-    return entriesCount > 1 ? "s" : "";
-  };
-
   const getDownloadMessage = () => {
-    const rowText = `${totalEntries.toLocaleString()} row${pluralizeRows(
-      totalEntries
-    )}`;
-
+    const rowText = totalEntries.toLocaleString();
     switch (downloadState) {
       case "downloading":
         if (totalEntries > 10000) {
@@ -89,7 +82,7 @@ const DownloadResultsCsvModal = ({
       case "complete":
         return `Download complete! ${rowText} downloaded successfully.`;
       default:
-        return `The CSV file will include ${rowText}.`;
+        return `The CSV file will include ${rowText} rows.`;
     }
   };
 

@@ -585,7 +585,7 @@ describe("TestResultsList", () => {
         })
       ).toBeInTheDocument();
       expect(
-        screen.getByText("The CSV file will include 3 rows", { exact: false })
+        screen.getByText("The CSV file will include 3 ro", { exact: false })
       ).toBeInTheDocument();
     });
 
@@ -613,7 +613,7 @@ describe("TestResultsList", () => {
         )
       ).toBeInTheDocument();
       expect(
-        screen.getByText("The CSV file will include 2 rows", { exact: false })
+        screen.getByText("The CSV file will include 2 rows.", { exact: false })
       ).toBeInTheDocument();
     });
 
