@@ -59,8 +59,11 @@ public class FeatureFlagsConfig {
 
     facilityFlags.forEach(
         flag -> {
-          Map<String, Boolean> facilityMap =
-              allFacilitiesMap.computeIfAbsent(flag.getFacilityId(), k -> new HashMap<>());
+          Map<String, Boolean> facilityMap = new HashMap<>();
+
+          if (allFacilitiesMap.get(flag.getFacilityId()) != null) {
+            facilityMap = allFacilitiesMap.get(flag.getFacilityId());
+          }
 
           facilityMap.put(flag.getName(), flag.getValue());
           allFacilitiesMap.put(flag.getFacilityId(), facilityMap);
@@ -85,8 +88,11 @@ public class FeatureFlagsConfig {
 
   public Map<String, Boolean> getFeatureFlags(Optional<UUID> facilityId) {
     Map<String, Boolean> featureFlags = new HashMap<>();
-    Map<String, Boolean> facilityMap =
-        facilityId.isPresent() ? allFacilitiesMap.get(facilityId.get()) : new HashMap<>();
+    Map<String, Boolean> facilityMap = new HashMap<>();
+
+    if (facilityId.isPresent() && allFacilitiesMap.get(facilityId.get()) != null) {
+      facilityMap = allFacilitiesMap.get(facilityId.get());
+    }
 
     Field[] fields = this.getClass().getDeclaredFields();
     for (Field field : fields) {
