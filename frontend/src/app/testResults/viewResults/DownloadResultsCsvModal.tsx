@@ -35,11 +35,13 @@ function buildCsvDownloadPath({
   const basePath = `/results/download`;
   const params = new URLSearchParams();
   if (filterParams.filterFacilityId === ALL_FACILITIES_ID) {
-    console.log("SKIP");
-  } else {
-    const facilityId = filterParams.filterFacilityId ?? activeFacilityId;
-    params.append("facilityId", facilityId);
+    throw new Error(
+      "Organization-level downloads are not available from this page. Please select a specific facility or use the organization settings page for organization-level downloads."
+    );
   }
+  const facilityId = filterParams.filterFacilityId ?? activeFacilityId;
+  params.append("facilityId", facilityId);
+
   if (filterParams.patientId)
     params.append("patientId", filterParams.patientId);
   if (filterParams.result) params.append("result", filterParams.result);
@@ -52,7 +54,7 @@ function buildCsvDownloadPath({
   return `${basePath}?${params.toString()}`;
 }
 
-export const DownloadResultsCsvModal = ({
+const DownloadResultsCsvModal = ({
   filterParams,
   modalIsOpen,
   closeModal,
@@ -60,6 +62,8 @@ export const DownloadResultsCsvModal = ({
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
   const [downloadState, setDownloadState] = useState<DownloadState>("idle");
+  const isAllFacilitiesSelected =
+    filterParams.filterFacilityId === ALL_FACILITIES_ID;
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
     if (key === "filterFacilityId") {
       return val !== activeFacilityId;
@@ -218,16 +222,35 @@ export const DownloadResultsCsvModal = ({
 
         {!isComplete && (
           <div className="grid-row grid-gap">
-            <p>
-              {filtersPresent
-                ? "Download results with current search filters applied?"
-                : "Download results without any search filters applied?"}
-            </p>
+            {isAllFacilitiesSelected ? (
+              <div>
+                <p className="text-error">
+                  Organization-level downloads are not available from this page.
+                </p>
+                <p>
+                  To download data for all facilities in your organization,
+                  please use the "Download Test Results" button on the
+                  organization settings page.
+                </p>
+                <p>
+                  To download data for a specific facility, please select a
+                  facility from the facility filter above.
+                </p>
+              </div>
+            ) : (
+              <p>
+                {filtersPresent
+                  ? "Download results with current search filters applied?"
+                  : "Download results without any search filters applied?"}
+              </p>
+            )}
           </div>
         )}
-        <div className="grid-row grid-gap">
-          <p>{getDownloadMessage()}</p>
-        </div>
+        {!isAllFacilitiesSelected && (
+          <div className="grid-row grid-gap">
+            <p>{getDownloadMessage()}</p>
+          </div>
+        )}
 
         {isDownloading && totalEntries > 1000 && (
           <div className="grid-row grid-gap">
@@ -254,10 +277,14 @@ export const DownloadResultsCsvModal = ({
             )}
             <Button
               onClick={isComplete ? handleClose : handleDownload}
-              disabled={isDownloading}
+              disabled={isDownloading || isAllFacilitiesSelected}
               icon={buttonContent.icon}
               iconClassName={buttonContent.className}
-              label={buttonContent.label}
+              label={
+                isAllFacilitiesSelected
+                  ? "Select a facility to download"
+                  : buttonContent.label
+              }
               variant={isComplete ? "accent-cool" : undefined}
             />
           </div>

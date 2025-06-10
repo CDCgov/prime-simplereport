@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import ReactDOM from "react-dom";
 
-import { DownloadResultsCsvModal } from "./DownloadResultsCsvModal";
+import DownloadResultsCsvModal from "./DownloadResultsCsvModal";
 
 jest.mock("../../../app/utils/api", () => {
   return jest.fn().mockImplementation(() => ({

@@ -57,7 +57,6 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
     try {
       const downloadPath = `/results/download?organizationId=${organization.id}`;
       const fullUrl = apiClient.getURL(downloadPath);
-      console.log("Full organization object:", organization);
 
       console.log("Organization Download URL:", fullUrl);
 
@@ -96,7 +95,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
       window.URL.revokeObjectURL(urlBlob);
 
       setDownloadState("complete");
-      showSuccess("Download Complete", "Test results downloaded successfully");
+      showSuccess("Success Message", "Test results downloaded successfully");
 
       setTimeout(() => {
         setDownloadState("idle");
