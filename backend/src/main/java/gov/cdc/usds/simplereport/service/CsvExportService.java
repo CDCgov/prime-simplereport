@@ -26,12 +26,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -310,11 +312,9 @@ public class CsvExportService {
     AskOnEntrySurvey surveyData = item.getSurveyData();
     ApiUser createdBy = item.getCreatedBy();
 
-    String firstName =
-        patient != null && patient.getFirstName() != null ? patient.getFirstName() : "";
-    String middleName =
-        patient != null && patient.getMiddleName() != null ? patient.getMiddleName() : "";
-    String lastName = patient != null && patient.getLastName() != null ? patient.getLastName() : "";
+    String firstName = extractString(patient, Person::getFirstName);
+    String middleName = extractString(patient, Person::getMiddleName);
+    String lastName = extractString(patient, Person::getLastName);
     String fullName = formatFullName(firstName, middleName, lastName);
 
     String submitterName = "";
@@ -377,9 +377,9 @@ public class CsvExportService {
         formatAsDateTime(item.getDateUpdated()),
         item.getCorrectionStatus() != null ? item.getCorrectionStatus().toString() : "",
         item.getReasonForCorrection(),
-        deviceType != null ? deviceType.getName() : "",
-        deviceType != null ? deviceType.getManufacturer() : "",
-        deviceType != null ? deviceType.getModel() : "",
+        extractString(deviceType, DeviceType::getName),
+        extractString(deviceType, DeviceType::getManufacturer),
+        extractString(deviceType, DeviceType::getModel),
         swabType,
         hasSymptoms,
         symptomsPresent,
@@ -387,23 +387,27 @@ public class CsvExportService {
         facilityName,
         submitterName,
         patient != null && patient.getRole() != null ? patient.getRole().toString() : "",
-        patient != null ? patient.getLookupId() : "",
-        patient != null ? patient.getPreferredLanguage() : "",
+        extractString(patient, Person::getLookupId),
+        extractString(patient, Person::getPreferredLanguage),
         phoneNumber,
-        patient != null ? patient.getEmail() : "",
-        patient != null ? patient.getStreet() : "",
-        patient != null ? patient.getStreetTwo() : "",
-        patient != null ? patient.getCity() : "",
-        patient != null ? patient.getState() : "",
-        patient != null ? patient.getZipCode() : "",
-        patient != null ? patient.getCounty() : "",
-        patient != null ? patient.getCountry() : "",
+        extractString(patient, Person::getEmail),
+        extractString(patient, Person::getStreet),
+        extractString(patient, Person::getStreetTwo),
+        extractString(patient, Person::getCity),
+        extractString(patient, Person::getState),
+        extractString(patient, Person::getZipCode),
+        extractString(patient, Person::getCounty),
+        extractString(patient, Person::getCountry),
         patient != null && patient.getGender() != null ? patient.getGender() : "",
         patient != null && patient.getRace() != null ? patient.getRace() : "",
         patient != null && patient.getEthnicity() != null ? patient.getEthnicity() : "",
         tribalAffiliation,
         patient != null ? patient.getResidentCongregateSetting() : "",
         patient != null ? patient.getEmployedInHealthcare() : "");
+  }
+
+  private <T> String extractString(T object, Function<T, String> getter) {
+    return object != null ? StringUtils.trimToEmpty(getter.apply(object)) : "";
   }
 
   private String formatFullName(String firstName, String middleName, String lastName) {
