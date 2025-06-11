@@ -42,6 +42,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CsvExportService {
   private final ResultService resultService;
+  private final OrganizationService organizationService;
 
   public record ExportParameters(
       UUID facilityId,
@@ -53,39 +54,43 @@ public class CsvExportService {
       Date startDate,
       Date endDate,
       int pageNumber,
-      int pageSize) {
+      int pageSize,
+      boolean includeAllFacilities) {
 
     public void validate() {
       if (facilityId == null && organizationId == null) {
         throw new IllegalArgumentException(
             "Either facilityId or organizationId is required for exports");
       }
-      if (facilityId != null && organizationId != null) {
-        throw new IllegalArgumentException("Cannot specify both facilityId and organizationId");
+      // Allow both facilityId and organizationId when includeAllFacilities is true (Path 3)
+      if (facilityId != null && organizationId != null && !includeAllFacilities) {
+        throw new IllegalArgumentException(
+            "Cannot specify both facilityId and organizationId unless includeAllFacilities is true");
       }
     }
 
     public boolean isFacilityExport() {
-      return facilityId != null;
-    }
-
-    public boolean isOrganizationExport() {
-      return organizationId != null;
+      // For Path 3 (includeAllFacilities=true), treat as organization export even with facilityId
+      return facilityId != null && !includeAllFacilities;
     }
   }
 
   public void streamResultsAsCsv(OutputStream outputStream, ExportParameters params) {
     params.validate();
 
+    ExportParameters resolvedParams = resolveOrganizationId(params);
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
 
-      int batchSize = params.pageSize();
-      int totalElements = getResultsCount(params);
+      int batchSize = resolvedParams.pageSize();
+      int totalElements = getResultsCount(resolvedParams);
       int totalPages = (int) Math.ceil((double) totalElements / batchSize);
 
-      String exportType = params.isFacilityExport() ? "facility" : "organization";
-      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
+      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
+      UUID exportId =
+          resolvedParams.isFacilityExport()
+              ? resolvedParams.facilityId()
+              : resolvedParams.organizationId();
       log.info(
           "Starting {} CSV export for {}={}: {} records in {} batches",
           exportType,
@@ -96,7 +101,7 @@ public class CsvExportService {
 
       for (int currentPage = 0; currentPage < totalPages; currentPage++) {
         Pageable pageable = PageRequest.of(currentPage, batchSize);
-        Page<TestResultsListItem> resultsPage = fetchResultsPage(params, pageable);
+        Page<TestResultsListItem> resultsPage = fetchResultsPage(resolvedParams, pageable);
 
         log.info(
             "Page {}/{}: Expected {} records, Got {} records, Total so far: {}",
@@ -117,8 +122,11 @@ public class CsvExportService {
 
       log.info("Completed {} CSV export for {}={}", exportType, exportType + "Id", exportId);
     } catch (IOException e) {
-      String exportType = params.isFacilityExport() ? "facility" : "organization";
-      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
+      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
+      UUID exportId =
+          resolvedParams.isFacilityExport()
+              ? resolvedParams.facilityId()
+              : resolvedParams.organizationId();
       log.error(
           "Error streaming {} CSV data for {}={}", exportType, exportType + "Id", exportId, e);
       throw new RuntimeException("Failed to generate CSV file", e);
@@ -126,6 +134,7 @@ public class CsvExportService {
   }
 
   public void streamResultsAsZippedCsv(OutputStream rawOut, ExportParameters params) {
+    ExportParameters resolvedParams = resolveOrganizationId(params);
 
     class NonClosingOutputStream extends FilterOutputStream {
       NonClosingOutputStream(OutputStream out) {
@@ -141,15 +150,48 @@ public class CsvExportService {
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
       zipOut.putNextEntry(new ZipEntry("test-results.csv"));
 
-      streamResultsAsCsv(new NonClosingOutputStream(zipOut), params);
+      streamResultsAsCsv(new NonClosingOutputStream(zipOut), resolvedParams);
 
       zipOut.closeEntry();
     } catch (IOException ex) {
-      String exportType = params.isFacilityExport() ? "facility" : "organization";
-      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
+      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
+      UUID exportId =
+          resolvedParams.isFacilityExport()
+              ? resolvedParams.facilityId()
+              : resolvedParams.organizationId();
       log.error("Error zipping CSV for {} {}", exportType, exportId, ex);
       throw new RuntimeException("Failed to generate zipped CSV", ex);
     }
+  }
+
+  private ExportParameters resolveOrganizationId(ExportParameters params) {
+    // Only resolve organizationId if:
+    // 1. organizationId is null AND facilityId exists AND includeAllFacilities is true (Path 3)
+    // 2. organizationId is already provided (Path 1)
+    // For Path 2 (facility-only), keep organizationId as null
+
+    if (params.organizationId() != null
+        || params.facilityId() == null
+        || !params.includeAllFacilities()) {
+      return params;
+    }
+
+    // Path 3: "All Facilities" - derive organizationId from facilityId
+    var organization = organizationService.getOrganizationByFacilityId(params.facilityId());
+    UUID organizationId = organization != null ? organization.getInternalId() : null;
+
+    return new ExportParameters(
+        params.facilityId(),
+        organizationId,
+        params.patientId(),
+        params.testResult(),
+        params.personRole(),
+        params.disease(),
+        params.startDate(),
+        params.endDate(),
+        params.pageNumber(),
+        params.pageSize(),
+        params.includeAllFacilities());
   }
 
   private int getResultsCount(ExportParameters params) {

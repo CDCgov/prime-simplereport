@@ -1,10 +1,10 @@
 package gov.cdc.usds.simplereport.api;
 
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.service.CsvExportService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +25,7 @@ public class TestResultDataController {
   private final CsvExportService csvExportService;
 
   @GetMapping(value = "/results/download")
+  @AuthorizationConfiguration.RequirePermissionCSVUpload
   public ResponseEntity<StreamingResponseBody> downloadResultsAsCSV(
       @RequestParam(required = false) UUID facilityId,
       @RequestParam(required = false) UUID organizationId,
@@ -34,8 +35,24 @@ public class TestResultDataController {
       @RequestParam(required = false) String disease,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
+      @RequestParam(required = false, defaultValue = "false") boolean includeAllFacilities,
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "5000") int pageSize) {
+
+    // Determine the download path
+    if (includeAllFacilities && facilityId != null) {
+      // Path 3: "All Facilities" - get org ID from facility, export org-level data
+      log.info("Path 3: All Facilities download via facilityId={}", facilityId);
+      // organizationId will be derived in CsvExportService.resolveOrganizationId()
+    } else if (facilityId != null) {
+      // Path 2: Facility-level download
+      log.info("Path 2: Facility-level download for facilityId={}", facilityId);
+    } else if (organizationId != null) {
+      // Path 1: Organization-level download
+      log.info("Path 1: Organization-level download for organizationId={}", organizationId);
+    } else {
+      throw new IllegalArgumentException("Either facilityId or organizationId is required");
+    }
 
     log.info(
         "CSV download request for facilityId={}, organizationId={}", facilityId, organizationId);
@@ -61,18 +78,15 @@ public class TestResultDataController {
             startDate,
             endDate,
             pageNumber,
-            pageSize);
+            pageSize,
+            includeAllFacilities);
 
     StreamingResponseBody responseBody =
         out -> {
           csvExportService.streamResultsAsZippedCsv(out, params);
         };
 
-    String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
-    String exportType = facilityId != null ? "facility" : "organization";
-    UUID exportId = facilityId != null ? facilityId : organizationId;
-    String zipFileName =
-        String.format("%s-%s-test-results-%s.zip", exportType, exportId, timestamp);
+    String zipFileName = "testResults.zip";
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zipFileName)
