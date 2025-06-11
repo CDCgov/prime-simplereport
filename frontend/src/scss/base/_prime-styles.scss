@@ -1182,3 +1182,7 @@ a[href^='https:']:not([href*='simplereport.gov']) {
     height: 100%;
   }
 }
+
+.usa-nav-container.prime-header .desktop-nav .nav__primary-item-icon:last-child {
+  border-bottom: none !important;
+}

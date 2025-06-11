@@ -1,12 +1,13 @@
 package gov.cdc.usds.simplereport.validators;
 
-import static gov.cdc.usds.simplereport.api.Translators.ABNORMAL_SNOMEDS;
+import static gov.cdc.usds.simplereport.api.Translators.ALL_ACCEPTED_RESULT_SNOMED_RECORDS;
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
-import static gov.cdc.usds.simplereport.api.Translators.NORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_LITERAL;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_SNOMED;
 import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOMELESS_LITERAL;
@@ -135,13 +136,11 @@ public class CsvValidatorUtils {
   private static final String NOT_HISPANIC_DB_VALUE = "not_hispanic";
   private static final String POSITIVE_LITERAL = "positive";
   private static final String NEGATIVE_LITERAL = "negative";
-  private static final String POSITIVE_CODE = "10828004";
   private static final String DETECTED_LITERAL = "detected";
   private static final String NOT_DETECTED_LITERAL = "not detected";
-  private static final String DETECTED_CODE = "260373001";
   private static final String INVALID_RESULT_LITERAL = "invalid result";
   private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
-      Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_CODE, DETECTED_CODE);
+      Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_SNOMED, DETECTED_SNOMED);
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "m", MALE_LITERAL,
@@ -174,7 +173,7 @@ public class CsvValidatorUtils {
           ASK_LITERAL,
           UNKNOWN_CODE,
           UNKNOWN_LITERAL);
-  private static final Set<String> YES_NO_VALUES =
+  private static final Set<String> YES_NO_UNKNOWN_VALUES =
       Set.of(
           "y", "yes",
           "n", "no",
@@ -187,11 +186,10 @@ public class CsvValidatorUtils {
           DETECTED_LITERAL,
           INVALID_RESULT_LITERAL);
 
-  private static final Set<String> ACCEPTED_TEST_RESULT_SNOMEDS =
-      concat(NORMAL_SNOMEDS.keySet().stream(), ABNORMAL_SNOMEDS.keySet().stream()).collect(toSet());
-
   private static final Set<String> ALL_ACCEPTED_TEST_RESULT_VALUES =
-      concat(ACCEPTED_LITERAL_TEST_RESULT_VALUES.stream(), ACCEPTED_TEST_RESULT_SNOMEDS.stream())
+      concat(
+              ACCEPTED_LITERAL_TEST_RESULT_VALUES.stream(),
+              ALL_ACCEPTED_RESULT_SNOMED_RECORDS.keySet().stream())
           .collect(toSet());
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
@@ -332,8 +330,8 @@ public class CsvValidatorUtils {
     return validateInSet(input, RESIDENCE_VALUES);
   }
 
-  public static List<FeedbackMessage> validateYesNoAnswer(ValueOrError input) {
-    return validateInSet(input, YES_NO_VALUES);
+  public static List<FeedbackMessage> validateYesNoUnknownAnswer(ValueOrError input) {
+    return validateInSet(input, YES_NO_UNKNOWN_VALUES);
   }
 
   public static List<FeedbackMessage> validateEthnicity(ValueOrError input) {

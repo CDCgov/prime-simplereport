@@ -13,6 +13,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartystreets.api.exceptions.SmartyException;
+import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
@@ -52,7 +53,7 @@ public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
   private static ResultsUploaderCachingService resultsUploaderCachingService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
-  final FhirContext ctx = FhirContext.forR4();
+  final FhirContext ctx = FhirContextProvider.get();
   final IParser parser = ctx.newJsonParser();
   private final UUIDGenerator uuidGenerator = new UUIDGenerator();
   private final DateGenerator dateGenerator = new DateGenerator();
@@ -682,5 +683,37 @@ public class BulkUploadResultsToFhirTest {
 
     assertThat(syphilisHistoryObservations).hasSize(1);
     assertThat(codeableConceptValues).isEqualTo(List.of("unknown"));
+  }
+
+  @Test
+  void diagnosticReport_usesTestOrderedCode() throws IOException {
+    byte[] input = loadCsv("testResultUpload/test-results-upload-all-fields.csv").readAllBytes();
+    FHIRBundleRecord bundleRecord =
+        sut.convertToFhirBundles(new ByteArrayInputStream(input), UUID.randomUUID());
+    var serializedBundles = bundleRecord.serializedBundle();
+    var mappingIterator = getIteratorForCsv(new ByteArrayInputStream(input));
+
+    int index = 0;
+    while (mappingIterator.hasNext()) {
+      var csvRow = mappingIterator.next();
+      var inputOrderedCode = csvRow.get("test_ordered_code");
+      var inputPerformedCode = csvRow.get("test_performed_code");
+
+      var bundle = serializedBundles.get(index++);
+      var deserializedBundle = (Bundle) parser.parseResource(bundle);
+
+      var diagnosticReportEntry =
+          deserializedBundle.getEntry().stream()
+              .filter(entry -> entry.getFullUrl().contains("DiagnosticReport/"))
+              .findFirst()
+              .orElseThrow(
+                  () -> new AssertionError("Expected to find DiagnosticReport, but not found"));
+      var diagnosticReport = (DiagnosticReport) diagnosticReportEntry.getResource();
+
+      var mappedCode = diagnosticReport.getCode().getCoding().stream().findFirst().get().getCode();
+
+      assertThat(mappedCode).isEqualTo(inputOrderedCode);
+      assertThat(inputOrderedCode).isNotEqualTo(inputPerformedCode);
+    }
   }
 }

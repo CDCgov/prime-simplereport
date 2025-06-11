@@ -44,10 +44,10 @@ dependencies {
 
     // graphql
     implementation 'org.springframework.boot:spring-boot-starter-graphql:3.4.4'
-    implementation 'org.springframework:spring-web:6.2.1'
+    implementation 'org.springframework:spring-web:6.2.7'
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
-    implementation 'com.graphql-java:graphql-java:22.3'
+    implementation 'com.graphql-java:graphql-java:23.1'
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:22.0'
     // graphql-java-extended-scalars
@@ -69,7 +69,8 @@ dependencies {
      */
     implementation 'com.squareup.okio:okio:3.10.2'
     implementation 'org.springframework:spring-core:6.2.1'
-    implementation 'org.springframework.security:spring-security-core:6.4.3'
+    implementation 'org.springframework.security:spring-security-core:6.4.6'
+    implementation 'org.springframework.security:spring-security-crypto:6.3.9'
     implementation 'org.springframework.security:spring-security-oauth2-client:6.4.4'
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.34'
     implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:11.0.5'

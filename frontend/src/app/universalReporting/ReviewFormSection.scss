@@ -1,0 +1,14 @@
+.review-form {
+  table,
+  th,
+  td {
+    border-top: none !important;
+    border-bottom: 1px solid #dfe1e2 !important;
+    line-height: 1;
+  }
+
+  td:first-child {
+    width: 18rem;
+    padding-left: 0;
+  }
+}

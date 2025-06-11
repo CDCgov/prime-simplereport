@@ -5,6 +5,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import feign.Response;
+import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.LoincStaging;
@@ -37,7 +38,12 @@ public class ConditionService {
   private final ConditionRepository conditionRepository;
   private final LoincStagingRepository loincStagingRepository;
 
+  //  This is a safety check to ensure we don't get stuck in an infinite loop
+  private static final int MAX_PAGES = 1000;
+
   private static final int PAGE_SIZE = 20;
+
+  public static final String CODEABLE_CONCEPT_CODE = "focus";
 
   public List<Condition> getConditions() {
     return conditionRepository.findAllByHasLabsIsTrue();
@@ -68,18 +74,16 @@ public class ConditionService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
   public void syncConditions() {
-    // TODO let's track a count of conditions instead of all the conditions if all we are doing is
-    // aggregating for the response
     // TODO add handling for HTTP 429 in case we get into a rate limiting situation.
-    List<Condition> conditionList = new ArrayList<>();
+    int conditionsLoaded = 0;
 
     int pageOffset = 0;
 
     boolean hasNext = true;
-    // TODO add something here to ensure this doesn't turn into an infinite by mistake e.g. max 1k
-    // iterations.
+    int pagesLoaded = 0;
     log.info("Starting sync conditions");
-    while (hasNext) {
+    while (hasNext && pagesLoaded < MAX_PAGES) {
+      pagesLoaded++;
       log.info("Requesting TES condition page with offset {}", pageOffset);
       // TODO: Add error handling for this network call.
       Response response = tesClient.getConditions(PAGE_SIZE, pageOffset);
@@ -98,7 +102,7 @@ public class ConditionService {
         ValueSet valueSet = (ValueSet) entry.getResource();
         CodeableConcept conditionConcept = parseCondition(valueSet);
         Condition condition = saveCondition(conditionConcept);
-        conditionList.add(condition);
+        conditionsLoaded++;
         var loincList = parseLoinc(valueSet);
         loincList.ifPresent(
             conceptSetComponent -> saveLoincList(conceptSetComponent.getConcept(), condition));
@@ -108,7 +112,7 @@ public class ConditionService {
       pageOffset = pageOffset + PAGE_SIZE;
     }
 
-    log.info("Condition sync completed successfully with {} conditions", conditionList.size());
+    log.info("Condition sync completed successfully with {} conditions", conditionsLoaded);
   }
 
   private void saveLoincList(
@@ -135,7 +139,7 @@ public class ConditionService {
   }
 
   private Bundle parseResponseToBundle(String responseString) {
-    FhirContext ctx = FhirContext.forR4();
+    FhirContext ctx = FhirContextProvider.get();
     IParser parser = ctx.newJsonParser();
     Bundle bundle;
     try {
@@ -155,9 +159,8 @@ public class ConditionService {
     List<UsageContext> useContext = valueSet.getUseContext();
     for (UsageContext context : useContext) {
       Coding code = context.getCode();
-      // TODO extract 'focus' into a variable whose variable name captures the
-      //  significance of the word 'focus'
-      if (code.getCode().equals("focus")) {
+
+      if (code.getCode().equals(CODEABLE_CONCEPT_CODE)) {
         return context.getValueCodeableConcept();
       }
     }
