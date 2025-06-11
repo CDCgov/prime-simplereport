@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -23,9 +22,11 @@ public class PatientExportController {
   private final FacilityCsvExportService csvExportService;
 
   @RequirePermissionReadResultListAtFacility
-  @GetMapping(value = "/facilities/{facilityId}/patients/download")
+  @GetMapping(value = "/patients/download")
   public ResponseEntity<StreamingResponseBody> downloadFacilityPatientsAsCSV(
-      @PathVariable UUID facilityId,
+      //      @PathVariable UUID facilityId,
+      @RequestParam(required = false) UUID facilityId,
+      @RequestParam(required = false) UUID organizationId,
       //            @RequestParam(required = false) UUID patientId,
       //            @RequestParam(required = false) String result,
       //            @RequestParam(required = false) String role,
@@ -65,14 +66,14 @@ public class PatientExportController {
 
     StreamingResponseBody responseBody =
         outputStream -> {
-          csvExportService.streamFacilityPatientsAsCsv(outputStream, facilityId);
+          csvExportService.streamPatientsAsZippedCsv(outputStream, facilityId);
         };
 
     String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
-    String csvFileName = String.format("facility-%s-patients-%s.csv", facilityId, timestamp);
+    String zippedCsvFileName = String.format("facility-%s-patients-%s.zip", facilityId, timestamp);
 
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + csvFileName)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zippedCsvFileName)
         .header(HttpHeaders.CONTENT_TYPE, "text/csv;charset=UTF-8")
         .body(responseBody);
   }
