@@ -39,23 +39,11 @@ public class TestResultDataController {
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "5000") int pageSize) {
 
-    // Determine the download path
-    if (includeAllFacilities && facilityId != null) {
-      // Path 3: "All Facilities" - get org ID from facility, export org-level data
-      log.info("Path 3: All Facilities download via facilityId={}", facilityId);
-      // organizationId will be derived in CsvExportService.resolveOrganizationId()
-    } else if (facilityId != null) {
-      // Path 2: Facility-level download
-      log.info("Path 2: Facility-level download for facilityId={}", facilityId);
-    } else if (organizationId != null) {
-      // Path 1: Organization-level download
-      log.info("Path 1: Organization-level download for organizationId={}", organizationId);
-    } else {
-      throw new IllegalArgumentException("Either facilityId or organizationId is required");
-    }
-
     log.info(
-        "CSV download request for facilityId={}, organizationId={}", facilityId, organizationId);
+        "CSV download request for facilityId={}, organizationId={}, includeAllFacilities={}",
+        facilityId,
+        organizationId,
+        includeAllFacilities);
 
     if (pageNumber < 0) {
       pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;

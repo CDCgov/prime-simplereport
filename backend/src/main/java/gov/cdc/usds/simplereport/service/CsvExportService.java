@@ -59,7 +59,7 @@ public class CsvExportService {
       int pageSize,
       boolean includeAllFacilities) {
 
-    public void validate() {
+    public ExportParameters {
       if (facilityId == null && organizationId == null) {
         throw new IllegalArgumentException(
             "Either facilityId or organizationId is required for exports");
@@ -78,8 +78,6 @@ public class CsvExportService {
   }
 
   public void streamResultsAsCsv(OutputStream outputStream, ExportParameters params) {
-    params.validate();
-
     ExportParameters resolvedParams = resolveOrganizationId(params);
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
