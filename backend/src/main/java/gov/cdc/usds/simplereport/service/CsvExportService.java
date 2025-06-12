@@ -167,7 +167,6 @@ public class CsvExportService {
   private ExportParameters resolveOrganizationId(ExportParameters params) {
     // Only resolve organizationId if:
     // 1. organizationId is null AND facilityId exists AND includeAllFacilities is true (Path 3)
-    // 2. organizationId is already provided (Path 1)
     // For Path 2 (facility-only), keep organizationId as null
 
     if (params.organizationId() != null
