@@ -22,6 +22,7 @@ import Modal from "react-modal";
 
 import ReportingApp from "./app/ReportingApp";
 import PatientApp from "./patientApp/PatientApp";
+import PilotApp from "./app/PilotApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import SignUpApp from "./app/signUp/SignUpApp";
 import HealthChecks from "./app/HealthChecks";
@@ -139,6 +140,14 @@ const routes = createRoutesFromElements(
       element={
         <MaintenanceBannerWrapper>
           <SignUpApp />
+        </MaintenanceBannerWrapper>
+      }
+    />
+    <Route
+      path="/pilot/*"
+      element={
+        <MaintenanceBannerWrapper>
+          <PilotApp />
         </MaintenanceBannerWrapper>
       }
     />

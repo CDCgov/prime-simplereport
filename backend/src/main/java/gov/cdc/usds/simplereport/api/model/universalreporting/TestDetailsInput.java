@@ -9,6 +9,7 @@ import lombok.Getter;
 public class TestDetailsInput {
   private final String condition;
   private final String testOrderLoinc;
+  private final String testOrderDisplayName;
   private final String testPerformedLoinc;
   private final String testPerformedLoincLongCommonName;
   private final ResultScaleType resultType;
