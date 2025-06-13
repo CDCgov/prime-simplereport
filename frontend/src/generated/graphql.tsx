@@ -305,6 +305,7 @@ export type Mutation = {
   updateAoeQuestions?: Maybe<Scalars["String"]["output"]>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
+  updateFacilityFeatureFlag?: Maybe<FeatureFlag>;
   updateFacilityLab?: Maybe<FacilityLab>;
   updateFeatureFlag?: Maybe<FeatureFlag>;
   updateOrganization?: Maybe<Scalars["String"]["output"]>;
@@ -597,6 +598,12 @@ export type MutationUpdateDeviceTypeArgs = {
 
 export type MutationUpdateFacilityArgs = {
   facilityInfo: UpdateFacilityInput;
+};
+
+export type MutationUpdateFacilityFeatureFlagArgs = {
+  facilityId: Scalars["ID"]["input"];
+  name: Scalars["String"]["input"];
+  value: Scalars["Boolean"]["input"];
 };
 
 export type MutationUpdateFacilityLabArgs = {
@@ -1145,6 +1152,7 @@ export type SpecimenInput = {
   collectionBodySiteName?: InputMaybe<Scalars["String"]["input"]>;
   collectionDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   receivedDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  snomedDisplayName?: InputMaybe<Scalars["String"]["input"]>;
   snomedTypeCode: Scalars["String"]["input"];
 };
 
@@ -1199,6 +1207,7 @@ export type TestDetailsInput = {
   resultInterpretation?: InputMaybe<Scalars["String"]["input"]>;
   resultType: ResultScaleType;
   resultValue: Scalars["String"]["input"];
+  testOrderDisplayName?: InputMaybe<Scalars["String"]["input"]>;
   testOrderLoinc: Scalars["String"]["input"];
   testPerformedLoinc: Scalars["String"]["input"];
   testPerformedLoincLongCommonName?: InputMaybe<Scalars["String"]["input"]>;

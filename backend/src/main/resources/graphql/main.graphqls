@@ -503,6 +503,7 @@ input FacilityReportInput {
 
 input SpecimenInput {
   snomedTypeCode: String!
+  snomedDisplayName: String
   collectionDate: DateTime
   receivedDate: DateTime
   collectionBodySiteName: String
@@ -512,6 +513,7 @@ input SpecimenInput {
 input TestDetailsInput {
   condition: String!
   testOrderLoinc: String!
+  testOrderDisplayName: String
   testPerformedLoinc: String!
   testPerformedLoincLongCommonName: String
   resultType: ResultScaleType!

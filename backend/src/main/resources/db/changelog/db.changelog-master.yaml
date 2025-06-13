@@ -6334,6 +6334,79 @@ databaseChangeLog:
             tableName: specimen
             constraintName: uk__loinc_system_code__snomed_code
   - changeSet:
+      id: add-facility-feature-flag
+      author: az01@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-facility-feature-flag
+        - createTable:
+            tableName: facility_feature_flag
+            remarks: Table to store facility-specific feature flags
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: facility_id
+                  type: uuid
+                  remarks: Internal Id of a facility in the facility table.
+                  constraints:
+                    unique: false
+                    nullable: false
+                    foreignKeyName: fk__facility__facility_id
+                    references: facility
+              - column:
+                  name: name
+                  type: text
+                  remarks: The name of the flag. It should describe the feature it represents.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: value
+                  type: boolean
+                  remarks: The value of the flag. It indicates if the feature is enable or disable for the app.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+        - addUniqueConstraint:
+            constraintName: uk__facility_id__name
+            tableName: facility_feature_flag
+            columnNames: facility_id, name
+      rollback:
+        - dropTable:
+            tableName: facility_feature_flag
+  - changeSet:
       id: add-facility-lab
       author: az01@cdc.gov
       changes:

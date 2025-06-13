@@ -37,6 +37,7 @@ const ProviderFormSection = ({
               setProvider({ ...provider, firstName: e.target.value })
             }
             value={provider.firstName}
+            required
           ></TextInput>
         </div>
         <div className="grid-col-4">
@@ -61,6 +62,7 @@ const ProviderFormSection = ({
               setProvider({ ...provider, lastName: e.target.value })
             }
             value={provider.lastName}
+            required
           ></TextInput>
         </div>
         <div className="grid-col-4">
@@ -82,6 +84,7 @@ const ProviderFormSection = ({
             label={"Provider NPI number"}
             value={provider.npi}
             onChange={(e) => setProvider({ ...provider, npi: e.target.value })}
+            required
           ></TextInput>
         </div>
       </div>

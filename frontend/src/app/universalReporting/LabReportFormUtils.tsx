@@ -8,12 +8,14 @@ import {
   SpecimenBodySite,
   SpecimenInput,
 } from "../../generated/graphql";
+import { RadioGroupOptions } from "../commonComponents/RadioGroup";
+import { TEST_RESULTS_SNOMED } from "../testResults/constants";
 
 export const defaultPatientReportInputState: PatientReportInput = {
   city: "",
   country: "USA",
   county: "",
-  dateOfBirth: "",
+  dateOfBirth: "01/01/1990",
   email: "",
   ethnicity: "",
   firstName: "",
@@ -34,11 +36,11 @@ export const defaultProviderReportInputState: ProviderReportInput = {
   city: "",
   county: "",
   email: "",
-  firstName: "",
-  lastName: "",
+  firstName: "Count",
+  lastName: "Dracula",
   middleName: "",
-  npi: "",
-  phone: "",
+  npi: "0000000000",
+  phone: "(555) 555-5555",
   state: "",
   street: "",
   streetTwo: "",
@@ -47,16 +49,16 @@ export const defaultProviderReportInputState: ProviderReportInput = {
 };
 
 export const defaultFacilityReportInputState: FacilityReportInput = {
-  city: "",
-  clia: "",
-  county: "",
+  city: "Jefferson City",
+  clia: "00D000000000",
+  county: "Cole",
   email: "",
-  name: "",
-  phone: "",
-  state: "",
-  street: "",
+  name: "Dracula",
+  phone: "(555) 555-5555",
+  state: "MO",
+  street: "201 W Capitol Ave",
   streetTwo: "",
-  zipCode: "",
+  zipCode: "65101-6809",
 };
 
 export const defaultSpecimenReportInputState: SpecimenInput = {
@@ -79,6 +81,21 @@ export const mapScaleDisplayToResultScaleType = (scaleDisplay: string) => {
       return ResultScaleType.Ordinal;
   }
 };
+
+export const ordinalResultOptions: RadioGroupOptions<string> = [
+  {
+    value: TEST_RESULTS_SNOMED.POSITIVE,
+    label: `Positive (+)`,
+  },
+  {
+    value: TEST_RESULTS_SNOMED.NEGATIVE,
+    label: `Negative (-)`,
+  },
+  {
+    value: TEST_RESULTS_SNOMED.UNDETERMINED,
+    label: `Undetermined`,
+  },
+];
 
 export const buildSpecimenOptionList = (specimens: Specimen[]) => {
   const options = specimens.map((specimen) => {

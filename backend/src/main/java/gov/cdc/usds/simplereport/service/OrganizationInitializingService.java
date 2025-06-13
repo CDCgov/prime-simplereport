@@ -11,22 +11,30 @@ import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoAuthorization;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.Specimen;
+import gov.cdc.usds.simplereport.db.model.SpecimenBodySite;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenBodySiteRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.errors.UserFacilityNotInitializedException;
@@ -64,6 +72,10 @@ public class OrganizationInitializingService {
   private final PatientRegistrationLinkRepository _prlRepository;
   //  private final FacilityLabTestOrderRepository _facilityLabTestOrderRepository;
   private final DiseaseService diseaseService;
+  private final ConditionRepository conditionRepository;
+  private final LabRepository labRepository;
+  private final SpecimenRepository specimenRepository;
+  private final SpecimenBodySiteRepository specimenBodySiteRepository;
 
   public void initAll() {
 
@@ -134,6 +146,8 @@ public class OrganizationInitializingService {
     // users are in the org.
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
     configureDemoUsers(users, facilitiesByName);
+
+    initUELRExampleData(_props.getConditions(), _props.getSpecimens());
   }
 
   public void initCurrentUser() {
@@ -423,6 +437,47 @@ public class OrganizationInitializingService {
           _personRepository.save(createdPatient);
         }
       }
+    }
+  }
+
+  public void initUELRExampleData(List<Condition> conditions, List<Specimen> specimens) {
+
+    if (conditions != null && specimens != null) {
+      List<Condition> newConditionsToSave =
+          conditions.stream()
+              .filter(
+                  condition -> conditionRepository.findConditionByCode(condition.getCode()) == null)
+              .collect(Collectors.toCollection(ArrayList::new));
+
+      List<Lab> newLabsToSave =
+          conditions.stream()
+              .flatMap(condition -> condition.getLabs().stream())
+              .filter(lab -> labRepository.findByCode(lab.getCode()).isEmpty())
+              .collect(Collectors.toCollection(ArrayList::new));
+
+      List<Specimen> newSpecimensToSave =
+          specimens.stream()
+              .filter(
+                  specimen ->
+                      specimenRepository.findByLoincSystemCodeAndSnomedCode(
+                              specimen.getLoincSystemCode(), specimen.getSnomedCode())
+                          == null)
+              .collect(Collectors.toCollection(ArrayList::new));
+
+      List<SpecimenBodySite> newSpecimenBodySitesToSave =
+          specimens.stream()
+              .flatMap(specimen -> specimen.getBodySiteList().stream())
+              .filter(
+                  specimen ->
+                      specimenBodySiteRepository.findBySnomedSpecimenCodeAndSnomedSiteCode(
+                              specimen.getSnomedSpecimenCode(), specimen.getSnomedSiteCode())
+                          == null)
+              .collect(Collectors.toCollection(ArrayList::new));
+
+      conditionRepository.saveAll(newConditionsToSave);
+      labRepository.saveAll(newLabsToSave);
+      specimenRepository.saveAll(newSpecimensToSave);
+      specimenBodySiteRepository.saveAll(newSpecimenBodySitesToSave);
     }
   }
 }
