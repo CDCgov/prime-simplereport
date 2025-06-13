@@ -6,6 +6,8 @@ resource "azurerm_postgresql_flexible_server" "db" {
   version             = "14"
   delegated_subnet_id = var.subnet_id
   private_dns_zone_id = var.private_dns_zone_id
+  public_network_access_enabled = false
+
 
 
   administrator_login    = var.administrator_login
