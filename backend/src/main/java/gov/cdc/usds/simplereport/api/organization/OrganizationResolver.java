@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityLab;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import java.util.List;
@@ -139,11 +138,5 @@ public class OrganizationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<FacilityLab> facilityLabs(@Argument UUID facilityId) {
     return _organizationService.getFacilityLabs(facilityId);
-  }
-
-  @QueryMapping
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Set<Specimen> facilityLabSpecimens(@Argument UUID facilityId, @Argument UUID labId) {
-    return _organizationService.getFacilityLabSpecimens(facilityId, labId);
   }
 }

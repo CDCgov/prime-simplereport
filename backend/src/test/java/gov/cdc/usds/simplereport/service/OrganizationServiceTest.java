@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,7 @@ import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -46,6 +48,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -611,19 +614,30 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void getFacilityLabs_shouldReturnAllNonDeletedFacilityLabs() {
-    // Given
     UUID facilityId = UUID.randomUUID();
-    List<FacilityLab> expectedLabs =
-        Arrays.asList(
-            createMockFacilityLab(facilityId, UUID.randomUUID()),
-            createMockFacilityLab(facilityId, UUID.randomUUID()));
+
+    FacilityLab expectedLab1 =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(UUID.randomUUID())
+            .name("name1")
+            .description("description1")
+            .build();
+
+    FacilityLab expectedLab2 =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(UUID.randomUUID())
+            .name("name2")
+            .description("description2")
+            .build();
+
+    List<FacilityLab> expectedLabs = Arrays.asList(expectedLab1, expectedLab2);
+
     when(facilityLabRepository.findAllByFacilityIdAndIsDeletedFalse(facilityId))
         .thenReturn(expectedLabs);
-
-    // When
     List<FacilityLab> result = _service.getFacilityLabs(facilityId);
 
-    // Then
     assertThat(result).hasSize(2);
     assertThat(result).isEqualTo(expectedLabs);
     verify(facilityLabRepository).findAllByFacilityIdAndIsDeletedFalse(facilityId);
@@ -752,7 +766,14 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   void markFacilityLabAsDeleted_shouldDeleteFacilityLab_whenExists() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
-    FacilityLab existingLab = createMockFacilityLab(facilityId, labId);
+
+    FacilityLab existingLab =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(labId)
+            .name("Old Name")
+            .description("Old Description")
+            .build();
 
     when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
             facilityId, labId))
@@ -776,6 +797,163 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     assertThrows(
         IllegalArgumentException.class, () -> _service.markFacilityLabAsDeleted(facilityId, labId));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void addFacilityLabSpecimen_shouldAddSpecimen_whenBothExist() {
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    UUID specimenId = UUID.randomUUID();
+
+    FacilityLab facilityLab =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(labId)
+            .name("name")
+            .description("description")
+            .specimens(new HashSet<>())
+            .build();
+
+    Specimen specimen = createMockSpecimen(specimenId);
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId))
+        .thenReturn(Optional.of(facilityLab));
+    when(specimenRepository.findById(specimenId)).thenReturn(Optional.of(specimen));
+    Set<Specimen> result = _service.addFacilityLabSpecimen(facilityId, labId, specimenId);
+
+    assertThat(result).hasSize(1);
+    assertThat(result).contains(specimen);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void addFacilityLabSpecimen_shouldThrowException_whenFacilityLabNotFound() {
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    UUID specimenId = UUID.randomUUID();
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId))
+        .thenReturn(Optional.empty());
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> _service.addFacilityLabSpecimen(facilityId, labId, specimenId));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void addFacilityLabSpecimen_shouldThrowException_whenSpecimenNotFound() {
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    UUID specimenId = UUID.randomUUID();
+
+    FacilityLab facilityLab =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(labId)
+            .name("name")
+            .description("description")
+            .build();
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId))
+        .thenReturn(Optional.of(facilityLab));
+    when(specimenRepository.findById(specimenId)).thenReturn(Optional.empty());
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> _service.addFacilityLabSpecimen(facilityId, labId, specimenId));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void deleteFacilityLabSpecimen_shouldRemoveSpecimen_whenBothExist() {
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    UUID specimenId = UUID.randomUUID();
+
+    FacilityLab facilityLab = createMockFacilityLab(facilityId, labId);
+    Specimen specimen = createMockSpecimen(specimenId);
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId))
+        .thenReturn(Optional.of(facilityLab));
+    when(specimenRepository.findById(specimenId)).thenReturn(Optional.of(specimen));
+    when(facilityLab.removeSpecimen(specimen)).thenReturn(true);
+
+    boolean result = _service.deleteFacilityLabSpecimen(facilityId, labId, specimenId);
+
+    assertThat(result).isTrue();
+    verify(facilityLab).removeSpecimen(specimen);
+    verify(facilityLabRepository).save(facilityLab);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void deleteFacilityLabSpecimen_shouldReturnFalse_whenFacilityLabNotFound() {
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    UUID specimenId = UUID.randomUUID();
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId))
+        .thenReturn(Optional.empty());
+
+    boolean result = _service.deleteFacilityLabSpecimen(facilityId, labId, specimenId);
+
+    assertThat(result).isFalse();
+    verify(facilityLabRepository, never()).save(any());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void deleteFacilityLabSpecimen_shouldReturnFalse_whenSpecimenNotFound() {
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    UUID specimenId = UUID.randomUUID();
+
+    FacilityLab facilityLab =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(labId)
+            .name("name")
+            .description("description")
+            .build();
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId))
+        .thenReturn(Optional.of(facilityLab));
+    when(specimenRepository.findById(specimenId)).thenReturn(Optional.empty());
+
+    boolean result = _service.deleteFacilityLabSpecimen(facilityId, labId, specimenId);
+
+    assertThat(result).isFalse();
+    verify(facilityLabRepository, never()).save(any());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void deleteFacilityLabSpecimen_shouldReturnFalse_whenSpecimenNotRemovedFromLab() {
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    UUID specimenId = UUID.randomUUID();
+
+    FacilityLab facilityLab = createMockFacilityLab(facilityId, labId);
+    Specimen specimen = createMockSpecimen(specimenId);
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId))
+        .thenReturn(Optional.of(facilityLab));
+    when(specimenRepository.findById(specimenId)).thenReturn(Optional.of(specimen));
+    when(facilityLab.removeSpecimen(specimen)).thenReturn(false);
+
+    boolean result = _service.deleteFacilityLabSpecimen(facilityId, labId, specimenId);
+
+    assertThat(result).isFalse();
+    verify(facilityLabRepository, never()).save(any());
   }
 
   @Nested
@@ -996,5 +1174,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     when(facilityLab.getLabId()).thenReturn(labId);
     when(facilityLab.getIsDeleted()).thenReturn(false);
     return facilityLab;
+  }
+
+  private Specimen createMockSpecimen(UUID specimenId) {
+    Specimen specimen = mock(Specimen.class);
+    when(specimen.getInternalId()).thenReturn(specimenId);
+    return specimen;
   }
 }

@@ -697,19 +697,6 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Set<Specimen> getFacilityLabSpecimens(@Argument UUID facilityId, @Argument UUID labId) {
-    Optional<FacilityLab> facilityLabOpt =
-        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
-            facilityId, labId);
-
-    if (facilityLabOpt.isEmpty()) {
-      throw new IllegalArgumentException("Cannot find facility lab");
-    }
-
-    return facilityLabOpt.get().getSpecimens();
-  }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public Set<Specimen> addFacilityLabSpecimen(
       @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
     Optional<FacilityLab> facilityLabOpt =
