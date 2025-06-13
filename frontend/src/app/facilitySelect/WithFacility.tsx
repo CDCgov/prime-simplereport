@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { appPermissions } from "../permissions";
 import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
 import { RootState } from "../store";
+import { FeatureFlagsApiService } from "../../featureFlags/FeatureFlagsApiService";
 
 import FacilitySelect from "./FacilitySelect";
 import { useSelectedFacility } from "./useSelectedFacility";
@@ -35,12 +36,31 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   const [selectedFacility, setSelectedFacility] = useSelectedFacility();
 
   useEffect(() => {
-    if (selectedFacility || !dataLoaded) {
+    if (!dataLoaded) {
+      return;
+    }
+
+    if (selectedFacility) {
+      // FeatureFlagsApiService.featureFlags({ facility: selectedFacility.id })
+      //   .then((flags: Record<string, boolean>) => {
+      //     if (flags.pilotEnabled) {
+      //       window.location.replace('/pilot/?selectedEnabled=1');
+      //     }
+      //   })
+      //   .catch(() => {});
+
       return;
     }
 
     if (facilities.length === 1) {
       setSelectedFacility(facilities[0]);
+    } else if (facilities.length > 1) {
+      const promises = facilities.map((facility) =>
+        FeatureFlagsApiService.featureFlags({ facility: facility.id })
+      );
+
+      const results = Promise.all(promises);
+      console.log(results);
     }
   }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
 
