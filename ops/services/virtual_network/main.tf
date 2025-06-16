@@ -19,6 +19,12 @@ resource "azurerm_virtual_network" "vn" {
   private_endpoint_vnet_policies = "Basic"
 
   tags = var.management_tags
+
+  lifecycle {
+    ignore_changes = [
+      private_endpoint_vnet_policies
+    ]
+  }
 }
 
 resource "azurerm_subnet" "vms" {
