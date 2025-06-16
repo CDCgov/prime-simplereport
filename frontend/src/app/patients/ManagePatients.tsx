@@ -37,13 +37,13 @@ import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
 import { ArchivedStatus } from "../../generated/graphql";
 
-import ArchivePersonModal from "./ArchivePersonModal";
-
 import "./ManagePatients.scss";
 import Button from "../commonComponents/Button/Button";
 import { getAppInsightsHeaders } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
 import FetchClient from "../utils/api";
+
+import ArchivePersonModal from "./ArchivePersonModal";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
