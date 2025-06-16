@@ -16,6 +16,7 @@ resource "azurerm_virtual_network" "vn" {
   resource_group_name = var.resource_group_name
   location            = var.location
   address_space       = [var.network_address]
+  private_endpoint_vnet_policies = "Basic"
 
   tags = var.management_tags
 }
