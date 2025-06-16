@@ -36,7 +36,6 @@ import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
 import { ArchivedStatus } from "../../generated/graphql";
-
 import "./ManagePatients.scss";
 import Button from "../commonComponents/Button/Button";
 import { getAppInsightsHeaders } from "../TelemetryService";
