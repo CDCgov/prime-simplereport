@@ -154,7 +154,48 @@ public class FacilityCsvExportService {
     }
   }
 
-  public void streamPatientsAsZippedCsv(OutputStream rawOut, UUID facilityId) {
+  public void streamOrganizationPatientsAsCsv(OutputStream outputStream, UUID organizationId) {
+
+    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        CSVPrinter csvPrinter = new CSVPrinter(writer, createPatientsCsvFormat())) {
+
+      long organizationPatientsCount = getOrganizationPatientsCount(organizationId);
+      int totalPages = (int) Math.ceil((double) organizationPatientsCount / BATCH_SIZE);
+
+      log.info(
+          "Starting organization CSV patient export for organizationId={}: {} patient records in {} batches",
+          organizationId,
+          organizationPatientsCount,
+          totalPages);
+
+      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
+        Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
+        List<Person> organizationPatients = fetchOrganizationPatients(organizationId, pageable);
+
+        log.info(
+            "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
+            (currentPage + 1),
+            totalPages,
+            BATCH_SIZE,
+            organizationPatients.size(),
+            (currentPage * BATCH_SIZE) + organizationPatients.size());
+        for (Person patient : organizationPatients) {
+          writePatientCsvRow(csvPrinter, patient);
+        }
+
+        csvPrinter.flush();
+        log.debug(
+            "Processed batch {}/{} for organization CSV export", (currentPage + 1), totalPages);
+      }
+
+      log.info("Completed organization patient CSV export for organizationId={}", organizationId);
+    } catch (IOException e) {
+      log.error("Error streaming organization CSV data for organizationId={}", organizationId, e);
+      throw new RuntimeException("Failed to generate organization CSV file", e);
+    }
+  }
+
+  public void streamFacilityPatientsAsZippedCsv(OutputStream rawOut, UUID facilityId) {
 
     class NonClosingOutputStream extends FilterOutputStream {
       NonClosingOutputStream(OutputStream out) {
@@ -175,6 +216,31 @@ public class FacilityCsvExportService {
       zipOut.closeEntry();
     } catch (IOException ex) {
       log.error("Error zipping CSV for facility {}", facilityId, ex);
+      throw new RuntimeException("Failed to generate zipped CSV", ex);
+    }
+  }
+
+  public void streamOrganizationPatientsAsZippedCsv(OutputStream rawOut, UUID organizationId) {
+
+    class NonClosingOutputStream extends FilterOutputStream {
+      NonClosingOutputStream(OutputStream out) {
+        super(out);
+      }
+
+      @Override
+      public void close() throws IOException {
+        flush();
+      }
+    }
+
+    try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
+      zipOut.putNextEntry(new ZipEntry("organization-patient-data.csv"));
+
+      streamOrganizationPatientsAsCsv(new NonClosingOutputStream(zipOut), organizationId);
+
+      zipOut.closeEntry();
+    } catch (IOException ex) {
+      log.error("Error zipping CSV for organization {}", organizationId, ex);
       throw new RuntimeException("Failed to generate zipped CSV", ex);
     }
   }
@@ -201,6 +267,10 @@ public class FacilityCsvExportService {
     return personService.getPatientsCount(facilityId, ArchivedStatus.UNARCHIVED, null, false, "");
   }
 
+  private long getOrganizationPatientsCount(UUID organizationId) {
+    return personService.getPatientsCountByOrganization(organizationId);
+  }
+
   private Page<TestResultsListItem> fetchFacilityResultsPage(
       FacilityExportParameters params, Pageable pageable) {
     return resultService
@@ -220,6 +290,17 @@ public class FacilityCsvExportService {
   private List<Person> fetchFacilityPatients(UUID facilityId, Pageable pageable) {
     return personService.getPatients(
         facilityId,
+        pageable.getPageNumber(),
+        pageable.getPageSize(),
+        ArchivedStatus.UNARCHIVED,
+        null,
+        false,
+        null);
+  }
+
+  private List<Person> fetchOrganizationPatients(UUID organizationId, Pageable pageable) {
+    return personService.getPatients(
+        null, // a null facility fetches all patients in the current org
         pageable.getPageNumber(),
         pageable.getPageSize(),
         ArchivedStatus.UNARCHIVED,

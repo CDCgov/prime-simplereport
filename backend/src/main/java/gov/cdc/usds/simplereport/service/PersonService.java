@@ -286,6 +286,14 @@ public class PersonService {
             facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities, orgToSearch));
   }
 
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public long getPatientsCountByOrganization(UUID organizationId) {
+    Organization orgToSearch = _os.getOrganizationById(organizationId);
+    ;
+
+    return _repo.countByOrganizationAndIsDeleted(orgToSearch, false);
+  }
+
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
     return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), false);

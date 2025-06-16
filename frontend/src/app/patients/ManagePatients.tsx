@@ -7,6 +7,7 @@ import {
   faDownload,
   faIdCard,
   faRightFromBracket,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -274,7 +275,7 @@ export const DetachedManagePatients = ({
   function showActionButtons() {
     if (canEditUser) {
       return (
-        <div>
+        <div className={"display-flex align-items-center"}>
           <MenuButton
             id={"add-patient"}
             buttonContent={
@@ -325,9 +326,9 @@ export const DetachedManagePatients = ({
           />
           <Button
             type="button"
-            label="Download Patients"
-            icon={faDownload as IconProp}
-            iconClassName={"none"}
+            label={downloadFacilityPatientsButtonContent.label}
+            icon={downloadFacilityPatientsButtonContent.icon}
+            iconClassName={downloadFacilityPatientsButtonContent.className}
             onClick={handleDownloadPatientData}
             disabled={downloadState === "downloading"}
             variant="outline"
@@ -394,28 +395,30 @@ export const DetachedManagePatients = ({
     }
   };
 
-  // const getDownloadButtonContent = () => {
-  //   switch (downloadState) {
-  //     case "downloading":
-  //       return {
-  //         icon: faSpinner,
-  //         label: "Downloading...",
-  //         className: "fa-spin",
-  //       };
-  //     case "complete":
-  //       return {
-  //         icon: faDownload,
-  //         label: "Download Complete",
-  //         className: "",
-  //       };
-  //     default:
-  //       return {
-  //         icon: faDownload,
-  //         label: "Download Test Results",
-  //         className: "",
-  //       };
-  //   }
-  // };
+  const getDownloadButtonContent = () => {
+    switch (downloadState) {
+      case "downloading":
+        return {
+          icon: faSpinner,
+          label: "Downloading...",
+          className: "fa-spin",
+        };
+      case "complete":
+        return {
+          icon: faDownload,
+          label: "Download Complete",
+          className: "",
+        };
+      default:
+        return {
+          icon: faDownload,
+          label: "Download patients",
+          className: "",
+        };
+    }
+  };
+
+  const downloadFacilityPatientsButtonContent = getDownloadButtonContent();
 
   return (
     <div className="prime-home flex-1" data-cy="manage-patients-page">

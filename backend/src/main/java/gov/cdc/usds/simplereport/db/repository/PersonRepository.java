@@ -22,6 +22,8 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
 
   int countByFacilityAndIsDeleted(Facility facility, boolean isDeleted);
 
+  int countByOrganizationAndIsDeleted(Organization organization, boolean isDeleted);
+
   @Query(
       BASE_ALLOW_DELETED_QUERY
           + " e.isDeleted = :isDeleted AND e.internalId = :id and e.organization = :org")

@@ -22,21 +22,9 @@ public class PatientExportController {
   private final FacilityCsvExportService csvExportService;
 
   @RequirePermissionReadResultListAtFacility
-  @GetMapping(value = "/patients/download")
+  @GetMapping(value = "/patients/download/facility")
   public ResponseEntity<StreamingResponseBody> downloadFacilityPatientsAsCSV(
-      //      @PathVariable UUID facilityId,
-      @RequestParam(required = false) UUID facilityId,
-      @RequestParam(required = false) UUID organizationId,
-      //            @RequestParam(required = false) UUID patientId,
-      //            @RequestParam(required = false) String result,
-      //            @RequestParam(required = false) String role,
-      //            @RequestParam(required = false) String disease,
-      //            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-      // Date
-      // startDate,
-      //            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-      // Date
-      // endDate,
+      @RequestParam() UUID facilityId,
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "5000") int pageSize) {
 
@@ -49,28 +37,44 @@ public class PatientExportController {
       pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
     }
 
-    //        SupportedDisease supportedDisease =
-    //                disease != null ? diseaseService.getDiseaseByName(disease) : null;
-
-    //        final FacilityCsvExportService.FacilityExportParameters params =
-    //                new FacilityCsvExportService.FacilityExportParameters(
-    //                        facilityId,
-    //                        patientId,
-    //                        Translators.parseTestResult(result),
-    //                        Translators.parsePersonRole(role, true),
-    //                        supportedDisease,
-    //                        startDate,
-    //                        endDate,
-    //                        pageNumber,
-    //                        pageSize);
-
     StreamingResponseBody responseBody =
         outputStream -> {
-          csvExportService.streamPatientsAsZippedCsv(outputStream, facilityId);
+          csvExportService.streamFacilityPatientsAsZippedCsv(outputStream, facilityId);
         };
 
     String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
     String zippedCsvFileName = String.format("facility-%s-patients-%s.zip", facilityId, timestamp);
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zippedCsvFileName)
+        .header(HttpHeaders.CONTENT_TYPE, "text/csv;charset=UTF-8")
+        .body(responseBody);
+  }
+
+  @RequirePermissionReadResultListAtFacility
+  @GetMapping(value = "/patients/download/organization")
+  public ResponseEntity<StreamingResponseBody> downloadOrganizationPatientsAsCSV(
+      @RequestParam() UUID organizationId,
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @RequestParam(defaultValue = "5000") int pageSize) {
+
+    log.info("Organization patients CSV download request for organizationId={}", organizationId);
+
+    if (pageNumber < 0) {
+      pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
+    }
+    if (pageSize < 1) {
+      pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
+    }
+
+    StreamingResponseBody responseBody =
+        outputStream -> {
+          csvExportService.streamOrganizationPatientsAsZippedCsv(outputStream, organizationId);
+        };
+
+    String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+    String zippedCsvFileName =
+        String.format("organization-%s-patients-%s.zip", organizationId, timestamp);
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zippedCsvFileName)

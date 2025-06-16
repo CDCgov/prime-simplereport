@@ -108,7 +108,63 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
     }
   };
 
-  const getDownloadButtonContent = () => {
+  const handleDownloadPatients = async () => {
+    setDownloadState("downloading");
+    try {
+      const downloadPath = `/patients/download/organization?organizationId=${organization.id}`;
+      const fullUrl = apiClient.getURL(downloadPath);
+      console.log("Full organization object:", organization);
+
+      console.log("Organization Download URL:", fullUrl);
+
+      const response = await fetch(fullUrl, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Access-Control-Request-Headers": "Authorization",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          ...getAppInsightsHeaders(),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to download patients: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = "organization-patients.zip";
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename=(.+)/);
+        if (match) filename = match[1];
+      }
+
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+
+      setDownloadState("complete");
+      showSuccess("Download Complete", "Patients downloaded successfully");
+
+      setTimeout(() => {
+        setDownloadState("idle");
+      }, 3000);
+    } catch (e: any) {
+      console.error("Download error:", e);
+      showError("Error downloading patients", e.message);
+      setDownloadState("idle");
+    }
+  };
+
+  const getDownloadButtonContent = (downloadableItems: string) => {
     switch (downloadState) {
       case "downloading":
         return {
@@ -125,13 +181,15 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
       default:
         return {
           icon: faDownload,
-          label: "Download Test Results",
+          label: "Download " + downloadableItems,
           className: "",
         };
     }
   };
 
-  const buttonContent = getDownloadButtonContent();
+  const downloadTestResultsButtonContent =
+    getDownloadButtonContent("Test Results");
+  const downloadPatientsButtonContent = getDownloadButtonContent("patients");
 
   return (
     <div className="grid-row position-relative">
@@ -142,10 +200,19 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
             <div className="display-flex flex-gap-1">
               <Button
                 type="button"
-                label={buttonContent.label}
-                icon={buttonContent.icon}
-                iconClassName={buttonContent.className}
+                label={downloadTestResultsButtonContent.label}
+                icon={downloadTestResultsButtonContent.icon}
+                iconClassName={downloadTestResultsButtonContent.className}
                 onClick={handleDownloadTestResults}
+                disabled={downloadState === "downloading"}
+                variant="outline"
+              />
+              <Button
+                type="button"
+                label={downloadPatientsButtonContent.label}
+                icon={downloadPatientsButtonContent.icon}
+                iconClassName={downloadPatientsButtonContent.className}
+                onClick={handleDownloadPatients}
                 disabled={downloadState === "downloading"}
                 variant="outline"
               />
