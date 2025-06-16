@@ -27,7 +27,7 @@ resource "azurerm_subnet" "vms" {
   virtual_network_name                          = azurerm_virtual_network.vn.name
   address_prefixes                              = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
   private_endpoint_network_policies             = "Enabled"
-  private_link_service_network_policies_enabled = "false"
+  private_link_service_network_policies_enabled = "true"
 }
 
 resource "azurerm_subnet" "lbs" {
@@ -36,7 +36,7 @@ resource "azurerm_subnet" "lbs" {
   virtual_network_name                          = azurerm_virtual_network.vn.name
   address_prefixes                              = [cidrsubnet(var.network_address, 8, 254)] # X.X.254.0/24
   private_endpoint_network_policies             = "Enabled"
-  private_link_service_network_policies_enabled = "false"
+  private_link_service_network_policies_enabled = "true"
   service_endpoints = [
     "Microsoft.Web",
     "Microsoft.Storage"
@@ -84,7 +84,7 @@ resource "azurerm_subnet" "container_instances" {
   virtual_network_name                          = azurerm_virtual_network.vn.name
   address_prefixes                              = [cidrsubnet(var.network_address, 8, 101)] # X.X.101.0/24
   private_endpoint_network_policies             = "Enabled"
-  private_link_service_network_policies_enabled = "false"
+  private_link_service_network_policies_enabled = "true"
 
   delegation {
     name = "${var.env}-container-instances"
@@ -118,7 +118,7 @@ resource "azurerm_subnet" "db" {
   virtual_network_name                          = azurerm_virtual_network.vn.name
   address_prefixes                              = [cidrsubnet(var.network_address, 8, 102)] # X.X.102.0/24
   private_endpoint_network_policies             = "Enabled"
-  private_link_service_network_policies_enabled = "false"
+  private_link_service_network_policies_enabled = "true"
 
   delegation {
     name = "${var.env}-db"
