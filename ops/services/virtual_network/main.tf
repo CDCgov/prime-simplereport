@@ -49,7 +49,7 @@ resource "azurerm_subnet" "webapp" {
   virtual_network_name                          = azurerm_virtual_network.vn.name
   address_prefixes                              = [cidrsubnet(var.network_address, 8, 100)] # X.X.100.0/24
   private_endpoint_network_policies             = "Enabled"
-  private_link_service_network_policies_enabled = "false"
+  private_link_service_network_policies_enabled = "true"
 
   delegation {
     name = "serverfarms"
