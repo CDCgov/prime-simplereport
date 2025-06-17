@@ -330,7 +330,6 @@ export const DetachedManagePatients = ({
             iconClassName={downloadFacilityPatientsButtonContent.className}
             onClick={handleDownloadPatientData}
             disabled={downloadState === "downloading"}
-            variant="outline"
           />
         </div>
       );

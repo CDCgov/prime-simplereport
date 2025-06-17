@@ -214,7 +214,6 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
                 iconClassName={downloadPatientsButtonContent.className}
                 onClick={handleDownloadPatients}
                 disabled={downloadState === "downloading"}
-                variant="outline"
               />
               <Button
                 type="submit"
