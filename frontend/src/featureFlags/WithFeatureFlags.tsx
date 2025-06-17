@@ -22,7 +22,7 @@ const WithFeatureFlags = ({ children }: WithFeatureFlagsProps): JSX.Element => {
    */
   useEffect(() => {
     FeatureFlagsApiService.featureFlags()
-      .then((flags: Record<string, boolean>) => {
+      .then((flags) => {
         setFeatureFlags(flags);
       })
       .catch(() => {
