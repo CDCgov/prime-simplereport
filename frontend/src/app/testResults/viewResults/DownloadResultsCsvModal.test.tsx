@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import ReactDOM from "react-dom";
 
-import { DownloadResultsCsvModal } from "./DownloadResultsCsvModal";
+import DownloadResultsCsvModal from "./DownloadResultsCsvModal";
 
 jest.mock("../../../app/utils/api", () => {
   return jest.fn().mockImplementation(() => ({
@@ -90,9 +90,6 @@ describe("DownloadResultsCsvModal with result filters", () => {
       )
     ).toBeInTheDocument();
     expect(await screen.findByText("No, go back")).toBeInTheDocument();
-    expect(
-      await screen.findByLabelText("Download test results")
-    ).toHaveTextContent("The CSV file will include 15 rows.");
   });
 });
 

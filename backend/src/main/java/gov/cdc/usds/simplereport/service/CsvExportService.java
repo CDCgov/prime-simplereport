@@ -26,12 +26,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,6 +44,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CsvExportService {
   private final ResultService resultService;
+  private final OrganizationService organizationService;
 
   public record ExportParameters(
       UUID facilityId,
@@ -53,39 +56,41 @@ public class CsvExportService {
       Date startDate,
       Date endDate,
       int pageNumber,
-      int pageSize) {
+      int pageSize,
+      boolean includeAllFacilities) {
 
-    public void validate() {
+    public ExportParameters {
       if (facilityId == null && organizationId == null) {
         throw new IllegalArgumentException(
             "Either facilityId or organizationId is required for exports");
       }
-      if (facilityId != null && organizationId != null) {
-        throw new IllegalArgumentException("Cannot specify both facilityId and organizationId");
+      // Allow both facilityId and organizationId when includeAllFacilities is true (Path 3)
+      if (facilityId != null && organizationId != null && !includeAllFacilities) {
+        throw new IllegalArgumentException(
+            "Cannot specify both facilityId and organizationId unless includeAllFacilities is true");
       }
     }
 
     public boolean isFacilityExport() {
-      return facilityId != null;
-    }
-
-    public boolean isOrganizationExport() {
-      return organizationId != null;
+      // For Path 3 (includeAllFacilities=true), treat as organization export even with facilityId
+      return facilityId != null && !includeAllFacilities;
     }
   }
 
   public void streamResultsAsCsv(OutputStream outputStream, ExportParameters params) {
-    params.validate();
-
+    ExportParameters resolvedParams = resolveOrganizationId(params);
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
 
-      int batchSize = params.pageSize();
-      int totalElements = getResultsCount(params);
+      int batchSize = resolvedParams.pageSize();
+      int totalElements = getResultsCount(resolvedParams);
       int totalPages = (int) Math.ceil((double) totalElements / batchSize);
 
-      String exportType = params.isFacilityExport() ? "facility" : "organization";
-      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
+      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
+      UUID exportId =
+          resolvedParams.isFacilityExport()
+              ? resolvedParams.facilityId()
+              : resolvedParams.organizationId();
       log.info(
           "Starting {} CSV export for {}={}: {} records in {} batches",
           exportType,
@@ -96,7 +101,7 @@ public class CsvExportService {
 
       for (int currentPage = 0; currentPage < totalPages; currentPage++) {
         Pageable pageable = PageRequest.of(currentPage, batchSize);
-        Page<TestResultsListItem> resultsPage = fetchResultsPage(params, pageable);
+        Page<TestResultsListItem> resultsPage = fetchResultsPage(resolvedParams, pageable);
 
         log.info(
             "Page {}/{}: Expected {} records, Got {} records, Total so far: {}",
@@ -117,8 +122,11 @@ public class CsvExportService {
 
       log.info("Completed {} CSV export for {}={}", exportType, exportType + "Id", exportId);
     } catch (IOException e) {
-      String exportType = params.isFacilityExport() ? "facility" : "organization";
-      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
+      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
+      UUID exportId =
+          resolvedParams.isFacilityExport()
+              ? resolvedParams.facilityId()
+              : resolvedParams.organizationId();
       log.error(
           "Error streaming {} CSV data for {}={}", exportType, exportType + "Id", exportId, e);
       throw new RuntimeException("Failed to generate CSV file", e);
@@ -126,6 +134,7 @@ public class CsvExportService {
   }
 
   public void streamResultsAsZippedCsv(OutputStream rawOut, ExportParameters params) {
+    ExportParameters resolvedParams = resolveOrganizationId(params);
 
     class NonClosingOutputStream extends FilterOutputStream {
       NonClosingOutputStream(OutputStream out) {
@@ -141,15 +150,47 @@ public class CsvExportService {
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
       zipOut.putNextEntry(new ZipEntry("test-results.csv"));
 
-      streamResultsAsCsv(new NonClosingOutputStream(zipOut), params);
+      streamResultsAsCsv(new NonClosingOutputStream(zipOut), resolvedParams);
 
       zipOut.closeEntry();
     } catch (IOException ex) {
-      String exportType = params.isFacilityExport() ? "facility" : "organization";
-      UUID exportId = params.isFacilityExport() ? params.facilityId() : params.organizationId();
+      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
+      UUID exportId =
+          resolvedParams.isFacilityExport()
+              ? resolvedParams.facilityId()
+              : resolvedParams.organizationId();
       log.error("Error zipping CSV for {} {}", exportType, exportId, ex);
       throw new RuntimeException("Failed to generate zipped CSV", ex);
     }
+  }
+
+  private ExportParameters resolveOrganizationId(ExportParameters params) {
+    // Only resolve organizationId if:
+    // 1. organizationId is null AND facilityId exists AND includeAllFacilities is true (Path 3)
+    // For Path 2 (facility-only), keep organizationId as null
+
+    if (params.organizationId() != null
+        || params.facilityId() == null
+        || !params.includeAllFacilities()) {
+      return params;
+    }
+
+    // Path 3: "All Facilities" - derive organizationId from facilityId
+    var organization = organizationService.getOrganizationByFacilityId(params.facilityId());
+    UUID organizationId = organization != null ? organization.getInternalId() : null;
+
+    return new ExportParameters(
+        params.facilityId(),
+        organizationId,
+        params.patientId(),
+        params.testResult(),
+        params.personRole(),
+        params.disease(),
+        params.startDate(),
+        params.endDate(),
+        params.pageNumber(),
+        params.pageSize(),
+        params.includeAllFacilities());
   }
 
   private int getResultsCount(ExportParameters params) {
@@ -268,11 +309,9 @@ public class CsvExportService {
     AskOnEntrySurvey surveyData = item.getSurveyData();
     ApiUser createdBy = item.getCreatedBy();
 
-    String firstName =
-        patient != null && patient.getFirstName() != null ? patient.getFirstName() : "";
-    String middleName =
-        patient != null && patient.getMiddleName() != null ? patient.getMiddleName() : "";
-    String lastName = patient != null && patient.getLastName() != null ? patient.getLastName() : "";
+    String firstName = extractString(patient, Person::getFirstName);
+    String middleName = extractString(patient, Person::getMiddleName);
+    String lastName = extractString(patient, Person::getLastName);
     String fullName = formatFullName(firstName, middleName, lastName);
 
     String submitterName = "";
@@ -335,9 +374,9 @@ public class CsvExportService {
         formatAsDateTime(item.getDateUpdated()),
         item.getCorrectionStatus() != null ? item.getCorrectionStatus().toString() : "",
         item.getReasonForCorrection(),
-        deviceType != null ? deviceType.getName() : "",
-        deviceType != null ? deviceType.getManufacturer() : "",
-        deviceType != null ? deviceType.getModel() : "",
+        extractString(deviceType, DeviceType::getName),
+        extractString(deviceType, DeviceType::getManufacturer),
+        extractString(deviceType, DeviceType::getModel),
         swabType,
         hasSymptoms,
         symptomsPresent,
@@ -345,23 +384,27 @@ public class CsvExportService {
         facilityName,
         submitterName,
         patient != null && patient.getRole() != null ? patient.getRole().toString() : "",
-        patient != null ? patient.getLookupId() : "",
-        patient != null ? patient.getPreferredLanguage() : "",
+        extractString(patient, Person::getLookupId),
+        extractString(patient, Person::getPreferredLanguage),
         phoneNumber,
-        patient != null ? patient.getEmail() : "",
-        patient != null ? patient.getStreet() : "",
-        patient != null ? patient.getStreetTwo() : "",
-        patient != null ? patient.getCity() : "",
-        patient != null ? patient.getState() : "",
-        patient != null ? patient.getZipCode() : "",
-        patient != null ? patient.getCounty() : "",
-        patient != null ? patient.getCountry() : "",
+        extractString(patient, Person::getEmail),
+        extractString(patient, Person::getStreet),
+        extractString(patient, Person::getStreetTwo),
+        extractString(patient, Person::getCity),
+        extractString(patient, Person::getState),
+        extractString(patient, Person::getZipCode),
+        extractString(patient, Person::getCounty),
+        extractString(patient, Person::getCountry),
         patient != null && patient.getGender() != null ? patient.getGender() : "",
         patient != null && patient.getRace() != null ? patient.getRace() : "",
         patient != null && patient.getEthnicity() != null ? patient.getEthnicity() : "",
         tribalAffiliation,
         patient != null ? patient.getResidentCongregateSetting() : "",
         patient != null ? patient.getEmployedInHealthcare() : "");
+  }
+
+  private <T> String extractString(T object, Function<T, String> getter) {
+    return object != null ? StringUtils.trimToEmpty(getter.apply(object)) : "";
   }
 
   private String formatFullName(String firstName, String middleName, String lastName) {

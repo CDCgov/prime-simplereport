@@ -34,12 +34,17 @@ function buildCsvDownloadPath({
 }) {
   const basePath = `/results/download`;
   const params = new URLSearchParams();
+
   if (filterParams.filterFacilityId === ALL_FACILITIES_ID) {
-    console.log("SKIP");
+    // Path 3: "All Facilities" download
+    params.append("facilityId", activeFacilityId);
+    params.append("includeAllFacilities", "true");
   } else {
+    // Path 2: Facility-level download
     const facilityId = filterParams.filterFacilityId ?? activeFacilityId;
     params.append("facilityId", facilityId);
   }
+
   if (filterParams.patientId)
     params.append("patientId", filterParams.patientId);
   if (filterParams.result) params.append("result", filterParams.result);
@@ -52,7 +57,7 @@ function buildCsvDownloadPath({
   return `${basePath}?${params.toString()}`;
 }
 
-export const DownloadResultsCsvModal = ({
+const DownloadResultsCsvModal = ({
   filterParams,
   modalIsOpen,
   closeModal,
@@ -60,6 +65,8 @@ export const DownloadResultsCsvModal = ({
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
   const [downloadState, setDownloadState] = useState<DownloadState>("idle");
+  const isAllFacilitiesSelected =
+    filterParams.filterFacilityId === ALL_FACILITIES_ID;
   const filtersPresent = Object.entries(filterParams).some(([key, val]) => {
     if (key === "filterFacilityId") {
       return val !== activeFacilityId;
@@ -67,15 +74,8 @@ export const DownloadResultsCsvModal = ({
     return val;
   });
 
-  const pluralizeRows = (entriesCount: number) => {
-    return entriesCount > 1 ? "s" : "";
-  };
-
   const getDownloadMessage = () => {
-    const rowText = `${totalEntries.toLocaleString()} row${pluralizeRows(
-      totalEntries
-    )}`;
-
+    const rowText = totalEntries.toLocaleString();
     switch (downloadState) {
       case "downloading":
         if (totalEntries > 10000) {
@@ -85,7 +85,7 @@ export const DownloadResultsCsvModal = ({
       case "complete":
         return `Download complete! ${rowText} downloaded successfully.`;
       default:
-        return `The CSV file will include ${rowText}.`;
+        return `The CSV file will include ${rowText} rows.`;
     }
   };
 
@@ -219,7 +219,11 @@ export const DownloadResultsCsvModal = ({
         {!isComplete && (
           <div className="grid-row grid-gap">
             <p>
-              {filtersPresent
+              {isAllFacilitiesSelected
+                ? filtersPresent
+                  ? "Download results for all facilities with current search filters applied?"
+                  : "Download results for all facilities without any search filters applied?"
+                : filtersPresent
                 ? "Download results with current search filters applied?"
                 : "Download results without any search filters applied?"}
             </p>
