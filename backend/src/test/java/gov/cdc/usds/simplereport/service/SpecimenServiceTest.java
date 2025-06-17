@@ -360,7 +360,6 @@ class SpecimenServiceTest {
     }
   }
 
-  // TODO:  This does not check if we parse it correctly
   @Test
   @SuppressWarnings("unchecked")
   void sendInitialSnomedRelationsRequests_shouldProcessAllSnomedCodes() throws Exception {
@@ -463,7 +462,7 @@ class SpecimenServiceTest {
     assertFalse(savedSpecimens.isEmpty());
 
     assertTrue(
-        savedSpecimens.size() >= 2,
+        savedSpecimens.size() == 2,
         "Expected at least 2 specimens, but got " + savedSpecimens.size());
 
     boolean foundArterialBloodSpecimen = false;
@@ -707,7 +706,7 @@ class SpecimenServiceTest {
     resultArray.put(specimenRelation);
 
     JSONObject obsoleteRelation = new JSONObject();
-    obsoleteRelation.put("additionalRelationLabel", "obsolete");
+    obsoleteRelation.put("additionalRelationLabel", "inverse_isa");
     obsoleteRelation.put("obsolete", true);
     obsoleteRelation.put(
         "relatedId",

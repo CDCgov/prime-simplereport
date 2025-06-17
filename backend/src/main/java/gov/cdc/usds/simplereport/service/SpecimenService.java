@@ -209,6 +209,9 @@ public class SpecimenService {
           JSONObject result = (JSONObject) results.get(i);
           boolean saveSnomed = false;
           String relationLabel = result.get("additionalRelationLabel").toString();
+          if (result.has("obsolete") && result.get("obsolete").equals(true)) {
+            continue;
+          }
           // Ensure the snomed specimen is an actual specimen
           // TODO: Could possibly use an ancestor hierarchy query for the Specimen Concept
           //    to ensure the snomed specimen concept is a descedant
