@@ -138,6 +138,9 @@ public class SpecimenService {
     List<Specimen> codes = new ArrayList<>();
     for (int i = 0; i < results.length(); i++) {
       JSONObject result = (JSONObject) results.get(i);
+      if (result.has("obsolete") && result.get("obsolete").equals(true)) {
+        continue;
+      }
       codes.add(
           new Specimen(
               loincSystemCode,
