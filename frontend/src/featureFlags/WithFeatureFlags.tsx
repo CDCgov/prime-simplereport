@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
 import { FlagsProvider } from "flagged";
 
 import { FeatureFlagsApiService } from "./FeatureFlagsApiService";
-// import { RootState } from "../app/store";
 
 type WithFeatureFlagsProps = {
   children: JSX.Element;
@@ -12,10 +10,6 @@ type WithFeatureFlagsProps = {
 const WithFeatureFlags = ({ children }: WithFeatureFlagsProps): JSX.Element => {
   // flags default to false when not defined
   const [featureFlags, setFeatureFlags] = useState<Record<string, boolean>>({});
-
-  // const facilities = useSelector<RootState, Facility[]>(
-  //   (state) => state.facilities
-  // );
 
   /**
    * Initialization
