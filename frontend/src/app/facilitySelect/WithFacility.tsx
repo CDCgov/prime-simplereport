@@ -7,6 +7,7 @@ import { RootState } from "../store";
 
 import FacilitySelect from "./FacilitySelect";
 import { useSelectedFacility } from "./useSelectedFacility";
+import { useRedirectToPilot } from "./useRedirectToPilot";
 import NoFacilityPopup from "./NoFacilityPopup";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
@@ -43,6 +44,8 @@ const WithFacility: React.FC<Props> = ({ children }) => {
       setSelectedFacility(facilities[0]);
     }
   }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
+
+  useRedirectToPilot(facilities, selectedFacility);
 
   /**
    * HTML
