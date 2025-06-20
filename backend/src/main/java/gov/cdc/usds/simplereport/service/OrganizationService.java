@@ -626,12 +626,11 @@ public class OrganizationService {
     return orgToDelete;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<FacilityLab> getFacilityLabs(@Argument UUID facilityId) {
     return facilityLabRepository.findAllByFacilityIdAndIsDeletedFalse(facilityId);
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @AuthorizationConfiguration.RequirePermissionEditFacility
   public FacilityLab createFacilityLab(
       @Argument UUID facilityId,
       @Argument UUID labId,
@@ -660,7 +659,7 @@ public class OrganizationService {
     return facilityLabRepository.save(facilityLab);
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @AuthorizationConfiguration.RequirePermissionEditFacility
   public FacilityLab updateFacilityLab(
       @Argument UUID facilityId,
       @Argument UUID labId,
@@ -682,7 +681,7 @@ public class OrganizationService {
   }
 
   @Transactional(readOnly = false)
-  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @AuthorizationConfiguration.RequirePermissionEditFacility
   public boolean markFacilityLabAsDeleted(@Argument UUID facilityId, @Argument UUID labId) {
     Optional<FacilityLab> facilityLabOpt =
         facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
@@ -696,7 +695,7 @@ public class OrganizationService {
     return true;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @AuthorizationConfiguration.RequirePermissionEditFacility
   public Set<Specimen> addFacilityLabSpecimen(
       @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
     Optional<FacilityLab> facilityLabOpt =
@@ -717,7 +716,7 @@ public class OrganizationService {
     return facilityLab.getSpecimens();
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @AuthorizationConfiguration.RequirePermissionEditFacility
   public boolean deleteFacilityLabSpecimen(
       @Argument UUID facilityId, @Argument UUID labId, UUID specimenId) {
     Optional<FacilityLab> facilityLabOpt =

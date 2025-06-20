@@ -135,7 +135,6 @@ public class OrganizationResolver {
   }
 
   @QueryMapping
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<FacilityLab> facilityLabs(@Argument UUID facilityId) {
     return _organizationService.getFacilityLabs(facilityId);
   }
