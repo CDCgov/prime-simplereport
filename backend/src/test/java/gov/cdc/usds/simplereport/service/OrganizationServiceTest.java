@@ -612,7 +612,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void getFacilityLabs_shouldReturnAllNonDeletedFacilityLabs() {
     UUID facilityId = UUID.randomUUID();
 
@@ -644,7 +644,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void createFacilityLab_shouldCreateNewFacilityLab_whenNoneExists() {
     // Given
     UUID facilityId = UUID.randomUUID();
@@ -679,7 +679,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void createFacilityLab_shouldRestoreDeletedFacilityLab_whenDeletedOneExists() {
     // Given
     UUID facilityId = UUID.randomUUID();
@@ -715,7 +715,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void updateFacilityLab_shouldUpdateExistingFacilityLab() {
     // Given
     UUID facilityId = UUID.randomUUID();
@@ -747,7 +747,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void updateFacilityLab_shouldThrowException_whenFacilityLabNotFound() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -762,7 +762,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void markFacilityLabAsDeleted_shouldDeleteFacilityLab_whenExists() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -786,7 +786,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void markFacilityLabAsDeleted_shouldThrowException_whenFacilityLabNotFound() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -800,7 +800,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void addFacilityLabSpecimen_shouldAddSpecimen_whenBothExist() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -828,7 +828,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void addFacilityLabSpecimen_shouldThrowException_whenFacilityLabNotFound() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -844,7 +844,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void addFacilityLabSpecimen_shouldThrowException_whenSpecimenNotFound() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -869,7 +869,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void deleteFacilityLabSpecimen_shouldRemoveSpecimen_whenBothExist() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -892,7 +892,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void deleteFacilityLabSpecimen_shouldReturnFalse_whenFacilityLabNotFound() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -909,7 +909,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void deleteFacilityLabSpecimen_shouldReturnFalse_whenSpecimenNotFound() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
@@ -935,7 +935,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportOrgAdminUser
   void deleteFacilityLabSpecimen_shouldReturnFalse_whenSpecimenNotRemovedFromLab() {
     UUID facilityId = UUID.randomUUID();
     UUID labId = UUID.randomUUID();
