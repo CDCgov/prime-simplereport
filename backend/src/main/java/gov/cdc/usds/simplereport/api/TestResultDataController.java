@@ -1,10 +1,11 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.service.CsvExportService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,6 @@ public class TestResultDataController {
   private final CsvExportService csvExportService;
 
   @GetMapping(value = "/results/download")
-  @AuthorizationConfiguration.RequirePermissionCSVUpload
   public ResponseEntity<StreamingResponseBody> downloadResultsAsCSV(
       @RequestParam(required = false) UUID facilityId,
       @RequestParam(required = false) UUID organizationId,
@@ -74,7 +74,8 @@ public class TestResultDataController {
           csvExportService.streamResultsAsZippedCsv(out, params);
         };
 
-    String zipFileName = "testResults.zip";
+    String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+    String zipFileName = "testResults_" + timestamp + ".zip";
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zipFileName)
