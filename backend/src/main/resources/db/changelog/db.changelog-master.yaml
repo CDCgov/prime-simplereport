@@ -6406,3 +6406,129 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: facility_feature_flag
+  - changeSet:
+      id: add-facility-lab
+      author: az01@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-facility-lab
+        - createTable:
+            tableName: facility_lab
+            remarks: Table to store facility-specific descriptions and names for test orders
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: facility_id
+                  type: uuid
+                  remarks: Internal Id of a facility in the facility table.
+                  constraints:
+                    unique: false
+                    nullable: false
+                    foreignKeyName: fk__facility__facility_id
+                    references: facility
+              - column:
+                  name: lab_id
+                  type: uuid
+                  remarks: Internal Id of a lab in the lab table.
+                  constraints:
+                    unique: false
+                    nullable: false
+                    foreignKeyName: fk__lab__lab_id
+                    references: lab
+                    deleteCascade: true
+              - column:
+                  name: name
+                  type: text
+                  remarks: Facility-specific name for test order
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  remarks: Facility-specific description for test order
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+        - addUniqueConstraint:
+            constraintName: uk__facility_id__lab_id
+            tableName: facility_lab
+            columnNames: facility_id, lab_id
+      rollback:
+        - dropTable:
+            tableName: facility_lab
+  - changeSet:
+      id: add-facility-lab-specimen
+      author: az01@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-facility-lab-specimen
+        - createTable:
+            tableName: facility_lab_specimen
+            remarks: Table to store facility-specific test order specimens
+            columns:
+              - column:
+                  name: facility_lab_id
+                  type: uuid
+                  remarks: Internal Id of a test order in the facility_lab table.
+                  constraints:
+                    unique: false
+                    nullable: false
+                    foreignKeyName: fk__facility_lab__facility_lab_id
+                    references: facility_lab
+                    deleteCascade: true
+              - column:
+                  name: specimen_id
+                  type: uuid
+                  remarks: Internal Id of a specimen in the specimen table.
+                  constraints:
+                    unique: false
+                    nullable: false
+                    foreignKeyName: fk__specimen__specimen_id
+                    references: specimen
+                    deleteCascade: true
+        - addUniqueConstraint:
+            constraintName: uk__facility_lab_id__specimen_id
+            tableName: facility_lab_specimen
+            columnNames: facility_lab_id, specimen_id
+      rollback:
+        - dropTable:
+            tableName: facility_lab_specimen
