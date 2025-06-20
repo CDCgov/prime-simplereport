@@ -253,7 +253,6 @@ public class OrganizationMutationResolver {
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequirePermissionEditFacility
   public FacilityLab addFacilityLab(
       @Argument UUID facilityId,
       @Argument UUID labId,
@@ -263,7 +262,6 @@ public class OrganizationMutationResolver {
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequirePermissionEditFacility
   public FacilityLab updateFacilityLab(
       @Argument UUID facilityId,
       @Argument UUID labId,
@@ -273,20 +271,17 @@ public class OrganizationMutationResolver {
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequirePermissionEditFacility
   public boolean removeFacilityLab(@Argument UUID facilityId, @Argument UUID labId) {
     return organizationService.markFacilityLabAsDeleted(facilityId, labId);
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequirePermissionEditFacility
   public Set<Specimen> addFacilityLabSpecimen(
       @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
     return organizationService.addFacilityLabSpecimen(facilityId, labId, specimenId);
   }
 
   @MutationMapping
-  @AuthorizationConfiguration.RequirePermissionEditFacility
   public boolean removeFacilityLabSpecimen(
       @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
     return organizationService.deleteFacilityLabSpecimen(facilityId, labId, specimenId);
