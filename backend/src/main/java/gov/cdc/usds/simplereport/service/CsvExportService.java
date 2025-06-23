@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -77,6 +78,7 @@ public class CsvExportService {
     }
   }
 
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
   public void streamResultsAsCsv(OutputStream outputStream, ExportParameters params) {
     ExportParameters resolvedParams = resolveOrganizationId(params);
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -133,6 +135,7 @@ public class CsvExportService {
     }
   }
 
+  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
   public void streamResultsAsZippedCsv(OutputStream rawOut, ExportParameters params) {
     ExportParameters resolvedParams = resolveOrganizationId(params);
 
@@ -511,10 +514,10 @@ public class CsvExportService {
   }
 
   private String formatAsDate(Object dateObj) {
-    return formatDateValue(dateObj, "MM/DD/yyyy");
+    return formatDateValue(dateObj, "MM/dd/yyyy");
   }
 
   private String formatAsDateTime(Object dateObj) {
-    return formatDateValue(dateObj, "MM/DD/yyyy h:mma");
+    return formatDateValue(dateObj, "MM/dd/yyyy h:mma");
   }
 }
