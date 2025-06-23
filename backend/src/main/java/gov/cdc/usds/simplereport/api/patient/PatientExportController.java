@@ -48,7 +48,7 @@ public class PatientExportController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zippedCsvFileName)
-        .header(HttpHeaders.CONTENT_TYPE, "text/csv;charset=UTF-8")
+        .header(HttpHeaders.CONTENT_TYPE, "application/zip")
         .body(responseBody);
   }
 
@@ -78,7 +78,7 @@ public class PatientExportController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zippedCsvFileName)
-        .header(HttpHeaders.CONTENT_TYPE, "text/csv;charset=UTF-8")
+        .header(HttpHeaders.CONTENT_TYPE, "application/zip")
         .body(responseBody);
   }
 }
