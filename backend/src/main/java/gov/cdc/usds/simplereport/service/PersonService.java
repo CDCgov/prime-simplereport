@@ -216,6 +216,7 @@ public class PersonService {
    * @return A list of matching patients.
    */
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
+  @Transactional(readOnly = true)
   public List<Person> getPatients(
       UUID facilityId,
       int pageOffset,
