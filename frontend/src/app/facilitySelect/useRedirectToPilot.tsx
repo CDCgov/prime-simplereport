@@ -60,5 +60,6 @@ export function useRedirectToPilot(
     navigate,
     facilities,
     selectedFacility,
+    urlPrefix,
   ]);
 }
