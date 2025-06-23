@@ -462,7 +462,7 @@ class SpecimenServiceTest {
     assertFalse(savedSpecimens.isEmpty());
 
     assertTrue(
-        savedSpecimens.size() >= 2,
+        savedSpecimens.size() == 2,
         "Expected at least 2 specimens, but got " + savedSpecimens.size());
 
     boolean foundArterialBloodSpecimen = false;
@@ -681,6 +681,12 @@ class SpecimenServiceTest {
     result2.put("name", "Serum specimen");
     resultArray.put(result2);
 
+    JSONObject result3 = new JSONObject();
+    result3.put("obsolete", true);
+    result3.put("ui", "8675309");
+    result3.put("name", "obsolete should not see");
+    resultArray.put(result3);
+
     json.put("result", resultArray);
     return json.toString();
   }
@@ -698,6 +704,15 @@ class SpecimenServiceTest {
         "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/444555666");
     specimenRelation.put("relatedIdName", "Venous blood specimen");
     resultArray.put(specimenRelation);
+
+    JSONObject obsoleteRelation = new JSONObject();
+    obsoleteRelation.put("additionalRelationLabel", "inverse_isa");
+    obsoleteRelation.put("obsolete", true);
+    obsoleteRelation.put(
+        "relatedId",
+        "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/444555667");
+    obsoleteRelation.put("relatedIdName", "Obsolete blood specimen");
+    resultArray.put(obsoleteRelation);
 
     // A body site relationship
     JSONObject bodySiteRelation = new JSONObject();
@@ -723,6 +738,15 @@ class SpecimenServiceTest {
         "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/555666777");
     specimenRelation.put("relatedIdName", "Arterial blood specimen");
     resultArray.put(specimenRelation);
+
+    JSONObject obsoleteSpecimenRelation = new JSONObject();
+    obsoleteSpecimenRelation.put("obsolete", true);
+    obsoleteSpecimenRelation.put("additionalRelationLabel", "inverse_isa");
+    obsoleteSpecimenRelation.put(
+        "relatedId",
+        "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/555666778");
+    obsoleteSpecimenRelation.put("relatedIdName", "Obsolete blood specimen");
+    resultArray.put(obsoleteSpecimenRelation);
 
     JSONObject bodySiteRelation = new JSONObject();
     bodySiteRelation.put("additionalRelationLabel", "has_specimen_source_topography");
