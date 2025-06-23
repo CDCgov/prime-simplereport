@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { getUrl } from "../utils/url";
@@ -12,7 +12,6 @@ export function useRedirectToPilot(
   selectedFacility?: Facility
 ) {
   const navigate = useNavigate();
-  const hasRedirect = useRef(false);
   const [facilityFlags, setFacilityFlags] = useState<{
     [facilityId: string]: FeatureFlags;
   } | null>(null);
@@ -35,7 +34,7 @@ export function useRedirectToPilot(
         const flagMap = results.reduce((a, c) => ({ ...a, ...c }), {});
         setFacilityFlags(flagMap);
       });
-    } else if (!hasRedirect.current) {
+    } else {
       const allInPilot = Object.values(facilityFlags).every(
         (flags) => flags.pilotEnabled
       );
@@ -46,17 +45,14 @@ export function useRedirectToPilot(
         selectedFacility && facilityFlags[selectedFacility.id].pilotEnabled;
 
       if (allInPilot || selectedInPilot) {
-        hasRedirect.current = true;
         window.location.replace(`${urlPrefix}pilot/report`);
       } else if (someInPilot && selectedFacility) {
-        hasRedirect.current = true;
         navigate({ search: "?" });
       }
     }
   }, [
     facilityFlags,
     setFacilityFlags,
-    hasRedirect,
     navigate,
     facilities,
     selectedFacility,
