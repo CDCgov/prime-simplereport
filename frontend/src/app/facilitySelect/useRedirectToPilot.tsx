@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { getUrl } from "../utils/url";
 import {
   FeatureFlagsApiService,
   type FeatureFlags,
@@ -15,6 +16,9 @@ export function useRedirectToPilot(
   const [facilityFlags, setFacilityFlags] = useState<{
     [facilityId: string]: FeatureFlags;
   } | null>(null);
+
+  const prefix = getUrl(true);
+  console.log({ prefix });
 
   useEffect(() => {
     if (facilities.length === 0) {
