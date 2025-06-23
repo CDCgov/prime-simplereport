@@ -17,8 +17,7 @@ export function useRedirectToPilot(
     [facilityId: string]: FeatureFlags;
   } | null>(null);
 
-  const prefix = getUrl(true);
-  console.log({ prefix });
+  const urlPrefix = getUrl(true);
 
   useEffect(() => {
     if (facilities.length === 0) {
@@ -48,7 +47,7 @@ export function useRedirectToPilot(
 
       if (allInPilot || selectedInPilot) {
         hasRedirect.current = true;
-        window.location.replace("/pilot/report");
+        window.location.replace(`${urlPrefix}pilot/report`);
       } else if (someInPilot && selectedFacility) {
         hasRedirect.current = true;
         navigate({ search: "?" });
