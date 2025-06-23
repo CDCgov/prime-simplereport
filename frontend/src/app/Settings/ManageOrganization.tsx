@@ -113,7 +113,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   const handleDownloadPatients = async () => {
     setPatientDownloadState("downloading");
     try {
-      const downloadPath = `/patients/download/organization?organizationId=${organization.id}`;
+      const downloadPath = `/patients/download/organization?orgId=${organization.id}`;
       const fullUrl = apiClient.getURL(downloadPath);
       console.log("Full organization object:", organization);
 

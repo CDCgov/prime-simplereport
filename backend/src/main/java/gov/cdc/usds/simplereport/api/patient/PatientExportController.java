@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.patient;
 
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration.RequirePermissionReadResultListAtFacility;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration.RequirePermissionEditPatientAtFacility;
 import gov.cdc.usds.simplereport.service.FacilityCsvExportService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 public class PatientExportController {
   private final FacilityCsvExportService csvExportService;
 
-  @RequirePermissionReadResultListAtFacility
+  @RequirePermissionEditPatientAtFacility
   @GetMapping(value = "/patients/download/facility")
   public ResponseEntity<StreamingResponseBody> downloadFacilityPatientsAsCSV(
       @RequestParam() UUID facilityId,
@@ -51,14 +52,14 @@ public class PatientExportController {
         .body(responseBody);
   }
 
-  @RequirePermissionReadResultListAtFacility
+  @AuthorizationConfiguration.RequirePermissionToAccessOrg
   @GetMapping(value = "/patients/download/organization")
   public ResponseEntity<StreamingResponseBody> downloadOrganizationPatientsAsCSV(
-      @RequestParam() UUID organizationId,
+      @RequestParam() UUID orgId,
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "5000") int pageSize) {
 
-    log.info("Organization patients CSV download request for organizationId={}", organizationId);
+    log.info("Organization patients CSV download request for organizationId={}", orgId);
 
     if (pageNumber < 0) {
       pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
@@ -69,12 +70,11 @@ public class PatientExportController {
 
     StreamingResponseBody responseBody =
         outputStream -> {
-          csvExportService.streamOrganizationPatientsAsZippedCsv(outputStream, organizationId);
+          csvExportService.streamOrganizationPatientsAsZippedCsv(outputStream, orgId);
         };
 
     String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
-    String zippedCsvFileName =
-        String.format("organization-%s-patients-%s.zip", organizationId, timestamp);
+    String zippedCsvFileName = String.format("organization-%s-patients-%s.zip", orgId, timestamp);
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zippedCsvFileName)

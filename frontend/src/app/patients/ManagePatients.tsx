@@ -340,7 +340,7 @@ export const DetachedManagePatients = ({
   const handleDownloadPatientData = async () => {
     setDownloadState("downloading");
     try {
-      const downloadPath = `/patients/download?facilityId=${activeFacilityId}`;
+      const downloadPath = `/patients/download/facility?facilityId=${activeFacilityId}`;
       const fullUrl = apiClient.getURL(downloadPath);
       // console.log("Full organization object:", facility);
 
