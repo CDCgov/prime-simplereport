@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Created by nickrobison on 11/17/20 */
@@ -216,7 +217,7 @@ public class PersonService {
    * @return A list of matching patients.
    */
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
-  @Transactional(readOnly = true)
+  @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
   public List<Person> getPatients(
       UUID facilityId,
       int pageOffset,
