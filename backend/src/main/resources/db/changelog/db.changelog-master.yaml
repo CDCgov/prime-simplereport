@@ -6406,3 +6406,13 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: facility_feature_flag
+  - changeSet:
+      id: add-index-person-org
+      author: david@skylight.digital
+      changes:
+        - createIndex:
+            tableName: person
+            indexName: ix__person__organization_id
+            columns:
+              - column:
+                  name: organization_id

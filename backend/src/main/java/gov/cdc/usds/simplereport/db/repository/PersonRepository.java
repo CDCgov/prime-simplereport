@@ -18,6 +18,8 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
 
   List<Person> findAllByInternalIdIn(Collection<UUID> ids);
 
+  List<Person> findAllByOrganizationInternalId(UUID organizationInternalId, Pageable p);
+
   int count(Specification<Person> searchSpec);
 
   int countByFacilityAndIsDeleted(Facility facility, boolean isDeleted);

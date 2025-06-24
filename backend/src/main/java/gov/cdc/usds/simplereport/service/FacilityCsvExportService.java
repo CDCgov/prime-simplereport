@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultsListItem;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,6 +44,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -52,6 +54,7 @@ public class FacilityCsvExportService {
   private final PersonService personService;
   private final FacilityRepository facilityRepository;
   private static final int BATCH_SIZE = 10000;
+  private final PersonRepository personRepository;
 
   public record FacilityExportParameters(
       UUID facilityId,
@@ -113,6 +116,7 @@ public class FacilityCsvExportService {
     }
   }
 
+  @Transactional(readOnly = true)
   public void streamFacilityPatientsAsCsv(OutputStream outputStream, UUID facilityId) {
     //        params.validate();
 
@@ -154,6 +158,7 @@ public class FacilityCsvExportService {
     }
   }
 
+  @Transactional(readOnly = true)
   public void streamOrganizationPatientsAsCsv(OutputStream outputStream, UUID organizationId) {
 
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -195,6 +200,7 @@ public class FacilityCsvExportService {
     }
   }
 
+  @Transactional(readOnly = true)
   public void streamFacilityPatientsAsZippedCsv(OutputStream rawOut, UUID facilityId) {
 
     class NonClosingOutputStream extends FilterOutputStream {
@@ -298,15 +304,17 @@ public class FacilityCsvExportService {
         null);
   }
 
-  private List<Person> fetchOrganizationPatients(UUID organizationId, Pageable pageable) {
-    return personService.getPatients(
-        null, // a null facility fetches all patients in the current org
-        pageable.getPageNumber(),
-        pageable.getPageSize(),
-        ArchivedStatus.UNARCHIVED,
-        null,
-        false,
-        null);
+  private List<Person> fetchOrganizationPatients(UUID organizationInternalId, Pageable pageable) {
+
+    return personRepository.findAllByOrganizationInternalId(organizationInternalId, pageable);
+    //    return personService.getPatients(
+    //        null, // a null facility fetches all patients in the current org
+    //        pageable.getPageNumber(),
+    //        pageable.getPageSize(),
+    //        ArchivedStatus.UNARCHIVED,
+    //        null,
+    //        false,
+    //        null);
   }
 
   private CSVFormat createCsvFormat() {
