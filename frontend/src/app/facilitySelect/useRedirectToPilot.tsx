@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { getUrl } from "../utils/url";
@@ -16,6 +16,7 @@ export function useRedirectToPilot(
     [facilityId: string]: FeatureFlags;
   } | null>(null);
 
+  const isInitialMount = useRef(true);
   const urlPrefix = getUrl(true);
 
   useEffect(() => {
@@ -46,10 +47,12 @@ export function useRedirectToPilot(
 
       if (allInPilot || selectedInPilot) {
         window.location.replace(`${urlPrefix}pilot/report`);
-      } else if (someInPilot && selectedFacility) {
+      } else if (someInPilot && selectedFacility && isInitialMount.current) {
         navigate({ search: "?" });
       }
     }
+
+    isInitialMount.current = false;
   }, [
     facilityFlags,
     setFacilityFlags,
@@ -57,5 +60,6 @@ export function useRedirectToPilot(
     facilities,
     selectedFacility,
     urlPrefix,
+    isInitialMount,
   ]);
 }
