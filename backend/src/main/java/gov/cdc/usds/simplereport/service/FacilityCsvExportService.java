@@ -51,7 +51,7 @@ public class FacilityCsvExportService {
   private final ResultService resultService;
   private final PersonService personService;
   private final FacilityRepository facilityRepository;
-  private static final int BATCH_SIZE = 5000;
+  private static final int BATCH_SIZE = 10000;
 
   public record FacilityExportParameters(
       UUID facilityId,
