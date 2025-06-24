@@ -226,6 +226,7 @@ public class FacilityCsvExportService {
     }
   }
 
+  @Transactional(readOnly = true)
   public void streamOrganizationPatientsAsZippedCsv(OutputStream rawOut, UUID organizationId) {
 
     class NonClosingOutputStream extends FilterOutputStream {
