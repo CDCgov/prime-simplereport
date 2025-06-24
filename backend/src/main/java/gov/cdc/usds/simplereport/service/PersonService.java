@@ -288,6 +288,7 @@ public class PersonService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
+  @Transactional(readOnly = true)
   public long getPatientsCountByOrganization(UUID organizationId) {
     Organization orgToSearch = _os.getOrganizationById(organizationId);
     ;
