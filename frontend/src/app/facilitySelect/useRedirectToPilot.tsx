@@ -43,7 +43,7 @@ export function useRedirectToPilot(
         (flags) => flags.pilotEnabled
       );
       const selectedInPilot =
-        selectedFacility && facilityFlags[selectedFacility.id].pilotEnabled;
+        selectedFacility && facilityFlags[selectedFacility.id]?.pilotEnabled;
 
       if (allInPilot || selectedInPilot) {
         window.location.replace(`${urlPrefix}pilot/report`);
