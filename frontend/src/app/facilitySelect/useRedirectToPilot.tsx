@@ -16,7 +16,7 @@ export function useRedirectToPilot(
     [facilityId: string]: FeatureFlags;
   } | null>(null);
 
-  const isInitialMount = useRef(true);
+  const isInitialRedirect = useRef(true);
   const urlPrefix = getUrl(true);
 
   useEffect(() => {
@@ -47,12 +47,11 @@ export function useRedirectToPilot(
 
       if (allInPilot || selectedInPilot) {
         window.location.replace(`${urlPrefix}pilot/report`);
-      } else if (someInPilot && selectedFacility && isInitialMount.current) {
+      } else if (someInPilot && selectedFacility && isInitialRedirect.current) {
         navigate({ search: "?" });
+        isInitialRedirect.current = false;
       }
     }
-
-    isInitialMount.current = false;
   }, [
     facilityFlags,
     setFacilityFlags,
@@ -60,6 +59,6 @@ export function useRedirectToPilot(
     facilities,
     selectedFacility,
     urlPrefix,
-    isInitialMount,
+    isInitialRedirect,
   ]);
 }
