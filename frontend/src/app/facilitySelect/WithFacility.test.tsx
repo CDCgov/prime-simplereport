@@ -60,12 +60,6 @@ describe("WithFacility", () => {
         facilities: [],
       });
       store.dispatch = jest.fn();
-
-      fetchMock.mockResponseOnce(
-        JSON.stringify({
-          ok: true,
-        })
-      );
     });
 
     it("should notify user to contact an admin", () => {
@@ -99,12 +93,6 @@ describe("WithFacility", () => {
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
-
-      fetchMock.mockResponseOnce(
-        JSON.stringify({
-          ok: true,
-        })
-      );
     });
 
     it("should bypass the facility selection screen", async () => {
