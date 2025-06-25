@@ -45,13 +45,16 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     }
   }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
 
-  useRedirectToPilot(facilities, selectedFacility);
+  const { facilityFlagsLoaded } = useRedirectToPilot(
+    facilities,
+    selectedFacility
+  );
 
   /**
    * HTML
    */
 
-  if (!dataLoaded) {
+  if (!dataLoaded || !facilityFlagsLoaded) {
     return <Loading />;
   } else if (selectedFacility || (isAdmin && facilities.length === 0)) {
     return <>{children}</>;
