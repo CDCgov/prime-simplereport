@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.utils;
 import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonNodesEqual;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -124,6 +125,12 @@ public class BulkUploadResultsToFhirTest {
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(19);
     assertThat(resourceUrls).hasSize(19);
+  }
+
+  @Test
+  void requiredFieldsOnlyCsv_success() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-required-only.csv");
+    assertDoesNotThrow(() -> sut.convertToFhirBundles(input, UUID.randomUUID()));
   }
 
   @Test

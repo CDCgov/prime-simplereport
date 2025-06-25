@@ -61,7 +61,7 @@ class TestResultRowTest {
           "testing_lab_city",
           "testing_lab_state",
           "testing_lab_zip_code");
-  final List<String> individualFields =
+  final List<String> validatedFields =
       List.of(
           "patient_state",
           "ordering_provider_state",
@@ -98,6 +98,7 @@ class TestResultRowTest {
           "specimen_type",
           "testing_lab_clia",
           "genders_of_sexual_partners",
+          "syphilis_history",
           "patient_gender_identity");
 
   @BeforeEach
@@ -360,8 +361,14 @@ class TestResultRowTest {
             validRowMap.get("test_result_status"),
             from(TestResultRow::getTestResultStatus).andThen(ValueOrError::getValue))
         .returns(
+            validRowMap.get("test_ordered_code"),
+            from(TestResultRow::getTestOrderedCode).andThen(ValueOrError::getValue))
+        .returns(
             validRowMap.get("genders_of_sexual_partners"),
             from(TestResultRow::getGendersOfSexualPartners).andThen(ValueOrError::getValue))
+        .returns(
+            validRowMap.get("syphilis_history"),
+            from(TestResultRow::getSyphilisHistory).andThen(ValueOrError::getValue))
         .returns(
             validRowMap.get("patient_gender_identity"),
             from(TestResultRow::getPatientGenderIdentity).andThen(ValueOrError::getValue));
@@ -418,6 +425,7 @@ class TestResultRowTest {
     invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
     invalidIndividualFields.put("genders_of_sexual_partners", "ma, f");
+    invalidIndividualFields.put("syphilis_history", "na");
     invalidIndividualFields.put("patient_gender_identity", "fe");
     var testResultRow =
         new TestResultRow(
@@ -433,8 +441,8 @@ class TestResultRowTest {
                 message ->
                     TestErrorMessageUtil.getColumnNameFromInvalidErrorMessage(message.getMessage()))
             .collect(Collectors.toSet());
-    assertThat(actual).hasSize(individualFields.size());
-    individualFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
+    assertThat(actual).hasSize(validatedFields.size());
+    validatedFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
   }
 
   @Test
