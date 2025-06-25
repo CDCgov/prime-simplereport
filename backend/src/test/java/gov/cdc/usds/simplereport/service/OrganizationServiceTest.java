@@ -737,7 +737,9 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     doReturn(existingLab).when(facilityLabRepository).save(any());
 
     // When
-    FacilityLab result = _service.updateFacilityLab(facilityId, labId, newName, newDescription);
+    FacilityLab result =
+        _service.updateFacilityLab(
+            facilityId, labId, Optional.of(newName), Optional.of(newDescription));
 
     // Then
     assertThat(result.getName()).isEqualTo(newName);
@@ -758,7 +760,9 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> _service.updateFacilityLab(facilityId, labId, "name", "description"));
+        () ->
+            _service.updateFacilityLab(
+                facilityId, labId, Optional.of("name"), Optional.of("description")));
   }
 
   @Test

@@ -663,8 +663,8 @@ public class OrganizationService {
   public FacilityLab updateFacilityLab(
       @Argument UUID facilityId,
       @Argument UUID labId,
-      @Argument String name,
-      @Argument String description) {
+      @Argument Optional<String> name,
+      @Argument Optional<String> description) {
     Optional<FacilityLab> facilityLabOpt =
         facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
             facilityId, labId);
@@ -675,8 +675,9 @@ public class OrganizationService {
 
     FacilityLab facilityLab = facilityLabOpt.get();
     facilityLab.setLabId(labId);
-    facilityLab.setName(name);
-    facilityLab.setDescription(description);
+
+    name.ifPresent(facilityLab::setName);
+    description.ifPresent(facilityLab::setDescription);
     return facilityLabRepository.save(facilityLab);
   }
 

@@ -267,7 +267,8 @@ public class OrganizationMutationResolver {
       @Argument UUID labId,
       @Argument String name,
       @Argument String description) {
-    return organizationService.updateFacilityLab(facilityId, labId, name, description);
+    return organizationService.updateFacilityLab(
+        facilityId, labId, Optional.ofNullable(name), Optional.ofNullable(description));
   }
 
   @MutationMapping
