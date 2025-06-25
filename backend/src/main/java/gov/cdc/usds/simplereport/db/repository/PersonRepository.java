@@ -9,15 +9,18 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 
 /** Interface specification for fetching and manipulating {@link Person} entities */
 public interface PersonRepository extends EternalAuditedEntityRepository<Person> {
 
+  @EntityGraph(attributePaths = {"facility", "organization", "phoneNumbers"})
   List<Person> findAll(Specification<Person> searchSpec, Pageable p);
 
   List<Person> findAllByInternalIdIn(Collection<UUID> ids);
 
+  @EntityGraph(attributePaths = {"facility", "organization", "phoneNumbers"})
   List<Person> findAllByOrganizationInternalId(UUID organizationInternalId, Pageable p);
 
   int count(Specification<Person> searchSpec);
