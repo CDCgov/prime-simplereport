@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
@@ -55,6 +56,7 @@ public class FacilityCsvExportService {
   private final FacilityRepository facilityRepository;
   private static final int BATCH_SIZE = 10000;
   private final PersonRepository personRepository;
+  private final OrganizationService organizationService;
 
   public record FacilityExportParameters(
       UUID facilityId,
@@ -126,12 +128,22 @@ public class FacilityCsvExportService {
       long facilityPatientsCount = getFacilityPatientsCount(facilityId);
       int totalPages = (int) Math.ceil((double) facilityPatientsCount / BATCH_SIZE);
 
+      //      Organization currentOrg = organizationService.getOrganizationById(organizationId);
+      //      String facilityList = facilityRepository
+      //              .findAllByOrganizationAndDeleted(currentOrg, false)
+      //              .stream()
+      //              .map(Facility::getFacilityName)
+      //              .collect(Collectors.joining(";"));
+
       log.info(
           "Starting facility CSV patient export for facilityId={}: {} patient records in {} batches",
           facilityId,
           facilityPatientsCount,
           totalPages);
 
+      // fetch facility name and all facilities in the org here? would cut down on querying the
+      // facility
+      // and org tables whenever we access those values in the writePatientCsvRow methode
       for (int currentPage = 0; currentPage < totalPages; currentPage++) {
         Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
         List<Person> facilityPatients = fetchFacilityPatients(facilityId, pageable);
@@ -143,9 +155,9 @@ public class FacilityCsvExportService {
             BATCH_SIZE,
             facilityPatients.size(),
             (currentPage * BATCH_SIZE) + facilityPatients.size());
-        for (Person patient : facilityPatients) {
-          writePatientCsvRow(csvPrinter, patient);
-        }
+        //        for (Person patient : facilityPatients) {
+        //          writePatientCsvRow(csvPrinter, patient);
+        //        }
 
         csvPrinter.flush();
         log.debug("Processed batch {}/{} for facility CSV export", (currentPage + 1), totalPages);
@@ -158,6 +170,8 @@ public class FacilityCsvExportService {
     }
   }
 
+  // fetch all facilities in the org here? would cut down on querying the facility
+  // and org tables whenever we access those values in the writePatientCsvRow methode
   @Transactional(readOnly = true)
   public void streamOrganizationPatientsAsCsv(OutputStream outputStream, UUID organizationId) {
 
@@ -166,6 +180,12 @@ public class FacilityCsvExportService {
 
       long organizationPatientsCount = getOrganizationPatientsCount(organizationId);
       int totalPages = (int) Math.ceil((double) organizationPatientsCount / BATCH_SIZE);
+
+      Organization currentOrg = organizationService.getOrganizationById(organizationId);
+      String facilityList =
+          facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
+              .map(Facility::getFacilityName)
+              .collect(Collectors.joining(";"));
 
       log.info(
           "Starting organization CSV patient export for organizationId={}: {} patient records in {} batches",
@@ -185,7 +205,7 @@ public class FacilityCsvExportService {
             organizationPatients.size(),
             (currentPage * BATCH_SIZE) + organizationPatients.size());
         for (Person patient : organizationPatients) {
-          writePatientCsvRow(csvPrinter, patient);
+          writePatientCsvRow(csvPrinter, patient, facilityList);
         }
 
         csvPrinter.flush();
@@ -494,7 +514,8 @@ public class FacilityCsvExportService {
         patient != null ? patient.getEmployedInHealthcare() : "");
   }
 
-  private void writePatientCsvRow(CSVPrinter csvPrinter, Person patient) throws IOException {
+  private void writePatientCsvRow(CSVPrinter csvPrinter, Person patient, String facilityList)
+      throws IOException {
     //                "First Name",
     //                "Middle Name",
     //                "Last Name",
@@ -545,13 +566,7 @@ public class FacilityCsvExportService {
         trimToEmpty(patient.getGender()),
         trimToEmpty(patient.getEthnicity()),
         trimToEmpty(patient.getRole().toString()),
-        patient.getFacility() != null
-            ? patient.getFacility().getFacilityName()
-            : facilityRepository
-                .findAllByOrganizationAndDeleted(patient.getOrganization(), false)
-                .stream()
-                .map(Facility::getFacilityName)
-                .collect(Collectors.joining(";")),
+        patient.getFacility() != null ? patient.getFacility().getFacilityName() : facilityList,
         patient.getEmployedInHealthcare() != null ? patient.getEmployedInHealthcare() : "",
         patient.getResidentCongregateSetting() != null
             ? patient.getResidentCongregateSetting()
