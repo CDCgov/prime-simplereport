@@ -4,6 +4,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter as Router } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
+import { FetchMock } from "jest-fetch-mock";
 
 import { appPermissions } from "../permissions";
 import { GetFacilitiesDocument as GET_FACILITY_QUERY } from "../../generated/graphql";
@@ -13,6 +14,7 @@ import { createGQLWrappedMemoryRouterWithDataApis } from "../utils/reactRouter";
 import WithFacility from "./WithFacility";
 
 const mockStore = configureStore([]);
+const fetchMock = fetch as FetchMock;
 
 const mocks = [
   {
@@ -38,6 +40,10 @@ const mocks = [
 
 describe("WithFacility", () => {
   let store: any;
+
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
 
   describe("With zero facilities", () => {
     beforeEach(() => {
@@ -87,6 +93,12 @@ describe("WithFacility", () => {
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
+
+      fetchMock.mockResponseOnce(
+        JSON.stringify({
+          ok: true,
+        })
+      );
     });
 
     it("should bypass the facility selection screen", async () => {
@@ -130,11 +142,14 @@ describe("WithFacility", () => {
       ),
     });
 
-    it("should show the facility selection screen", () => {
+    it("should show the facility selection screen", async () => {
       renderWithUser();
-      expect(
-        screen.getByText("Select your facility", { exact: false })
-      ).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(
+          screen.getByText("Select your facility", { exact: false })
+        ).toBeInTheDocument();
+      });
     });
 
     it("should show the app after selecting facility", async () => {
