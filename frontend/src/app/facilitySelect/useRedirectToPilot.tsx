@@ -18,7 +18,7 @@ export function useRedirectToPilot(
 
   const isInitialRedirect = useRef(true);
   const urlPrefix = getUrl(true);
-  const facilityFlagsLoaded = facilityFlags !== null;
+  const facilityFlagsLoading = facilities.length > 0 && facilityFlags === null;
 
   useEffect(() => {
     if (facilities.length === 0) {
@@ -64,5 +64,5 @@ export function useRedirectToPilot(
     isInitialRedirect,
   ]);
 
-  return { facilityFlagsLoaded };
+  return { facilityFlagsLoading };
 }

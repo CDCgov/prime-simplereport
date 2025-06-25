@@ -60,6 +60,12 @@ describe("WithFacility", () => {
         facilities: [],
       });
       store.dispatch = jest.fn();
+
+      fetchMock.mockResponseOnce(
+        JSON.stringify({
+          ok: true,
+        })
+      );
     });
 
     it("should notify user to contact an admin", () => {
@@ -144,17 +150,17 @@ describe("WithFacility", () => {
 
     it("should show the facility selection screen", async () => {
       renderWithUser();
-
-      await waitFor(() => {
-        expect(
-          screen.getByText("Select your facility", { exact: false })
-        ).toBeInTheDocument();
+      const text = await screen.findByText("Select your facility", {
+        exact: false,
       });
+      expect(text).toBeInTheDocument();
     });
 
     it("should show the app after selecting facility", async () => {
       const { user } = renderWithUser();
-      const continueBtn = screen.getByRole("button", { name: "Continue" });
+      const continueBtn = await screen.findByRole("button", {
+        name: "Continue",
+      });
       await user.type(
         screen.getByLabelText("Select your facility"),
         "Facility 1{enter}"
