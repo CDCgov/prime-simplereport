@@ -31,6 +31,4 @@ features:
   hepatitisCEnabled: false
   syphilisEnabled: false
   hivEnabled: false
-  agnosticEnabled: false
-  agnosticBulkUploadEnabled: false
   universalReportingEnabled: false
