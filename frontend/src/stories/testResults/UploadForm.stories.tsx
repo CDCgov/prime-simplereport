@@ -5,7 +5,6 @@ import { Meta, StoryFn } from "@storybook/react";
 import { store } from "../../app/store";
 import { StoryGraphQLProvider } from "../storyMocks";
 import DiseaseSpecificUploadContainer from "../../app/testResults/uploads/DiseaseSpecificUploadContainer";
-import AgnosticUploadContainer from "../../app/testResults/uploads/AgnosticUploadContainer";
 
 export default {
   title: "App/Results/Bulk upload form",
@@ -30,14 +29,3 @@ const DiseaseSpecificTemplate: StoryFn<{}> = () => (
 
 export const DiseaseSpecificUpload = DiseaseSpecificTemplate.bind({});
 DiseaseSpecificUpload.args = {};
-
-const DiseaseAgnosticTemplate: StoryFn<{}> = () => (
-  <Provider store={store}>
-    <MemoryRouter>
-      <AgnosticUploadContainer />
-    </MemoryRouter>
-  </Provider>
-);
-
-export const DiseaseAgnosticUpload = DiseaseAgnosticTemplate.bind({});
-DiseaseAgnosticUpload.args = {};

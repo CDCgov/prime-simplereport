@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.config;
 
-import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
@@ -16,11 +15,6 @@ public class FileValidatorConfiguration {
       FeatureFlagsConfig featureFlagsConfig) {
     return new FileValidator<>(
         row -> new TestResultRow(row, resultsUploaderCachingService, featureFlagsConfig));
-  }
-
-  @Bean
-  public FileValidator<ConditionAgnosticResultRow> conditionAgnosticResultRowFileValidator() {
-    return new FileValidator<>(row -> new ConditionAgnosticResultRow(row));
   }
 
   @Bean
