@@ -26,41 +26,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 class TestResultRowTest {
   Map<String, String> validRowMap;
-  final List<String> requiredFields =
-      List.of(
-          "patient_last_name",
-          "patient_first_name",
-          "patient_street",
-          "patient_city",
-          "patient_state",
-          "patient_zip_code",
-          "patient_county",
-          "patient_phone_number",
-          "patient_dob",
-          "patient_gender",
-          "patient_race",
-          "patient_ethnicity",
-          "accession_number",
-          "equipment_model_name",
-          "test_performed_code",
-          "test_result",
-          "order_test_date",
-          "test_result_date",
-          "specimen_type",
-          "ordering_provider_id",
-          "ordering_provider_last_name",
-          "ordering_provider_first_name",
-          "ordering_provider_street",
-          "ordering_provider_city",
-          "ordering_provider_state",
-          "ordering_provider_zip_code",
-          "ordering_provider_phone_number",
-          "testing_lab_clia",
-          "testing_lab_name",
-          "testing_lab_street",
-          "testing_lab_city",
-          "testing_lab_state",
-          "testing_lab_zip_code");
   final List<String> validatedFields =
       List.of(
           "patient_state",
@@ -381,6 +346,7 @@ class TestResultRowTest {
     var actual = testResultRow.validateRequiredFields();
 
     var messages = actual.stream().map(FeedbackMessage::getMessage).collect(Collectors.toSet());
+    List<String> requiredFields = TestResultRow.getStaticRequiredFields();
     assertThat(actual).hasSize(requiredFields.size());
     requiredFields.forEach(
         fieldName ->
