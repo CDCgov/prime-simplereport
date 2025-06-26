@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Enumerations.PublicationStatus;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -160,6 +161,28 @@ class ConditionServiceTest {
     assertThrows(ExecutionException.class, future::get);
   }
 
+  @Test
+  @Transactional
+  void syncConditions_checksCodeStatus() throws Exception {
+    // Arrange
+    String response = createActiveAndInactiveConditionResponse();
+    Response mockResponse = createMockResponse(response);
+    when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
+    setupRepositoryMocks();
+
+    // Act
+    CompletableFuture<Void> future =
+        CompletableFuture.runAsync(
+            () -> {
+              this.conditionService.syncConditions();
+            });
+    future.get();
+
+    // Assert
+    verify(this.conditionRepository, times(1)).save(any());
+    verify(this.loincStagingRepository, times(1)).saveAll(any());
+  }
+
   private Response createMockResponse(String responseBody) {
     Response.Body body =
         new Response.Body() {
@@ -209,6 +232,79 @@ class ConditionServiceTest {
         .build();
   }
 
+  private String createActiveAndInactiveConditionResponse() {
+    Bundle bundle = new Bundle().setType(Bundle.BundleType.SEARCHSET).setTotal(1);
+
+    bundle
+        .addLink()
+        .setRelation("self")
+        .setUrl(
+            "https://tes.tools.aimsplatform.org/api/fhir/ValueSet?context-type=focus&_count=20&_getpagesoffset=0");
+
+    ValueSet valueSet = new ValueSet();
+    valueSet.setId("covid-19");
+    valueSet.setName("COVID-19");
+    valueSet.setStatus(PublicationStatus.ACTIVE);
+    valueSet.setCompose(
+        new ValueSet.ValueSetComposeComponent()
+            .setInclude(
+                List.of(
+                    new ValueSet.ConceptSetComponent()
+                        .setSystem("http://loinc.org")
+                        .setConcept(
+                            List.of(
+                                new ValueSet.ConceptReferenceComponent()
+                                    .setCode("94534-5")
+                                    .setDisplay(
+                                        "SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay"))))));
+    valueSet.addUseContext(
+        new UsageContext()
+            .setCode(
+                new Coding()
+                    .setSystem("http://terminology.hl7.org/CodeSystem/usage-context-type")
+                    .setCode("focus")
+                    .setDisplay("Clinical Focus"))
+            .setValue(
+                new CodeableConcept()
+                    .addCoding(
+                        new Coding()
+                            .setSystem("http://snomed.info/sct")
+                            .setCode("428175000")
+                            .setDisplay("COVID-19"))
+                    .setText("COVID-19")));
+
+    Bundle.BundleEntryComponent entry = new Bundle.BundleEntryComponent().setResource(valueSet);
+    bundle.addEntry(entry);
+    //    This just clones the other one, saves some reading of the structure. The only practical
+    // difference one is retired
+    var inactiveValueSet = valueSet.copy();
+    inactiveValueSet.setStatus(PublicationStatus.RETIRED);
+    Bundle.BundleEntryComponent inactiveEntry =
+        new Bundle.BundleEntryComponent().setResource(inactiveValueSet);
+    bundle.addEntry(inactiveEntry);
+
+    var draftValueSet = valueSet.copy();
+    draftValueSet.setStatus(PublicationStatus.DRAFT);
+    Bundle.BundleEntryComponent draftEntry =
+        new Bundle.BundleEntryComponent().setResource(draftValueSet);
+    bundle.addEntry(draftEntry);
+
+    var unknownValueSet = valueSet.copy();
+    unknownValueSet.setStatus(PublicationStatus.UNKNOWN);
+    Bundle.BundleEntryComponent unknownEntry =
+        new Bundle.BundleEntryComponent().setResource(unknownValueSet);
+    bundle.addEntry(unknownEntry);
+
+    var nullValueSet = valueSet.copy();
+    nullValueSet.setStatus(PublicationStatus.NULL);
+    Bundle.BundleEntryComponent nullEntry =
+        new Bundle.BundleEntryComponent().setResource(nullValueSet);
+    bundle.addEntry(nullEntry);
+
+    IParser parser = fhirContext.newJsonParser();
+    return parser.encodeResourceToString(bundle);
+  }
+
   private String createSinglePageResponse() {
     Bundle bundle = new Bundle().setType(Bundle.BundleType.SEARCHSET).setTotal(1);
 
@@ -221,6 +317,7 @@ class ConditionServiceTest {
     ValueSet valueSet = new ValueSet();
     valueSet.setId("covid-19");
     valueSet.setName("COVID-19");
+    valueSet.setStatus(PublicationStatus.ACTIVE);
     valueSet.setCompose(
         new ValueSet.ValueSetComposeComponent()
             .setInclude(
@@ -273,6 +370,7 @@ class ConditionServiceTest {
     ValueSet valueSet = new ValueSet();
     valueSet.setId("test-condition-1");
     valueSet.setName("Test Condition 1");
+    valueSet.setStatus(PublicationStatus.ACTIVE);
     valueSet.setCompose(
         new ValueSet.ValueSetComposeComponent()
             .setInclude(
@@ -320,6 +418,7 @@ class ConditionServiceTest {
     ValueSet valueSet = new ValueSet();
     valueSet.setId("test-condition-2");
     valueSet.setName("Test Condition 2");
+    valueSet.setStatus(PublicationStatus.ACTIVE);
     valueSet.setCompose(
         new ValueSet.ValueSetComposeComponent()
             .setInclude(
