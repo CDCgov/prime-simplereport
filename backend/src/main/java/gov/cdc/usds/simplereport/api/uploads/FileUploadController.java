@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api.uploads;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
-import static gov.cdc.usds.simplereport.config.WebConfiguration.CONDITION_AGNOSTIC_RESULT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 
@@ -18,7 +17,6 @@ import java.io.InputStream;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,20 +47,6 @@ public class FileUploadController {
     } catch (IOException e) {
       log.error("Patient CSV upload failed", e);
       throw new CsvProcessingException("Unable to complete patient CSV upload");
-    }
-  }
-
-  @PostMapping(CONDITION_AGNOSTIC_RESULT_UPLOAD)
-  @PreAuthorize("@featureFlagsConfig.isAgnosticBulkUploadEnabled()")
-  public TestResultUpload handleConditionAgnosticResultsUpload(
-      @RequestParam("file") MultipartFile file) {
-    assertCsvFileType(file);
-    try (InputStream resultsUpload = file.getInputStream()) {
-      return testResultUploadService.processConditionAgnosticResultCSV(resultsUpload);
-    } catch (IOException e) {
-      log.error("Condition agnostic test result CSV encountered an unexpected error", e);
-      throw new CsvProcessingException(
-          "Unable to process condition agnostic test result CSV upload");
     }
   }
 
