@@ -182,7 +182,7 @@ public class FacilityCsvExportService {
       int totalPages = (int) Math.ceil((double) organizationPatientsCount / BATCH_SIZE);
 
       Organization currentOrg = organizationService.getOrganizationById(organizationId);
-      String facilityList =
+      String orgFacilityList =
           facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
               .map(Facility::getFacilityName)
               .collect(Collectors.joining(";"));
@@ -205,7 +205,7 @@ public class FacilityCsvExportService {
             organizationPatients.size(),
             (currentPage * BATCH_SIZE) + organizationPatients.size());
         for (Person patient : organizationPatients) {
-          writePatientCsvRow(csvPrinter, patient, facilityList);
+          writePatientCsvRow(csvPrinter, patient, orgFacilityList);
         }
 
         csvPrinter.flush();
@@ -327,7 +327,8 @@ public class FacilityCsvExportService {
 
   private List<Person> fetchOrganizationPatients(UUID organizationInternalId, Pageable pageable) {
 
-    return personRepository.findAllByOrganizationInternalId(organizationInternalId, pageable);
+    return personRepository.findAllByOrganizationInternalIdAndIsDeleted(
+        organizationInternalId, false, pageable);
     //    return personService.getPatients(
     //        null, // a null facility fetches all patients in the current org
     //        pageable.getPageNumber(),
@@ -514,7 +515,7 @@ public class FacilityCsvExportService {
         patient != null ? patient.getEmployedInHealthcare() : "");
   }
 
-  private void writePatientCsvRow(CSVPrinter csvPrinter, Person patient, String facilityList)
+  private void writePatientCsvRow(CSVPrinter csvPrinter, Person patient, String orgFacilityList)
       throws IOException {
     //                "First Name",
     //                "Middle Name",
@@ -566,7 +567,7 @@ public class FacilityCsvExportService {
         trimToEmpty(patient.getGender()),
         trimToEmpty(patient.getEthnicity()),
         trimToEmpty(patient.getRole().toString()),
-        patient.getFacility() != null ? patient.getFacility().getFacilityName() : facilityList,
+        patient.getFacility() != null ? patient.getFacility().getFacilityName() : orgFacilityList,
         patient.getEmployedInHealthcare() != null ? patient.getEmployedInHealthcare() : "",
         patient.getResidentCongregateSetting() != null
             ? patient.getResidentCongregateSetting()
