@@ -596,6 +596,10 @@ public class TestResultRow implements FileRow {
 
   @Override
   public List<String> getRequiredFields() {
+    return getStaticRequiredFields();
+  }
+
+  public static List<String> getStaticRequiredFields() {
     return requiredFields;
   }
 
