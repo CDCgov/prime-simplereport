@@ -1717,6 +1717,7 @@ export type GetCurrentOrganizationQuery = {
     __typename?: "User";
     organization?: {
       __typename?: "Organization";
+      id: string;
       name: string;
       type: string;
     } | null;
@@ -4674,6 +4675,7 @@ export const GetCurrentOrganizationDocument = gql`
   query GetCurrentOrganization {
     whoami {
       organization {
+        id
         name
         type
       }
