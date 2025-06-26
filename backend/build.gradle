@@ -44,7 +44,7 @@ dependencies {
 
     // graphql
     implementation 'org.springframework.boot:spring-boot-starter-graphql:3.4.4'
-    implementation 'org.springframework:spring-web:6.2.1'
+    implementation 'org.springframework:spring-web:6.2.7'
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
     implementation 'com.graphql-java:graphql-java:24.1'

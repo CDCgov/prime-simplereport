@@ -51,11 +51,7 @@ public class SpecimenService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
-  // TODO: Test LOINC to SNOMED conversion with mock HTTP responses
-  // TODO: Test syncSpecimens fails gracefully when HttpClient cannot be created
-  // TODO: Test syncSpecimens fails gracefully when no system codes are found or system unable to
   // read codes
-  // TODO: Test concurrent HTTP request handling with simulated delays
   // TODO: Test error handling when UMLS API returns error responses
   // TODO: Test behavior when UMLS API returns empty or malformed responses
   public void syncSpecimens() {
@@ -114,7 +110,6 @@ public class SpecimenService {
     }
   }
 
-  // TODO: Test getLoinctoSnomedRequest creates correct URL and request
   private HttpRequest getLoinctoSnomedRequest(String loinc) {
     String uriString =
         String.format(
@@ -124,7 +119,6 @@ public class SpecimenService {
     return HttpRequest.newBuilder().uri(uri).GET().build();
   }
 
-  // TODO: Test getSnomedRelationsRequest creates correct URL and request
   private HttpRequest getSnomedRelationsRequest(String snomed) {
     /* TODO:
     Not sure the 'additionalRelationLabel' provides any changes to the results from the API.  We may just want to remove it
@@ -137,7 +131,6 @@ public class SpecimenService {
     return HttpRequest.newBuilder().uri(uri).GET().build();
   }
 
-  // TODO: Test parseCodeDisplayPairsFromUmlsResponse correctly parses API response
   private List<Specimen> parseCodeDisplayPairsFromUmlsResponse(
       HttpResponse<String> response, String loincSystemCode, String loincSystemDisplay) {
     JSONObject body = new JSONObject(response.body());
@@ -145,6 +138,9 @@ public class SpecimenService {
     List<Specimen> codes = new ArrayList<>();
     for (int i = 0; i < results.length(); i++) {
       JSONObject result = (JSONObject) results.get(i);
+      if (result.has("obsolete") && result.get("obsolete").equals(true)) {
+        continue;
+      }
       codes.add(
           new Specimen(
               loincSystemCode,
@@ -155,8 +151,6 @@ public class SpecimenService {
     return codes;
   }
 
-  // TODO: Test processing of SNOMED relations with mock HTTP responses
-  // TODO: Test sendInitialSnomedRelationsRequests correctly processes all SNOMED codes
   private Map<String, CompletableFuture<HttpResponse<String>>> sendInitialSnomedRelationsRequests(
       Map<String, List<Specimen>> specimensByLoincSystemCode, HttpClient client) {
     List<CompletableFuture<HttpResponse<String>>> futures = new ArrayList<>();
@@ -182,7 +176,6 @@ public class SpecimenService {
     return loincSnomedResponses;
   }
 
-  // TODO: Test processInitialSnomedRelations correctly identifies specimens
   // TODO: Test handling of different relation types in processInitialSnomedRelations
   private void processAndSaveInitialSnomedRelations(
       Map<String, List<Specimen>> specimensByLoincSystemCode,
@@ -216,6 +209,9 @@ public class SpecimenService {
           JSONObject result = (JSONObject) results.get(i);
           boolean saveSnomed = false;
           String relationLabel = result.get("additionalRelationLabel").toString();
+          if (result.has("obsolete") && result.get("obsolete").equals(true)) {
+            continue;
+          }
           // Ensure the snomed specimen is an actual specimen
           // TODO: Could possibly use an ancestor hierarchy query for the Specimen Concept
           //    to ensure the snomed specimen concept is a descedant
@@ -286,8 +282,6 @@ public class SpecimenService {
     log.info("Specimen Body Sites saved.");
   }
 
-  // TODO: Test saveSpecimens skips existing specimens
-  // TODO: Test saveSpecimens correctly saves new specimens
   private void saveNewSpecimens(List<Specimen> specimens) {
     List<Specimen> newSpecimensToSave =
         specimens.stream()
@@ -301,8 +295,6 @@ public class SpecimenService {
     specimenRepository.saveAll(newSpecimensToSave);
   }
 
-  // TODO: Test saveSpecimenBodySites saves new bodySites
-  // TODO: Test saveSpecimenBodySites skips existing specimens
   @SuppressWarnings({"checkstyle:illegalcatch"})
   private void saveNewSpecimenBodySites(List<SpecimenBodySite> bodySites) {
     // TODO: We may want to move this duplicate check into the process

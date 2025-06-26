@@ -3,33 +3,20 @@ import moment from "moment";
 import { Label, Textarea } from "@trussworks/react-uswds";
 
 import TextInput from "../commonComponents/TextInput";
-import RadioGroup, { RadioGroupOptions } from "../commonComponents/RadioGroup";
-import { TEST_RESULTS_SNOMED } from "../testResults/constants";
+import RadioGroup from "../commonComponents/RadioGroup";
 import { formatDate } from "../utils/date";
 import "./TestDetailSection.scss";
 import { ResultScaleType, TestDetailsInput } from "../../generated/graphql";
 
-import { ResultScaleTypeOptions } from "./LabReportFormUtils";
+import {
+  ordinalResultOptions,
+  ResultScaleTypeOptions,
+} from "./LabReportFormUtils";
 
 type TestDetailSectionProps = {
   testDetails: TestDetailsInput;
   updateTestDetails: (details: TestDetailsInput) => void;
 };
-
-const ordinalResultButtons: RadioGroupOptions<string> = [
-  {
-    value: TEST_RESULTS_SNOMED.POSITIVE,
-    label: `Positive (+)`,
-  },
-  {
-    value: TEST_RESULTS_SNOMED.NEGATIVE,
-    label: `Negative (-)`,
-  },
-  {
-    value: TEST_RESULTS_SNOMED.UNDETERMINED,
-    label: `Undetermined`,
-  },
-];
 
 const TestDetailSection = ({
   testDetails,
@@ -117,7 +104,7 @@ const TestDetailSection = ({
           <div className="grid-col-4">
             <RadioGroup<string>
               legend={`Test result`}
-              buttons={ordinalResultButtons}
+              buttons={ordinalResultOptions}
               name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
               selectedRadio={testDetails.resultValue}
               required={true}
