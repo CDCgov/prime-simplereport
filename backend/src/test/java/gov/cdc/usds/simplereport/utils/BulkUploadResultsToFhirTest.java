@@ -731,10 +731,11 @@ public class BulkUploadResultsToFhirTest {
   }
 
   private List<String> getColumnNames(String csvFileName) throws IOException {
-    InputStream input = loadCsv(csvFileName);
-    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-    String headerLine = reader.readLine();
-    return Arrays.asList(headerLine.split(","));
+    try (InputStream input = loadCsv(csvFileName);
+         BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+      String headerLine = reader.readLine();
+      return Arrays.asList(headerLine.split(","));
+    }
   }
 
   private InputStream getJsonStream(String jsonFile) {
