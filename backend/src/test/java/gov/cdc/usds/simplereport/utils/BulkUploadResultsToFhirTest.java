@@ -732,7 +732,7 @@ public class BulkUploadResultsToFhirTest {
 
   private List<String> getColumnNames(String csvFileName) throws IOException {
     try (InputStream input = loadCsv(csvFileName);
-         BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
       String headerLine = reader.readLine();
       return Arrays.asList(headerLine.split(","));
     }
