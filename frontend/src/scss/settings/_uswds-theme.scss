@@ -2,7 +2,17 @@
 // https://designsystem.digital.gov/documentation/settings/
 @forward "@uswds/uswds/packages/uswds-core" with (
   // Color
-
+  $theme-color-primary-family: "violet-warm",
+  $theme-color-primary-lightest: "violet-warm-5",
+  $theme-color-primary-lighter: "violet-warm-10", 
+  $theme-color-primary-light: "violet-warm-20",
+  $theme-color-primary: "violet-warm-50",
+  $theme-color-primary-vivid: "violet-warm-60",
+  $theme-color-primary-dark: "violet-warm-70",
+  $theme-color-primary-darker: "violet-warm-80",
+  $theme-color-primary-darkest: "violet-warm-90",
+  $theme-color-accent-warm-family: "violet-warm",
+  $theme-color-accent-warm: "violet-warm-50",
   // Component
   $theme-step-indicator-min-width: "mobile",
   $theme-hero-image: "../../../../dist/img/hero.jpg",
