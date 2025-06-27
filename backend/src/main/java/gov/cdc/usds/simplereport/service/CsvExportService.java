@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -57,7 +58,7 @@ public class CsvExportService {
   private final ResultService resultService;
   private final PersonService personService;
   private final FacilityRepository facilityRepository;
-  private static final int BATCH_SIZE = 5000;
+  private static final int BATCH_SIZE = 6000;
   private final PersonRepository personRepository;
   private final OrganizationService organizationService;
 
@@ -312,7 +313,15 @@ public class CsvExportService {
 
       for (int currentPage = 0; currentPage < totalPages; currentPage++) {
         Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
+
+        Instant beforeOrganizationPatientsQuery = Instant.now();
         List<Person> organizationPatients = fetchOrganizationPatients(organizationId, pageable);
+        Instant afterOrganizationPatientsQuery = Instant.now();
+
+        log.info(
+            "Time to fetch Organization Patients: {}",
+            afterOrganizationPatientsQuery.getEpochSecond()
+                - beforeOrganizationPatientsQuery.getEpochSecond());
 
         log.info(
             "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
@@ -321,11 +330,19 @@ public class CsvExportService {
             BATCH_SIZE,
             organizationPatients.size(),
             (currentPage * BATCH_SIZE) + organizationPatients.size());
+
+        Instant beforeWritePatientCsvRow = Instant.now();
         for (Person patient : organizationPatients) {
           writePatientCsvRow(csvPrinter, patient, orgFacilityList);
         }
+        Instant afterWritePatientCsvRow = Instant.now();
+
+        log.info(
+            "Time to writePatientCsvRow in a loop: {}",
+            afterWritePatientCsvRow.getEpochSecond() - beforeWritePatientCsvRow.getEpochSecond());
 
         csvPrinter.flush();
+
         log.debug(
             "Processed batch {}/{} for organization patient CSV export",
             (currentPage + 1),
