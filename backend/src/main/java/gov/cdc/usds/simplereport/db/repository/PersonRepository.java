@@ -20,7 +20,7 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
 
   List<Person> findAllByInternalIdIn(Collection<UUID> ids);
 
-  @EntityGraph(attributePaths = {"phoneNumbers", "facility"})
+  @EntityGraph(attributePaths = {"facility", "organization", "phoneNumbers"})
   List<Person>
       findAllByOrganizationInternalIdAndIsDeletedOrderByOrganizationInternalIdAscInternalIdAsc(
           UUID organizationInternalId, boolean isDeleted, Pageable p);
