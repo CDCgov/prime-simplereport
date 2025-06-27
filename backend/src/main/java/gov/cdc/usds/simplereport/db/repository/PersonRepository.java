@@ -21,8 +21,9 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
   List<Person> findAllByInternalIdIn(Collection<UUID> ids);
 
   @EntityGraph(attributePaths = {"phoneNumbers"})
-  List<Person> findAllByOrganizationInternalIdAndIsDeleted(
-      UUID organizationInternalId, boolean isDeleted, Pageable p);
+  List<Person>
+      findAllByOrganizationInternalIdAndIsDeletedOrderByOrganizationInternalIdAscInternalIdAsc(
+          UUID organizationInternalId, boolean isDeleted, Pageable p);
 
   int count(Specification<Person> searchSpec);
 

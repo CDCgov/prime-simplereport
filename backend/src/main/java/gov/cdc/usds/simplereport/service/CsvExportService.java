@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.apache.commons.lang3.StringUtils.trimToEmpty;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,12 +9,17 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ArchivedStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultsListItem;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,10 +35,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
@@ -39,12 +48,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class CsvExportService {
   private final ResultService resultService;
+  private final PersonService personService;
+  private final FacilityRepository facilityRepository;
+  private static final int BATCH_SIZE = 5000;
+  private final PersonRepository personRepository;
   private final OrganizationService organizationService;
 
   public record ExportParameters(
@@ -82,7 +96,7 @@ public class CsvExportService {
   public void streamResultsAsCsv(OutputStream outputStream, ExportParameters params) {
     ExportParameters resolvedParams = resolveOrganizationId(params);
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        CSVPrinter csvPrinter = new CSVPrinter(writer, createCsvFormat())) {
+        CSVPrinter csvPrinter = new CSVPrinter(writer, createResultCsvFormat())) {
 
       int batchSize = resolvedParams.pageSize();
       int totalElements = getResultsCount(resolvedParams);
@@ -114,7 +128,7 @@ public class CsvExportService {
             (currentPage * batchSize) + resultsPage.getContent().size());
 
         for (TestResultsListItem item : resultsPage.getContent()) {
-          writeCsvRow(csvPrinter, item);
+          writeResultCsvRow(csvPrinter, item);
         }
 
         csvPrinter.flush();
@@ -167,6 +181,165 @@ public class CsvExportService {
     }
   }
 
+  @Transactional(readOnly = true)
+  public void streamFacilityPatientsAsZippedCsv(
+      OutputStream rawOut, UUID facilityId, String unZippedCsvFileName) {
+
+    class NonClosingOutputStream extends FilterOutputStream {
+      NonClosingOutputStream(OutputStream out) {
+        super(out);
+      }
+
+      @Override
+      public void close() throws IOException {
+        flush();
+      }
+    }
+
+    try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
+      zipOut.putNextEntry(new ZipEntry(unZippedCsvFileName));
+
+      streamFacilityPatientsAsCsv(new NonClosingOutputStream(zipOut), facilityId);
+
+      zipOut.closeEntry();
+    } catch (IOException ex) {
+      log.error("Error zipping patient CSV for facility {}", facilityId, ex);
+      throw new RuntimeException("Failed to generate zipped patient CSV", ex);
+    }
+  }
+
+  @Transactional(readOnly = true)
+  public void streamOrganizationPatientsAsZippedCsv(
+      OutputStream rawOut, UUID organizationId, String unZippedCsvFileName) {
+
+    class NonClosingOutputStream extends FilterOutputStream {
+      NonClosingOutputStream(OutputStream out) {
+        super(out);
+      }
+
+      @Override
+      public void close() throws IOException {
+        flush();
+      }
+    }
+
+    try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
+      zipOut.putNextEntry(new ZipEntry(unZippedCsvFileName));
+
+      streamOrganizationPatientsAsCsv(new NonClosingOutputStream(zipOut), organizationId);
+
+      zipOut.closeEntry();
+    } catch (IOException ex) {
+      log.error("Error zipping patient CSV for organization {}", organizationId, ex);
+      throw new RuntimeException("Failed to generate zipped patient CSV", ex);
+    }
+  }
+
+  @Transactional(readOnly = true)
+  public void streamFacilityPatientsAsCsv(OutputStream outputStream, UUID facilityId) {
+
+    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        CSVPrinter csvPrinter = new CSVPrinter(writer, createPatientsCsvFormat())) {
+
+      long facilityPatientsCount = getFacilityPatientsCount(facilityId);
+      int totalPages = (int) Math.ceil((double) facilityPatientsCount / BATCH_SIZE);
+
+      // avoids multiple db calls for finding the list of facilities for the current org, given that
+      // a
+      // patient is assigned to all facilities in the org
+      Organization currentOrg = organizationService.getOrganizationByFacilityId(facilityId);
+      String facilityList =
+          facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
+              .map(Facility::getFacilityName)
+              .collect(Collectors.joining(";"));
+
+      log.info(
+          "Starting facility CSV patient export for facilityId={}: {} patient records in {} batches",
+          facilityId,
+          facilityPatientsCount,
+          totalPages);
+
+      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
+        Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
+        List<Person> facilityPatients = fetchFacilityPatients(facilityId, pageable);
+
+        log.info(
+            "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
+            (currentPage + 1),
+            totalPages,
+            BATCH_SIZE,
+            facilityPatients.size(),
+            (currentPage * BATCH_SIZE) + facilityPatients.size());
+        for (Person patient : facilityPatients) {
+          writePatientCsvRow(csvPrinter, patient, facilityList);
+        }
+
+        csvPrinter.flush();
+        log.debug(
+            "Processed batch {}/{} for facility patient CSV export", (currentPage + 1), totalPages);
+      }
+
+      log.info("Completed facility patient CSV export for facilityId={}", facilityId);
+    } catch (IOException e) {
+      log.error("Error streaming facility patient CSV data for facilityId={}", facilityId, e);
+      throw new RuntimeException("Failed to generate facility patient CSV file", e);
+    }
+  }
+
+  @Transactional(readOnly = true)
+  public void streamOrganizationPatientsAsCsv(OutputStream outputStream, UUID organizationId) {
+
+    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        CSVPrinter csvPrinter = new CSVPrinter(writer, createPatientsCsvFormat())) {
+
+      long organizationPatientsCount = getOrganizationPatientsCount(organizationId);
+      int totalPages = (int) Math.ceil((double) organizationPatientsCount / BATCH_SIZE);
+
+      // avoids multiple db calls for finding the list of facilities for the current org, given that
+      // a
+      // patient, or many patients, could be assigned to all facilities in the org
+      Organization currentOrg = organizationService.getOrganizationById(organizationId);
+      String orgFacilityList =
+          facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
+              .map(Facility::getFacilityName)
+              .collect(Collectors.joining(";"));
+
+      log.info(
+          "Starting organization CSV patient download for organizationId={}: {} patient records in {} batches",
+          organizationId,
+          organizationPatientsCount,
+          totalPages);
+
+      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
+        Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
+        List<Person> organizationPatients = fetchOrganizationPatients(organizationId, pageable);
+
+        log.info(
+            "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
+            (currentPage + 1),
+            totalPages,
+            BATCH_SIZE,
+            organizationPatients.size(),
+            (currentPage * BATCH_SIZE) + organizationPatients.size());
+        for (Person patient : organizationPatients) {
+          writePatientCsvRow(csvPrinter, patient, orgFacilityList);
+        }
+
+        csvPrinter.flush();
+        log.debug(
+            "Processed batch {}/{} for organization patient CSV export",
+            (currentPage + 1),
+            totalPages);
+      }
+
+      log.info("Completed organization patient CSV download for organizationId={}", organizationId);
+    } catch (IOException e) {
+      log.error(
+          "Error streaming organization patient CSV data for organizationId={}", organizationId, e);
+      throw new RuntimeException("Failed to generate organization patient CSV file", e);
+    }
+  }
+
   private ExportParameters resolveOrganizationId(ExportParameters params) {
     // Only resolve organizationId if:
     // 1. organizationId is null AND facilityId exists AND includeAllFacilities is true (Path 3)
@@ -179,7 +352,8 @@ public class CsvExportService {
     }
 
     // Path 3: "All Facilities" - derive organizationId from facilityId
-    var organization = organizationService.getOrganizationByFacilityId(params.facilityId());
+    Organization organization =
+        organizationService.getOrganizationByFacilityId(params.facilityId());
     UUID organizationId = organization != null ? organization.getInternalId() : null;
 
     return new ExportParameters(
@@ -261,7 +435,41 @@ public class CsvExportService {
     }
   }
 
-  private CSVFormat createCsvFormat() {
+  private long getFacilityPatientsCount(UUID facilityId) {
+    return personService.getPatientsCount(facilityId, ArchivedStatus.UNARCHIVED, null, false, "");
+  }
+
+  private long getOrganizationPatientsCount(UUID organizationId) {
+    return personService.getPatientsCountByOrganization(organizationId);
+  }
+
+  private List<Person> fetchFacilityPatients(UUID facilityId, Pageable pageable) {
+    return personService.getPatients(
+        facilityId,
+        pageable.getPageNumber(),
+        pageable.getPageSize(),
+        ArchivedStatus.UNARCHIVED,
+        null,
+        false,
+        null);
+  }
+
+  private List<Person> fetchOrganizationPatients(UUID organizationInternalId, Pageable pageable) {
+
+    return personRepository
+        .findAllByOrganizationInternalIdAndIsDeletedOrderByOrganizationInternalIdAscInternalIdAsc(
+            organizationInternalId, false, pageable);
+    //    return personService.getPatients(
+    //        null, // a null facility fetches all patients in the current org
+    //        pageable.getPageNumber(),
+    //        pageable.getPageSize(),
+    //        ArchivedStatus.UNARCHIVED,
+    //        null,
+    //        false,
+    //        null);
+  }
+
+  private CSVFormat createResultCsvFormat() {
     String[] headers = {
       "Patient first name",
       "Patient middle name",
@@ -305,7 +513,37 @@ public class CsvExportService {
     return CSVFormat.Builder.create().setHeader(headers).build();
   }
 
-  private void writeCsvRow(CSVPrinter csvPrinter, TestResultsListItem item) throws IOException {
+  private CSVFormat createPatientsCsvFormat() {
+    String[] headers = {
+      "First Name",
+      "Middle Name",
+      "Last Name",
+      "Suffix",
+      "Birth Date",
+      "Street",
+      "City",
+      "County",
+      "State",
+      "Postal Code",
+      "County",
+      "Phone Numbers",
+      "Emails",
+      "Race",
+      "Sex",
+      "Ethnicity",
+      "Role",
+      "Facilities",
+      "Employed in Healthcare?",
+      "Group or Shared Housing Resident?",
+      "Tribal Affiliation",
+      "Preferred Language",
+      "Notes"
+    };
+    return CSVFormat.Builder.create().setHeader(headers).build();
+  }
+
+  private void writeResultCsvRow(CSVPrinter csvPrinter, TestResultsListItem item)
+      throws IOException {
     Person patient = item.getPatient();
     DeviceType deviceType = item.getDeviceType();
     Facility facility = item.getFacility();
@@ -404,6 +642,45 @@ public class CsvExportService {
         tribalAffiliation,
         patient != null ? patient.getResidentCongregateSetting() : "",
         patient != null ? patient.getEmployedInHealthcare() : "");
+  }
+
+  private void writePatientCsvRow(CSVPrinter csvPrinter, Person patient, String orgFacilityList)
+      throws IOException {
+
+    if (patient == null) {
+      return;
+    }
+
+    csvPrinter.printRecord(
+        trimToEmpty(patient.getFirstName()),
+        trimToEmpty(patient.getMiddleName()),
+        trimToEmpty(patient.getLastName()),
+        trimToEmpty(patient.getSuffix()),
+        formatAsDate(patient.getBirthDate()),
+        trimToEmpty(trimToEmpty(patient.getStreet()) + " " + trimToEmpty(patient.getStreetTwo())),
+        trimToEmpty(patient.getCity()),
+        trimToEmpty(patient.getCounty()),
+        trimToEmpty(patient.getState()),
+        trimToEmpty(patient.getZipCode()),
+        trimToEmpty(patient.getCountry()),
+        patient.getPhoneNumbers() != null
+            ? patient.getPhoneNumbers().stream()
+                .map(PhoneNumber::getNumber)
+                .collect(Collectors.joining(";"))
+            : "",
+        String.join(";", ListUtils.emptyIfNull(patient.getEmails())),
+        trimToEmpty(patient.getRace()),
+        trimToEmpty(patient.getGender()),
+        trimToEmpty(patient.getEthnicity()),
+        trimToEmpty(patient.getRole().toString()),
+        patient.getFacility() != null ? patient.getFacility().getFacilityName() : orgFacilityList,
+        patient.getEmployedInHealthcare() != null ? patient.getEmployedInHealthcare() : "",
+        patient.getResidentCongregateSetting() != null
+            ? patient.getResidentCongregateSetting()
+            : "",
+        String.join(";", ListUtils.emptyIfNull(patient.getTribalAffiliation())),
+        trimToEmpty(patient.getPreferredLanguage()),
+        trimToEmpty(patient.getNotes()));
   }
 
   private <T> String extractString(T object, Function<T, String> getter) {
