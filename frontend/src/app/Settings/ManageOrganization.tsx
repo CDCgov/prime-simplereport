@@ -12,6 +12,7 @@ import { Organization } from "../../generated/graphql";
 import FetchClient from "../../app/utils/api";
 import { getAppInsightsHeaders } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
+import { triggerBlobDownload } from "../utils/file";
 
 interface ManageOrganizationProps {
   organization: Organization;
@@ -21,6 +22,29 @@ interface ManageOrganizationProps {
 
 type DownloadState = "idle" | "downloading" | "complete";
 const apiClient = new FetchClient();
+
+const getDownloadButtonContent = (downloadState: DownloadState) => {
+  switch (downloadState) {
+    case "downloading":
+      return {
+        icon: faSpinner,
+        label: "Downloading...",
+        className: "fa-spin",
+      };
+    case "complete":
+      return {
+        icon: faDownload,
+        label: "Download Complete",
+        className: "",
+      };
+    default:
+      return {
+        icon: faDownload,
+        label: "Download Test Results",
+        className: "",
+      };
+  }
+};
 
 const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   organization,
@@ -78,21 +102,12 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("content-disposition");
-      let filename = "organization-test-results.zip";
 
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename=(.+)/);
-        if (match) filename = match[1];
-      }
-
-      const urlBlob = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = urlBlob;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(urlBlob);
+      triggerBlobDownload({
+        blob,
+        contentDisposition: contentDisposition || undefined,
+        defaultFilename: "organization-test-results.zip",
+      });
 
       setDownloadState("complete");
       showSuccess("Success Message", "Test results downloaded successfully");
@@ -107,30 +122,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
     }
   };
 
-  const getDownloadButtonContent = () => {
-    switch (downloadState) {
-      case "downloading":
-        return {
-          icon: faSpinner,
-          label: "Downloading...",
-          className: "fa-spin",
-        };
-      case "complete":
-        return {
-          icon: faDownload,
-          label: "Download Complete",
-          className: "",
-        };
-      default:
-        return {
-          icon: faDownload,
-          label: "Download Test Results",
-          className: "",
-        };
-    }
-  };
-
-  const buttonContent = getDownloadButtonContent();
+  const buttonContent = getDownloadButtonContent(downloadState);
 
   return (
     <div className="grid-row position-relative">

@@ -11,6 +11,7 @@ import { showError } from "../../utils/srToast";
 import Button from "../../commonComponents/Button/Button";
 import FetchClient from "../../../app/utils/api";
 import { getAppInsightsHeaders } from "../../TelemetryService";
+import { triggerBlobDownload } from "../../utils/file";
 
 import { ALL_FACILITIES_ID } from "./TestResultsList";
 
@@ -142,21 +143,12 @@ const DownloadResultsCsvModal = ({
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("content-disposition");
-      let filename = "simplereport-test-results.zip";
 
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename=(.+)/);
-        if (match) filename = match[1];
-      }
-
-      const urlBlob = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = urlBlob;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(urlBlob);
+      triggerBlobDownload({
+        blob,
+        contentDisposition: contentDisposition || undefined,
+        defaultFilename: "simplereport-test-results.zip",
+      });
 
       setDownloadState("complete");
 
