@@ -2,6 +2,7 @@ import React from "react";
 import { Table } from "@trussworks/react-uswds";
 
 import { FacilityReportInput } from "../../generated/graphql";
+import "./FacilityFormSection.scss";
 
 type FacilityFormSectionProps = {
   facility: FacilityReportInput;
@@ -52,7 +53,7 @@ const FacilityFormSection = ({ facility }: FacilityFormSectionProps) => {
   ];
 
   return (
-    <>
+    <div className="facility-form">
       <div className="grid-row">
         <div className="grid-col">
           <h2 className={"font-sans-lg"}>Facility information</h2>
@@ -80,7 +81,7 @@ const FacilityFormSection = ({ facility }: FacilityFormSectionProps) => {
           </Table>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
