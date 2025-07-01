@@ -56,7 +56,7 @@ const FacilityFormSection = ({ facility }: FacilityFormSectionProps) => {
     <div className="facility-form">
       <div className="grid-row">
         <div className="grid-col">
-          <h2 className={"font-sans-lg"}>Facility information</h2>
+          <h2 className={"font-sans-lg"}>Performing facility</h2>
           <p>Please review your facility information</p>
 
           <Table bordered={false} fullWidth={true}>
