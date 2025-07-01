@@ -183,7 +183,7 @@ public class CsvExportService {
     }
   }
 
-  @Transactional(readOnly = true)
+  @Transactional(readOnly = true, timeout = 100)
   public void streamFacilityPatientsAsZippedCsv(
       OutputStream rawOut, UUID facilityId, String unZippedCsvFileName) {
 
@@ -210,7 +210,7 @@ public class CsvExportService {
     }
   }
 
-  @Transactional(readOnly = true)
+  @Transactional(readOnly = true, timeout = 100)
   public void streamOrganizationPatientsAsZippedCsv(
       OutputStream rawOut, UUID organizationId, String unZippedCsvFileName) {
 
@@ -237,7 +237,7 @@ public class CsvExportService {
     }
   }
 
-  @Transactional(readOnly = true)
+  @Transactional(readOnly = true, timeout = 100)
   public void streamFacilityPatientsAsCsv(OutputStream outputStream, UUID facilityId) {
 
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -288,7 +288,7 @@ public class CsvExportService {
     }
   }
 
-  @Transactional(readOnly = true)
+  @Transactional(readOnly = true, timeout = 100)
   public void streamOrganizationPatientsAsCsv(OutputStream outputStream, UUID organizationId) {
 
     try (BufferedWriter writer =
@@ -471,7 +471,7 @@ public class CsvExportService {
         null);
   }
 
-  @Transactional(readOnly = true)
+  @Transactional(readOnly = true, timeout = 100)
   protected List<Person> fetchOrganizationPatients(Organization organizationId, Pageable pageable) {
 
     List<UUID> personInternalIdsPage =
