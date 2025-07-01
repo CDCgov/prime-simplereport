@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultsListItem;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import java.io.BufferedWriter;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -290,7 +291,8 @@ public class CsvExportService {
   @Transactional(readOnly = true)
   public void streamOrganizationPatientsAsCsv(OutputStream outputStream, UUID organizationId) {
 
-    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+    try (BufferedWriter writer =
+            new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
         CSVPrinter csvPrinter = new CSVPrinter(writer, createPatientsCsvFormat())) {
 
       long organizationPatientsCount = getOrganizationPatientsCount(organizationId);
@@ -469,7 +471,8 @@ public class CsvExportService {
         null);
   }
 
-  private List<Person> fetchOrganizationPatients(Organization organizationId, Pageable pageable) {
+  @Transactional(readOnly = true)
+  protected List<Person> fetchOrganizationPatients(Organization organizationId, Pageable pageable) {
 
     List<UUID> personInternalIdsPage =
         personRepository.findAllByOrganizationAndIsDeleted(organizationId, false, pageable).stream()
