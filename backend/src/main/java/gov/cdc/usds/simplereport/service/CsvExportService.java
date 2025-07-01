@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
@@ -26,7 +27,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -297,8 +297,7 @@ public class CsvExportService {
       int totalPages = (int) Math.ceil((double) organizationPatientsCount / BATCH_SIZE);
 
       // avoids multiple db calls for finding the list of facilities for the current org, given that
-      // a
-      // patient, or many patients, could be assigned to all facilities in the org
+      // a patient, or many patients, could be assigned to all facilities in the org
       Organization currentOrg = organizationService.getOrganizationById(organizationId);
       String orgFacilityList =
           facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
@@ -314,14 +313,13 @@ public class CsvExportService {
       for (int currentPage = 0; currentPage < totalPages; currentPage++) {
         Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
 
-        Instant beforeOrganizationPatientsQuery = Instant.now();
-        List<Person> organizationPatients = fetchOrganizationPatients(organizationId, pageable);
-        Instant afterOrganizationPatientsQuery = Instant.now();
+        long beforeOrganizationPatientsQuery = System.currentTimeMillis();
+        List<Person> organizationPatients = fetchOrganizationPatients(currentOrg, pageable);
+        long afterOrganizationPatientsQuery = System.currentTimeMillis();
 
         log.info(
             "Time to fetch Organization Patients: {}",
-            afterOrganizationPatientsQuery.getEpochSecond()
-                - beforeOrganizationPatientsQuery.getEpochSecond());
+            afterOrganizationPatientsQuery - beforeOrganizationPatientsQuery);
 
         log.info(
             "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
@@ -331,15 +329,16 @@ public class CsvExportService {
             organizationPatients.size(),
             (currentPage * BATCH_SIZE) + organizationPatients.size());
 
-        Instant beforeWritePatientCsvRow = Instant.now();
+        long beforeWritePatientCsvRow = System.currentTimeMillis();
         for (Person patient : organizationPatients) {
           writePatientCsvRow(csvPrinter, patient, orgFacilityList);
         }
-        Instant afterWritePatientCsvRow = Instant.now();
+        long afterWritePatientCsvRow = System.currentTimeMillis();
+        ;
 
         log.info(
             "Time to writePatientCsvRow in a loop: {}",
-            afterWritePatientCsvRow.getEpochSecond() - beforeWritePatientCsvRow.getEpochSecond());
+            afterWritePatientCsvRow - beforeWritePatientCsvRow);
 
         csvPrinter.flush();
 
@@ -471,11 +470,16 @@ public class CsvExportService {
         null);
   }
 
-  private List<Person> fetchOrganizationPatients(UUID organizationInternalId, Pageable pageable) {
+  private List<Person> fetchOrganizationPatients(Organization organizationId, Pageable pageable) {
 
-    return personRepository
-        .findAllByOrganizationInternalIdAndIsDeletedOrderByOrganizationInternalIdAscInternalIdAsc(
-            organizationInternalId, false, pageable);
+    List<UUID> personInternalIdsPage =
+        personRepository.findAllByOrganizationAndIsDeleted(organizationId, false, pageable).stream()
+            .map(IdentifiedEntity::getInternalId)
+            .toList();
+
+    return personRepository.findByInternalIdIn(personInternalIdsPage);
+
+    //    return
     //    return personService.getPatients(
     //        null, // a null facility fetches all patients in the current org
     //        pageable.getPageNumber(),
@@ -542,7 +546,7 @@ public class CsvExportService {
       "County",
       "State",
       "Postal Code",
-      "County",
+      "Country",
       "Phone Numbers",
       "Emails",
       "Race",
