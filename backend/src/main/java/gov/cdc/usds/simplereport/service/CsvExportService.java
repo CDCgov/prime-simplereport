@@ -21,7 +21,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultsListItem;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
-import java.io.BufferedWriter;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -59,7 +58,7 @@ public class CsvExportService {
   private final ResultService resultService;
   private final PersonService personService;
   private final FacilityRepository facilityRepository;
-  private static final int BATCH_SIZE = 500;
+  private static final int BATCH_SIZE = 5000;
   private final PersonRepository personRepository;
   private final OrganizationService organizationService;
 
@@ -183,7 +182,7 @@ public class CsvExportService {
     }
   }
 
-  @Transactional(readOnly = true, timeout = 100)
+  @Transactional(readOnly = true)
   public void streamFacilityPatientsAsZippedCsv(
       OutputStream rawOut, UUID facilityId, String unZippedCsvFileName) {
 
@@ -210,7 +209,7 @@ public class CsvExportService {
     }
   }
 
-  @Transactional(readOnly = true, timeout = 100)
+  @Transactional(readOnly = true)
   public void streamOrganizationPatientsAsZippedCsv(
       OutputStream rawOut, UUID organizationId, String unZippedCsvFileName) {
 
@@ -237,7 +236,7 @@ public class CsvExportService {
     }
   }
 
-  @Transactional(readOnly = true, timeout = 100)
+  @Transactional(readOnly = true)
   public void streamFacilityPatientsAsCsv(OutputStream outputStream, UUID facilityId) {
 
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -246,11 +245,11 @@ public class CsvExportService {
       long facilityPatientsCount = getFacilityPatientsCount(facilityId);
       int totalPages = (int) Math.ceil((double) facilityPatientsCount / BATCH_SIZE);
 
-      // avoids multiple db calls for finding the list of facilities for the current org, given that
-      // a
-      // patient is assigned to all facilities in the org
+      // avoids multiple db calls for finding the list of facilities for the current org, for the
+      // case where
+      // a patient, or many patients, could be assigned to all facilities in the org
       Organization currentOrg = organizationService.getOrganizationByFacilityId(facilityId);
-      String facilityList =
+      String facilityNameList =
           facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
               .map(Facility::getFacilityName)
               .collect(Collectors.joining(";"));
@@ -273,7 +272,7 @@ public class CsvExportService {
             facilityPatients.size(),
             (currentPage * BATCH_SIZE) + facilityPatients.size());
         for (Person patient : facilityPatients) {
-          writePatientCsvRow(csvPrinter, patient, facilityList);
+          writePatientCsvRow(csvPrinter, patient, facilityNameList);
         }
 
         csvPrinter.flush();
@@ -288,20 +287,20 @@ public class CsvExportService {
     }
   }
 
-  @Transactional(readOnly = true, timeout = 100)
+  @Transactional(readOnly = true)
   public void streamOrganizationPatientsAsCsv(OutputStream outputStream, UUID organizationId) {
 
-    try (BufferedWriter writer =
-            new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
+    try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createPatientsCsvFormat())) {
 
       long organizationPatientsCount = getOrganizationPatientsCount(organizationId);
       int totalPages = (int) Math.ceil((double) organizationPatientsCount / BATCH_SIZE);
 
-      // avoids multiple db calls for finding the list of facilities for the current org, given that
+      // avoids multiple db calls for finding the list of facilities for the current org, for the
+      // case where
       // a patient, or many patients, could be assigned to all facilities in the org
       Organization currentOrg = organizationService.getOrganizationById(organizationId);
-      String orgFacilityList =
+      String orgFacilityNameList =
           facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
               .map(Facility::getFacilityName)
               .collect(Collectors.joining(";"));
@@ -332,9 +331,20 @@ public class CsvExportService {
             (currentPage * BATCH_SIZE) + organizationPatients.size());
 
         long beforeWritePatientCsvRow = System.currentTimeMillis();
-        for (Person patient : organizationPatients) {
-          writePatientCsvRow(csvPrinter, patient, orgFacilityList);
-        }
+
+        organizationPatients.parallelStream()
+            .forEach(
+                patient -> {
+                  try {
+                    writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
+                  } catch (IOException e) {
+                    throw new RuntimeException(e);
+                  }
+                });
+        //
+        //        for (Person patient : organizationPatients) {
+        //          writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
+        //        }
         long afterWritePatientCsvRow = System.currentTimeMillis();
 
         log.info(
@@ -474,22 +484,13 @@ public class CsvExportService {
   @Transactional(readOnly = true, timeout = 100)
   protected List<Person> fetchOrganizationPatients(Organization organizationId, Pageable pageable) {
 
+    // running two queries here prevents paginating in memory
     List<UUID> personInternalIdsPage =
         personRepository.findAllByOrganizationAndIsDeleted(organizationId, false, pageable).stream()
             .map(IdentifiedEntity::getInternalId)
             .toList();
 
     return personRepository.findByInternalIdIn(personInternalIdsPage);
-
-    //    return
-    //    return personService.getPatients(
-    //        null, // a null facility fetches all patients in the current org
-    //        pageable.getPageNumber(),
-    //        pageable.getPageSize(),
-    //        ArchivedStatus.UNARCHIVED,
-    //        null,
-    //        false,
-    //        null);
   }
 
   private CSVFormat createResultCsvFormat() {
@@ -667,7 +668,7 @@ public class CsvExportService {
         patient != null ? patient.getEmployedInHealthcare() : "");
   }
 
-  private void writePatientCsvRow(CSVPrinter csvPrinter, Person patient, String orgFacilityList)
+  private void writePatientCsvRow(CSVPrinter csvPrinter, Person patient, String orgFacilityNameList)
       throws IOException {
 
     if (patient == null) {
@@ -696,7 +697,9 @@ public class CsvExportService {
         trimToEmpty(patient.getGender()),
         trimToEmpty(patient.getEthnicity()),
         trimToEmpty(patient.getRole().toString()),
-        patient.getFacility() != null ? patient.getFacility().getFacilityName() : orgFacilityList,
+        patient.getFacility() != null
+            ? patient.getFacility().getFacilityName()
+            : orgFacilityNameList,
         patient.getEmployedInHealthcare() != null ? patient.getEmployedInHealthcare() : "",
         patient.getResidentCongregateSetting() != null
             ? patient.getResidentCongregateSetting()

@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.service.CsvExportService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.async.WebAsyncTask;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @RestController
@@ -47,31 +45,22 @@ public class PatientExportController {
 
   @AuthorizationConfiguration.RequirePermissionToAccessOrg
   @GetMapping(value = "/patients/download/organization")
-  public WebAsyncTask<ResponseEntity<StreamingResponseBody>> downloadOrganizationPatientsAsCSV(
+  public ResponseEntity<StreamingResponseBody> downloadOrganizationPatientsAsCSV(
       @RequestParam() UUID orgId) {
-    Callable<ResponseEntity<StreamingResponseBody>> callable =
-        () -> {
-          log.info("Organization patients CSV download request for organizationId={}", orgId);
+    log.info("Organization patients CSV download request for organizationId={}", orgId);
 
-          String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
-          String zippedCsvFileName = String.format("organization-patients-%s.zip", timestamp);
-          String unZippedCsvFileName = String.format("organization-patients-%s.csv", timestamp);
+    String timestamp = new SimpleDateFormat("yyyyMMdd-HHmmss").format(new Date());
+    String zippedCsvFileName = String.format("organization-patients-%s.zip", timestamp);
+    String unZippedCsvFileName = String.format("organization-patients-%s.csv", timestamp);
 
-          StreamingResponseBody responseBody =
-              outputStream -> {
-                csvExportService.streamOrganizationPatientsAsZippedCsv(
-                    outputStream, orgId, unZippedCsvFileName);
-              };
-          return ResponseEntity.ok()
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zippedCsvFileName)
-              .header(HttpHeaders.CONTENT_TYPE, "application/zip")
-              .body(responseBody);
+    StreamingResponseBody responseBody =
+        outputStream -> {
+          csvExportService.streamOrganizationPatientsAsZippedCsv(
+              outputStream, orgId, unZippedCsvFileName);
         };
-    WebAsyncTask<ResponseEntity<StreamingResponseBody>> asyncTask =
-        new WebAsyncTask<>(60000, callable); // 10-second timeout
-
-    asyncTask.onTimeout(() -> ResponseEntity.internalServerError().build());
-
-    return asyncTask;
+    return ResponseEntity.ok()
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + zippedCsvFileName)
+        .header(HttpHeaders.CONTENT_TYPE, "application/zip")
+        .body(responseBody);
   }
 }

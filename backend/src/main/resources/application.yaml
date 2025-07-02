@@ -72,7 +72,7 @@ spring:
       max-request-size: 60MB
   mvc:
     async:
-      request-timeout: 120000
+      request-timeout: 120000 #delete after patient and test result download is removed
 server:
   error:
     include-stacktrace: never

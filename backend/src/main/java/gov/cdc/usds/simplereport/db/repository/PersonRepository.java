@@ -15,17 +15,33 @@ import org.springframework.data.jpa.repository.Query;
 /** Interface specification for fetching and manipulating {@link Person} entities */
 public interface PersonRepository extends EternalAuditedEntityRepository<Person> {
 
-  //  @EntityGraph(attributePaths = {"facility", "organization", "phoneNumbers"})
   List<Person> findAll(Specification<Person> searchSpec, Pageable p);
 
   List<Person> findAll(Pageable p);
+
+  @Query(
+      value =
+          """
+                SELECT p.internal_id
+                FROM Person p
+                WHERE p.internal_id > :lastSeenId
+                    AND p.organization_id = :organizationId
+                    AND p.is_deleted = :isDeleted
+                ORDER BY p.internal_id ASC""",
+      nativeQuery = true)
+  List<UUID> findAllByOrganizationAndIsDeletedAndLastSeen(
+      UUID lastSeenId, Organization organizationId, boolean isDeleted, Pageable p);
+
+  @Query(
+      value = "SELECT p.internal_id FROM Person p WHERE p.id > :lastSeenId ORDER BY p.id ASC",
+      nativeQuery = true)
+  List<UUID> findNextPage(UUID lastSeenId, Pageable pageable);
 
   List<Person> findAllByInternalIdIn(Collection<UUID> ids);
 
   @EntityGraph(attributePaths = {"facility", "phoneNumbers"})
   List<Person> findByInternalIdIn(Collection<UUID> ids);
 
-  //  @EntityGraph(attributePaths = {"facility", "phoneNumbers"})
   List<Person> findAllByOrganizationAndIsDeleted(
       Organization organizationId, boolean isDeleted, Pageable p);
 
