@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
@@ -151,6 +152,7 @@ public class CsvExportService {
     }
 
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
+      zipOut.setLevel(Deflater.BEST_SPEED);
       zipOut.putNextEntry(new ZipEntry("test-results.csv"));
 
       streamResultsAsCsv(new NonClosingOutputStream(zipOut), resolvedParams);
