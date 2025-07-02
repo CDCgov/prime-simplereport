@@ -425,7 +425,7 @@ const LabReportForm = () => {
                 />
               </>
             )}
-            <div className="usa-form-group">
+            <div className="usa-form-group report-form-controls">
               {currentStep === 4 ? (
                 <Button onClick={() => submitForm()} type={"button"}>
                   Submit results

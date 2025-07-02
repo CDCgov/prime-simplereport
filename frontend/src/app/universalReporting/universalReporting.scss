@@ -1,4 +1,8 @@
-.facility-form {
+.form-section {
+  table {
+    margin-bottom: 0;
+  }
+
   table,
   th,
   td {
@@ -10,5 +14,9 @@
   td:first-child {
     width: 10rem;
     padding-left: 0;
+  }
+
+  h2 {
+    margin-top: 0;
   }
 }
