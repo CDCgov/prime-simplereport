@@ -37,9 +37,7 @@ import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
 import UploadPatients from "./patients/UploadPatients";
 import DiseaseSpecificUploadContainer from "./testResults/uploads/DiseaseSpecificUploadContainer";
-import AgnosticUploadContainer from "./testResults/uploads/AgnosticUploadContainer";
 import { specificSchemaBuilder } from "./testResults/uploads/specificSchemaBuilder";
-import { agnosticSchemaBuilder } from "./testResults/uploads/agnosticSchemaBuilder";
 import LabReportForm from "./universalReporting/LabReportForm";
 
 export const WHOAMI_QUERY = gql`
@@ -84,7 +82,6 @@ export const checkOktaLoginStatus = (
 };
 
 const ReportingApp = () => {
-  const agnosticEnabled = useFeature("agnosticEnabled");
   const universalReportingEnabled = useFeature("universalReportingEnabled");
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
@@ -253,41 +250,6 @@ const ReportingApp = () => {
                   />
                 }
               />
-              {agnosticEnabled && (
-                <>
-                  <Route
-                    path="results/agnostic/upload/submit"
-                    element={
-                      <ProtectedRoute
-                        requiredPermissions={canViewResults}
-                        userPermissions={data.whoami.permissions}
-                        element={
-                          <ResultsNavWrapper>
-                            <AgnosticUploadContainer />
-                          </ResultsNavWrapper>
-                        }
-                      />
-                    }
-                  />
-                  <Route
-                    path="results/agnostic/upload/submit/guide"
-                    element={
-                      <ProtectedRoute
-                        requiredPermissions={canViewResults}
-                        userPermissions={data.whoami.permissions}
-                        element={
-                          <ResultsNavWrapper>
-                            <Schema
-                              schemaBuilder={agnosticSchemaBuilder}
-                              returnUrl={"/results/agnostic/upload/submit"}
-                            />
-                          </ResultsNavWrapper>
-                        }
-                      />
-                    }
-                  />
-                </>
-              )}
               {universalReportingEnabled && (
                 <Route
                   path="results/universal"

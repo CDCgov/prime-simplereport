@@ -33,7 +33,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
-import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -73,7 +72,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +95,6 @@ public class TestResultUploadService {
   private final ResultsUploaderCachingService resultsUploaderCachingService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
-  private final FileValidator<ConditionAgnosticResultRow> conditionAgnosticResultFileValidator;
   private final DiseaseService diseaseService;
   private final BulkUploadResultsToFhir fhirConverter;
 
@@ -567,67 +564,6 @@ public class TestResultUploadService {
     private E error;
   }
 
-  @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public TestResultUpload processConditionAgnosticResultCSV(InputStream csvStream) {
-    var submissionId = UUID.randomUUID();
-    Organization org = _orgService.getCurrentOrganization();
-    byte[] content;
-    try {
-      content = csvStream.readAllBytes();
-    } catch (IOException e) {
-      log.error("Error reading test result upload CSV", e);
-      throw new CsvProcessingException("Unable to read csv");
-    }
-
-    List<FeedbackMessage> errors =
-        conditionAgnosticResultFileValidator.validate(new ByteArrayInputStream(content));
-    if (!errors.isEmpty()) {
-      TestResultUpload validationErrorResult = new TestResultUpload(UploadStatus.FAILURE);
-      validationErrorResult.setErrors(errors.toArray(FeedbackMessage[]::new));
-      errorRepository.saveAll(
-          errors.stream().map(error -> new ResultUploadError(org, error, submissionId)).toList());
-
-      return validationErrorResult;
-    }
-
-    Future<UploadResponse> fhirResponse;
-    TestResultUpload fhirResult = null;
-    if (content.length > 0) {
-      fhirResponse = submitConditionAgnosticAsFhir(new ByteArrayInputStream(content));
-      try {
-        if (fhirResponse.get() != null) {
-          fhirResult = mapFhirResponseToUploadResponse(fhirResponse.get(), org, submissionId);
-        }
-      } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
-        log.error("Error processing FHIR in bulk result upload", e);
-        Thread.currentThread().interrupt();
-      }
-    }
-
-    return fhirResult;
-  }
-
-  private Future<UploadResponse> submitConditionAgnosticAsFhir(ByteArrayInputStream content) {
-    // send to report stream
-    return CompletableFuture.supplyAsync(
-        withMDC(
-            () -> {
-              long start = System.currentTimeMillis();
-              // convert csv to fhir and serialize to json
-              List<String> serializedFhirBundles =
-                  fhirConverter.convertToConditionAgnosticFhirBundles(content);
-              UploadResponse response;
-              try {
-                response = uploadBundleAsFhir(serializedFhirBundles);
-              } catch (JsonProcessingException e) {
-                throw new CsvProcessingException("Unable to parse Report Stream response.");
-              }
-              log.info(
-                  "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
-              return response;
-            }));
-  }
-
   private UploadResponse uploadBundleAsFhir(List<String> serializedFhirBundles)
       throws JsonProcessingException {
     // build the ndjson request body
@@ -644,39 +580,5 @@ public class TestResultUploadService {
       response = parseFeignException(e);
     }
     return response;
-  }
-
-  private TestResultUpload mapFhirResponseToUploadResponse(
-      UploadResponse response, Organization org, UUID submissionId) {
-    TestResultUpload result = null;
-    if (response != null) {
-      var status = UploadResponse.parseStatus(response.getOverallStatus());
-      result =
-          new TestResultUpload(
-              response.getId(),
-              submissionId,
-              status,
-              response.getReportItemCount(),
-              org,
-              response.getWarnings(),
-              response.getErrors(),
-              Pipeline.UNIVERSAL,
-              null);
-
-      if (response.getErrors() != null && response.getErrors().length > 0) {
-        for (var error : response.getErrors()) {
-          error.setSource(ResultUploadErrorSource.REPORT_STREAM);
-        }
-
-        TestResultUpload finalResult = result;
-        errorRepository.saveAll(
-            Arrays.stream(response.getErrors())
-                .map(
-                    feedbackMessage ->
-                        new ResultUploadError(finalResult, org, feedbackMessage, submissionId))
-                .toList());
-      }
-    }
-    return result;
   }
 }

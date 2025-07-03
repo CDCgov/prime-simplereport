@@ -1,8 +1,0 @@
-test_result_status,test_result_effective_date,test_performed_code,test_result_value,patient_id,patient_first_name,patient_last_name,patient_admin_gender,patient_name_absent_reason
-F,11/27/2023 16:14 CT,97097-0,260373001,a33f2841-eec2-4bfa-bc51-43e5ca76194a,Tony,Stark,Male,
-C,11/11/2023 19:51 EST,94534-5,260415000,0df89b0c-22a9-41e4-b4f5-01c7c98752e5,Carol,Danvers,Female,
-F,5/25/2023 4:30 CT,94558-4,260373001,66a02452-62c6-11ee-8c99-0242ac120002,Bruce,Banner,Male,
-F,10/5/2023 8:55 MST,94534-5,260415000,66a029a2-62c6-11ee-8c99-0242ac120002,Steve,Rogers,Male,
-F,4/29/2023 2:42 CST,94508-9,419984006,66a02b96-62c6-11ee-8c99-0242ac120002,Natasha,Romanov,Female,
-F,12/15/2023 05:43 CST,94534-5,260415000,66a03406-62c6-11ee-8c99-0242ac120002,Wanda,Maximoff,Female,
-F,11/15/2023 11:54 EST,94534-5,260373001,67ee88af-5528-407d-be34-b174f976b5b3,,,Ambiguous,Unknown
