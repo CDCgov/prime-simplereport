@@ -26,42 +26,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 class TestResultRowTest {
   Map<String, String> validRowMap;
-  final List<String> requiredFields =
-      List.of(
-          "patient_last_name",
-          "patient_first_name",
-          "patient_street",
-          "patient_city",
-          "patient_state",
-          "patient_zip_code",
-          "patient_county",
-          "patient_phone_number",
-          "patient_dob",
-          "patient_gender",
-          "patient_race",
-          "patient_ethnicity",
-          "accession_number",
-          "equipment_model_name",
-          "test_performed_code",
-          "test_result",
-          "order_test_date",
-          "test_result_date",
-          "specimen_type",
-          "ordering_provider_id",
-          "ordering_provider_last_name",
-          "ordering_provider_first_name",
-          "ordering_provider_street",
-          "ordering_provider_city",
-          "ordering_provider_state",
-          "ordering_provider_zip_code",
-          "ordering_provider_phone_number",
-          "testing_lab_clia",
-          "testing_lab_name",
-          "testing_lab_street",
-          "testing_lab_city",
-          "testing_lab_state",
-          "testing_lab_zip_code");
-  final List<String> individualFields =
+  final List<String> validatedFields =
       List.of(
           "patient_state",
           "ordering_provider_state",
@@ -98,6 +63,7 @@ class TestResultRowTest {
           "specimen_type",
           "testing_lab_clia",
           "genders_of_sexual_partners",
+          "syphilis_history",
           "patient_gender_identity");
 
   @BeforeEach
@@ -360,8 +326,14 @@ class TestResultRowTest {
             validRowMap.get("test_result_status"),
             from(TestResultRow::getTestResultStatus).andThen(ValueOrError::getValue))
         .returns(
+            validRowMap.get("test_ordered_code"),
+            from(TestResultRow::getTestOrderedCode).andThen(ValueOrError::getValue))
+        .returns(
             validRowMap.get("genders_of_sexual_partners"),
             from(TestResultRow::getGendersOfSexualPartners).andThen(ValueOrError::getValue))
+        .returns(
+            validRowMap.get("syphilis_history"),
+            from(TestResultRow::getSyphilisHistory).andThen(ValueOrError::getValue))
         .returns(
             validRowMap.get("patient_gender_identity"),
             from(TestResultRow::getPatientGenderIdentity).andThen(ValueOrError::getValue));
@@ -374,6 +346,7 @@ class TestResultRowTest {
     var actual = testResultRow.validateRequiredFields();
 
     var messages = actual.stream().map(FeedbackMessage::getMessage).collect(Collectors.toSet());
+    List<String> requiredFields = TestResultRow.getStaticRequiredFields();
     assertThat(actual).hasSize(requiredFields.size());
     requiredFields.forEach(
         fieldName ->
@@ -418,6 +391,7 @@ class TestResultRowTest {
     invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
     invalidIndividualFields.put("genders_of_sexual_partners", "ma, f");
+    invalidIndividualFields.put("syphilis_history", "na");
     invalidIndividualFields.put("patient_gender_identity", "fe");
     var testResultRow =
         new TestResultRow(
@@ -433,8 +407,8 @@ class TestResultRowTest {
                 message ->
                     TestErrorMessageUtil.getColumnNameFromInvalidErrorMessage(message.getMessage()))
             .collect(Collectors.toSet());
-    assertThat(actual).hasSize(individualFields.size());
-    individualFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
+    assertThat(actual).hasSize(validatedFields.size());
+    validatedFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
   }
 
   @Test
