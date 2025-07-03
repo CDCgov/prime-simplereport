@@ -25,23 +25,23 @@
   }
 
   .role-tag {
-    border-bottom: 1px #dfe1e2 solid;
+    border-bottom: 1px color("base-lighter") solid;
     // $theme-color-prime-gray:
-    color: #71767a;
+    color: color("base-dark");
     margin-top: 0.5rem;
     padding-bottom: 1rem;
   }
 
   .header-link-icon {
     // $theme-color-primary
-    color: #005ea2;
+    color: color("primary");
     width: 16px;
     height: 16px;
     margin-right: 0.5rem;
   }
 
   .sparkle-icon-mask {
-    background-color: #005ea2;
+    background-color: color("primary");
     mask: url("../../img/font-awesome-pro-icons/sparkles.svg") no-repeat center;
   }
 
@@ -50,11 +50,11 @@
     padding: 0;
     margin-top: 0.75rem;
     // $theme-color-primary
-    color: #005ea2 !important;
+    color: color("primary") !important;
   }
 
   .ghost-user-link:hover {
-    background-color: #fff;
+    background-color: color("white");
   }
 
   @media (max-width: "desktop") {
@@ -78,7 +78,7 @@
   }
 
   .nav__primary-item-icon:last-child {
-    border-bottom: 1px solid #dfe1e2;
+    border-bottom: 1px solid color("base-lighter");
   }
 
   .mobile-secondary-nav-container {
@@ -105,27 +105,27 @@
     margin-top: 0.75rem;
 
     button {
-      color: #005ea2;
+      color: color("primary");
       text-decoration: none;
       padding: 0 !important;
     }
 
     a {
-      color: #005ea2 !important;
+      color: color("primary") !important;
       font-weight: 500;
       padding: 0 !important;
     }
 
     a:hover,
     button:hover {
-      color: #005ea2;
+      color: color("primary");
       text-decoration: underline;
       font-weight: 700;
-      background-color: #fff;
+      background-color: color("white");
     }
 
     a:visited {
-      color: #005ea2;
+      color: color("primary");
     }
   }
 
