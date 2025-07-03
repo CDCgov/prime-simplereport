@@ -59,7 +59,7 @@ public class CsvExportService {
   private final ResultService resultService;
   private final PersonService personService;
   private final FacilityRepository facilityRepository;
-  private static final int BATCH_SIZE = 5000;
+  private static final int BATCH_SIZE = 10000;
   private final PersonRepository personRepository;
   private final OrganizationService organizationService;
 
