@@ -23,6 +23,7 @@ import { FORM_ERROR_MSG, FORM_ERROR_TITLE } from "../../../config/constants";
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
+import ManageTestOrder from "./Components/ManageTestOrder";
 import { deviceRequiredErrMsg, facilityInfoErrMsgs } from "./constants";
 
 export type FacilityFormData = {
@@ -408,6 +409,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           control={control}
           rules={{ required: deviceRequiredErrMsg }}
         />
+        <ManageTestOrder />
         <div className="float-right margin-bottom-4 margin-top-1">
           <Button
             className="margin-right-0"
