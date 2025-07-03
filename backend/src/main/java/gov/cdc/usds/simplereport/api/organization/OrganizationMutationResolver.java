@@ -15,8 +15,10 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityLab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
+import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
@@ -248,5 +250,41 @@ public class OrganizationMutationResolver {
       throw new IllegalGraphqlArgumentException("type can be \"facilities\" or \"patients\"");
     }
     return organizationService.sendOrgAdminEmailCSV(type, state);
+  }
+
+  @MutationMapping
+  public FacilityLab addFacilityLab(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    return organizationService.createFacilityLab(facilityId, labId, name, description);
+  }
+
+  @MutationMapping
+  public FacilityLab updateFacilityLab(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    return organizationService.updateFacilityLab(
+        facilityId, labId, Optional.ofNullable(name), Optional.ofNullable(description));
+  }
+
+  @MutationMapping
+  public boolean removeFacilityLab(@Argument UUID facilityId, @Argument UUID labId) {
+    return organizationService.markFacilityLabAsDeleted(facilityId, labId);
+  }
+
+  @MutationMapping
+  public Set<Specimen> addFacilityLabSpecimen(
+      @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
+    return organizationService.addFacilityLabSpecimen(facilityId, labId, specimenId);
+  }
+
+  @MutationMapping
+  public boolean removeFacilityLabSpecimen(
+      @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
+    return organizationService.deleteFacilityLabSpecimen(facilityId, labId, specimenId);
   }
 }

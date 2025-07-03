@@ -325,4 +325,6 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             });
     assertEquals("Not a valid state", caught.getMessage());
   }
+
+  void addFacilityLabTestOrder_success() {}
 }
