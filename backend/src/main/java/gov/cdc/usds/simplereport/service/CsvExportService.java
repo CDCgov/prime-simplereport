@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
@@ -311,53 +312,62 @@ public class CsvExportService {
           organizationPatientsCount,
           totalPages);
 
-      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
-        Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
+      IntStream.range(0, totalPages)
+          .parallel()
+          .forEach(
+              currentPage -> {
 
-        long beforeOrganizationPatientsQuery = System.currentTimeMillis();
-        List<Person> organizationPatients = fetchOrganizationPatients(currentOrg, pageable);
-        long afterOrganizationPatientsQuery = System.currentTimeMillis();
+                //      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
+                Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
 
-        log.info(
-            "Time to fetch Organization Patients: {}",
-            afterOrganizationPatientsQuery - beforeOrganizationPatientsQuery);
+                long beforeOrganizationPatientsQuery = System.currentTimeMillis();
+                List<Person> organizationPatients = fetchOrganizationPatients(currentOrg, pageable);
+                long afterOrganizationPatientsQuery = System.currentTimeMillis();
 
-        log.info(
-            "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
-            (currentPage + 1),
-            totalPages,
-            BATCH_SIZE,
-            organizationPatients.size(),
-            (currentPage * BATCH_SIZE) + organizationPatients.size());
+                log.info(
+                    "Time to fetch Organization Patients: {}",
+                    afterOrganizationPatientsQuery - beforeOrganizationPatientsQuery);
 
-        long beforeWritePatientCsvRow = System.currentTimeMillis();
+                log.info(
+                    "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
+                    (currentPage + 1),
+                    totalPages,
+                    BATCH_SIZE,
+                    organizationPatients.size(),
+                    (currentPage * BATCH_SIZE) + organizationPatients.size());
 
-        organizationPatients.parallelStream()
-            .forEach(
-                patient -> {
-                  try {
-                    writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
-                  } catch (IOException e) {
-                    throw new RuntimeException(e);
-                  }
-                });
-        //
-        //        for (Person patient : organizationPatients) {
-        //          writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
-        //        }
-        long afterWritePatientCsvRow = System.currentTimeMillis();
+                long beforeWritePatientCsvRow = System.currentTimeMillis();
 
-        log.info(
-            "Time to writePatientCsvRow in a loop: {}",
-            afterWritePatientCsvRow - beforeWritePatientCsvRow);
+                organizationPatients.parallelStream()
+                    .forEach(
+                        patient -> {
+                          try {
+                            writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
+                          } catch (IOException e) {
+                            throw new RuntimeException(e);
+                          }
+                        });
+                //
+                //        for (Person patient : organizationPatients) {
+                //          writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
+                //        }
+                long afterWritePatientCsvRow = System.currentTimeMillis();
 
-        csvPrinter.flush();
+                log.info(
+                    "Time to writePatientCsvRow in a loop: {}",
+                    afterWritePatientCsvRow - beforeWritePatientCsvRow);
 
-        log.debug(
-            "Processed batch {}/{} for organization patient CSV export",
-            (currentPage + 1),
-            totalPages);
-      }
+                try {
+                  csvPrinter.flush();
+                } catch (IOException e) {
+                  throw new RuntimeException(e);
+                }
+
+                log.debug(
+                    "Processed batch {}/{} for organization patient CSV export",
+                    (currentPage + 1),
+                    totalPages);
+              });
 
       log.info("Completed organization patient CSV download for organizationId={}", organizationId);
     } catch (IOException e) {
