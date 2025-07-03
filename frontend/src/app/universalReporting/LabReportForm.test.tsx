@@ -61,7 +61,7 @@ describe("LabReportForm Stepper", () => {
     expect(currentStep).toHaveTextContent("Facility information");
 
     const nextButton = screen.getByRole("button", {
-      name: /Next: Provider information/i,
+      name: /Next/i,
     });
     fireEvent.click(nextButton);
 
