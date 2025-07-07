@@ -30,7 +30,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /** Created by nickrobison on 11/17/20 */
@@ -217,7 +216,7 @@ public class PersonService {
    * @return A list of matching patients.
    */
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
-  @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
+  @Transactional(readOnly = true)
   public List<Person> getPatients(
       UUID facilityId,
       int pageOffset,
@@ -292,7 +291,6 @@ public class PersonService {
   @Transactional(readOnly = true)
   public long getPatientsCountByOrganization(UUID organizationId) {
     Organization orgToSearch = _os.getOrganizationById(organizationId);
-    ;
 
     return _repo.countByOrganizationAndIsDeleted(orgToSearch, false);
   }

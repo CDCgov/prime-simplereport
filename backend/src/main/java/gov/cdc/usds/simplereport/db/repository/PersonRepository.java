@@ -17,8 +17,6 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
 
   List<Person> findAll(Specification<Person> searchSpec, Pageable p);
 
-  List<Person> findAll(Pageable p);
-
   List<Person> findAllByInternalIdIn(Collection<UUID> ids);
 
   @EntityGraph(attributePaths = {"facility", "phoneNumbers"})

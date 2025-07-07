@@ -154,17 +154,6 @@ public class CsvExportService {
   public void streamResultsAsZippedCsv(OutputStream rawOut, ExportParameters params) {
     ExportParameters resolvedParams = resolveOrganizationId(params);
 
-    class NonClosingOutputStream extends FilterOutputStream {
-      NonClosingOutputStream(OutputStream out) {
-        super(out);
-      }
-
-      @Override
-      public void close() throws IOException {
-        flush();
-      }
-    }
-
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
       zipOut.putNextEntry(new ZipEntry("test-results.csv"));
 
@@ -186,17 +175,6 @@ public class CsvExportService {
   public void streamFacilityPatientsAsZippedCsv(
       OutputStream rawOut, UUID facilityId, String unZippedCsvFileName) {
 
-    class NonClosingOutputStream extends FilterOutputStream {
-      NonClosingOutputStream(OutputStream out) {
-        super(out);
-      }
-
-      @Override
-      public void close() throws IOException {
-        flush();
-      }
-    }
-
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
       zipOut.putNextEntry(new ZipEntry(unZippedCsvFileName));
 
@@ -212,17 +190,6 @@ public class CsvExportService {
   @Transactional(readOnly = true)
   public void streamOrganizationPatientsAsZippedCsv(
       OutputStream rawOut, UUID organizationId, String unZippedCsvFileName) {
-
-    class NonClosingOutputStream extends FilterOutputStream {
-      NonClosingOutputStream(OutputStream out) {
-        super(out);
-      }
-
-      @Override
-      public void close() throws IOException {
-        flush();
-      }
-    }
 
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
       zipOut.putNextEntry(new ZipEntry(unZippedCsvFileName));
@@ -246,9 +213,8 @@ public class CsvExportService {
       int totalPages = (int) Math.ceil((double) facilityPatientsCount / BATCH_SIZE);
 
       // avoids multiple db calls for finding the list of facility names for the current org, for
-      // the
-      // case where
-      // a patient, or many patients, could be assigned to all facilities in the org
+      // the case where a patient, or many patients, could be assigned to all facilities in the
+      // org
       Organization currentOrg = organizationService.getOrganizationByFacilityId(facilityId);
       String orgFacilitiesNamesList =
           facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
@@ -301,9 +267,8 @@ public class CsvExportService {
       int totalPages = (int) Math.ceil((double) organizationPatientsCount / BATCH_SIZE);
 
       // avoids multiple db calls for finding the list of facility names for the current org, for
-      // the
-      // case where
-      // a patient, or many patients, could be assigned to all facilities in the org
+      // the case where a patient, or many patients, could be assigned to all facilities in the
+      // org
       Organization currentOrg = organizationService.getOrganizationById(organizationId);
       String orgFacilityNameList =
           facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
@@ -465,7 +430,8 @@ public class CsvExportService {
     return personService.getPatientsCountByOrganization(organizationId);
   }
 
-  private List<Person> fetchFacilityPatients(UUID facilityId, Pageable pageable) {
+  @Transactional(readOnly = true)
+  protected List<Person> fetchFacilityPatients(UUID facilityId, Pageable pageable) {
 
     // running two queries here prevents paginating in memory
     List<UUID> facilityPatientIdsPage =
@@ -826,5 +792,16 @@ public class CsvExportService {
 
   private String formatAsDateTime(Object dateObj) {
     return formatDateValue(dateObj, "MM/dd/yyyy h:mma");
+  }
+
+  class NonClosingOutputStream extends FilterOutputStream {
+    NonClosingOutputStream(OutputStream out) {
+      super(out);
+    }
+
+    @Override
+    public void close() throws IOException {
+      flush();
+    }
   }
 }
