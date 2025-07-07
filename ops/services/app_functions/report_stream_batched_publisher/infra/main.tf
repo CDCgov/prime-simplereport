@@ -102,6 +102,10 @@ resource "azurerm_linux_function_app" "functions" {
     REPORT_STREAM_BATCH_MAXIMUM           = var.report_stream_batch_maximum
     SIMPLE_REPORT_CB_URL                  = local.simple_report_callback_url
     SIMPLE_REPORT_CB_TOKEN                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
+    AIMS_ACCESS_KEY_ID                    = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_access_key_id.id})"
+    AIMS_SECRET_ACCESS_KEY                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_secret_access_key.id})"
+    AIMS_KMS_ENCRYPTION_KEY               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_kms_encryption_key.id})"
+    AIMS_OUTBOUND_ENDPOINT                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_outbound_storage_endpoint.id})"
   }
   lifecycle {
     ignore_changes = [
