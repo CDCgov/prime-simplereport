@@ -1,0 +1,357 @@
+package gov.cdc.usds.simplereport.api.converter;
+
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.when;
+
+import ca.uhn.hl7v2.HapiContext;
+import ca.uhn.hl7v2.model.DataTypeException;
+import ca.uhn.hl7v2.model.v251.datatype.XAD;
+import ca.uhn.hl7v2.model.v251.datatype.XCN;
+import ca.uhn.hl7v2.model.v251.datatype.XTN;
+import ca.uhn.hl7v2.model.v251.message.ORU_R01;
+import ca.uhn.hl7v2.model.v251.segment.MSH;
+import ca.uhn.hl7v2.model.v251.segment.PID;
+import ca.uhn.hl7v2.model.v251.segment.SFT;
+import ca.uhn.hl7v2.parser.Parser;
+import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
+import gov.cdc.usds.simplereport.utils.UUIDGenerator;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.GitProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+
+@SpringBootTest
+@ActiveProfiles("test")
+class HL7ConverterTest {
+  private static final Instant STATIC_INSTANT = Instant.ofEpochSecond(1749742604L);
+  private static final String STATIC_RANDOM_UUID = "5db534ea-5e97-4861-ba18-d74acc46db15";
+
+  private final HapiContext hapiContext = HapiContextProvider.get();
+  @Mock private GitProperties gitProperties;
+  @MockBean private UUIDGenerator uuidGenerator;
+  @MockBean private DateGenerator dateGenerator;
+  @Autowired private HL7Converter hl7Converter;
+
+  @BeforeEach
+  public void init() {
+    when(gitProperties.getCommitTime()).thenReturn(STATIC_INSTANT);
+    when(gitProperties.getShortCommitId()).thenReturn("1234567");
+    when(uuidGenerator.randomUUID()).thenReturn(UUID.fromString(STATIC_RANDOM_UUID));
+    when(dateGenerator.newDate()).thenReturn(Date.from(STATIC_INSTANT));
+  }
+
+  @Test
+  void createLabReportMessage_encodesWithoutException() {
+    PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
+    FacilityReportInput facilityReportInput = TestDataBuilder.createFacilityReportInput();
+    ProviderReportInput providerReportInput = TestDataBuilder.createProviderReportInput();
+    SpecimenInput specimenInput = TestDataBuilder.createSpecimenInput(dateGenerator);
+    List<TestDetailsInput> testDetailsInputList =
+        TestDataBuilder.createTestDetailsInputList(dateGenerator);
+
+    assertDoesNotThrow(
+        () -> {
+          ORU_R01 message =
+              hl7Converter.createLabReportMessage(
+                  patientReportInput,
+                  providerReportInput,
+                  facilityReportInput,
+                  specimenInput,
+                  testDetailsInputList,
+                  gitProperties,
+                  "T");
+
+          Parser parser = hapiContext.getPipeParser();
+          parser.encode(message);
+        });
+  }
+
+  @Test
+  void createLabReportMessage_valid() throws DataTypeException {
+    PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
+    FacilityReportInput facilityReportInput = TestDataBuilder.createFacilityReportInput();
+    ProviderReportInput providerReportInput = TestDataBuilder.createProviderReportInput();
+    SpecimenInput specimenInput = TestDataBuilder.createSpecimenInput(dateGenerator);
+    List<TestDetailsInput> testDetailsInputList =
+        TestDataBuilder.createTestDetailsInputList(dateGenerator);
+
+    ORU_R01 message =
+        hl7Converter.createLabReportMessage(
+            patientReportInput,
+            providerReportInput,
+            facilityReportInput,
+            specimenInput,
+            testDetailsInputList,
+            gitProperties,
+            "T");
+
+    Parser parser = hapiContext.getPipeParser();
+    assertDoesNotThrow(() -> parser.encode(message));
+  }
+
+  @Test
+  void populateMessageHeader_valid() throws DataTypeException {
+    MSH msh = new ORU_R01().getMSH();
+    String clia = "12D1234567";
+
+    hl7Converter.populateMessageHeader(msh, clia, "T");
+
+    assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue()).isEqualTo(clia);
+    assertThat(msh.getMsh7_DateTimeOfMessage().getTs1_Time().getValue())
+        .isEqualTo("20250612153644.0000+0000");
+    assertThat(msh.getMsh10_MessageControlID().getValue()).isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(msh.getMsh11_ProcessingID().getPt1_ProcessingID().getValue()).isEqualTo("T");
+  }
+
+  @Test
+  void populateSoftwareSegment_valid() throws DataTypeException {
+    SFT sft = new ORU_R01().getSFT();
+
+    hl7Converter.populateSoftwareSegment(sft, gitProperties);
+
+    assertThat(sft.getSft1_SoftwareVendorOrganization().getOrganizationName().getValue())
+        .isEqualTo("SimpleReport");
+    assertThat(sft.getSft2_SoftwareCertifiedVersionOrReleaseNumber().getValue())
+        .isEqualTo("1234567");
+    assertThat(sft.getSft3_SoftwareProductName().getValue()).isEqualTo("SimpleReport");
+    assertThat(sft.getSft4_SoftwareBinaryID().getValue()).isEqualTo("1234567");
+    assertThat(sft.getSft6_SoftwareInstallDate().getTs1_Time().getValue())
+        .isEqualTo("20250612153644.0000+0000");
+  }
+
+  @Test
+  void populatePatientIdentification_valid() throws DataTypeException {
+    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+    PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
+
+    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+
+    var patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
+
+    assertThat(patientIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(patientIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+    assertThat(patientIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
+  }
+
+  @Test
+  void populatePatientIdentification_valid_withPatientId() throws DataTypeException {
+    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+    String predefinedPatientId = "80b1f7ed-a865-47c9-8c52-38ea1a393a63";
+    PatientReportInput patientReportInput =
+        new PatientReportInput(
+            "John",
+            "Jacob",
+            "Smith",
+            "Jr",
+            "john@example.com",
+            "716-555-1234",
+            "123 Main St",
+            "Apartment A",
+            "Buffalo",
+            "Erie",
+            "NY",
+            "14220",
+            "USA",
+            "male",
+            LocalDate.of(1990, 1, 1),
+            "native",
+            "not_hispanic",
+            "266",
+            predefinedPatientId);
+    ;
+
+    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+
+    var patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
+
+    assertThat(patientIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(predefinedPatientId);
+    assertThat(patientIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+    assertThat(patientIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
+  }
+
+  @Test
+  void populatePatientIdentification_dateOfBirth_valid() throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
+
+    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+
+    assertThat(pid.getPid7_DateTimeOfBirth().getTs1_Time().getValue()).isEqualTo("19900101");
+  }
+
+  @Test
+  void populateName_valid() throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    var patientName = pid.getPid5_PatientName(0);
+
+    hl7Converter.populateName(patientName, "John", "Jacob", "Smith", "Jr");
+
+    assertThat(patientName.getXpn1_FamilyName().getFn1_Surname().getValue()).isEqualTo("Smith");
+    assertThat(patientName.getXpn2_GivenName().getValue()).isEqualTo("John");
+    assertThat(patientName.getXpn3_SecondAndFurtherGivenNamesOrInitialsThereof().getValue())
+        .isEqualTo("Jacob");
+    assertThat(patientName.getXpn4_SuffixEgJRorIII().getValue()).isEqualTo("Jr");
+  }
+
+  private static Stream<Arguments> administrativeSexArgs() {
+    return Stream.of(
+        arguments("", "U"),
+        arguments("male", "M"),
+        arguments("female", "F"),
+        arguments("other", "U"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("administrativeSexArgs")
+  void populateAdministrativeSex_valid(String patientSex, String expectedIdentifier)
+      throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    var administrativeSexCodedValue = pid.getPid8_AdministrativeSex();
+
+    hl7Converter.populateAdministrativeSex(administrativeSexCodedValue, patientSex);
+
+    assertThat(administrativeSexCodedValue.getValue()).isEqualTo(expectedIdentifier);
+  }
+
+  private static Stream<Arguments> raceArgs() {
+    return Stream.of(
+        arguments("native", "1002-5", "American Indian or Alaska Native", "HL70005"),
+        arguments("black", "2054-5", "Black or African American", "HL70005"),
+        arguments("refused", null, null, null),
+        arguments("Fishpeople", null, null, null));
+  }
+
+  @ParameterizedTest
+  @MethodSource("raceArgs")
+  void populateRace_valid(
+      String race, String expectedIdentifier, String expectedText, String codeSystem)
+      throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    var raceCodedElement = pid.getPid10_Race(0);
+
+    hl7Converter.populateRace(raceCodedElement, race);
+
+    assertThat(raceCodedElement.getCe1_Identifier().getValue()).isEqualTo(expectedIdentifier);
+    assertThat(raceCodedElement.getCe2_Text().getValue()).isEqualTo(expectedText);
+    assertThat(raceCodedElement.getCe3_NameOfCodingSystem().getValue()).isEqualTo(codeSystem);
+  }
+
+  private static Stream<Arguments> ethnicityArgs() {
+    return Stream.of(
+        arguments("hispanic", "H", "Hispanic or Latino", "HL70189"),
+        arguments("not_hispanic", "N", "Not Hispanic or Latino", "HL70189"),
+        arguments("refused", "U", "unknown", "HL70189"),
+        arguments("shark", "U", "unknown", "HL70189"));
+  }
+
+  @ParameterizedTest
+  @MethodSource("ethnicityArgs")
+  void populateEthnicGroup_valid(
+      String ethnicity, String ethnicityIdentifier, String ethnicityText, String codeSystem)
+      throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    var ethnicGroupCodedElement = pid.getPid22_EthnicGroup(0);
+
+    hl7Converter.populateEthnicGroup(ethnicGroupCodedElement, ethnicity);
+
+    assertThat(ethnicGroupCodedElement.getCe1_Identifier().getValue())
+        .isEqualTo(ethnicityIdentifier);
+    assertThat(ethnicGroupCodedElement.getCe2_Text().getValue()).isEqualTo(ethnicityText);
+    assertThat(ethnicGroupCodedElement.getCe3_NameOfCodingSystem().getValue())
+        .isEqualTo(codeSystem);
+  }
+
+  @Test
+  void populatePhoneNumber_valid() throws DataTypeException {
+    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+    XTN xtn = pid.getPid13_PhoneNumberHome(0);
+
+    hl7Converter.populatePhoneNumber(xtn, "(716) 555-1234");
+
+    assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo("716");
+    assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo("5551234");
+  }
+
+  @Test
+  void populatePhoneNumber_throwsExceptionFor_NotMatching10Digits() {
+    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+    XTN xtn = pid.getPid13_PhoneNumberHome(0);
+
+    assertThrows(
+        IllegalArgumentException.class, () -> hl7Converter.populatePhoneNumber(xtn, "16-555-1234"));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> hl7Converter.populatePhoneNumber(xtn, "7716-555-1234"));
+  }
+
+  @Test
+  void populatePhoneNumber_empty() throws DataTypeException {
+    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+    XTN xtn = pid.getPid13_PhoneNumberHome(0);
+
+    hl7Converter.populatePhoneNumber(xtn, "");
+
+    assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo(null);
+    assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo(null);
+  }
+
+  @Test
+  void populateExtendedAddress_valid() throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    XAD address = pid.getPid11_PatientAddress(0);
+
+    hl7Converter.populateExtendedAddress(
+        address, "123 Main St", "Apartment A", "Buffalo", "NY", "14220", "USA");
+
+    assertThat(address.getXad1_StreetAddress().getSad1_StreetOrMailingAddress().getValue())
+        .isEqualTo("123 Main St");
+    assertThat(address.getXad2_OtherDesignation().getValue()).isEqualTo("Apartment A");
+    assertThat(address.getXad3_City().getValue()).isEqualTo("Buffalo");
+    assertThat(address.getXad4_StateOrProvince().getValue()).isEqualTo("NY");
+    assertThat(address.getXad5_ZipOrPostalCode().getValue()).isEqualTo("14220");
+    assertThat(address.getXad6_Country().getValue()).isEqualTo("USA");
+  }
+
+  @Test
+  void populateOrderingProvider_valid() throws DataTypeException {
+    XCN orderingProvider =
+        new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getORC().getOrderingProvider(0);
+    ProviderReportInput providerInput = TestDataBuilder.createProviderReportInput();
+
+    hl7Converter.populateOrderingProvider(orderingProvider, providerInput);
+
+    assertThat(orderingProvider.getXcn1_IDNumber().getValue()).isEqualTo(providerInput.getNpi());
+    assertThat(orderingProvider.getXcn2_FamilyName().getFn1_Surname().getValue())
+        .isEqualTo(providerInput.getLastName());
+    assertThat(orderingProvider.getXcn3_GivenName().getValue())
+        .isEqualTo(providerInput.getFirstName());
+    assertThat(orderingProvider.getXcn4_SecondAndFurtherGivenNamesOrInitialsThereof().getValue())
+        .isEqualTo(providerInput.getMiddleName());
+    assertThat(orderingProvider.getXcn5_SuffixEgJRorIII().getValue()).isEqualTo("");
+  }
+}

@@ -169,4 +169,16 @@ public class DateTimeUtils {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     return formatter.format(zonedDateTime);
   }
+
+  /** Formats the ZonedDateTime to a valid HL7 timestamp string with zone offset */
+  public static String formatToHL7DateTime(ZonedDateTime zonedDateTime) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss.SSSSZ");
+    return zonedDateTime.format(formatter);
+  }
+
+  /** Formats the LocalDate to a valid HL7 timestamp string with day-level precision */
+  public static String formatToHL7DateTime(LocalDate localDate) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+    return localDate.format(formatter);
+  }
 }
