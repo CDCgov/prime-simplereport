@@ -245,7 +245,8 @@ public class CsvExportService {
       long facilityPatientsCount = getFacilityPatientsCount(facilityId);
       int totalPages = (int) Math.ceil((double) facilityPatientsCount / BATCH_SIZE);
 
-      // avoids multiple db calls for finding the list of facilities for the current org, for the
+      // avoids multiple db calls for finding the list of facility names for the current org, for
+      // the
       // case where
       // a patient, or many patients, could be assigned to all facilities in the org
       Organization currentOrg = organizationService.getOrganizationByFacilityId(facilityId);
@@ -255,7 +256,7 @@ public class CsvExportService {
               .collect(Collectors.joining(";"));
 
       log.info(
-          "Starting facility CSV patient export for facilityId={}: {} patient records in {} batches",
+          "Starting facility CSV patient download for facilityId={}: {} patient records in {} batches",
           facilityId,
           facilityPatientsCount,
           totalPages);
@@ -271,16 +272,19 @@ public class CsvExportService {
             BATCH_SIZE,
             facilityPatients.size(),
             (currentPage * BATCH_SIZE) + facilityPatients.size());
+
         for (Person patient : facilityPatients) {
           writePatientCsvRow(csvPrinter, patient, orgFacilitiesNamesList);
         }
 
         csvPrinter.flush();
         log.debug(
-            "Processed batch {}/{} for facility patient CSV export", (currentPage + 1), totalPages);
+            "Processed batch {}/{} for facility patient CSV download",
+            (currentPage + 1),
+            totalPages);
       }
 
-      log.info("Completed facility patient CSV export for facilityId={}", facilityId);
+      log.info("Completed facility patient CSV download for facilityId={}", facilityId);
     } catch (IOException e) {
       log.error("Error streaming facility patient CSV data for facilityId={}", facilityId, e);
       throw new RuntimeException("Failed to generate facility patient CSV file", e);
@@ -296,7 +300,8 @@ public class CsvExportService {
       long organizationPatientsCount = getOrganizationPatientsCount(organizationId);
       int totalPages = (int) Math.ceil((double) organizationPatientsCount / BATCH_SIZE);
 
-      // avoids multiple db calls for finding the list of facilities for the current org, for the
+      // avoids multiple db calls for finding the list of facility names for the current org, for
+      // the
       // case where
       // a patient, or many patients, could be assigned to all facilities in the org
       Organization currentOrg = organizationService.getOrganizationById(organizationId);
