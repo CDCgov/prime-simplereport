@@ -338,12 +338,7 @@ const LabReportForm = () => {
         <div className="prime-container card-container">
           <div className="usa-card__body">
             {currentStep === 0 && <FacilityFormSection facility={facility} />}
-            {currentStep === 1 && (
-              <ProviderFormSection
-                provider={provider}
-                setProvider={setProvider}
-              />
-            )}
+            {currentStep === 1 && <ProviderFormSection provider={provider} />}
             {currentStep === 2 && (
               <PatientFormSection patient={patient} setPatient={setPatient} />
             )}
