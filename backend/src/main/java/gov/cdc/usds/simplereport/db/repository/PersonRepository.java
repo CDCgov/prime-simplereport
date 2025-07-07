@@ -19,24 +19,6 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
 
   List<Person> findAll(Pageable p);
 
-  @Query(
-      value =
-          """
-                SELECT p.internal_id
-                FROM Person p
-                WHERE p.internal_id > :lastSeenId
-                    AND p.organization_id = :organizationId
-                    AND p.is_deleted = :isDeleted
-                ORDER BY p.internal_id ASC""",
-      nativeQuery = true)
-  List<UUID> findAllByOrganizationAndIsDeletedAndLastSeen(
-      UUID lastSeenId, Organization organizationId, boolean isDeleted, Pageable p);
-
-  @Query(
-      value = "SELECT p.internal_id FROM Person p WHERE p.id > :lastSeenId ORDER BY p.id ASC",
-      nativeQuery = true)
-  List<UUID> findNextPage(UUID lastSeenId, Pageable pageable);
-
   List<Person> findAllByInternalIdIn(Collection<UUID> ids);
 
   @EntityGraph(attributePaths = {"facility", "phoneNumbers"})
@@ -44,68 +26,6 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
 
   List<Person> findAllByOrganizationAndIsDeleted(
       Organization organizationId, boolean isDeleted, Pageable p);
-
-  @Query(
-      value =
-          """
-          SELECT
-              person.internal_id,
-              person.first_name,
-              person.middle_name,
-              person.last_name,
-              person.suffix,
-              person.birth_date,
-              person.street,
-              person.city,
-              person.county,
-              person.state,
-              person.postal_code,
-              person.country,
-              person.emails,
-              person.race,
-              person.gender,
-              person.gender_identity,
-              person.ethnicity,
-              person.role,
-              person.facility_id,
-              person.employed_in_healthcare,
-              person.resident_congregate_setting,
-              person.tribal_affiliation,
-              person.preferred_language,
-              person.notes,
-              person.email,
-              person.created_at,
-              person.created_by,
-              person.is_deleted,
-              person.lookup_id,
-              person.emails,
-              facility.internal_id,
-              facility.city,
-              facility.county,
-              facility.postal_code,
-              facility.state,
-              facility.street,
-              facility.clia_number,
-              facility.created_at,
-              facility.created_by,
-              facility.default_device_type_id,
-              facility.default_ordering_provider_id,
-              facility.default_specimen_type_id,
-              facility.email,
-              facility.facility_name,
-              facility.is_deleted,
-              facility.organization_id,
-              facility.telephone,
-              facility.updated_at,
-              facility.updated_by
-          FROM {h-schema}person as person
-            LEFT JOIN {h-schema}facility as facility
-                    ON facility.internal_id=person.facility_id
-                    where person.organization_id=:organizationInternalId
-                    and person.is_deleted=:isDeleted
-                    """,
-      nativeQuery = true)
-  List<Person> getAllThePeople(UUID organizationInternalId, boolean isDeleted, Pageable p);
 
   int count(Specification<Person> searchSpec);
 

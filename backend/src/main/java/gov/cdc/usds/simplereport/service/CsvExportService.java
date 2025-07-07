@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
@@ -250,7 +249,7 @@ public class CsvExportService {
       // case where
       // a patient, or many patients, could be assigned to all facilities in the org
       Organization currentOrg = organizationService.getOrganizationByFacilityId(facilityId);
-      String facilityNameList =
+      String orgFacilitiesNamesList =
           facilityRepository.findAllByOrganizationAndDeleted(currentOrg, false).stream()
               .map(Facility::getFacilityName)
               .collect(Collectors.joining(";"));
@@ -273,7 +272,7 @@ public class CsvExportService {
             facilityPatients.size(),
             (currentPage * BATCH_SIZE) + facilityPatients.size());
         for (Person patient : facilityPatients) {
-          writePatientCsvRow(csvPrinter, patient, facilityNameList);
+          writePatientCsvRow(csvPrinter, patient, orgFacilitiesNamesList);
         }
 
         csvPrinter.flush();
@@ -312,62 +311,43 @@ public class CsvExportService {
           organizationPatientsCount,
           totalPages);
 
-      IntStream.range(0, totalPages)
-          .parallel()
-          .forEach(
-              currentPage -> {
+      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
+        Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
 
-                //      for (int currentPage = 0; currentPage < totalPages; currentPage++) {
-                Pageable pageable = PageRequest.of(currentPage, BATCH_SIZE);
+        long beforeOrganizationPatientsQuery = System.currentTimeMillis();
+        List<Person> organizationPatients = fetchOrganizationPatients(currentOrg, pageable);
+        long afterOrganizationPatientsQuery = System.currentTimeMillis();
 
-                long beforeOrganizationPatientsQuery = System.currentTimeMillis();
-                List<Person> organizationPatients = fetchOrganizationPatients(currentOrg, pageable);
-                long afterOrganizationPatientsQuery = System.currentTimeMillis();
+        log.info(
+            "Time to fetch Organization Patients: {}",
+            afterOrganizationPatientsQuery - beforeOrganizationPatientsQuery);
 
-                log.info(
-                    "Time to fetch Organization Patients: {}",
-                    afterOrganizationPatientsQuery - beforeOrganizationPatientsQuery);
+        log.info(
+            "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
+            (currentPage + 1),
+            totalPages,
+            BATCH_SIZE,
+            organizationPatients.size(),
+            (currentPage * BATCH_SIZE) + organizationPatients.size());
 
-                log.info(
-                    "Page {}/{}: Expected {} patient records, Got {} patient records, Total so far: {}",
-                    (currentPage + 1),
-                    totalPages,
-                    BATCH_SIZE,
-                    organizationPatients.size(),
-                    (currentPage * BATCH_SIZE) + organizationPatients.size());
+        long beforeWritePatientCsvRow = System.currentTimeMillis();
 
-                long beforeWritePatientCsvRow = System.currentTimeMillis();
+        for (Person patient : organizationPatients) {
+          writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
+        }
+        long afterWritePatientCsvRow = System.currentTimeMillis();
 
-                organizationPatients.parallelStream()
-                    .forEach(
-                        patient -> {
-                          try {
-                            writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
-                          } catch (IOException e) {
-                            throw new RuntimeException(e);
-                          }
-                        });
-                //
-                //        for (Person patient : organizationPatients) {
-                //          writePatientCsvRow(csvPrinter, patient, orgFacilityNameList);
-                //        }
-                long afterWritePatientCsvRow = System.currentTimeMillis();
+        log.info(
+            "Time to writePatientCsvRow in a loop: {}",
+            afterWritePatientCsvRow - beforeWritePatientCsvRow);
 
-                log.info(
-                    "Time to writePatientCsvRow in a loop: {}",
-                    afterWritePatientCsvRow - beforeWritePatientCsvRow);
+        csvPrinter.flush();
 
-                try {
-                  csvPrinter.flush();
-                } catch (IOException e) {
-                  throw new RuntimeException(e);
-                }
-
-                log.debug(
-                    "Processed batch {}/{} for organization patient CSV export",
-                    (currentPage + 1),
-                    totalPages);
-              });
+        log.debug(
+            "Processed batch {}/{} for organization patient CSV export",
+            (currentPage + 1),
+            totalPages);
+      }
 
       log.info("Completed organization patient CSV download for organizationId={}", organizationId);
     } catch (IOException e) {
@@ -481,22 +461,31 @@ public class CsvExportService {
   }
 
   private List<Person> fetchFacilityPatients(UUID facilityId, Pageable pageable) {
-    return personService.getPatients(
-        facilityId,
-        pageable.getPageNumber(),
-        pageable.getPageSize(),
-        ArchivedStatus.UNARCHIVED,
-        null,
-        false,
-        null);
+
+    // running two queries here prevents paginating in memory
+    List<UUID> facilityPatientIdsPage =
+        personService
+            .getPatients(
+                facilityId,
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                ArchivedStatus.UNARCHIVED,
+                null,
+                false,
+                null)
+            .stream()
+            .map(IdentifiedEntity::getInternalId)
+            .toList();
+
+    return personRepository.findByInternalIdIn(facilityPatientIdsPage);
   }
 
-  @Transactional(readOnly = true, timeout = 100)
-  protected List<Person> fetchOrganizationPatients(Organization organizationId, Pageable pageable) {
+  @Transactional(readOnly = true)
+  protected List<Person> fetchOrganizationPatients(Organization organization, Pageable pageable) {
 
     // running two queries here prevents paginating in memory
     List<UUID> personInternalIdsPage =
-        personRepository.findAllByOrganizationAndIsDeleted(organizationId, false, pageable).stream()
+        personRepository.findAllByOrganizationAndIsDeleted(organization, false, pageable).stream()
             .map(IdentifiedEntity::getInternalId)
             .toList();
 
