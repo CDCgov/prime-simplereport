@@ -50,7 +50,7 @@ export const defaultProviderReportInputState: ProviderReportInput = {
 
 export const defaultFacilityReportInputState: FacilityReportInput = {
   city: "Jefferson City",
-  clia: "00D000000000",
+  clia: "00D0000000",
   county: "Cole",
   email: "",
   name: "Dracula",
