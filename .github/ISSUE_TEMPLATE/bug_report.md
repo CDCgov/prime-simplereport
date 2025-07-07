@@ -1,5 +1,5 @@
 ---
-name: Simple Report Bug Report 🐛
+name: SimpleReport Bug Report 🐛
 about: Create a report to help us improve
 title: ""
 labels: "Bug, Assign Urgency"
