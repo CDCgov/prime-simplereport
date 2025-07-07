@@ -1,15 +1,17 @@
 package gov.cdc.usds.simplereport.api.model.universalreporting;
 
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor
 public class PatientReportInput {
-  private final String firstName;
+  @NotBlank private final String firstName;
   private final String middleName;
-  private final String lastName;
+  @NotBlank private final String lastName;
   private final String suffix;
   private final String email;
   private final String phone;
@@ -21,7 +23,7 @@ public class PatientReportInput {
   private final String zipCode;
   private final String country;
   private final String sex;
-  private final LocalDate dateOfBirth;
+  @NonNull private final LocalDate dateOfBirth;
   private final String race;
   private final String ethnicity;
   private final String tribalAffiliation;
