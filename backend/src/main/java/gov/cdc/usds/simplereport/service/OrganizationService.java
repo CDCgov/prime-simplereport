@@ -626,6 +626,7 @@ public class OrganizationService {
     return orgToDelete;
   }
 
+  @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public List<FacilityLab> getFacilityLabs(@Argument UUID facilityId) {
     return facilityLabRepository.findAllByFacilityIdAndIsDeletedFalse(facilityId);
   }
@@ -638,10 +639,13 @@ public class OrganizationService {
       @Argument String description) {
     FacilityLab facilityLab;
     Optional<FacilityLab> facilityLabOpt =
-        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedTrue(
-            facilityId, labId);
+        facilityLabRepository.findDistinctFirstByFacilityIdAndLabId(facilityId, labId);
 
     if (facilityLabOpt.isPresent()) {
+      if (!facilityLabOpt.get().getIsDeleted()) {
+        throw new IllegalArgumentException("Facility lab already exists");
+      }
+
       facilityLab = facilityLabOpt.get();
       facilityLab.setName(name);
       facilityLab.setDescription(description);

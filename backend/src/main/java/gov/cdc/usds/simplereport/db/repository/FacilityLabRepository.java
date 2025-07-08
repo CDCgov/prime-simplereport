@@ -8,6 +8,8 @@ import java.util.UUID;
 public interface FacilityLabRepository extends EternalAuditedEntityRepository<FacilityLab> {
   List<FacilityLab> findAllByFacilityIdAndIsDeletedFalse(UUID facilityId);
 
+  Optional<FacilityLab> findDistinctFirstByFacilityIdAndLabId(UUID facilityId, UUID labId);
+
   Optional<FacilityLab> findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
       UUID facilityId, UUID labId);
 
