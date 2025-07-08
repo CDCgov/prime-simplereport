@@ -288,6 +288,12 @@ public class HL7Converter {
         patientInput.getZipCode(),
         patientInput.getCountry());
 
+    if (StringUtils.isBlank(patientInput.getPhone())
+        && StringUtils.isBlank(patientInput.getEmail())) {
+      throw new IllegalArgumentException(
+          "Patient input must contain at least phone number or email address for PID-13");
+    }
+
     populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone());
 
     // For some reason, email address is indeed stored on the PhoneNumberHome element array
@@ -508,6 +514,11 @@ public class HL7Converter {
         orderingFacility.getState(),
         orderingFacility.getZipCode(),
         DEFAULT_COUNTRY);
+
+    if (StringUtils.isBlank(orderingFacility.getPhone())) {
+      throw new IllegalArgumentException(
+          "Ordering facility input must contain at least phone number for ORC-23");
+    }
 
     populatePhoneNumber(
         commonOrder.getOrc23_OrderingFacilityPhoneNumber(0), orderingFacility.getPhone());

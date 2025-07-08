@@ -14,6 +14,7 @@ import ca.uhn.hl7v2.model.v251.datatype.XCN;
 import ca.uhn.hl7v2.model.v251.datatype.XTN;
 import ca.uhn.hl7v2.model.v251.message.ORU_R01;
 import ca.uhn.hl7v2.model.v251.segment.MSH;
+import ca.uhn.hl7v2.model.v251.segment.ORC;
 import ca.uhn.hl7v2.model.v251.segment.PID;
 import ca.uhn.hl7v2.model.v251.segment.SFT;
 import ca.uhn.hl7v2.parser.Parser;
@@ -195,6 +196,39 @@ class HL7ConverterTest {
   }
 
   @Test
+  void populatePatientIdentification_throwsExceptionFor_BlankEmailAndPhone() {
+    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+    PatientReportInput patientReportInput =
+        new PatientReportInput(
+            "John",
+            "Jacob",
+            "Smith",
+            "Jr",
+            "",
+            "",
+            "123 Main St",
+            "Apartment A",
+            "Buffalo",
+            "Erie",
+            "NY",
+            "14220",
+            "USA",
+            "male",
+            LocalDate.of(1990, 1, 1),
+            "native",
+            "not_hispanic",
+            "266",
+            "");
+
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> hl7Converter.populatePatientIdentification(pid, patientReportInput));
+    assertThat(exception.getMessage())
+        .isEqualTo("Patient input must contain at least phone number or email address for PID-13");
+  }
+
+  @Test
   void populatePatientIdentification_dateOfBirth_valid() throws DataTypeException {
     PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
@@ -353,5 +387,32 @@ class HL7ConverterTest {
     assertThat(orderingProvider.getXcn4_SecondAndFurtherGivenNamesOrInitialsThereof().getValue())
         .isEqualTo(providerInput.getMiddleName());
     assertThat(orderingProvider.getXcn5_SuffixEgJRorIII().getValue()).isEqualTo("");
+  }
+
+  @Test
+  void populateCommonOrderSegment_throwsExceptionFor_BlankFacilityPhone() {
+    ORC orc = new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION().getORC();
+    ProviderReportInput orderingProvider = TestDataBuilder.createProviderReportInput();
+    FacilityReportInput orderingFacility =
+        new FacilityReportInput(
+            "Dracula Medical",
+            "12D1234567",
+            "123 Main St",
+            "Suite 100",
+            "Buffalo",
+            "Erie",
+            "NY",
+            "14220",
+            "",
+            "");
+
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                hl7Converter.populateCommonOrderSegment(
+                    orc, orderingFacility, orderingProvider, "123"));
+    assertThat(exception.getMessage())
+        .isEqualTo("Ordering facility input must contain at least phone number for ORC-23");
   }
 }
