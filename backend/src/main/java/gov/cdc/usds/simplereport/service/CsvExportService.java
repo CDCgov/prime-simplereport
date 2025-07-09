@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -472,7 +473,12 @@ public class CsvExportService {
           .forEachRemaining(
               entry -> {
                 if (entry.getValue().asBoolean()) {
-                  symptomList.add(entry.getKey());
+                  String symptomName = Translators.getSymptomName(entry.getKey());
+                  if (symptomName != null) {
+                    symptomList.add(symptomName);
+                  } else {
+                    symptomList.add(entry.getKey());
+                  }
                 }
               });
 
