@@ -661,7 +661,9 @@ public class CsvExportService {
                 .map(PhoneNumber::getNumber)
                 .collect(Collectors.joining(";"))
             : "",
-        String.join(";", ListUtils.emptyIfNull(patient.getEmails())),
+        patient.getEmails() != null && !patient.getEmails().isEmpty()
+            ? String.join(";", patient.getEmails())
+            : trimToEmpty(patient.getEmail()),
         trimToEmpty(patient.getRace()),
         trimToEmpty(patient.getGender()),
         trimToEmpty(patient.getEthnicity()),
