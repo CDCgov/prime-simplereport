@@ -12,6 +12,7 @@ import { Organization } from "../../generated/graphql";
 import FetchClient from "../../app/utils/api";
 import { getAppInsightsHeaders } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
+import { triggerBlobDownload } from "../utils/file";
 
 interface ManageOrganizationProps {
   organization: Organization;
@@ -81,21 +82,12 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
 
       const blob = await response.blob();
       const contentDisposition = response.headers.get("content-disposition");
-      let filename = "organization-test-results.zip";
 
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename=(.+)/);
-        if (match) filename = match[1];
-      }
-
-      const urlBlob = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = urlBlob;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(urlBlob);
+      triggerBlobDownload({
+        blob,
+        contentDisposition: contentDisposition || undefined,
+        defaultFilename: "organization-test-results.zip",
+      });
 
       setTestResultDownloadState("complete");
       showSuccess("Success Message", "Test results downloaded successfully");

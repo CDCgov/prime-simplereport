@@ -5,7 +5,6 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -37,6 +36,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
@@ -93,7 +93,6 @@ public class CsvExportService {
     }
   }
 
-  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
   public void streamResultsAsCsv(OutputStream outputStream, ExportParameters params) {
     ExportParameters resolvedParams = resolveOrganizationId(params);
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
@@ -150,11 +149,11 @@ public class CsvExportService {
     }
   }
 
-  @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
   public void streamResultsAsZippedCsv(OutputStream rawOut, ExportParameters params) {
     ExportParameters resolvedParams = resolveOrganizationId(params);
 
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
+      zipOut.setLevel(Deflater.BEST_SPEED);
       zipOut.putNextEntry(new ZipEntry("test-results.csv"));
 
       streamResultsAsCsv(new NonClosingOutputStream(zipOut), resolvedParams);
