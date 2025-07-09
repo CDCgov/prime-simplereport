@@ -699,8 +699,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     deletedLab.setName("Old Name");
     deletedLab.setDescription("Old Description");
 
-    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedTrue(
-            facilityId, labId))
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabId(facilityId, labId))
         .thenReturn(Optional.of(deletedLab));
     doReturn(deletedLab).when(facilityLabRepository).save(any());
 
@@ -712,6 +711,35 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertThat(result.getDescription()).isEqualTo(description);
     assertThat(result.getIsDeleted()).isFalse();
     verify(facilityLabRepository).save(deletedLab);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void createFacilityLab_shouldThrow_whenFacilityLabAlreadyExistsAndNotDeleted() {
+    // Given
+    UUID facilityId = UUID.randomUUID();
+    UUID labId = UUID.randomUUID();
+    String name = "Existing Lab";
+    String description = "Existing Description";
+
+    FacilityLab existingLab =
+        FacilityLab.builder()
+            .facilityId(facilityId)
+            .labId(labId)
+            .name(name)
+            .description(description)
+            .build();
+
+    existingLab.setIsDeleted(false);
+
+    when(facilityLabRepository.findDistinctFirstByFacilityIdAndLabId(facilityId, labId))
+        .thenReturn(Optional.of(existingLab));
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> _service.createFacilityLab(facilityId, labId, name, description));
+
+    verify(facilityLabRepository, never()).save(any());
   }
 
   @Test
