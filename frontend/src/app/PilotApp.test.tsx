@@ -185,7 +185,7 @@ describe("App", () => {
     await user.click(screen.getByText("Enter lab results", { exact: false }));
 
     expect(
-      await screen.findByText("Next: Provider information", {
+      await screen.findByText("Next", {
         exact: false,
       })
     ).toBeInTheDocument();

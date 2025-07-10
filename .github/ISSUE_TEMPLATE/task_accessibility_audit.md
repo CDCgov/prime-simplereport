@@ -1,8 +1,8 @@
 ---
-name: Accessibility Ticket
+name: SimpleReport Accessibility Task 🚧
 about: Create a new work item for accessibility issues
 title: ""
-labels: Accessibility
+labels: Accessibility, Assign Urgency
 assignees: ""
 ---
 
