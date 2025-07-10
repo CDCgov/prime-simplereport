@@ -23,35 +23,15 @@ interface ManageOrganizationProps {
 type DownloadState = "idle" | "downloading" | "complete";
 const apiClient = new FetchClient();
 
-const getDownloadButtonContent = (downloadState: DownloadState) => {
-  switch (downloadState) {
-    case "downloading":
-      return {
-        icon: faSpinner,
-        label: "Downloading...",
-        className: "fa-spin",
-      };
-    case "complete":
-      return {
-        icon: faDownload,
-        label: "Download Complete",
-        className: "",
-      };
-    default:
-      return {
-        icon: faDownload,
-        label: "Download Test Results",
-        className: "",
-      };
-  }
-};
-
 const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   organization,
   onSave,
   canEditOrganizationName,
 }: ManageOrganizationProps) => {
-  const [downloadState, setDownloadState] = useState<DownloadState>("idle");
+  const [testResultDownloadState, setTestResultDownloadState] =
+    useState<DownloadState>("idle");
+  const [patientDownloadState, setPatientDownloadState] =
+    useState<DownloadState>("idle");
 
   const {
     register,
@@ -77,7 +57,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   };
 
   const handleDownloadTestResults = async () => {
-    setDownloadState("downloading");
+    setTestResultDownloadState("downloading");
     try {
       const downloadPath = `/results/download?organizationId=${organization.id}`;
       const fullUrl = apiClient.getURL(downloadPath);
@@ -109,20 +89,125 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
         defaultFilename: "organization-test-results.zip",
       });
 
-      setDownloadState("complete");
+      setTestResultDownloadState("complete");
       showSuccess("Success Message", "Test results downloaded successfully");
 
       setTimeout(() => {
-        setDownloadState("idle");
+        setTestResultDownloadState("idle");
       }, 3000);
     } catch (e: any) {
       console.error("Download error:", e);
       showError("Error downloading test results", e.message);
-      setDownloadState("idle");
+      setTestResultDownloadState("idle");
     }
   };
 
-  const buttonContent = getDownloadButtonContent(downloadState);
+  const handleDownloadPatients = async () => {
+    setPatientDownloadState("downloading");
+    try {
+      const downloadPath = `/patients/download/organization?orgId=${organization.id}`;
+      const fullUrl = apiClient.getURL(downloadPath);
+      console.log("Full organization object:", organization);
+
+      console.log("Organization Download URL:", fullUrl);
+
+      const response = await fetch(fullUrl, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Access-Control-Request-Headers": "Authorization",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          ...getAppInsightsHeaders(),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to download patients: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get("content-disposition");
+      let filename = "organization-patients.zip";
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename=(.+)/);
+        if (match) filename = match[1];
+      }
+
+      const urlBlob = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = urlBlob;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(urlBlob);
+
+      setPatientDownloadState("complete");
+      showSuccess("Download Complete", "Patients downloaded successfully");
+
+      setTimeout(() => {
+        setPatientDownloadState("idle");
+      }, 3000);
+    } catch (e: any) {
+      console.error("Download error:", e);
+      showError("Error downloading patients", e.message);
+      setPatientDownloadState("idle");
+    }
+  };
+
+  const getTestResultDownloadButtonContent = (downloadableItems: string) => {
+    switch (testResultDownloadState) {
+      case "downloading":
+        return {
+          icon: faSpinner,
+          label: "Downloading...",
+          className: "fa-spin",
+        };
+      case "complete":
+        return {
+          icon: faDownload,
+          label: "Download Complete",
+          className: "",
+        };
+      default:
+        return {
+          icon: faDownload,
+          label: "Download " + downloadableItems,
+          className: "",
+        };
+    }
+  };
+
+  const getPatientDownloadButtonContent = (downloadableItems: string) => {
+    switch (patientDownloadState) {
+      case "downloading":
+        return {
+          icon: faSpinner,
+          label: "Downloading...",
+          className: "fa-spin",
+        };
+      case "complete":
+        return {
+          icon: faDownload,
+          label: "Download Complete",
+          className: "",
+        };
+      default:
+        return {
+          icon: faDownload,
+          label: "Download " + downloadableItems,
+          className: "",
+        };
+    }
+  };
+
+  const downloadTestResultsButtonContent =
+    getTestResultDownloadButtonContent("test results");
+  const downloadPatientsButtonContent =
+    getPatientDownloadButtonContent("patients");
 
   return (
     <div className="grid-row position-relative">
@@ -133,12 +218,19 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
             <div className="display-flex flex-gap-1">
               <Button
                 type="button"
-                label={buttonContent.label}
-                icon={buttonContent.icon}
-                iconClassName={buttonContent.className}
+                label={downloadPatientsButtonContent.label}
+                icon={downloadPatientsButtonContent.icon}
+                iconClassName={downloadPatientsButtonContent.className}
+                onClick={handleDownloadPatients}
+                disabled={patientDownloadState === "downloading"}
+              />
+              <Button
+                type="button"
+                label={downloadTestResultsButtonContent.label}
+                icon={downloadTestResultsButtonContent.icon}
+                iconClassName={downloadTestResultsButtonContent.className}
                 onClick={handleDownloadTestResults}
-                disabled={downloadState === "downloading"}
-                variant="outline"
+                disabled={testResultDownloadState === "downloading"}
               />
               <Button
                 type="submit"
