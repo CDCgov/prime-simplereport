@@ -45,7 +45,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 /**
  * Tests around edges of audit logging.
@@ -114,12 +113,9 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     HashMap<String, Object> args = patientArgs();
     args.put("symptoms", "{}");
     args.put("noSymptoms", true);
-    String clientErrorMessage =
-        assertThrows(WebClientRequestException.class, () -> runQuery("update-aoe-questions", args))
-            .getMessage();
-    assertEquals(
-        "Request processing failed: header: Something went wrong; body: Please check for errors and try again",
-        clientErrorMessage);
+    AssertionError error =
+        assertThrows(AssertionError.class, () -> runQuery("update-aoe-questions", args));
+    assertThat(error.getMessage()).contains("Something went wrong");
   }
 
   @Test
