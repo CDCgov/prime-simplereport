@@ -614,7 +614,15 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void getFacilityLabs_shouldReturnAllNonDeletedFacilityLabs() {
-    UUID facilityId = UUID.randomUUID();
+    List<Organization> disOrgs = organizationRepository.findAllByName("Dis Organization");
+    assertThat(disOrgs).hasSize(1);
+    Organization disOrg = disOrgs.get(0);
+
+    Facility facility =
+        facilityRepository.findByOrganizationAndFacilityName(disOrg, "Injection Site").get();
+    assertThat(facility).isNotNull();
+
+    UUID facilityId = facility.getInternalId();
 
     FacilityLab expectedLab1 =
         FacilityLab.builder()
