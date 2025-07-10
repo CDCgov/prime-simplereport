@@ -1,31 +1,34 @@
 ---
-name: Bug report
+name: SimpleReport Bug Report 🐛
 about: Create a report to help us improve
-title: ''
-labels: Bug
-assignees: ''
-
+title: ""
+labels: "Bug, Assign Urgency"
+assignees: ""
 ---
 
-### Description
+## Description
 
-A clear and concise description of what the bug is.
+_Provide a high-level summary of the bug and what impact it has_
 
-### Steps to reproduce
+## Steps to reproduce
 
-If applicable, add screenshots to help explain your problem.
+_List out the steps in detail to reproduce the bug_
 
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+1.
 
-### Expected behavior
+## Expected Result
 
-A clear and concise description of what you expected to happen.
+_Explain how it should function if the bug was fixed. Attach screenshot if applicable_
 
-If applicable, add screenshots to help explain the solution.
+## Actual result
 
-### Additional context
+_Explain what's happening now when the bug is present. Attach screenshot if applicable_
 
-Add any other context about the problem here.
+## Impact
+
+_Describe what you believe is the significance/impact of this bug to help correctly prioritize a fix_
+
+
+## Notes
+
+_Include any additional context or information here that doesn't fit into other parts of the template_

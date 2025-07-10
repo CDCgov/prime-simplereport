@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.utils;
 import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonNodesEqual;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -15,21 +17,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
@@ -124,6 +132,19 @@ public class BulkUploadResultsToFhirTest {
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(19);
     assertThat(resourceUrls).hasSize(19);
+  }
+
+  @Test
+  void requiredFieldsOnlyCsv_success() throws IOException {
+    String testFileName = "testResultUpload/test-results-upload-valid-required-only.csv";
+
+    // check test file is up to date with list of required fields
+    Set<String> requiredFields = new HashSet<>(TestResultRow.getStaticRequiredFields());
+    Set<String> testFileFields = new HashSet<>(getColumnNames(testFileName));
+    assertEquals(requiredFields, testFileFields);
+
+    InputStream input = loadCsv(testFileName);
+    assertDoesNotThrow(() -> sut.convertToFhirBundles(input, UUID.randomUUID()));
   }
 
   @Test
@@ -230,10 +251,6 @@ public class BulkUploadResultsToFhirTest {
     assertThat(symptomaticCongregateAOE).hasSize(11);
   }
 
-  private InputStream loadCsv(String csvFile) {
-    return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(csvFile);
-  }
-
   @Test
   void convertExistingCsv_observationValuesPresent() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
@@ -257,14 +274,6 @@ public class BulkUploadResultsToFhirTest {
 
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(19);
-  }
-
-  private InputStream getJsonStream(String jsonFile) {
-    return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(jsonFile);
-  }
-
-  private String inputStreamToString(InputStream inputStream) throws IOException {
-    return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
   }
 
   @Test
@@ -715,5 +724,25 @@ public class BulkUploadResultsToFhirTest {
       assertThat(mappedCode).isEqualTo(inputOrderedCode);
       assertThat(inputOrderedCode).isNotEqualTo(inputPerformedCode);
     }
+  }
+
+  private InputStream loadCsv(String csvFile) {
+    return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(csvFile);
+  }
+
+  private List<String> getColumnNames(String csvFileName) throws IOException {
+    try (InputStream input = loadCsv(csvFileName);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+      String headerLine = reader.readLine();
+      return Arrays.asList(headerLine.split(","));
+    }
+  }
+
+  private InputStream getJsonStream(String jsonFile) {
+    return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(jsonFile);
+  }
+
+  private String inputStreamToString(InputStream inputStream) throws IOException {
+    return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
   }
 }
