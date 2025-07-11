@@ -10,7 +10,7 @@ locals {
 
 resource "azurerm_storage_container" "deployments" {
   name                  = "rs-batched-publisher-function-releases"
-  storage_account_id  = data.azurerm_storage_account.app.id
+  storage_account_name  = data.azurerm_storage_account.app.name
   container_access_type = "private"
 }
 
