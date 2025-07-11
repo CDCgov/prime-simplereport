@@ -143,7 +143,7 @@ const configureStore = () => {
 
 export const store = configureStore();
 
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = typeof initialState;
 
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
