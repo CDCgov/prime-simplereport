@@ -70,6 +70,9 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 60MB
+  mvc:
+    async:
+      request-timeout: 140000
 server:
   error:
     include-stacktrace: never
