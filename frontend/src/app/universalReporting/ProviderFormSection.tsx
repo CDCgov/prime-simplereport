@@ -1,190 +1,99 @@
-import React, { Dispatch } from "react";
-import { useTranslation } from "react-i18next";
+import React from "react";
+import { Table } from "@trussworks/react-uswds";
 
-import TextInput from "../commonComponents/TextInput";
 import { ProviderReportInput } from "../../generated/graphql";
-import Select from "../commonComponents/Select";
-import { stateCodes } from "../../config/constants";
+import "./universalReporting.scss";
 
 type ProviderFormSectionProps = {
   provider: ProviderReportInput;
-  setProvider: Dispatch<ProviderReportInput>;
 };
 
-const ProviderFormSection = ({
-  provider,
-  setProvider,
-}: ProviderFormSectionProps) => {
-  const { t } = useTranslation();
+const ProviderFormSection = ({ provider }: ProviderFormSectionProps) => {
+  const providerTableInfo = [
+    {
+      name: "First name",
+      value: provider.firstName,
+    },
+    {
+      name: "Middle name",
+      value: provider.middleName,
+    },
+    {
+      name: "Last name",
+      value: provider.lastName,
+    },
+    {
+      name: "Suffix",
+      value: provider.suffix,
+    },
+    {
+      name: "NPI",
+      value: provider.npi,
+    },
+    {
+      name: "Street address",
+      value: provider.street,
+    },
+    {
+      name: "Apt, suite, etc",
+      value: provider.streetTwo,
+    },
+    {
+      name: "City",
+      value: provider.city,
+    },
+    {
+      name: "County",
+      value: provider.county,
+    },
+    {
+      name: "State",
+      value: provider.state,
+    },
+    {
+      name: "ZIP code",
+      value: provider.zipCode,
+    },
+    {
+      name: "Phone",
+      value: provider.phone,
+    },
+    {
+      name: "Email",
+      value: provider.email,
+    },
+  ];
 
   return (
-    <>
+    <div className="form-section provider-form">
       <div className="grid-row">
-        <div className="grid-col-auto">
-          <h2 className={"font-sans-lg"}>Provider Info</h2>
-          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
-            General information
-          </h3>
+        <div className="grid-col">
+          <h2 className={"font-sans-lg"}>Ordering provider</h2>
+          <p>Please review the provider information</p>
+
+          <Table bordered={false} fullWidth={true}>
+            <thead>
+              <tr>
+                <th scope="col" className={"usa-sr-only"}>
+                  Field
+                </th>
+                <th scope="col" className={"usa-sr-only"}>
+                  Value
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {providerTableInfo.map((row) => (
+                <tr key={`data-row-${row.name}`}>
+                  <td className={"text-bold"}>{row.name}</td>
+                  <td>{row.value ?? ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </div>
       </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-first-name"}
-            type={"text"}
-            label={"Provider first name"}
-            onChange={(e) =>
-              setProvider({ ...provider, firstName: e.target.value })
-            }
-            value={provider.firstName}
-            required
-          ></TextInput>
-        </div>
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-middle-name"}
-            type={"text"}
-            label={"Provider middle name"}
-            onChange={(e) =>
-              setProvider({ ...provider, middleName: e.target.value })
-            }
-            value={provider.middleName ?? ""}
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-last-name"}
-            type={"text"}
-            label={"Provider last name"}
-            onChange={(e) =>
-              setProvider({ ...provider, lastName: e.target.value })
-            }
-            value={provider.lastName}
-            required
-          ></TextInput>
-        </div>
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-suffix"}
-            type={"text"}
-            label={"Provider suffix"}
-            onChange={(e) =>
-              setProvider({ ...provider, suffix: e.target.value })
-            }
-            value={provider.suffix ?? ""}
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-8">
-          <TextInput
-            name={"provider-npi"}
-            label={"Provider NPI number"}
-            value={provider.npi}
-            onChange={(e) => setProvider({ ...provider, npi: e.target.value })}
-            required
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row">
-        <div className="grid-col-auto">
-          <h3 className={"font-sans-md margin-bottom-0 margin-top-4"}>
-            Contact information
-          </h3>
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-email"}
-            label={"Provider email"}
-            value={provider.email ?? ""}
-            onChange={(e) =>
-              setProvider({ ...provider, email: e.target.value })
-            }
-          ></TextInput>
-        </div>
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-phone"}
-            label={"Provider phone"}
-            value={provider.phone ?? ""}
-            onChange={(e) =>
-              setProvider({ ...provider, phone: e.target.value })
-            }
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-8">
-          <TextInput
-            name={"provider-street"}
-            label={"Provider street address 1"}
-            value={provider.street ?? ""}
-            onChange={(e) =>
-              setProvider({ ...provider, street: e.target.value })
-            }
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-8">
-          <TextInput
-            name={"provider-street"}
-            label={"Provider street address 2"}
-            value={provider.streetTwo ?? ""}
-            onChange={(e) =>
-              setProvider({ ...provider, streetTwo: e.target.value })
-            }
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-city"}
-            label={"Provider city"}
-            value={provider.city ?? ""}
-            onChange={(e) => setProvider({ ...provider, city: e.target.value })}
-          ></TextInput>
-        </div>
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-county"}
-            label={"Provider county"}
-            value={provider.county ?? ""}
-            onChange={(e) =>
-              setProvider({ ...provider, county: e.target.value })
-            }
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-4">
-          <Select<string>
-            label={"Provider state"}
-            name="provider-state"
-            value={provider.state ?? ""}
-            options={stateCodes.map((c) => ({ label: c, value: c }))}
-            defaultOption={t("common.defaultDropdownOption")}
-            defaultSelect
-            onChange={(state) => setProvider({ ...provider, state })}
-          />
-        </div>
-        <div className="grid-col-4">
-          <TextInput
-            name={"provider-zip-code"}
-            label={"Provider ZIP code"}
-            value={provider.zipCode ?? ""}
-            onChange={(e) =>
-              setProvider({ ...provider, zipCode: e.target.value })
-            }
-          ></TextInput>
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 
