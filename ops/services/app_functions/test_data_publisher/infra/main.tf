@@ -1,6 +1,6 @@
 locals {
-  resource_group_name        = "${var.resource_group_name_prefix}${var.env_level}"
-  function_app_source        = "${path.module}/../${var.function_app_source}"
+  resource_group_name = "${var.resource_group_name_prefix}${var.env_level}"
+  function_app_source = "${path.module}/../${var.function_app_source}"
   management_tags = {
     prime-app      = "simple-report"
     environment    = var.environment
@@ -9,7 +9,7 @@ locals {
 }
 
 resource "azurerm_storage_container" "deployments" {
-  name                  = "rs-batched-publisher-function-releases"
+  name                  = "test-data-publisher-function-releases"
   storage_account_name  = data.azurerm_storage_account.app.name
   container_access_type = "private"
 }
