@@ -1,7 +1,5 @@
 locals {
-  simple_report_callback_url = "https://${var.environment == "prod" ? "www" : var.environment}.simplereport.gov/api/reportstream/callback"
   resource_group_name        = "${var.resource_group_name_prefix}${var.env_level}"
-  report_stream_url          = "https://${(var.environment == "prod" || var.environment == "stg") ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems"
   function_app_source        = "${path.module}/../${var.function_app_source}"
   management_tags = {
     prime-app      = "simple-report"
@@ -12,13 +10,13 @@ locals {
 
 resource "azurerm_storage_container" "deployments" {
   name                  = "rs-batched-publisher-function-releases"
-  storage_account_name  = data.azurerm_storage_account.app.name
+  storage_account_id  = data.azurerm_storage_account.app.id
   container_access_type = "private"
 }
 
 // The Terraform deploy currently assumes that the .zip to be deployed already exists
 resource "azurerm_storage_blob" "appcode" {
-  name                   = "functionapp.zip"
+  name                   = "newfunctionapp.zip"
   storage_account_name   = data.azurerm_storage_account.app.name
   storage_container_name = azurerm_storage_container.deployments.name
   type                   = "Block"
@@ -89,19 +87,10 @@ resource "azurerm_linux_function_app" "functions" {
     AZ_STORAGE_ACCOUNT_NAME               = data.azurerm_storage_account.app.name
     AZ_STORAGE_ACCOUNT_KEY                = data.azurerm_storage_account.app.primary_access_key
     AZ_STORAGE_QUEUE_CXN_STRING           = data.azurerm_storage_account.app.primary_connection_string
-    TEST_EVENT_QUEUE_NAME                 = var.test_event_queue_name
-    PUBLISHING_ERROR_QUEUE_NAME           = var.publishing_error_queue_name
-    REPORTING_EXCEPTION_QUEUE_NAME        = var.reporting_exception_queue_name
-    FHIR_TEST_EVENT_QUEUE_NAME            = var.fhir_test_event_queue_name
-    FHIR_PUBLISHING_ERROR_QUEUE_NAME      = var.fhir_publishing_error_queue_name
-    REPORT_STREAM_URL                     = local.report_stream_url
-    REPORT_STREAM_BASE_URL                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_url.id})"
-    REPORT_STREAM_TOKEN                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
-    FHIR_REPORT_STREAM_KEY                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
-    REPORT_STREAM_BATCH_MINIMUM           = var.report_stream_batch_minimum
-    REPORT_STREAM_BATCH_MAXIMUM           = var.report_stream_batch_maximum
-    SIMPLE_REPORT_CB_URL                  = local.simple_report_callback_url
-    SIMPLE_REPORT_CB_TOKEN                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
+    AIMS_ACCESS_KEY_ID                    = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_access_key_id.id})"
+    AIMS_SECRET_ACCESS_KEY                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_secret_access_key.id})"
+    AIMS_KMS_ENCRYPTION_KEY               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_kms_encryption_key.id})"
+    AIMS_OUTBOUND_ENDPOINT                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_outbound_storage_endpoint.id})"
   }
   lifecycle {
     ignore_changes = [
