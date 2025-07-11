@@ -678,8 +678,6 @@ public class OrganizationService {
     }
 
     FacilityLab facilityLab = facilityLabOpt.get();
-    facilityLab.setLabId(labId);
-
     name.ifPresent(facilityLab::setName);
     description.ifPresent(facilityLab::setDescription);
     return facilityLabRepository.save(facilityLab);
