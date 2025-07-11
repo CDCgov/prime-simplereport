@@ -79,7 +79,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   const handleDownloadTestResults = async () => {
     setDownloadState("downloading");
     try {
-      const downloadPath = `/results/download?organizationId=${organization.id}`;
+      const downloadPath = `/results/download`;
       const fullUrl = apiClient.getURL(downloadPath);
 
       console.log("Organization Download URL:", fullUrl);

@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Result;
@@ -44,14 +43,10 @@ class CsvExportServiceTest {
 
   @Mock private ResultService resultService;
 
-  @Mock private OrganizationService organizationService;
-
   @InjectMocks private CsvExportService csvExportService;
 
   private ExportParameters facilityExportParams;
   private ExportParameters organizationExportParams;
-  private ExportParameters allFacilitiesExportParams;
-  private Organization mockOrganization;
   private Facility mockFacility;
   private Person mockPerson;
   private DeviceType mockDeviceType;
@@ -60,7 +55,6 @@ class CsvExportServiceTest {
 
   @BeforeEach
   void setUp() {
-    mockOrganization = createMockOrganization();
     mockFacility = createMockFacility();
     mockPerson = createMockPerson();
     mockDeviceType = createMockDeviceType();
@@ -68,27 +62,10 @@ class CsvExportServiceTest {
     mockSurvey = createMockSurveyData();
 
     facilityExportParams =
-        new ExportParameters(
-            UUID.randomUUID(), null, null, null, null, null, null, null, 0, 100, false);
+        new ExportParameters(UUID.randomUUID(), null, null, null, null, null, null, 0, 100);
 
     organizationExportParams =
-        new ExportParameters(
-            null, UUID.randomUUID(), null, null, null, null, null, null, 0, 100, false);
-
-    allFacilitiesExportParams =
-        new ExportParameters(
-            UUID.randomUUID(),
-            null,
-            null,
-            TestResult.POSITIVE,
-            PersonRole.STUDENT,
-            null,
-            Date.from(
-                LocalDate.now().minusDays(30).atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            0,
-            100,
-            true);
+        new ExportParameters(null, null, null, null, null, null, null, 0, 100);
   }
 
   @Test
@@ -149,12 +126,10 @@ class CsvExportServiceTest {
   }
 
   @Test
-  void streamResultsAsZippedCsv_withAllFacilitiesExport_shouldGenerateZipSuccessfully()
+  void streamResultsAsZippedCsv_withOrganizationExport_shouldGenerateZipSuccessfully()
       throws IOException {
     Result mockResult = createMockResult();
     Page<Result> mockPage = new PageImpl<>(List.of(mockResult));
-    when(organizationService.getOrganizationByFacilityId(allFacilitiesExportParams.facilityId()))
-        .thenReturn(mockOrganization);
     when(resultService.getOrganizationResults(
             any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
         .thenReturn(mockPage);
@@ -162,7 +137,7 @@ class CsvExportServiceTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     assertDoesNotThrow(
-        () -> csvExportService.streamResultsAsZippedCsv(outputStream, allFacilitiesExportParams));
+        () -> csvExportService.streamResultsAsZippedCsv(outputStream, organizationExportParams));
 
     byte[] zipBytes = outputStream.toByteArray();
     assertThat(zipBytes).isNotEmpty();
@@ -182,10 +157,6 @@ class CsvExportServiceTest {
       assertThat(csvContent).contains("123 Main St");
       assertThat(csvContent).contains("555-1234");
     }
-  }
-
-  private Organization createMockOrganization() {
-    return mock(Organization.class);
   }
 
   private Facility createMockFacility() {

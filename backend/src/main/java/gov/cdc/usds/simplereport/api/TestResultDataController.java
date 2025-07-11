@@ -28,22 +28,16 @@ public class TestResultDataController {
   @GetMapping(value = "/results/download")
   public ResponseEntity<StreamingResponseBody> downloadResultsAsCSV(
       @RequestParam(required = false) UUID facilityId,
-      @RequestParam(required = false) UUID organizationId,
       @RequestParam(required = false) UUID patientId,
       @RequestParam(required = false) String result,
       @RequestParam(required = false) String role,
       @RequestParam(required = false) String disease,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startDate,
       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endDate,
-      @RequestParam(required = false, defaultValue = "false") boolean includeAllFacilities,
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "30000") int pageSize) {
 
-    log.info(
-        "CSV download request for facilityId={}, organizationId={}, includeAllFacilities={}",
-        facilityId,
-        organizationId,
-        includeAllFacilities);
+    log.info("CSV download request for facilityId={}", facilityId);
 
     if (pageNumber < 0) {
       pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
@@ -58,7 +52,6 @@ public class TestResultDataController {
     final CsvExportService.ExportParameters params =
         new CsvExportService.ExportParameters(
             facilityId,
-            organizationId,
             patientId,
             Translators.parseTestResult(result),
             Translators.parsePersonRole(role, true),
@@ -66,8 +59,7 @@ public class TestResultDataController {
             startDate,
             endDate,
             pageNumber,
-            pageSize,
-            includeAllFacilities);
+            pageSize);
 
     StreamingResponseBody responseBody =
         out -> {
