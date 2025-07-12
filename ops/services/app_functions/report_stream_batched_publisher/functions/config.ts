@@ -40,10 +40,6 @@ export const ENV = (() => {
       "SimpleReport webhook URL for ReportStream exceptions",
     SIMPLE_REPORT_CB_TOKEN:
       "API token for the SimpleReport webhook for ReportStream exceptions",
-    AIMS_ACCESS_KEY_ID: "AWS access key ID for connecting to AIMS",
-    AIMS_SECRET_ACCESS_KEY: "AWS secret access key for connecting to AIMS",
-    AIMS_KMS_ENCRYPTION_KEY: "KMS encryption key for sending data to AIMS",
-    AIMS_OUTBOUND_ENDPOINT: "destination endpoint for sending data to AIMS",
   };
   return Object.entries(CONFIG_VALUES).reduce(
     (acc, cur) => {

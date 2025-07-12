@@ -83,3 +83,14 @@ module "report_stream_reporting_functions" {
     azurerm_storage_account.app
   ]
 }
+
+module "test_data_reporting_function_app" {
+  source       = "../services/app_functions/test_data_publisher/infra"
+  environment  = local.env
+  env_level    = local.env_level
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  lb_subnet_id = data.terraform_remote_state.persistent_dev2.outputs.subnet_lbs_id
+  depends_on = [
+    azurerm_storage_account.app
+  ]
+}
