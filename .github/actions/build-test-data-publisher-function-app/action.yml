@@ -1,9 +1,5 @@
 name: Build test data publisher functions
 description: Build functions for test data publisher function app
-inputs:
-  deploy-env:  #todo try removing things it doesn't seem to be used?
-    description: The environment being deployed (e.g. "prod" or "test")
-    required: true
 runs:
   using: composite
   steps:

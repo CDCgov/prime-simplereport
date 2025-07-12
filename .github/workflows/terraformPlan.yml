@@ -74,7 +74,5 @@ jobs:
           deploy-env: ${{ matrix.env }}
       - name: Build test publisher function app
         uses: ./.github/actions/build-test-data-publisher-function-app
-        with:
-          deploy-env: ${{ matrix.env }}
       - name: Terraform plan
         run: make plan-${{ matrix.env }}

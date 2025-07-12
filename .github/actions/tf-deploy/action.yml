@@ -38,8 +38,6 @@ runs:
         deploy-env: ${{ inputs.deploy_env }}
     - name: Build data publisher function app
       uses: ./.github/actions/build-test-data-publisher-function-app
-      with:
-        deploy-env: ${{ inputs.deploy_env }}
     - name: Terraform Init
       working-directory: ./ops
       env: # all Azure interaction is through Terraform

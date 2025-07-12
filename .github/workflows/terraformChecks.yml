@@ -87,8 +87,6 @@ jobs:
       - name: Build test publisher function app prod
         if: ${{ github.actor != 'dependabot[bot]' }}
         uses: ./.github/actions/build-test-data-publisher-function-app
-        with:
-          deploy-env: ${{env.DEPLOY_ENV}}
       - name: Terraform Plan Prod
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: make plan-prod
@@ -104,8 +102,6 @@ jobs:
       - name: Build test publisher function app stg
         if: ${{ github.actor != 'dependabot[bot]' }}
         uses: ./.github/actions/build-test-data-publisher-function-app
-        with:
-          deploy-env: stg
       - name: Terraform plan Stg
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: make plan-stg
