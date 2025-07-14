@@ -36,7 +36,7 @@ runs:
       uses: ./.github/actions/build-reportstream-functions
       with:
         deploy-env: ${{ inputs.deploy_env }}
-    - name: Build data publisher function app
+    - name: Build data publisher functions package
       uses: ./.github/actions/build-test-data-publisher-function-app
     - name: Terraform Init
       working-directory: ./ops

@@ -84,7 +84,7 @@ jobs:
         uses: ./.github/actions/build-reportstream-functions
         with:
           deploy-env: ${{env.DEPLOY_ENV}}
-      - name: Build test publisher function app prod
+      - name: Build data publisher functions package
         if: ${{ github.actor != 'dependabot[bot]' }}
         uses: ./.github/actions/build-test-data-publisher-function-app
       - name: Terraform Plan Prod
@@ -99,7 +99,7 @@ jobs:
         uses: ./.github/actions/build-reportstream-functions
         with:
           deploy-env: stg
-      - name: Build test publisher function app stg
+      - name: Build data publisher functions package
         if: ${{ github.actor != 'dependabot[bot]' }}
         uses: ./.github/actions/build-test-data-publisher-function-app
       - name: Terraform plan Stg

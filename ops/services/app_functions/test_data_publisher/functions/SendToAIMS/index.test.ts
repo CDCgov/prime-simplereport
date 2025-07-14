@@ -9,13 +9,6 @@ jest.mock("@azure/functions", () => ({
     timer: jest.fn(),
   },
 }));
-jest.mock("../config", () => ({
-  ENV: {
-    AZ_STORAGE_QUEUE_SVC_URL: "hello",
-    AZ_STORAGE_ACCOUNT_NAME: "hola",
-    AZ_STORAGE_ACCOUNT_KEY: "bonjour",
-  },
-}));
 
 jest.mock(
   "applicationinsights",
@@ -38,6 +31,8 @@ describe("SendToAIMS", () => {
   const timer = {} as jest.MockedObject<Timer>;
 
   it("has a test file so that deploys will work", async () => {
+    // build fails if no test files
+    // to be replaced when SendToAIMS function has actual functionality
     await SendToAIMS(timer, context);
 
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledTimes(1);

@@ -1,5 +1,5 @@
 name: Build test data publisher functions
-description: Build functions for test data publisher function app
+description: Build local package file for functions in test data publisher function app
 runs:
   using: composite
   steps:
@@ -10,5 +10,5 @@ runs:
       shell: bash
       working-directory: ./ops/services/app_functions/test_data_publisher/functions
       run: |
-        echo "::group::Build function"
+        echo "Build function"
         yarn build:production
