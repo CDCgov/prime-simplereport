@@ -3,12 +3,14 @@ package gov.cdc.usds.simplereport.utils;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.time.DateTimeException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -180,5 +182,15 @@ public class DateTimeUtils {
   public static String formatToHL7DateTime(LocalDate localDate) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
     return localDate.format(formatter);
+  }
+
+  /** Formats the Instant to a valid HL7 timestamp string at UTC zone offset */
+  public static String formatToHL7DateTime(Instant instant) {
+    return formatToHL7DateTime(instant.atZone(ZoneOffset.UTC));
+  }
+
+  /** Formats the Date to a valid HL7 timestamp string at UTC zone offset */
+  public static String formatToHL7DateTime(Date date) {
+    return formatToHL7DateTime(date.toInstant());
   }
 }

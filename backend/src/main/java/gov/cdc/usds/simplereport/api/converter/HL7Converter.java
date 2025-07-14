@@ -48,8 +48,6 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -183,11 +181,9 @@ public class HL7Converter {
     msh.getMsh6_ReceivingFacility().getHd2_UniversalID().setValue(APHL_ORG_OID);
     msh.getMsh6_ReceivingFacility().getHd3_UniversalIDType().setValue("ISO");
 
-    ZonedDateTime utcDateTime = dateGenerator.newDate().toInstant().atZone(ZoneOffset.UTC);
-    String messageDateTime = formatToHL7DateTime(utcDateTime);
-    // For some reason, providing the raw new Date causes the encoder to use an invalid character
-    // for MSH.DateTimeOfMessage.Time.Millis
-    msh.getMsh7_DateTimeOfMessage().getTs1_Time().setValue(messageDateTime);
+    msh.getMsh7_DateTimeOfMessage()
+        .getTs1_Time()
+        .setValue(formatToHL7DateTime(dateGenerator.newDate()));
 
     /*
     "ORU^R01^ORU_R01" is the Message Type used for result messages in the HL7v2.5.1 IG
@@ -245,9 +241,9 @@ public class HL7Converter {
     If the zone offset is not provided in the string for DTM.setValue, then DTM will default to the machine's time zone.
     This would lead to unit tests producing different results based on the machine.
     */
-    ZonedDateTime commitZonedDateTime = gitProperties.getCommitTime().atZone(ZoneOffset.UTC);
-    String commitHL7DateTime = formatToHL7DateTime(commitZonedDateTime);
-    sft.getSft6_SoftwareInstallDate().getTs1_Time().setValue(commitHL7DateTime);
+    sft.getSft6_SoftwareInstallDate()
+        .getTs1_Time()
+        .setValue(formatToHL7DateTime(gitProperties.getCommitTime()));
   }
 
   /**
@@ -623,23 +619,22 @@ public class HL7Converter {
     serviceIdentifier.getCe2_Text().setValue(testOrderDisplay);
     serviceIdentifier.getCe3_NameOfCodingSystem().setValue(HL7_LOINC_CODE_SYSTEM);
 
-    observationRequest.getObr7_ObservationDateTime().getTs1_Time().setValue(specimenCollectionDate);
+    observationRequest
+        .getObr7_ObservationDateTime()
+        .getTs1_Time()
+        .setValue(formatToHL7DateTime(specimenCollectionDate));
 
     observationRequest
         .getObr8_ObservationEndDateTime()
         .getTs1_Time()
-        .setValue(specimenCollectionDate);
+        .setValue(formatToHL7DateTime(specimenCollectionDate));
 
     populateOrderingProvider(observationRequest.getObr16_OrderingProvider(0), orderingProvider);
 
-    ZonedDateTime utcDateTime = dateGenerator.newDate().toInstant().atZone(ZoneOffset.UTC);
-    String reportStatusChangeDateTime = formatToHL7DateTime(utcDateTime);
-    // For some reason, providing an unformatted raw new Date to setValue causes the encoder to use
-    // an invalid character for MSH.DateTimeOfMessage.Time.Millis
     observationRequest
         .getObr22_ResultsRptStatusChngDateTime()
         .getTs1_Time()
-        .setValue(reportStatusChangeDateTime);
+        .setValue(formatToHL7DateTime(dateGenerator.newDate()));
 
     // F for final results, from HL7 table 0123 Result Status
     observationRequest.getObr25_ResultStatus().setValue("F");
@@ -693,11 +688,15 @@ public class HL7Converter {
 
     // "For specimen-based laboratory reporting, the specimen collection date and time."
     // See page 142, HL7 v2.5.1 IG
-    obx.getObx14_DateTimeOfTheObservation().getTs1_Time().setValue(specimenCollectionDate);
+    obx.getObx14_DateTimeOfTheObservation()
+        .getTs1_Time()
+        .setValue(formatToHL7DateTime(specimenCollectionDate));
 
     // "Time at which the testing was performed."
     // See page 143, HL7 v2.5.1 IG
-    obx.getObx19_DateTimeOfTheAnalysis().getTs1_Time().setValue(testDetail.getResultDate());
+    obx.getObx19_DateTimeOfTheAnalysis()
+        .getTs1_Time()
+        .setValue(formatToHL7DateTime(testDetail.getResultDate()));
 
     XON performingOrganizationName = obx.getObx23_PerformingOrganizationName();
     performingOrganizationName.getXon1_OrganizationName().setValue(performingFacility.getName());
@@ -789,16 +788,16 @@ public class HL7Converter {
         .getSpm17_SpecimenCollectionDateTime()
         .getDr1_RangeStartDateTime()
         .getTs1_Time()
-        .setValue(specimenInput.getCollectionDate());
+        .setValue(formatToHL7DateTime(specimenInput.getCollectionDate()));
     specimen
         .getSpm17_SpecimenCollectionDateTime()
         .getDr2_RangeEndDateTime()
         .getTs1_Time()
-        .setValue(specimenInput.getCollectionDate());
+        .setValue(formatToHL7DateTime(specimenInput.getCollectionDate()));
 
     specimen
         .getSpm18_SpecimenReceivedDateTime()
         .getTs1_Time()
-        .setValue(specimenInput.getReceivedDate());
+        .setValue(formatToHL7DateTime(specimenInput.getReceivedDate()));
   }
 }

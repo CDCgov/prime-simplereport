@@ -9,18 +9,23 @@ import static org.mockito.Mockito.when;
 
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.model.DataTypeException;
+import ca.uhn.hl7v2.model.v251.datatype.CE;
 import ca.uhn.hl7v2.model.v251.datatype.XAD;
 import ca.uhn.hl7v2.model.v251.datatype.XCN;
 import ca.uhn.hl7v2.model.v251.datatype.XTN;
 import ca.uhn.hl7v2.model.v251.message.ORU_R01;
 import ca.uhn.hl7v2.model.v251.segment.MSH;
+import ca.uhn.hl7v2.model.v251.segment.OBR;
+import ca.uhn.hl7v2.model.v251.segment.OBX;
 import ca.uhn.hl7v2.model.v251.segment.ORC;
 import ca.uhn.hl7v2.model.v251.segment.PID;
 import ca.uhn.hl7v2.model.v251.segment.SFT;
+import ca.uhn.hl7v2.model.v251.segment.SPM;
 import ca.uhn.hl7v2.parser.Parser;
 import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
@@ -29,6 +34,7 @@ import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -47,7 +53,9 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles("test")
 class HL7ConverterTest {
-  private static final Instant STATIC_INSTANT = Instant.ofEpochSecond(1749742604L);
+  private static final Instant STATIC_INSTANT =
+      LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
+  private static final String STATIC_INSTANT_HL7_STRING = "20250701000000.0000+0000";
   private static final String STATIC_RANDOM_UUID = "5db534ea-5e97-4861-ba18-d74acc46db15";
 
   private final HapiContext hapiContext = HapiContextProvider.get();
@@ -122,7 +130,7 @@ class HL7ConverterTest {
 
     assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue()).isEqualTo(clia);
     assertThat(msh.getMsh7_DateTimeOfMessage().getTs1_Time().getValue())
-        .isEqualTo("20250612153644.0000+0000");
+        .isEqualTo(STATIC_INSTANT_HL7_STRING);
     assertThat(msh.getMsh10_MessageControlID().getValue()).isEqualTo(STATIC_RANDOM_UUID);
     assertThat(msh.getMsh11_ProcessingID().getPt1_ProcessingID().getValue()).isEqualTo("T");
   }
@@ -154,7 +162,7 @@ class HL7ConverterTest {
     assertThat(sft.getSft3_SoftwareProductName().getValue()).isEqualTo("SimpleReport");
     assertThat(sft.getSft4_SoftwareBinaryID().getValue()).isEqualTo("1234567");
     assertThat(sft.getSft6_SoftwareInstallDate().getTs1_Time().getValue())
-        .isEqualTo("20250612153644.0000+0000");
+        .isEqualTo(STATIC_INSTANT_HL7_STRING);
   }
 
   @Test
@@ -428,5 +436,149 @@ class HL7ConverterTest {
                     orc, orderingFacility, orderingProvider, "123"));
     assertThat(exception.getMessage())
         .isEqualTo("Ordering facility input must contain at least phone number for ORC-23");
+  }
+
+  @Test
+  void populateObservationRequest_valid() throws DataTypeException {
+    OBR observationRequest = new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getOBR();
+    ProviderReportInput providerInput = TestDataBuilder.createProviderReportInput();
+    String testOrderLoinc = "12345";
+    String testOrderDisplay = "Test order display";
+
+    Instant specimenCollectionDate =
+        LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
+    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+
+    hl7Converter.populateObservationRequest(
+        observationRequest,
+        "1",
+        STATIC_RANDOM_UUID,
+        providerInput,
+        Date.from(specimenCollectionDate),
+        testOrderLoinc,
+        testOrderDisplay);
+
+    assertThat(
+            observationRequest.getObr4_UniversalServiceIdentifier().getCe1_Identifier().getValue())
+        .isEqualTo(testOrderLoinc);
+    assertThat(observationRequest.getObr4_UniversalServiceIdentifier().getCe2_Text().getValue())
+        .isEqualTo(testOrderDisplay);
+    assertThat(
+            observationRequest
+                .getObr4_UniversalServiceIdentifier()
+                .getCe3_NameOfCodingSystem()
+                .getValue())
+        .isEqualTo("LN");
+
+    assertThat(observationRequest.getObr7_ObservationDateTime().getTs1_Time().getValue())
+        .isEqualTo(expectedSpecimenCollectionDate);
+    assertThat(observationRequest.getObr8_ObservationEndDateTime().getTs1_Time().getValue())
+        .isEqualTo(expectedSpecimenCollectionDate);
+    assertThat(observationRequest.getObr22_ResultsRptStatusChngDateTime().getTs1_Time().getValue())
+        .isEqualTo(STATIC_INSTANT_HL7_STRING);
+  }
+
+  @Test
+  void populateObservationResult_valid() throws DataTypeException {
+    OBX observationResult =
+        new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getOBSERVATION().getOBX();
+
+    Instant specimenCollectionDate =
+        LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
+    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+
+    Instant testResultDate = LocalDate.of(2025, 7, 2).atStartOfDay().toInstant(ZoneOffset.UTC);
+    String expectedTestResultDate = "20250702000000.0000+0000";
+
+    FacilityReportInput performingFacility = TestDataBuilder.createFacilityReportInput();
+    TestDetailsInput testDetail =
+        new TestDetailsInput(
+            "105629000",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            ResultScaleType.ORDINAL,
+            "260373001",
+            Date.from(testResultDate),
+            "");
+
+    hl7Converter.populateObservationResult(
+        observationResult, "1", performingFacility, Date.from(specimenCollectionDate), testDetail);
+
+    assertThat(observationResult.getObx3_ObservationIdentifier().getCe1_Identifier().getValue())
+        .isEqualTo(testDetail.getTestOrderLoinc());
+    assertThat(observationResult.getObx3_ObservationIdentifier().getCe2_Text().getValue())
+        .isEqualTo(testDetail.getTestOrderDisplayName());
+
+    assertThat(observationResult.getObx2_ValueType().getValue()).isEqualTo("CE");
+    CE observationValue = (CE) observationResult.getObx5_ObservationValue(0).getData();
+    assertThat(observationValue.getCe1_Identifier().getValue())
+        .isEqualTo(testDetail.getResultValue());
+    assertThat(observationValue.getCe3_NameOfCodingSystem().getValue()).isEqualTo("SNM");
+
+    assertThat(observationResult.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
+        .isEqualTo(expectedSpecimenCollectionDate);
+
+    assertThat(observationResult.getObx19_DateTimeOfTheAnalysis().getTs1_Time().getValue())
+        .isEqualTo(expectedTestResultDate);
+  }
+
+  @Test
+  void populateSpecimen_valid() throws DataTypeException {
+    SPM specimen =
+        new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getSPECIMEN(0).getSPM();
+
+    Instant specimenCollectionDate =
+        LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
+    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+
+    Instant specimenReceivedDate =
+        LocalDate.of(2025, 7, 2).atStartOfDay().toInstant(ZoneOffset.UTC);
+    String expectedSpecimenReceivedDate = "20250702000000.0000+0000";
+
+    SpecimenInput specimenInput =
+        new SpecimenInput(
+            "258479004",
+            "Interstitial fluid specimen",
+            Date.from(specimenCollectionDate),
+            Date.from(specimenReceivedDate),
+            "Body tissue structure",
+            "85756007");
+
+    hl7Converter.populateSpecimen(specimen, "1", STATIC_RANDOM_UUID, specimenInput);
+
+    assertThat(
+            specimen
+                .getSpm2_SpecimenID()
+                .getEip1_PlacerAssignedIdentifier()
+                .getEi1_EntityIdentifier()
+                .getValue())
+        .isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(
+            specimen
+                .getSpm2_SpecimenID()
+                .getEip2_FillerAssignedIdentifier()
+                .getEi1_EntityIdentifier()
+                .getValue())
+        .isEqualTo(STATIC_RANDOM_UUID);
+
+    assertThat(
+            specimen
+                .getSpm17_SpecimenCollectionDateTime()
+                .getDr1_RangeStartDateTime()
+                .getTs1_Time()
+                .getValue())
+        .isEqualTo(expectedSpecimenCollectionDate);
+    assertThat(
+            specimen
+                .getSpm17_SpecimenCollectionDateTime()
+                .getDr2_RangeEndDateTime()
+                .getTs1_Time()
+                .getValue())
+        .isEqualTo(expectedSpecimenCollectionDate);
+
+    assertThat(specimen.getSpm18_SpecimenReceivedDateTime().getTs1_Time().getValue())
+        .isEqualTo(expectedSpecimenReceivedDate);
   }
 }
