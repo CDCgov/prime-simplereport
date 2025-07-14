@@ -44,11 +44,11 @@ then run `source ~/.bash_profile`
 
 #### Function App Build
 
-SimpleReport contains a function app, `report_stream_batched_publisher`, which pushes data to ReportStream on a regular basis. This app must be built and exist in the folder structure to begin executing terraform commands that reside outside of an environment's `persistent` directory.
+SimpleReport contains function app(s) which push data to our intermediary on a regular basis. This app must be built and exist in the folder structure to begin executing terraform commands that reside outside of an environment's `persistent` directory.
 
 This preparation should only need to be done once, unless major changes are made to the application's construction.
 
-To build the function app, run the following commands from the repository's root:
+To build the function app, execute the build command from the `functions` subdirectory of the given function app's directory. For example, to build the report-stream-batched-publisher function app, run the following commands from the repository's root:
 
 ```bash
 $ cd ./ops/services/app_functions/report_stream_batched_publisher/functions

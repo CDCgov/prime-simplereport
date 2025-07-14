@@ -29,5 +29,4 @@ variable "function_app_source" {
   default = "./functions/build/test-data-publisher.zip"
 }
 
-
 variable "lb_subnet_id" {}

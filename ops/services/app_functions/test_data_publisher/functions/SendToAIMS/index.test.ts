@@ -36,8 +36,6 @@ describe("SendToAIMS", () => {
     await SendToAIMS(timer, context);
 
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledTimes(1);
-    expect(context.log).toHaveBeenCalledWith(
-      "Sent a telemetry event",
-    );
+    expect(context.log).toHaveBeenCalledWith("Sent a telemetry event");
   });
 });

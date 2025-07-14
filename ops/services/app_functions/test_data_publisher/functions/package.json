@@ -6,46 +6,28 @@
     "node": "^20.0.0"
   },
   "scripts": {
-    "func": "func",
     "coverage": "jest --coverage",
     "clean": "rimraf build",
     "build:compile": "tsc",
-    "build:localSetup": "yarn && yarn coverage && yarn prestart && yarn install --production && yarn build:zip",
     "build:production": "yarn && yarn coverage && yarn build && yarn install --production && yarn build:zip",
-    "prebuild:zip": "mkdir -m700 -p build",
     "build:zip": "zip -r build/test-data-publisher.zip . -x \"*.zip\" -x \".terraform\" -x \"terraform.*\" -x \"*.tf\" -x \"local.settings.json\" -x \"*.map\"",
     "build": "yarn clean && yarn build:compile",
     "lint:write": "prettier --write . && eslint --fix .",
-    "predeploy": "yarn build:production",
-    "prestart": "yarn build && func extensions install",
-    "start": "func start",
     "test": "jest --watch"
   },
   "main": "dist/**/index.js",
   "dependencies": {
     "@azure/functions": "^4.6.0",
-    "@azure/storage-queue": "^12.26.0",
-    "applicationinsights": "^3.7.0",
-    "csv-stringify": "^6.5.2",
-    "jsonwebtoken": "^9.0.2",
-    "node-fetch": "^2.7.0"
-  },
-  "resolutions": {
-    "semver": "7.5.2",
-    "undici": "5.26.2"
+    "applicationinsights": "^3.7.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.7.7",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "azure-functions-core-tools": "^4.0.6821",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.1",
     "jest": "^29.7.0",
-    "jest-fetch-mock": "^3.0.3",
     "prettier": "3.5.3",
-    "rimraf": "^6.0.1",
     "ts-jest": "^29.2.6",
     "typescript": "^5.8.3"
   },
