@@ -615,6 +615,7 @@ public class HL7Converter {
       throws DataTypeException {
     observationRequest.getObr1_SetIDOBR().setValue(sequenceNumber);
 
+    // OBR-3 must contain the same value as ORC-3 Filler Order Number.
     populateEntityIdentifierOID(observationRequest.getObr3_FillerOrderNumber(), orderId);
 
     // IG says this should be a CWE datatype, but the API implements it as a CE datatype

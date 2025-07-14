@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.datatype.CE;
+import ca.uhn.hl7v2.model.v251.datatype.EI;
 import ca.uhn.hl7v2.model.v251.datatype.XAD;
 import ca.uhn.hl7v2.model.v251.datatype.XCN;
 import ca.uhn.hl7v2.model.v251.datatype.XTN;
@@ -99,7 +100,7 @@ class HL7ConverterTest {
   }
 
   @Test
-  void createLabReportMessage_valid() throws DataTypeException {
+  void createLabReportMessage_orc3_matches_obr3() throws DataTypeException {
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
     FacilityReportInput facilityReportInput = TestDataBuilder.createFacilityReportInput();
     ProviderReportInput providerReportInput = TestDataBuilder.createProviderReportInput();
@@ -117,8 +118,12 @@ class HL7ConverterTest {
             gitProperties,
             "T");
 
-    Parser parser = hapiContext.getPipeParser();
-    assertDoesNotThrow(() -> parser.encode(message));
+    EI commonOrderFillerOrderNumber =
+        message.getPATIENT_RESULT().getORDER_OBSERVATION().getORC().getOrc3_FillerOrderNumber();
+    EI observationRequestFillerOrderNumber =
+        message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR().getObr3_FillerOrderNumber();
+    assertThat(commonOrderFillerOrderNumber.getEi1_EntityIdentifier().getValue())
+        .isEqualTo(observationRequestFillerOrderNumber.getEi1_EntityIdentifier().getValue());
   }
 
   @Test
