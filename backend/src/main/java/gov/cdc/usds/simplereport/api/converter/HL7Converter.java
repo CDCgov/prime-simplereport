@@ -149,7 +149,9 @@ public class HL7Converter {
   }
 
   /**
-   * Populates the Message Header Segment (MSH) on the ORU message. See page 90, HL7 v2.5.1 IG.
+   * The Message Header Segment (MSH) contains information describing how to parse and process the
+   * message. This includes identification of message delimiters, sender, receiver, message type,
+   * timestamp, etc. See page 90, HL7 v2.5.1 IG.
    *
    * @param msh the Message Header Segment (MSH) object from the message
    * @param sendingFacilityClia CLIA number for the facility sending the lab report
@@ -218,7 +220,9 @@ public class HL7Converter {
   }
 
   /**
-   * Populates the Software Segment (SFT) on the ORU message. See page 96, HL7 v2.5.1 IG.
+   * The Software Segment (SFT) provides information about the sending application or other
+   * applications that manipulate the message before the receiving application processes the
+   * message. See page 96, HL7 v2.5.1 IG.
    *
    * @param sft the Software Segment (SFT) object from the message
    * @param gitProperties used for software version, binary id, and install date
@@ -247,8 +251,8 @@ public class HL7Converter {
   }
 
   /**
-   * Populates the Patient Identification Segment (PID) of the HL7 message. See page 100, HL7 v2.5.1
-   * IG.
+   * The Patient Identification Segment (PID) is used to provide basic demographics regarding the
+   * subject of the testing. See page 100, HL7 v2.5.1 IG.
    *
    * @param pid the PID object from the message's PATIENT_RESULT.PATIENT group
    * @param patientInput the input containing the form values for patient
