@@ -450,14 +450,15 @@ public class HL7Converter {
             .replaceAll("\\(", "")
             .replaceAll("\\)", "")
             .replaceAll(" ", "");
-    int requiredPhoneNumberLength = 10;
+    final int requiredPhoneNumberLength = 10;
     if (strippedNumber.length() != requiredPhoneNumberLength) {
       throw new IllegalArgumentException(
           "Phone number must have exactly 10 digits to populate XTN.");
     }
-    xtn.getXtn6_AreaCityCode().setValue(strippedNumber.substring(0, 3));
+    final int localNumberStartIndex = 3;
+    xtn.getXtn6_AreaCityCode().setValue(strippedNumber.substring(0, localNumberStartIndex));
     // If XTN-7 Local Number is present, XTN-4 Email Address must be empty
-    xtn.getXtn7_LocalNumber().setValue(strippedNumber.substring(3));
+    xtn.getXtn7_LocalNumber().setValue(strippedNumber.substring(localNumberStartIndex));
   }
 
   /**
