@@ -95,7 +95,7 @@ jobs:
           path: |
             frontend/coverage/**
           key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
-  function-tests:
+  rs-function-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -103,10 +103,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: "Function Apps: yarn install"
+      - name: "RS Function App: yarn install"
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
         run: yarn
-      - name: "Function Apps: Test"
+      - name: "RS Function App: Test"
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
         run: yarn coverage
       - name: Cache function coverage results
@@ -114,14 +114,39 @@ jobs:
         with:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
-          key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-rs-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive function coverage results
         uses: actions/upload-artifact@v4
         with:
           name: function-coverage
           path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
+  data-publisher-function-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: "Data publisher function app: yarn install"
+        working-directory: ./ops/services/app_functions/test_data_publisher/functions
+        run: yarn
+      - name: "Data publisher function app: test w/ coverage"
+        working-directory: ./ops/services/app_functions/test_data_publisher/functions
+        run: yarn coverage
+      - name: Cache function coverage results
+        uses: actions/cache@v4
+        with:
+          path: |
+            ops/services/app_functions/test_data_publisher/functions/coverage/**
+          key: ${{ runner.os }}-data-publisher-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Archive function coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: function-coverage
+          path: ops/services/app_functions/test_data_publisher/functions/coverage
   sonar:
-    needs: [backend-tests, frontend-tests, function-tests]
+    needs: [backend-tests, frontend-tests, rs-function-tests, data-publisher-function-tests]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -144,13 +169,20 @@ jobs:
           path: |
             frontend/coverage/**
           key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
-      - name: Restore functions cache
+      - name: Restore RS function coverage cache
         if: ${{ github.actor != 'dependabot[bot]' }}
         uses: actions/cache@v4
         with:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
-          key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          key: ${{ runner.os }}-rs-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Restore data publisher function coverage cache
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        uses: actions/cache@v4
+        with:
+          path: |
+            ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
+          key: ${{ runner.os }}-data-publisher-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
