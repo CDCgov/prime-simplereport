@@ -15,7 +15,11 @@ const ManagePatientsContainer = () => {
   const currentPage = pageNumber ? +pageNumber : 1;
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
+  const facilityName = facility?.name || "this facility";
   const user = useSelector<RootState, User>((state) => state.user);
+  const organization = useSelector(
+    (state) => (state as any).organization as Organization
+  );
 
   const canEditUser = hasPermission(
     user.permissions,
@@ -31,6 +35,8 @@ const ManagePatientsContainer = () => {
   return (
     <ManagePatients
       activeFacilityId={activeFacilityId}
+      facilityName={facilityName}
+      organizationName={organization.name}
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
       currentPage={currentPage}

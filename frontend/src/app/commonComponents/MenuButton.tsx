@@ -10,6 +10,7 @@ import "./MenuButton.scss";
 interface Props {
   title?: string;
   id?: string;
+  disabled?: boolean;
   items: {
     name: string;
     content?: React.ReactNode;
@@ -21,7 +22,11 @@ interface Props {
 export const MenuButton = (props: Props) => (
   <Menu
     menuButton={
-      <ReactMenuButton id={props.id} className="usa-button usa-button--primary">
+      <ReactMenuButton
+        id={props.id}
+        disabled={props.disabled}
+        className="usa-button usa-button--primary"
+      >
         {props.buttonContent}
       </ReactMenuButton>
     }

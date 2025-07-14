@@ -37,10 +37,11 @@ import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
 import { ArchivedStatus } from "../../generated/graphql";
 import "./ManagePatients.scss";
-import Button from "../commonComponents/Button/Button";
-import { getAppInsightsHeaders } from "../TelemetryService";
-import { showError, showSuccess } from "../utils/srToast";
-import FetchClient from "../utils/api";
+// import { getAppInsightsHeaders } from "../TelemetryService";
+// import { showError, showSuccess } from "../utils/srToast";
+// import FetchClient from "../utils/api";
+
+import DownloadResultsCsvModal from "../testResults/viewResults/DownloadResultsCsvModal";
 
 import ArchivePersonModal from "./ArchivePersonModal";
 
@@ -107,6 +108,8 @@ export interface Patient {
 
 interface Props {
   activeFacilityId: string;
+  facilityName: string;
+  organizationName: string;
   canEditUser: boolean;
   canDeleteUser: boolean;
   currentPage: number;
@@ -119,7 +122,7 @@ interface Props {
 }
 const FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER = "focus on search bar on next render";
 type DownloadState = "idle" | "downloading" | "complete";
-const apiClient = new FetchClient();
+// const apiClient = new FetchClient();
 export const DetachedManagePatients = ({
   canEditUser,
   data,
@@ -129,12 +132,18 @@ export const DetachedManagePatients = ({
   refetch,
   setNamePrefixMatch,
   activeFacilityId,
+  facilityName,
+  organizationName,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
   const [subsequentFocusId, setSubsequentFocusId] = useState<string | null>(
     FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER
   );
-  const [downloadState, setDownloadState] = useState<DownloadState>("idle");
+  const [downloadState] = useState<DownloadState>("idle");
+  const [patientDownloadModalIsOpen, setPatientDownloadModalIsOpen] =
+    useState(false);
+  const openPatientDownloadModal = () => setPatientDownloadModalIsOpen(true);
+  const closePatientDownloadModal = () => setPatientDownloadModalIsOpen(false);
 
   const navigate = useNavigate();
 
@@ -323,13 +332,60 @@ export const DetachedManagePatients = ({
               },
             ]}
           />
-          <Button
-            type="button"
-            label={downloadFacilityPatientsButtonContent.label}
-            icon={downloadFacilityPatientsButtonContent.icon}
-            iconClassName={downloadFacilityPatientsButtonContent.className}
-            onClick={handleDownloadPatientData}
+          <MenuButton
+            id={"add-patient"}
             disabled={downloadState === "downloading"}
+            buttonContent={
+              <>
+                <span
+                  className={"margin-right-1"}
+                  data-cy="add-patients-button"
+                >
+                  {downloadFacilityPatientsButtonContent.label}
+                </span>
+                <FontAwesomeIcon
+                  icon={downloadFacilityPatientsButtonContent.icon as IconProp}
+                  className={downloadFacilityPatientsButtonContent.className}
+                />
+              </>
+            }
+            items={[
+              {
+                name: "facility",
+                content: (
+                  <IconLabel
+                    icon={faDownload}
+                    primaryText={`For ` + facilityName}
+                    secondaryText={"Only patients in this facility"}
+                  />
+                ),
+                // action: (handleDownloadPatientData),
+                action: openPatientDownloadModal,
+              },
+              {
+                name: "organization",
+                content: (
+                  <IconLabel
+                    icon={faDownload}
+                    primaryText={`For ` + organizationName}
+                    secondaryText={"All patients in this organization"}
+                  />
+                ),
+                action: () => {
+                  setRedirect({
+                    pathname: "/upload-patients",
+                    search: `?facility=${activeFacilityId}`,
+                  });
+                },
+              },
+            ]}
+          />
+          <DownloadResultsCsvModal
+            filterParams={{}}
+            modalIsOpen={patientDownloadModalIsOpen}
+            closeModal={closePatientDownloadModal}
+            totalEntries={100}
+            activeFacilityId={activeFacilityId}
           />
         </div>
       );
@@ -337,61 +393,61 @@ export const DetachedManagePatients = ({
     return null;
   }
 
-  const handleDownloadPatientData = async () => {
-    setDownloadState("downloading");
-    try {
-      const downloadPath = `/patients/download/facility?facilityId=${activeFacilityId}`;
-      const fullUrl = apiClient.getURL(downloadPath);
-      // console.log("Full organization object:", facility);
-
-      // console.log("Patients Download URL:", fullUrl);
-
-      const response = await fetch(fullUrl, {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          "Access-Control-Request-Headers": "Authorization",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          ...getAppInsightsHeaders(),
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to download patient data: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const blob = await response.blob();
-      const contentDisposition = response.headers.get("content-disposition");
-      let filename = "facility-patient-data.zip";
-
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename=(.+)/);
-        if (match) filename = match[1];
-      }
-
-      const urlBlob = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = urlBlob;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(urlBlob);
-
-      setDownloadState("complete");
-      showSuccess("Download Complete", "Patient data downloaded successfully");
-
-      setTimeout(() => {
-        setDownloadState("idle");
-      }, 3000);
-    } catch (e: any) {
-      console.error("Download error:", e);
-      showError("Error downloading patient data", e.message);
-      setDownloadState("idle");
-    }
-  };
+  // const handleDownloadPatientData = async () => {
+  //   setDownloadState("downloading");
+  //   try {
+  //     const downloadPath = `/patients/download/facility?facilityId=${activeFacilityId}`;
+  //     const fullUrl = apiClient.getURL(downloadPath);
+  //     // console.log("Full organization object:", facility);
+  //
+  //     // console.log("Patients Download URL:", fullUrl);
+  //
+  //     const response = await fetch(fullUrl, {
+  //       method: "GET",
+  //       mode: "cors",
+  //       headers: {
+  //         "Access-Control-Request-Headers": "Authorization",
+  //         Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+  //         ...getAppInsightsHeaders(),
+  //       },
+  //     });
+  //
+  //     if (!response.ok) {
+  //       throw new Error(
+  //         `Failed to download patient data: ${response.status} ${response.statusText}`
+  //       );
+  //     }
+  //
+  //     const blob = await response.blob();
+  //     const contentDisposition = response.headers.get("content-disposition");
+  //     let filename = "facility-patient-data.zip";
+  //
+  //     if (contentDisposition) {
+  //       const match = contentDisposition.match(/filename=(.+)/);
+  //       if (match) filename = match[1];
+  //     }
+  //
+  //     const urlBlob = window.URL.createObjectURL(blob);
+  //     const a = document.createElement("a");
+  //     a.href = urlBlob;
+  //     a.download = filename;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     a.remove();
+  //     window.URL.revokeObjectURL(urlBlob);
+  //
+  //     setDownloadState("complete");
+  //     showSuccess("Download Complete", "Patient data downloaded successfully");
+  //
+  //     setTimeout(() => {
+  //       setDownloadState("idle");
+  //     }, 3000);
+  //   } catch (e: any) {
+  //     console.error("Download error:", e);
+  //     showError("Error downloading patient data", e.message);
+  //     setDownloadState("idle");
+  //   }
+  // };
 
   const getDownloadButtonContent = () => {
     switch (downloadState) {
@@ -409,8 +465,8 @@ export const DetachedManagePatients = ({
         };
       default:
         return {
-          icon: faDownload,
-          label: "Download patients",
+          icon: faCaretDown,
+          label: "Download " + PATIENT_TERM_PLURAL,
           className: "",
         };
     }

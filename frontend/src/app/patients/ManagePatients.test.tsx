@@ -26,6 +26,8 @@ const PageNumberContainer = () => {
     <ManagePatients
       currentPage={pageNumber ? +pageNumber : 1}
       activeFacilityId="a1"
+      facilityName="Some Facility Name"
+      organizationName="Some Facility Name"
       canEditUser={true}
       canDeleteUser={true}
     />
