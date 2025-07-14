@@ -14,9 +14,9 @@ export function fetchFromEnvironmentOrThrow(
 
 export const ENV = (() => {
   const CONFIG_VALUES = {
-    AZ_STORAGE_QUEUE_SVC_URL: "Azure Storage Queue service URL",
-    AZ_STORAGE_ACCOUNT_NAME: "Azure Account Name",
-    AZ_STORAGE_ACCOUNT_KEY: "Azure Account Key",
+    AZ_STORAGE_QUEUE_SVC_URL: "Azure Storage queue service URL",
+    AZ_STORAGE_ACCOUNT_NAME: "Azure Storage Account name",
+    AZ_STORAGE_ACCOUNT_KEY: "Azure Storage Account access key",
     AIMS_ACCESS_KEY_ID: "AWS access key ID for connecting to AIMS",
     AIMS_SECRET_ACCESS_KEY: "AWS secret access key for connecting to AIMS",
     AIMS_KMS_ENCRYPTION_KEY: "KMS encryption key for sending data to AIMS",

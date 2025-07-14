@@ -17,7 +17,6 @@ variable "env_level" {
   type        = string
 }
 
-# Secret Access
 variable "tenant_id" {}
 
 variable "resource_group_name_prefix" {
@@ -29,5 +28,6 @@ variable "function_app_source" {
   type    = string
   default = "./functions/build/test-data-publisher.zip"
 }
+
 
 variable "lb_subnet_id" {}
