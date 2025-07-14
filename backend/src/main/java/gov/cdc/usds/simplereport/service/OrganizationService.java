@@ -12,16 +12,20 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
+import gov.cdc.usds.simplereport.db.model.FacilityLab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityLabRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -62,8 +66,10 @@ public class OrganizationService {
   private final DbAuthorizationService dbAuthorizationService;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
+  private final FacilityLabRepository facilityLabRepository;
   private final EmailService emailService;
   private final FeatureFlagsConfig featureFlagsConfig;
+  private final SpecimenRepository specimenRepository;
 
   public void resetOrganizationRolesContext() {
     organizationRolesContext.reset();
@@ -618,5 +624,120 @@ public class OrganizationService {
             .orElseThrow(NonexistentOrgException::new);
     oktaRepository.deleteOrganization(orgToDelete);
     return orgToDelete;
+  }
+
+  @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
+  public List<FacilityLab> getFacilityLabs(@Argument UUID facilityId) {
+    return facilityLabRepository.findAllByFacilityIdAndIsDeletedFalse(facilityId);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public FacilityLab createFacilityLab(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument String name,
+      @Argument String description) {
+    FacilityLab facilityLab;
+    Optional<FacilityLab> facilityLabOpt =
+        facilityLabRepository.findDistinctFirstByFacilityIdAndLabId(facilityId, labId);
+
+    if (facilityLabOpt.isPresent()) {
+      if (!facilityLabOpt.get().getIsDeleted()) {
+        throw new IllegalArgumentException("Facility lab already exists");
+      }
+
+      facilityLab = facilityLabOpt.get();
+      facilityLab.setName(name);
+      facilityLab.setDescription(description);
+      facilityLab.setIsDeleted(false);
+    } else {
+      facilityLab =
+          FacilityLab.builder()
+              .facilityId(facilityId)
+              .labId(labId)
+              .name(name)
+              .description(description)
+              .build();
+    }
+
+    return facilityLabRepository.save(facilityLab);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public FacilityLab updateFacilityLab(
+      @Argument UUID facilityId,
+      @Argument UUID labId,
+      @Argument Optional<String> name,
+      @Argument Optional<String> description) {
+    Optional<FacilityLab> facilityLabOpt =
+        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
+
+    if (facilityLabOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find facility lab to update");
+    }
+
+    FacilityLab facilityLab = facilityLabOpt.get();
+    name.ifPresent(facilityLab::setName);
+    description.ifPresent(facilityLab::setDescription);
+    return facilityLabRepository.save(facilityLab);
+  }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public boolean markFacilityLabAsDeleted(@Argument UUID facilityId, @Argument UUID labId) {
+    Optional<FacilityLab> facilityLabOpt =
+        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
+
+    if (facilityLabOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find facility lab for deletion");
+    }
+
+    facilityLabRepository.delete(facilityLabOpt.get());
+    return true;
+  }
+
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public Set<Specimen> addFacilityLabSpecimen(
+      @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
+    Optional<FacilityLab> facilityLabOpt =
+        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
+    Optional<Specimen> specimenOpt = specimenRepository.findById(specimenId);
+
+    if (facilityLabOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find facility lab");
+    } else if (specimenOpt.isEmpty()) {
+      throw new IllegalArgumentException("Cannot find specimen");
+    }
+
+    FacilityLab facilityLab = facilityLabOpt.get();
+    Specimen specimen = specimenOpt.get();
+
+    facilityLab.addSpecimen(specimen);
+    return facilityLab.getSpecimens();
+  }
+
+  @AuthorizationConfiguration.RequirePermissionEditFacility
+  public boolean deleteFacilityLabSpecimen(
+      @Argument UUID facilityId, @Argument UUID labId, UUID specimenId) {
+    Optional<FacilityLab> facilityLabOpt =
+        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
+            facilityId, labId);
+    Optional<Specimen> specimenOpt = specimenRepository.findById(specimenId);
+
+    if (facilityLabOpt.isEmpty() || specimenOpt.isEmpty()) {
+      return false;
+    }
+
+    FacilityLab facilityLab = facilityLabOpt.get();
+    Specimen specimen = specimenOpt.get();
+
+    boolean isRemoved = facilityLab.removeSpecimen(specimen);
+    if (isRemoved) {
+      facilityLabRepository.save(facilityLab);
+    }
+    return isRemoved;
   }
 }
