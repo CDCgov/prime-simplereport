@@ -221,7 +221,7 @@ const PatientFormSection = ({
             name="patient-date-of-birth"
             type="date"
             label="Patient date of birth"
-            min={formatDate(new Date("Jan 1, 1900"))}
+            min={formatDate("1900-01-01")}
             max={formatDate(moment().toDate())}
             value={formatDate(moment(patient.dateOfBirth).toDate())}
             onChange={(e) => {
