@@ -18,7 +18,7 @@ resource "azurerm_storage_container" "deployments" {
 
 // The Terraform deploy currently assumes that the .zip to be deployed already exists
 resource "azurerm_storage_blob" "appcode" {
-  name                   = "testdatapublisherpackage.zip"
+  name                   = "functionapp.zip"
   storage_account_name   = data.azurerm_storage_account.app.name
   storage_container_name = azurerm_storage_container.deployments.name
   type                   = "Block"
