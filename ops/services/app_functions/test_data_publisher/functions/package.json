@@ -12,6 +12,7 @@
     "build:production": "yarn && yarn coverage && yarn build && yarn install --production && yarn build:zip",
     "build:zip": "zip -r build/test-data-publisher.zip . -x \"*.zip\" -x \".terraform\" -x \"terraform.*\" -x \"*.tf\" -x \"local.settings.json\" -x \"*.map\"",
     "build": "yarn clean && yarn build:compile",
+    "prebuild:zip": "mkdir -m700 -p build",
     "lint:write": "prettier --write . && eslint --fix .",
     "test": "jest --watch"
   },
