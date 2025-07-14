@@ -44,7 +44,7 @@ then run `source ~/.bash_profile`
 
 #### Function App Build
 
-SimpleReport contains function app(s) which push data to our intermediary on a regular basis. This app must be built and exist in the folder structure to begin executing terraform commands that reside outside of an environment's `persistent` directory.
+SimpleReport contains function app(s) which push data to our intermediary on a regular basis. These app(s) must be built and exist in the folder structure to begin executing terraform commands that reside outside of an environment's `persistent` directory.
 
 This preparation should only need to be done once, unless major changes are made to the application's construction.
 
