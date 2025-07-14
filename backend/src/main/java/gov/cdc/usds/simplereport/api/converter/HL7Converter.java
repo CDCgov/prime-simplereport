@@ -59,6 +59,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@SuppressWarnings({"checkstyle:TodoComment"})
 public class HL7Converter {
   // Used for easier mocking of UUID.randomUUID()
   private final UUIDGenerator uuidGenerator;
@@ -320,6 +321,7 @@ public class HL7Converter {
     // For some reason, email address is indeed stored on the PhoneNumberHome element array
     populateEmailAddress(pid.getPid13_PhoneNumberHome(1), patientInput.getEmail());
 
+    // TODO: determine HL7 valid tribal affiliation code system values
     /*
     Cannot currently populate tribal citizenship due to limitations on providing coding system data
 
@@ -359,7 +361,6 @@ public class HL7Converter {
       case "female", "f" -> administrativeSex.setValue("F");
       default -> administrativeSex.setValue("U");
     }
-    ;
   }
 
   /**
@@ -449,7 +450,8 @@ public class HL7Converter {
             .replaceAll("\\(", "")
             .replaceAll("\\)", "")
             .replaceAll(" ", "");
-    if (strippedNumber.length() != 10) {
+    int requiredPhoneNumberLength = 10;
+    if (strippedNumber.length() != requiredPhoneNumberLength) {
       throw new IllegalArgumentException(
           "Phone number must have exactly 10 digits to populate XTN.");
     }

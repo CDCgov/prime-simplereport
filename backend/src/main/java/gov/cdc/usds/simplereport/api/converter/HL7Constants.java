@@ -20,7 +20,6 @@ public class HL7Constants {
 
   public static final String DEFAULT_COUNTRY = "USA";
 
-  // TODO: determine HL7 valid tribal affiliation code system values
   public static final String TRIBAL_AFFILIATION_CODE_SYSTEM_NAME = "TribalEntityUS";
   public static final String TRIBAL_AFFILIATION_CODE_SYSTEM_OID = "2.16.840.1.113883.5.140";
   public static final String TRIBAL_AFFILIATION_CODE_SYSTEM_VERSION = "4.0.0";

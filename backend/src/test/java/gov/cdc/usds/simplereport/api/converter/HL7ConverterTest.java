@@ -210,7 +210,6 @@ class HL7ConverterTest {
             "not_hispanic",
             "266",
             predefinedPatientId);
-    ;
 
     hl7Converter.populatePatientIdentification(pid, patientReportInput);
 
