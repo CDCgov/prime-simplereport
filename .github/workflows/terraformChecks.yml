@@ -76,6 +76,10 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           terraform_version: 1.9.6
+      - name: Build data publisher functions package
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        uses: ./.github/actions/build-test-data-publisher-function-app
+
       - name: Terraform Init Prod
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: make init-prod
@@ -84,9 +88,6 @@ jobs:
         uses: ./.github/actions/build-reportstream-functions
         with:
           deploy-env: ${{env.DEPLOY_ENV}}
-      - name: Build data publisher functions package
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: ./.github/actions/build-test-data-publisher-function-app
       - name: Terraform Plan Prod
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: make plan-prod
@@ -99,9 +100,6 @@ jobs:
         uses: ./.github/actions/build-reportstream-functions
         with:
           deploy-env: stg
-      - name: Build data publisher functions package
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: ./.github/actions/build-test-data-publisher-function-app
       - name: Terraform plan Stg
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: make plan-stg
