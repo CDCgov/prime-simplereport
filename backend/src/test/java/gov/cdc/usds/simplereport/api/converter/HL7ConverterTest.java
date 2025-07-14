@@ -128,6 +128,20 @@ class HL7ConverterTest {
   }
 
   @Test
+  void populateMessageHeader_throwsExceptionFor_invalidProcessingId() {
+    MSH msh = new ORU_R01().getMSH();
+    String clia = "12D1234567";
+
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> hl7Converter.populateMessageHeader(msh, clia, "F"));
+    assertThat(exception.getMessage())
+        .isEqualTo(
+            "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
+  }
+
+  @Test
   void populateSoftwareSegment_valid() throws DataTypeException {
     SFT sft = new ORU_R01().getSFT();
 

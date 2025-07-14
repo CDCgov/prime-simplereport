@@ -9,12 +9,10 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.HL7_SNOMED_CO
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.HL7_TABLE_ETHNIC_GROUP;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.HL7_TABLE_RACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.HL7_VERSION_ID;
-import static gov.cdc.usds.simplereport.api.converter.HL7Constants.IDENTIFIER_TYPE_CODE_FACILITY_ID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFILE_ID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFILE_NAMESPACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFILE_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.NPI_NAMING_SYSTEM_OID;
-import static gov.cdc.usds.simplereport.api.converter.HL7Constants.PATIENT_INTERNAL_IDENTIFIER_TYPE_CODE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_NAME;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
@@ -69,6 +67,25 @@ public class HL7Converter {
   // Used for easier mocking of new Date()
   private final DateGenerator dateGenerator;
 
+  /**
+   * Creates an ORU_R01 message based on HL7 Version 2.5.1 Implementation Guide: Electronic
+   * Laboratory Reporting to Public Health. ORU_R01 refers to an "Unsolicited transmission of an
+   * observation message"
+   *
+   * @param patientInput patient data
+   * @param providerInput ordering provider data
+   * @param facilityInput facility data (currently assumes ordering facility and performing facility
+   *     are the same)
+   * @param specimenInput specimen data
+   * @param testDetailsInputList test result data
+   * @param gitProperties used to populate the message software segment
+   * @param processingId indicates intent for processing. Must be either T for training, D for
+   *     debugging, or P for production (see HL7 table 0103)
+   * @return ORU_R01 message
+   * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
+   *     primitive data type
+   * @throws IllegalArgumentException if input data is invalid
+   */
   public ORU_R01 createLabReportMessage(
       PatientReportInput patientInput,
       ProviderReportInput providerInput,
@@ -77,8 +94,7 @@ public class HL7Converter {
       List<TestDetailsInput> testDetailsInputList,
       GitProperties gitProperties,
       String processingId)
-      throws DataTypeException {
-    // ORU_R01 refers to an "Unsolicited transmission of an observation message".
+      throws DataTypeException, IllegalArgumentException {
     ORU_R01 message = new ORU_R01();
 
     MSH messageHeader = message.getMSH();
@@ -139,13 +155,15 @@ public class HL7Converter {
    *
    * @param msh the Message Header Segment (MSH) object from the message
    * @param sendingFacilityClia CLIA number for the facility sending the lab report
-   * @param processingId Indicates intent for processing the message, such as "T" for testing or "P"
-   *     for production
+   * @param processingId Indicates intent for processing. Must be either T for training, D for
+   *     debugging, or P for production (see HL7 table 0103)
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
+   * @throws IllegalArgumentException if facility CLIA number does not match required format
+   * @throws IllegalArgumentException if processing id is not T, D, or P
    */
   public void populateMessageHeader(MSH msh, String sendingFacilityClia, String processingId)
-      throws DataTypeException {
+      throws DataTypeException, IllegalArgumentException {
     msh.getMsh1_FieldSeparator().setValue("|");
     msh.getMsh2_EncodingCharacters().setValue("^~\\&");
     msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
@@ -185,13 +203,17 @@ public class HL7Converter {
 
     msh.getMsh10_MessageControlID().setValue(uuidGenerator.randomUUID().toString());
 
+    if (!processingId.matches("^[TDP]$")) {
+      throw new IllegalArgumentException(
+          "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
+    }
     msh.getMsh11_ProcessingID().getPt1_ProcessingID().setValue(processingId);
 
     msh.getMsh12_VersionID().getVersionID().setValue(HL7_VERSION_ID);
 
     msh.getMsh17_CountryCode().setValue(DEFAULT_COUNTRY);
 
-    // TODO: confirm which message profile ID to use
+    // TODO: confirm with AIMS which message profile ID to use
     EI messageProfileIdentifier = msh.getMsh21_MessageProfileIdentifier(0);
     messageProfileIdentifier.getEi1_EntityIdentifier().setValue(MESSAGE_PROFILE_ID);
     messageProfileIdentifier.getEi2_NamespaceID().setValue(MESSAGE_PROFILE_NAMESPACE);
@@ -258,9 +280,8 @@ public class HL7Converter {
         .getHd2_UniversalID()
         .setValue(SIMPLE_REPORT_ORG_OID);
     patientIdentifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
-    patientIdentifierEntry
-        .getCx5_IdentifierTypeCode()
-        .setValue(PATIENT_INTERNAL_IDENTIFIER_TYPE_CODE);
+    // PI is the value for Patient internal identifier on HL7 table 0203 Identifier type
+    patientIdentifierEntry.getCx5_IdentifierTypeCode().setValue("PI");
 
     populateName(
         pid.getPid5_PatientName(0),
@@ -688,9 +709,8 @@ public class HL7Converter {
         .getXon6_AssigningAuthority()
         .getHd3_UniversalIDType()
         .setValue("ISO");
-    performingOrganizationName
-        .getXon7_IdentifierTypeCode()
-        .setValue(IDENTIFIER_TYPE_CODE_FACILITY_ID);
+    // FI is the value for Facility ID on HL7 table 0203 Identifier type
+    performingOrganizationName.getXon7_IdentifierTypeCode().setValue("FI");
     performingOrganizationName
         .getXon10_OrganizationIdentifier()
         .setValue(performingFacility.getClia());

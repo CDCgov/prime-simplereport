@@ -6,8 +6,10 @@ public class HL7Constants {
   }
 
   public static final String SIMPLE_REPORT_NAME = "SimpleReport";
-  // this is the CDC OID for now until we get a SimpleReport OID registered
+
+  /** Note: this is the CDC OID for now until we get a SimpleReport OID registered */
   public static final String SIMPLE_REPORT_ORG_OID = "2.16.840.1.114222.4";
+
   public static final String APHL_ORG_OID = "2.16.840.1.113883.3.8589";
   public static final String HL7_VERSION_ID = "2.5.1";
 
@@ -17,11 +19,6 @@ public class HL7Constants {
   public static final String MESSAGE_PROFILE_OID = "2.16.840.1.113883.9.11";
 
   public static final String DEFAULT_COUNTRY = "USA";
-
-  /** FI is the value for Facility ID on HL7 value set table 0203 */
-  public static final String IDENTIFIER_TYPE_CODE_FACILITY_ID = "FI";
-
-  public static final String PATIENT_INTERNAL_IDENTIFIER_TYPE_CODE = "PI";
 
   // TODO: determine HL7 valid tribal affiliation code system values
   public static final String TRIBAL_AFFILIATION_CODE_SYSTEM_NAME = "TribalEntityUS";
