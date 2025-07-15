@@ -6,6 +6,10 @@ import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useDocumentTitle } from "../utils/hooks";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+import {
+  Organization,
+  useGetCurrentOrganizationQuery,
+} from "../../generated/graphql";
 
 import ManagePatients from "./ManagePatients";
 
@@ -17,9 +21,12 @@ const ManagePatientsContainer = () => {
   const activeFacilityId = facility?.id || "";
   const facilityName = facility?.name || "this facility";
   const user = useSelector<RootState, User>((state) => state.user);
-  const organization = useSelector(
-    (state) => (state as any).organization as Organization
-  );
+
+  const { data } = useGetCurrentOrganizationQuery({
+    fetchPolicy: "no-cache",
+  });
+  const currentOrganization = data?.whoami.organization as Organization;
+  console.log("this is the organization: ", currentOrganization);
 
   const canEditUser = hasPermission(
     user.permissions,
@@ -36,7 +43,7 @@ const ManagePatientsContainer = () => {
     <ManagePatients
       activeFacilityId={activeFacilityId}
       facilityName={facilityName}
-      organizationName={organization.name}
+      organization={currentOrganization}
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
       currentPage={currentPage}
