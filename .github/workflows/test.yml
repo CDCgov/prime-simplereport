@@ -95,7 +95,7 @@ jobs:
           path: |
             frontend/coverage/**
           key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
-  rs-function-tests:
+  function-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
