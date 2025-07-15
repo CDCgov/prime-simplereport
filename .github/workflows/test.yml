@@ -95,7 +95,7 @@ jobs:
           path: |
             frontend/coverage/**
           key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
-  function-tests:
+  rs-function-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -145,6 +145,9 @@ jobs:
         with:
           name: data-publisher-function-coverage
           path: ops/services/app_functions/test_data_publisher/functions/coverage
+  function-tests:
+    runs-on: ubuntu-latest
+    # satisfy branch protection checks - to be removed once required checks are updated
   sonar:
     needs: [backend-tests, frontend-tests, rs-function-tests, data-publisher-function-tests]
     runs-on: ubuntu-latest
