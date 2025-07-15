@@ -147,7 +147,7 @@ jobs:
           path: ops/services/app_functions/test_data_publisher/functions/coverage
   function-tests:
     runs-on: ubuntu-latest
-    # satisfy branch protection checks - to be removed once required checks are updated
+    # satisfy branch protection checks - to be removed once required checks are updated to use new names
   sonar:
     needs: [backend-tests, frontend-tests, rs-function-tests, data-publisher-function-tests]
     runs-on: ubuntu-latest
