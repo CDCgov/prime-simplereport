@@ -44,10 +44,11 @@ dependencies {
 
     // graphql
     implementation 'org.springframework.boot:spring-boot-starter-graphql:3.4.4'
+    implementation 'org.springframework.graphql:spring-graphql:1.4.1'
     implementation 'org.springframework:spring-web:6.2.7'
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
-    implementation 'com.graphql-java:graphql-java:23.1'
+    implementation 'com.graphql-java:graphql-java:24.1'
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:22.0'
     // graphql-java-extended-scalars
@@ -55,7 +56,7 @@ dependencies {
 
 
     //Feign HTTP Client
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.4'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
     /*
@@ -65,14 +66,14 @@ dependencies {
      * Please do NOT scatter packages elsewhere around the file. Scattered packages make it easy for pins to become
      * stale.
      *
-     * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 24 February 2025.
+     * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 25 June 2025.
      */
     implementation 'com.squareup.okio:okio:3.10.2'
     implementation 'org.springframework:spring-core:6.2.1'
     implementation 'org.springframework.security:spring-security-core:6.4.6'
     implementation 'org.springframework.security:spring-security-crypto:6.3.9'
     implementation 'org.springframework.security:spring-security-oauth2-client:6.4.4'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.34'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.40'
     implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:11.0.5'
     implementation 'org.springframework.security:spring-security-web:6.3.5'
 
@@ -85,7 +86,7 @@ dependencies {
     // this provides additional types for JsonB and for ListArray types in Postgres
     implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.6'
     implementation 'org.liquibase:liquibase-core:4.31.1'
-    implementation 'org.postgresql:postgresql:42.7.5'
+    implementation 'org.postgresql:postgresql:42.7.7'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.28'

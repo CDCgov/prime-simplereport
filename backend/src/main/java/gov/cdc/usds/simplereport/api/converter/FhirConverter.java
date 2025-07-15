@@ -16,7 +16,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLA
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DIAGNOSTIC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
@@ -24,7 +23,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LABORATORY_STRING_LITERAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LAB_STRING_LITERAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_IDENTIFIER;
@@ -46,7 +44,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CO
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NPI_PREFIX;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.OBSERVATION_CATEGORY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
@@ -110,7 +107,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
-import gov.cdc.usds.simplereport.utils.DateTimeUtils;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import jakarta.validation.constraints.NotNull;
@@ -1930,53 +1926,6 @@ public class FhirConverter {
     return messageHeader;
   }
 
-  public DiagnosticReport convertToDiagnosticReport(
-      ConditionAgnosticConvertToDiagnosticReportProps props) {
-    DiagnosticReport diagnosticReport = new DiagnosticReport();
-    var categoryCodeableConcept = new CodeableConcept();
-    var categoryCoding = categoryCodeableConcept.addCoding();
-    categoryCoding.setSystem(DIAGNOSTIC_CODE_SYSTEM);
-    categoryCoding.setCode(LAB_STRING_LITERAL);
-    diagnosticReport.setCategory(List.of(categoryCodeableConcept));
-
-    var diagnosticCodeableConcept = new CodeableConcept();
-    var diagnosticCoding = diagnosticCodeableConcept.addCoding();
-
-    diagnosticCoding.setSystem(LOINC_CODE_SYSTEM).setCode(props.getTestPerformedCode());
-    diagnosticReport.setCode(diagnosticCodeableConcept);
-
-    var effectiveDateTime = DateTimeUtils.convertToZonedDateTime(props.getTestEffectiveDate());
-    diagnosticReport.setEffective(convertToDateTimeType(effectiveDateTime));
-
-    String diagnosticReportId = uuidGenerator.randomUUID().toString();
-    diagnosticReport.setId(diagnosticReportId);
-
-    return diagnosticReport;
-  }
-
-  public Observation convertToObservation(ConditionAgnosticConvertToObservationProps props) {
-    Observation observation = new Observation();
-    setStatus(observation, props.getCorrectionStatus());
-
-    var labCodeableConcept = new CodeableConcept();
-    var labCodeableCoding = labCodeableConcept.addCoding();
-    labCodeableCoding.setSystem(OBSERVATION_CATEGORY_CODE_SYSTEM);
-    labCodeableCoding.setCode(LABORATORY_STRING_LITERAL);
-    observation.setCategory(List.of(labCodeableConcept));
-
-    var observationCodeableConcept = new CodeableConcept();
-    var observationCoding = observationCodeableConcept.addCoding();
-    observationCoding.setSystem(LOINC_CODE_SYSTEM).setCode(props.getTestPerformedCode());
-    observation.setCode(observationCodeableConcept);
-
-    addSNOMEDValue(props.getResultValue(), observation, null);
-
-    String observationId = uuidGenerator.randomUUID().toString();
-    observation.setId(observationId);
-
-    return observation;
-  }
-
   public Observation convertToObservation(TestDetailsInput testDetailsInput) {
     var observation = new Observation();
     setStatus(observation, TestCorrectionStatus.ORIGINAL);
@@ -2024,95 +1973,10 @@ public class FhirConverter {
     return observation;
   }
 
-  public Patient convertToPatient(ConditionAgnosticConvertToPatientProps props) {
-    var patient = new Patient();
-    patient.setId(props.getId());
-    assignPotentiallyAbsentName(
-        props.getFirstName(), props.getLastName(), props.getNameAbsentReason(), patient);
-    patient.setGender(convertToAdministrativeGender(props.getGender()));
-    return patient;
-  }
-
-  private Patient assignPotentiallyAbsentName(
-      String first, String last, String absentReason, Patient patient) {
-    if (StringUtils.isNotBlank(first) || StringUtils.isNotBlank(last)) {
-      var humanName = convertToHumanName(first, null, last, null);
-      patient.addName(humanName);
-
-    } else {
-      patient
-          .addName()
-          .addExtension(
-              new Extension()
-                  .setUrl(DATA_ABSENT_REASON_EXTENSION_URL)
-                  .setValue(new CodeableConcept().addCoding().setCode(absentReason)));
-    }
-    return patient;
-  }
-
   private List<String> getFilteredSymptomsPresent(Map<String, Boolean> symptomsMap) {
     return symptomsMap.entrySet().stream()
         .filter(symptom -> Boolean.TRUE.equals(symptom.getValue()))
         .map(Entry::getKey)
         .collect(Collectors.toList());
-  }
-
-  public Bundle createFhirBundle(ConditionAgnosticCreateFhirBundleProps props) {
-
-    var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
-    props.getDiagnosticReport().setSubject(new Reference(patientFullUrl));
-
-    var diagnosticReportFullUrl =
-        ResourceType.DiagnosticReport + "/" + props.getDiagnosticReport().getId();
-
-    UUID messageHeaderId = uuidGenerator.randomUUID();
-    var messageHeader =
-        createMessageHeader(
-            null,
-            diagnosticReportFullUrl,
-            null,
-            props.getGitProperties(),
-            props.getProcessingId(),
-            messageHeaderId);
-    var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
-
-    var entryList = new ArrayList<Pair<String, Resource>>();
-    entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
-    entryList.add(Pair.of(patientFullUrl, props.getPatient()));
-    entryList.add(
-        Pair.of(
-            ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
-            new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
-
-    props
-        .getResultObservations()
-        .forEach(
-            observation -> {
-              var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
-              observation.setSubject(new Reference(patientFullUrl));
-              entryList.add(Pair.of(observationFullUrl, observation));
-              Reference observationReference = new Reference(observationFullUrl);
-              props.getDiagnosticReport().addResult(observationReference);
-            });
-
-    entryList.add(Pair.of(diagnosticReportFullUrl, props.getDiagnosticReport()));
-    Date currentDate = dateGenerator.newDate();
-
-    var bundle =
-        new Bundle()
-            .setType(Bundle.BundleType.MESSAGE)
-            .setTimestamp(currentDate)
-            .setIdentifier(new Identifier().setValue(props.getDiagnosticReport().getId()));
-
-    bundle.getTimestampElement().setTimeZoneZulu(true);
-
-    entryList.forEach(
-        pair ->
-            bundle.addEntry(
-                new Bundle.BundleEntryComponent()
-                    .setFullUrl(pair.getFirst())
-                    .setResource(pair.getSecond())));
-
-    return bundle;
   }
 }

@@ -43,8 +43,6 @@ public class FeatureFlagsConfig {
   private boolean hepatitisCEnabled;
   private boolean syphilisEnabled;
   private boolean hivEnabled;
-  private boolean agnosticEnabled;
-  private boolean agnosticBulkUploadEnabled;
   private boolean bulkUploadDisabled; // inverting logic because bulk uploader is enabled by default
   private boolean universalReportingEnabled;
 
@@ -78,8 +76,6 @@ public class FeatureFlagsConfig {
       case "hepatitisCEnabled" -> setHepatitisCEnabled(flagValue);
       case "syphilisEnabled" -> setSyphilisEnabled(flagValue);
       case "hivEnabled" -> setHivEnabled(flagValue);
-      case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
-      case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);
       case "bulkUploadDisabled" -> setBulkUploadDisabled(flagValue);
       case "universalReportingEnabled" -> setUniversalReportingEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);

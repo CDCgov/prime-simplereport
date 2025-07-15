@@ -199,8 +199,6 @@ features:
   hepatitisCEnabled: true
   syphilisEnabled: true
   hivEnabled: true
-  agnosticEnabled: true
-  agnosticBulkUploadEnabled: true
   universalReportingEnabled: true
 slack:
   hook:
