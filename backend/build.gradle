@@ -116,6 +116,9 @@ dependencies {
     // SendGrid for Email
     implementation 'com.sendgrid:sendgrid-java:4.10.3'
 
+    //CSV Downloads
+    implementation 'org.apache.commons:commons-csv:1.9.0'
+
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
