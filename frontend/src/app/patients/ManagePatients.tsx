@@ -46,7 +46,7 @@ import ArchivePersonModal from "./ArchivePersonModal";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
-    $facilityId: ID!
+    $facilityId: ID
     $archivedStatus: ArchivedStatus = UNARCHIVED
     $namePrefixMatch: String
   ) {
@@ -114,6 +114,8 @@ interface Props {
   currentPage: number;
   entriesPerPage: number;
   totalEntries?: number;
+  facilityPatientCount?: number;
+  orgPatientCount?: number;
   archivedStatus?: ArchivedStatus;
   data?: { patients: Patient[] };
   refetch: () => null;
@@ -127,6 +129,8 @@ export const DetachedManagePatients = ({
   data,
   currentPage,
   entriesPerPage,
+  facilityPatientCount,
+  orgPatientCount,
   totalEntries,
   refetch,
   setNamePrefixMatch,
@@ -145,6 +149,34 @@ export const DetachedManagePatients = ({
   const [patientsDownloadPath, setPatientsDownloadPath] = useState<string>("");
   const [patientsDownloadFileName, setPatientsDownloadFileName] =
     useState<string>("");
+  // const [facilityCount, setFacilityCount] =
+  //     useState<number>();
+  // const [organizationCount, setOrganizationCount] =
+  //     useState<number>();
+  const [totalPatientsToDownload, setTotalPatientsToDownload] =
+    useState<number>();
+
+  // const {
+  //   data: facilityPatients,
+  // } = useQuery(patientsCountQuery, {
+  //   variables: {
+  //     facilityId: activeFacilityId,
+  //     archivedStatus: ArchivedStatus.Unarchived,
+  //   },
+  //   fetchPolicy: "no-cache",
+  // });
+  // setFacilityCount(facilityPatients?.patientsCount);
+  //
+  // const {
+  //   data: organizationPatients,
+  // } = useQuery(patientsCountQuery, {
+  //   variables: {
+  //     facilityId: null,
+  //     archivedStatus: ArchivedStatus.Unarchived,
+  //   },
+  //   fetchPolicy: "no-cache",
+  // });
+  // setOrganizationCount(organizationPatients?.patientsCount);
 
   const navigate = useNavigate();
 
@@ -379,7 +411,7 @@ export const DetachedManagePatients = ({
             handleDownloadPatientData={handleDownloadPatientData}
             modalIsOpen={patientDownloadModalIsOpen}
             closeModal={closePatientDownloadModal}
-            totalEntries={100}
+            totalPatientsToDownload={totalPatientsToDownload}
           />
         </div>
       );
@@ -469,6 +501,7 @@ export const DetachedManagePatients = ({
     );
     setPatientsDownloadFileName("facility-patient-data.zip");
     setPatientDownloadModalIsOpen(true);
+    setTotalPatientsToDownload(facilityPatientCount);
   };
 
   const openDownloadModalForOrganization = () => {
@@ -477,6 +510,7 @@ export const DetachedManagePatients = ({
     );
     setPatientsDownloadFileName("organization-patient-data.zip");
     setPatientDownloadModalIsOpen(true);
+    setTotalPatientsToDownload(orgPatientCount);
   };
 
   return (
@@ -574,6 +608,22 @@ const ManagePatients = (
 ) => {
   const [namePrefixMatch, setNamePrefixMatch] = useState<string | null>(null);
 
+  const { data: facilityPatients } = useQuery(patientsCountQuery, {
+    variables: {
+      facilityId: props.activeFacilityId,
+      archivedStatus: ArchivedStatus.Unarchived,
+    },
+    fetchPolicy: "no-cache",
+  });
+
+  const { data: organizationPatients } = useQuery(patientsCountQuery, {
+    variables: {
+      facilityId: null,
+      archivedStatus: ArchivedStatus.Unarchived,
+    },
+    fetchPolicy: "no-cache",
+  });
+
   const {
     data: totalPatients,
     error,
@@ -596,6 +646,8 @@ const ManagePatients = (
   }
 
   const totalEntries = totalPatients?.patientsCount;
+  const orgPatientCount = organizationPatients?.patientsCount;
+  const facilityPatientCount = facilityPatients?.patientsCount;
   const entriesPerPage = 20;
   const pageNumber = props.currentPage || 1;
   return (
@@ -615,6 +667,8 @@ const ManagePatients = (
       displayLoadingIndicator={false}
       componentProps={{
         ...props,
+        orgPatientCount,
+        facilityPatientCount,
         totalEntries,
         currentPage: pageNumber,
         entriesPerPage,

@@ -13,7 +13,7 @@ interface DownloadPatientsCsvModalProps {
   handleDownloadPatientData: () => void;
   modalIsOpen: boolean;
   closeModal: () => void;
-  totalEntries: number;
+  totalPatientsToDownload?: number;
 }
 
 type DownloadState = "idle" | "downloading" | "complete";
@@ -22,15 +22,15 @@ const DownloadPatientsCsvModal = ({
   handleDownloadPatientData,
   modalIsOpen,
   closeModal,
-  totalEntries,
+  totalPatientsToDownload,
 }: DownloadPatientsCsvModalProps) => {
   const [downloadState, setDownloadState] = useState<DownloadState>("idle");
 
   const getDownloadMessage = () => {
-    const rowText = totalEntries.toLocaleString();
+    const rowText = totalPatientsToDownload?.toLocaleString();
     switch (downloadState) {
       case "downloading":
-        if (totalEntries > 10000) {
+        if (totalPatientsToDownload && totalPatientsToDownload > 10000) {
           return `Downloading ${rowText}... This may take a moment for large files.`;
         }
         return `Downloading ${rowText}...`;
@@ -130,17 +130,19 @@ const DownloadPatientsCsvModal = ({
           <p>{getDownloadMessage()}</p>
         </div>
 
-        {isDownloading && totalEntries > 1000 && (
-          <div className="grid-row grid-gap">
-            <p
-              className="text-base margin-top-1"
-              style={{ fontStyle: "italic" }}
-            >
-              Large downloads may take several minutes. Please don't close this
-              window.
-            </p>
-          </div>
-        )}
+        {isDownloading &&
+          totalPatientsToDownload &&
+          totalPatientsToDownload > 1000 && (
+            <div className="grid-row grid-gap">
+              <p
+                className="text-base margin-top-1"
+                style={{ fontStyle: "italic" }}
+              >
+                Large downloads may take several minutes. Please don't close
+                this window.
+              </p>
+            </div>
+          )}
 
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
