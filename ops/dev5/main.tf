@@ -68,6 +68,11 @@ resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
   storage_account_name = azurerm_storage_account.app.name
 }
 
+resource "azurerm_storage_queue" "hl7v2_data_queue" {
+  name                 = "hl7v2-data-publishing"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
 resource "azurerm_storage_share" "db_client_export" {
   name                 = "db-client-export-${local.env}"
   storage_account_name = azurerm_storage_account.app.name
