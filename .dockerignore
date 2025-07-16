@@ -6,6 +6,7 @@ frontend/node_modules/
 nginx/
 ops/**/.terraform/
 ops/services/app_functions/report_stream_batched_publisher/functions/node_modules/
+ops/services/app_functions/test_data_publisher/functions/node_modules/
 docs/
 .github/
 .run/
