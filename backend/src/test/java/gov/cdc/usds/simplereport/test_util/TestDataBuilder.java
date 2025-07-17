@@ -3,7 +3,15 @@ package gov.cdc.usds.simplereport.test_util;
 import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_DEVICE_TYPE;
 import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_SPECIMEN_TYPE;
 
+import ca.uhn.hl7v2.model.v251.message.ORU_R01;
+import ca.uhn.hl7v2.model.v251.segment.PID;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
+import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
+import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -21,6 +29,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -374,5 +383,97 @@ public class TestDataBuilder {
     TestEvent testEvent = new TestEvent(testOrder, false);
     createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
     return testEvent;
+  }
+
+  public static PID createPatientIdentificationSegment() {
+    return new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+  }
+
+  public static PatientReportInput createPatientReportInput() {
+    return new PatientReportInput(
+        "John",
+        "Jacob",
+        "Smith",
+        "Jr",
+        "john@example.com",
+        "716-555-1234",
+        "123 Main St",
+        "Apartment A",
+        "Buffalo",
+        "Erie",
+        "NY",
+        "14220",
+        "USA",
+        "male",
+        LocalDate.of(1990, 1, 1),
+        "native",
+        "not_hispanic",
+        "266",
+        "");
+  }
+
+  public static FacilityReportInput createFacilityReportInput() {
+    return new FacilityReportInput(
+        "Dracula Medical",
+        "12D1234567",
+        "123 Main St",
+        "Suite 100",
+        "Buffalo",
+        "Erie",
+        "NY",
+        "14220",
+        "7165551234",
+        "dracula@example.com");
+  }
+
+  public static ProviderReportInput createProviderReportInput() {
+    return new ProviderReportInput(
+        "Fred",
+        "Fitzgerald",
+        "Flintstone",
+        "",
+        "12345678",
+        "123 Main St",
+        "Apartment A",
+        "Buffalo",
+        "Erie",
+        "NY",
+        "14220",
+        "716-555-5555",
+        "flintstonemedical@example.com");
+  }
+
+  public static SpecimenInput createSpecimenInput(DateGenerator dateGenerator) {
+    return new SpecimenInput(
+        "258479004",
+        "Interstitial fluid specimen",
+        dateGenerator.newDate(),
+        dateGenerator.newDate(),
+        "Body tissue structure",
+        "85756007");
+  }
+
+  public static List<TestDetailsInput> createTestDetailsInputList(DateGenerator dateGenerator) {
+    return List.of(
+        new TestDetailsInput(
+            "105629000",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            ResultScaleType.ORDINAL,
+            "260373001",
+            dateGenerator.newDate(),
+            ""),
+        new TestDetailsInput(
+            "186747009",
+            "14451-9",
+            "Virus identified in Eye by Culture",
+            "14451-9",
+            "Virus identified in Eye by Culture",
+            ResultScaleType.ORDINAL,
+            "260373001",
+            dateGenerator.newDate(),
+            ""));
   }
 }

@@ -25,4 +25,5 @@ public class PatientReportInput {
   private final String race;
   private final String ethnicity;
   private final String tribalAffiliation;
+  private final String patientId;
 }
