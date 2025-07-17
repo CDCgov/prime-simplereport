@@ -240,7 +240,7 @@ data "azurerm_storage_account" "app" {
 }
 
 data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
-  name         = "report-stream-exception-callback-test"
+  name         = "report-stream-exception-callback-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
