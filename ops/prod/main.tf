@@ -1,8 +1,8 @@
 locals {
-  project   = "prime"
-  name      = "simple-report"
-  env       = "prod"
-  env_level = "prod"
+  project          = "prime"
+  name             = "simple-report"
+  env              = "prod"
+  env_level        = "prod"
   token_env_suffix = (local.env == "prod" || local.env == "stg") ? "prod" : "test"
   management_tags = {
     prime-app      = "simple-report"
