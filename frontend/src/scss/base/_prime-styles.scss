@@ -3,11 +3,371 @@
 @use "@uswds/uswds/packages/usa-prose";
 @use "@uswds/uswds/packages/usa-link";
 
+// Design System Base Styles
+html,
+body {
+  height: 100%;
+}
+
+html {
+  scroll-behavior: auto;
+  box-sizing: border-box;
+}
+
+body {
+  @include u-font("sans", 5);
+  line-height: 1.4;
+  background-color: $background;
+}
+
+.application-container {
+  display: flex;
+  flex-flow: column;
+  min-height: 100%;
+}
+
 header,
 footer {
   padding: 1rem 5rem;
   margin: 0;
   background-color: $brand-darker;
+}
+
+h1 {
+  @include u-font("serif", 12);
+}
+
+h2 {
+  @include u-font("sans", 11);
+}
+
+h3 {
+  @include u-font("sans", 8);
+}
+
+h4 {
+  @include u-font("sans", 5);
+}
+
+a,
+a:visited {
+  color: $brand-primary;
+}
+
+.main-body {
+  background-color: $background;
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.usa-button {
+  background-color: $accent-primary;
+  box-shadow: inset 0 0 0 2px $accent-primary;
+
+  &:hover,
+  &--outline:hover {
+    box-shadow: inset 0 0 0 2px $accent-dark;
+    background-color: $accent-dark !important;
+  }
+
+  &:active,
+  &--outline:active {
+    box-shadow: inset 0 0 0 2px $accent-darker;
+    background-color: $accent-darker !important;
+  }
+
+  &--secondary {
+    background-color: white;
+    box-shadow: inset 0 0 0 2px $accent-primary;
+    color: $accent-primary !important;
+  }
+
+  &--secondary:hover {
+    background-color: white !important;
+    box-shadow: inset 0 0 0 2px $accent-dark;
+    color: $accent-dark !important;
+  }
+
+  &--secondary:active {
+    background-color: white !important;
+    box-shadow: inset 0 0 0 2px $accent-darker;
+    color: $accent-darker !important;
+  }
+
+  &:disabled,
+  &:disabled:hover,
+  &:disabled:active {
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 1;
+    background-color: color($theme-color-disabled-light) !important;
+  }
+
+  &--unstyled {
+    box-shadow: none;
+    color: $brand-primary;
+    background-color: transparent !important;
+  }
+
+  &--unstyled:hover {
+    box-shadow: none;
+    color: $brand-dark;
+    background-color: transparent !important;
+  }
+
+  &--unstyled:active {
+    box-shadow: none;
+    color: $brand-darker;
+    background-color: transparent !important;
+  }
+
+  &--destructive {
+    box-shadow: none;
+    color: white;
+    background-color: $destructive-primary !important;
+  }
+
+  &--destructive:hover {
+    box-shadow: none;
+    color: white;
+    background-color: $destructive-dark !important;
+  }
+
+  &--destructive:active {
+    box-shadow: none;
+    color: white;
+    background-color: $destructive-darker !important;
+  }
+}
+
+.usa-alert--success {
+  outline: 3px solid color($theme-color-success);
+
+  .usa-alert__body::before {
+    background-color: color($theme-color-success-dark);
+  }
+}
+
+.usa-alert--info {
+  .usa-alert__body::before {
+    background-color: color($theme-color-info-dark);
+  }
+}
+
+.usa-alert--warning {
+  .usa-alert__body::before {
+    background-color: color($theme-color-warning-dark);
+  }
+}
+
+.usa-alert--error {
+  .usa-alert__body::before {
+    background-color: color($theme-color-error-dark);
+  }
+}
+
+.usa-step-indicator__segment::before {
+  box-shadow:
+    0 0 0 0.25rem white,
+    0 0 0 0 white !important;
+}
+
+.usa-step-indicator__segment-label,
+.usa-step-indicator__segment::before {
+  color: $text-inactive-dark;
+}
+
+.usa-step-indicator__segment--current .usa-step-indicator__segment-label {
+  color: $brand-primary;
+}
+
+.usa-step-indicator__segment--current::before,
+.usa-step-indicator__segment--current::after {
+  background-color: $brand-primary;
+  color: $brand-primary;
+  box-shadow:
+    0 0 0 0.25rem white,
+    0 0 0 0 white !important;
+}
+
+.usa-accordion__button,
+.usa-accordion__button:hover {
+  background-color: $background-darker;
+  color: $text-primary;
+}
+
+.usa-modal__close {
+  background-color: white;
+
+  &:active,
+  &:hover {
+    background-color: white;
+  }
+}
+
+.usa-checkbox__input:checked + [class*="__label"]::before {
+  background-color: $accent-primary !important;
+  box-shadow: none !important;
+}
+
+.usa-radio__input:checked + [class*="__label"]::before {
+  background-color: $accent-primary !important;
+  box-shadow:
+    0 0 0 2px $accent-primary,
+    inset 0 0 0 2px #fff;
+}
+
+.usa-checkbox__label {
+  cursor: pointer;
+  display: inherit;
+  font-weight: normal;
+  margin-top: 0;
+  padding-left: 2rem;
+  position: relative;
+}
+
+.usa-accordion {
+  border-radius: 4px;
+  padding: 0;
+}
+
+.usa-step-indicator__segment-label {
+  padding-right: 0;
+
+  // Show labels only at the min-width
+  @include at-media($theme-step-indicator-min-width) {
+    padding-right: units(2);
+  }
+}
+
+.usa-sidenav__item a:not(.usa-sidenav__sublist a) {
+  font-weight: bold;
+}
+
+ul.usa-sidenav > li.usa-sidenav__item > ul.usa-sidenav__sublist > li.usa-sidenav__item > a {
+  font-weight: bold;
+}
+
+ul.usa-sidenav > li.usa-sidenav__item > ul.usa-sidenav__sublist > li.usa-sidenav__item > a.usa-current {
+  &::after {
+    background-color: rgb(0, 94, 162);
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0.25rem;
+    top: 0.25rem;
+    width: 0.25rem;
+    left: 0;
+    border-radius: 99rem;
+  }
+}
+
+.usa-step-indicator__current-step {
+  background-color: $brand-primary;
+  margin-right: 0.5rem;
+  padding: 0;
+  height: 2.75rem;
+  width: 2.75rem;
+}
+
+.usa-step-indicator__total-steps {
+  color: $brand-primary;
+}
+
+.usa-step-indicator__total-steps,
+.usa-step-indicator__current-step {
+  font-size: 2rem;
+}
+
+.usa-pagination .usa-current {
+  background-color: white;
+  border-radius: 0.25rem;
+  border: 1px solid $border-dark !important;
+  color: $accent-dark !important;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 140%;
+  margin: 0;
+  text-decoration: underline;
+}
+
+.usa-pagination__button:hover,
+.usa-pagination__button:focus,
+.usa-pagination__button:active,
+.usa-pagination__link:hover,
+.usa-pagination__link:focus,
+.usa-pagination__link:active {
+  color: $accent-darker !important;
+}
+
+.usa-pagination__button:hover,
+.usa-pagination__button:focus,
+.usa-pagination__button:active {
+  border: 1px solid $border !important;
+  background-color: $hover-neutral !important;
+}
+
+.usa-pagination__button,
+.usa-pagination__link {
+  color: $accent-primary;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 140%;
+  margin: 0;
+  text-decoration: none;
+}
+
+.usa-pagination__overflow {
+  align-self: center;
+}
+
+.usa-alert__heading {
+  &.h1 {
+    font-size: 2.125rem;
+    font-weight: bold;
+    line-height: 1.5;
+  }
+
+  &.h2 {
+    font-size: 1.875rem;
+    font-weight: bold;
+    line-height: 1.5;
+  }
+
+  &.h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1.4;
+  }
+
+  &.h4 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    line-height: 1.3;
+  }
+
+  &.h5 {
+    font-size: 1.125rem;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+
+  &.h6 {
+    font-size: 1rem;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+}
+
+.usa-step-indicator__segment--current::before,
+.usa-step-indicator__segment--complete::before {
+  box-shadow:
+    inset 0 0 0 0 $brand-darker,
+    0 0 0 0.25rem white !important;
+}
+
+.usa-alert__text {
+  font-size: 0.875rem;
 }
 
 .prime-home {
@@ -592,16 +952,12 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   width: units(4);
 }
 
-.usa-alert--success {
-  outline: 3px solid #00a91c;
-}
-
 .prime-secondary-nav {
   margin-top: units(1);
 }
 
 .prime-secondary-nav.results {
-  background-color: color("base-lightest");
+  background-color: $background;
   padding-top: units(2);
 }
 
@@ -866,7 +1222,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 // Patient form
 .patient-app--form {
-  background-color: color("base-lightest");
+  background-color: $background;
 }
 
 .prime-formgroup {
@@ -983,13 +1339,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     &::before {
       box-shadow: 0 0 0 units(0.5) color("base-lightest");
     }
-  }
-}
-
-.usa-step-indicator__segment-label {
-  // Show labels only at the min-width
-  @include at-media($theme-step-indicator-min-width) {
-    padding-right: units(2);
   }
 }
 
@@ -1130,14 +1479,14 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .usa-checkbox__label::before,
 .usa-radio__label::before {
-  box-shadow: 0 0 0 2px #71767a;
+  box-shadow: 0 0 0 2px $border-dark;
   line-height: 1.25rem;
   margin-right: 0.75rem;
   text-indent: 0;
 }
 
 .usa-radio__input--tile + .usa-radio__label {
-  border: 2px solid #dfe1e2;
+  border: 2px solid $border;
 }
 
 .sr-element__sr-only {
@@ -1152,7 +1501,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 .no-hover-state-when-disabled:hover {
-  box-shadow: inset 0 0 0 2px #c9c9c9 !important;
+  box-shadow: inset 0 0 0 2px $gray-20 !important;
 }
 
 abbr.usa-hint.usa-hint--required {
