@@ -6,7 +6,6 @@ import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
 import { RootState } from "../store";
 
 import FacilitySelect from "./FacilitySelect";
-import { useSelectedFacility } from "./useSelectedFacility";
 import { useRedirectToPilot } from "./useRedirectToPilot";
 import NoFacilityPopup from "./NoFacilityPopup";
 
@@ -33,7 +32,12 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     (state) => state.facilities
   );
 
-  const [selectedFacility, setSelectedFacility] = useSelectedFacility();
+  const {
+    facilityFlagsLoading,
+    onFacilitySelect,
+    selectedFacility,
+    setSelectedFacility,
+  } = useRedirectToPilot(facilities);
 
   useEffect(() => {
     if (selectedFacility || !dataLoaded) {
@@ -44,15 +48,6 @@ const WithFacility: React.FC<Props> = ({ children }) => {
       setSelectedFacility(facilities[0]);
     }
   }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
-
-  const { facilityFlagsLoading } = useRedirectToPilot(
-    facilities,
-    selectedFacility
-  );
-
-  /**
-   * HTML
-   */
 
   if (!dataLoaded || facilityFlagsLoading) {
     return <Loading />;
@@ -73,7 +68,7 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     return (
       <FacilitySelect
         facilities={facilities}
-        setActiveFacility={setSelectedFacility}
+        onFacilitySelect={onFacilitySelect}
       />
     );
   }

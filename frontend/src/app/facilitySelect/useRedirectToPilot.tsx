@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { getUrl } from "../utils/url";
@@ -7,11 +7,11 @@ import {
   type FeatureFlags,
 } from "../../featureFlags/FeatureFlagsApiService";
 
-export function useRedirectToPilot(
-  facilities: Facility[],
-  selectedFacility?: Facility
-) {
+import { useSelectedFacility } from "./useSelectedFacility";
+
+export function useRedirectToPilot(facilities: Facility[]) {
   const navigate = useNavigate();
+  const [selectedFacility, setSelectedFacility] = useSelectedFacility();
   const [facilityFlags, setFacilityFlags] = useState<{
     [facilityId: string]: FeatureFlags;
   } | null>(null);
@@ -19,6 +19,29 @@ export function useRedirectToPilot(
   const isInitialRedirect = useRef(true);
   const urlPrefix = getUrl(true);
   const facilityFlagsLoading = facilities.length > 0 && facilityFlags === null;
+
+  const someInPilot =
+    facilityFlags &&
+    Object.values(facilityFlags).some((flags) => flags.pilotEnabled);
+
+  const allInPilot =
+    facilityFlags &&
+    Object.values(facilityFlags).every((flags) => flags.pilotEnabled);
+
+  const redirectToPilot = useCallback(() => {
+    window.location.replace(`${urlPrefix}pilot/report`);
+  }, [urlPrefix]);
+
+  const onFacilitySelect = (facility: Facility) => {
+    const selectedInPilot =
+      facilityFlags && facilityFlags[facility.id]?.pilotEnabled;
+
+    if (selectedInPilot) {
+      redirectToPilot();
+    } else {
+      setSelectedFacility(facility);
+    }
+  };
 
   useEffect(() => {
     if (facilities.length === 0) {
@@ -37,18 +60,10 @@ export function useRedirectToPilot(
         setFacilityFlags(flagMap);
       });
     } else {
-      const allInPilot = Object.values(facilityFlags).every(
-        (flags) => flags.pilotEnabled
-      );
-      const someInPilot = Object.values(facilityFlags).some(
-        (flags) => flags.pilotEnabled
-      );
-      const selectedInPilot =
-        selectedFacility && facilityFlags[selectedFacility.id]?.pilotEnabled;
-
-      if (allInPilot || selectedInPilot) {
-        window.location.replace(`${urlPrefix}pilot/report`);
+      if (allInPilot) {
+        redirectToPilot();
       } else if (someInPilot && selectedFacility && isInitialRedirect.current) {
+        // redirects back to FacilitySelect
         navigate({ search: "?" });
       }
 
@@ -62,7 +77,15 @@ export function useRedirectToPilot(
     selectedFacility,
     urlPrefix,
     isInitialRedirect,
+    allInPilot,
+    redirectToPilot,
+    someInPilot,
   ]);
 
-  return { facilityFlagsLoading };
+  return {
+    facilityFlagsLoading,
+    onFacilitySelect,
+    selectedFacility,
+    setSelectedFacility,
+  };
 }
