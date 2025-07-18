@@ -9,7 +9,7 @@ import FacilitySelect from "./FacilitySelect";
 const mockStore = configureStore([]);
 
 describe("FacilitySelect", () => {
-  const mockSetActiveFacility = jest.fn();
+  const mockOnFacilitySelect = jest.fn();
   const facilityList = [
     { id: "1", name: "Facility 1" },
     { id: "2", name: "Facility 2" },
@@ -30,7 +30,7 @@ describe("FacilitySelect", () => {
     <Provider store={store}>
       <FacilitySelect
         facilities={facilityList as any}
-        setActiveFacility={mockSetActiveFacility}
+        onFacilitySelect={mockOnFacilitySelect}
       />
     </Provider>
   );
@@ -66,8 +66,8 @@ describe("FacilitySelect", () => {
     await waitFor(() => expect(continueBtn).toBeEnabled());
 
     await user.click(continueBtn);
-    expect(mockSetActiveFacility).toHaveBeenCalledTimes(1);
-    expect(mockSetActiveFacility).toHaveBeenCalledWith({
+    expect(mockOnFacilitySelect).toHaveBeenCalledTimes(1);
+    expect(mockOnFacilitySelect).toHaveBeenCalledWith({
       id: "1",
       name: "Facility 1",
     });

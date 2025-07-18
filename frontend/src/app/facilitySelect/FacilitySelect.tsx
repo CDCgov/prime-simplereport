@@ -7,41 +7,32 @@ import FacilityPopup from "./FacilityPopup";
 import "./FacilitySelect.scss";
 
 export interface FacilitySelectProps {
-  setActiveFacility: (facility: Facility) => void;
   facilities: Facility[];
+  onFacilitySelect: (facility: Facility) => void;
 }
 
 const FacilitySelect: React.FC<FacilitySelectProps> = ({
   facilities,
-  setActiveFacility,
+  onFacilitySelect,
 }) => {
   useDocumentTitle("Select facility");
 
-  /**
-   * Initial setup
-   */
   const comboBoxId = "facility-selector-combobox";
   const facilityList = facilities.map((facility) => ({
     value: facility.id,
     label: facility.name,
   }));
 
-  /**
-   * Facility selection
-   */
-  const [facilitySelected, setFacilitySelected] = useState<
+  const [selectedFacilityId, setSelectedFacilityId] = useState<
     string | undefined
   >();
-  function handleContinue() {
-    const facility = facilities.find((f) => f.id === facilitySelected);
-    if (facility) {
-      setActiveFacility(facility);
-    }
-  }
 
-  /**
-   * HTML
-   */
+  const handleContinue = () => {
+    const facility = facilities.find((f) => f.id === selectedFacilityId);
+    if (!facility) return;
+    onFacilitySelect(facility);
+  };
+
   return (
     <FacilityPopup>
       <label className="select-text" htmlFor={comboBoxId}>
@@ -52,14 +43,14 @@ const FacilitySelect: React.FC<FacilitySelectProps> = ({
         name={comboBoxId}
         id={comboBoxId}
         onChange={(facilityId) => {
-          setFacilitySelected(facilityId);
+          setSelectedFacilityId(facilityId);
         }}
       />
       <Button
         className="continue width-full margin-top-3 margin-bottom-2"
         type="button"
         onClick={handleContinue}
-        disabled={!facilitySelected}
+        disabled={!selectedFacilityId}
       >
         Continue
       </Button>
