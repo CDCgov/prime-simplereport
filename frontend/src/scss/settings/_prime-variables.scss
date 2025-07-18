@@ -15,7 +15,7 @@ $blue-cool-50: #3a7d95;
 $blue-cool-70: #224a58;
 $blue-cool-80: #14333d;
 
-// Gray primitives - numbered system
+// Gray primitives
 $gray-600: #5c5c5c;
 $gray-500: #919191;
 $gray-400: #dfe1e2;
@@ -68,20 +68,20 @@ $text-secondary: $gray-500;
 $text-inactive: $gray-20;
 $text-inactive-dark: $gray-600;
 
-$brand-primary: $blue-cool-50;
+$brand-primary: $blue-cool-50; //branded text color
 $brand-light: $blue-cool-20;
-$brand-lighter: $blue-cool-10;
-$brand-lightest: $blue-cool-5;
+$brand-lighter: $blue-cool-10; //tertiary link text color
+$brand-lightest: $blue-cool-5; //secondary button background
 $brand-dark: $blue-cool-70;
 $brand-darker: $blue-cool-80;
 
-$accent-primary: $violet-warm-60;
-$accent-dark: $violet-warm-70;
-$accent-darker: $violet-warm-80;
+$accent-primary: $violet-warm-60; //primary CTA / info color
+$accent-dark: $violet-warm-70; //CTA hover
+$accent-darker: $violet-warm-80; // CTA active
 
-$destructive-primary: #d54309;
-$destructive-dark: #b51d09;
-$destructive-darker: #6f3331;
+$destructive-primary: #d54309; // primary error / info color
+$destructive-dark: #b51d09; //error hover
+$destructive-darker: #6f3331; // error active
 
 $background: $gray-100;
 $background-dark: $gray-200;
@@ -92,13 +92,12 @@ $border: $gray-400;
 $border-light: $gray-300;
 $border-dark: $gray-500;
 
-// Additional semantic tokens
 $hover-neutral: $gray-200;
 $drop-shadow: $gray-200;
 $focus-outline: $blue-40v;
 $overlay-background: rgba(0, 0, 0, 0.5);
 
-// Legacy PRIME color variables (for backward compatibility)
+// Legacy PRIME color variables (for backward compatibility) if you remove these things will start to break
 $theme-color-prime-blue-lightest: $blue-cool-5;
 $theme-color-prime-blue-light: $blue-cool-20;
 $theme-color-prime-blue: $brand-primary;
