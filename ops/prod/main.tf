@@ -3,7 +3,7 @@ locals {
   name             = "simple-report"
   env              = "prod"
   env_level        = "prod"
-  token_env_suffix = (local.env == "prod" || local.env == "stg") ? "prod" : "test"
+  token_env_suffix = "prod"
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
