@@ -1,11 +1,13 @@
 resource "azurerm_postgresql_flexible_server" "db" {
-  name                = "simple-report-${var.env}-flexible-db"
-  location            = var.rg_location
-  resource_group_name = var.rg_name
-  sku_name            = var.env == "prod" ? "MO_Standard_E8ds_v4" : "MO_Standard_E4ds_v4"
-  version             = "14"
-  delegated_subnet_id = var.subnet_id
-  private_dns_zone_id = var.private_dns_zone_id
+  name                          = "simple-report-${var.env}-flexible-db"
+  location                      = var.rg_location
+  resource_group_name           = var.rg_name
+  sku_name                      = var.env == "prod" ? "MO_Standard_E8ds_v4" : "MO_Standard_E4ds_v4"
+  version                       = "14"
+  delegated_subnet_id           = var.subnet_id
+  private_dns_zone_id           = var.private_dns_zone_id
+  public_network_access_enabled = false
+
 
 
   administrator_login    = var.administrator_login
