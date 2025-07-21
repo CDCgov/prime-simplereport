@@ -271,7 +271,7 @@ describe("ManageOrganization Download Tests", () => {
 
     await waitFor(() => {
       expect(showSuccessSpy).toHaveBeenCalledWith(
-        "Success Message",
+        "Download Complete",
         "Test results downloaded successfully"
       );
     });
