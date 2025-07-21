@@ -36,6 +36,10 @@ const ManagePatientsContainer = () => {
     user.permissions,
     appPermissions.people.canDelete
   );
+  const isOrgAdmin = hasPermission(
+    user.permissions,
+    appPermissions.settings.canView
+  );
   if (activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
   }
@@ -46,6 +50,7 @@ const ManagePatientsContainer = () => {
       organization={currentOrganization}
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
+      isOrgAdmin={isOrgAdmin}
       currentPage={currentPage}
     />
   );

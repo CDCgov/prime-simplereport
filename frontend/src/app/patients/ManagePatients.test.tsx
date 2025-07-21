@@ -29,6 +29,7 @@ const PageNumberContainer = () => {
       facilityName="Some Facility Name"
       canEditUser={true}
       canDeleteUser={true}
+      isOrgAdmin={true}
     />
   );
 };

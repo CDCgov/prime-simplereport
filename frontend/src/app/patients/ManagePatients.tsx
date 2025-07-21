@@ -111,6 +111,7 @@ interface Props {
   organization?: Organization;
   canEditUser: boolean;
   canDeleteUser: boolean;
+  isOrgAdmin: boolean;
   currentPage: number;
   entriesPerPage: number;
   totalEntries?: number;
@@ -126,6 +127,7 @@ type DownloadState = "idle" | "downloading" | "complete";
 const apiClient = new FetchClient();
 export const DetachedManagePatients = ({
   canEditUser,
+  isOrgAdmin,
   data,
   currentPage,
   entriesPerPage,
@@ -149,34 +151,8 @@ export const DetachedManagePatients = ({
   const [patientsDownloadPath, setPatientsDownloadPath] = useState<string>("");
   const [patientsDownloadFileName, setPatientsDownloadFileName] =
     useState<string>("");
-  // const [facilityCount, setFacilityCount] =
-  //     useState<number>();
-  // const [organizationCount, setOrganizationCount] =
-  //     useState<number>();
   const [totalPatientsToDownload, setTotalPatientsToDownload] =
     useState<number>();
-
-  // const {
-  //   data: facilityPatients,
-  // } = useQuery(patientsCountQuery, {
-  //   variables: {
-  //     facilityId: activeFacilityId,
-  //     archivedStatus: ArchivedStatus.Unarchived,
-  //   },
-  //   fetchPolicy: "no-cache",
-  // });
-  // setFacilityCount(facilityPatients?.patientsCount);
-  //
-  // const {
-  //   data: organizationPatients,
-  // } = useQuery(patientsCountQuery, {
-  //   variables: {
-  //     facilityId: null,
-  //     archivedStatus: ArchivedStatus.Unarchived,
-  //   },
-  //   fetchPolicy: "no-cache",
-  // });
-  // setOrganizationCount(organizationPatients?.patientsCount);
 
   const navigate = useNavigate();
 
@@ -366,7 +342,7 @@ export const DetachedManagePatients = ({
             ]}
           />
           <MenuButton
-            id={"add-patient"}
+            id={"download-patients"}
             disabled={downloadState === "downloading"}
             buttonContent={
               <>
@@ -382,30 +358,46 @@ export const DetachedManagePatients = ({
                 />
               </>
             }
-            items={[
-              {
-                name: "facility",
-                content: (
-                  <IconLabel
-                    icon={faDownload}
-                    primaryText={`For ` + facilityName}
-                    secondaryText={"Only patients in this facility"}
-                  />
-                ),
-                action: openDownloadModalForFacility,
-              },
-              {
-                name: "organization",
-                content: (
-                  <IconLabel
-                    icon={faDownload}
-                    primaryText={`For ` + organization?.name}
-                    secondaryText={"All patients in this organization"}
-                  />
-                ),
-                action: openDownloadModalForOrganization,
-              },
-            ]}
+            items={
+              isOrgAdmin
+                ? [
+                    {
+                      name: "facility",
+                      content: (
+                        <IconLabel
+                          icon={faDownload}
+                          primaryText={`For ` + facilityName}
+                          secondaryText={"Only patients in this facility"}
+                        />
+                      ),
+                      action: openDownloadModalForFacility,
+                    },
+                    {
+                      name: "organization",
+                      content: (
+                        <IconLabel
+                          icon={faDownload}
+                          primaryText={`For ` + organization?.name}
+                          secondaryText={"All patients in this organization"}
+                        />
+                      ),
+                      action: openDownloadModalForOrganization,
+                    },
+                  ]
+                : [
+                    {
+                      name: "facility",
+                      content: (
+                        <IconLabel
+                          icon={faDownload}
+                          primaryText={`For ` + facilityName}
+                          secondaryText={"Only patients in this facility"}
+                        />
+                      ),
+                      action: openDownloadModalForFacility,
+                    },
+                  ]
+            }
           />
           <DownloadPatientsCsvModal
             handleDownloadPatientData={handleDownloadPatientData}

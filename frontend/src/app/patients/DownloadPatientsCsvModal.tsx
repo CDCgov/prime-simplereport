@@ -8,6 +8,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../commonComponents/Button/Button";
+import { showError } from "../utils/srToast";
 
 interface DownloadPatientsCsvModalProps {
   handleDownloadPatientData: () => void;
@@ -58,7 +59,7 @@ const DownloadPatientsCsvModal = ({
       default:
         return {
           icon: faDownload,
-          label: "Download results",
+          label: "Download patients",
           className: "",
         };
     }
@@ -67,6 +68,23 @@ const DownloadPatientsCsvModal = ({
   const handleClose = () => {
     if (downloadState !== "downloading") {
       closeModal();
+      setDownloadState("idle");
+    }
+  };
+
+  const handleDownload = () => {
+    setDownloadState("downloading");
+    try {
+      handleDownloadPatientData();
+      setDownloadState("complete");
+
+      setTimeout(() => {
+        closeModal();
+        setDownloadState("idle");
+      }, 2000);
+    } catch (e: any) {
+      console.error("Download error:", e);
+      showError("Error downloading patient data", e.message);
       setDownloadState("idle");
     }
   };
@@ -156,7 +174,7 @@ const DownloadPatientsCsvModal = ({
               />
             )}
             <Button
-              onClick={isComplete ? handleClose : handleDownloadPatientData}
+              onClick={isComplete ? handleClose : handleDownload}
               disabled={isDownloading}
               icon={buttonContent.icon}
               iconClassName={buttonContent.className}
