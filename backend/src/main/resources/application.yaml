@@ -192,6 +192,12 @@ loinc-fhir:
   url: "https://fhir.loinc.org"
 umls:
   api-key: ${UMLS_API_KEY:super-secret-api-key}
+aims:
+  access-key-id: ${AIMS_ACCESS_KEY_ID}
+  secret-access-key: ${AIMS_SECRET_ACCESS_KEY}
+  encryption-key: ${AIMS_KMS_ENCRYPTION_KEY}
+  outbound-endpoint: ${AIMS_OUTBOUND_ENDPOINT}
+  message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT}
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true
