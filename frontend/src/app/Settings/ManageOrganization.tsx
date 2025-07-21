@@ -110,7 +110,10 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
       });
 
       setDownloadState("complete");
-      showSuccess("Success Message", "Test results downloaded successfully");
+      showSuccess(
+        "Test Results Downloaded",
+        "Test results downloaded successfully"
+      );
 
       setTimeout(() => {
         setDownloadState("idle");
