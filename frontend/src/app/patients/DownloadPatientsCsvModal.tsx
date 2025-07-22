@@ -16,8 +16,6 @@ interface DownloadPatientsCsvModalProps {
   totalPatientsToDownload?: number;
 }
 
-// type DownloadState = "idle" | "downloading" | "complete";
-
 const DownloadPatientsCsvModal = ({
   handleDownloadPatientData,
   downloadState,
@@ -25,15 +23,10 @@ const DownloadPatientsCsvModal = ({
   closeModal,
   totalPatientsToDownload,
 }: DownloadPatientsCsvModalProps) => {
-  // const [downloadState, setDownloadState] = useState<DownloadState>("idle");
-
   const getDownloadMessage = () => {
     const rowText = totalPatientsToDownload?.toLocaleString();
     switch (downloadState) {
       case "downloading":
-        if (totalPatientsToDownload && totalPatientsToDownload > 10000) {
-          return `Downloading ${rowText}... This may take a moment for large files.`;
-        }
         return `Downloading ${rowText}...`;
       case "complete":
         return `Download complete! ${rowText} downloaded successfully.`;
@@ -68,26 +61,8 @@ const DownloadPatientsCsvModal = ({
   const handleClose = () => {
     if (downloadState !== "downloading") {
       closeModal();
-      // setDownloadState("idle");
     }
   };
-
-  // const handleDownload = () => {
-  //   // setDownloadState("downloading");
-  //   try {
-  //     handleDownloadPatientData();
-  //
-  //     // setTimeout(() => {
-  //     //   closeModal();
-  //     //   setDownloadState("idle");
-  //     // }, 2000);
-  //   } catch (e: any) {
-  //     console.error("Download error:", e);
-  //     showError("Error downloading patient data", e.message);
-  //     setDownloadState("idle");
-  //   }
-  //   setDownloadState("complete");
-  // };
 
   const buttonContent = getButtonContent();
   const isDownloading = downloadState === "downloading";
@@ -130,18 +105,7 @@ const DownloadPatientsCsvModal = ({
 
         {!isComplete && (
           <div className="grid-row grid-gap">
-            <p>
-              {
-                "Download patient data?"
-                // isAllFacilitiesSelected
-                // ? filtersPresent
-                //   ? "Download results for all facilities with current search filters applied?"
-                //   : "Download results for all facilities without any search filters applied?"
-                // : filtersPresent
-                // ? "Download results with current search filters applied?"
-                // : "Download results without any search filters applied?"
-              }
-            </p>
+            <p>{"Download patient data?"}</p>
           </div>
         )}
         <div className="grid-row grid-gap">

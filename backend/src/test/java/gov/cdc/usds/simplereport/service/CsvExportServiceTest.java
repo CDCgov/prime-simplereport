@@ -57,7 +57,6 @@ class CsvExportServiceTest {
 
   private ExportParameters facilityExportParams;
   private ExportParameters organizationExportParams;
-  private ExportParameters allFacilitiesExportParams;
   private Organization mockOrganization;
   private Facility mockFacility;
   private Person mockPerson;
@@ -143,8 +142,6 @@ class CsvExportServiceTest {
       throws IOException {
     Result mockResult = createMockResult();
     Page<Result> mockPage = new PageImpl<>(List.of(mockResult));
-    when(organizationService.getOrganizationByFacilityId(allFacilitiesExportParams.facilityId()))
-        .thenReturn(mockOrganization);
     when(resultService.getOrganizationResults(
             any(), any(), any(), any(), any(), any(), anyInt(), anyInt()))
         .thenReturn(mockPage);
@@ -239,7 +236,6 @@ class CsvExportServiceTest {
   private Facility createMockFacility() {
     Facility facility = mock(Facility.class);
     when(facility.getFacilityName()).thenReturn("Test Facility");
-    //    when(facility.getIsDeleted()).thenReturn(false);
     return facility;
   }
 
@@ -275,27 +271,15 @@ class CsvExportServiceTest {
   }
 
   private DeviceType createMockDeviceType() {
-    DeviceType deviceType = mock(DeviceType.class);
-    //    when(deviceType.getName()).thenReturn("Abbott BinaxNOW");
-    //    when(deviceType.getManufacturer()).thenReturn("Abbott");
-    //    when(deviceType.getModel()).thenReturn("BinaxNOW COVID-19 Ag Card");
-    //    when(deviceType.getSwabTypes()).thenReturn(List.of());
-    return deviceType;
+    return mock(DeviceType.class);
   }
 
   private ApiUser createMockApiUser() {
-    ApiUser apiUser = mock(ApiUser.class);
-    //    PersonName submitterName = new PersonName("Test", "", "Submitter", "");
-    //    when(apiUser.getNameInfo()).thenReturn(submitterName);
-    return apiUser;
+    return mock(ApiUser.class);
   }
 
   private AskOnEntrySurvey createMockSurveyData() {
-    AskOnEntrySurvey survey = mock(AskOnEntrySurvey.class);
-    //    when(survey.getNoSymptoms()).thenReturn(false);
-    //    when(survey.getSymptomsJSON()).thenReturn("{\"fever\":true,\"cough\":false}");
-    //    when(survey.getSymptomOnsetDate()).thenReturn(LocalDate.now().minusDays(2));
-    return survey;
+    return mock(AskOnEntrySurvey.class);
   }
 
   private Result createMockResult() {

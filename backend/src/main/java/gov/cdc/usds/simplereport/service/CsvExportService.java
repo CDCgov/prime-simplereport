@@ -747,7 +747,7 @@ public class CsvExportService {
     return formatDateValue(dateObj, "MM/dd/yyyy h:mma");
   }
 
-  class NonClosingOutputStream extends FilterOutputStream {
+  static class NonClosingOutputStream extends FilterOutputStream {
     NonClosingOutputStream(OutputStream out) {
       super(out);
     }
