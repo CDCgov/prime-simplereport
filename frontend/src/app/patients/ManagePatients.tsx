@@ -348,7 +348,7 @@ export const DetachedManagePatients = ({
               <>
                 <span
                   className={"margin-right-1"}
-                  data-cy="add-patients-button"
+                  data-cy="download-patients-button"
                 >
                   {downloadFacilityPatientsButtonContent.label}
                 </span>
