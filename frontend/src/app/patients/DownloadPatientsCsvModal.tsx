@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Modal from "react-modal";
 import {
   faDownload,
@@ -8,24 +7,25 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../commonComponents/Button/Button";
-import { showError } from "../utils/srToast";
 
 interface DownloadPatientsCsvModalProps {
   handleDownloadPatientData: () => void;
+  downloadState: string;
   modalIsOpen: boolean;
   closeModal: () => void;
   totalPatientsToDownload?: number;
 }
 
-type DownloadState = "idle" | "downloading" | "complete";
+// type DownloadState = "idle" | "downloading" | "complete";
 
 const DownloadPatientsCsvModal = ({
   handleDownloadPatientData,
+  downloadState,
   modalIsOpen,
   closeModal,
   totalPatientsToDownload,
 }: DownloadPatientsCsvModalProps) => {
-  const [downloadState, setDownloadState] = useState<DownloadState>("idle");
+  // const [downloadState, setDownloadState] = useState<DownloadState>("idle");
 
   const getDownloadMessage = () => {
     const rowText = totalPatientsToDownload?.toLocaleString();
@@ -68,26 +68,26 @@ const DownloadPatientsCsvModal = ({
   const handleClose = () => {
     if (downloadState !== "downloading") {
       closeModal();
-      setDownloadState("idle");
+      // setDownloadState("idle");
     }
   };
 
-  const handleDownload = () => {
-    setDownloadState("downloading");
-    try {
-      handleDownloadPatientData();
-      setDownloadState("complete");
-
-      setTimeout(() => {
-        closeModal();
-        setDownloadState("idle");
-      }, 2000);
-    } catch (e: any) {
-      console.error("Download error:", e);
-      showError("Error downloading patient data", e.message);
-      setDownloadState("idle");
-    }
-  };
+  // const handleDownload = () => {
+  //   // setDownloadState("downloading");
+  //   try {
+  //     handleDownloadPatientData();
+  //
+  //     // setTimeout(() => {
+  //     //   closeModal();
+  //     //   setDownloadState("idle");
+  //     // }, 2000);
+  //   } catch (e: any) {
+  //     console.error("Download error:", e);
+  //     showError("Error downloading patient data", e.message);
+  //     setDownloadState("idle");
+  //   }
+  //   setDownloadState("complete");
+  // };
 
   const buttonContent = getButtonContent();
   const isDownloading = downloadState === "downloading";
@@ -174,7 +174,7 @@ const DownloadPatientsCsvModal = ({
               />
             )}
             <Button
-              onClick={isComplete ? handleClose : handleDownload}
+              onClick={isComplete ? handleClose : handleDownloadPatientData}
               disabled={isDownloading}
               icon={buttonContent.icon}
               iconClassName={buttonContent.className}

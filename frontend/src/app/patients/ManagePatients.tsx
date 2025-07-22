@@ -401,6 +401,7 @@ export const DetachedManagePatients = ({
           />
           <DownloadPatientsCsvModal
             handleDownloadPatientData={handleDownloadPatientData}
+            downloadState={downloadState}
             modalIsOpen={patientDownloadModalIsOpen}
             closeModal={closePatientDownloadModal}
             totalPatientsToDownload={totalPatientsToDownload}
@@ -449,8 +450,9 @@ export const DetachedManagePatients = ({
       a.remove();
       window.URL.revokeObjectURL(urlBlob);
 
-      setDownloadState("complete");
+      setPatientDownloadModalIsOpen(false);
       showSuccess("Download Complete", "Patient data downloaded successfully");
+      setDownloadState("complete");
 
       setTimeout(() => {
         setDownloadState("idle");
