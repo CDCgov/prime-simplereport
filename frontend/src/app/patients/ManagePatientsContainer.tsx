@@ -19,7 +19,7 @@ const ManagePatientsContainer = () => {
   const currentPage = pageNumber ? +pageNumber : 1;
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
-  const facilityName = facility?.name || "this facility";
+  const facilityName = facility?.name || "";
   const user = useSelector<RootState, User>((state) => state.user);
 
   const { data } = useGetCurrentOrganizationQuery({
