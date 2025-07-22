@@ -2,23 +2,23 @@
 # the repo. Unless a later match takes precedence,
 # the team on this line will be requested for
 # review when someone opens a pull request.
-*                   @CDCgov/simplereport-engineeringreviews
+*                     @CDCgov/simplereport-engineeringreviews
 
 # docker
-Dockerfile          @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
-Dockerfile.*        @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
+Dockerfile            @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
+Dockerfile.*          @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
 
 # github-actions
-workflows/*         @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
+/.github/workflows/** @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
 
 # gradle
-build.gradle        @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
-gradle.lockfile     @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
+build.gradle          @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
+gradle.lockfile       @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
 
 # npm
-package.json        @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
-yarn.lock           @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
+package.json          @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
+yarn.lock             @CDCgov/simplereport-dependencyreviews @CDCgov/simplereport-devsecops
 
 # terraform
-.terraform.lock.hcl @CDCgov/simplereport-devsecops
-_config.tf          @CDCgov/simplereport-devsecops
+.terraform.lock.hcl   @CDCgov/simplereport-devsecops
+_config.tf            @CDCgov/simplereport-devsecops

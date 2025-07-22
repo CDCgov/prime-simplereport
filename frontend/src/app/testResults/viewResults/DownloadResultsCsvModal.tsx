@@ -37,11 +37,10 @@ function buildCsvDownloadPath({
   const params = new URLSearchParams();
 
   if (filterParams.filterFacilityId === ALL_FACILITIES_ID) {
-    // Path 3: "All Facilities" download
-    params.append("facilityId", activeFacilityId);
-    params.append("includeAllFacilities", "true");
+    // Organization-level download (facilityId is null)
+    // No facilityId parameter- backend will treat as org export
   } else {
-    // Path 2: Facility-level download
+    // Facility-level download
     const facilityId = filterParams.filterFacilityId ?? activeFacilityId;
     params.append("facilityId", facilityId);
   }

@@ -337,18 +337,8 @@ const LabReportForm = () => {
         )}
         <div className="prime-container card-container">
           <div className="usa-card__body">
-            {currentStep === 0 && (
-              <FacilityFormSection
-                facility={facility}
-                setFacility={setFacility}
-              />
-            )}
-            {currentStep === 1 && (
-              <ProviderFormSection
-                provider={provider}
-                setProvider={setProvider}
-              />
-            )}
+            {currentStep === 0 && <FacilityFormSection facility={facility} />}
+            {currentStep === 1 && <ProviderFormSection provider={provider} />}
             {currentStep === 2 && (
               <PatientFormSection patient={patient} setPatient={setPatient} />
             )}
@@ -430,7 +420,7 @@ const LabReportForm = () => {
                 />
               </>
             )}
-            <div className="usa-form-group">
+            <div className="usa-form-group report-form-controls">
               {currentStep === 4 ? (
                 <Button onClick={() => submitForm()} type={"button"}>
                   Submit results
@@ -442,7 +432,7 @@ const LabReportForm = () => {
                   type={"button"}
                   className={"margin-right-2"}
                 >
-                  Next: {stepperData[currentStep + 1].label}
+                  Next
                   <FontAwesomeIcon
                     icon={faArrowRight}
                     className="margin-left-1"

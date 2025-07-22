@@ -75,27 +75,10 @@ class CsvExportServiceTest {
     mockSurvey = createMockSurveyData();
 
     facilityExportParams =
-        new ExportParameters(
-            UUID.randomUUID(), null, null, null, null, null, null, null, 0, 100, false);
+        new ExportParameters(UUID.randomUUID(), null, null, null, null, null, null, 0, 100);
 
     organizationExportParams =
-        new ExportParameters(
-            null, UUID.randomUUID(), null, null, null, null, null, null, 0, 100, false);
-
-    allFacilitiesExportParams =
-        new ExportParameters(
-            UUID.randomUUID(),
-            null,
-            null,
-            TestResult.POSITIVE,
-            PersonRole.STUDENT,
-            null,
-            Date.from(
-                LocalDate.now().minusDays(30).atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            0,
-            100,
-            true);
+        new ExportParameters(null, null, null, null, null, null, null, 0, 100);
   }
 
   @Test
@@ -156,7 +139,7 @@ class CsvExportServiceTest {
   }
 
   @Test
-  void streamResultsAsZippedCsv_withAllFacilitiesExport_shouldGenerateZipSuccessfully()
+  void streamResultsAsZippedCsv_withOrganizationExport_shouldGenerateZipSuccessfully()
       throws IOException {
     Result mockResult = createMockResult();
     Page<Result> mockPage = new PageImpl<>(List.of(mockResult));
@@ -169,7 +152,7 @@ class CsvExportServiceTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
     assertDoesNotThrow(
-        () -> csvExportService.streamResultsAsZippedCsv(outputStream, allFacilitiesExportParams));
+        () -> csvExportService.streamResultsAsZippedCsv(outputStream, organizationExportParams));
 
     byte[] zipBytes = outputStream.toByteArray();
     assertThat(zipBytes).isNotEmpty();

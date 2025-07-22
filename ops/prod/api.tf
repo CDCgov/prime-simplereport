@@ -67,6 +67,11 @@ module "simple_report_api" {
     SLACK_HOOK_TOKEN                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.slack_hook_token.id})"
     SR_PROD_BACKEND_URL                           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_prod_backend_url.id})"
     SR_PROD_DEVICES_TOKEN                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_prod_devices_token.id})"
+    AIMS_ACCESS_KEY_ID                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_access_key_id.id})"
+    AIMS_SECRET_ACCESS_KEY                        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_secret_access_key.id})"
+    AIMS_KMS_ENCRYPTION_KEY                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_kms_encryption_key.id})"
+    AIMS_OUTBOUND_ENDPOINT                        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_outbound_storage_endpoint.id})"
+    AIMS_MESSAGE_QUEUE_ENDPOINT                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_message_queue_endpoint.id})"
     # true by default: can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows (and overrides) an identical declaration in application.yaml
@@ -76,6 +81,17 @@ module "simple_report_api" {
 
 module "report_stream_reporting_functions" {
   source       = "../services/app_functions/report_stream_batched_publisher/infra"
+  environment  = local.env
+  env_level    = local.env_level
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  lb_subnet_id = data.terraform_remote_state.persistent_prod.outputs.subnet_lbs_id
+  depends_on = [
+    azurerm_storage_account.app
+  ]
+}
+
+module "test_data_reporting_function_app" {
+  source       = "../services/app_functions/test_data_publisher/infra"
   environment  = local.env
   env_level    = local.env_level
   tenant_id    = data.azurerm_client_config.current.tenant_id

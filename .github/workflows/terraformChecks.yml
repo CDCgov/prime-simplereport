@@ -76,6 +76,10 @@ jobs:
         if: ${{ github.actor != 'dependabot[bot]' }}
         with:
           terraform_version: 1.9.6
+      - name: Build data publisher functions package
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        uses: ./.github/actions/build-test-data-publisher-function-app
+
       - name: Terraform Init Prod
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: make init-prod

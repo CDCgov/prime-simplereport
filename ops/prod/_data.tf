@@ -196,7 +196,7 @@ data "azurerm_key_vault_secret" "experian_preciseid_password" {
 }
 
 data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
-  name         = "report-stream-exception-callback-prod"
+  name         = "report-stream-exception-callback-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
@@ -225,22 +225,22 @@ data "azurerm_key_vault_secret" "db_password_no_phi" {
 }
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-prod"
+  name         = "datahub-api-key-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_fhir_key" {
-  name         = "datahub-fhir-key-prod"
+  name         = "datahub-fhir-key-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_url" {
-  name         = "datahub-url-prod"
+  name         = "datahub-url-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_signing_key" {
-  name         = "datahub-signing-key-prod"
+  name         = "datahub-signing-key-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
@@ -256,5 +256,30 @@ data "azurerm_key_vault_secret" "simple_report_prod_backend_url" {
 
 data "azurerm_key_vault_secret" "simple_report_prod_devices_token" {
   name         = "simple-report-prod-devices-token"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "aims_access_key_id" {
+  name         = "aims-access-key-id-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "aims_secret_access_key" {
+  name         = "aims-secret-access-key-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "aims_kms_encryption_key" {
+  name         = "aims-kms-encryption-key-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "aims_outbound_storage_endpoint" {
+  name         = "aims-outbound-storage-endpoint-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "aims_message_queue_endpoint" {
+  name         = "aims-message-queue-endpoint-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }

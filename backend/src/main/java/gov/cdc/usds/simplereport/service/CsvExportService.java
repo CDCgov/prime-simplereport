@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -64,7 +65,6 @@ public class CsvExportService {
 
   public record ExportParameters(
       UUID facilityId,
-      UUID organizationId,
       UUID patientId,
       TestResult testResult,
       PersonRole personRole,
@@ -72,41 +72,25 @@ public class CsvExportService {
       Date startDate,
       Date endDate,
       int pageNumber,
-      int pageSize,
-      boolean includeAllFacilities) {
-
-    public ExportParameters {
-      if (facilityId == null && organizationId == null) {
-        throw new IllegalArgumentException(
-            "Either facilityId or organizationId is required for exports");
-      }
-      // Allow both facilityId and organizationId when includeAllFacilities is true (Path 3)
-      if (facilityId != null && organizationId != null && !includeAllFacilities) {
-        throw new IllegalArgumentException(
-            "Cannot specify both facilityId and organizationId unless includeAllFacilities is true");
-      }
-    }
+      int pageSize) {
 
     public boolean isFacilityExport() {
-      // For Path 3 (includeAllFacilities=true), treat as organization export even with facilityId
-      return facilityId != null && !includeAllFacilities;
+      // facility export when facilityId is not null
+      // Organization export when facilityId is null
+      return facilityId != null;
     }
   }
 
   public void streamResultsAsCsv(OutputStream outputStream, ExportParameters params) {
-    ExportParameters resolvedParams = resolveOrganizationId(params);
     try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         CSVPrinter csvPrinter = new CSVPrinter(writer, createResultCsvFormat())) {
 
-      int batchSize = resolvedParams.pageSize();
-      int totalElements = getResultsCount(resolvedParams);
+      int batchSize = params.pageSize();
+      int totalElements = getResultsCount(params);
       int totalPages = (int) Math.ceil((double) totalElements / batchSize);
 
-      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
-      UUID exportId =
-          resolvedParams.isFacilityExport()
-              ? resolvedParams.facilityId()
-              : resolvedParams.organizationId();
+      String exportType = params.isFacilityExport() ? "facility" : "organization";
+      UUID exportId = params.isFacilityExport() ? params.facilityId() : null;
       log.info(
           "Starting {} CSV export for {}={}: {} records in {} batches",
           exportType,
@@ -117,7 +101,7 @@ public class CsvExportService {
 
       for (int currentPage = 0; currentPage < totalPages; currentPage++) {
         Pageable pageable = PageRequest.of(currentPage, batchSize);
-        Page<TestResultsListItem> resultsPage = fetchResultsPage(resolvedParams, pageable);
+        Page<TestResultsListItem> resultsPage = fetchResultsPage(params, pageable);
 
         log.info(
             "Page {}/{}: Expected {} records, Got {} records, Total so far: {}",
@@ -138,11 +122,8 @@ public class CsvExportService {
 
       log.info("Completed {} CSV export for {}={}", exportType, exportType + "Id", exportId);
     } catch (IOException e) {
-      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
-      UUID exportId =
-          resolvedParams.isFacilityExport()
-              ? resolvedParams.facilityId()
-              : resolvedParams.organizationId();
+      String exportType = params.isFacilityExport() ? "facility" : "organization";
+      UUID exportId = params.isFacilityExport() ? params.facilityId() : null;
       log.error(
           "Error streaming {} CSV data for {}={}", exportType, exportType + "Id", exportId, e);
       throw new RuntimeException("Failed to generate CSV file", e);
@@ -150,21 +131,17 @@ public class CsvExportService {
   }
 
   public void streamResultsAsZippedCsv(OutputStream rawOut, ExportParameters params) {
-    ExportParameters resolvedParams = resolveOrganizationId(params);
 
     try (ZipOutputStream zipOut = new ZipOutputStream(rawOut)) {
       zipOut.setLevel(Deflater.BEST_SPEED);
       zipOut.putNextEntry(new ZipEntry("test-results.csv"));
 
-      streamResultsAsCsv(new NonClosingOutputStream(zipOut), resolvedParams);
+      streamResultsAsCsv(new NonClosingOutputStream(zipOut), params);
 
       zipOut.closeEntry();
     } catch (IOException ex) {
-      String exportType = resolvedParams.isFacilityExport() ? "facility" : "organization";
-      UUID exportId =
-          resolvedParams.isFacilityExport()
-              ? resolvedParams.facilityId()
-              : resolvedParams.organizationId();
+      String exportType = params.isFacilityExport() ? "facility" : "organization";
+      UUID exportId = params.isFacilityExport() ? params.facilityId() : null;
       log.error("Error zipping CSV for {} {}", exportType, exportId, ex);
       throw new RuntimeException("Failed to generate zipped CSV", ex);
     }
@@ -324,36 +301,6 @@ public class CsvExportService {
           "Error streaming organization patient CSV data for organizationId={}", organizationId, e);
       throw new RuntimeException("Failed to generate organization patient CSV file", e);
     }
-  }
-
-  private ExportParameters resolveOrganizationId(ExportParameters params) {
-    // Only resolve organizationId if:
-    // 1. organizationId is null AND facilityId exists AND includeAllFacilities is true (Path 3)
-    // For Path 2 (facility-only), keep organizationId as null
-
-    if (params.organizationId() != null
-        || params.facilityId() == null
-        || !params.includeAllFacilities()) {
-      return params;
-    }
-
-    // Path 3: "All Facilities" - derive organizationId from facilityId
-    Organization organization =
-        organizationService.getOrganizationByFacilityId(params.facilityId());
-    UUID organizationId = organization != null ? organization.getInternalId() : null;
-
-    return new ExportParameters(
-        params.facilityId(),
-        organizationId,
-        params.patientId(),
-        params.testResult(),
-        params.personRole(),
-        params.disease(),
-        params.startDate(),
-        params.endDate(),
-        params.pageNumber(),
-        params.pageSize(),
-        params.includeAllFacilities());
   }
 
   private int getResultsCount(ExportParameters params) {
@@ -747,7 +694,12 @@ public class CsvExportService {
           .forEachRemaining(
               entry -> {
                 if (entry.getValue().asBoolean()) {
-                  symptomList.add(entry.getKey());
+                  String symptomName = Translators.getSymptomName(entry.getKey());
+                  if (symptomName != null) {
+                    symptomList.add(symptomName);
+                  } else {
+                    symptomList.add(entry.getKey());
+                  }
                 }
               });
 
