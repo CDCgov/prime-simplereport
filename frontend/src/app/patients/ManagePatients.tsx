@@ -343,6 +343,7 @@ export const DetachedManagePatients = ({
           />
           <MenuButton
             id={"download-patients"}
+            className={"usa-button usa-button--outline"}
             disabled={downloadState === "downloading"}
             buttonContent={
               <>

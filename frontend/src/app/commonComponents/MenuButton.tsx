@@ -11,6 +11,7 @@ interface Props {
   title?: string;
   id?: string;
   disabled?: boolean;
+  className?: string;
   items: {
     name: string;
     content?: React.ReactNode;
@@ -25,7 +26,9 @@ export const MenuButton = (props: Props) => (
       <ReactMenuButton
         id={props.id}
         disabled={props.disabled}
-        className="usa-button usa-button--primary"
+        className={
+          props.className ? props.className : "usa-button usa-button--primary"
+        }
       >
         {props.buttonContent}
       </ReactMenuButton>
