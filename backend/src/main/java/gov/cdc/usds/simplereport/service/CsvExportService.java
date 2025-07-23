@@ -455,28 +455,28 @@ public class CsvExportService {
 
   private CSVFormat createPatientsCsvFormat() {
     String[] headers = {
-      "First Name",
-      "Middle Name",
-      "Last Name",
+      "First name",
+      "Middle name",
+      "Last name",
       "Suffix",
-      "Birth Date",
+      "Birth date",
       "Street",
       "City",
       "County",
       "State",
-      "Postal Code",
+      "Postal code",
       "Country",
-      "Phone Numbers",
+      "Phone numbers",
       "Emails",
       "Race",
       "Sex",
       "Ethnicity",
       "Role",
       "Facilities",
-      "Employed in Healthcare?",
-      "Group or Shared Housing Resident?",
-      "Tribal Affiliation",
-      "Preferred Language",
+      "Employed in healthcare?",
+      "Group or shared housing resident?",
+      "Tribal affiliation",
+      "Preferred language",
       "Notes"
     };
     return CSVFormat.Builder.create().setHeader(headers).build();
