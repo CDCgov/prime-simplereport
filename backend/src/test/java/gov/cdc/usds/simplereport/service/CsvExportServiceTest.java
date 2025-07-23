@@ -193,10 +193,10 @@ class CsvExportServiceTest {
     assertThat(csvContent).isNotEmpty();
     assertThat(csvContent)
         .contains(
-            "First Name,Middle Name,Last Name,Suffix,Birth Date,Street,City,County,State,Postal Code,Country,Phone Numbers,Emails,Race,Sex,Ethnicity,Role,Facilities,Employed in Healthcare?,Group or Shared Housing Resident?,Tribal Affiliation,Preferred Language,Notes");
+            "First name,Middle name,Last name,Suffix,Birth date,Street address 1,Street address 2,City,County,State,Postal code,Country,Phone numbers,Emails,Race,Sex,Ethnicity,Role,Facilities,Employed in healthcare?,Group or shared housing resident?,Tribal affiliation,Preferred language,Notes");
     assertThat(csvContent)
         .contains(
-            "John,Michael,Doe,,01/15/1990,123 Main St Apt 4B,Anytown,Test County,NY,12345,USA,555-1234,john.doe@example.com,White,M,Not Hispanic,STUDENT,Test Facility,false,false,Cherokee,English,");
+            "John,Michael,Doe,,01/15/1990,123 Main St,Apt 4B,Anytown,Test County,NY,12345,USA,555-1234,john.doe@example.com,White,M,Not Hispanic,STUDENT,Test Facility,false,false,Cherokee,English,");
   }
 
   @Test
@@ -223,10 +223,10 @@ class CsvExportServiceTest {
     assertThat(csvContent).isNotEmpty();
     assertThat(csvContent)
         .contains(
-            "First Name,Middle Name,Last Name,Suffix,Birth Date,Street,City,County,State,Postal Code,Country,Phone Numbers,Emails,Race,Sex,Ethnicity,Role,Facilities,Employed in Healthcare?,Group or Shared Housing Resident?,Tribal Affiliation,Preferred Language,Notes");
+            "First name,Middle name,Last name,Suffix,Birth date,Street address 1,Street address 2,City,County,State,Postal code,Country,Phone numbers,Emails,Race,Sex,Ethnicity,Role,Facilities,Employed in healthcare?,Group or shared housing resident?,Tribal affiliation,Preferred language,Notes");
     assertThat(csvContent)
         .contains(
-            "John,Michael,Doe,,01/15/1990,123 Main St Apt 4B,Anytown,Test County,NY,12345,USA,555-1234,john.doe@example.com,White,M,Not Hispanic,STUDENT,Test Facility,false,false,Cherokee,English,");
+            "John,Michael,Doe,,01/15/1990,123 Main St,Apt 4B,Anytown,Test County,NY,12345,USA,555-1234,john.doe@example.com,White,M,Not Hispanic,STUDENT,Test Facility,false,false,Cherokee,English,");
   }
 
   private Organization createMockOrganization() {
