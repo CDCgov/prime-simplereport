@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { getAppInsights } from "../TelemetryService";
 
 import Button from "./Button/Button";
 
@@ -14,6 +18,7 @@ interface DataRetentionModalProps {
 
 const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
+  const appInsights = getAppInsights();
 
   const handleContinue = () => {
     if (dontShowAgain) {
@@ -23,6 +28,14 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
   };
 
   const handleLearnMoreClick = () => {
+    appInsights?.trackEvent({
+      name: "dataRetentionModal_learnMore_clicked",
+      properties: {
+        action: "learn_more_clicked",
+        modalType: "data_retention",
+        supportLink: SUPPORT_LINK,
+      },
+    });
     window.open(SUPPORT_LINK, "_blank", "noopener,noreferrer");
   };
 
@@ -79,13 +92,18 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
 
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
+            <Button className="margin-right-2" onClick={handleLearnMoreClick}>
+              Learn more{" "}
+              <FontAwesomeIcon
+                icon={faExternalLinkAlt}
+                className="margin-left-1"
+              />
+            </Button>
             <Button
-              className="margin-right-2"
-              onClick={handleLearnMoreClick}
+              onClick={handleContinue}
               variant="outline"
-              label="Learn more"
+              label="Continue to SimpleReport"
             />
-            <Button onClick={handleContinue} label="Continue to SimpleReport" />
           </div>
         </div>
       </div>
