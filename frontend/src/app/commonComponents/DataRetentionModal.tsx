@@ -115,5 +115,5 @@ export default DataRetentionModal;
 
 export const shouldShowDataRetentionModal = (): boolean => {
   const dismissed = localStorage.getItem(DATA_RETENTION_MODAL_DISMISSED_KEY);
-  return !dismissed;
+  return dismissed !== "true";
 };
