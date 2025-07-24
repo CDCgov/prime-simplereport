@@ -163,7 +163,7 @@ public class HL7Converter {
    * @throws IllegalArgumentException if facility CLIA number does not match required format
    * @throws IllegalArgumentException if processing id is not T, D, or P
    */
-  public void populateMessageHeader(MSH msh, String sendingFacilityClia, String processingId)
+  void populateMessageHeader(MSH msh, String sendingFacilityClia, String processingId)
       throws DataTypeException, IllegalArgumentException {
     msh.getMsh1_FieldSeparator().setValue("|");
     msh.getMsh2_EncodingCharacters().setValue("^~\\&");
@@ -230,8 +230,7 @@ public class HL7Converter {
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
    */
-  public void populateSoftwareSegment(SFT sft, GitProperties gitProperties)
-      throws DataTypeException {
+  void populateSoftwareSegment(SFT sft, GitProperties gitProperties) throws DataTypeException {
     XON softwareOrg = sft.getSft1_SoftwareVendorOrganization();
     softwareOrg.getXon1_OrganizationName().setValue(SIMPLE_REPORT_NAME);
 
@@ -260,7 +259,7 @@ public class HL7Converter {
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
    */
-  public void populatePatientIdentification(PID pid, PatientReportInput patientInput)
+  void populatePatientIdentification(PID pid, PatientReportInput patientInput)
       throws DataTypeException {
     // PID Sequence 1 is "Set ID - PID" which is used to identify repetitions.
     // Since the ORU^R01 message only allows one Patient per message, the HL7 IG says this must be
@@ -332,7 +331,7 @@ public class HL7Converter {
   }
 
   /** Populates the Extended Person Name (XPN) object */
-  public void populateName(
+  void populateName(
       XPN extendedPersonName, String firstName, String middleName, String lastName, String suffix)
       throws DataTypeException {
     extendedPersonName.getXpn1_FamilyName().getFn1_Surname().setValue(lastName);
@@ -349,8 +348,7 @@ public class HL7Converter {
    * @param patientSex This should be a value on the HL7 0001 Sex table
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
-  public void populateAdministrativeSex(IS administrativeSex, String patientSex)
-      throws DataTypeException {
+  void populateAdministrativeSex(IS administrativeSex, String patientSex) throws DataTypeException {
     if (patientSex == null) {
       administrativeSex.setValue("U");
       return;
@@ -372,7 +370,7 @@ public class HL7Converter {
    * @param race This should be a value on the HL7 0005 Race table
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
-  public void populateRace(CE codedElement, String race) throws DataTypeException {
+  void populateRace(CE codedElement, String race) throws DataTypeException {
     boolean isParseableRace =
         StringUtils.isNotBlank(race) && PersonUtils.HL7_RACE_MAP.containsKey(race.toLowerCase());
 
@@ -393,7 +391,7 @@ public class HL7Converter {
    * @param ethnicity This should be a key on PersonUtils.ETHNICITY_MAP
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
-  public void populateEthnicGroup(CE codedElement, String ethnicity) throws DataTypeException {
+  void populateEthnicGroup(CE codedElement, String ethnicity) throws DataTypeException {
     boolean isParseableEthnicGroup =
         StringUtils.isNotBlank(ethnicity)
             && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity.toLowerCase());
@@ -409,7 +407,7 @@ public class HL7Converter {
   }
 
   // TODO: determine how we should send tribal citizenship data
-  public void populateTribalCitizenship(CWE codedElement, String tribalAffiliationCode)
+  void populateTribalCitizenship(CWE codedElement, String tribalAffiliationCode)
       throws DataTypeException {
     /*
     There is an HL7 code system for tribal entity called TribalEntityUS.
@@ -439,7 +437,7 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    * @throws IllegalArgumentException if phone number does not have exactly 10 digits
    */
-  public void populatePhoneNumber(XTN xtn, String phoneNumber)
+  void populatePhoneNumber(XTN xtn, String phoneNumber)
       throws DataTypeException, IllegalArgumentException {
     if (StringUtils.isBlank(phoneNumber)) {
       return;
@@ -469,7 +467,7 @@ public class HL7Converter {
    * @param emailAddress the email address
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
-  public void populateEmailAddress(XTN xtn, String emailAddress) throws DataTypeException {
+  void populateEmailAddress(XTN xtn, String emailAddress) throws DataTypeException {
     xtn.getXtn2_TelecommunicationUseCode().setValue("NET");
     xtn.getXtn3_TelecommunicationEquipmentType().setValue("Internet");
     // If XTN-4 Email Address is present, XTN-7 Local Number must be empty
@@ -480,7 +478,7 @@ public class HL7Converter {
    * Populates extended address (XAD), except for county code in XAD-9 since that requires FIPS
    * codes
    */
-  public void populateExtendedAddress(
+  void populateExtendedAddress(
       XAD extendedAddress,
       String street,
       String streetTwo,
@@ -510,7 +508,7 @@ public class HL7Converter {
    * @param orderId Used for filler order number
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
-  public void populateCommonOrderSegment(
+  void populateCommonOrderSegment(
       ORC commonOrder,
       FacilityReportInput orderingFacility,
       ProviderReportInput orderingProvider,
@@ -564,7 +562,7 @@ public class HL7Converter {
    * Populates an Entity Identifier (EI) with the provided id and SimpleReport as the assigning
    * authority for that id
    */
-  public void populateEntityIdentifierOID(EI entityIdentifier, String id) throws DataTypeException {
+  void populateEntityIdentifierOID(EI entityIdentifier, String id) throws DataTypeException {
     entityIdentifier.getEi1_EntityIdentifier().setValue(id);
     // EI-3 contains the universal ID for the assigning authority,
     // not the universal ID for the entity itself
@@ -573,7 +571,7 @@ public class HL7Converter {
   }
 
   /** Populates name and NPI for ordering provider */
-  public void populateOrderingProvider(XCN orderingProvider, ProviderReportInput providerInput)
+  void populateOrderingProvider(XCN orderingProvider, ProviderReportInput providerInput)
       throws DataTypeException {
     orderingProvider.getXcn1_IDNumber().setValue(providerInput.getNpi());
 
@@ -607,7 +605,7 @@ public class HL7Converter {
    *     message
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
-  public void populateObservationRequest(
+  void populateObservationRequest(
       OBR observationRequest,
       String sequenceNumber,
       String orderId,
@@ -660,7 +658,7 @@ public class HL7Converter {
    * @param testDetail The test result data
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
-  public void populateObservationResult(
+  void populateObservationResult(
       OBX obx,
       String sequenceNumber,
       FacilityReportInput performingFacility,
@@ -748,7 +746,7 @@ public class HL7Converter {
    * @param specimenInput Specimen data
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
-  public void populateSpecimen(
+  void populateSpecimen(
       SPM specimen, String sequenceNumber, String specimenId, SpecimenInput specimenInput)
       throws DataTypeException {
     specimen.getSpm1_SetIDSPM().setValue(sequenceNumber);
