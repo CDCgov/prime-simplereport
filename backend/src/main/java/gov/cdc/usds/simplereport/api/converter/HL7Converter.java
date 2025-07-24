@@ -684,8 +684,10 @@ public class HL7Converter {
 
       Varies value = obx.getObservationValue(0);
       value.setData(observationValue);
+    } else {
+      // TODO: handle quantitative and nominal result types. See page 145, HL7 v2.5.1 IG
+      throw new IllegalArgumentException("Non-ordinal result types are not currently supported");
     }
-    // TODO: handle quantitative and nominal result types. See page 145, HL7 v2.5.1 IG
 
     // TODO: determine how we should programmatically set OBX 8 - Abnormal flags
 

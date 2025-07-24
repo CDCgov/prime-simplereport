@@ -529,6 +529,38 @@ class HL7ConverterTest {
   }
 
   @Test
+  void populateObservationResult_throwsExceptionFor_nonOrdinalResultTypes() {
+    OBX observationResult =
+        new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getOBSERVATION().getOBX();
+
+    FacilityReportInput performingFacility = TestDataBuilder.createFacilityReportInput();
+    TestDetailsInput testDetail =
+        new TestDetailsInput(
+            "105629000",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            ResultScaleType.NOMINAL,
+            "260373001",
+            Date.from(STATIC_INSTANT),
+            "");
+
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                hl7Converter.populateObservationResult(
+                    observationResult,
+                    "1",
+                    performingFacility,
+                    Date.from(STATIC_INSTANT),
+                    testDetail));
+    assertThat(exception.getMessage())
+        .isEqualTo("Non-ordinal result types are not currently supported");
+  }
+
+  @Test
   void populateSpecimen_valid() throws DataTypeException {
     SPM specimen =
         new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getSPECIMEN(0).getSPM();
