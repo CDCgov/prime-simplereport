@@ -19,7 +19,6 @@ import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.CLIA_REGEX;
 
 import ca.uhn.hl7v2.model.DataTypeException;
-import ca.uhn.hl7v2.model.Varies;
 import ca.uhn.hl7v2.model.v251.datatype.CE;
 import ca.uhn.hl7v2.model.v251.datatype.CWE;
 import ca.uhn.hl7v2.model.v251.datatype.CX;
@@ -682,8 +681,7 @@ public class HL7Converter {
       // determine what the naming is (i.e. positive/negative vs reactive/non-reactive)
       observationValue.getCe3_NameOfCodingSystem().setValue(HL7_SNOMED_CODE_SYSTEM);
 
-      Varies value = obx.getObservationValue(0);
-      value.setData(observationValue);
+      obx.getObservationValue(0).setData(observationValue);
     } else {
       // TODO: handle quantitative and nominal result types. See page 145, HL7 v2.5.1 IG
       throw new IllegalArgumentException("Non-ordinal result types are not currently supported");
