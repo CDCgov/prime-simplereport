@@ -6,6 +6,10 @@ import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useDocumentTitle } from "../utils/hooks";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+import {
+  Organization,
+  useGetCurrentOrganizationQuery,
+} from "../../generated/graphql";
 
 import ManagePatients from "./ManagePatients";
 
@@ -15,7 +19,14 @@ const ManagePatientsContainer = () => {
   const currentPage = pageNumber ? +pageNumber : 1;
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id || "";
+  const facilityName = facility?.name || "";
   const user = useSelector<RootState, User>((state) => state.user);
+
+  const { data } = useGetCurrentOrganizationQuery({
+    fetchPolicy: "no-cache",
+  });
+  const currentOrganization = data?.whoami.organization as Organization;
+  console.log("this is the organization: ", currentOrganization);
 
   const canEditUser = hasPermission(
     user.permissions,
@@ -25,14 +36,21 @@ const ManagePatientsContainer = () => {
     user.permissions,
     appPermissions.people.canDelete
   );
+  const isOrgAdmin = hasPermission(
+    user.permissions,
+    appPermissions.settings.canView
+  );
   if (activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
   }
   return (
     <ManagePatients
       activeFacilityId={activeFacilityId}
+      facilityName={facilityName}
+      organization={currentOrganization}
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
+      isOrgAdmin={isOrgAdmin}
       currentPage={currentPage}
     />
   );

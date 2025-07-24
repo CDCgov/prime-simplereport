@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -11,15 +12,17 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.service.CsvExportService.ExportParameters;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,6 +30,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,11 +46,18 @@ import org.springframework.data.domain.PageImpl;
 class CsvExportServiceTest {
 
   @Mock private ResultService resultService;
+  @Mock private PersonService personService;
+
+  @Mock private OrganizationService organizationService;
+
+  @Mock private FacilityRepository facilityRepository;
+  @Mock private PersonRepository personRepository;
 
   @InjectMocks private CsvExportService csvExportService;
 
   private ExportParameters facilityExportParams;
   private ExportParameters organizationExportParams;
+  private Organization mockOrganization;
   private Facility mockFacility;
   private Person mockPerson;
   private DeviceType mockDeviceType;
@@ -55,6 +66,7 @@ class CsvExportServiceTest {
 
   @BeforeEach
   void setUp() {
+    mockOrganization = createMockOrganization();
     mockFacility = createMockFacility();
     mockPerson = createMockPerson();
     mockDeviceType = createMockDeviceType();
@@ -159,10 +171,71 @@ class CsvExportServiceTest {
     }
   }
 
+  @Test
+  void streamPatientsAsCsv_withFacilityDownload_shouldGenerateCsvSuccessfully() {
+    List<Person> mockPersons = List.of(mockPerson);
+    when(personService.getPatients(any(), anyInt(), anyInt(), any(), any(), any(), any()))
+        .thenReturn(mockPersons);
+
+    when(facilityRepository.findAllByOrganizationAndDeleted(any(), anyBoolean()))
+        .thenReturn(Set.of(mockFacility));
+    when(personRepository.findByInternalIdIn(any())).thenReturn(mockPersons);
+    when(personService.getPatientsCount(any(), any(), any(), anyBoolean(), any())).thenReturn(1L);
+
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    assertDoesNotThrow(
+        () ->
+            csvExportService.streamFacilityPatientsAsCsv(
+                outputStream, mockFacility.getInternalId()));
+
+    String csvContent = outputStream.toString();
+    assertThat(csvContent).isNotEmpty();
+    assertThat(csvContent)
+        .contains(
+            "First name,Middle name,Last name,Suffix,Birth date,Street address 1,Street address 2,City,County,State,Postal code,Country,Phone numbers,Emails,Race,Sex,Ethnicity,Role,Facilities,Employed in healthcare?,Group or shared housing resident?,Tribal affiliation,Preferred language,Notes");
+    assertThat(csvContent)
+        .contains(
+            "John,Michael,Doe,,01/15/1990,123 Main St,Apt 4B,Anytown,Test County,NY,12345,USA,555-1234,john.doe@example.com,White,M,Not Hispanic,STUDENT,Test Facility,false,false,Cherokee,English,");
+  }
+
+  @Test
+  void streamPatientsAsCsv_withOrganizationDownload_shouldGenerateCsvSuccessfully() {
+    List<Person> mockPersons = List.of(mockPerson);
+
+    when(personRepository.findAllByOrganizationAndIsDeleted(any(), anyBoolean(), any()))
+        .thenReturn(mockPersons);
+
+    when(facilityRepository.findAllByOrganizationAndDeleted(any(), anyBoolean()))
+        .thenReturn(Set.of(mockFacility));
+    when(personRepository.findByInternalIdIn(any())).thenReturn(mockPersons);
+
+    when(personService.getPatientsCountByOrganization(any())).thenReturn(1L);
+
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+    assertDoesNotThrow(
+        () ->
+            csvExportService.streamOrganizationPatientsAsCsv(
+                outputStream, mockOrganization.getInternalId()));
+
+    String csvContent = outputStream.toString();
+    assertThat(csvContent).isNotEmpty();
+    assertThat(csvContent)
+        .contains(
+            "First name,Middle name,Last name,Suffix,Birth date,Street address 1,Street address 2,City,County,State,Postal code,Country,Phone numbers,Emails,Race,Sex,Ethnicity,Role,Facilities,Employed in healthcare?,Group or shared housing resident?,Tribal affiliation,Preferred language,Notes");
+    assertThat(csvContent)
+        .contains(
+            "John,Michael,Doe,,01/15/1990,123 Main St,Apt 4B,Anytown,Test County,NY,12345,USA,555-1234,john.doe@example.com,White,M,Not Hispanic,STUDENT,Test Facility,false,false,Cherokee,English,");
+  }
+
+  private Organization createMockOrganization() {
+    return mock(Organization.class);
+  }
+
   private Facility createMockFacility() {
     Facility facility = mock(Facility.class);
     when(facility.getFacilityName()).thenReturn("Test Facility");
-    when(facility.getIsDeleted()).thenReturn(false);
     return facility;
   }
 
@@ -174,7 +247,6 @@ class CsvExportServiceTest {
     when(person.getLastName()).thenReturn("Doe");
     when(person.getBirthDate()).thenReturn(LocalDate.of(1990, 1, 15));
     when(person.getRole()).thenReturn(PersonRole.STUDENT);
-    when(person.getLookupId()).thenReturn("STU123");
     when(person.getPreferredLanguage()).thenReturn("English");
     when(person.getEmail()).thenReturn("john.doe@example.com");
     when(person.getStreet()).thenReturn("123 Main St");
@@ -199,27 +271,15 @@ class CsvExportServiceTest {
   }
 
   private DeviceType createMockDeviceType() {
-    DeviceType deviceType = mock(DeviceType.class);
-    when(deviceType.getName()).thenReturn("Abbott BinaxNOW");
-    when(deviceType.getManufacturer()).thenReturn("Abbott");
-    when(deviceType.getModel()).thenReturn("BinaxNOW COVID-19 Ag Card");
-    when(deviceType.getSwabTypes()).thenReturn(List.of());
-    return deviceType;
+    return mock(DeviceType.class);
   }
 
   private ApiUser createMockApiUser() {
-    ApiUser apiUser = mock(ApiUser.class);
-    PersonName submitterName = new PersonName("Test", "", "Submitter", "");
-    when(apiUser.getNameInfo()).thenReturn(submitterName);
-    return apiUser;
+    return mock(ApiUser.class);
   }
 
   private AskOnEntrySurvey createMockSurveyData() {
-    AskOnEntrySurvey survey = mock(AskOnEntrySurvey.class);
-    when(survey.getNoSymptoms()).thenReturn(false);
-    when(survey.getSymptomsJSON()).thenReturn("{\"fever\":true,\"cough\":false}");
-    when(survey.getSymptomOnsetDate()).thenReturn(LocalDate.now().minusDays(2));
-    return survey;
+    return mock(AskOnEntrySurvey.class);
   }
 
   private Result createMockResult() {
