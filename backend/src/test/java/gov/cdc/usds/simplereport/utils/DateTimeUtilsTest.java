@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.getCurrentDatestamp;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.parseLocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,9 +12,12 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,5 +114,33 @@ public class DateTimeUtilsTest {
   void getCurrentDatestamp_returnDateString() {
     LocalDateTime expectedDateTime = LocalDateTime.of(2023, 7, 13, 12, 0);
     assertThat(getCurrentDatestamp(expectedDateTime)).isEqualTo("20230713");
+  }
+
+  @Test
+  void formatToHL7DateTime_localDate() {
+    LocalDate localDate = LocalDate.of(2025, 7, 1);
+    assertThat(formatToHL7DateTime(localDate)).isEqualTo("20250701");
+  }
+
+  @Test
+  void formatToHL7DateTime_zonedDateTime() {
+    LocalDateTime localDateTime = LocalDateTime.of(2025, 7, 1, 8, 0, 0);
+    ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("US/Pacific"));
+    assertThat(formatToHL7DateTime(zonedDateTime)).isEqualTo("20250701080000.0000-0700");
+  }
+
+  @Test
+  void formatToHL7DateTime_instant() {
+    LocalDateTime localDateTime = LocalDateTime.of(2025, 7, 1, 8, 0, 0);
+    ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneOffset.UTC);
+    assertThat(formatToHL7DateTime(zonedDateTime.toInstant()))
+        .isEqualTo("20250701080000.0000+0000");
+  }
+
+  @Test
+  void formatToHL7DateTime_date() {
+    LocalDateTime localDateTime = LocalDateTime.of(2025, 7, 1, 8, 0, 0);
+    Date date = Date.from(localDateTime.atZone(ZoneOffset.UTC).toInstant());
+    assertThat(formatToHL7DateTime(date)).isEqualTo("20250701080000.0000+0000");
   }
 }

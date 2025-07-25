@@ -1,7 +1,11 @@
 package gov.cdc.usds.simplereport.service;
 
-import ca.uhn.fhir.context.FhirContext;
-import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.HapiContext;
+import ca.uhn.hl7v2.model.v251.message.ORU_R01;
+import ca.uhn.hl7v2.parser.Parser;
+import gov.cdc.usds.simplereport.api.converter.HL7Converter;
+import gov.cdc.usds.simplereport.api.converter.HapiContextProvider;
 import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
@@ -10,7 +14,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hl7.fhir.r4.model.Bundle;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +23,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @SuppressWarnings({"checkstyle:TodoComment"})
 public class UniversalReportService {
-  private final FhirConverter fhirConverter;
+  private final HL7Converter hl7Converter;
   private final GitProperties gitProperties;
-  private final FhirContext fhirContext;
+  private final HapiContext hapiContext = HapiContextProvider.get();
+  private final Parser parser = hapiContext.getPipeParser();
+
+  @Value("${simple-report.processing-mode-code:P}")
+  private String processingModeCode = "P";
 
   // TODO: Maybe not right away but at some point we could have a service that generates an audit
   // trail of the bundle.We can track the bundle creation and keep a log of why the report is
@@ -33,18 +41,23 @@ public class UniversalReportService {
       ProviderReportInput providerInput,
       FacilityReportInput facilityInput,
       SpecimenInput specimenInput,
-      List<TestDetailsInput> testDetailsInputList) {
-    // TODO: test for error handling
-    Bundle bundle =
-        fhirConverter.createUniversalFhirBundle(
-            patientInput,
-            providerInput,
-            facilityInput,
-            specimenInput,
-            testDetailsInputList,
-            gitProperties,
-            "P");
-    var parser = fhirContext.newJsonParser();
-    return parser.encodeResourceToString(bundle);
+      List<TestDetailsInput> testDetailsInputList)
+      throws HL7Exception {
+
+    try {
+      ORU_R01 message =
+          hl7Converter.createLabReportMessage(
+              patientInput,
+              providerInput,
+              facilityInput,
+              specimenInput,
+              testDetailsInputList,
+              gitProperties,
+              processingModeCode);
+      return parser.encode(message);
+    } catch (HL7Exception e) {
+      log.error("Encountered an error converting the form data to HL7");
+      throw e;
+    }
   }
 }

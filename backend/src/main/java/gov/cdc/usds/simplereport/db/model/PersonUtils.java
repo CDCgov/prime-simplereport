@@ -669,6 +669,10 @@ public class PersonUtils {
   }
 
   public static final Map<String, String> raceMap = new HashMap<>();
+
+  /** Race map limited to the values on HL7 v2.5.1 0005 Race table. */
+  public static final Map<String, List<String>> HL7_RACE_MAP = new HashMap<>();
+
   private static final String NATIVE_CODE = "1002-5";
   private static final String ASIAN_CODE = "2028-9";
   private static final String BLACK_CODE = "2054-5";
@@ -697,6 +701,13 @@ public class PersonUtils {
     raceMap.put("refused", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
     raceMap.put("ask, but unknown", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
     raceMap.put("asku", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
+
+    HL7_RACE_MAP.put("native", List.of(NATIVE_CODE, "American Indian or Alaska Native"));
+    HL7_RACE_MAP.put("asian", List.of(ASIAN_CODE, "Asian"));
+    HL7_RACE_MAP.put("black", List.of(BLACK_CODE, "Black or African American"));
+    HL7_RACE_MAP.put("pacific", List.of(PACIFIC_CODE, "Native Hawaiian or Other Pacific Islander"));
+    HL7_RACE_MAP.put("white", List.of(WHITE_CODE, "White"));
+    HL7_RACE_MAP.put("other", List.of(OTHER_CODE, "Other"));
   }
 
   private static final List<String> hispanic = List.of("H", "Hispanic or Latino");

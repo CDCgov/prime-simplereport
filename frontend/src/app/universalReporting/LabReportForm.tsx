@@ -250,7 +250,10 @@ const LabReportForm = () => {
   const facilityFieldsMissing =
     isEmpty(facility.name) || isEmpty(facility.clia);
 
-  const specimenFieldsMissing = isEmpty(specimen.snomedTypeCode);
+  const specimenFieldsMissing =
+    isEmpty(specimen.snomedTypeCode) ||
+    isEmpty(specimen.collectionDate) ||
+    isEmpty(specimen.receivedDate);
 
   const testDetailFieldsMissing = testDetailList.some(
     (testDetail) =>
