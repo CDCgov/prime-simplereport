@@ -164,14 +164,18 @@ public class HL7Converter {
    */
   void populateMessageHeader(MSH msh, String sendingFacilityClia, String processingId)
       throws DataTypeException, IllegalArgumentException {
+    if (!sendingFacilityClia.matches(CLIA_REGEX)) {
+      throw new IllegalArgumentException("Sending facility CLIA number must match CLIA format");
+    }
+    if (!processingId.matches("^[TDP]$")) {
+      throw new IllegalArgumentException(
+          "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
+    }
+
     msh.getMsh1_FieldSeparator().setValue("|");
     msh.getMsh2_EncodingCharacters().setValue("^~\\&");
     msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
-
-    if (!sendingFacilityClia.matches(CLIA_REGEX)) {
-      throw new IllegalArgumentException("Sending facility CLIA number must match CLIA format");
-    }
 
     msh.getMsh4_SendingFacility().getHd2_UniversalID().setValue(sendingFacilityClia);
     // CLIA is allowed for MSH-4 even though it is not in the Universal ID Type value set of HL70301
@@ -201,10 +205,6 @@ public class HL7Converter {
 
     msh.getMsh10_MessageControlID().setValue(uuidGenerator.randomUUID().toString());
 
-    if (!processingId.matches("^[TDP]$")) {
-      throw new IllegalArgumentException(
-          "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
-    }
     msh.getMsh11_ProcessingID().getPt1_ProcessingID().setValue(processingId);
 
     msh.getMsh12_VersionID().getVersionID().setValue(HL7_VERSION_ID);
@@ -260,6 +260,12 @@ public class HL7Converter {
    */
   void populatePatientIdentification(PID pid, PatientReportInput patientInput)
       throws DataTypeException {
+    if (StringUtils.isBlank(patientInput.getPhone())
+        && StringUtils.isBlank(patientInput.getEmail())) {
+      throw new IllegalArgumentException(
+          "Patient input must contain at least phone number or email address for PID-13");
+    }
+
     // PID Sequence 1 is "Set ID - PID" which is used to identify repetitions.
     // Since the ORU^R01 message only allows one Patient per message, the HL7 IG says this must be
     // the literal value '1'.
@@ -307,12 +313,6 @@ public class HL7Converter {
         patientInput.getState(),
         patientInput.getZipCode(),
         patientInput.getCountry());
-
-    if (StringUtils.isBlank(patientInput.getPhone())
-        && StringUtils.isBlank(patientInput.getEmail())) {
-      throw new IllegalArgumentException(
-          "Patient input must contain at least phone number or email address for PID-13");
-    }
 
     populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone());
 
@@ -522,6 +522,11 @@ public class HL7Converter {
       ProviderReportInput orderingProvider,
       String orderId)
       throws DataTypeException {
+    if (StringUtils.isBlank(orderingFacility.getPhone())) {
+      throw new IllegalArgumentException(
+          "Ordering facility input must contain at least phone number for ORC-23");
+    }
+
     // In the ORU^R01 this should be the literal value: "RE." See page 120, HL7 v2.5.1 IG
     // RE is the value for "Observations to follow" on HL7 table 0119
     commonOrder.getOrc1_OrderControl().setValue("RE");
@@ -544,11 +549,6 @@ public class HL7Converter {
         orderingFacility.getState(),
         orderingFacility.getZipCode(),
         DEFAULT_COUNTRY);
-
-    if (StringUtils.isBlank(orderingFacility.getPhone())) {
-      throw new IllegalArgumentException(
-          "Ordering facility input must contain at least phone number for ORC-23");
-    }
 
     populatePhoneNumber(
         commonOrder.getOrc23_OrderingFacilityPhoneNumber(0), orderingFacility.getPhone());
