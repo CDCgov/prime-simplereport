@@ -381,22 +381,6 @@ class HL7ConverterTest {
   }
 
   @Test
-  void populateEmailAddress_throwsExceptionFor_lengthTooLong() {
-    PID pid = TestDataBuilder.createPatientIdentificationSegment();
-    XTN xtn = pid.getPid13_PhoneNumberHome(0);
-
-    IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () ->
-                hl7Converter.populateEmailAddress(
-                    xtn,
-                    "test@exaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaample.com"));
-    assertThat(exception.getMessage())
-        .isEqualTo("XTN-4 Email Address must be less than 199 characters long.");
-  }
-
-  @Test
   void populateExtendedAddress_valid() throws DataTypeException {
     PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
     XAD address = pid.getPid11_PatientAddress(0);

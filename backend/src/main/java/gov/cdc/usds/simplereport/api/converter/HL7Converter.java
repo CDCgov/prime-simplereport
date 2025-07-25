@@ -465,17 +465,8 @@ public class HL7Converter {
    * @param xtn Extended telecommunication number.
    * @param emailAddress the email address
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
-   * @throws IllegalArgumentException if email is longer than 199 characters
    */
   void populateEmailAddress(XTN xtn, String emailAddress) throws DataTypeException {
-    if (StringUtils.isBlank(emailAddress)) {
-      return;
-    }
-    final int maxEmailLength = 199;
-    if (emailAddress.length() > maxEmailLength) {
-      throw new IllegalArgumentException(
-          "XTN-4 Email Address must be less than 199 characters long.");
-    }
     xtn.getXtn2_TelecommunicationUseCode().setValue("NET");
     xtn.getXtn3_TelecommunicationEquipmentType().setValue("Internet");
     // If XTN-4 Email Address is present, XTN-7 Local Number must be empty
