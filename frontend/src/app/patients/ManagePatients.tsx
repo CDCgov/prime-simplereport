@@ -40,6 +40,7 @@ import "./ManagePatients.scss";
 import { getAppInsightsHeaders } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
 import FetchClient from "../utils/api";
+import { triggerBlobDownload } from "../utils/file";
 
 import DownloadPatientsCsvModal from "./DownloadPatientsCsvModal";
 import ArchivePersonModal from "./ArchivePersonModal";
@@ -437,19 +438,11 @@ export const DetachedManagePatients = ({
       const blob = await response.blob();
       const contentDisposition = response.headers.get("content-disposition");
 
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename=(.+)/);
-        if (match) setPatientsDownloadFileName(match[1]);
-      }
-
-      const urlBlob = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = urlBlob;
-      a.download = patientsDownloadFileName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(urlBlob);
+      triggerBlobDownload({
+        blob,
+        contentDisposition: contentDisposition || undefined,
+        defaultFilename: patientsDownloadFileName,
+      });
 
       setPatientDownloadModalIsOpen(false);
       showSuccess("Download Complete", "Patient data downloaded successfully");
