@@ -12,8 +12,6 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,24 +48,12 @@ public class GenerateDataForPerfTest {
           // For this example, we'll just use the current user from TestUserIdentities
           ApiUser testUser = testDataFactory.getApiUserService().getCurrentUserInfo().getWrapped();
 
-          // Track exported entities to avoid duplicates
-          Set<String> exportedPersons = new HashSet<>();
-          Set<String> exportedOrgs = new HashSet<>();
-          Set<String> exportedFacilities = new HashSet<>();
-          Set<String> exportedUsers = new HashSet<>();
-          Set<String> exportedDeviceTypes = new HashSet<>();
-
           // Prepare files and headers
           File personFile = new File(fileName + "_persons.csv");
           File orgFile = new File(fileName + "_orgs.csv");
           File facilityFile = new File(fileName + "_facilities.csv");
           File userFile = new File(fileName + "_users.csv");
           File deviceTypeFile = new File(fileName + "_device_types.csv");
-          boolean writePersonHeader = true;
-          boolean writeOrgHeader = true;
-          boolean writeFacilityHeader = true;
-          boolean writeUserHeader = true;
-          boolean writeDeviceTypeHeader = true;
 
           // Export device type
           try (FileWriter deviceTypeWriter = new FileWriter(deviceTypeFile)) {
@@ -379,6 +365,6 @@ public class GenerateDataForPerfTest {
   @Disabled
   @Test
   public void testGenerate100000Events() {
-    generateTestEvents(1000, "1000");
+    //    generateTestEvents(1000, "1000");
   }
 }
