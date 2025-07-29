@@ -1958,7 +1958,7 @@ export type UpdatePatientMutation = {
 };
 
 export type GetPatientsCountByFacilityQueryVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
   archivedStatus?: InputMaybe<ArchivedStatus>;
   namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
 }>;
@@ -5427,7 +5427,7 @@ export type UpdatePatientMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const GetPatientsCountByFacilityDocument = gql`
   query GetPatientsCountByFacility(
-    $facilityId: ID!
+    $facilityId: ID
     $archivedStatus: ArchivedStatus = UNARCHIVED
     $namePrefixMatch: String
   ) {
@@ -5458,14 +5458,10 @@ export const GetPatientsCountByFacilityDocument = gql`
  * });
  */
 export function useGetPatientsCountByFacilityQuery(
-  baseOptions: Apollo.QueryHookOptions<
+  baseOptions?: Apollo.QueryHookOptions<
     GetPatientsCountByFacilityQuery,
     GetPatientsCountByFacilityQueryVariables
-  > &
-    (
-      | { variables: GetPatientsCountByFacilityQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
