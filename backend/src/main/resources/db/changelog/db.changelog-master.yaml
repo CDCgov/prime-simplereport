@@ -6542,3 +6542,222 @@ databaseChangeLog:
             columns:
               - column:
                   name: organization_id
+
+  - changeSet:
+      id: add-test-event-metadata-table
+      author: ar72@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-test-event-metadata-table
+        - createTable:
+            tableName: test_event_metadata
+            remarks: Metadata about test events for reporting and tracking purposes, including information about how and where test events were reported.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: id for this metadata record
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: timestamp of when this metadata was saved
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: API user who created this which should be the SR service account running the cron job
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event_metadata__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: this record should never actually be updated so this should match the created_at timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: this record should never actually be updated so this should match the created_by API user
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event_metadata__updated_by
+                    references: api_user
+              - column:
+                  name: test_event_id
+                  type: uuid
+                  remarks: id of the test event this metadata refers to
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event_metadata__test_event_id
+                    references: test_event
+              - column:
+                  name: test_event_created_at
+                  type: DATETIME
+                  remarks: timestamp referring to when the test event was created
+                  constraints:
+                    nullable: false
+              - column:
+                  name: test_event_created_by
+                  type: uuid
+                  remarks: API user who created the test event
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event_metadata__test_event_created_by
+                    references: api_user
+              - column:
+                  name: test_event_updated_at
+                  type: DATETIME
+                  remarks: timestamp referring to when the test event was last updated
+                  constraints:
+                    nullable: false
+              - column:
+                  name: test_event_updated_by
+                  type: uuid
+                  remarks: API user who last updated the test event
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event_metadata__test_event_updated_by
+                    references: api_user
+              - column:
+                  name: organization_id
+                  type: uuid
+                  remarks: populated from test_event.organization_id
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event_metadata__organization_id
+                    references: organization
+              - column:
+                  name: facility_id
+                  type: uuid
+                  remarks: populated from test_event.facility_id
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event_metadata__facility_id
+                    references: facility
+              - column:
+                  name: provider_id
+                  type: text
+                  remarks: populated from test_event.provider_data.provider_id
+                  constraints:
+                    nullable: true
+              - column:
+                  name: report_type
+                  type: text
+                  remarks: currently this will always be eLR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: destination
+                  type: text
+                  remarks: currently this will be ReportStream, but may switch to HL7v2 depending on how soon we switch to AIMS
+                  constraints:
+                    nullable: false
+              - column:
+                  name: format
+                  type: text
+                  remarks: currently this will be FHIR, but may switch to HL7v2 depending on how soon we switch to AIMS
+                  constraints:
+                    nullable: false
+              - column:
+                  name: conditions
+                  type: text[]
+                  remarks: since multiplex test events are associated with multiple supported diseases, this stores the disease names as an array (e.g., ['COVID-19', 'Flu A', 'Flu B'])
+                  constraints:
+                    nullable: true
+              - column:
+                  name: test_ordered_code
+                  type: text
+                  remarks: populated by going from test_event.device_type_id to device_type_disease.test_order_code. alternatively, we could just keep track of the device_id here, but there's possible (unlikely) risk of device data changing, so it might not truly represent the same test_ordered_code as it existed during the test event
+                  constraints:
+                    nullable: true
+              - column:
+                  name: correction_status
+                  type: text
+                  remarks: populated from test_event.correction_status
+                  constraints:
+                    nullable: true
+              - column:
+                  name: original_test_order_id
+                  type: uuid
+                  remarks: populated from test_event.test_order_id, this allows test events from the same test order to still be associated with each other
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__test_event_metadata__original_test_order_id
+                    references: test_order
+        - addUniqueConstraint:
+            tableName: test_event_metadata
+            columnNames: test_event_id
+            constraintName: uk__test_event_metadata__test_event_id
+      rollback:
+        - dropTable:
+            tableName: test_event_metadata
+  - changeSet:
+      id: populate-test-event-metadata
+      author: ar72@cdc.gov
+      changes:
+        - sqlFile:
+            path: ../scripts/populate_test_event_metadata_up.sql
+            relativeToChangelogFile: true
+      rollback:
+        - sqlFile:
+            relativeToChangelogFile: true
+            path: ../scripts/populate_test_event_metadata_down.sql
+  - changeSet:
+      id: add-test-event-metadata-indexes
+      author: ar72@cdc.gov
+      changes:
+        - tagDatabase:
+            tag: add-test-event-metadata-indexes
+        - createIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__test_event_id
+            columns:
+              - column:
+                  name: test_event_id
+        - createIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__organization_id
+            columns:
+              - column:
+                  name: organization_id
+        - createIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__facility_id
+            columns:
+              - column:
+                  name: facility_id
+        - createIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__created_at
+            columns:
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__conditions
+            columns:
+              - column:
+                  name: conditions
+                  type: GIN
+      rollback:
+        - dropIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__test_event_id
+        - dropIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__organization_id
+        - dropIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__facility_id
+        - dropIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__created_at
+        - dropIndex:
+            tableName: test_event_metadata
+            indexName: ix__test_event_metadata__conditions
