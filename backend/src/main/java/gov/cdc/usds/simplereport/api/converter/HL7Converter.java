@@ -95,8 +95,10 @@ public class HL7Converter {
       throws DataTypeException, IllegalArgumentException {
     ORU_R01 message = new ORU_R01();
 
+    Date messageTimestamp = dateGenerator.newDate();
+
     MSH messageHeader = message.getMSH();
-    populateMessageHeader(messageHeader, facilityInput.getClia(), processingId);
+    populateMessageHeader(messageHeader, facilityInput.getClia(), processingId, messageTimestamp);
 
     SFT softwareSegment = message.getSFT();
     populateSoftwareSegment(softwareSegment, gitProperties);
@@ -131,7 +133,8 @@ public class HL7Converter {
           providerInput,
           specimenInput.getCollectionDate(),
           testDetail.getTestOrderLoinc(),
-          testDetail.getTestOrderDisplayName());
+          testDetail.getTestOrderDisplayName(),
+          messageTimestamp);
 
       OBX observationResult = orderGroup.getOBSERVATION().getOBX();
       populateObservationResult(
@@ -157,12 +160,15 @@ public class HL7Converter {
    * @param sendingFacilityClia CLIA number for the facility sending the lab report
    * @param processingId Indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
+   * @param messageTimestamp Must be greater than or equal to the value of OBR-22 Results
+   *     Report/Status Change Datetime
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
-   * @throws IllegalArgumentException if facility CLIA number does not match required format
-   * @throws IllegalArgumentException if processing id is not T, D, or P
+   * @throws IllegalArgumentException if facility CLIA number does not match required format, or if
+   *     processing id is not T, D, or P
    */
-  void populateMessageHeader(MSH msh, String sendingFacilityClia, String processingId)
+  void populateMessageHeader(
+      MSH msh, String sendingFacilityClia, String processingId, Date messageTimestamp)
       throws DataTypeException, IllegalArgumentException {
     if (!sendingFacilityClia.matches(CLIA_REGEX)) {
       throw new IllegalArgumentException("Sending facility CLIA number must match CLIA format");
@@ -187,9 +193,7 @@ public class HL7Converter {
     msh.getMsh6_ReceivingFacility().getHd2_UniversalID().setValue(APHL_ORG_OID);
     msh.getMsh6_ReceivingFacility().getHd3_UniversalIDType().setValue("ISO");
 
-    msh.getMsh7_DateTimeOfMessage()
-        .getTs1_Time()
-        .setValue(formatToHL7DateTime(dateGenerator.newDate()));
+    msh.getMsh7_DateTimeOfMessage().getTs1_Time().setValue(formatToHL7DateTime(messageTimestamp));
 
     /*
     "ORU^R01^ORU_R01" is the Message Type used for result messages in the HL7v2.5.1 IG
@@ -260,12 +264,6 @@ public class HL7Converter {
    */
   void populatePatientIdentification(PID pid, PatientReportInput patientInput)
       throws DataTypeException {
-    if (StringUtils.isBlank(patientInput.getPhone())
-        && StringUtils.isBlank(patientInput.getEmail())) {
-      throw new IllegalArgumentException(
-          "Patient input must contain at least phone number or email address for PID-13");
-    }
-
     // PID Sequence 1 is "Set ID - PID" which is used to identify repetitions.
     // Since the ORU^R01 message only allows one Patient per message, the HL7 IG says this must be
     // the literal value '1'.
@@ -314,10 +312,16 @@ public class HL7Converter {
         patientInput.getZipCode(),
         patientInput.getCountry());
 
-    populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone());
+    if (StringUtils.isNotBlank(patientInput.getPhone())) {
+      populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone());
+    }
 
-    // For some reason, email address is indeed stored on the PhoneNumberHome element array
-    populateEmailAddress(pid.getPid13_PhoneNumberHome(1), patientInput.getEmail());
+    if (StringUtils.isNotBlank(patientInput.getEmail())) {
+      int nextRepetitionIndex = pid.getPid13_PhoneNumberHomeReps();
+      // For some reason, email address is indeed stored on the PhoneNumberHome element array
+      populateEmailAddress(
+          pid.getPid13_PhoneNumberHome(nextRepetitionIndex), patientInput.getEmail());
+    }
 
     // TODO: determine HL7 valid tribal affiliation code system values
     /*
@@ -506,16 +510,19 @@ public class HL7Converter {
    * @param orderingProvider Provider who ordered the test
    * @param orderId Used for filler order number
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
+   * @throws IllegalArgumentException if ordering facility is missing both phone number and email
+   *     address
    */
   void populateCommonOrderSegment(
       ORC commonOrder,
       FacilityReportInput orderingFacility,
       ProviderReportInput orderingProvider,
       String orderId)
-      throws DataTypeException {
-    if (StringUtils.isBlank(orderingFacility.getPhone())) {
+      throws DataTypeException, IllegalArgumentException {
+    if (StringUtils.isBlank(orderingFacility.getPhone())
+        && StringUtils.isBlank(orderingFacility.getEmail())) {
       throw new IllegalArgumentException(
-          "Ordering facility input must contain at least phone number for ORC-23");
+          "Ordering facility must contain at least phone number or email address for ORC-23");
     }
 
     // In the ORU^R01 this should be the literal value: "RE." See page 120, HL7 v2.5.1 IG
@@ -541,11 +548,17 @@ public class HL7Converter {
         orderingFacility.getZipCode(),
         DEFAULT_COUNTRY);
 
-    populatePhoneNumber(
-        commonOrder.getOrc23_OrderingFacilityPhoneNumber(0), orderingFacility.getPhone());
+    if (StringUtils.isNotBlank(orderingFacility.getPhone())) {
+      populatePhoneNumber(
+          commonOrder.getOrc23_OrderingFacilityPhoneNumber(0), orderingFacility.getPhone());
+    }
 
-    populateEmailAddress(
-        commonOrder.getOrc23_OrderingFacilityPhoneNumber(1), orderingFacility.getEmail());
+    if (StringUtils.isNotBlank(orderingFacility.getEmail())) {
+      int nextRepetitionIndex = commonOrder.getOrc23_OrderingFacilityPhoneNumberReps();
+      populateEmailAddress(
+          commonOrder.getOrc23_OrderingFacilityPhoneNumber(nextRepetitionIndex),
+          orderingFacility.getEmail());
+    }
 
     populateExtendedAddress(
         commonOrder.getOrc24_OrderingProviderAddress(0),
@@ -602,6 +615,7 @@ public class HL7Converter {
    * @param testOrderLoinc All OBR segment repeats should use the same test order LOINC
    * @param testOrderDisplay This should be the same test order LOINC for all OBR within this
    *     message
+   * @param messageTimestamp Must be less than or equal to the value of MSH-7 Date Time of Message
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateObservationRequest(
@@ -611,7 +625,8 @@ public class HL7Converter {
       ProviderReportInput orderingProvider,
       Date specimenCollectionDate,
       String testOrderLoinc,
-      String testOrderDisplay)
+      String testOrderDisplay,
+      Date messageTimestamp)
       throws DataTypeException {
     observationRequest.getObr1_SetIDOBR().setValue(sequenceNumber);
 
@@ -639,7 +654,7 @@ public class HL7Converter {
     observationRequest
         .getObr22_ResultsRptStatusChngDateTime()
         .getTs1_Time()
-        .setValue(formatToHL7DateTime(dateGenerator.newDate()));
+        .setValue(formatToHL7DateTime(messageTimestamp));
 
     // F for final results, from HL7 table 0123 Result Status
     observationRequest.getObr25_ResultStatus().setValue("F");
@@ -656,6 +671,7 @@ public class HL7Converter {
    * @param specimenCollectionDate Used to populate the time of the observation
    * @param testDetail The test result data
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
+   * @throws IllegalArgumentException if non-ordinal result type is provided
    */
   void populateObservationResult(
       OBX obx,
@@ -663,7 +679,7 @@ public class HL7Converter {
       FacilityReportInput performingFacility,
       Date specimenCollectionDate,
       TestDetailsInput testDetail)
-      throws DataTypeException {
+      throws DataTypeException, IllegalArgumentException {
     obx.getObx1_SetIDOBX().setValue(sequenceNumber);
 
     CE observationIdentifier = obx.getObx3_ObservationIdentifier();

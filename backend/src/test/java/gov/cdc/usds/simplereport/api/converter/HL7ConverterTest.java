@@ -131,7 +131,7 @@ class HL7ConverterTest {
     MSH msh = new ORU_R01().getMSH();
     String clia = "12D1234567";
 
-    hl7Converter.populateMessageHeader(msh, clia, "T");
+    hl7Converter.populateMessageHeader(msh, clia, "T", Date.from(STATIC_INSTANT));
 
     assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue()).isEqualTo(clia);
     assertThat(msh.getMsh7_DateTimeOfMessage().getTs1_Time().getValue())
@@ -148,7 +148,7 @@ class HL7ConverterTest {
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> hl7Converter.populateMessageHeader(msh, clia, "F"));
+            () -> hl7Converter.populateMessageHeader(msh, clia, "F", Date.from(STATIC_INSTANT)));
     assertThat(exception.getMessage())
         .isEqualTo(
             "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
@@ -222,15 +222,25 @@ class HL7ConverterTest {
   }
 
   @Test
-  void populatePatientIdentification_throwsExceptionFor_BlankEmailAndPhone() {
-    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+  void populatePatientIdentification_dateOfBirth_valid() throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
+
+    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+
+    assertThat(pid.getPid7_DateTimeOfBirth().getTs1_Time().getValue()).isEqualTo("19900101");
+  }
+
+  @Test
+  void populatePatientIdentification_valid_emailWithoutPhone() throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
     PatientReportInput patientReportInput =
         new PatientReportInput(
             "John",
             "Jacob",
             "Smith",
             "Jr",
-            "",
+            "john@example.com",
             "",
             "123 Main St",
             "Apartment A",
@@ -246,22 +256,10 @@ class HL7ConverterTest {
             "266",
             "");
 
-    IllegalArgumentException exception =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> hl7Converter.populatePatientIdentification(pid, patientReportInput));
-    assertThat(exception.getMessage())
-        .isEqualTo("Patient input must contain at least phone number or email address for PID-13");
-  }
-
-  @Test
-  void populatePatientIdentification_dateOfBirth_valid() throws DataTypeException {
-    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
-    PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
-
     hl7Converter.populatePatientIdentification(pid, patientReportInput);
 
-    assertThat(pid.getPid7_DateTimeOfBirth().getTs1_Time().getValue()).isEqualTo("19900101");
+    assertThat(pid.getPid13_PhoneNumberHome(0).getXtn4_EmailAddress().getValue())
+        .isEqualTo("john@example.com");
   }
 
   @Test
@@ -416,7 +414,7 @@ class HL7ConverterTest {
   }
 
   @Test
-  void populateCommonOrderSegment_throwsExceptionFor_BlankFacilityPhone() {
+  void populateCommonOrderSegment_throwsExceptionFor_BlankFacilityPhoneAndEmail() {
     ORC orc = new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION().getORC();
     ProviderReportInput orderingProvider = TestDataBuilder.createProviderReportInput();
     FacilityReportInput orderingFacility =
@@ -439,7 +437,31 @@ class HL7ConverterTest {
                 hl7Converter.populateCommonOrderSegment(
                     orc, orderingFacility, orderingProvider, "123"));
     assertThat(exception.getMessage())
-        .isEqualTo("Ordering facility input must contain at least phone number for ORC-23");
+        .isEqualTo(
+            "Ordering facility must contain at least phone number or email address for ORC-23");
+  }
+
+  @Test
+  void populateCommonOrderSegment_valid_facilityEmailWithoutPhone() throws DataTypeException {
+    ORC orc = new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION().getORC();
+    ProviderReportInput orderingProvider = TestDataBuilder.createProviderReportInput();
+    FacilityReportInput orderingFacility =
+        new FacilityReportInput(
+            "Dracula Medical",
+            "12D1234567",
+            "123 Main St",
+            "Suite 100",
+            "Buffalo",
+            "Erie",
+            "NY",
+            "14220",
+            "",
+            "dracula@example.com");
+
+    hl7Converter.populateCommonOrderSegment(orc, orderingFacility, orderingProvider, "123");
+
+    assertThat(orc.getOrc23_OrderingFacilityPhoneNumber(0).getEmailAddress().getValue())
+        .isEqualTo("dracula@example.com");
   }
 
   @Test
@@ -460,7 +482,8 @@ class HL7ConverterTest {
         providerInput,
         Date.from(specimenCollectionDate),
         testOrderLoinc,
-        testOrderDisplay);
+        testOrderDisplay,
+        Date.from(STATIC_INSTANT));
 
     assertThat(
             observationRequest.getObr4_UniversalServiceIdentifier().getCe1_Identifier().getValue())
