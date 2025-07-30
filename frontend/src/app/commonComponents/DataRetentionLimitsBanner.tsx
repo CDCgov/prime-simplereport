@@ -1,5 +1,3 @@
-import { NavLink } from "react-router-dom";
-
 import Alert from "./Alert";
 
 import "./DataRetentionLimitsBanner.scss";
@@ -25,14 +23,14 @@ export const DataRetentionLimitsBanner = ({ dataRetained }: Props) => {
               <br />
             </strong>
             {"This change may impact how your facility uses SimpleReport. "}
-            <NavLink to="/using-simplereport/data-retention-limits">
-              <a
-                className={"data-retention-limits-link"}
-                href={"/using-simplereport/data-retention-limits"}
-              >
-                {"Learn how to prepare for data retention limits."}
-              </a>
-            </NavLink>
+            <a
+              className={"data-retention-limits-link"}
+              href={
+                "https://dev5.simplereport.gov/using-simplereport/data-retention-limits/"
+              }
+            >
+              {"Learn how to prepare for data retention limits."}
+            </a>
           </Alert>
         </div>
       }
