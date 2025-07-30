@@ -1,9 +1,12 @@
 @use "../../scss/settings";
 
-.data-retention-limits-alert-body {
-  max-width: settings.$site-max-width !important;
+.data-retention-limits-alert {
   color: #5c4809 !important;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15);
+}
+
+.data-retention-limits-alert-body {
+  color: #5c4809 !important;
 }
 
 .data-retention-limits-header {
