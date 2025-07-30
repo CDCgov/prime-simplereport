@@ -34,11 +34,11 @@ import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
 import { ArchivedStatus } from "../../generated/graphql";
+import { DataRetentionLimitsBanner } from "../commonComponents/DataRetentionLimitsBanner";
 
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
-import { DataRetentionLimitsBanner } from "../commonComponents/DataRetentionLimitsBanner";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
