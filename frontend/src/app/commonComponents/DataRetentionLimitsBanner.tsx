@@ -1,12 +1,22 @@
 import Alert from "./Alert";
 
 import "./DataRetentionLimitsBanner.scss";
+import { getAppInsights } from "../TelemetryService";
 
 interface Props {
   dataRetained: string;
 }
 
 export const DataRetentionLimitsBanner = ({ dataRetained }: Props) => {
+  const appInsights = getAppInsights();
+
+  const handleSupportClick = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Data Retention Limits" });
+      console.log("handle support click worked!!!!!");
+    }
+  };
+
   return (
     <>
       {
@@ -28,6 +38,7 @@ export const DataRetentionLimitsBanner = ({ dataRetained }: Props) => {
               href={
                 "https://dev5.simplereport.gov/using-simplereport/data-retention-limits/"
               }
+              onClick={handleSupportClick}
             >
               {"Learn how to prepare for data retention limits."}
             </a>
