@@ -28,7 +28,7 @@ export const DataRetentionLimitsBanner = ({ dataRetained }: Props) => {
             <NavLink to="/using-simplereport/data-retention-limits">
               <a
                 className={"data-retention-limits-link"}
-                href={"data-retention-limits-info"}
+                href={"/using-simplereport/data-retention-limits"}
               >
                 {"Learn how to prepare for data retention limits."}
               </a>
