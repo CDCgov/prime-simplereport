@@ -38,6 +38,7 @@ import { ArchivedStatus } from "../../generated/graphql";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
+import { DataRetentionLimitsBanner } from "../commonComponents/DataRetentionLimitsBanner";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
@@ -320,6 +321,7 @@ export const DetachedManagePatients = ({
     <div className="prime-home flex-1" data-cy="manage-patients-page">
       <div className="grid-container">
         <div className="grid-row">
+          <DataRetentionLimitsBanner dataRetained={"patient profiles"} />
           <div className="prime-container card-container">
             <div className="usa-card__header" data-cy="manage-patients-header">
               <div className="display-flex flex-align-center">
