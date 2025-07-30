@@ -1,7 +1,8 @@
+import { getAppInsights } from "../TelemetryService";
+
 import Alert from "./Alert";
 
 import "./DataRetentionLimitsBanner.scss";
-import { getAppInsights } from "../TelemetryService";
 
 interface Props {
   dataRetained: string;
