@@ -1,9 +1,9 @@
-import { Meta, StoryFn } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react-webpack5";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
-import { getMocks, StoryGraphQLProvider } from "../../stories/storyMocks";
+import { getMocks, StoryGraphQLProvider } from "../storyMocks";
 import Submission from "../../app/testResults/submissions/Submission";
 
 const mockStore = createMockStore([]);
