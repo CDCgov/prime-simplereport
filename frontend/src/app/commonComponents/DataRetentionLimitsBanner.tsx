@@ -14,7 +14,6 @@ export const DataRetentionLimitsBanner = ({ dataRetained }: Props) => {
   const handleSupportClick = () => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Data Retention Limits" });
-      console.log("handle support click worked!!!!!");
     }
   };
 
@@ -38,7 +37,7 @@ export const DataRetentionLimitsBanner = ({ dataRetained }: Props) => {
         target="_blank"
         rel="noopener noreferrer"
         href={
-          "https://dev5.simplereport.gov/using-simplereport/data-retention-limits/"
+          "https://simplereport.gov/using-simplereport/data-retention-limits/"
         }
         onClick={handleSupportClick}
       >
