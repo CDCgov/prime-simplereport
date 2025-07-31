@@ -56,8 +56,8 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
     >
       <div className="border-0 card-container">
         <h2
-          id="data-retention-title"
-          className="font-heading-lg margin-top-05 margin-bottom-2"
+            id="data-retention-title"
+            className="font-heading-lg margin-top-05 margin-bottom-2"
         >
           New data retention limits are coming to SimpleReport
         </h2>
@@ -77,12 +77,12 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
         <div className="margin-bottom-3">
           <label className="usa-checkbox">
             <input
-              className="usa-checkbox__input"
-              id="dont-show-again"
-              type="checkbox"
-              name="dont-show-again"
-              checked={dontShowAgain}
-              onChange={handleCheckboxChange}
+                className="usa-checkbox__input"
+                id="dont-show-again"
+                type="checkbox"
+                name="dont-show-again"
+                checked={dontShowAgain}
+                onChange={handleCheckboxChange}
             />
             <span className="usa-checkbox__label">
               Got it. I don't need to see this again.
@@ -90,21 +90,19 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
           </label>
         </div>
 
-        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-2 padding-top-205 text-right">
-          <div className="display-flex flex-justify-end">
-            <Button className="margin-right-2" onClick={handleLearnMoreClick}>
-              Learn more{" "}
-              <FontAwesomeIcon
+        <div className="border-top border-base-lighter margin-top-2 padding-top-205 button-row">
+          <Button className="margin-right-2" onClick={handleLearnMoreClick} >
+            Learn more{" "}
+            <FontAwesomeIcon
                 icon={faExternalLinkAlt}
-                className="margin-left-1"
-              />
-            </Button>
-            <Button
+                className="sr-learn-more-icon"
+            />
+          </Button>
+          <Button
               onClick={handleContinue}
               variant="outline"
               label="Continue to SimpleReport"
-            />
-          </div>
+          />
         </div>
       </div>
     </Modal>

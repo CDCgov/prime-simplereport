@@ -22,7 +22,14 @@
   position: relative;
   box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
 
-  &:focus {
-    outline: none;
+  &:focus,
+  &:focus-visible,
+  &:focus-within {
+    outline: none !important;
+    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .sr-learn-more-icon {
+    margin-left: 0.2rem;
   }
 }
