@@ -4,6 +4,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter as Router } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
+import { FetchMock } from "jest-fetch-mock";
 
 import { appPermissions } from "../permissions";
 import { GetFacilitiesDocument as GET_FACILITY_QUERY } from "../../generated/graphql";
@@ -13,6 +14,7 @@ import { createGQLWrappedMemoryRouterWithDataApis } from "../utils/reactRouter";
 import WithFacility from "./WithFacility";
 
 const mockStore = configureStore([]);
+const fetchMock = fetch as FetchMock;
 
 const mocks = [
   {
@@ -38,6 +40,10 @@ const mocks = [
 
 describe("WithFacility", () => {
   let store: any;
+
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
 
   describe("With zero facilities", () => {
     beforeEach(() => {
@@ -130,16 +136,19 @@ describe("WithFacility", () => {
       ),
     });
 
-    it("should show the facility selection screen", () => {
+    it("should show the facility selection screen", async () => {
       renderWithUser();
-      expect(
-        screen.getByText("Select your facility", { exact: false })
-      ).toBeInTheDocument();
+      const text = await screen.findByText("Select your facility", {
+        exact: false,
+      });
+      expect(text).toBeInTheDocument();
     });
 
     it("should show the app after selecting facility", async () => {
       const { user } = renderWithUser();
-      const continueBtn = screen.getByRole("button", { name: "Continue" });
+      const continueBtn = await screen.findByRole("button", {
+        name: "Continue",
+      });
       await user.type(
         screen.getByLabelText("Select your facility"),
         "Facility 1{enter}"
