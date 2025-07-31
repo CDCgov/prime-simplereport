@@ -4,8 +4,10 @@ import moment from "moment";
 import classnames from "classnames";
 import {
   faCaretDown,
+  faDownload,
   faIdCard,
   faRightFromBracket,
+  faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,16 +35,21 @@ import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
-import { ArchivedStatus } from "../../generated/graphql";
+import { ArchivedStatus, Organization } from "../../generated/graphql";
 import { DataRetentionLimitsBanner } from "../commonComponents/DataRetentionLimitsBanner";
 
-import ArchivePersonModal from "./ArchivePersonModal";
-
 import "./ManagePatients.scss";
+import { getAppInsightsHeaders } from "../TelemetryService";
+import { showError, showSuccess } from "../utils/srToast";
+import FetchClient from "../utils/api";
+import { triggerBlobDownload } from "../utils/file";
+
+import DownloadPatientsCsvModal from "./DownloadPatientsCsvModal";
+import ArchivePersonModal from "./ArchivePersonModal";
 
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
-    $facilityId: ID!
+    $facilityId: ID
     $archivedStatus: ArchivedStatus = UNARCHIVED
     $namePrefixMatch: String
   ) {
@@ -103,31 +110,52 @@ export interface Patient {
 
 interface Props {
   activeFacilityId: string;
+  facilityName: string;
+  organization?: Organization;
   canEditUser: boolean;
   canDeleteUser: boolean;
+  isOrgAdmin: boolean;
   currentPage: number;
   entriesPerPage: number;
   totalEntries?: number;
+  facilityPatientCount?: number;
+  orgPatientCount?: number;
   archivedStatus?: ArchivedStatus;
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
 }
 const FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER = "focus on search bar on next render";
+type DownloadState = "idle" | "downloading" | "complete";
+const apiClient = new FetchClient();
 export const DetachedManagePatients = ({
   canEditUser,
+  isOrgAdmin,
   data,
   currentPage,
   entriesPerPage,
+  facilityPatientCount,
+  orgPatientCount,
   totalEntries,
   refetch,
   setNamePrefixMatch,
   activeFacilityId,
+  facilityName,
+  organization,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
   const [subsequentFocusId, setSubsequentFocusId] = useState<string | null>(
     FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER
   );
+  const [downloadState, setDownloadState] = useState<DownloadState>("idle");
+  const [patientDownloadModalIsOpen, setPatientDownloadModalIsOpen] =
+    useState(false);
+  const closePatientDownloadModal = () => setPatientDownloadModalIsOpen(false);
+  const [patientsDownloadPath, setPatientsDownloadPath] = useState<string>("");
+  const [patientsDownloadFileName, setPatientsDownloadFileName] =
+    useState<string>("");
+  const [totalPatientsToDownload, setTotalPatientsToDownload] =
+    useState<number>();
 
   const navigate = useNavigate();
 
@@ -267,55 +295,213 @@ export const DetachedManagePatients = ({
   function showActionButtons() {
     if (canEditUser) {
       return (
-        <MenuButton
-          id={"add-patient"}
-          buttonContent={
-            <>
-              <span className={"margin-right-1"} data-cy="add-patients-button">
-                Add {PATIENT_TERM_PLURAL}
-              </span>
-              <FontAwesomeIcon icon={faCaretDown as IconProp} />
-            </>
-          }
-          items={[
-            {
-              name: "individual",
-              content: (
-                <IconLabel
-                  icon={faIdCard as IconProp}
-                  primaryText={`Add individual ${PATIENT_TERM}`}
-                  secondaryText={"Fill out a form to add a patient"}
-                />
-              ),
-              action: () => {
-                setRedirect({
-                  pathname: "/add-patient",
-                  search: `?facility=${activeFacilityId}`,
-                });
+        <div className={"display-flex align-items-center"}>
+          <MenuButton
+            id={"add-patient"}
+            buttonContent={
+              <>
+                <span
+                  className={"margin-right-1"}
+                  data-cy="add-patients-button"
+                >
+                  Add {PATIENT_TERM_PLURAL}
+                </span>
+                <FontAwesomeIcon icon={faCaretDown as IconProp} />
+              </>
+            }
+            items={[
+              {
+                name: "individual",
+                content: (
+                  <IconLabel
+                    icon={faIdCard as IconProp}
+                    primaryText={`Add individual ${PATIENT_TERM}`}
+                    secondaryText={"Fill out a form to add a patient"}
+                  />
+                ),
+                action: () => {
+                  setRedirect({
+                    pathname: "/add-patient",
+                    search: `?facility=${activeFacilityId}`,
+                  });
+                },
               },
-            },
-            {
-              name: "upload patients",
-              content: (
-                <IconLabel
-                  icon={faRightFromBracket as IconProp}
-                  primaryText={"Import from spreadsheet"}
-                  secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
-                />
-              ),
-              action: () => {
-                setRedirect({
-                  pathname: "/upload-patients",
-                  search: `?facility=${activeFacilityId}`,
-                });
+              {
+                name: "upload patients",
+                content: (
+                  <IconLabel
+                    icon={faRightFromBracket as IconProp}
+                    primaryText={"Import from spreadsheet"}
+                    secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
+                  />
+                ),
+                action: () => {
+                  setRedirect({
+                    pathname: "/upload-patients",
+                    search: `?facility=${activeFacilityId}`,
+                  });
+                },
               },
-            },
-          ]}
-        />
+            ]}
+          />
+          <MenuButton
+            id={"download-patients"}
+            className={"usa-button usa-button--outline"}
+            disabled={downloadState === "downloading"}
+            buttonContent={
+              <>
+                <span
+                  className={"margin-right-1"}
+                  data-cy="download-patients-button"
+                >
+                  {downloadFacilityPatientsButtonContent.label}
+                </span>
+                <FontAwesomeIcon
+                  icon={downloadFacilityPatientsButtonContent.icon as IconProp}
+                  className={downloadFacilityPatientsButtonContent.className}
+                />
+              </>
+            }
+            items={
+              isOrgAdmin
+                ? [
+                    {
+                      name: "facility",
+                      content: (
+                        <IconLabel
+                          icon={faDownload}
+                          primaryText={`For ` + facilityName}
+                          secondaryText={"Only patients in this facility"}
+                        />
+                      ),
+                      action: openDownloadModalForFacility,
+                    },
+                    {
+                      name: "organization",
+                      content: (
+                        <IconLabel
+                          icon={faDownload}
+                          primaryText={`For ` + organization?.name}
+                          secondaryText={"All patients in this organization"}
+                        />
+                      ),
+                      action: openDownloadModalForOrganization,
+                    },
+                  ]
+                : [
+                    {
+                      name: "facility",
+                      content: (
+                        <IconLabel
+                          icon={faDownload}
+                          primaryText={`For ` + facilityName}
+                          secondaryText={"Only patients in this facility"}
+                        />
+                      ),
+                      action: openDownloadModalForFacility,
+                    },
+                  ]
+            }
+          />
+          <DownloadPatientsCsvModal
+            handleDownloadPatientData={handleDownloadPatientData}
+            downloadState={downloadState}
+            modalIsOpen={patientDownloadModalIsOpen}
+            closeModal={closePatientDownloadModal}
+            totalPatientsToDownload={totalPatientsToDownload}
+          />
+        </div>
       );
     }
     return null;
   }
+
+  const handleDownloadPatientData = async () => {
+    setDownloadState("downloading");
+    try {
+      const fullUrl = apiClient.getURL(patientsDownloadPath);
+
+      const response = await fetch(fullUrl, {
+        method: "GET",
+        mode: "cors",
+        headers: {
+          "Access-Control-Request-Headers": "Authorization",
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          ...getAppInsightsHeaders(),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to download patient data: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const blob = await response.blob();
+      const contentDisposition = response.headers.get("content-disposition");
+
+      triggerBlobDownload({
+        blob,
+        contentDisposition: contentDisposition || undefined,
+        defaultFilename: patientsDownloadFileName,
+      });
+
+      setPatientDownloadModalIsOpen(false);
+      showSuccess("Download Complete", "Patient data downloaded successfully");
+      setDownloadState("complete");
+
+      setTimeout(() => {
+        setDownloadState("idle");
+      }, 3000);
+    } catch (e: any) {
+      console.error("Download error:", e);
+      showError("Error downloading patient data", e.message);
+      setDownloadState("idle");
+    }
+  };
+
+  const getDownloadButtonContent = () => {
+    switch (downloadState) {
+      case "downloading":
+        return {
+          icon: faSpinner,
+          label: "Downloading...",
+          className: "fa-spin",
+        };
+      case "complete":
+        return {
+          icon: faDownload,
+          label: "Download Complete",
+          className: "",
+        };
+      default:
+        return {
+          icon: faCaretDown,
+          label: "Download " + PATIENT_TERM_PLURAL,
+          className: "",
+        };
+    }
+  };
+
+  const downloadFacilityPatientsButtonContent = getDownloadButtonContent();
+
+  const openDownloadModalForFacility = () => {
+    setPatientsDownloadPath(
+      `/patients/download/facility?facilityId=${activeFacilityId}`
+    );
+    setPatientsDownloadFileName("facility-patient-data.zip");
+    setPatientDownloadModalIsOpen(true);
+    setTotalPatientsToDownload(facilityPatientCount);
+  };
+
+  const openDownloadModalForOrganization = () => {
+    setPatientsDownloadPath(
+      `/patients/download/organization?orgId=${organization?.id}`
+    );
+    setPatientsDownloadFileName("organization-patient-data.zip");
+    setPatientDownloadModalIsOpen(true);
+    setTotalPatientsToDownload(orgPatientCount);
+  };
 
   return (
     <div className="prime-home flex-1" data-cy="manage-patients-page">
@@ -413,6 +599,22 @@ const ManagePatients = (
 ) => {
   const [namePrefixMatch, setNamePrefixMatch] = useState<string | null>(null);
 
+  const { data: facilityPatients } = useQuery(patientsCountQuery, {
+    variables: {
+      facilityId: props.activeFacilityId,
+      archivedStatus: ArchivedStatus.Unarchived,
+    },
+    fetchPolicy: "no-cache",
+  });
+
+  const { data: organizationPatients } = useQuery(patientsCountQuery, {
+    variables: {
+      facilityId: null,
+      archivedStatus: ArchivedStatus.Unarchived,
+    },
+    fetchPolicy: "no-cache",
+  });
+
   const {
     data: totalPatients,
     error,
@@ -435,6 +637,8 @@ const ManagePatients = (
   }
 
   const totalEntries = totalPatients?.patientsCount;
+  const orgPatientCount = organizationPatients?.patientsCount;
+  const facilityPatientCount = facilityPatients?.patientsCount;
   const entriesPerPage = 20;
   const pageNumber = props.currentPage || 1;
   return (
@@ -454,6 +658,8 @@ const ManagePatients = (
       displayLoadingIndicator={false}
       componentProps={{
         ...props,
+        orgPatientCount,
+        facilityPatientCount,
         totalEntries,
         currentPage: pageNumber,
         entriesPerPage,

@@ -26,8 +26,10 @@ const PageNumberContainer = () => {
     <ManagePatients
       currentPage={pageNumber ? +pageNumber : 1}
       activeFacilityId="a1"
+      facilityName="Some Facility Name"
       canEditUser={true}
       canDeleteUser={true}
+      isOrgAdmin={true}
     />
   );
 };
@@ -150,16 +152,18 @@ describe("ManagePatients", () => {
   describe("ManagePatientsContainer", () => {
     it("Doesn't render if no facility is selected", async () => {
       render(
-        <MemoryRouter>
-          <Provider
-            store={createMockStore()({
-              facilities: [],
-              user: { isAdmin: false },
-            })}
-          >
-            <ManagePatientsContainer />
-          </Provider>
-        </MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <MemoryRouter>
+            <Provider
+              store={createMockStore()({
+                facilities: [],
+                user: { isAdmin: false },
+              })}
+            >
+              <ManagePatientsContainer />
+            </Provider>
+          </MemoryRouter>
+        </MockedProvider>
       );
       expect(
         await screen.findByText("No facility selected", { exact: false })

@@ -216,6 +216,7 @@ public class PersonService {
    * @return A list of matching patients.
    */
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
+  @Transactional(readOnly = true)
   public List<Person> getPatients(
       UUID facilityId,
       int pageOffset,
@@ -284,6 +285,14 @@ public class PersonService {
     return _repo.count(
         buildPersonSearchFilter(
             facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities, orgToSearch));
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  @Transactional(readOnly = true)
+  public long getPatientsCountByOrganization(UUID organizationId) {
+    Organization orgToSearch = _os.getOrganizationById(organizationId);
+
+    return _repo.countByOrganizationAndIsDeleted(orgToSearch, false);
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
