@@ -19,6 +19,7 @@ export const DataRetentionLimitsBanner = ({ dataRetained }: Props) => {
 
   return (
     <Alert
+      id={"data-retention-limits-banner"}
       type="warning"
       role="alert"
       className={
