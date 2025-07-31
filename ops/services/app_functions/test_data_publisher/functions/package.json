@@ -19,10 +19,14 @@
   "main": "dist/**/index.js",
   "dependencies": {
     "@azure/functions": "^4.6.0",
-    "applicationinsights": "^3.7.0"
+    "@azure/storage-queue": "^12.24.0",
+    "applicationinsights": "^3.7.0",
+    "@aws-sdk/client-s3": "^2.1727.0",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
+    "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.57.1",
