@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react-webpack5";
 import React, { useState } from "react";
 
 import Checkboxes from "./Checkboxes";
