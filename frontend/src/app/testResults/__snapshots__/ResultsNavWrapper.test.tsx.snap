@@ -10,7 +10,7 @@ exports[`ResultsNav displays the results sub nav when user has the permission 1`
     >
       <div
         class="usa-alert usa-alert--warning width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
-        id="f84de836-bcfd-4851-a9c9-1b246aed6224"
+        id="38ea7e07-70a7-43dc-88d5-a40649fc1985"
         role="alert"
       >
         <div
@@ -18,7 +18,7 @@ exports[`ResultsNav displays the results sub nav when user has the permission 1`
         >
           <div
             class="usa-alert__text"
-            id="0afc2634-34d9-4ac9-a138-d5939534074d"
+            id="a43fa93a-1418-42d0-8021-7b5f9924f2d4"
           >
             <strong
               class="data-retention-limits-header"
