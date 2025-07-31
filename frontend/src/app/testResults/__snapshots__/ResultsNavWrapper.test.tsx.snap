@@ -10,7 +10,6 @@ exports[`ResultsNav displays the results sub nav when user has the permission 1`
     >
       <div
         class="usa-alert usa-alert--warning width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
-        id="ed208013-df1f-47b9-a4f9-d6182fdbec0c"
         role="alert"
       >
         <div
@@ -18,7 +17,6 @@ exports[`ResultsNav displays the results sub nav when user has the permission 1`
         >
           <div
             class="usa-alert__text"
-            id="1c97a2c2-e857-4558-ace5-2a136f4df4c4"
           >
             <strong
               class="data-retention-limits-header"
@@ -95,6 +93,38 @@ exports[`ResultsNav doesnt display the results sub nav when user doesnt have the
     <div
       class="grid-container results-wide-container"
     >
+      <div
+        class="usa-alert usa-alert--warning width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
+        role="alert"
+      >
+        <div
+          class="usa-alert__body data-retention-limits-alert-body"
+        >
+          <div
+            class="usa-alert__text"
+          >
+            <strong
+              class="data-retention-limits-header"
+            >
+              Beginning November 1st, 2025, 
+               
+              test results
+               
+               will only be stored for 30 days
+              <br />
+            </strong>
+            This change may impact how your facility uses SimpleReport. 
+            <a
+              class="data-retention-limits-link"
+              href="https://simplereport.gov/using-simplereport/data-retention-limits/"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Learn how to prepare for data retention limits.
+            </a>
+          </div>
+        </div>
+      </div>
       <nav
         aria-label="Secondary navigation"
         class="prime-secondary-nav"
