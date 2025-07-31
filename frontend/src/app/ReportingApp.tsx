@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { useDispatch, connect } from "react-redux";
 import {
@@ -39,10 +39,6 @@ import UploadPatients from "./patients/UploadPatients";
 import DiseaseSpecificUploadContainer from "./testResults/uploads/DiseaseSpecificUploadContainer";
 import { specificSchemaBuilder } from "./testResults/uploads/specificSchemaBuilder";
 import LabReportForm from "./universalReporting/LabReportForm";
-import DataRetentionModal, {
-  shouldShowDataRetentionModal,
-} from "./commonComponents/DataRetentionModal";
-import "./commonComponents/DataRetentionModal.scss";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -91,7 +87,6 @@ const ReportingApp = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const accessToken = localStorage.getItem("access_token");
-  const [showDataRetentionModal, setShowDataRetentionModal] = useState(false);
 
   // Check if the user is logged in, if not redirect to Okta
   checkOktaLoginStatus(accessToken, location);
@@ -138,9 +133,6 @@ const ReportingApp = () => {
         },
       })
     );
-    if (shouldShowDataRetentionModal()) {
-      setShowDataRetentionModal(true);
-    }
   }, [data, dispatch, appInsights]);
 
   if (loading) {
@@ -202,10 +194,6 @@ const ReportingApp = () => {
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}
-      <DataRetentionModal
-        isOpen={showDataRetentionModal}
-        onClose={() => setShowDataRetentionModal(false)}
-      />
       <WithFacility>
         <Page
           header={<Header />}
