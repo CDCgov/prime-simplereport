@@ -21,11 +21,13 @@ import { v4 as uuidv4 } from "uuid";
  */
 
 export type AlertType = "info" | "success" | "warning" | "error" | "emergency";
+
 export interface AlertContent {
   type: AlertType;
   title: string;
   body: string;
 }
+
 interface Props {
   type: AlertType;
   role?: "alert" | "alertdialog" | "region";
@@ -35,7 +37,9 @@ interface Props {
   slim?: boolean;
   className?: string;
   bodyClassName?: string;
+  id?: string;
 }
+
 const Alert = ({
   type,
   title,
@@ -45,6 +49,7 @@ const Alert = ({
   slim,
   className,
   bodyClassName,
+  id,
 }: Props) => {
   const classes = classnames(
     "usa-alert",
@@ -68,12 +73,12 @@ const Alert = ({
     return "region";
   };
 
-  const bodyId = uuidv4();
+  const bodyId = id ? id + "-body" : uuidv4();
 
   return (
     <div
       className={classes}
-      id={uuidv4()}
+      id={id ? id : uuidv4()}
       role={getIdentifiedRole()}
       aria-label={title ? `Alert: ${title}` : undefined}
     >

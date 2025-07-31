@@ -36,6 +36,7 @@ import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
 import { ArchivedStatus, Organization } from "../../generated/graphql";
+import { DataRetentionLimitsBanner } from "../commonComponents/DataRetentionLimitsBanner";
 import "./ManagePatients.scss";
 import { getAppInsightsHeaders } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
@@ -505,6 +506,7 @@ export const DetachedManagePatients = ({
     <div className="prime-home flex-1" data-cy="manage-patients-page">
       <div className="grid-container">
         <div className="grid-row">
+          <DataRetentionLimitsBanner dataRetained={"patient profiles"} />
           <div className="prime-container card-container">
             <div className="usa-card__header" data-cy="manage-patients-header">
               <div className="display-flex flex-align-center">
