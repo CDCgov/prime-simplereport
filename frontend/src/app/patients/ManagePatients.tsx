@@ -37,7 +37,6 @@ import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
 import { ArchivedStatus, Organization } from "../../generated/graphql";
 import { DataRetentionLimitsBanner } from "../commonComponents/DataRetentionLimitsBanner";
-
 import "./ManagePatients.scss";
 import { getAppInsightsHeaders } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
