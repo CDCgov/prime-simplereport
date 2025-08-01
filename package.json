@@ -21,5 +21,6 @@
     "test:frontend": "docker compose run --rm -e REACT_APP_BASE_URL=https://simplereport.gov -e REACT_APP_BACKEND_URL=https://simplereport.gov/api -e REACT_APP_OKTA_ENABLED=false frontend yarn test",
     "test:backend": "docker compose --env-file .env.test -p simple-report-tests up -d db; docker compose --env-file .env.test -p simple-report-tests run --rm backend gradle test -PskipDbSetup=true -PtestDbHost=db; docker compose -p simple-report-tests down -v"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
