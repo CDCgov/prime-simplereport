@@ -1,13 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 import { appPermissions } from "../permissions";
 import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
 import { RootState } from "../store";
+import DataRetentionModal, {
+  shouldShowDataRetentionModal,
+} from "../commonComponents/DataRetentionModal";
 
 import FacilitySelect from "./FacilitySelect";
 import { useRedirectToPilot } from "./useRedirectToPilot";
 import NoFacilityPopup from "./NoFacilityPopup";
+import "../commonComponents/DataRetentionModal.scss";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
 
@@ -39,6 +43,8 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     setSelectedFacility,
   } = useRedirectToPilot(facilities);
 
+  const [showDataRetentionModal, setShowDataRetentionModal] = useState(false);
+
   useEffect(() => {
     if (selectedFacility || !dataLoaded) {
       return;
@@ -49,10 +55,25 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     }
   }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
 
+  // Show modal only after facility is selected
+  useEffect(() => {
+    if (selectedFacility && shouldShowDataRetentionModal()) {
+      setShowDataRetentionModal(true);
+    }
+  }, [selectedFacility]);
+
   if (!dataLoaded || facilityFlagsLoading) {
     return <Loading />;
   } else if (selectedFacility || (isAdmin && facilities.length === 0)) {
-    return <>{children}</>;
+    return (
+      <>
+        <DataRetentionModal
+          isOpen={showDataRetentionModal}
+          onClose={() => setShowDataRetentionModal(false)}
+        />
+        {children}
+      </>
+    );
   } else if (canViewSettings && facilities.length === 0) {
     // new org needs to create a facility
     return (
