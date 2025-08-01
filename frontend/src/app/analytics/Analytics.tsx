@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment/moment";
 import classNames from "classnames";
@@ -11,10 +11,6 @@ import { PATIENT_TERM_PLURAL } from "../../config/constants";
 import { useDocumentTitle } from "../utils/hooks";
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
 import { useSupportedDiseaseList } from "../utils/disease";
-import DataRetentionModal, {
-  shouldShowDataRetentionModal,
-} from "../commonComponents/DataRetentionModal";
-import "../commonComponents/DataRetentionModal.scss";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -82,15 +78,8 @@ export const Analytics = (props: Props) => {
   const [endDate, setEndDate] = useState<string>(
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
-  const [showDataRetentionModal, setShowDataRetentionModal] = useState(false);
 
   const supportedDiseaseList = useSupportedDiseaseList();
-
-  useEffect(() => {
-    if (shouldShowDataRetentionModal()) {
-      setShowDataRetentionModal(true);
-    }
-  }, []);
 
   const updateFacility = ({
     target: { value },
@@ -157,12 +146,7 @@ export const Analytics = (props: Props) => {
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
 
   return (
-    <>
-      <DataRetentionModal
-        isOpen={showDataRetentionModal}
-        onClose={() => setShowDataRetentionModal(false)}
-      />
-      <div className="prime-home flex-1">
+    <div className="prime-home flex-1">
         <div className="grid-container">
           <div className="prime-container card-container margin-top-2">
             <div className="usa-card__header">
@@ -338,7 +322,6 @@ export const Analytics = (props: Props) => {
             </div>
           </div>
         </div>
-      </div>
-    </>
+    </div>
   );
 };
