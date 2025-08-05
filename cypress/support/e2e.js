@@ -94,3 +94,7 @@ Cypress.on("uncaught:exception", (err, _runnable) => {
 export const loginHooks = () => {
   cy.session("SESSION", cy.login, { cacheAcrossSpecs: true });
 };
+
+beforeEach(() => {
+  cy.closeModal();
+});
