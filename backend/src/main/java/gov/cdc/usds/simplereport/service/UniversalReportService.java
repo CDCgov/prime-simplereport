@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,10 +51,12 @@ public class UniversalReportService {
               patientInput,
               providerInput,
               facilityInput,
+              null,
               specimenInput,
               testDetailsInputList,
               gitProperties,
-              processingModeCode);
+              processingModeCode,
+              String.valueOf(UUID.randomUUID()));
       return parser.encode(message);
     } catch (HL7Exception e) {
       log.error("Encountered an error converting the form data to HL7");

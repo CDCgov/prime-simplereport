@@ -1,19 +1,24 @@
 package gov.cdc.usds.simplereport.api.model.universalreporting;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class TestDetailsInput {
   private final String condition;
-  private final String testOrderLoinc;
+  @NotNull private final String testOrderLoinc;
   private final String testOrderDisplayName;
-  private final String testPerformedLoinc;
+  @NotNull private final String testPerformedLoinc;
   private final String testPerformedLoincLongCommonName;
-  private final ResultScaleType resultType;
-  private final String resultValue;
-  private final Date resultDate;
+  @NotNull private final ResultScaleType resultType;
+  @NotBlank private final String resultValue;
+  @NotNull private final Date resultDate;
   private final String resultInterpretation;
+  private final String correctionStatus;
 }

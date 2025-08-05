@@ -249,7 +249,9 @@ describe("App", () => {
     });
     expect(trainingWelcome).toBeInTheDocument();
 
-    await user.click(screen.getByText("Got it", { exact: false }));
+    await user.click(
+      screen.getByText(/got it,? thanks/i, { selector: "button" })
+    );
     expect(trainingWelcome).not.toBeInTheDocument();
   });
 
