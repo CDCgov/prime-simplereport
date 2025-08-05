@@ -7,6 +7,12 @@ import { getAppInsights } from "../TelemetryService";
 
 import Button from "./Button/Button";
 
+declare global {
+  interface Window {
+    Cypress?: any;
+  }
+}
+
 const DATA_RETENTION_MODAL_DISMISSED_KEY = "dataRetentionModalDismissed";
 const SUPPORT_LINK =
   "https://www.simplereport.gov/using-simplereport/data-retention-limits/";
@@ -19,6 +25,10 @@ interface DataRetentionModalProps {
 const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
   const [dontShowAgain, setDontShowAgain] = useState(false);
   const appInsights = getAppInsights();
+
+  if (window.Cypress) {
+    return null;
+  }
 
   const handleContinue = () => {
     if (dontShowAgain) {
