@@ -4,10 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class TestDetailsInput {
   private final String condition;
   @NotNull private final String testOrderLoinc;
@@ -18,4 +20,5 @@ public class TestDetailsInput {
   @NotBlank private final String resultValue;
   @NotNull private final Date resultDate;
   private final String resultInterpretation;
+  private final String correctionStatus;
 }

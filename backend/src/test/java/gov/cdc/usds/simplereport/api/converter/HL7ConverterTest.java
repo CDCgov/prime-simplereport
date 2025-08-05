@@ -32,10 +32,10 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
-import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -89,10 +89,12 @@ class HL7ConverterTest {
                   patientReportInput,
                   providerReportInput,
                   facilityReportInput,
+                  null,
                   specimenInput,
                   testDetailsInputList,
                   gitProperties,
-                  "T");
+                  "T",
+                  uuidGenerator.randomUUID().toString());
 
           Parser parser = hapiContext.getPipeParser();
           parser.encode(message);
@@ -113,10 +115,12 @@ class HL7ConverterTest {
             patientReportInput,
             providerReportInput,
             facilityReportInput,
+            null,
             specimenInput,
             testDetailsInputList,
             gitProperties,
-            "T");
+            "T",
+            uuidGenerator.randomUUID().toString());
 
     EI commonOrderFillerOrderNumber =
         message.getPATIENT_RESULT().getORDER_OBSERVATION().getORC().getOrc3_FillerOrderNumber();
@@ -483,6 +487,7 @@ class HL7ConverterTest {
         Date.from(specimenCollectionDate),
         testOrderLoinc,
         testOrderDisplay,
+        "F",
         Date.from(STATIC_INSTANT));
 
     assertThat(
@@ -528,6 +533,7 @@ class HL7ConverterTest {
             ResultScaleType.ORDINAL,
             "260373001",
             Date.from(testResultDate),
+            "",
             "");
 
     hl7Converter.populateObservationResult(
@@ -567,6 +573,7 @@ class HL7ConverterTest {
             ResultScaleType.NOMINAL,
             "260373001",
             Date.from(STATIC_INSTANT),
+            "",
             "");
 
     IllegalArgumentException exception =
