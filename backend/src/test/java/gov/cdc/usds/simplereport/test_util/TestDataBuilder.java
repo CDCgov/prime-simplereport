@@ -264,7 +264,7 @@ public class TestDataBuilder {
         FacilityBuilder.builder()
             .org(createValidOrganization())
             .facilityName("Testing Paradise")
-            .cliaNumber("123456")
+            .cliaNumber("12D1234567")
             .facilityAddress(getAddress())
             .phone("555-867-5309")
             .email("facility@test.com")
@@ -464,6 +464,7 @@ public class TestDataBuilder {
             ResultScaleType.ORDINAL,
             "260373001",
             dateGenerator.newDate(),
+            "",
             ""),
         new TestDetailsInput(
             "186747009",
@@ -474,6 +475,7 @@ public class TestDataBuilder {
             ResultScaleType.ORDINAL,
             "260373001",
             dateGenerator.newDate(),
+            "",
             ""));
   }
 }
