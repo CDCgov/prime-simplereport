@@ -1,3 +1,5 @@
+const webpack = require("webpack");
+
 module.exports = {
   stories: ["../src/**/*.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
@@ -7,6 +9,19 @@ module.exports = {
     "@storybook/addon-docs",
   ],
   webpackFinal: async (config) => {
+    config.plugins.push(
+      new webpack.ProvidePlugin({
+        process: "process/browser",
+      })
+    );
+    // config.plugins = config.plugins.map((plugin) => {
+    //   if (plugin instanceof webpack.DefinePlugin) {
+    //     plugin.definitions['process'] = JSON.stringify('{}');
+    //   }
+    //
+    //   return plugin;
+    // });
+
     config.resolve.alias["@microsoft/applicationinsights-react-js"] =
       require.resolve("../src/stories/__mocks__/appInsights.ts");
     config.resolve.alias["./TestTimer"] = require.resolve(
