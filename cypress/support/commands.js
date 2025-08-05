@@ -210,13 +210,3 @@ function printAccessibilityViolations(violations) {
 Cypress.Commands.add("checkAccessibility", () => {
   cy.checkA11y(null, null, printAccessibilityViolations);
 });
-
-Cypress.Commands.add("closeModal", () => {
-  cy.get('body').then(($body) => {
-    if ($body.find('[data-testid="modal"], .modal, [role="dialog"]').length > 0) {
-      cy.get('[data-testid="modal"] [data-testid="close-button"], .modal [data-testid="close-button"], [role="dialog"] [data-testid="close-button"]')
-        .first()
-        .click({ force: true });
-    }
-  });
-});
