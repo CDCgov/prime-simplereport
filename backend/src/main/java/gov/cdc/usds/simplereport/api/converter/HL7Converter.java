@@ -72,13 +72,18 @@ public class HL7Converter {
    *
    * @param patientInput patient data
    * @param providerInput ordering provider data
-   * @param facilityInput facility data (currently assumes ordering facility and performing facility
-   *     are the same)
+   * @param performingFacility facility that performed the testing
+   * @param orderingFacility facility that ordered the testing. If this is null, then ordering
+   *     facility will be populated with the performing facility data based on the legacy app
+   *     assumption that this is the same facility
    * @param specimenInput specimen data
    * @param testDetailsInputList test result data
    * @param gitProperties used to populate the message software segment
    * @param processingId indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
+   * @param orderId used to populate the Filler Order Number in OBR-3 and ORC-3. This should be the
+   *     TestEvent id for single entry or the accession number for bulk upload. This parameter is
+   *     not the same as the message control id in MSH-10 which is randomly generated.
    * @return ORU_R01 message
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
@@ -87,18 +92,28 @@ public class HL7Converter {
   public ORU_R01 createLabReportMessage(
       PatientReportInput patientInput,
       ProviderReportInput providerInput,
-      FacilityReportInput facilityInput,
+      FacilityReportInput performingFacility,
+      FacilityReportInput orderingFacility,
       SpecimenInput specimenInput,
       List<TestDetailsInput> testDetailsInputList,
       GitProperties gitProperties,
-      String processingId)
+      String processingId,
+      String orderId)
       throws DataTypeException, IllegalArgumentException {
+    // Lab reports from single entry and bulk upload should always have order id already populated.
+    // Single entry would use TestEvent internal id which is always required. Bulk upload would use
+    // Accession Number which is also required.
+    if (StringUtils.isBlank(orderId)) {
+      throw new IllegalArgumentException("Missing orderId for lab report message");
+    }
+
     ORU_R01 message = new ORU_R01();
 
     Date messageTimestamp = dateGenerator.newDate();
 
     MSH messageHeader = message.getMSH();
-    populateMessageHeader(messageHeader, facilityInput.getClia(), processingId, messageTimestamp);
+    populateMessageHeader(
+        messageHeader, performingFacility.getClia(), processingId, messageTimestamp);
 
     SFT softwareSegment = message.getSFT();
     populateSoftwareSegment(softwareSegment, gitProperties);
@@ -106,8 +121,11 @@ public class HL7Converter {
     PID patientIdentificationSegment = message.getPATIENT_RESULT().getPATIENT().getPID();
     populatePatientIdentification(patientIdentificationSegment, patientInput);
 
-    String orderId = String.valueOf(uuidGenerator.randomUUID());
     String specimenId = String.valueOf(uuidGenerator.randomUUID());
+
+    if (orderingFacility == null) {
+      orderingFacility = performingFacility;
+    }
 
     for (int i = 0; i < testDetailsInputList.size(); i++) {
       // The ORDER_OBSERVATION group is required and can repeat.
@@ -116,7 +134,7 @@ public class HL7Converter {
       ORU_R01_ORDER_OBSERVATION orderGroup = message.getPATIENT_RESULT().getORDER_OBSERVATION(i);
 
       ORC commonOrder = orderGroup.getORC();
-      populateCommonOrderSegment(commonOrder, facilityInput, providerInput, orderId);
+      populateCommonOrderSegment(commonOrder, orderingFacility, providerInput, orderId);
 
       // "For the first repeat of the OBR segment, the sequence number shall be one (1),
       //  for the second repeat, the sequence number shall be two (2), etc."
@@ -134,13 +152,14 @@ public class HL7Converter {
           specimenInput.getCollectionDate(),
           testDetail.getTestOrderLoinc(),
           testDetail.getTestOrderDisplayName(),
+          testDetail.getCorrectionStatus(),
           messageTimestamp);
 
       OBX observationResult = orderGroup.getOBSERVATION().getOBX();
       populateObservationResult(
           observationResult,
           sequenceNumber,
-          facilityInput,
+          performingFacility,
           specimenInput.getCollectionDate(),
           testDetail);
 
@@ -626,6 +645,7 @@ public class HL7Converter {
       Date specimenCollectionDate,
       String testOrderLoinc,
       String testOrderDisplay,
+      String correctionStatus,
       Date messageTimestamp)
       throws DataTypeException {
     observationRequest.getObr1_SetIDOBR().setValue(sequenceNumber);
@@ -657,7 +677,8 @@ public class HL7Converter {
         .setValue(formatToHL7DateTime(messageTimestamp));
 
     // F for final results, from HL7 table 0123 Result Status
-    observationRequest.getObr25_ResultStatus().setValue("F");
+    String resultStatus = StringUtils.isBlank(correctionStatus) ? "F" : correctionStatus;
+    observationRequest.getObr25_ResultStatus().setValue(resultStatus);
   }
 
   /**
@@ -706,7 +727,11 @@ public class HL7Converter {
     // TODO: determine how we should programmatically set OBX 8 - Abnormal flags
 
     // F for final results, from HL7 table 0085 Observation result status codes interpretation
-    obx.getObx11_ObservationResultStatus().setValue("F");
+    String resultStatus =
+        StringUtils.isBlank(testDetail.getCorrectionStatus())
+            ? "F"
+            : testDetail.getCorrectionStatus();
+    obx.getObx11_ObservationResultStatus().setValue(resultStatus);
 
     // "For specimen-based laboratory reporting, the specimen collection date and time."
     // See page 142, HL7 v2.5.1 IG
