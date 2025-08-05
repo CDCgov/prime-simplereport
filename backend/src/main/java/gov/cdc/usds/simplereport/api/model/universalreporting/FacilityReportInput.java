@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.api.model.universalreporting;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class FacilityReportInput {
   private final String name;
   private final String clia;

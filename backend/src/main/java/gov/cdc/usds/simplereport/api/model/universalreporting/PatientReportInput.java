@@ -2,10 +2,12 @@ package gov.cdc.usds.simplereport.api.model.universalreporting;
 
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class PatientReportInput {
   private final String firstName;
   private final String middleName;

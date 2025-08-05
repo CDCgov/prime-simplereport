@@ -35,6 +35,7 @@ import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.ResultUploadError;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
@@ -97,6 +98,7 @@ public class TestResultUploadService {
   private final FileValidator<TestResultRow> testResultFileValidator;
   private final DiseaseService diseaseService;
   private final BulkUploadResultsToFhir fhirConverter;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -154,18 +156,22 @@ public class TestResultUploadService {
       }
 
       if (content.length > 0) {
-        CompletableFuture<UniversalSubmissionSummary> universalSubmission =
-            submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
+        if (featureFlagsConfig.isAIMSBulkUploadEnabled()) {
 
-        var covidCsvContent = transformAndExtractCovidCsvContent(content);
+        } else {
+          CompletableFuture<UniversalSubmissionSummary> universalSubmission =
+              submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
 
-        if (covidCsvContent.length != 0) {
-          CompletableFuture<CovidSubmissionSummary> covidSubmission =
-              submitResultsToCovidPipeline(covidCsvContent, org, submissionId);
-          processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
+          var covidCsvContent = transformAndExtractCovidCsvContent(content);
+
+          if (covidCsvContent.length != 0) {
+            CompletableFuture<CovidSubmissionSummary> covidSubmission =
+                submitResultsToCovidPipeline(covidCsvContent, org, submissionId);
+            processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
+          }
+
+          processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
         }
-
-        processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
@@ -402,6 +408,17 @@ public class TestResultUploadService {
               return new UniversalSubmissionSummary(
                   submissionId, org, response, fhirBundleWithMeta.metadata());
             }));
+  }
+
+  private CompletableFuture<boolean> submitResultsToAIMS(ByteArrayInputStream content) throws CsvProcessingException {
+    return CompletableFuture.supplyAsync(
+        withMDC(
+            () -> {
+              long start = System.currentTimeMillis();
+              boolean batchHL7Message =
+            }
+        )
+    );
   }
 
   private Optional<TestResultUpload> processUniversalPipelineResponse(

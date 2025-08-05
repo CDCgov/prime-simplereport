@@ -2,10 +2,12 @@ package gov.cdc.usds.simplereport.api.model.universalreporting;
 
 import java.util.Date;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class SpecimenInput {
   private final String snomedTypeCode;
   private final String snomedDisplay;
