@@ -9,7 +9,9 @@ import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
+import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -105,6 +107,19 @@ public class BulkUploadResultsToHL7 {
                 Instant.from(
                     LocalDate.parse(
                         row.getTestingLabSpecimenReceivedDate().getValue(), DATE_TIME_FORMATTER))))
+        .build();
+  }
+
+  private TestDetailsInput getTestDetailsInput(TestResultRow row) {
+    return TestDetailsInput.builder()
+        .testOrderLoinc(row.getTestOrderedCode().getValue())
+        .testPerformedLoinc(row.getTestPerformedCode().getValue())
+        .resultType(ResultScaleType.ORDINAL)
+        .resultValue(row.getTestResult().getValue())
+        .resultDate(
+            Date.from(
+                Instant.from(
+                    LocalDate.parse(row.getTestResultDate().getValue(), DATE_TIME_FORMATTER))))
         .build();
   }
 }

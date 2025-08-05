@@ -57,6 +57,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
+import gov.cdc.usds.simplereport.utils.BulkUploadResultsToHL7;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -98,6 +99,7 @@ public class TestResultUploadService {
   private final FileValidator<TestResultRow> testResultFileValidator;
   private final DiseaseService diseaseService;
   private final BulkUploadResultsToFhir fhirConverter;
+  private final BulkUploadResultsToHL7 hl7Converter;
   private final FeatureFlagsConfig featureFlagsConfig;
 
   @Value("${data-hub.url}")
@@ -160,7 +162,8 @@ public class TestResultUploadService {
 
         } else {
           CompletableFuture<UniversalSubmissionSummary> universalSubmission =
-              submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
+              submitResultsToUniversalPipeline(
+                  new ByteArrayInputStream(content), org, submissionId);
 
           var covidCsvContent = transformAndExtractCovidCsvContent(content);
 
@@ -410,15 +413,14 @@ public class TestResultUploadService {
             }));
   }
 
-  private CompletableFuture<boolean> submitResultsToAIMS(ByteArrayInputStream content) throws CsvProcessingException {
+  private CompletableFuture<boolean> submitResultsToAIMS(ByteArrayInputStream content)
+      throws CsvProcessingException {
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
               long start = System.currentTimeMillis();
-              boolean batchHL7Message =
-            }
-        )
-    );
+              String batchHL7Message = hl7Converter.convertToHL7BatchMessage(content);
+            }));
   }
 
   private Optional<TestResultUpload> processUniversalPipelineResponse(
