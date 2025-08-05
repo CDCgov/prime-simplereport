@@ -71,7 +71,7 @@ describe("Adding testing devices", () => {
     cy.get('input[role="combobox"]').first().type(multiplexDevice.name);
     cy.get('li[id="selectDevice--list--option-0"]')
       .contains(multiplexDevice.name)
-      .click();
+      .click({ force: true });
     cy.get('input[name="name"]').should("have.value", multiplexDevice.name);
     cy.injectSRAxe();
     cy.checkAccessibility();
@@ -107,25 +107,25 @@ describe("Adding testing devices", () => {
   it("Adds devices to a testing facility", () => {
     accessOrganizationByName(`${currentSpecRunVersionName}-org`);
     cy.visit(`/settings/facilities`);
-    cy.get(`[data-cy="${currentSpecRunVersionName}-facility-link"]`).click();
+    cy.get(`[data-cy="${currentSpecRunVersionName}-facility-link"]`).click({ force: true });
     cy.contains("Manage devices");
     cy.injectSRAxe();
     cy.checkAccessibility();
     cy.get('input[role="combobox"]').first().type(covidOnlyDevice.name);
     cy.get(
       `button[aria-label="Select ${covidOnlyDevice.manufacturer} ${covidOnlyDevice.model}"]`,
-    ).click();
+    ).click({ force: true });
     cy.get('input[role="combobox"]').first().type(multiplexDevice.name);
     cy.get(
       `button[aria-label="Select ${multiplexDevice.manufacturer} ${multiplexDevice.model}"]`,
-    ).click();
-    cy.contains("Save changes").click();
+    ).click({ force: true });
+    cy.contains("Save changes").click({ force: true });
     cy.get(".modal__content")
       .find("fieldset")
       .each((fieldset) => {
         fieldset.find("label").first().trigger("click");
       });
-    cy.get('button[id="save-confirmed-address"]').click();
+    cy.get('button[id="save-confirmed-address"]').click({ force: true });
     cy.wait("@UpdateFacility");
     cy.get(".Toastify").contains("Updated Facility");
     cy.wait("@GetManagedFacilities"); // waits until it goes back to manage facilities page

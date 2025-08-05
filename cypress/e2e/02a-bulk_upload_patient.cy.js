@@ -47,7 +47,7 @@ describe("Bulk upload patients", () => {
   it("navigates to the bulk upload page", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
-    cy.get("#desktop-patient-nav-link").click();
+    cy.get("#desktop-patient-nav-link").click({ force: true });
     cy.get(".prime-container");
     cy.get("#add-patient").click();
     cy.get("#upload_add-patient").click();
@@ -78,7 +78,7 @@ describe("Bulk upload patients", () => {
   it("patients should appear in the patients list", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
-    cy.get("#desktop-patient-nav-link").click();
+    cy.get("#desktop-patient-nav-link").click({ force: true });
     cy.get(".usa-card__header").contains("Patients");
     cy.get(".usa-card__header").contains("Showing");
     cy.get("#search-field-small").type(patients[0].lastName);

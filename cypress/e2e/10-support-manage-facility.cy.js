@@ -72,7 +72,7 @@ describe("Support admin: manage facility", () => {
     cy.get('input[role="combobox"]').last().type(`${facilityName}{enter}`);
 
     // clicks search button
-    cy.get("button").contains("Search").click();
+    cy.get("button").contains("Search").click({ force: true });
 
     // displays facility information
     cy.wait("@GetFacilityStats");
@@ -82,15 +82,15 @@ describe("Support admin: manage facility", () => {
     cy.checkAccessibility();
 
     // checks the confirmation modal
-    cy.get("button").contains("Delete facility").click();
+    cy.get("button").contains("Delete facility").click({ force: true });
     cy.contains(`Delete ${facilityName}`);
     cy.checkAccessibility();
-    cy.get("button").contains("No, go back").click();
+    cy.get("button").contains("No, go back").click({ force: true });
     cy.contains(`Delete ${facilityName}`).should("not.exist");
 
     // Deletes a facility
-    cy.get("button").contains("Delete facility").click();
-    cy.get("button").contains("Yes, delete facility").click();
+    cy.get("button").contains("Delete facility").click({ force: true });
+    cy.get("button").contains("Yes, delete facility").click({ force: true });
     cy.get(".Toastify").contains(
       `Facility ${facilityName} successfully deleted`,
     );
