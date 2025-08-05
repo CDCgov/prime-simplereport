@@ -62,7 +62,7 @@ describe("Reporting a COVID test from:", () => {
   it("reports a test from the result page", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
-    cy.get("#desktop-report-test-nav-link").click({ force: true });
+    cy.get("#desktop-report-test-nav-link").click();
     cy.get("#search-field-small").type(lastName);
     cy.get(".results-dropdown").contains(lastName);
 
@@ -157,7 +157,7 @@ describe("Reporting a COVID test from:", () => {
     cy.contains(`Result for ${patientName} was saved and reported.`);
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
 
-    cy.get("#desktop-results-nav-link").click({ force: true });
+    cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
 
     cy.checkAccessibility();
@@ -166,7 +166,7 @@ describe("Reporting a COVID test from:", () => {
   it("starts a test via the manage patients page action menu and then submits a test", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
-    cy.get('[data-cy="desktop-patient-nav-link"]').click({ force: true });
+    cy.get('[data-cy="desktop-patient-nav-link"]').click();
     cy.get('[data-cy="manage-patients-header"]').contains("Patients");
     cy.get('[data-cy="manage-patients-header"]').contains("Showing");
     cy.get('[data-cy="manage-patients-search-input"]').type(lastName);
@@ -212,7 +212,7 @@ describe("Reporting a COVID test from:", () => {
 
     cy.visit("/");
     cy.get(".usa-nav-container");
-    cy.get("#desktop-patient-nav-link").click({ force: true });
+    cy.get("#desktop-patient-nav-link").click();
     cy.get("#add-patient").click();
     cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");

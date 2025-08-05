@@ -81,7 +81,7 @@ describe("Testing with multiplex devices", () => {
       `${patient.lastName}, ${patient.firstName}`,
     );
     cy.wait("@GetPatientsByFacilityForQueue");
-    cy.contains("Begin test").click({ force: true });
+    cy.contains("Begin test").click();
     cy.get(".Toastify").contains(`${patient.lastName}, ${patient.firstName}`);
     cy.get(".Toastify").contains(`was added to the queue`);
 
@@ -102,14 +102,14 @@ describe("Testing with multiplex devices", () => {
     // then it won't trigger a network call
     cy.wait("@GetFacilityQueue", { timeout: 20000 });
 
-    cy.contains("Submit results").click({ force: true });
+    cy.contains("Submit results").click();
     cy.contains("Please enter a valid test result");
     cy.contains("Invalid test results");
 
     cy.contains("legend", "Flu A result")
       .next("div")
       .within(() => {
-        cy.contains("label", "Inconclusive").click({ force: true });
+        cy.contains("label", "Inconclusive").click();
       });
 
     cy.get(queueCard).within(() => {
@@ -118,8 +118,8 @@ describe("Testing with multiplex devices", () => {
 
     cy.wait("@EditQueueItem");
 
-    cy.contains("Submit results").click({ force: true });
-    cy.contains("Submit anyway").click({ force: true });
+    cy.contains("Submit results").click();
+    cy.contains("Submit anyway").click();
 
     cy.wait("@SubmitQueueItem");
     cy.wait("@GetFacilityQueue", { timeout: 20000 });

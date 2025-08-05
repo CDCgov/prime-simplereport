@@ -41,7 +41,7 @@ describe("Adding a single patient", () => {
 
   it("navigates to and fills out add patient form", () => {
     cy.visit("/");
-    cy.get('[data-cy="desktop-patient-nav-link"]').click({ force: true });
+    cy.get('[data-cy="desktop-patient-nav-link"]').click();
     cy.get('[data-cy="add-patients-button"]').click();
     cy.get('[data-cy="individual"]').click();
     cy.get('[data-cy="add-patient-header"]').contains("Add new patient");

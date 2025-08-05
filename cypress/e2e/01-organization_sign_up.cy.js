@@ -82,7 +82,7 @@ describe("Organization sign up", () => {
     cy.contains("Support admin");
 
     // navigates to the manage facilities page
-    cy.get("#desktop-settings-button").click({ force: true });
+    cy.get("#desktop-settings-button").click();
     cy.contains("Manage facilities").click();
     cy.contains("CLIA number");
 
@@ -90,7 +90,7 @@ describe("Organization sign up", () => {
     cy.injectSRAxe();
     cy.checkAccessibility();
 
-    cy.contains("+ New facility").click({ force: true });
+    cy.contains("+ New facility").click();
     cy.contains("Testing facility information");
 
     // Test a11y on New Facility page
@@ -118,7 +118,7 @@ describe("Organization sign up", () => {
     cy.contains("+ New facility");
 
     // enables adding patients
-    cy.get("#desktop-patient-nav-link").click({ force: true });
+    cy.get("#desktop-patient-nav-link").click();
     cy.contains("No results");
 
     // Test a11y on the People page
