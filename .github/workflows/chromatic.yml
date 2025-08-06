@@ -57,7 +57,6 @@ jobs:
           autoAcceptChanges: true  # handle squash-on-merge
 
       - name: Artifact Chromatic logs
-        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: logs
