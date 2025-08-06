@@ -6698,17 +6698,6 @@ databaseChangeLog:
         - dropTable:
             tableName: test_event_metadata
   - changeSet:
-      id: populate-test-event-metadata
-      author: ar72@cdc.gov
-      changes:
-        - sqlFile:
-            path: ../scripts/populate_test_event_metadata_up.sql
-            relativeToChangelogFile: true
-      rollback:
-        - sqlFile:
-            relativeToChangelogFile: true
-            path: ../scripts/populate_test_event_metadata_down.sql
-  - changeSet:
       id: add-test-event-metadata-indexes
       author: ar72@cdc.gov
       changes:
