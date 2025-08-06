@@ -102,6 +102,12 @@ const LabReportForm = () => {
   const [getLabsByConditions, { data: labData, loading: labDataLoading }] =
     useGetLabsByConditionsLazyQuery();
 
+  const [isFormValid, setIsFormValid] = useState(true);
+
+  const handleValidationChange = (isValid: boolean) => {
+    setIsFormValid(isValid);
+  };
+
   useEffect(() => {
     if (activeFacility?.id) {
       const facilityInfo = facilityData?.facility;
@@ -343,7 +349,11 @@ const LabReportForm = () => {
             {currentStep === 0 && <FacilityFormSection facility={facility} />}
             {currentStep === 1 && <ProviderFormSection provider={provider} />}
             {currentStep === 2 && (
-              <PatientFormSection patient={patient} setPatient={setPatient} />
+              <PatientFormSection
+                patient={patient}
+                setPatient={setPatient}
+                onValidate={handleValidationChange}
+              />
             )}
             {currentStep === 3 && (
               <>
@@ -426,20 +436,17 @@ const LabReportForm = () => {
             <div className="usa-form-group report-form-controls">
               {currentStep === 4 ? (
                 <Button onClick={() => submitForm()} type={"button"}>
-                  Submit results
+                  Submit
                 </Button>
               ) : (
                 <Button
                   onClick={() => nextStep()}
-                  disabled={currentStep === stepperData.length - 1}
+                  disabled={!isFormValid}
                   type={"button"}
                   className={"margin-right-2"}
                 >
-                  Next
-                  <FontAwesomeIcon
-                    icon={faArrowRight}
-                    className="margin-left-1"
-                  />
+                  Next: {stepperData[currentStep + 1].label}
+                  <FontAwesomeIcon icon={faArrowRight} className="" />
                 </Button>
               )}
             </div>
