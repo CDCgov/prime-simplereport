@@ -158,8 +158,9 @@ public class TestResultUploadService {
       }
 
       if (content.length > 0) {
-        if (featureFlagsConfig.isAIMSBulkUploadEnabled()) {
-
+//        if (featureFlagsConfig.isAIMSBulkUploadEnabled()) {
+        if (true) {
+          CompletableFuture<String> aimsSubmission = submitResultsToAIMS(new ByteArrayInputStream(content));
         } else {
           CompletableFuture<UniversalSubmissionSummary> universalSubmission =
               submitResultsToUniversalPipeline(
@@ -413,13 +414,18 @@ public class TestResultUploadService {
             }));
   }
 
-  private CompletableFuture<boolean> submitResultsToAIMS(ByteArrayInputStream content)
+  private CompletableFuture<String> submitResultsToAIMS(ByteArrayInputStream content)
       throws CsvProcessingException {
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
               long start = System.currentTimeMillis();
-              String batchHL7Message = hl7Converter.convertToHL7BatchMessage(content);
+              var batchMessage = hl7Converter.convertToHL7BatchMessage(content);
+              return "";
+
+              // try upload to s3
+              // catch error
+              // create summary based on upload progress
             }));
   }
 
