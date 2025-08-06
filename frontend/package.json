@@ -232,7 +232,7 @@
     "sass": "^1.63.6",
     "selenium-webdriver": "^4.16.0",
     "storybook": "^9.0.18",
-    "storybook-addon-apollo-client": "^8.1.2",
+    "storybook-addon-apollo-client": "^9.0.0",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "typescript": "^5.3.2",
