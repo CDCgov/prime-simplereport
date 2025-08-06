@@ -1,7 +1,6 @@
-import React, { Dispatch, useEffect } from "react";
+import React, { Dispatch } from "react";
 import moment from "moment/moment";
 import { ComboBox } from "@trussworks/react-uswds";
-import { isEmpty } from "lodash";
 
 import TextInput from "../commonComponents/TextInput";
 import { PatientReportInput } from "../../generated/graphql";
@@ -24,32 +23,24 @@ import "./PatientFormSection.scss";
 type PatientFormSectionProps = {
   patient: PatientReportInput;
   setPatient: Dispatch<PatientReportInput>;
-  onValidate: (isValid: boolean) => void;
 };
 
 const PatientFormSection = ({
   patient,
   setPatient,
-  onValidate,
 }: PatientFormSectionProps) => {
-  const patientFieldsMissing =
-    isEmpty(patient.firstName) ||
-    isEmpty(patient.lastName) ||
-    isEmpty(patient.dateOfBirth);
-  isEmpty(patient.sex);
-  isEmpty(patient.race);
-  isEmpty(patient.ethnicity);
-  isEmpty(patient.street);
-  isEmpty(patient.city);
-  isEmpty(patient.country);
-  isEmpty(patient.state);
-  isEmpty(patient.zipCode);
-
-  const isValid = !patientFieldsMissing;
-
-  useEffect(() => {
-    onValidate(isValid);
-  }, [isValid, onValidate]);
+  // const patientFieldsMissing =
+  //   isEmpty(patient.firstName) ||
+  //   isEmpty(patient.lastName) ||
+  //   isEmpty(patient.dateOfBirth);
+  // isEmpty(patient.sex);
+  // isEmpty(patient.race);
+  // isEmpty(patient.ethnicity);
+  // isEmpty(patient.street);
+  // isEmpty(patient.city);
+  // isEmpty(patient.country);
+  // isEmpty(patient.state);
+  // isEmpty(patient.zipCode);
 
   const raceValues = [
     ...RACE_VALUES,

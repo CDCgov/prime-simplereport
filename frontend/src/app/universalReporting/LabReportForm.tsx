@@ -102,11 +102,11 @@ const LabReportForm = () => {
   const [getLabsByConditions, { data: labData, loading: labDataLoading }] =
     useGetLabsByConditionsLazyQuery();
 
-  const [isFormValid, setIsFormValid] = useState(true);
-
-  const handleValidationChange = (isValid: boolean) => {
-    setIsFormValid(isValid);
-  };
+  // const [isFormValid, setIsFormValid] = useState(true);
+  //
+  // const handleValidationChange = (isValid: boolean) => {
+  //   setIsFormValid(isValid);
+  // };
 
   useEffect(() => {
     if (activeFacility?.id) {
@@ -349,11 +349,7 @@ const LabReportForm = () => {
             {currentStep === 0 && <FacilityFormSection facility={facility} />}
             {currentStep === 1 && <ProviderFormSection provider={provider} />}
             {currentStep === 2 && (
-              <PatientFormSection
-                patient={patient}
-                setPatient={setPatient}
-                onValidate={handleValidationChange}
-              />
+              <PatientFormSection patient={patient} setPatient={setPatient} />
             )}
             {currentStep === 3 && (
               <>
@@ -441,7 +437,7 @@ const LabReportForm = () => {
               ) : (
                 <Button
                   onClick={() => nextStep()}
-                  disabled={!isFormValid}
+                  disabled={currentStep === stepperData.length - 1}
                   type={"button"}
                   className={"margin-right-2"}
                 >
