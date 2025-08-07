@@ -90,6 +90,7 @@ describe("LabReportForm Stepper", () => {
     const patientStep = within(stepIndicator).getByText("Patient information");
     fireEvent.click(patientStep);
     expect(currentStep).toHaveTextContent("Patient information");
+    confirmPatientFormSectionFieldNames();
 
     const facilityStep = within(stepIndicator).getByText(
       "Facility information"
@@ -97,4 +98,30 @@ describe("LabReportForm Stepper", () => {
     fireEvent.click(facilityStep);
     expect(currentStep).toHaveTextContent("Facility information");
   });
+
+  const confirmPatientFormSectionFieldNames = () => {
+    const patientFormSection = screen.getByTestId("patientFormSection");
+    expect(patientFormSection).toHaveTextContent("Patient identifiers");
+    expect(patientFormSection).toHaveTextContent("First name");
+    expect(patientFormSection).toHaveTextContent("Middle name (optional)");
+    expect(patientFormSection).toHaveTextContent("Last name");
+    expect(patientFormSection).toHaveTextContent("Date of birth");
+    expect(patientFormSection).toHaveTextContent("Patient ID (optional)");
+    expect(patientFormSection).toHaveTextContent("Sex");
+    expect(patientFormSection).toHaveTextContent("Race");
+    expect(patientFormSection).toHaveTextContent(
+      "Is the patient Hispanic or Latino?"
+    );
+    expect(patientFormSection).toHaveTextContent(
+      "Tribal affiliation (optional)"
+    );
+    expect(patientFormSection).toHaveTextContent("Patient contact");
+    expect(patientFormSection).toHaveTextContent("Street address");
+    expect(patientFormSection).toHaveTextContent("Apt, suite, etc (optional)");
+    expect(patientFormSection).toHaveTextContent("City");
+    expect(patientFormSection).toHaveTextContent("County (optional)");
+    expect(patientFormSection).toHaveTextContent("ZIP code");
+    expect(patientFormSection).toHaveTextContent("Phone number (optional)");
+    expect(patientFormSection).toHaveTextContent("Email address (optional)");
+  };
 });
