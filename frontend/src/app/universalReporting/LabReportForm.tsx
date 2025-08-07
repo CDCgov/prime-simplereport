@@ -102,12 +102,6 @@ const LabReportForm = () => {
   const [getLabsByConditions, { data: labData, loading: labDataLoading }] =
     useGetLabsByConditionsLazyQuery();
 
-  // const [isFormValid, setIsFormValid] = useState(true);
-  //
-  // const handleValidationChange = (isValid: boolean) => {
-  //   setIsFormValid(isValid);
-  // };
-
   useEffect(() => {
     if (activeFacility?.id) {
       const facilityInfo = facilityData?.facility;

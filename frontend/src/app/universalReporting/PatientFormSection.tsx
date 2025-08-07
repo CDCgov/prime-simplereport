@@ -29,19 +29,6 @@ const PatientFormSection = ({
   patient,
   setPatient,
 }: PatientFormSectionProps) => {
-  // const patientFieldsMissing =
-  //   isEmpty(patient.firstName) ||
-  //   isEmpty(patient.lastName) ||
-  //   isEmpty(patient.dateOfBirth);
-  // isEmpty(patient.sex);
-  // isEmpty(patient.race);
-  // isEmpty(patient.ethnicity);
-  // isEmpty(patient.street);
-  // isEmpty(patient.city);
-  // isEmpty(patient.country);
-  // isEmpty(patient.state);
-  // isEmpty(patient.zipCode);
-
   const raceValues = [
     ...RACE_VALUES,
     { value: "unknown", label: "Unknown" },
