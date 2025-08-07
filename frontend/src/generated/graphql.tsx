@@ -785,7 +785,6 @@ export type PatientLink = {
 };
 
 export type PatientReportInput = {
-  patientId?: Maybe<Scalars["String"]["input"]>;
   city?: InputMaybe<Scalars["String"]["input"]>;
   country?: InputMaybe<Scalars["String"]["input"]>;
   county?: InputMaybe<Scalars["String"]["input"]>;
