@@ -1,16 +1,12 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
-import ca.uhn.hl7v2.model.v251.segment.BHS;
-import ca.uhn.hl7v2.model.v251.segment.BTS;
-import ca.uhn.hl7v2.model.v251.segment.FHS;
-import ca.uhn.hl7v2.model.v251.segment.FTS;
-import ca.uhn.hl7v2.parser.EncodingCharacters;
 import ca.uhn.hl7v2.parser.Parser;
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.converter.HL7Converter;
@@ -23,14 +19,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.info.GitProperties;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.io.InputStream;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -41,6 +30,27 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.GitProperties;
+import org.springframework.stereotype.Component;
+
+record HeaderSegmentFields(
+    String fieldName,
+    String sendingAppNamespaceId,
+    String sendingAppUniversalId,
+    String sendingAppUniversalIdType,
+    String sendingFacilityNamespaceId,
+    String sendingFacilityUniversalId,
+    String sendingFacilityUniversalIdType,
+    String receivingAppNamespaceId,
+    String receivingAppUniversalId,
+    String receivingAppUniversalIdType,
+    String receivingFacilityNamespaceId,
+    String receivingFacilityUniversalId,
+    String receivingFacilityUniversalIdType,
+    String datetime) {}
 
 @Component
 @Slf4j
@@ -50,12 +60,81 @@ public class BulkUploadResultsToHL7 {
   private final GitProperties gitProperties;
   private final HapiContext hapiContext = HapiContextProvider.get();
   private final Parser parser = hapiContext.getPipeParser();
+  private final DateGenerator dateGenerator;
+  private static final String ENCODING_CHARS = "^~\\&";
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
 
+  private static String orEmpty(String value) {
+    return value == null ? "" : value;
+  }
+
+  private String generateHD(String namespaceId, String universalId, String universalIdType) {
+    namespaceId = orEmpty(namespaceId);
+    universalId = orEmpty(universalId);
+    universalIdType = orEmpty(universalIdType);
+
+    if (namespaceId.isEmpty() && universalId.isEmpty() && universalIdType.isEmpty()) {
+      return "";
+    }
+
+    String result = namespaceId;
+
+    if (!universalId.isEmpty() || !universalIdType.isEmpty()) {
+      result += "^" + universalId;
+    }
+
+    if (!universalIdType.isEmpty()) {
+      result += "^" + universalIdType;
+    }
+
+    return result;
+  }
+
+  private String generateHeaderSegment(HeaderSegmentFields fields) {
+    var sendingApplication =
+        generateHD(
+            fields.sendingAppNamespaceId(),
+            fields.sendingAppUniversalId(),
+            fields.sendingAppUniversalIdType());
+
+    var sendingFacility =
+        generateHD(
+            fields.sendingFacilityNamespaceId(),
+            fields.sendingFacilityUniversalId(),
+            fields.sendingFacilityUniversalIdType());
+
+    var receivingApplication =
+        generateHD(
+            fields.receivingAppNamespaceId(),
+            fields.receivingAppUniversalId(),
+            fields.receivingAppUniversalIdType());
+
+    var receivingFacility =
+        generateHD(
+            fields.receivingFacilityNamespaceId(),
+            fields.receivingFacilityUniversalId(),
+            fields.receivingFacilityUniversalIdType());
+
+    return String.join(
+        "|",
+        fields.fieldName(),
+        ENCODING_CHARS,
+        sendingApplication,
+        sendingFacility,
+        receivingApplication,
+        receivingFacility,
+        fields.datetime());
+  }
+
+  private String generateTrailingSegment(String fieldName, int itemCount) {
+    return String.join("|", fieldName, String.valueOf(itemCount));
+  }
+
   public String convertToHL7BatchMessage(InputStream csvStream) {
     String batchMessage = "";
+    int batchMessageCount = 0;
     HashMap<String, Integer> diseasesReported = new HashMap<>();
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
@@ -64,45 +143,89 @@ public class BulkUploadResultsToHL7 {
       final Map<String, String> row = getNextRow(valueIterator);
       TestResultRow fileRow = new TestResultRow(row);
 
-      var future = CompletableFuture.supplyAsync(() -> {
-        try {
-          return convertRowToHL7(fileRow);
-        } catch (HL7Exception e) {
-          // TODO: address exception gracefully
-          return "";
-        }
-      });
+      var future =
+          CompletableFuture.supplyAsync(
+              () -> {
+                try {
+                  return convertRowToHL7(fileRow);
+                } catch (HL7Exception e) {
+                  // TODO: address exception gracefully
+                  return "";
+                }
+              });
 
       futureTestEvents.add(future);
+      batchMessageCount += 1;
     }
 
-    String messages = futureTestEvents.stream()
-        .map(future -> {
-            try {
-                return future.get();
-            } catch (InterruptedException | ExecutionException e) {
-              log.error("Bulk upload failure to convert to fhir.", e);
-              Thread.currentThread().interrupt();
-              throw new CsvProcessingException("Unable to process file.");
-            }
-        })
-        .collect(Collectors.joining());
+    String messages =
+        futureTestEvents.stream()
+            .map(
+                future -> {
+                  try {
+                    return future.get();
+                  } catch (InterruptedException | ExecutionException e) {
+                    log.error("Bulk upload failure to convert to fhir.", e);
+                    Thread.currentThread().interrupt();
+                    throw new CsvProcessingException("Unable to process file.");
+                  }
+                })
+            .collect(Collectors.joining("\n"));
 
-    batchMessage += messages;
+    try {
+      ArrayList<String> parts = new ArrayList<>();
 
-//    var fhs = new FHS(null, null);
-//    var bhs = new BHS(null, null);
-//    var bts = new BTS(null, null);
-//    var fts = new FTS(null, null);
-//
-//    try {
-//      batchMessage += parser.doEncode(fhs, EncodingCharacters.defaultInstance());
-//      batchMessage += parser.doEncode(bhs, EncodingCharacters.defaultInstance());
-//      batchMessage += parser.doEncode(bts, EncodingCharacters.defaultInstance());
-//      batchMessage += parser.doEncode(fts, EncodingCharacters.defaultInstance());
-//    } catch (HL7Exception e) {
-//      log.error("Encountered an error converting CSV to Batch HL7 Message");
-//    }
+      // FHS
+      parts.add(
+          generateHeaderSegment(
+              new HeaderSegmentFields(
+                  "FHS",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  formatToHL7DateTime(dateGenerator.newDate()))));
+
+      // BHS
+      parts.add(
+          generateHeaderSegment(
+              new HeaderSegmentFields(
+                  "BHS",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  "",
+                  formatToHL7DateTime(dateGenerator.newDate()))));
+
+      // Append test result messages
+      parts.add(messages);
+
+      // BTS
+      parts.add(generateTrailingSegment("BHS", batchMessageCount));
+
+      // FTS
+      parts.add(generateTrailingSegment("FHS", 1));
+
+      batchMessage = String.join("\n", parts);
+    } catch (Exception e) {
+      log.error("Encountered an error converting CSV to Batch HL7 Message");
+    }
 
     return batchMessage;
   }
@@ -118,17 +241,17 @@ public class BulkUploadResultsToHL7 {
     var testDetailsInputList = List.of(getTestDetailsInput(row));
 
     try {
-      var labReportMessage = hl7Converter.createLabReportMessage(
-        patientInput,
-        providerInput,
-        performingFacility,
-        orderingFacility,
-        specimenInput,
-        testDetailsInputList,
-        gitProperties,
-        processingModeCode,
-        testId
-      );
+      var labReportMessage =
+          hl7Converter.createLabReportMessage(
+              patientInput,
+              providerInput,
+              performingFacility,
+              orderingFacility,
+              specimenInput,
+              testDetailsInputList,
+              gitProperties,
+              processingModeCode,
+              testId);
 
       return parser.encode(labReportMessage);
     } catch (HL7Exception e) {
@@ -209,7 +332,8 @@ public class BulkUploadResultsToHL7 {
                     .toInstant()))
         .receivedDate(
             Date.from(
-                LocalDate.parse(row.getTestingLabSpecimenReceivedDate().getValue(), DATE_TIME_FORMATTER)
+                LocalDate.parse(
+                        row.getTestingLabSpecimenReceivedDate().getValue(), DATE_TIME_FORMATTER)
                     .atStartOfDay(ZoneId.systemDefault())
                     .toInstant()))
         .build();

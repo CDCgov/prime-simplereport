@@ -417,8 +417,7 @@ public class HL7Converter {
   void populateEthnicGroup(CE codedElement, String ethnicity) throws DataTypeException {
     ethnicity = ethnicity.toLowerCase();
     boolean isParseableEthnicGroup =
-        StringUtils.isNotBlank(ethnicity)
-            && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity);
+        StringUtils.isNotBlank(ethnicity) && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity);
 
     String identifier =
         isParseableEthnicGroup ? PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0) : "U";
