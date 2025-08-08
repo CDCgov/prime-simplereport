@@ -14,7 +14,7 @@ declare global {
 }
 
 const DATA_RETENTION_MODAL_DISMISSED_KEY = "dataRetentionModalDismissed";
-const SUPPORT_LINK =
+export const DATA_RETENTION_LIMITS_INFO_LINK =
   "https://www.simplereport.gov/using-simplereport/data-retention-limits/";
 
 interface DataRetentionModalProps {
@@ -43,10 +43,14 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
       properties: {
         action: "learn_more_clicked",
         modalType: "data_retention",
-        supportLink: SUPPORT_LINK,
+        supportLink: DATA_RETENTION_LIMITS_INFO_LINK,
       },
     });
-    window.open(SUPPORT_LINK, "_blank", "noopener,noreferrer");
+    window.open(
+      DATA_RETENTION_LIMITS_INFO_LINK,
+      "_blank",
+      "noopener,noreferrer"
+    );
   };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
