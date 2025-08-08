@@ -18,7 +18,7 @@ type TestDetailSectionProps = {
   updateTestDetails: (details: TestDetailsInput) => void;
 };
 
-const TestDetailSection = ({
+const TestDetailFormSubsection = ({
   testDetails,
   updateTestDetails,
 }: TestDetailSectionProps) => {
@@ -161,4 +161,4 @@ const TestDetailSection = ({
   );
 };
 
-export default TestDetailSection;
+export default TestDetailFormSubsection;

@@ -19,7 +19,7 @@ type SpecimenFormSectionProps = {
   isTestOrderSelected: boolean;
 };
 
-const SpecimenFormSection = ({
+const SpecimenFormSubsection = ({
   specimenList,
   specimen,
   setSpecimen,
@@ -177,4 +177,4 @@ const SpecimenFormSection = ({
   );
 };
 
-export default SpecimenFormSection;
+export default SpecimenFormSubsection;

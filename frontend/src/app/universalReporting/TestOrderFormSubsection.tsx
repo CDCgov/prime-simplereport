@@ -14,7 +14,7 @@ type TestOrderFormSectionProps = {
   setTestOrderSearchString: Dispatch<string>;
 };
 
-const TestOrderFormSection = ({
+const TestOrderFormSubsection = ({
   hasSelectedCondition,
   labDataLoading,
   labs,
@@ -105,4 +105,4 @@ const TestOrderFormSection = ({
   );
 };
 
-export default TestOrderFormSection;
+export default TestOrderFormSubsection;
