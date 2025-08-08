@@ -693,7 +693,7 @@ type Query {
   ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
   conditions: [Condition!]!
-  labs(conditionCodes: [String!]): [Lab!]!
+  labs: [Lab!]!
   specimens(loinc: String!): [Specimen!]!
   facilityLabs(facilityId: ID): [FacilityLab]
 }

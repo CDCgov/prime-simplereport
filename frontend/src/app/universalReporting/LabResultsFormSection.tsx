@@ -1,12 +1,9 @@
 import React, { Dispatch, useState } from "react";
-import { ComboBox } from "@trussworks/react-uswds";
 
 import {
   Lab,
   SpecimenInput,
   TestDetailsInput,
-  useGetConditionsQuery,
-  useGetLabsByConditionsLazyQuery,
   useGetSpecimensByLoincLazyQuery,
 } from "../../generated/graphql";
 
@@ -15,7 +12,6 @@ import TestOrderFormSubsection from "./TestOrderFormSubsection";
 import SpecimenFormSubsection from "./SpecimenFormSubsection";
 import TestDetailFormSubsection from "./TestDetailFormSubsection";
 import {
-  buildConditionsOptionList,
   defaultSpecimenReportInputState,
   mapScaleDisplayToResultScaleType,
 } from "./LabReportFormUtils";
@@ -33,45 +29,18 @@ const LabResultsFormSection = ({
   testDetailList,
   setTestDetailList,
 }: LabResultsFormSectionProps) => {
-  const [selectedCondition, setSelectedCondition] = useState<string>("");
   const [testOrderLoinc, setTestOrderLoinc] = useState<string>("");
 
-  const { data: conditionsData, loading: conditionsLoading } =
-    useGetConditionsQuery();
-  const [getLabsByConditions, { data: labData, loading: labDataLoading }] =
-    useGetLabsByConditionsLazyQuery();
   const [
     getSpecimensByLoinc,
     { data: specimenListData, loading: specimenListLoading },
   ] = useGetSpecimensByLoincLazyQuery();
 
-  const conditionOptions = buildConditionsOptionList(
-    conditionsData?.conditions ?? []
-  );
-
-  const updateCondition = async (selectedCondition: string) => {
-    setSelectedCondition(selectedCondition);
-
-    if (selectedCondition) {
-      // until we implement multiplex testing, for now we are restricting the frontend to handling one condition at a time
-      // even though the backend query can still support retrieving labs by multiple condition codes
-      await getLabsByConditions({
-        variables: {
-          conditionCodes: [selectedCondition],
-        },
-      });
-    } else {
-      setTestDetailList([]);
-      setTestOrderLoinc("");
-      setSpecimen(defaultSpecimenReportInputState);
-    }
-  };
-
   const updateTestOrderLoinc = async (lab: Lab | undefined) => {
     if (lab) {
       const updatedList = [] as TestDetailsInput[];
       updatedList.push({
-        condition: selectedCondition,
+        //todo: can we leave condition blank or should I make a new type or should I populate it in the backend even though we don't use it for HL7 messages?
         testOrderLoinc: lab.code,
         testOrderDisplayName: lab.display,
         testPerformedLoinc: lab.code,
@@ -129,40 +98,7 @@ const LabResultsFormSection = ({
 
   return (
     <>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-auto">
-          <h2 className={"font-sans-lg"}>Condition Tested</h2>
-        </div>
-      </div>
-      <div className="grid-row margin-bottom-2">
-        <div className="grid-col-10">
-          {conditionsLoading ? (
-            <div>Loading condition list...</div>
-          ) : (
-            <>
-              <label
-                className="usa-legend margin-top-0"
-                htmlFor="selected-condition"
-              >
-                Condition to report
-              </label>
-              <ComboBox
-                id="selected-condition"
-                name="selected-condition"
-                options={conditionOptions}
-                onChange={(e) => updateCondition(e ?? "")}
-                defaultValue={selectedCondition}
-                aria-required={true}
-                className={"condition-combo-box"}
-              />
-            </>
-          )}
-        </div>
-      </div>
       <TestOrderFormSubsection
-        hasSelectedCondition={!!selectedCondition}
-        labDataLoading={labDataLoading}
-        labs={labData?.labs ?? []}
         testOrderLoinc={testOrderLoinc}
         updateTestOrderLoinc={updateTestOrderLoinc}
       />

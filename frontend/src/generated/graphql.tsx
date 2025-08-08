@@ -3080,13 +3080,9 @@ export type GetConditionsQuery = {
   }>;
 };
 
-export type GetLabsByConditionsQueryVariables = Exact<{
-  conditionCodes?: InputMaybe<
-    Array<Scalars["String"]["input"]> | Scalars["String"]["input"]
-  >;
-}>;
+export type GetAllLabsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetLabsByConditionsQuery = {
+export type GetAllLabsQuery = {
   __typename?: "Query";
   labs: Array<{
     __typename?: "Lab";
@@ -9704,9 +9700,9 @@ export type GetConditionsQueryResult = Apollo.QueryResult<
   GetConditionsQuery,
   GetConditionsQueryVariables
 >;
-export const GetLabsByConditionsDocument = gql`
-  query GetLabsByConditions($conditionCodes: [String!]) {
-    labs(conditionCodes: $conditionCodes) {
+export const GetAllLabsDocument = gql`
+  query GetAllLabs {
+    labs {
       code
       display
       description
@@ -9723,74 +9719,68 @@ export const GetLabsByConditionsDocument = gql`
 `;
 
 /**
- * __useGetLabsByConditionsQuery__
+ * __useGetAllLabsQuery__
  *
- * To run a query within a React component, call `useGetLabsByConditionsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetLabsByConditionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetAllLabsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllLabsQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetLabsByConditionsQuery({
+ * const { data, loading, error } = useGetAllLabsQuery({
  *   variables: {
- *      conditionCodes: // value for 'conditionCodes'
  *   },
  * });
  */
-export function useGetLabsByConditionsQuery(
+export function useGetAllLabsQuery(
   baseOptions?: Apollo.QueryHookOptions<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
+    GetAllLabsQuery,
+    GetAllLabsQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
-  >(GetLabsByConditionsDocument, options);
+  return Apollo.useQuery<GetAllLabsQuery, GetAllLabsQueryVariables>(
+    GetAllLabsDocument,
+    options
+  );
 }
-export function useGetLabsByConditionsLazyQuery(
+export function useGetAllLabsLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
+    GetAllLabsQuery,
+    GetAllLabsQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
-  >(GetLabsByConditionsDocument, options);
+  return Apollo.useLazyQuery<GetAllLabsQuery, GetAllLabsQueryVariables>(
+    GetAllLabsDocument,
+    options
+  );
 }
-export function useGetLabsByConditionsSuspenseQuery(
+export function useGetAllLabsSuspenseQuery(
   baseOptions?:
     | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetLabsByConditionsQuery,
-        GetLabsByConditionsQueryVariables
-      >
+    | Apollo.SuspenseQueryHookOptions<GetAllLabsQuery, GetAllLabsQueryVariables>
 ) {
   const options =
     baseOptions === Apollo.skipToken
       ? baseOptions
       : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
-  >(GetLabsByConditionsDocument, options);
+  return Apollo.useSuspenseQuery<GetAllLabsQuery, GetAllLabsQueryVariables>(
+    GetAllLabsDocument,
+    options
+  );
 }
-export type GetLabsByConditionsQueryHookResult = ReturnType<
-  typeof useGetLabsByConditionsQuery
+export type GetAllLabsQueryHookResult = ReturnType<typeof useGetAllLabsQuery>;
+export type GetAllLabsLazyQueryHookResult = ReturnType<
+  typeof useGetAllLabsLazyQuery
 >;
-export type GetLabsByConditionsLazyQueryHookResult = ReturnType<
-  typeof useGetLabsByConditionsLazyQuery
+export type GetAllLabsSuspenseQueryHookResult = ReturnType<
+  typeof useGetAllLabsSuspenseQuery
 >;
-export type GetLabsByConditionsSuspenseQueryHookResult = ReturnType<
-  typeof useGetLabsByConditionsSuspenseQuery
->;
-export type GetLabsByConditionsQueryResult = Apollo.QueryResult<
-  GetLabsByConditionsQuery,
-  GetLabsByConditionsQueryVariables
+export type GetAllLabsQueryResult = Apollo.QueryResult<
+  GetAllLabsQuery,
+  GetAllLabsQueryVariables
 >;
 export const GetSpecimensByLoincDocument = gql`
   query GetSpecimensByLoinc($loinc: String!) {
