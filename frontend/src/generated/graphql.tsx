@@ -794,6 +794,7 @@ export type PatientReportInput = {
   firstName: Scalars["String"]["input"];
   lastName: Scalars["String"]["input"];
   middleName?: InputMaybe<Scalars["String"]["input"]>;
+  patientId?: InputMaybe<Scalars["String"]["input"]>;
   phone?: InputMaybe<Scalars["String"]["input"]>;
   race?: InputMaybe<Scalars["String"]["input"]>;
   sex?: InputMaybe<Scalars["String"]["input"]>;
