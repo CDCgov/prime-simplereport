@@ -18,8 +18,6 @@ import {
   stateCodes,
 } from "../../config/constants";
 
-import "./PatientFormSection.scss";
-
 type PatientFormSectionProps = {
   patient: PatientReportInput;
   setPatient: Dispatch<PatientReportInput>;
@@ -90,7 +88,7 @@ const PatientFormSection = ({
         </div>
       </div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-6">
+        <div className="grid-col-4">
           <TextInput
             name="patient-date-of-birth"
             type="date"
@@ -106,7 +104,7 @@ const PatientFormSection = ({
             }}
           ></TextInput>
         </div>
-        <div className="grid-col-6">
+        <div className="grid-col-4">
           <TextInput
             name={"patient-id"}
             type={"text"}
@@ -120,7 +118,7 @@ const PatientFormSection = ({
       </div>
       <div className="grid-row">
         <div className="grid-col-auto">
-          <h3 className={"margin-bottom-0 margin-top-4"}>
+          <h3 className={"margin-bottom-0 margin-top-5"}>
             Patient demographics
           </h3>
         </div>
@@ -138,7 +136,7 @@ const PatientFormSection = ({
           />
         </div>
       </div>
-      <div className="grid-row grid-gap">
+      <div className="grid-row grid-gap margin-top-1">
         <div className="grid-col-auto">
           <RadioGroup<string>
             legend={"Race"}
@@ -149,7 +147,7 @@ const PatientFormSection = ({
           />
         </div>
       </div>
-      <div className="grid-row grid-gap">
+      <div className="grid-row grid-gap margin-top-1">
         <div className="grid-col-auto">
           <RadioGroup<string>
             legend={"Is the patient Hispanic or Latino?"}
@@ -162,7 +160,7 @@ const PatientFormSection = ({
           />
         </div>
       </div>
-      <div className="grid-row grid-gap">
+      <div className="grid-row grid-gap margin-top-1">
         <div className="grid-col-6">
           <label className="usa-legend" htmlFor="tribal-affiliation">
             Tribal affiliation (optional)
@@ -181,7 +179,7 @@ const PatientFormSection = ({
       </div>
       <div className="grid-row">
         <div className="grid-col-auto">
-          <h3 className={"margin-bottom-0 margin-top-4"}>Patient contact</h3>
+          <h3 className={"margin-bottom-0 margin-top-5"}>Patient contact</h3>
         </div>
       </div>
       <div className="grid-row grid-gap">

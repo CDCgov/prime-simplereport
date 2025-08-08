@@ -15,7 +15,7 @@ export const defaultPatientReportInputState: PatientReportInput = {
   city: "",
   country: "USA",
   county: "",
-  dateOfBirth: "1990-01-01",
+  dateOfBirth: "",
   email: "",
   ethnicity: "",
   firstName: "",

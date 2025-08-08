@@ -173,6 +173,10 @@ const ReviewFormSection = ({
       value: patient.suffix,
     },
     {
+      name: "Patient ID",
+      value: patient.patientId,
+    },
+    {
       name: "Date of birth",
       value: patient.dateOfBirth,
     },

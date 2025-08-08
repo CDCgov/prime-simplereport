@@ -217,6 +217,7 @@ const LabReportForm = () => {
     if (currentStep < stepperData.length) {
       setCurrentStep((prevStep) => prevStep + 1);
     }
+    window.scrollTo(0, 0);
   };
 
   const prevStep = () => {
@@ -433,7 +434,7 @@ const LabReportForm = () => {
                   onClick={() => nextStep()}
                   disabled={currentStep === stepperData.length - 1}
                   type={"button"}
-                  className={"margin-right-2"}
+                  className={"margin-right-2 margin-top-3"}
                 >
                   Next: {stepperData[currentStep + 1].label}
                   <FontAwesomeIcon icon={faArrowRight} className="" />
