@@ -1,4 +1,4 @@
-import { Meta } from "@storybook/react";
+import { Meta } from "@storybook/react-webpack5";
 import { cloneDeep } from "lodash";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
