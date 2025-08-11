@@ -372,6 +372,8 @@ public class TestOrderService {
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
 
     applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
+    // TODO: check whether to add feature flag here or just have the queue disabled?
+    applicationEventPublisher.publishEvent(new ReportToAIMSEvent(savedOrder.getTestEvent()));
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
@@ -581,6 +583,8 @@ public class TestOrderService {
         _testOrderRepo.save(order);
 
         applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(newRemoveEvent));
+        // TODO: check whether to add feature flag here or just have the queue disabled?
+        applicationEventPublisher.publishEvent(new ReportToAIMSEvent(newRemoveEvent));
 
         return newRemoveEvent;
       }
