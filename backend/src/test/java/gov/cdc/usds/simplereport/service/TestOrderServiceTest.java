@@ -72,7 +72,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -100,8 +99,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   TestEventReportingService fhirQueueReportingService;
 
   @SpyBean ReportTestEventToRSEventListener reportTestEventToRSEventListener;
-
-  @Captor ArgumentCaptor<TestEvent> testEventArgumentCaptor;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -189,13 +186,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(patientLinkService).createPatientLink(any());
 
     // make sure the corrected event is sent to storage queue
-    //    verify(testEventReportingService).report(testEventArgumentCaptor.capture());
     verify(fhirQueueReportingService).report(any());
-    // todo improve fhir verification? test was only asserting csv / covid pipeline values
-    //    TestEvent sentEvent = testEventArgumentCaptor.getValue();
-    //    TestResult testResult = sentEvent.getCovidTestResult().get();
-    //    assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
-    //    assertThat(testResult).isEqualTo(TestResult.POSITIVE);
+    // improve fhir verification? test was only asserting csv / covid pipeline values
+    // was asserting: patient ids match, test results match
   }
 
   @Test
@@ -2308,7 +2301,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verifyNoInteractions(fhirQueueReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility);
-    TestEvent correctedTestEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
     _service.getFacilityTestEventsResults(
         facility.getInternalId(), null, null, null, null, null, null, 0, 10);
     _service.getTestResult(_e.getInternalId()).getTestOrder();
