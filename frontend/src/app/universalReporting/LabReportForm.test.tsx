@@ -50,6 +50,12 @@ describe("LabReportForm Stepper", () => {
     expect(steps[2]).toHaveTextContent("Patient information");
     expect(steps[3]).toHaveTextContent("Lab results");
     expect(steps[4]).toHaveTextContent("Review and submit");
+
+    const nextButton = screen.getByRole("button", {
+      name: /Next/i,
+    });
+
+    expect(nextButton).toHaveTextContent("Next: Provider information");
   });
 
   test("steps forward and back", () => {
