@@ -1347,9 +1347,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createFullPerson(org);
     _dataFactory.createTestEvent(p, facility);
 
-    // https://github.com/CDCgov/prime-simplereport/issues/677
-    // assertSecurityError(() ->
-    // _service.getTestResults(facility.getInternalId()));
     assertSecurityError(() -> _service.getTestResults(p));
   }
 
@@ -2177,7 +2174,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             facility.getInternalId(), null, TestResult.NEGATIVE, null, null, null, null, 0, 10);
 
     var expected = List.of(expected_allNeg.getInternalId(), expected_covidPos.getInternalId());
-    var actualInternalIds = res.stream().map(TestEvent::getInternalId).collect(Collectors.toList());
+    var actualInternalIds = res.stream().map(TestEvent::getInternalId).toList();
     assertTrue(actualInternalIds.containsAll(expected));
     assertEquals(expected.size(), actualInternalIds.size());
     assertFalse(actualInternalIds.contains(notExpected_allPos.getInternalId()));
@@ -2301,9 +2298,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verifyNoInteractions(fhirQueueReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility);
+    _service.markAsError(_e.getInternalId(), reasonMsg);
     _service.getFacilityTestEventsResults(
         facility.getInternalId(), null, null, null, null, null, null, 0, 10);
-    _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue
     verify(fhirQueueReportingService).report(any());
   }
