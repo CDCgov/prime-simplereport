@@ -114,10 +114,26 @@ describe("LabReportForm Stepper", () => {
     expect(patientFormSection).toHaveTextContent("Date of birth");
     expect(patientFormSection).toHaveTextContent("Patient ID (optional)");
     expect(patientFormSection).toHaveTextContent("Sex");
+    expect(patientFormSection).toHaveTextContent("Female");
+    expect(patientFormSection).toHaveTextContent("Male");
     expect(patientFormSection).toHaveTextContent("Race");
+    expect(patientFormSection).toHaveTextContent(
+      "American Indian/Alaskan Native"
+    );
+    expect(patientFormSection).toHaveTextContent("Asian");
+    expect(patientFormSection).toHaveTextContent("Black/African American");
+    expect(patientFormSection).toHaveTextContent(
+      "Native Hawaiian/other Pacific Islander"
+    );
+    expect(patientFormSection).toHaveTextContent("White");
+    expect(patientFormSection).toHaveTextContent("Other");
+    const unknownLabels = screen.getAllByText("Unknown");
+    expect(unknownLabels).toHaveLength(2);
     expect(patientFormSection).toHaveTextContent(
       "Is the patient Hispanic or Latino?"
     );
+    expect(patientFormSection).toHaveTextContent("Yes");
+    expect(patientFormSection).toHaveTextContent("No");
     expect(patientFormSection).toHaveTextContent(
       "Tribal affiliation (optional)"
     );
@@ -126,6 +142,9 @@ describe("LabReportForm Stepper", () => {
     expect(patientFormSection).toHaveTextContent("Apt, suite, etc (optional)");
     expect(patientFormSection).toHaveTextContent("City");
     expect(patientFormSection).toHaveTextContent("County (optional)");
+    expect(patientFormSection).toHaveTextContent("Country");
+    expect(patientFormSection).toHaveTextContent("United States");
+    expect(patientFormSection).toHaveTextContent("State");
     expect(patientFormSection).toHaveTextContent("ZIP code");
     expect(patientFormSection).toHaveTextContent("Phone number (optional)");
     expect(patientFormSection).toHaveTextContent("Email address (optional)");
