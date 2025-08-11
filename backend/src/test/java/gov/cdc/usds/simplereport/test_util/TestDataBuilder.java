@@ -33,6 +33,7 @@ import gov.cdc.usds.simplereport.utils.DateGenerator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -360,6 +361,21 @@ public class TestDataBuilder {
     result.setTestEvent(testEvent);
     testEvent.getResults().add(result);
     return result;
+  }
+
+  public static TestEvent createMultiplexTestEventWithDate(Date dateTested) {
+    TestOrder testOrder = createTestOrder();
+    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
+    testOrder.setDateTestedBackdate(dateTested);
+
+    TestEvent testEvent = new TestEvent(testOrder, false);
+    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
+
+    return testEvent;
   }
 
   public static TestEvent createMultiplexTestEvent() {
