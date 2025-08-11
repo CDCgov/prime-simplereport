@@ -21,7 +21,6 @@ import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -39,8 +38,6 @@ import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -76,14 +73,14 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Captor private ArgumentCaptor<String> accessTokenCaptor;
   @Mock private DataHubClient dataHubMock;
   @Mock private TestResultUploadRepository repoMock;
-  @Mock private ResultUploadErrorRepository errorRepoMock;
-  @Mock private UploadDiseaseDetailsRepository uploadDiseaseDetailsRepository;
   @Mock private OrganizationService orgServiceMock;
   @Mock private ResultsUploaderCachingService resultsUploaderCachingServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
-  @Mock private DiseaseService diseaseService;
+  // counter to what intellij is telling me these last two mocks are used / necessary
+  @Mock private ResultUploadErrorRepository errorRepoMock;
+  @Mock private UploadDiseaseDetailsRepository uploadDiseaseDetailsRepository;
   @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()
@@ -398,222 +395,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesEscapedCommas_inPatientAndAOEValues() throws Exception {
-    // GIVEN
-    InputStream input =
-        loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
-    setup_testResultsUpload_withEscapedCommas();
-    var tokenResponse = new TokenResponse();
-    tokenResponse.setAccessToken("fake-rs-access-token");
-
-    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
-        .thenReturn("fake-rs-sender-token");
-    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
-    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
-        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
-    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-
-    // WHEN
-    sut.processResultCSV(input);
-
-    // THEN
-    //    TestResultRow row = getRowFromUpload(dataHubMock);
-
-    //    assertThat(row.getPatientId().getValue()).isEqualTo("1234");
-    //    assertThat(row.getPatientLastName().getValue()).isEqualTo("Doe");
-    //    assertThat(row.getPatientFirstName().getValue()).isEqualTo("Jane");
-    //    assertThat(row.getPatientMiddleName().getValue()).isEmpty();
-    //    assertThat(row.getPatientStreet().getValue()).isEqualTo("123 Main St");
-    //    assertThat(row.getPatientStreet2().getValue()).isEmpty();
-    //    assertThat(row.getPatientCity().getValue()).isEqualTo("Birmingham");
-    //    assertThat(row.getPatientState().getValue()).isEqualTo("AL");
-    //    assertThat(row.getPatientZipCode().getValue()).isEqualTo("35226");
-    //    assertThat(row.getPatientCounty().getValue()).isEqualTo("Jefferson");
-    //    assertThat(row.getPatientPhoneNumber().getValue()).isEqualTo("205-999-2800");
-    //    assertThat(row.getPatientDob().getValue()).isEqualTo("1/20/1962");
-    //    assertThat(row.getPatientGender().getValue()).isEqualTo("F");
-    //    assertThat(row.getPatientRace().getValue()).isEqualTo("White");
-    //    assertThat(row.getPatientEthnicity().getValue()).isEqualTo("Not Hispanic or Latino");
-    //    assertThat(row.getPatientPreferredLanguage().getValue()).isEmpty();
-    //    assertThat(row.getPatientEmail().getValue()).isEmpty();
-    //
-    //    assertThat(row.getPregnant().getValue()).isEqualTo("N");
-    //    assertThat(row.getEmployedInHealthcare().getValue()).isEqualTo("N");
-    //    assertThat(row.getSymptomaticForDisease().getValue()).isEqualTo("N");
-    //    assertThat(row.getIllnessOnsetDate().getValue()).isEmpty();
-    //    assertThat(row.getResidentCongregateSetting().getValue()).isEqualTo("N");
-    //    assertThat(row.getResidenceType().getValue()).isEmpty();
-    //    assertThat(row.getHospitalized().getValue()).isEqualTo("N");
-  }
-
-  @Test
-  @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesEscapedCommas_inTestResultValues() throws Exception {
-    // GIVEN
-    InputStream input =
-        loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
-    setup_testResultsUpload_withEscapedCommas();
-    var tokenResponse = new TokenResponse();
-    tokenResponse.setAccessToken("fake-rs-access-token");
-
-    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
-        .thenReturn("fake-rs-sender-token");
-    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
-    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
-        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
-    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-
-    // WHEN
-    sut.processResultCSV(input);
-
-    // THEN
-    //    TestResultRow row = getRowFromUpload(dataHubMock);
-    //
-    //    assertThat(row.getAccessionNumber().getValue()).isEqualTo("123");
-    //    assertThat(row.getEquipmentModelName().getValue()).isEqualTo("ID NOW");
-    //    assertThat(row.getTestPerformedCode().getValue()).isEqualTo("94534-5");
-    //    assertThat(row.getTestResult().getValue()).isEqualTo("Detected");
-    //    assertThat(row.getOrderTestDate().getValue()).isEqualTo("2021-12-20T04:00-08:00");
-    //
-    // assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo("2021-12-21T14:00-05:00");
-    //    assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
-    //        .isEqualTo("2021-12-22T14:00-05:00");
-    //    assertThat(row.getTestResultDate().getValue()).isEqualTo("2021-12-23T14:00-08:00");
-    //    assertThat(row.getDateResultReleased().getValue()).isEqualTo("2021-12-24T14:00-05:00");
-    //    assertThat(row.getSpecimenType().getValue()).isEqualTo("000111222");
-    //    assertThat(row.getComment().getValue()).isEqualTo("Test Comment");
-    //    assertThat(row.getTestResultStatus().getValue()).isEqualTo("F");
-  }
-
-  @Test
-  @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesEscapedCommas_inTestingLabValues() throws Exception {
-    // GIVEN
-    InputStream input =
-        loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
-    setup_testResultsUpload_withEscapedCommas();
-    var tokenResponse = new TokenResponse();
-    tokenResponse.setAccessToken("fake-rs-access-token");
-
-    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
-        .thenReturn("fake-rs-sender-token");
-    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
-    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
-        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
-    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-
-    // WHEN
-    sut.processResultCSV(input);
-
-    // THEN
-    //    TestResultRow row = getRowFromUpload(dataHubMock);
-    //
-    //    assertThat(row.getTestingLabClia().getValue()).isEqualTo("01D1058442");
-    //    assertThat(row.getTestingLabName().getValue()).isEqualTo("My Testing Lab, Downtown
-    // Office");
-    //    assertThat(row.getTestingLabStreet().getValue()).isEqualTo("300 North Street");
-    //    assertThat(row.getTestingLabStreet2().getValue()).isEmpty();
-    //    assertThat(row.getTestingLabCity().getValue()).isEqualTo("Birmingham");
-    //    assertThat(row.getTestingLabState().getValue()).isEqualTo("AL");
-    //    assertThat(row.getTestingLabZipCode().getValue()).isEqualTo("35228");
-    //    assertThat(row.getTestingLabPhoneNumber().getValue()).isEqualTo("205-888-2000");
-  }
-
-  @Test
-  @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_handlesDefaultDateTimeZone_withValidOrderingProviderAddress()
-      throws Exception {
-    // GIVEN
-    ZoneId zoneId = ZoneId.of("US/Pacific");
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
-    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
-    var tokenResponse = new TokenResponse();
-    tokenResponse.setAccessToken("fake-rs-access-token");
-
-    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
-        .thenReturn("fake-rs-sender-token");
-    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
-    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
-        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
-    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
-    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
-        .thenReturn(Map.of("nasal swab", "000111222"));
-    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
-    StreetAddress providerAddress =
-        new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
-    when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress)).thenReturn(zoneId);
-    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
-
-    // WHEN
-    sut.processResultCSV(input);
-
-    // THEN
-    //    TestResultRow row = getRowFromUpload(dataHubMock);
-    String expectedTestResultDateTime =
-        ZonedDateTime.of(2021, 12, 23, 12, 0, 0, 0, zoneId).toOffsetDateTime().toString();
-    String expectedOrderTestDateTime =
-        ZonedDateTime.of(2021, 12, 20, 12, 0, 0, 0, zoneId).toOffsetDateTime().toString();
-    //    assertThat(row.getTestResultDate().getValue()).isEqualTo(expectedTestResultDateTime);
-    //    assertThat(row.getOrderTestDate().getValue()).isEqualTo(expectedOrderTestDateTime);
-    //
-    // assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo(expectedOrderTestDateTime);
-    //    assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
-    //        .isEqualTo(expectedOrderTestDateTime);
-    //    assertThat(row.getDateResultReleased().getValue()).isEqualTo(expectedTestResultDateTime);
-  }
-
-  @Test
-  @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_defaultsToEasternTimeZone_withInvalidOrderingProviderAddress()
-      throws Exception {
-    // GIVEN
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-default-dates.csv");
-    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
-    var tokenResponse = new TokenResponse();
-    tokenResponse.setAccessToken("fake-rs-access-token");
-
-    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
-        .thenReturn("fake-rs-sender-token");
-    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
-    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
-        .thenReturn(new FHIRBundleRecord(List.of("a", "b", "c"), new HashMap<>()));
-    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
-    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
-        .thenReturn(Map.of("nasal swab", "000111222"));
-    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
-    StreetAddress providerAddress =
-        new StreetAddress("400 Main Street", "", "Hayward", "CA", "94540", null);
-    when(resultsUploaderCachingServiceMock.getZoneIdByAddress(providerAddress)).thenReturn(null);
-    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
-
-    // WHEN
-    sut.processResultCSV(input);
-
-    // THEN
-    //    TestResultRow row = getRowFromUpload(dataHubMock);
-    String expectedTestResultDateTime =
-        ZonedDateTime.of(2021, 12, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"))
-            .toOffsetDateTime()
-            .toString();
-    String expectedOrderTestDateTime =
-        ZonedDateTime.of(2021, 12, 20, 12, 0, 0, 0, ZoneId.of("US/Eastern"))
-            .toOffsetDateTime()
-            .toString();
-    //    assertThat(row.getTestResultDate().getValue()).isEqualTo(expectedTestResultDateTime);
-    //    assertThat(row.getOrderTestDate().getValue()).isEqualTo(expectedOrderTestDateTime);
-    //
-    // assertThat(row.getSpecimenCollectionDate().getValue()).isEqualTo(expectedOrderTestDateTime);
-    //    assertThat(row.getTestingLabSpecimenReceivedDate().getValue())
-    //        .isEqualTo(expectedOrderTestDateTime);
-    //    assertThat(row.getDateResultReleased().getValue()).isEqualTo(expectedTestResultDateTime);
-  }
-
-  @Test
-  @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_processCsv_only_submit_fhir_when_flu_only_csv() throws Exception {
     // GIVEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
@@ -655,15 +436,5 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     response.setErrors(new FeedbackMessage[] {});
     response.setWarnings(new FeedbackMessage[] {});
     return response;
-  }
-
-  void setup_testResultsUpload_withEscapedCommas() {
-    //    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
-    //    when(dataHubMock.uploadCSV(any())).thenReturn(successfulResponse);
-    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
-        .thenReturn(Map.of("nasal swab", "000111222"));
-    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
-    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
   }
 }
