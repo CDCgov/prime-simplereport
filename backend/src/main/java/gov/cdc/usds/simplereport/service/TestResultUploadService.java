@@ -157,13 +157,13 @@ public class TestResultUploadService {
         CompletableFuture<UniversalSubmissionSummary> universalSubmission =
             submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
 
-        var covidCsvContent = transformAndExtractCovidCsvContent(content);
-
-        if (covidCsvContent.length != 0) {
-          CompletableFuture<CovidSubmissionSummary> covidSubmission =
-              submitResultsToCovidPipeline(covidCsvContent, org, submissionId);
-          processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
-        }
+        //        var covidCsvContent = transformAndExtractCovidCsvContent(content);
+        //
+        //        if (covidCsvContent.length != 0) {
+        //          CompletableFuture<CovidSubmissionSummary> covidSubmission =
+        //              submitResultsToCovidPipeline(covidCsvContent, org, submissionId);
+        //          processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
+        //        }
 
         processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
       }
