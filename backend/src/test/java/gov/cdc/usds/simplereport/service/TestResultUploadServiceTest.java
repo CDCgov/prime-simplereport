@@ -201,7 +201,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
-    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
 
     // when
@@ -247,7 +246,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
-    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
 
     // when
@@ -306,7 +304,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
         .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
-    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
 
     // when

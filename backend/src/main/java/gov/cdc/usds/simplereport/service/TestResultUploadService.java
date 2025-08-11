@@ -1,35 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.EQUIPMENT_MODEL_NAME;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.GENDERS_OF_SEXUAL_PARTNERS;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_CITY;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_NAME;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_PHONE_NUMBER;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_STATE;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_STREET;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_STREET2;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.ORDERING_FACILITY_ZIP_CODE;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.SYPHILIS_HISTORY;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_CITY;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_NAME;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_PHONE_NUMBER;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_STATE;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_STREET;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_STREET2;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_LAB_ZIP_CODE;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TEST_PERFORMED_CODE;
 import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
@@ -44,7 +19,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.CovidSubmissionSummary;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UniversalSubmissionSummary;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
@@ -61,13 +35,11 @@ import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -76,7 +48,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -157,14 +128,6 @@ public class TestResultUploadService {
         CompletableFuture<UniversalSubmissionSummary> universalSubmission =
             submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
 
-        //        var covidCsvContent = transformAndExtractCovidCsvContent(content);
-        //
-        //        if (covidCsvContent.length != 0) {
-        //          CompletableFuture<CovidSubmissionSummary> covidSubmission =
-        //              submitResultsToCovidPipeline(covidCsvContent, org, submissionId);
-        //          processCovidPipelineResponse(covidSubmission).ifPresent(uploadSummary::add);
-        //        }
-
         processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
@@ -190,147 +153,6 @@ public class TestResultUploadService {
     }
 
     return Optional.empty();
-  }
-
-  private byte[] transformAndExtractCovidCsvContent(byte[] content) {
-    List<Map<String, String>> extractedCovidRows = new ArrayList<>();
-    final MappingIterator<Map<String, String>> valueIterator =
-        getIteratorForCsv(new ByteArrayInputStream(content));
-    while (valueIterator.hasNext()) {
-      final Map<String, String> row;
-      row = getNextRow(valueIterator);
-
-      if (isCovidResult(row)) {
-        extractedCovidRows.add(transformCsvRow(row));
-      }
-    }
-
-    if (extractedCovidRows.isEmpty()) {
-      return new byte[0];
-    }
-
-    var headers =
-        extractedCovidRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
-    var csvMapper =
-        new CsvMapper()
-            .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
-            .writerFor(List.class)
-            .with(
-                CsvSchema.builder()
-                    .setUseHeader(true)
-                    .addColumns(headers, CsvSchema.ColumnType.STRING)
-                    .build());
-    String csvCovidContent;
-    try {
-      csvCovidContent = csvMapper.writeValueAsString(extractedCovidRows);
-    } catch (JsonProcessingException e) {
-      throw new CsvProcessingException("Error writing transformed Covid csv rows");
-    }
-
-    return csvCovidContent.getBytes(StandardCharsets.UTF_8);
-  }
-
-  private boolean isCovidResult(Map<String, String> row) {
-    String equipmentModelName = row.get(EQUIPMENT_MODEL_NAME);
-    String testPerformedCode = row.get(TEST_PERFORMED_CODE);
-    return resultsUploaderCachingService
-        .getCovidEquipmentModelAndTestPerformedCodeSet()
-        .contains(ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
-  }
-
-  private Map<String, String> transformCsvRow(Map<String, String> row) {
-
-    if (!"P".equals(processingModeCodeValue)
-        && !row.containsKey(PROCESSING_MODE_CODE_COLUMN_NAME)) {
-      row.put(PROCESSING_MODE_CODE_COLUMN_NAME, processingModeCodeValue);
-    }
-
-    var updatedSpecimenType =
-        modifyRowSpecimenNameToSNOMED(row.get(SPECIMEN_TYPE_COLUMN_NAME).toLowerCase());
-
-    var providerAddress =
-        new StreetAddress(
-            row.get("ordering_provider_street"),
-            row.get("ordering_provider_street2"),
-            row.get("ordering_provider_city"),
-            row.get("ordering_provider_state"),
-            row.get("ordering_provider_zip_code"),
-            null);
-
-    var testResultDate =
-        convertToZonedDateTime(
-            row.get(TEST_RESULT_DATE_COLUMN_NAME), resultsUploaderCachingService, providerAddress);
-
-    var orderTestDate =
-        convertToZonedDateTime(
-            row.get(ORDER_TEST_DATE_COLUMN_NAME), resultsUploaderCachingService, providerAddress);
-
-    var specimenCollectionDate =
-        StringUtils.isNotBlank(row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME))
-            ? convertToZonedDateTime(
-                row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME),
-                resultsUploaderCachingService,
-                providerAddress)
-            : orderTestDate;
-
-    var testingLabSpecimenReceivedDate =
-        StringUtils.isNotBlank(row.get(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME))
-            ? convertToZonedDateTime(
-                row.get(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME),
-                resultsUploaderCachingService,
-                providerAddress)
-            : orderTestDate;
-
-    var dateResultReleased =
-        StringUtils.isNotBlank(row.get(DATE_RESULT_RELEASED_COLUMN_NAME))
-            ? convertToZonedDateTime(
-                row.get(DATE_RESULT_RELEASED_COLUMN_NAME),
-                resultsUploaderCachingService,
-                providerAddress)
-            : testResultDate;
-
-    addOrderingFacilityValues(row);
-
-    row.put(SPECIMEN_TYPE_COLUMN_NAME, updatedSpecimenType);
-    row.put(TEST_RESULT_DATE_COLUMN_NAME, testResultDate.toOffsetDateTime().toString());
-    row.put(ORDER_TEST_DATE_COLUMN_NAME, orderTestDate.toOffsetDateTime().toString());
-    row.put(
-        SPECIMEN_COLLECTION_DATE_COLUMN_NAME, specimenCollectionDate.toOffsetDateTime().toString());
-    row.put(
-        TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME,
-        testingLabSpecimenReceivedDate.toOffsetDateTime().toString());
-    row.put(DATE_RESULT_RELEASED_COLUMN_NAME, dateResultReleased.toOffsetDateTime().toString());
-
-    row.remove(GENDERS_OF_SEXUAL_PARTNERS);
-    row.remove(SYPHILIS_HISTORY);
-
-    return row;
-  }
-
-  private String modifyRowSpecimenNameToSNOMED(String specimenTypeName) {
-    var snomedMap = resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap();
-    if (specimenTypeName.matches(ALPHABET_REGEX)) {
-      return snomedMap.get(specimenTypeName);
-    }
-    return specimenTypeName;
-  }
-
-  private void addOrderingFacilityValues(Map<String, String> row) {
-    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_NAME, TESTING_LAB_NAME);
-    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_STREET, TESTING_LAB_STREET);
-    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_STREET2, TESTING_LAB_STREET2);
-    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_CITY, TESTING_LAB_CITY);
-    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_STATE, TESTING_LAB_STATE);
-    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_ZIP_CODE, TESTING_LAB_ZIP_CODE);
-    setColumnValueForRowOrSetDefault(row, ORDERING_FACILITY_PHONE_NUMBER, TESTING_LAB_PHONE_NUMBER);
-  }
-
-  private void setColumnValueForRowOrSetDefault(
-      Map<String, String> row, String desiredColumnName, String defaultColumnName) {
-    String desiredColValue = row.get(desiredColumnName);
-    row.put(
-        desiredColumnName,
-        StringUtils.isNotBlank(desiredColValue) ? desiredColValue : row.get(defaultColumnName));
   }
 
   public Page<TestResultUpload> getUploadSubmissions(
