@@ -56,7 +56,8 @@ class AzureStorageQueueTestEventReportingServiceTest
         assertThrows(
             TestEventSerializationFailureException.class,
             () -> sut.report(invalidTestEventWithNoResults));
-    assertTrue(caught.getMessage().contains("TestEvent failed to serialize with UUID null"));
+    assertTrue(
+        caught.getMessage().contains("TestEvent failed to serialize for Covid with UUID null"));
   }
 
   @Test
