@@ -17,8 +17,12 @@ public class TestEventSerializationFailureException extends RuntimeException
 
   private static final long serialVersionUID = 1L;
 
-  public TestEventSerializationFailureException(UUID testEventId, String e) {
-    super(String.format("TestEvent failed to serialize with UUID %s: %s", testEventId, e));
+  public TestEventSerializationFailureException(
+      UUID testEventId, String e, String reportingQueueName) {
+    super(
+        String.format(
+            "TestEvent failed to serialize for %s with UUID %s: %s",
+            reportingQueueName, testEventId, e));
   }
 
   @Override // should-be-defaulted unused interface method

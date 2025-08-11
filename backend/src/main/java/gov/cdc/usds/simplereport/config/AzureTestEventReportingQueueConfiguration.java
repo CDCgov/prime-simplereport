@@ -3,17 +3,22 @@ package gov.cdc.usds.simplereport.config;
 import static gov.cdc.usds.simplereport.config.BeanProfiles.PROD;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.hl7v2.HL7Exception;
+import ca.uhn.hl7v2.HapiContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.api.converter.HL7Converter;
+import gov.cdc.usds.simplereport.api.converter.HapiContextProvider;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
+import gov.cdc.usds.simplereport.service.AzureStorageQueueHL7ReportingService;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import java.util.concurrent.CompletableFuture;
@@ -55,9 +60,28 @@ class AzureTestEventReportingQueueConfiguration {
         context, queueClient, gitProperties, fhirConverter);
   }
 
+  @Bean("hl7QueueReportingService")
+  @ConditionalOnProperty(
+      value = "simple-report.azure-reporting-queue.hl7-queue-enabled",
+      havingValue = "true")
+  TestEventReportingService hl7QueueReportingService(
+      HapiContext hapiContext,
+      @Qualifier("hl7QueueClient") QueueAsyncClient queueClient,
+      GitProperties gitProperties,
+      HL7Converter hl7Converter) {
+    log.info("Configured for queue={}", queueClient.getQueueName());
+    return new AzureStorageQueueHL7ReportingService(
+        hapiContext, queueClient, gitProperties, hl7Converter);
+  }
+
   @Bean
   FhirContext fhirContext() {
     return FhirContextProvider.get();
+  }
+
+  @Bean
+  HapiContext hapiContext() {
+    return HapiContextProvider.get();
   }
 
   @Profile(PROD)
@@ -80,6 +104,18 @@ class AzureTestEventReportingQueueConfiguration {
         .build();
   }
 
+  @Profile(PROD)
+  @Bean(name = "hl7QueueReportingService")
+  @ConditionalOnMissingBean(name = "hl7QueueReportingService")
+  TestEventReportingService noOpHL7ReportingService(
+      HapiContext hapiContext, GitProperties gitProperties, HL7Converter hl7Converter) {
+    return NoOpHL7ReportingService.builder()
+        .hapiContext(hapiContext)
+        .gitProperties(gitProperties)
+        .hl7Converter(hl7Converter)
+        .build();
+  }
+
   @Profile("!" + PROD)
   @Primary
   @Bean(name = "csvQueueReportingService")
@@ -97,6 +133,19 @@ class AzureTestEventReportingQueueConfiguration {
         .fhirContext(context)
         .gitProperties(gitProperties)
         .fhirConverter(fhirConverter)
+        .printSerializedTestEvent(true)
+        .build();
+  }
+
+  @Profile("!" + PROD)
+  @Bean(name = "hl7QueueReportingService")
+  @ConditionalOnMissingBean(name = "hl7QueueReportingService")
+  TestEventReportingService noOpDebugHL7ReportingService(
+      HapiContext hapiContext, GitProperties gitProperties, HL7Converter hl7Converter) {
+    return NoOpHL7ReportingService.builder()
+        .hapiContext(hapiContext)
+        .gitProperties(gitProperties)
+        .hl7Converter(hl7Converter)
         .printSerializedTestEvent(true)
         .build();
   }
@@ -123,6 +172,17 @@ class AzureTestEventReportingQueueConfiguration {
         .buildAsyncClient();
   }
 
+  @Bean("hl7QueueClient")
+  @ConditionalOnProperty(
+      value = "simple-report.azure-reporting-queue.hl7-queue-enabled",
+      havingValue = "true")
+  QueueAsyncClient hl7QueueServiceAsyncClient(AzureStorageQueueReportingProperties properties) {
+    return new QueueClientBuilder()
+        .connectionString(properties.getConnectionString())
+        .queueName(properties.getHl7QueueName())
+        .buildAsyncClient();
+  }
+
   @Builder
   static class NoOpCovidReportingService implements TestEventReportingService {
 
@@ -145,7 +205,8 @@ class AzureTestEventReportingQueueConfiguration {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(new TestEventExport(testEvent));
       } catch (JsonProcessingException e) {
-        throw new TestEventSerializationFailureException(testEvent.getInternalId(), e.getMessage());
+        throw new TestEventSerializationFailureException(
+            testEvent.getInternalId(), e.getMessage(), "Covid");
       }
     }
   }
@@ -175,6 +236,39 @@ class AzureTestEventReportingQueueConfiguration {
       return fhirContext
           .newJsonParser()
           .encodeResourceToString(fhirConverter.createFhirBundle(testEvent, gitProperties, "P"));
+    }
+  }
+
+  @Builder
+  static class NoOpHL7ReportingService implements TestEventReportingService {
+
+    @Builder.Default private boolean printSerializedTestEvent = false;
+
+    private HapiContext hapiContext;
+    private GitProperties gitProperties;
+    private HL7Converter hl7Converter;
+
+    @Override
+    public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
+      log.warn(
+          "No HL7 TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
+          testEvent.getInternalId());
+
+      if (printSerializedTestEvent) {
+        log.info("TestEvent converted to HL7 as: {}", toHl7Message(testEvent));
+      }
+      return CompletableFuture.completedFuture(null);
+    }
+
+    private String toHl7Message(TestEvent testEvent) {
+      try {
+        return hapiContext
+            .getPipeParser()
+            .encode(hl7Converter.createLabReportMessage(testEvent, gitProperties, "P"));
+      } catch (HL7Exception e) {
+        throw new TestEventSerializationFailureException(
+            testEvent.getInternalId(), e.getMessage(), "HL7");
+      }
     }
   }
 }
