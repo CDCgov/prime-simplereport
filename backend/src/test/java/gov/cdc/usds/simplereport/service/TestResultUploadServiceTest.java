@@ -62,7 +62,6 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
@@ -86,7 +85,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @BeforeEach()
   public void init() {
     initSampleData();
-    ReflectionTestUtils.setField(sut, "processingModeCodeValue", "P");
   }
 
   @Test
