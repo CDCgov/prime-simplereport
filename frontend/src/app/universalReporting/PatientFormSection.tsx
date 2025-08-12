@@ -44,7 +44,7 @@ const PatientFormSection = ({
   );
 
   return (
-    <div id="patientFormSection" data-testid={"patientFormSection"}>
+    <div id="patientFormSection" data-testid="patientFormSection">
       <div className="grid-row margin-bottom-30">
         <div className="grid-col-auto">
           <h3 className={" margin-bottom-0 margin-top-1"}>

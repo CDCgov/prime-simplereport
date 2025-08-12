@@ -81,7 +81,7 @@ describe("LabReportForm Stepper", () => {
     expect(currentStep).toHaveTextContent("Facility information");
   });
 
-  test("allows clicking to change step", () => {
+  test("allows clicking to change step", async () => {
     renderWithUser([]);
 
     const stepIndicator = screen.getByTestId("step-indicator");
@@ -96,7 +96,7 @@ describe("LabReportForm Stepper", () => {
     const patientStep = within(stepIndicator).getByText("Patient information");
     fireEvent.click(patientStep);
     expect(currentStep).toHaveTextContent("Patient information");
-    confirmPatientFormSectionFieldNames();
+    await confirmPatientFormSectionFieldNames();
 
     const facilityStep = within(stepIndicator).getByText(
       "Facility information"
@@ -105,9 +105,80 @@ describe("LabReportForm Stepper", () => {
     expect(currentStep).toHaveTextContent("Facility information");
   });
 
-  const confirmPatientFormSectionFieldNames = () => {
+  const confirmPatientFormSectionFieldNames = async () => {
     const patientFormSection = screen.getByTestId("patientFormSection");
-    expect(patientFormSection).toHaveTextContent("Patient identifiers");
+    const allInputs = within(patientFormSection).getAllByRole("textbox");
+    expect(allInputs).toHaveLength(11);
+
+    const firstNameInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-first-name"
+    )[0];
+    const middleNameInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-middle-name"
+    )[0];
+    const lastNameInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-last-name"
+    )[0];
+    const patientIdInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-id"
+    )[0];
+    const streetOneInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-street-one"
+    )[0];
+    const streetTwoInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-street-two"
+    )[0];
+    const cityInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-city"
+    )[0];
+    const countyInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-county"
+    )[0];
+    const zipCodeInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-zip-code"
+    )[0];
+    const phoneInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-phone"
+    )[0];
+    const emailInput = allInputs.filter(
+      (input) => input.getAttribute("name") === "patient-email"
+    )[0];
+
+    await userEvent.click(firstNameInput);
+    await userEvent.keyboard("Firstly");
+    await userEvent.click(middleNameInput);
+    await userEvent.keyboard("Middleton");
+    await userEvent.click(lastNameInput);
+    await userEvent.keyboard("Lastly");
+    await userEvent.click(patientIdInput);
+    await userEvent.keyboard("My Custom Id");
+    await userEvent.click(streetOneInput);
+    await userEvent.keyboard("My Street 1");
+    await userEvent.click(streetTwoInput);
+    await userEvent.keyboard("My Street 2");
+    await userEvent.click(cityInput);
+    await userEvent.keyboard("Baltimore");
+    await userEvent.click(countyInput);
+    await userEvent.keyboard("Fulton");
+    await userEvent.click(zipCodeInput);
+    await userEvent.keyboard("30319");
+    await userEvent.click(phoneInput);
+    await userEvent.keyboard("555-555-5555");
+    await userEvent.click(emailInput);
+    await userEvent.keyboard("fakeemail@example.com");
+
+    expect(firstNameInput).toHaveValue("Firstly");
+    expect(middleNameInput).toHaveValue("Middleton");
+    expect(lastNameInput).toHaveValue("Lastly");
+    expect(patientIdInput).toHaveValue("My Custom Id");
+    expect(streetOneInput).toHaveValue("My Street 1");
+    expect(streetTwoInput).toHaveValue("My Street 2");
+    expect(cityInput).toHaveValue("Baltimore");
+    expect(countyInput).toHaveValue("Fulton");
+    expect(zipCodeInput).toHaveValue("30319");
+    expect(phoneInput).toHaveValue("555-555-5555");
+    expect(emailInput).toHaveValue("fakeemail@example.com");
+
     expect(patientFormSection).toHaveTextContent("First name");
     expect(patientFormSection).toHaveTextContent("Middle name (optional)");
     expect(patientFormSection).toHaveTextContent("Last name");
