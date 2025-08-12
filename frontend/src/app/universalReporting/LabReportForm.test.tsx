@@ -103,6 +103,9 @@ describe("LabReportForm Stepper", () => {
     );
     fireEvent.click(facilityStep);
     expect(currentStep).toHaveTextContent("Facility information");
+
+    fireEvent.click(patientStep);
+    await confirmPatientFormFieldNamesSaved();
   });
 
   const confirmPatientFormSectionFieldNames = async () => {
@@ -247,5 +250,59 @@ describe("LabReportForm Stepper", () => {
     expect(patientFormSection).toHaveTextContent("ZIP code");
     expect(patientFormSection).toHaveTextContent("Phone number (optional)");
     expect(patientFormSection).toHaveTextContent("Email address (optional)");
+  };
+
+  const confirmPatientFormFieldNamesSaved = async () => {
+    const patientFormSection = screen.getByTestId("patientFormSection");
+    const textBoxInputs = within(patientFormSection).getAllByRole("textbox");
+    const dropdownInputs = within(patientFormSection).getAllByRole("combobox");
+    expect(textBoxInputs).toHaveLength(11);
+    expect(dropdownInputs).toHaveLength(3);
+
+    const firstNameInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-first-name"
+    )[0];
+    const middleNameInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-middle-name"
+    )[0];
+    const lastNameInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-last-name"
+    )[0];
+    const patientIdInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-id"
+    )[0];
+    const streetOneInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-street-one"
+    )[0];
+    const streetTwoInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-street-two"
+    )[0];
+    const cityInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-city"
+    )[0];
+    const countyInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-county"
+    )[0];
+    const zipCodeInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-zip-code"
+    )[0];
+    const phoneInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-phone"
+    )[0];
+    const emailInput = textBoxInputs.filter(
+      (input) => input.getAttribute("name") === "patient-email"
+    )[0];
+
+    expect(firstNameInput).toHaveValue("Firstly");
+    expect(middleNameInput).toHaveValue("Middleton");
+    expect(lastNameInput).toHaveValue("Lastly");
+    expect(patientIdInput).toHaveValue("My Custom Id");
+    expect(streetOneInput).toHaveValue("My Street 1");
+    expect(streetTwoInput).toHaveValue("My Street 2");
+    expect(cityInput).toHaveValue("Baltimore");
+    expect(countyInput).toHaveValue("Fulton");
+    expect(zipCodeInput).toHaveValue("30319");
+    expect(phoneInput).toHaveValue("555-555-5555");
+    expect(emailInput).toHaveValue("fakeemail@example.com");
   };
 });
