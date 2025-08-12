@@ -1,0 +1,5 @@
+@media (max-width: 768px) {
+  .grid-row {
+    flex-direction: column; /* stack columns in each row for mobile */
+  }
+}

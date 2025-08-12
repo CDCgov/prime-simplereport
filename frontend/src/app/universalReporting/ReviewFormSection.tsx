@@ -169,10 +169,6 @@ const ReviewFormSection = ({
       value: patient.lastName,
     },
     {
-      name: "Suffix",
-      value: patient.suffix,
-    },
-    {
       name: "Patient ID",
       value: patient.patientId,
     },

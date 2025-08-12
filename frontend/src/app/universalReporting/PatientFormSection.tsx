@@ -18,6 +18,8 @@ import {
   stateCodes,
 } from "../../config/constants";
 
+import "./PatientFormSection.scss";
+
 type PatientFormSectionProps = {
   patient: PatientReportInput;
   setPatient: Dispatch<PatientReportInput>;
