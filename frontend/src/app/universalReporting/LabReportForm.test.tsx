@@ -107,42 +107,53 @@ describe("LabReportForm Stepper", () => {
 
   const confirmPatientFormSectionFieldNames = async () => {
     const patientFormSection = screen.getByTestId("patientFormSection");
-    const allInputs = within(patientFormSection).getAllByRole("textbox");
-    expect(allInputs).toHaveLength(11);
+    const textBoxInputs = within(patientFormSection).getAllByRole("textbox");
+    const dropdownInputs = within(patientFormSection).getAllByRole("combobox");
+    expect(textBoxInputs).toHaveLength(11);
+    expect(dropdownInputs).toHaveLength(3);
 
-    const firstNameInput = allInputs.filter(
+    const firstNameInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-first-name"
     )[0];
-    const middleNameInput = allInputs.filter(
+    const middleNameInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-middle-name"
     )[0];
-    const lastNameInput = allInputs.filter(
+    const lastNameInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-last-name"
     )[0];
-    const patientIdInput = allInputs.filter(
+    const patientIdInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-id"
     )[0];
-    const streetOneInput = allInputs.filter(
+    const streetOneInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-street-one"
     )[0];
-    const streetTwoInput = allInputs.filter(
+    const streetTwoInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-street-two"
     )[0];
-    const cityInput = allInputs.filter(
+    const cityInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-city"
     )[0];
-    const countyInput = allInputs.filter(
+    const countyInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-county"
     )[0];
-    const zipCodeInput = allInputs.filter(
+    const zipCodeInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-zip-code"
     )[0];
-    const phoneInput = allInputs.filter(
+    const phoneInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-phone"
     )[0];
-    const emailInput = allInputs.filter(
+    const emailInput = textBoxInputs.filter(
       (input) => input.getAttribute("name") === "patient-email"
     )[0];
+    // const tribalAffiliationDropdown = dropdownInputs.filter(
+    //   (input) => input.getAttribute("id") === "tribal-affiliation"
+    // )[0];
+    // const countryDropdown = dropdownInputs.filter(
+    //   (input) => input.getAttribute("name") === "patient-country"
+    // )[0];
+    // const stateDropdown = dropdownInputs.filter(
+    //   (input) => input.getAttribute("name") === "patient-state"
+    // )[0];
 
     await userEvent.click(firstNameInput);
     await userEvent.keyboard("Firstly");
@@ -166,6 +177,23 @@ describe("LabReportForm Stepper", () => {
     await userEvent.keyboard("555-555-5555");
     await userEvent.click(emailInput);
     await userEvent.keyboard("fakeemail@example.com");
+
+    const femaleRadioOption = screen.getAllByLabelText("Female")[0];
+    expect(femaleRadioOption).not.toBeChecked();
+    await userEvent.click(femaleRadioOption);
+    expect(femaleRadioOption).toBeChecked();
+
+    const nativeRadioOption = screen.getAllByLabelText(
+      "Native Hawaiian/other Pacific Islander"
+    )[0];
+    expect(nativeRadioOption).not.toBeChecked();
+    await userEvent.click(nativeRadioOption);
+    expect(nativeRadioOption).toBeChecked();
+
+    const latinoYesRadioOption = screen.getAllByLabelText("Yes")[0];
+    expect(latinoYesRadioOption).not.toBeChecked();
+    await userEvent.click(latinoYesRadioOption);
+    expect(latinoYesRadioOption).toBeChecked();
 
     expect(firstNameInput).toHaveValue("Firstly");
     expect(middleNameInput).toHaveValue("Middleton");
