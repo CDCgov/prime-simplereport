@@ -36,7 +36,17 @@ public class MultiplexUtils {
         .getKey();
   }
 
-  //
+  /**
+   * Some test devices are configured to support multiple test order LOINCs. For example, a device
+   * may test Covid, Flu A, and Flu B as a multiplex test panel under test order LOINC 12345, but
+   * that same device may also be configured to support testing Covid-only under test order LOINC
+   * 23456. If a single Covid result is entered for such a device, we need to use the LOINC
+   * associated with Covid-only instead of the LOINC associated with the multiplex panel.
+   *
+   * @param deviceTypeDiseases The device type's list of SupportedDiseaseTestPerformed
+   * @param disease The disease we want to filter for
+   * @return The inferred test order LOINC for a single result of this disease
+   */
   public static String inferTestOrderLoincForSingleResult(
       List<DeviceTypeDisease> deviceTypeDiseases, SupportedDisease disease) {
     if (deviceTypeDiseases.isEmpty()) {
