@@ -153,9 +153,6 @@ public class HL7Converter {
     PID patientIdentificationSegment = message.getPATIENT_RESULT().getPATIENT().getPID();
     populatePatientIdentification(patientIdentificationSegment, patientInput);
 
-    if (StringUtils.isBlank(orderId)) {
-      orderId = String.valueOf(uuidGenerator.randomUUID());
-    }
     String specimenId = String.valueOf(uuidGenerator.randomUUID());
 
     if (orderingFacility == null) {
