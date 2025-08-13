@@ -33,3 +33,4 @@ features:
   syphilisEnabled: false
   hivEnabled: false
   universalReportingEnabled: false
+  aimsReportingEnabled: false
