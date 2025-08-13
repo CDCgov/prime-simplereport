@@ -40,6 +40,11 @@ data "azurerm_key_vault_secret" "aims_environment" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "aims_bucket_name" {
+  name         = "aims-outbound-storage-bucket-name-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 data "azurerm_application_insights" "app" {
   name                = "prime-simple-report-${var.environment}-insights"
   resource_group_name = local.resource_group_name

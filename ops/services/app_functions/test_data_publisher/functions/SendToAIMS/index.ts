@@ -32,8 +32,8 @@ function formatInterPartnerFilename(
   const uc = "DatapultELRPivot";
   const sj = "Simple-Report";
   const rj = "AIMSPlatform";
-  const se = env;
-  const re = env;
+  const se = env; //sending environment we could potentially consolidate to one variable
+  const re = env; //recieving environment
   const formattedTimestamp = formatTimestamp(timestamp);
   const stop = "STOP";
 
@@ -154,9 +154,11 @@ export async function SendToAIMS(
           AIMSPlatformSenderMessageId: messageId,
           Base64Encoded: "False",
         };
-
+        //bucket name cannot have a slash in it
+        //aims endpoint  --> secret will get the value of aims-partners-conslidated
+        //aims_user_id --> -----
         const uploadParams = {
-          Bucket: ENV.AIMS_OUTBOUND_ENDPOINT,
+          Bucket: ENV.AIMS_BUCKET_NAME,
           Key: objectKey,
           Body: hl7Message.content,
           Metadata: metadata,

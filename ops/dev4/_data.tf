@@ -300,3 +300,8 @@ data "azurerm_key_vault_secret" "aims_environment" {
   name         = "aims-environment-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
+
+data "azurerm_key_vault_secret" "aims_bucket_name" {
+  name         = "aims-outbound-storage-bucket-name-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}

@@ -23,6 +23,7 @@ export const ENV = (() => {
     AIMS_OUTBOUND_ENDPOINT: "destination endpoint for sending data to AIMS",
     AIMS_USER_ID: "AIMS user ID for S3 object key prefix",
     AIMS_ENVIRONMENT: "AIMS environment (Test or Prod) for filename formatting",
+    AIMS_BUCKET_NAME: "destination endpoint for sending data to AIMS",
   };
   return Object.entries(CONFIG_VALUES).reduce(
     (acc, cur) => {
