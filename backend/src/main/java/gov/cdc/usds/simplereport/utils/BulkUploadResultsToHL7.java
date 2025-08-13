@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.utils;
 
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.APHL_ORG_OID;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
@@ -19,6 +22,10 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -27,6 +34,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -61,6 +70,7 @@ public class BulkUploadResultsToHL7 {
   private final HapiContext hapiContext = HapiContextProvider.get();
   private final Parser parser = hapiContext.getPipeParser();
   private final DateGenerator dateGenerator;
+  private final ResultsUploaderCachingService resultsUploaderCachingService;
   private static final String ENCODING_CHARS = "^~\\&";
 
   @Value("${simple-report.processing-mode-code:P}")
@@ -132,16 +142,36 @@ public class BulkUploadResultsToHL7 {
     return String.join("|", fieldName, String.valueOf(itemCount));
   }
 
-  public String convertToHL7BatchMessage(InputStream csvStream) {
+  public HL7BatchMessage convertToHL7BatchMessage(InputStream csvStream) {
     String batchMessage = "";
     int batchMessageCount = 0;
     HashMap<String, Integer> diseasesReported = new HashMap<>();
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
+    String sendingFacilityNamespaceId = null;
+    String sendingFacilityUniversalId = null;
+
     while (valueIterator.hasNext()) {
       final Map<String, String> row = getNextRow(valueIterator);
       TestResultRow fileRow = new TestResultRow(row);
+
+      if (sendingFacilityNamespaceId == null) {
+        sendingFacilityNamespaceId = fileRow.getTestingLabName().getValue();
+      }
+
+      if (sendingFacilityUniversalId == null) {
+        sendingFacilityUniversalId = fileRow.getTestingLabClia().getValue();
+      }
+
+      Optional<String> disease =
+          getDiseaseFromDeviceSpecs(
+              fileRow.getEquipmentModelName().getValue(),
+              fileRow.getTestPerformedCode().getValue());
+
+      if (disease.isPresent()) {
+        diseasesReported.put(disease.get(), diseasesReported.getOrDefault(disease.get(), 0) + 1);
+      }
 
       var future =
           CompletableFuture.supplyAsync(
@@ -180,18 +210,18 @@ public class BulkUploadResultsToHL7 {
           generateHeaderSegment(
               new HeaderSegmentFields(
                   "FHS",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
+                  "SimpleReport",
+                  SIMPLE_REPORT_ORG_OID,
+                  "ISO",
+                  sendingFacilityNamespaceId,
+                  sendingFacilityUniversalId,
+                  "CLIA",
+                  "APHL",
+                  APHL_ORG_OID,
+                  "ISO",
+                  "APHL",
+                  APHL_ORG_OID,
+                  "ISO",
                   formatToHL7DateTime(dateGenerator.newDate()))));
 
       // BHS
@@ -199,35 +229,35 @@ public class BulkUploadResultsToHL7 {
           generateHeaderSegment(
               new HeaderSegmentFields(
                   "BHS",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
-                  "",
+                  "SimpleReport",
+                  SIMPLE_REPORT_ORG_OID,
+                  "ISO",
+                  sendingFacilityNamespaceId,
+                  sendingFacilityUniversalId,
+                  "CLIA",
+                  "APHL",
+                  APHL_ORG_OID,
+                  "ISO",
+                  "APHL",
+                  APHL_ORG_OID,
+                  "ISO",
                   formatToHL7DateTime(dateGenerator.newDate()))));
 
       // Append test result messages
       parts.add(messages);
 
       // BTS
-      parts.add(generateTrailingSegment("BHS", batchMessageCount));
+      parts.add(generateTrailingSegment("BTS", batchMessageCount));
 
       // FTS
-      parts.add(generateTrailingSegment("FHS", 1));
+      parts.add(generateTrailingSegment("FTS", 1));
 
       batchMessage = String.join("\n", parts);
     } catch (Exception e) {
       log.error("Encountered an error converting CSV to Batch HL7 Message");
     }
 
-    return batchMessage;
+    return new HL7BatchMessage(batchMessage, batchMessageCount, diseasesReported);
   }
 
   private String convertRowToHL7(TestResultRow row) throws HL7Exception {
@@ -351,5 +381,31 @@ public class BulkUploadResultsToHL7 {
                     .atStartOfDay(ZoneId.systemDefault())
                     .toInstant()))
         .build();
+  }
+
+  private Optional<String> getDiseaseFromDeviceSpecs(
+      String equipmentModelName, String testPerformedCode) {
+
+    var matchingDevice =
+        resultsUploaderCachingService
+            .getModelAndTestPerformedCodeToDeviceMap()
+            .get(ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
+
+    if (matchingDevice != null) {
+      List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+          matchingDevice.getSupportedDiseaseTestPerformed().stream()
+              .filter(
+                  disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
+              .toList();
+
+      if (!deviceTypeDiseaseEntries.isEmpty()) {
+        return deviceTypeDiseaseEntries.stream()
+            .findFirst()
+            .map(DeviceTypeDisease::getSupportedDisease)
+            .map(SupportedDisease::getName);
+      }
+    }
+
+    return Optional.ofNullable(diseaseSpecificLoincMap.get(testPerformedCode));
   }
 }

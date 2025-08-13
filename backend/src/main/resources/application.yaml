@@ -196,6 +196,8 @@ aims:
   access-key-id: ${AIMS_ACCESS_KEY_ID}
   secret-access-key: ${AIMS_SECRET_ACCESS_KEY}
   encryption-key: ${AIMS_KMS_ENCRYPTION_KEY}
+  s3-bucket-name: ${AIMS_S3_BUCKET_NAME}
+  user-id: ${AIMS_USER_ID}
   outbound-endpoint: ${AIMS_OUTBOUND_ENDPOINT}
   message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT}
 features:
@@ -206,6 +208,7 @@ features:
   syphilisEnabled: true
   hivEnabled: true
   universalReportingEnabled: true
+  aimsBulkUploadEnabled: false
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}
