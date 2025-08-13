@@ -50,10 +50,13 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
+import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import jakarta.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -156,47 +159,82 @@ public class HL7Converter {
       orderingFacility = performingFacility;
     }
 
-    for (int i = 0; i < testDetailsInputList.size(); i++) {
-      // The ORDER_OBSERVATION group is required and can repeat.
-      // This means that multiple ordered tests may be performed on a specimen.
+    // Since multiple ordered tests may be performed on a specimen, we need to group the test
+    // details based on test order loinc in order to correctly populate the observation
+    // request OBR and its list of observation results OBX.
+    // See page 81, HL7 v2.5.1 IG
+    Map<String, List<TestDetailsInput>> testOrderLoincToTestDetailsMap =
+        mapTestOrderLoincToTestDetails(testDetailsInputList);
+
+    int orderObservationIndex = 0;
+    for (var entry : testOrderLoincToTestDetailsMap.entrySet()) {
+      ORU_R01_ORDER_OBSERVATION orderGroup =
+          message.getPATIENT_RESULT().getORDER_OBSERVATION(orderObservationIndex);
+
+      // The first ORDER_OBSERVATION group must contain an ORC segment (containing ordering facility
+      // information) if no ordering provider information is present in OBR-16 or OBR-17.
       // See page 81, HL7 v2.5.1 IG
-      ORU_R01_ORDER_OBSERVATION orderGroup = message.getPATIENT_RESULT().getORDER_OBSERVATION(i);
+      if (orderObservationIndex == 0) {
+        ORC commonOrder = orderGroup.getORC();
+        populateCommonOrderSegment(commonOrder, orderingFacility, providerInput, orderId);
+      }
 
-      ORC commonOrder = orderGroup.getORC();
-      populateCommonOrderSegment(commonOrder, orderingFacility, providerInput, orderId);
-
-      // "For the first repeat of the OBR segment, the sequence number shall be one (1),
-      //  for the second repeat, the sequence number shall be two (2), etc."
-      //  See page 124, HL7 v2.5.1 IG
-      String sequenceNumber = String.valueOf(i + 1);
-
-      TestDetailsInput testDetail = testDetailsInputList.get(i);
+      // First test detail is picked to get the test order display name
+      // and correction status for OBR
+      TestDetailsInput firstTestDetail = entry.getValue().get(0);
 
       OBR observationRequest = orderGroup.getOBR();
       populateObservationRequest(
           observationRequest,
-          sequenceNumber,
+          orderObservationIndex + 1,
           orderId,
           providerInput,
           specimenInput.getCollectionDate(),
-          testDetail.getTestOrderLoinc(),
-          testDetail.getTestOrderDisplayName(),
-          testDetail.getCorrectionStatus(),
+          entry.getKey(),
+          firstTestDetail.getTestOrderDisplayName(),
+          firstTestDetail.getCorrectionStatus(),
           messageTimestamp);
 
-      OBX observationResult = orderGroup.getOBSERVATION().getOBX();
-      populateObservationResult(
-          observationResult,
-          sequenceNumber,
-          performingFacility,
-          specimenInput.getCollectionDate(),
-          testDetail);
+      // Populate the list of OBX associated with this OBR
+      int observationResultIndex = 0;
+      for (TestDetailsInput testDetail : entry.getValue()) {
+        OBX observationResult = orderGroup.getOBSERVATION(observationResultIndex).getOBX();
+        populateObservationResult(
+            observationResult,
+            observationResultIndex + 1,
+            performingFacility,
+            specimenInput.getCollectionDate(),
+            testDetail);
+        observationResultIndex++;
+      }
 
-      SPM specimen = orderGroup.getSPECIMEN().getSPM();
-      populateSpecimen(specimen, sequenceNumber, specimenId, specimenInput);
+      // Only a single specimen can be associated with the OBR
+      // See page 83, HL7 v2.5.1 IG
+      if (orderObservationIndex == 0) {
+        SPM specimen = orderGroup.getSPECIMEN().getSPM();
+        populateSpecimen(specimen, 1, specimenId, specimenInput);
+      }
+
+      orderObservationIndex++;
     }
 
     return message;
+  }
+
+  private Map<String, List<TestDetailsInput>> mapTestOrderLoincToTestDetails(
+      List<TestDetailsInput> testDetailsInputList) {
+    Map<String, List<TestDetailsInput>> testOrderLoincToTestDetailsMap = new HashMap<>();
+    for (TestDetailsInput testDetail : testDetailsInputList) {
+      String testOrderLoinc = testDetail.getTestOrderLoinc();
+      if (!testOrderLoincToTestDetailsMap.containsKey(testOrderLoinc)) {
+        testOrderLoincToTestDetailsMap.put(
+            testOrderLoinc,
+            testDetailsInputList.stream()
+                .filter(t -> t.getTestOrderLoinc().equals(testOrderLoinc))
+                .toList());
+      }
+    }
+    return testOrderLoincToTestDetailsMap;
   }
 
   /**
@@ -669,7 +707,7 @@ public class HL7Converter {
    */
   void populateObservationRequest(
       OBR observationRequest,
-      String sequenceNumber,
+      int sequenceNumber,
       String orderId,
       ProviderReportInput orderingProvider,
       Date specimenCollectionDate,
@@ -678,7 +716,7 @@ public class HL7Converter {
       String correctionStatus,
       Date messageTimestamp)
       throws DataTypeException {
-    observationRequest.getObr1_SetIDOBR().setValue(sequenceNumber);
+    observationRequest.getObr1_SetIDOBR().setValue(String.valueOf(sequenceNumber));
 
     // OBR-3 must contain the same value as ORC-3 Filler Order Number.
     populateEntityIdentifierOID(observationRequest.getObr3_FillerOrderNumber(), orderId);
@@ -726,12 +764,12 @@ public class HL7Converter {
    */
   void populateObservationResult(
       OBX obx,
-      String sequenceNumber,
+      int sequenceNumber,
       FacilityReportInput performingFacility,
       Date specimenCollectionDate,
       TestDetailsInput testDetail)
       throws DataTypeException, IllegalArgumentException {
-    obx.getObx1_SetIDOBX().setValue(sequenceNumber);
+    obx.getObx1_SetIDOBX().setValue(String.valueOf(sequenceNumber));
 
     CE observationIdentifier = obx.getObx3_ObservationIdentifier();
     observationIdentifier.getCe1_Identifier().setValue(testDetail.getTestPerformedLoinc());
@@ -818,9 +856,9 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateSpecimen(
-      SPM specimen, String sequenceNumber, String specimenId, SpecimenInput specimenInput)
+      SPM specimen, int sequenceNumber, String specimenId, SpecimenInput specimenInput)
       throws DataTypeException {
-    specimen.getSpm1_SetIDSPM().setValue(sequenceNumber);
+    specimen.getSpm1_SetIDSPM().setValue(String.valueOf(sequenceNumber));
 
     populateEntityIdentifierOID(
         specimen.getSpm2_SpecimenID().getEip1_PlacerAssignedIdentifier(), specimenId);
@@ -957,15 +995,37 @@ public class HL7Converter {
     return testEvent.getResults().stream()
         .map(
             result -> {
-              List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+              String testOrderLoinc;
+              if (testEvent.getResults().size() == 1) {
+                testOrderLoinc =
+                    MultiplexUtils.inferTestOrderLoincForSingleResult(
+                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
+                        result.getDisease());
+              } else {
+                testOrderLoinc =
+                    MultiplexUtils.inferMultiplexTestOrderLoinc(
+                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
+              }
+
+              if (StringUtils.isBlank(testOrderLoinc)) {
+                throw new IllegalArgumentException("Inferred test order loinc was blank");
+              }
+
+              DeviceTypeDisease deviceTypeDiseaseFromLoinc =
                   testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
-                      .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
-                      .toList();
-              DeviceTypeDisease deviceTypeDisease =
-                  deviceTypeDiseaseEntries.stream().findFirst().orElse(new DeviceTypeDisease());
+                      .filter(d -> testOrderLoinc.equalsIgnoreCase(d.getTestOrderedLoincCode()))
+                      .filter(d -> d.getSupportedDisease().equals(result.getDisease()))
+                      .findFirst()
+                      .orElse(null);
+
+              if (deviceTypeDiseaseFromLoinc == null) {
+                throw new IllegalArgumentException(
+                    "DeviceTypeDisease from inferred loinc was null");
+              }
+
               return convertToTestDetailsInput(
                   result,
-                  deviceTypeDisease,
+                  deviceTypeDiseaseFromLoinc,
                   testEvent.getDateTested(),
                   testEvent.getCorrectionStatus());
             })
