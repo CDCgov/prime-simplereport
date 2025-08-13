@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -79,6 +80,7 @@ public class TestOrderService {
   private final DiseaseService _diseaseService;
 
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -371,9 +373,11 @@ public class TestOrderService {
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
 
-    applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
-    // TODO: check whether to add feature flag here or just have the queue disabled?
-    applicationEventPublisher.publishEvent(new ReportToAIMSEvent(savedOrder.getTestEvent()));
+    applicationEventPublisher.publishEvent(
+        featureFlagsConfig.isAimsReportingEnabled()
+            ? new ReportToAIMSEvent(savedOrder.getTestEvent())
+            : new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
+
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
@@ -582,9 +586,10 @@ public class TestOrderService {
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
         _testOrderRepo.save(order);
 
-        applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(newRemoveEvent));
-        // TODO: check whether to add feature flag here or just have the queue disabled?
-        applicationEventPublisher.publishEvent(new ReportToAIMSEvent(newRemoveEvent));
+        applicationEventPublisher.publishEvent(
+            featureFlagsConfig.isAimsReportingEnabled()
+                ? new ReportToAIMSEvent(newRemoveEvent)
+                : new ReportTestEventToRSEvent(newRemoveEvent));
 
         return newRemoveEvent;
       }
