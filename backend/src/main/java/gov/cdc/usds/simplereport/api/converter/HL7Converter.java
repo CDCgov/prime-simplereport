@@ -50,13 +50,16 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
-import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import jakarta.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -998,37 +1001,58 @@ public class HL7Converter {
     return testEvent.getResults().stream()
         .map(
             result -> {
-              String testOrderLoinc;
-              if (testEvent.getResults().size() == 1) {
-                testOrderLoinc =
-                    MultiplexUtils.inferTestOrderLoincForSingleResult(
-                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
-                        result.getDisease());
-              } else {
-                testOrderLoinc =
-                    MultiplexUtils.inferMultiplexTestOrderLoinc(
-                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
-              }
-
-              if (StringUtils.isBlank(testOrderLoinc)) {
-                throw new IllegalArgumentException("Inferred test order loinc was blank");
-              }
-
-              DeviceTypeDisease deviceTypeDiseaseFromLoinc =
+              Set<DeviceTypeDisease> matchingDeviceTypeDiseases =
                   testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
-                      .filter(d -> testOrderLoinc.equalsIgnoreCase(d.getTestOrderedLoincCode()))
                       .filter(d -> d.getSupportedDisease().equals(result.getDisease()))
-                      .findFirst()
-                      .orElse(null);
+                      .collect(Collectors.toSet());
 
-              if (deviceTypeDiseaseFromLoinc == null) {
+              DeviceTypeDisease correctTestPerformed = null;
+              if (matchingDeviceTypeDiseases.size() != 1) {
+                // multiple matches for this result, need to infer correct device type disease
+
+                // get count of how many times test ordered LOINC is used for a device
+                HashMap<String, Integer> testOrderedLoincCounts = new HashMap<>();
+                testEvent
+                    .getDeviceType()
+                    .getSupportedDiseaseTestPerformed()
+                    .forEach(
+                        deviceTypeDisease -> {
+                          if (!StringUtils.isBlank(deviceTypeDisease.getTestOrderedLoincCode())) {
+                            testOrderedLoincCounts.merge(
+                                deviceTypeDisease.getTestOrderedLoincCode(), 1, Integer::sum);
+                          }
+                        });
+
+                if (testEvent.getResults().size() == 1) {
+                  // if non-multiplex result, get the device type disease that has the less used
+                  // test
+                  // ordered LOINC
+                  correctTestPerformed =
+                      Collections.min(
+                          matchingDeviceTypeDiseases,
+                          Comparator.comparing(
+                              a -> testOrderedLoincCounts.get(a.getTestOrderedLoincCode())));
+                } else {
+                  // multiplex use case, get the device type disease that has the more frequent test
+                  // ordered loinc
+                  correctTestPerformed =
+                      Collections.max(
+                          matchingDeviceTypeDiseases,
+                          Comparator.comparing(
+                              a -> testOrderedLoincCounts.get(a.getTestOrderedLoincCode())));
+                }
+              } else {
+                correctTestPerformed = matchingDeviceTypeDiseases.stream().findFirst().get();
+              }
+
+              if (correctTestPerformed == null) {
                 throw new IllegalArgumentException(
-                    "DeviceTypeDisease from inferred loinc was null");
+                    "Could not find matching DeviceTypeDisease data for the result");
               }
 
               return convertToTestDetailsInput(
                   result,
-                  deviceTypeDiseaseFromLoinc,
+                  correctTestPerformed,
                   testEvent.getDateTested(),
                   testEvent.getCorrectionStatus());
             })
