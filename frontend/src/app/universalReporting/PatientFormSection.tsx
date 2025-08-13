@@ -55,7 +55,7 @@ const PatientFormSection = ({
         </div>
       </div>
       <div className="grid-row grid-gap margin-top-0">
-        <div className="grid-col-4">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-first-name"}
             type={"text"}
@@ -66,7 +66,7 @@ const PatientFormSection = ({
             value={patient.firstName}
           ></TextInput>
         </div>
-        <div className="grid-col-4">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-middle-name"}
             type={"text"}
@@ -77,7 +77,7 @@ const PatientFormSection = ({
             value={patient.middleName ?? ""}
           ></TextInput>
         </div>
-        <div className="grid-col-4">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-last-name"}
             type={"text"}
@@ -89,8 +89,8 @@ const PatientFormSection = ({
           ></TextInput>
         </div>
       </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-4">
+      <div className="grid-row grid-gap ">
+        <div className="grid-col-mobile grid-col-4">
           <TextInput
             name="patient-date-of-birth"
             type="date"
@@ -106,7 +106,7 @@ const PatientFormSection = ({
             }}
           ></TextInput>
         </div>
-        <div className="grid-col-4">
+        <div className="grid-col-mobile grid-col-4">
           <TextInput
             name={"patient-id"}
             type={"text"}
@@ -163,7 +163,7 @@ const PatientFormSection = ({
         </div>
       </div>
       <div className="grid-row grid-gap margin-top-1">
-        <div className="grid-col-6">
+        <div className="grid-col-6 grid-col-mobile">
           <label className="usa-legend" htmlFor="tribal-affiliation">
             Tribal affiliation (optional)
           </label>
@@ -185,7 +185,7 @@ const PatientFormSection = ({
         </div>
       </div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-6">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-street-one"}
             label={"Street address"}
@@ -193,7 +193,7 @@ const PatientFormSection = ({
             onChange={(e) => setPatient({ ...patient, street: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-6">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-street-two"}
             label={"Apt, suite, etc (optional)"}
@@ -206,7 +206,7 @@ const PatientFormSection = ({
       </div>
       <div className="grid-row grid-gap"></div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-6">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-city"}
             label={"City"}
@@ -214,7 +214,7 @@ const PatientFormSection = ({
             onChange={(e) => setPatient({ ...patient, city: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-6">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-county"}
             label={"County (optional)"}
@@ -224,7 +224,7 @@ const PatientFormSection = ({
         </div>
       </div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-6">
+        <div className="grid-col-mobile grid-col-6">
           <label className="usa-legend" htmlFor="patient-country">
             Country
           </label>
@@ -241,7 +241,7 @@ const PatientFormSection = ({
         </div>
         {(patient.country === "USA" || patient.country === "CAN") && (
           <>
-            <div className="grid-col-3">
+            <div className="grid-col-mobile grid-col-3">
               {patient.country === "USA" && (
                 <div>
                   <label className="usa-legend" htmlFor="patient-state">
@@ -276,7 +276,7 @@ const PatientFormSection = ({
                 </div>
               )}
             </div>
-            <div className="grid-col-3">
+            <div className="grid-col-mobile grid-col-3">
               <TextInput
                 name={"patient-zip-code"}
                 label={"ZIP code"}
@@ -290,7 +290,7 @@ const PatientFormSection = ({
         )}
       </div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-6">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-phone"}
             label={"Phone number (optional)"}
@@ -298,7 +298,7 @@ const PatientFormSection = ({
             onChange={(e) => setPatient({ ...patient, phone: e.target.value })}
           ></TextInput>
         </div>
-        <div className="grid-col-6">
+        <div className="grid-col-fill">
           <TextInput
             name={"patient-email"}
             label={"Email address (optional)"}
