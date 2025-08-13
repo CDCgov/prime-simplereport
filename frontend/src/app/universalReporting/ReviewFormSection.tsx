@@ -169,12 +169,12 @@ const ReviewFormSection = ({
       value: patient.lastName,
     },
     {
-      name: "Patient ID",
-      value: patient.patientId,
-    },
-    {
       name: "Date of birth",
       value: patient.dateOfBirth,
+    },
+    {
+      name: "Patient ID",
+      value: patient.patientId,
     },
     {
       name: "Sex",
@@ -209,6 +209,10 @@ const ReviewFormSection = ({
       value: patient.county,
     },
     {
+      name: "Country",
+      value: patient.country,
+    },
+    {
       name: "State",
       value: patient.state,
     },
@@ -217,11 +221,11 @@ const ReviewFormSection = ({
       value: patient.zipCode,
     },
     {
-      name: "Phone",
+      name: "Phone number",
       value: patient.phone,
     },
     {
-      name: "Email",
+      name: "Email address",
       value: patient.email,
     },
   ];
