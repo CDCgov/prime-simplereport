@@ -71,6 +71,8 @@ module "simple_report_api" {
     AIMS_KMS_ENCRYPTION_KEY                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_kms_encryption_key.id})"
     AIMS_OUTBOUND_ENDPOINT                        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_outbound_storage_endpoint.id})"
     AIMS_MESSAGE_QUEUE_ENDPOINT                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_message_queue_endpoint.id})"
+    AIMS_USER_ID                                  = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_user_id.id})"
+    AIMS_ENVIRONMENT                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_environment.id})"
     # true by default: can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows (and overrides) an identical declaration in application.yaml

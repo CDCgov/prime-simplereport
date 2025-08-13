@@ -54,6 +54,9 @@
       "import/no-commonjs": 0,
       "import/no-named-as-default": 0,
       "no-unused-vars": "off"
+    },
+    "resolutions": {
+      "json-bigint": "^1.0.0"
     }
   }
 }
