@@ -150,7 +150,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
     verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
   }
 
-  @Test // todo: this seems bad (it should fail and it doesn't)
+  @Test
   void CSVUpload_Returns200_WhenFailsUniversalPipelineWith_ParseableFailure() throws Exception {
     var responseFile =
         getClass()
