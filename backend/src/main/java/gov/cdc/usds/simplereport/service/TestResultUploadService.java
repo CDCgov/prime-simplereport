@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
-import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -15,7 +14,6 @@ import gov.cdc.usds.simplereport.db.model.ResultUploadError;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.UploadDiseaseDetails;
-import gov.cdc.usds.simplereport.db.model.auxiliary.CovidSubmissionSummary;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
@@ -44,8 +42,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,7 +59,6 @@ public class TestResultUploadService {
   private final UploadDiseaseDetailsRepository diseaseDetailsRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
-  private final ResultsUploaderCachingService resultsUploaderCachingService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
   private final DiseaseService diseaseService;
@@ -81,21 +76,7 @@ public class TestResultUploadService {
   @Value("${data-hub.jwt-scope}")
   private String scope;
 
-  @Value("${simple-report.processing-mode-code:P}")
-  private String processingModeCodeValue;
-
   private static final int FIVE_MINUTES_MS = 300 * 1000;
-  public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
-  private static final String ORDER_TEST_DATE_COLUMN_NAME = "order_test_date";
-  private static final String SPECIMEN_COLLECTION_DATE_COLUMN_NAME = "specimen_collection_date";
-  private static final String TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME =
-      "testing_lab_specimen_received_date";
-  private static final String TEST_RESULT_DATE_COLUMN_NAME = "test_result_date";
-  private static final String DATE_RESULT_RELEASED_COLUMN_NAME = "date_result_released";
-
-  public static final String SPECIMEN_TYPE_COLUMN_NAME = "specimen_type";
-
-  private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
@@ -218,8 +199,7 @@ public class TestResultUploadService {
               } catch (JsonProcessingException e) {
                 throw new CsvProcessingException("Unable to parse Report Stream response.");
               }
-              log.info(
-                  "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+              log.info("FHIR submitted in {} milliseconds", System.currentTimeMillis() - start);
 
               return new UniversalSubmissionSummary(
                   submissionId, org, response, fhirBundleWithMeta.metadata());
@@ -241,77 +221,6 @@ public class TestResultUploadService {
       }
     } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
       log.error("Error processing FHIR in bulk result upload", e);
-      Thread.currentThread().interrupt();
-      throw e;
-    }
-
-    return Optional.empty();
-  }
-
-  private CompletableFuture<CovidSubmissionSummary> submitResultsToCovidPipeline(
-      byte[] covidCsvContent, Organization org, UUID submissionId) {
-    return CompletableFuture.supplyAsync(
-        withMDC(
-            () -> {
-              long start = System.currentTimeMillis();
-              FutureResult<UploadResponse, Exception> result;
-              try {
-                result =
-                    FutureResult.<UploadResponse, Exception>builder()
-                        .value(_client.uploadCSV(covidCsvContent))
-                        .build();
-              } catch (FeignException e) {
-                log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
-                try {
-                  UploadResponse value = mapper.readValue(e.contentUTF8(), UploadResponse.class);
-                  result = FutureResult.<UploadResponse, Exception>builder().value(value).build();
-
-                } catch (JsonProcessingException ex) {
-                  log.error("Unable to parse Report Stream response.", ex);
-                  result =
-                      FutureResult.<UploadResponse, Exception>builder()
-                          .error(
-                              new DependencyFailureException(
-                                  "Unable to parse Report Stream response."))
-                          .build();
-                }
-              }
-              log.info(
-                  "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
-
-              HashMap<String, Integer> diseaseReported = new HashMap<>();
-
-              if (result.getValue() != null) {
-                diseaseReported.put("COVID-19", result.getValue().getReportItemCount());
-              }
-
-              return new CovidSubmissionSummary(
-                  submissionId, org, result.getValue(), result.getError(), diseaseReported);
-            }));
-  }
-
-  private Optional<TestResultUpload> processCovidPipelineResponse(
-      CompletableFuture<CovidSubmissionSummary> futureSubmissionSummary)
-      throws DependencyFailureException,
-          CsvProcessingException,
-          ExecutionException,
-          InterruptedException {
-    try {
-      CovidSubmissionSummary submissionSummary = futureSubmissionSummary.get();
-      if (submissionSummary.processingException() instanceof DependencyFailureException) {
-        throw (DependencyFailureException) submissionSummary.processingException();
-      }
-
-      if (submissionSummary.submissionResponse() != null) {
-        return saveSubmissionToDb(
-            submissionSummary.submissionResponse(),
-            submissionSummary.org(),
-            submissionSummary.submissionId(),
-            Pipeline.COVID,
-            submissionSummary.reportedDiseases());
-      }
-    } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
-      log.error("Error processing csv in bulk result upload", e);
       Thread.currentThread().interrupt();
       throw e;
     }
@@ -379,13 +288,6 @@ public class TestResultUploadService {
     return Optional.empty();
   }
 
-  @Getter
-  @Builder
-  public static class FutureResult<V, E> {
-    private V value;
-    private E error;
-  }
-
   private UploadResponse uploadBundleAsFhir(List<String> serializedFhirBundles)
       throws JsonProcessingException {
     // build the ndjson request body
@@ -398,7 +300,7 @@ public class TestResultUploadService {
     try {
       response = _client.uploadFhir(ndJson.toString().trim(), getRSAuthToken().getAccessToken());
     } catch (FeignException e) {
-      log.info("RS Fhir API Error " + e.status() + " Response: " + e.contentUTF8());
+      log.info("RS Fhir API Error {} Response: {}", e.status(), e.contentUTF8());
       response = parseFeignException(e);
     }
     return response;

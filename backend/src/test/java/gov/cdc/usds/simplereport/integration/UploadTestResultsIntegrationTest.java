@@ -84,15 +84,6 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
 
     var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
 
-    // reports covid
-    stubFor(
-        WireMock.post(urlEqualTo("/api/reports?processing=async"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(HttpStatus.OK.value())
-                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(mockResponse)));
-
     // gets auth token
     stubFor(
         WireMock.post(urlEqualTo("/api/token"))
@@ -209,21 +200,6 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
 
   @Test
   void CSVUpload_Returns200_WhenSucceedsUniversalPipeline() throws Exception {
-    var responseFile =
-        getClass()
-            .getClassLoader()
-            .getResourceAsStream("responses/datahub-parseable-error-response.json");
-
-    var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
-
-    // submits the FHIR bundles to universal pipeline
-    stubFor(
-        WireMock.post(urlEqualTo("/api/reports?processing=async"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(HttpStatus.BAD_REQUEST.value())
-                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(mockResponse)));
 
     var sampleFhirMessage =
         IOUtils.toString(
@@ -256,9 +232,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   }
 
   @Test
-  void
-      CSVUpload_Returns400_WhenSucceedsToCovidPipelineAndFailsUniversalPipelineWith_UnparseableFailure()
-          throws Exception {
+  void CSVUpload_Returns400_FailsUniversalPipelineWith_UnparseableFailure() throws Exception {
 
     // submits the FHIR bundles to universal pipeline
     stubFor(
