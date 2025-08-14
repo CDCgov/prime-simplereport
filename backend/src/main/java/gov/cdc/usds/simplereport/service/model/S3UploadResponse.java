@@ -1,0 +1,63 @@
+package gov.cdc.usds.simplereport.service.model;
+
+import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import java.util.Date;
+import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class S3UploadResponse implements GenericResponse {
+  private UUID id;
+  private Date timestamp;
+  private int recordsCount;
+  private boolean success;
+  private String errorMessage;
+
+  private UUID generateId(String objectKey, Date timestamp) {
+    return UUID.nameUUIDFromBytes((objectKey + timestamp.getTime()).getBytes());
+  }
+
+  public S3UploadResponse(String objectKey, int recordsCount, boolean success) {
+    this.timestamp = new Date();
+    this.recordsCount = recordsCount;
+    this.id = generateId(objectKey, this.timestamp);
+    this.success = success;
+  }
+
+  public S3UploadResponse(String objectKey, int recordsCount, String errorMessage) {
+    this.timestamp = new Date();
+    this.recordsCount = recordsCount;
+    this.id = generateId(objectKey, this.timestamp);
+    this.success = false;
+    this.errorMessage = errorMessage;
+  }
+
+  public UUID getReportId() {
+    return this.id;
+  }
+
+  public UploadStatus getStatus() {
+    return success ? UploadStatus.SUCCESS : UploadStatus.FAILURE;
+  }
+
+  public Date getCreatedAt() {
+    return this.timestamp;
+  }
+
+  public FeedbackMessage[] getErrors() {
+    if (!success && errorMessage != null) {
+      FeedbackMessage error = new FeedbackMessage();
+      error.setMessage(errorMessage);
+      return new FeedbackMessage[] {error};
+    }
+    return new FeedbackMessage[0];
+  }
+
+  // TODO: Derive some level of warnings from S3 calls
+  public FeedbackMessage[] getWarnings() {
+    return new FeedbackMessage[0];
+  }
+}
