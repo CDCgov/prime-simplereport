@@ -476,7 +476,6 @@ public class TestResultUploadService {
 
                 long elapsed = System.currentTimeMillis() - start;
                 log.info("Uploaded HL7 file {} in {} ms", objectKey, elapsed);
-                System.out.println(hl7Batch.message());
 
                 int statusCode = putResponse.sdkHttpResponse().statusCode();
                 boolean isSuccessful = statusCode == 200;
