@@ -145,17 +145,6 @@ jobs:
         with:
           name: data-publisher-function-coverage
           path: ops/services/app_functions/test_data_publisher/functions/coverage
-  function-tests:
-    # satisfy branch protection checks - to be removed once required checks are updated to use new names
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - shell: bash
-        run: echo "RS function tests have been moved to rs-function-tests job"
   sonar:
     needs: [backend-tests, frontend-tests, rs-function-tests, data-publisher-function-tests]
     runs-on: ubuntu-latest

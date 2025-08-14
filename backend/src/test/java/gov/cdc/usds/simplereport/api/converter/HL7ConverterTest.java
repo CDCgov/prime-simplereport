@@ -1,12 +1,15 @@
 package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithDate;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createSingleCovidTestEventOnMultiplexDevice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.when;
 
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.datatype.CE;
@@ -23,12 +26,16 @@ import ca.uhn.hl7v2.model.v251.segment.PID;
 import ca.uhn.hl7v2.model.v251.segment.SFT;
 import ca.uhn.hl7v2.model.v251.segment.SPM;
 import ca.uhn.hl7v2.parser.Parser;
+import com.github.jknack.handlebars.internal.lang3.StringUtils;
 import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
@@ -50,6 +57,7 @@ import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -71,6 +79,101 @@ class HL7ConverterTest {
     when(gitProperties.getShortCommitId()).thenReturn("1234567");
     when(uuidGenerator.randomUUID()).thenReturn(UUID.fromString(STATIC_RANDOM_UUID));
     when(dateGenerator.newDate()).thenReturn(Date.from(STATIC_INSTANT));
+  }
+
+  @Test
+  void createLabReportMessage_fromTestEvent_valid() throws HL7Exception {
+    Date dateTested = Date.from(LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC));
+    TestEvent testEvent = createMultiplexTestEventWithDate(dateTested);
+
+    TestOrder testOrder = testEvent.getTestOrder();
+    var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
+    ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
+    testOrder.setTestEventRef(testEvent);
+
+    ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
+
+    OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
+    assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("F");
+    assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
+        .isEqualTo("20250701000000.0000+0000");
+
+    Parser parser = hapiContext.getPipeParser();
+    String encodedMessage = parser.encode(message);
+    assertThat(StringUtils.countMatches(encodedMessage, "OBR|")).isEqualTo(1);
+    assertThat(StringUtils.countMatches(encodedMessage, "OBX|")).isEqualTo(3);
+    assertThat(StringUtils.countMatches(encodedMessage, "SPM|")).isEqualTo(1);
+  }
+
+  @Test
+  void createLabReportMessage_fromTestEvent_correctionStatus() throws DataTypeException {
+    Date dateTested = Date.from(LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC));
+    TestEvent originalTestEvent = TestDataBuilder.createMultiplexTestEventWithDate(dateTested);
+    var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
+    ReflectionTestUtils.setField(originalTestEvent, "internalId", testEventId);
+
+    TestOrder originalTestOrder = originalTestEvent.getTestOrder();
+    var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
+    ReflectionTestUtils.setField(originalTestOrder, "internalId", testOrderId);
+    originalTestOrder.setTestEventRef(originalTestEvent);
+
+    Date backdate = Date.from(LocalDate.of(2025, 7, 4).atStartOfDay().toInstant(ZoneOffset.UTC));
+    originalTestOrder.setDateTestedBackdate(backdate);
+
+    TestEvent correctedTestEvent =
+        new TestEvent(originalTestOrder, TestCorrectionStatus.CORRECTED, "Incorrect date");
+    correctedTestEvent.getResults().addAll(originalTestOrder.getResults());
+
+    ORU_R01 message = hl7Converter.createLabReportMessage(correctedTestEvent, gitProperties, "T");
+
+    OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
+    assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("C");
+    assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
+        .isEqualTo("20250704000000.0000+0000");
+  }
+
+  @Test
+  void createLabReportMessage_fromTestEvent_deletionStatus() throws DataTypeException {
+    Date dateTested = Date.from(LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC));
+    TestEvent originalTestEvent = createMultiplexTestEventWithDate(dateTested);
+    var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
+    ReflectionTestUtils.setField(originalTestEvent, "internalId", testEventId);
+
+    TestOrder originalTestOrder = originalTestEvent.getTestOrder();
+    var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
+    ReflectionTestUtils.setField(originalTestOrder, "internalId", testOrderId);
+    originalTestOrder.setTestEventRef(originalTestEvent);
+
+    TestEvent correctedTestEvent =
+        new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Incorrect person");
+    correctedTestEvent.getResults().addAll(originalTestOrder.getResults());
+
+    ORU_R01 message = hl7Converter.createLabReportMessage(correctedTestEvent, gitProperties, "T");
+
+    OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
+    assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("X");
+  }
+
+  @Test
+  void createLabReportMessage_fromTestEvent_singleCovidResult_onMultiplexDevice()
+      throws HL7Exception {
+    Date dateTested = Date.from(LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC));
+    TestEvent testEvent = createSingleCovidTestEventOnMultiplexDevice(dateTested);
+
+    TestOrder testOrder = testEvent.getTestOrder();
+    var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
+    ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
+    testOrder.setTestEventRef(testEvent);
+
+    ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
+
+    OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+    assertThat(obr.getObr4_UniversalServiceIdentifier().getCe1_Identifier().getValue())
+        .isEqualTo("94534-5");
+
+    Parser parser = hapiContext.getPipeParser();
+    String encodedMessage = parser.encode(message);
+    assertThat(StringUtils.countMatches(encodedMessage, "OBX|")).isEqualTo(1);
   }
 
   @Test
@@ -481,7 +584,7 @@ class HL7ConverterTest {
 
     hl7Converter.populateObservationRequest(
         observationRequest,
-        "1",
+        1,
         STATIC_RANDOM_UUID,
         providerInput,
         Date.from(specimenCollectionDate),
@@ -537,7 +640,7 @@ class HL7ConverterTest {
             "");
 
     hl7Converter.populateObservationResult(
-        observationResult, "1", performingFacility, Date.from(specimenCollectionDate), testDetail);
+        observationResult, 1, performingFacility, Date.from(specimenCollectionDate), testDetail);
 
     assertThat(observationResult.getObx3_ObservationIdentifier().getCe1_Identifier().getValue())
         .isEqualTo(testDetail.getTestOrderLoinc());
@@ -582,7 +685,7 @@ class HL7ConverterTest {
             () ->
                 hl7Converter.populateObservationResult(
                     observationResult,
-                    "1",
+                    1,
                     performingFacility,
                     Date.from(STATIC_INSTANT),
                     testDetail));
@@ -612,7 +715,7 @@ class HL7ConverterTest {
             "Body tissue structure",
             "85756007");
 
-    hl7Converter.populateSpecimen(specimen, "1", STATIC_RANDOM_UUID, specimenInput);
+    hl7Converter.populateSpecimen(specimen, 1, STATIC_RANDOM_UUID, specimenInput);
 
     assertThat(
             specimen

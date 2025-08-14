@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "axe-core": "^4.10.3",
-    "cypress-axe": "^1.6.0"
+    "cypress-axe": "^1.6.0",
+    "form-data": "^4.0.4"
   }
 }
