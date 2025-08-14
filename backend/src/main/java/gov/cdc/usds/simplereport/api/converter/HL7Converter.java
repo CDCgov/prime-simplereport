@@ -881,23 +881,26 @@ public class HL7Converter {
     // but the HL7 data set says it "Shall contain a value descending from the SNOMED CT Anatomical
     // Structure (91723000) hierarchy"
 
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe1_Identifier()
-        .setValue(specimenInput.getCollectionBodySiteCode());
+    if (StringUtils.isNotBlank(specimenInput.getCollectionBodySiteCode())
+        && StringUtils.isNotBlank(specimenInput.getCollectionBodySiteName())) {
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe1_Identifier()
+          .setValue(specimenInput.getCollectionBodySiteCode());
 
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe2_Text()
-        .setValue(specimenInput.getCollectionBodySiteName());
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe3_NameOfCodingSystem()
-        .setValue(HL7_SNOMED_CODE_SYSTEM);
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe7_CodingSystemVersionID()
-        .setValue(HL7_SNOMED_CODE_SYSTEM_VERSION_ID);
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe2_Text()
+          .setValue(specimenInput.getCollectionBodySiteName());
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe3_NameOfCodingSystem()
+          .setValue(HL7_SNOMED_CODE_SYSTEM);
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe7_CodingSystemVersionID()
+          .setValue(HL7_SNOMED_CODE_SYSTEM_VERSION_ID);
+    }
 
     specimen
         .getSpm17_SpecimenCollectionDateTime()
