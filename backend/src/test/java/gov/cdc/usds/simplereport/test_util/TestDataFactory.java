@@ -850,4 +850,8 @@ public class TestDataFactory {
   public Specimen createSpecimen(String loincSystemCode, String snomedCode) {
     return createSpecimen(loincSystemCode, "system_display", snomedCode, "snomed_display");
   }
+
+  public ApiUserService getApiUserService() {
+    return apiUserService;
+  }
 }
