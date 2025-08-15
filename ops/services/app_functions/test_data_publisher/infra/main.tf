@@ -90,6 +90,9 @@ resource "azurerm_linux_function_app" "functions" {
     AIMS_SECRET_ACCESS_KEY                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_secret_access_key.id})"
     AIMS_KMS_ENCRYPTION_KEY               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_kms_encryption_key.id})"
     AIMS_OUTBOUND_ENDPOINT                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_outbound_storage_endpoint.id})"
+    AIMS_USER_ID                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_user_id.id})"
+    AIMS_ENVIRONMENT                      = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_environment.id})"
+    AIMS_BUCKET_NAME                      = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_bucket_name.id})"
   }
   lifecycle {
     ignore_changes = [

@@ -1,7 +1,20 @@
 import { InvocationContext, Timer } from "@azure/functions";
 import * as appInsights from "applicationinsights";
 
-import { SendToAIMS } from "./index";
+// Mock config before importing the main module
+jest.mock("../config", () => ({
+  ENV: {
+    AZ_STORAGE_QUEUE_SVC_URL: "https://test.queue.core.windows.net/",
+    AZ_STORAGE_ACCOUNT_NAME: "testaccount",
+    AZ_STORAGE_ACCOUNT_KEY: "testkey",
+    AIMS_ACCESS_KEY_ID: "testkey",
+    AIMS_SECRET_ACCESS_KEY: "testsecret",
+    AIMS_KMS_ENCRYPTION_KEY: "testkmskey",
+    AIMS_OUTBOUND_ENDPOINT: "test-bucket",
+    AIMS_USER_ID: "test-user",
+    AIMS_ENVIRONMENT: "Test",
+  },
+}));
 
 jest.mock("@azure/functions", () => ({
   ...jest.requireActual("@azure/functions"),
@@ -21,21 +34,58 @@ jest.mock(
   })),
 );
 
+jest.mock("@azure/storage-queue", () => ({
+  StorageSharedKeyCredential: jest.fn(),
+  QueueServiceClient: jest.fn().mockImplementation(() => ({
+    getQueueClient: jest.fn().mockReturnValue({
+      receiveMessages: jest.fn().mockResolvedValue({
+        receivedMessageItems: [],
+      }),
+    }),
+  })),
+}));
+
+jest.mock("@aws-sdk/client-s3", () => ({
+  S3Client: jest.fn(),
+  PutObjectCommand: jest.fn(),
+  S3ServiceException: class S3ServiceException extends Error {
+    name = "S3ServiceException";
+  },
+}));
+
+import { SendToAIMS } from "./index";
+
 describe("SendToAIMS", () => {
   const context = {
     error: jest.fn(),
     log: jest.fn(),
-    traceContext: { traceParent: "asdf" },
+    warn: jest.fn(),
+    traceContext: { traceParent: "test-operation-id" },
   } as jest.MockedObject<InvocationContext>;
 
   const timer = {} as jest.MockedObject<Timer>;
 
-  it("has a test file so that deploys will work", async () => {
-    // build fails if no test files
-    // to be replaced when SendToAIMS function has actual functionality
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should start successfully and log when no messages are found", async () => {
     await SendToAIMS(timer, context);
 
-    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledTimes(1);
-    expect(context.log).toHaveBeenCalledWith("Sent a telemetry event");
+    // Should track function start event
+    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+      name: "SendToAIMS function started",
+      properties: {
+        operationId: "test-operation-id",
+      },
+    });
+
+    // Should log checking for messages
+    expect(context.log).toHaveBeenCalledWith(
+      "Checking for messages in queue...",
+    );
+
+    // Should log no messages found
+    expect(context.log).toHaveBeenCalledWith("No messages found in queue");
   });
 });
