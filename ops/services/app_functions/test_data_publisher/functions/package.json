@@ -18,9 +18,9 @@
   },
   "main": "dist/**/index.js",
   "dependencies": {
-    "@azure/functions": "^4.6.0",
+    "@azure/functions": "^4.7.2",
+    "applicationinsights": "^3.7.0"
     "@azure/storage-queue": "^12.24.0",
-    "applicationinsights": "^3.7.0",
     "@aws-sdk/client-s3": "^3.500.0",
     "uuid": "^10.0.0"
   },
@@ -54,9 +54,6 @@
       "import/no-commonjs": 0,
       "import/no-named-as-default": 0,
       "no-unused-vars": "off"
-    },
-    "resolutions": {
-      "json-bigint": "^1.0.0"
     }
   }
 }
