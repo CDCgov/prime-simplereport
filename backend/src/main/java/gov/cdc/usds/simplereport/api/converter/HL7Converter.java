@@ -44,11 +44,19 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
+import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -66,19 +74,48 @@ public class HL7Converter {
   private final DateGenerator dateGenerator;
 
   /**
+   * Creates HL7 message from a single entry TestEvent
+   *
+   * @param testEvent single entry test event data
+   * @param gitProperties used to populate the message software segment
+   * @param processingId indicates intent for processing. Must be either T for training, D for
+   *     debugging, or P for production (see HL7 table 0103)
+   * @return ORU_R01 message
+   */
+  public ORU_R01 createLabReportMessage(
+      @NotNull TestEvent testEvent, GitProperties gitProperties, String processingId)
+      throws DataTypeException {
+    return createLabReportMessage(
+        convertToPatientReportInput(testEvent),
+        convertToProviderReportInput(testEvent),
+        convertToFacilityReportInput(testEvent),
+        null,
+        convertToSpecimenInput(testEvent),
+        convertToTestDetailsInputList(testEvent),
+        gitProperties,
+        processingId,
+        testEvent.getTestOrderId().toString());
+  }
+
+  /**
    * Creates an ORU_R01 message based on HL7 Version 2.5.1 Implementation Guide: Electronic
    * Laboratory Reporting to Public Health. ORU_R01 refers to an "Unsolicited transmission of an
    * observation message"
    *
    * @param patientInput patient data
    * @param providerInput ordering provider data
-   * @param facilityInput facility data (currently assumes ordering facility and performing facility
-   *     are the same)
+   * @param performingFacility facility that performed the testing
+   * @param orderingFacility facility that ordered the testing. If this is null, then ordering
+   *     facility will be populated with the performing facility data based on the legacy app
+   *     assumption that this is the same facility
    * @param specimenInput specimen data
    * @param testDetailsInputList test result data
    * @param gitProperties used to populate the message software segment
    * @param processingId indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
+   * @param orderId used to populate the Filler Order Number in OBR-3 and ORC-3. This should be the
+   *     TestEvent id for single entry or the accession number for bulk upload. This parameter is
+   *     not the same as the message control id in MSH-10 which is randomly generated.
    * @return ORU_R01 message
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
@@ -87,18 +124,28 @@ public class HL7Converter {
   public ORU_R01 createLabReportMessage(
       PatientReportInput patientInput,
       ProviderReportInput providerInput,
-      FacilityReportInput facilityInput,
+      FacilityReportInput performingFacility,
+      FacilityReportInput orderingFacility,
       SpecimenInput specimenInput,
       List<TestDetailsInput> testDetailsInputList,
       GitProperties gitProperties,
-      String processingId)
+      String processingId,
+      String orderId)
       throws DataTypeException, IllegalArgumentException {
+    // Lab reports from single entry and bulk upload should always have order id already populated.
+    // Single entry would use TestEvent internal id which is always required. Bulk upload would use
+    // Accession Number which is also required.
+    if (StringUtils.isBlank(orderId)) {
+      throw new IllegalArgumentException("Missing orderId for lab report message");
+    }
+
     ORU_R01 message = new ORU_R01();
 
     Date messageTimestamp = dateGenerator.newDate();
 
     MSH messageHeader = message.getMSH();
-    populateMessageHeader(messageHeader, facilityInput.getClia(), processingId, messageTimestamp);
+    populateMessageHeader(
+        messageHeader, performingFacility.getClia(), processingId, messageTimestamp);
 
     SFT softwareSegment = message.getSFT();
     populateSoftwareSegment(softwareSegment, gitProperties);
@@ -106,49 +153,88 @@ public class HL7Converter {
     PID patientIdentificationSegment = message.getPATIENT_RESULT().getPATIENT().getPID();
     populatePatientIdentification(patientIdentificationSegment, patientInput);
 
-    String orderId = String.valueOf(uuidGenerator.randomUUID());
     String specimenId = String.valueOf(uuidGenerator.randomUUID());
 
-    for (int i = 0; i < testDetailsInputList.size(); i++) {
-      // The ORDER_OBSERVATION group is required and can repeat.
-      // This means that multiple ordered tests may be performed on a specimen.
+    if (orderingFacility == null) {
+      orderingFacility = performingFacility;
+    }
+
+    // Since multiple ordered tests may be performed on a specimen, we need to group the test
+    // details based on test order loinc in order to correctly populate the observation
+    // request OBR and its list of observation results OBX.
+    // See page 81, HL7 v2.5.1 IG
+    Map<String, List<TestDetailsInput>> testOrderLoincToTestDetailsMap =
+        mapTestOrderLoincToTestDetails(testDetailsInputList);
+
+    int orderObservationIndex = 0;
+    for (var entry : testOrderLoincToTestDetailsMap.entrySet()) {
+      ORU_R01_ORDER_OBSERVATION orderGroup =
+          message.getPATIENT_RESULT().getORDER_OBSERVATION(orderObservationIndex);
+
+      // The first ORDER_OBSERVATION group must contain an ORC segment (containing ordering facility
+      // information) if no ordering provider information is present in OBR-16 or OBR-17.
       // See page 81, HL7 v2.5.1 IG
-      ORU_R01_ORDER_OBSERVATION orderGroup = message.getPATIENT_RESULT().getORDER_OBSERVATION(i);
+      if (orderObservationIndex == 0) {
+        ORC commonOrder = orderGroup.getORC();
+        populateCommonOrderSegment(commonOrder, orderingFacility, providerInput, orderId);
+      }
 
-      ORC commonOrder = orderGroup.getORC();
-      populateCommonOrderSegment(commonOrder, facilityInput, providerInput, orderId);
-
-      // "For the first repeat of the OBR segment, the sequence number shall be one (1),
-      //  for the second repeat, the sequence number shall be two (2), etc."
-      //  See page 124, HL7 v2.5.1 IG
-      String sequenceNumber = String.valueOf(i + 1);
-
-      TestDetailsInput testDetail = testDetailsInputList.get(i);
+      // First test detail is picked to get the test order display name
+      // and correction status for OBR
+      TestDetailsInput firstTestDetail = entry.getValue().get(0);
 
       OBR observationRequest = orderGroup.getOBR();
       populateObservationRequest(
           observationRequest,
-          sequenceNumber,
+          orderObservationIndex + 1,
           orderId,
           providerInput,
           specimenInput.getCollectionDate(),
-          testDetail.getTestOrderLoinc(),
-          testDetail.getTestOrderDisplayName(),
+          entry.getKey(),
+          firstTestDetail.getTestOrderDisplayName(),
+          firstTestDetail.getCorrectionStatus(),
           messageTimestamp);
 
-      OBX observationResult = orderGroup.getOBSERVATION().getOBX();
-      populateObservationResult(
-          observationResult,
-          sequenceNumber,
-          facilityInput,
-          specimenInput.getCollectionDate(),
-          testDetail);
+      // Populate the list of OBX associated with this OBR
+      int observationResultIndex = 0;
+      for (TestDetailsInput testDetail : entry.getValue()) {
+        OBX observationResult = orderGroup.getOBSERVATION(observationResultIndex).getOBX();
+        populateObservationResult(
+            observationResult,
+            observationResultIndex + 1,
+            performingFacility,
+            specimenInput.getCollectionDate(),
+            testDetail);
+        observationResultIndex++;
+      }
 
-      SPM specimen = orderGroup.getSPECIMEN().getSPM();
-      populateSpecimen(specimen, sequenceNumber, specimenId, specimenInput);
+      // Only a single specimen can be associated with the OBR
+      // See page 83, HL7 v2.5.1 IG
+      if (orderObservationIndex == 0) {
+        SPM specimen = orderGroup.getSPECIMEN().getSPM();
+        populateSpecimen(specimen, 1, specimenId, specimenInput);
+      }
+
+      orderObservationIndex++;
     }
 
     return message;
+  }
+
+  private Map<String, List<TestDetailsInput>> mapTestOrderLoincToTestDetails(
+      List<TestDetailsInput> testDetailsInputList) {
+    Map<String, List<TestDetailsInput>> testOrderLoincToTestDetailsMap = new HashMap<>();
+    for (TestDetailsInput testDetail : testDetailsInputList) {
+      String testOrderLoinc = testDetail.getTestOrderLoinc();
+      if (!testOrderLoincToTestDetailsMap.containsKey(testOrderLoinc)) {
+        testOrderLoincToTestDetailsMap.put(
+            testOrderLoinc,
+            testDetailsInputList.stream()
+                .filter(t -> t.getTestOrderLoinc().equals(testOrderLoinc))
+                .toList());
+      }
+    }
+    return testOrderLoincToTestDetailsMap;
   }
 
   /**
@@ -180,6 +266,7 @@ public class HL7Converter {
 
     msh.getMsh1_FieldSeparator().setValue("|");
     msh.getMsh2_EncodingCharacters().setValue("^~\\&");
+    msh.getMsh3_SendingApplication().getHd1_NamespaceID().setValue("SimpleReport");
     msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
@@ -620,15 +707,16 @@ public class HL7Converter {
    */
   void populateObservationRequest(
       OBR observationRequest,
-      String sequenceNumber,
+      int sequenceNumber,
       String orderId,
       ProviderReportInput orderingProvider,
       Date specimenCollectionDate,
       String testOrderLoinc,
       String testOrderDisplay,
+      String correctionStatus,
       Date messageTimestamp)
       throws DataTypeException {
-    observationRequest.getObr1_SetIDOBR().setValue(sequenceNumber);
+    observationRequest.getObr1_SetIDOBR().setValue(String.valueOf(sequenceNumber));
 
     // OBR-3 must contain the same value as ORC-3 Filler Order Number.
     populateEntityIdentifierOID(observationRequest.getObr3_FillerOrderNumber(), orderId);
@@ -657,7 +745,8 @@ public class HL7Converter {
         .setValue(formatToHL7DateTime(messageTimestamp));
 
     // F for final results, from HL7 table 0123 Result Status
-    observationRequest.getObr25_ResultStatus().setValue("F");
+    String resultStatus = StringUtils.isBlank(correctionStatus) ? "F" : correctionStatus;
+    observationRequest.getObr25_ResultStatus().setValue(resultStatus);
   }
 
   /**
@@ -675,12 +764,12 @@ public class HL7Converter {
    */
   void populateObservationResult(
       OBX obx,
-      String sequenceNumber,
+      int sequenceNumber,
       FacilityReportInput performingFacility,
       Date specimenCollectionDate,
       TestDetailsInput testDetail)
       throws DataTypeException, IllegalArgumentException {
-    obx.getObx1_SetIDOBX().setValue(sequenceNumber);
+    obx.getObx1_SetIDOBX().setValue(String.valueOf(sequenceNumber));
 
     CE observationIdentifier = obx.getObx3_ObservationIdentifier();
     observationIdentifier.getCe1_Identifier().setValue(testDetail.getTestPerformedLoinc());
@@ -706,7 +795,11 @@ public class HL7Converter {
     // TODO: determine how we should programmatically set OBX 8 - Abnormal flags
 
     // F for final results, from HL7 table 0085 Observation result status codes interpretation
-    obx.getObx11_ObservationResultStatus().setValue("F");
+    String resultStatus =
+        StringUtils.isBlank(testDetail.getCorrectionStatus())
+            ? "F"
+            : testDetail.getCorrectionStatus();
+    obx.getObx11_ObservationResultStatus().setValue(resultStatus);
 
     // "For specimen-based laboratory reporting, the specimen collection date and time."
     // See page 142, HL7 v2.5.1 IG
@@ -763,9 +856,9 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateSpecimen(
-      SPM specimen, String sequenceNumber, String specimenId, SpecimenInput specimenInput)
+      SPM specimen, int sequenceNumber, String specimenId, SpecimenInput specimenInput)
       throws DataTypeException {
-    specimen.getSpm1_SetIDSPM().setValue(sequenceNumber);
+    specimen.getSpm1_SetIDSPM().setValue(String.valueOf(sequenceNumber));
 
     populateEntityIdentifierOID(
         specimen.getSpm2_SpecimenID().getEip1_PlacerAssignedIdentifier(), specimenId);
@@ -788,23 +881,26 @@ public class HL7Converter {
     // but the HL7 data set says it "Shall contain a value descending from the SNOMED CT Anatomical
     // Structure (91723000) hierarchy"
 
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe1_Identifier()
-        .setValue(specimenInput.getCollectionBodySiteCode());
+    if (StringUtils.isNotBlank(specimenInput.getCollectionBodySiteCode())
+        && StringUtils.isNotBlank(specimenInput.getCollectionBodySiteName())) {
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe1_Identifier()
+          .setValue(specimenInput.getCollectionBodySiteCode());
 
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe2_Text()
-        .setValue(specimenInput.getCollectionBodySiteName());
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe3_NameOfCodingSystem()
-        .setValue(HL7_SNOMED_CODE_SYSTEM);
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe7_CodingSystemVersionID()
-        .setValue(HL7_SNOMED_CODE_SYSTEM_VERSION_ID);
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe2_Text()
+          .setValue(specimenInput.getCollectionBodySiteName());
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe3_NameOfCodingSystem()
+          .setValue(HL7_SNOMED_CODE_SYSTEM);
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe7_CodingSystemVersionID()
+          .setValue(HL7_SNOMED_CODE_SYSTEM_VERSION_ID);
+    }
 
     specimen
         .getSpm17_SpecimenCollectionDateTime()
@@ -821,5 +917,162 @@ public class HL7Converter {
         .getSpm18_SpecimenReceivedDateTime()
         .getTs1_Time()
         .setValue(formatToHL7DateTime(specimenInput.getReceivedDate()));
+  }
+
+  private PatientReportInput convertToPatientReportInput(@NotNull TestEvent testEvent) {
+    boolean hasTribalAffiliation =
+        testEvent.getPatientData().getTribalAffiliation() != null
+            && !testEvent.getPatientData().getTribalAffiliation().isEmpty();
+    return PatientReportInput.builder()
+        .firstName(testEvent.getPatientData().getFirstName())
+        .middleName(testEvent.getPatientData().getMiddleName())
+        .lastName(testEvent.getPatientData().getLastName())
+        .suffix(testEvent.getPatientData().getSuffix())
+        .email(testEvent.getPatientData().getEmail())
+        .phone(testEvent.getPatientData().getTelephone())
+        .street(testEvent.getPatientData().getStreet())
+        .streetTwo(testEvent.getPatientData().getStreetTwo())
+        .city(testEvent.getPatientData().getCity())
+        .county(testEvent.getPatientData().getCounty())
+        .state(testEvent.getPatientData().getState())
+        .zipCode(testEvent.getPatientData().getZipCode())
+        .country(testEvent.getPatientData().getCountry())
+        .sex(testEvent.getPatientData().getGender())
+        .dateOfBirth(testEvent.getPatient().getBirthDate())
+        .race(testEvent.getPatientData().getRace())
+        .ethnicity(testEvent.getPatientData().getEthnicity())
+        .tribalAffiliation(
+            hasTribalAffiliation ? testEvent.getPatientData().getTribalAffiliation().get(0) : null)
+        .patientId(
+            testEvent.getPatientData().getInternalId() != null
+                ? testEvent.getPatientData().getInternalId().toString()
+                : null)
+        .build();
+  }
+
+  private ProviderReportInput convertToProviderReportInput(@NotNull TestEvent testEvent) {
+    return ProviderReportInput.builder()
+        .firstName(testEvent.getProviderData().getNameInfo().getFirstName())
+        .middleName(testEvent.getProviderData().getNameInfo().getMiddleName())
+        .lastName(testEvent.getProviderData().getNameInfo().getLastName())
+        .suffix(testEvent.getProviderData().getNameInfo().getSuffix())
+        .npi(testEvent.getProviderData().getProviderId())
+        .street(testEvent.getProviderData().getStreet())
+        .streetTwo(testEvent.getProviderData().getStreetTwo())
+        .city(testEvent.getProviderData().getCity())
+        .county(testEvent.getProviderData().getCounty())
+        .state(testEvent.getProviderData().getState())
+        .zipCode(testEvent.getProviderData().getZipCode())
+        .phone(testEvent.getProviderData().getTelephone())
+        .email(null)
+        .build();
+  }
+
+  private FacilityReportInput convertToFacilityReportInput(@NotNull TestEvent testEvent) {
+    return FacilityReportInput.builder()
+        .name(testEvent.getFacility().getFacilityName())
+        .clia(testEvent.getFacility().getCliaNumber())
+        .street(testEvent.getFacility().getAddress().getStreetOne())
+        .streetTwo(testEvent.getFacility().getAddress().getStreetTwo())
+        .city(testEvent.getFacility().getAddress().getCity())
+        .county(testEvent.getFacility().getAddress().getCounty())
+        .state(testEvent.getFacility().getAddress().getState())
+        .zipCode(testEvent.getFacility().getAddress().getPostalCode())
+        .phone(testEvent.getFacility().getTelephone())
+        .email(testEvent.getFacility().getEmail())
+        .build();
+  }
+
+  private SpecimenInput convertToSpecimenInput(@NotNull TestEvent testEvent) {
+    return SpecimenInput.builder()
+        .snomedTypeCode(testEvent.getSpecimenType().getTypeCode())
+        .snomedDisplay(testEvent.getSpecimenType().getName())
+        .collectionDate(testEvent.getDateTested())
+        .receivedDate(testEvent.getDateTested())
+        .collectionBodySiteName(testEvent.getSpecimenType().getCollectionLocationName())
+        .collectionBodySiteCode(testEvent.getSpecimenType().getCollectionLocationCode())
+        .build();
+  }
+
+  private List<TestDetailsInput> convertToTestDetailsInputList(@NotNull TestEvent testEvent) {
+    return testEvent.getResults().stream()
+        .map(
+            result -> {
+              String testOrderLoinc;
+              if (testEvent.getResults().size() == 1) {
+                testOrderLoinc =
+                    MultiplexUtils.inferTestOrderLoincForSingleResult(
+                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
+                        result.getDisease());
+              } else {
+                testOrderLoinc =
+                    MultiplexUtils.inferMultiplexTestOrderLoinc(
+                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
+              }
+
+              if (StringUtils.isBlank(testOrderLoinc)) {
+                throw new IllegalArgumentException("Inferred test order loinc was blank");
+              }
+
+              DeviceTypeDisease deviceTypeDiseaseFromLoinc =
+                  testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
+                      .filter(d -> testOrderLoinc.equalsIgnoreCase(d.getTestOrderedLoincCode()))
+                      .filter(d -> d.getSupportedDisease().equals(result.getDisease()))
+                      .findFirst()
+                      .orElse(null);
+
+              if (deviceTypeDiseaseFromLoinc == null) {
+                throw new IllegalArgumentException(
+                    "DeviceTypeDisease from inferred loinc was null");
+              }
+
+              return convertToTestDetailsInput(
+                  result,
+                  deviceTypeDiseaseFromLoinc,
+                  testEvent.getDateTested(),
+                  testEvent.getCorrectionStatus());
+            })
+        .toList();
+  }
+
+  private TestDetailsInput convertToTestDetailsInput(
+      Result result,
+      DeviceTypeDisease deviceTypeDisease,
+      Date resultDate,
+      TestCorrectionStatus testCorrectionStatus) {
+    return TestDetailsInput.builder()
+        .condition(result.getDisease().getName())
+        .testOrderLoinc(deviceTypeDisease.getTestOrderedLoincCode())
+        .testOrderDisplayName(deviceTypeDisease.getTestOrderedLoincLongName())
+        .testPerformedLoinc(deviceTypeDisease.getTestPerformedLoincCode())
+        .testPerformedLoincLongCommonName(deviceTypeDisease.getTestPerformedLoincLongName())
+        .resultType(ResultScaleType.ORDINAL)
+        .resultValue(result.getResultSNOMED())
+        .resultDate(resultDate)
+        .resultInterpretation(null)
+        .correctionStatus(convertToObservationResultStatus(testCorrectionStatus))
+        .build();
+  }
+
+  /**
+   * Converts TestCorrectionStatus to value from HL7 table 0085 Observation result status codes
+   * interpretation
+   */
+  private String convertToObservationResultStatus(TestCorrectionStatus testCorrectionStatus) {
+    switch (testCorrectionStatus) {
+      case ORIGINAL -> {
+        return "F";
+      }
+      case CORRECTED -> {
+        return "C";
+      }
+      case REMOVED -> {
+        return "X";
+      }
+      default -> {
+        throw new IllegalArgumentException(
+            "Cannot convert invalid test correction status to observation result status");
+      }
+    }
   }
 }
