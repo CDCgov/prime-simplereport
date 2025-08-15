@@ -4,7 +4,6 @@ import {
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
-import { v4 as uuidv4 } from "uuid";
 import { ENV } from "../config";
 import {
   PutObjectCommand,
@@ -113,7 +112,7 @@ export async function SendToAIMS(
       try {
         const hl7Message = parseHL7Message(message.messageText);
 
-        // Check message size and log if larger than 64KB
+        // Check message size and log if larger than 64KB which might not be processed
         const approxBytes = Buffer.byteLength(
           message.messageText || "",
           "utf8",
@@ -138,7 +137,7 @@ export async function SendToAIMS(
           });
         }
 
-        // Use parsed messageId, don't override with fallback
+        // Parse messageID from HL7
         const messageId = hl7Message.messageId;
         const filename = hl7Message.filename || `hl7-message-${Date.now()}.hl7`;
         const objectKey = `${ENV.AIMS_USER_ID}/SendTo/${filename}`;
@@ -154,9 +153,6 @@ export async function SendToAIMS(
           AIMSPlatformSenderMessageId: messageId,
           Base64Encoded: "False",
         };
-        //bucket name cannot have a slash in it
-        //aims endpoint  --> secret will get the value of aims-partners-conslidated
-        //aims_user_id --> -----
         const uploadParams = {
           Bucket: ENV.AIMS_BUCKET_NAME,
           Key: objectKey,
@@ -282,7 +278,7 @@ export async function SendToAIMS(
 
 function parseHL7Message(messageText: string): HL7Message {
   // Extract message ID from HL7 MSH segment if available
-  let messageId = uuidv4();
+  let messageId = "abcd1234messageIDNotFound";
   let baseFilename = `hl7-message-${Date.now()}.hl7`;
 
   if (messageText) {
