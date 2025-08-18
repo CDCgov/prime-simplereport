@@ -22,7 +22,7 @@ interface HL7Message {
 
 type Environment = "Test" | "Prod";
 
-function formatInterPartnerFilename(
+export function formatInterPartnerFilename(
   env: Environment,
   timestamp: Date,
   sof: string,
@@ -39,15 +39,15 @@ function formatInterPartnerFilename(
   return `InterPartner~${uc}~${sj}~${rj}~${se}~${re}~${formattedTimestamp}~${stop}~${sof}`;
 }
 
-function formatTimestamp(date: Date): string {
+export function formatTimestamp(date: Date): string {
   // Format: yyyyMMddHHmmssSSS (17 digits)
-  const year = date.getFullYear().toString();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  const seconds = date.getSeconds().toString().padStart(2, "0");
-  const milliseconds = date.getMilliseconds().toString().padStart(3, "0");
+  const year = date.getUTCFullYear().toString();
+  const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+  const day = date.getUTCDate().toString().padStart(2, "0");
+  const hours = date.getUTCHours().toString().padStart(2, "0");
+  const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+  const seconds = date.getUTCSeconds().toString().padStart(2, "0");
+  const milliseconds = date.getUTCMilliseconds().toString().padStart(3, "0");
 
   return `${year}${month}${day}${hours}${minutes}${seconds}${milliseconds}`;
 }
@@ -276,16 +276,14 @@ export async function SendToAIMS(
   }
 }
 
-function parseHL7Message(messageText: string): HL7Message {
+export function parseHL7Message(messageText: string): HL7Message {
   // Extract message ID from HL7 MSH segment if available
   let messageId = "abcd1234messageIDNotFound";
   let baseFilename = `hl7-message-${Date.now()}.hl7`;
 
   if (messageText) {
     // Look for MSH segment message control ID (MSH.10)
-    const mshSegmentMatch = messageText.match(
-      /^MSH\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|([^|]+)\|/m,
-    );
+    const mshSegmentMatch = messageText.match(/^MSH\|(?:[^|]*\|){8}([^|]*)\|/m);
     if (mshSegmentMatch && mshSegmentMatch[1]) {
       messageId = mshSegmentMatch[1].trim();
       baseFilename = `${messageId}.hl7`;
