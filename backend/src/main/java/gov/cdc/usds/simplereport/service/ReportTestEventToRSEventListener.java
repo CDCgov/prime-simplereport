@@ -17,8 +17,6 @@ record ReportTestEventToRSEvent(TestEvent testEvent) {}
 @Component
 @RequiredArgsConstructor
 public class ReportTestEventToRSEventListener {
-  @Qualifier("csvQueueReportingService")
-  private final TestEventReportingService testEventReportingService;
 
   @Qualifier("fhirQueueReportingService")
   private final TestEventReportingService fhirQueueReportingService;
@@ -29,10 +27,6 @@ public class ReportTestEventToRSEventListener {
   }
 
   private void reportTestEventToRS(TestEvent savedEvent) {
-    if (savedEvent.hasCovidResult()) {
-      testEventReportingService.report(savedEvent);
-    }
-
     fhirQueueReportingService.report(savedEvent);
   }
 }
