@@ -26,7 +26,6 @@ body {
   min-height: 100%;
 }
 
-header,
 footer {
   padding: 1rem 5rem;
   margin: 0;
@@ -1126,11 +1125,11 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   font-weight: bolder;
 }
 
-.prime-organization-name {
-  color: color("base");
-  font-size: size("body", "3xs");
-  margin-left: units(4);
-}
+// .prime-organization-name {
+//   color: color("base");
+//   font-size: size("body", "3xs");
+//   margin-left: units(4);
+// }
 
 .usa-sidenav__sublist,
 .mobile-sublist-container {

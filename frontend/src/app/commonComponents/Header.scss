@@ -1,7 +1,12 @@
-@use "../../scss/settings";
+@use "../../scss/settings" as *;
 
 .usa-nav-container.prime-header {
-  max-width: settings.$site-max-width;
+  max-width: $site-max-width;
+
+  .prime-organization-name {
+    color: $brand-lightest;
+    font-size: $size-body-3xs;
+  }
 
   .prime-nav-link {
     font-size: 1.2rem;

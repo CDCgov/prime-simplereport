@@ -321,7 +321,9 @@ const Header: React.FC<{}> = () => {
               alt={process.env.REACT_APP_TITLE}
             />
           </LinkWithQuery>
-          <div className="prime-organization-name">{organization.name}</div>
+          <div className="prime-organization-name margin-left-4">
+            {organization.name}
+          </div>
         </div>
 
         <button

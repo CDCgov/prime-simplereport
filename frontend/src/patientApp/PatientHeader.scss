@@ -1,5 +1,12 @@
+@use "../scss/settings" as *;
+
 @media print {
   .header {
     display: none;
   }
+}
+
+.prime-organization-name {
+  color: $brand-lightest;
+  font-size: $size-body-3xs;
 }

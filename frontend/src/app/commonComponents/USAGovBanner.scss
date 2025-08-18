@@ -1,4 +1,4 @@
-@use "../../scss/settings";
+@use "../../scss/settings" as *;
 
 @media print {
   .usa-banner {
@@ -8,6 +8,28 @@
 
 .usa-banner {
   .usa-banner__inner {
-    max-width: settings.$site-max-width;
+    max-width: $site-max-width;
+  }
+
+  .usa-banner__header-text {
+    color: white;
+  }
+
+  .usa-accordion__button {
+    color: $gray-20;
+    background-color: $gray-90;
+
+    &:hover {
+      color: white;
+      background-color: $gray-90;
+    }
+  }
+
+  .usa-banner__content {
+    color: white;
+  }
+
+  &.site-banner {
+    background-color: $gray-90;
   }
 }
