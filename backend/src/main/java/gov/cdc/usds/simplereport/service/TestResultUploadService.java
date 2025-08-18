@@ -459,7 +459,7 @@ public class TestResultUploadService {
                       .build();
 
               S3UploadResponse s3Response;
-              String filename = String.format("hl7-batch-%s-%d.hl7", submissionId, start);
+              String filename = String.format("hl7-batch-%d.hl7", start);
               String objectKey = aimsUserId + "/SendTo/" + filename;
 
               try (s3) {

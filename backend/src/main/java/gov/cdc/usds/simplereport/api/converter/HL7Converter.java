@@ -461,8 +461,9 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateRace(CE codedElement, String race) throws DataTypeException {
+    race = race.toLowerCase();
     boolean isParseableRace =
-        StringUtils.isNotBlank(race) && PersonUtils.HL7_RACE_MAP.containsKey(race.toLowerCase());
+        StringUtils.isNotBlank(race) && PersonUtils.HL7_RACE_MAP.containsKey(race);
 
     if (isParseableRace) {
       codedElement.getCe1_Identifier().setValue(PersonUtils.HL7_RACE_MAP.get(race).get(0));
@@ -482,9 +483,9 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateEthnicGroup(CE codedElement, String ethnicity) throws DataTypeException {
+    ethnicity = ethnicity.toLowerCase();
     boolean isParseableEthnicGroup =
-        StringUtils.isNotBlank(ethnicity)
-            && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity.toLowerCase());
+        StringUtils.isNotBlank(ethnicity) && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity);
 
     String identifier =
         isParseableEthnicGroup ? PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0) : "U";
