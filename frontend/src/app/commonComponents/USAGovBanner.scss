@@ -15,13 +15,17 @@
     color: white;
   }
 
-  .usa-accordion__button {
+  .usa-banner__header-action {
     color: $gray-20;
-    background-color: $gray-90;
+  }
 
-    &:hover {
-      color: white;
-      background-color: $gray-90;
+  .usa-accordion__button {
+    .usa-banner__button-text {
+      color: $gray-20;
+
+      &:hover {
+        color: white;
+      }
     }
   }
 

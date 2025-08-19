@@ -10,13 +10,18 @@ const AccordionContent = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="usa-banner__content usa-accordion__content" id="gov-banner">
+    <div
+      className="usa-banner__content usa-accordion__content"
+      id="gov-banner-default"
+    >
       <div className="grid-row grid-gap-lg">
         <div className="usa-banner__guidance tablet:grid-col-6">
           <img
             className="usa-banner__icon usa-media-block__img"
             src={iconDotGov}
-            alt="Dot gov"
+            role="img"
+            alt=""
+            aria-hidden="true"
           />
           <div className="usa-media-block__body">
             <p>
@@ -30,7 +35,9 @@ const AccordionContent = () => {
           <img
             className="usa-banner__icon usa-media-block__img"
             src={iconHttps}
-            alt="Https"
+            role="img"
+            alt=""
+            aria-hidden="true"
           />
           <div className="usa-media-block__body">
             <p>
@@ -57,37 +64,49 @@ const USAGovBanner = () => {
   }, [setIsContentVisible]);
 
   return (
-    <div className="usa-banner site-banner usa-banner__header">
+    <section
+      className="usa-banner site-banner"
+      aria-label={t("banner.officialWebsite")}
+    >
       <div className="usa-accordion">
-        <div className="usa-banner__inner">
-          <div className="grid-col-auto">
-            <img className="usa-banner__header-flag" src={usFlagSmall} alt="" />
+        <header className="usa-banner__header">
+          <div className="usa-banner__inner">
+            <div className="grid-col-auto">
+              <img
+                className="usa-banner__header-flag"
+                src={usFlagSmall}
+                aria-hidden="true"
+              />
+            </div>
+            <div
+              className="grid-col-fill tablet:grid-col-auto"
+              aria-hidden="true"
+            >
+              <p className="usa-banner__header-text">
+                {t("banner.officialWebsite")}
+              </p>
+              <p className="usa-banner__header-action">
+                {t("banner.howYouKnow")}
+              </p>
+            </div>
+            <button
+              className="usa-accordion__button usa-banner__button"
+              aria-expanded={isContentVisible}
+              aria-controls="gov-banner"
+              aria-label={"Here's how you know this is an official website"}
+              type="button"
+              onClick={toggleDetails}
+            >
+              <span className="usa-banner__button-text">
+                {t("banner.howYouKnow")}
+              </span>
+            </button>
           </div>
-          <div className="grid-col-fill tablet:grid-col-auto">
-            <p className="usa-banner__header-text">
-              {t("banner.officialWebsite")}
-            </p>
-            <p className="usa-banner__header-action" aria-hidden="true">
-              {t("banner.howYouKnow")}
-            </p>
-          </div>
-          <button
-            className="usa-accordion__button usa-banner__button"
-            aria-expanded={isContentVisible}
-            aria-controls="gov-banner"
-            aria-label={"Here's how you know this is an official website"}
-            type="button"
-            onClick={toggleDetails}
-          >
-            <span className="usa-banner__button-text" aria-hidden={true}>
-              {t("banner.howYouKnow")}
-            </span>
-          </button>
-        </div>
+        </header>
 
         {isContentVisible && <AccordionContent />}
       </div>
-    </div>
+    </section>
   );
 };
 
