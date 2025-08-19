@@ -1,4 +1,4 @@
-import { Meta } from "@storybook/react";
+import { Meta } from "@storybook/react-webpack5";
 import configureStore from "redux-mock-store";
 import React from "react";
 import { Provider } from "react-redux";

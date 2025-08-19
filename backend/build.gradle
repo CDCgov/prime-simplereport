@@ -13,7 +13,7 @@ plugins {
     id 'jacoco'
     id 'org.sonarqube' version '5.1.0.4882'
     id 'com.gorylenko.gradle-git-properties' version '2.4.2'
-    id "com.diffplug.spotless" version "6.25.0"
+    id "com.diffplug.spotless" version "7.1.0"
 }
 
 group = 'gov.cdc.usds'
@@ -45,7 +45,7 @@ dependencies {
     // graphql
     implementation 'org.springframework.boot:spring-boot-starter-graphql:3.4.4'
     implementation 'org.springframework.graphql:spring-graphql:1.4.1'
-    implementation 'org.springframework:spring-web:6.2.7'
+    implementation 'org.springframework:spring-web:6.2.9'
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
     implementation 'com.graphql-java:graphql-java:24.1'
@@ -160,6 +160,10 @@ dependencies {
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.6.0'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.17.3'
+
+    // HL7v2
+    implementation 'ca.uhn.hapi:hapi-base:2.5.1'
+    implementation 'ca.uhn.hapi:hapi-structures-v251:2.5.1'
 
     implementation 'commons-validator:commons-validator:1.9.0'
     implementation 'org.bouncycastle:bcpkix-jdk18on:1.79'

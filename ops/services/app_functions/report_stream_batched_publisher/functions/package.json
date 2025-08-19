@@ -26,7 +26,7 @@
     "@azure/functions": "^4.6.0",
     "@azure/storage-queue": "^12.26.0",
     "applicationinsights": "^3.7.0",
-    "csv-stringify": "^6.5.2",
+    "csv-stringify": "^6.6.0",
     "jsonwebtoken": "^9.0.2",
     "node-fetch": "^2.7.0"
   },
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.7.7",
+    "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "azure-functions-core-tools": "^4.0.7317",

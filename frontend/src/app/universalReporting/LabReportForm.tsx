@@ -217,6 +217,7 @@ const LabReportForm = () => {
     if (currentStep < stepperData.length) {
       setCurrentStep((prevStep) => prevStep + 1);
     }
+    window.scrollTo(0, 0);
   };
 
   const prevStep = () => {
@@ -250,7 +251,10 @@ const LabReportForm = () => {
   const facilityFieldsMissing =
     isEmpty(facility.name) || isEmpty(facility.clia);
 
-  const specimenFieldsMissing = isEmpty(specimen.snomedTypeCode);
+  const specimenFieldsMissing =
+    isEmpty(specimen.snomedTypeCode) ||
+    isEmpty(specimen.collectionDate) ||
+    isEmpty(specimen.receivedDate);
 
   const testDetailFieldsMissing = testDetailList.some(
     (testDetail) =>
@@ -423,20 +427,17 @@ const LabReportForm = () => {
             <div className="usa-form-group report-form-controls">
               {currentStep === 4 ? (
                 <Button onClick={() => submitForm()} type={"button"}>
-                  Submit results
+                  Submit
                 </Button>
               ) : (
                 <Button
                   onClick={() => nextStep()}
                   disabled={currentStep === stepperData.length - 1}
                   type={"button"}
-                  className={"margin-right-2"}
+                  className={"margin-right-2 margin-top-3"}
                 >
-                  Next
-                  <FontAwesomeIcon
-                    icon={faArrowRight}
-                    className="margin-left-1"
-                  />
+                  Next: {stepperData[currentStep + 1].label}
+                  <FontAwesomeIcon icon={faArrowRight} className="" />
                 </Button>
               )}
             </div>

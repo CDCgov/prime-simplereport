@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react-webpack5";
 import { ComponentProps } from "react";
 
 import SingleFileInput from "./SingleFileInput";

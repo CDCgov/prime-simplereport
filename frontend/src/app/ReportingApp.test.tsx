@@ -12,6 +12,7 @@ import userEvent from "@testing-library/user-event";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
 import MockDate from "mockdate";
+import { FetchMock } from "jest-fetch-mock";
 
 import {
   GetFacilityQueueDocument,
@@ -52,6 +53,7 @@ jest.mock("./TelemetryService", () => ({
 jest.mock("jwt-decode", () => jest.fn());
 
 const mockStore = createMockStore([]);
+const fetchMock = fetch as FetchMock;
 
 const store = {
   dispatch: mockDispatch,
@@ -185,10 +187,20 @@ const MODAL_TEXT = "Welcome to the SimpleReport";
 describe("App", () => {
   beforeEach(() => {
     MockDate.set("2021-08-01");
+
+    // handle fetch from WithFacility Provider
+    fetchMock.enableMocks();
+    fetchMock.doMock();
+    fetchMock.mockResponseOnce(
+      JSON.stringify({
+        ok: true,
+      })
+    );
   });
 
   afterEach(() => {
     MockDate.reset();
+    fetchMock.resetMocks();
   });
 
   it("Renders loading masks (account and facility)", async () => {
@@ -237,7 +249,9 @@ describe("App", () => {
     });
     expect(trainingWelcome).toBeInTheDocument();
 
-    await user.click(screen.getByText("Got it", { exact: false }));
+    await user.click(
+      screen.getByText(/got it,? thanks/i, { selector: "button" })
+    );
     expect(trainingWelcome).not.toBeInTheDocument();
   });
 
