@@ -8,24 +8,19 @@ const NextSteps = () => {
   return (
     <CardBackground>
       <Card logo>
-        <h1 className="font-ui-lg margin-top-3 margin-bottom-4">
-          Identity verification call
+        <h1 className="font-ui-lg margin-top-3 margin-bottom-3">
+          Experian was unable to verify your identity
         </h1>
         <p className="margin-bottom-2">
-          Experian was unable to verify your identity. You’ll need to schedule a
-          quick identity verification call with our customer support team
-          instead.
+          Your security and experience are important to us. Let's schedule a
+          quick call to get you back on track.
         </p>
-        <p className="margin-bottom-0">
-          Your SimpleReport account will be accessible after your identity is
-          verified.
+        <p className="margin-bottom-2">
+          Email{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          to schedule a call to verify your identity and address any other
+          questions.
         </p>
-        <a
-          className="usa-button width-full margin-top-3 display-block"
-          href="https://calendly.com/simplereport-id-verification-sessions/simplereport-id-verification-sessions?back=1&month=2022-05"
-        >
-          Schedule identity verification
-        </a>
       </Card>
     </CardBackground>
   );
