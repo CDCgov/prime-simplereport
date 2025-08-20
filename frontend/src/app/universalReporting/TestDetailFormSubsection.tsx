@@ -57,10 +57,10 @@ const TestDetailFormSubsection = ({
     <>
       <div className="grid-row grid-gap flex-justify">
         <div className="grid-col-auto">
-          <h3>
+          <h4 className={"margin-bottom-0"}>
             Result {resultIndex + 1} -{" "}
             {testDetails.testPerformedLoincLongCommonName}
-          </h3>
+          </h4>
         </div>
       </div>
       <div className="grid-row grid-gap">
@@ -77,7 +77,6 @@ const TestDetailFormSubsection = ({
             }
             buttons={ResultScaleTypeOptions}
             selectedRadio={testDetails.resultType}
-            required={true}
           />
         </div>
         {testDetails.resultType === ResultScaleType.Ordinal && (
@@ -87,7 +86,6 @@ const TestDetailFormSubsection = ({
               buttons={ordinalResultOptions}
               name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
               selectedRadio={testDetails.resultValue}
-              required={true}
               onChange={(value) =>
                 updateTestDetails({ ...testDetails, resultValue: value })
               }
@@ -108,7 +106,6 @@ const TestDetailFormSubsection = ({
                 })
               }
               value={testDetails.resultValue}
-              required={true}
             ></TextInput>
           </div>
         )}
@@ -123,7 +120,6 @@ const TestDetailFormSubsection = ({
             max={formatDate(moment().toDate())}
             value={formatDate(moment(testDetails.resultDate).toDate())}
             onChange={(e) => handleResultDateUpdate(e.target.value)}
-            required={true}
           ></TextInput>
         </div>
         <div className="grid-col-6">
@@ -134,7 +130,6 @@ const TestDetailFormSubsection = ({
             step="60"
             value={moment(testDetails.resultDate).format("HH:mm")}
             onChange={(e) => handleResultTimeUpdate(e.target.value)}
-            required={true}
           ></TextInput>
         </div>
       </div>

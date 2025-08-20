@@ -68,7 +68,9 @@ const TestOrderFormSubsection = ({
     <>
       <div className="grid-row">
         <div className="grid-col-auto">
-          <h2 className={"font-sans-lg"}>Test order information</h2>
+          <h3 className={"margin-bottom-0 margin-top-1"}>
+            Test order information
+          </h3>
           <p>Choose a test order to select specimen type</p>
         </div>
       </div>

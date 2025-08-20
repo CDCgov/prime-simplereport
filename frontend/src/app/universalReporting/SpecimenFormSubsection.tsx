@@ -100,8 +100,12 @@ const SpecimenFormSubsection = ({
     <>
       <div className="grid-row margin-top-2">
         <div className="grid-col-auto">
-          <h2 className={"font-sans-lg"}>Specimen information</h2>
-          <p>Choose a specimen type to enter test results</p>
+          <h3 className={"margin-bottom-0 margin-top-5"}>
+            Specimen information
+          </h3>
+          <p className={"margin-bottom-0"}>
+            Choose a specimen type to enter test results
+          </p>
         </div>
       </div>
       {loading && <div>Loading specimen list for selected test order...</div>}

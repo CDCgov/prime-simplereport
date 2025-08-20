@@ -47,11 +47,13 @@ const TestDetailsFormSubsection = ({
 
   return (
     <>
-      <div className="grid-row margin-top-2">
+      <div>
         <div className="grid-col-auto">
-          <h2 className={"font-sans-lg"}>Test result information</h2>
+          <h3 className={"margin-bottom-0 margin-top-5"}>
+            Test result information
+          </h3>
           {!labAndSpecimenSelected ? (
-            <p>
+            <p className={"margin-bottom-0"}>
               Please select test order and specimen type above to see test
               result information
             </p>
