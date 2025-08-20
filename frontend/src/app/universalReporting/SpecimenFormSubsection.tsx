@@ -4,7 +4,10 @@ import React, { Dispatch } from "react";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import { formatDate } from "../utils/date";
-import { Specimen, SpecimenInput } from "../../generated/graphql";
+import {
+  SpecimenInput,
+  useGetSpecimensByLoincQuery,
+} from "../../generated/graphql";
 
 import {
   buildBodySiteOptionsList,
@@ -12,20 +15,26 @@ import {
 } from "./LabReportFormUtils";
 
 type SpecimenFormSectionProps = {
+  systemCodeLoinc: string;
   specimen: SpecimenInput;
   setSpecimen: Dispatch<SpecimenInput>;
-  specimenList: Specimen[];
-  loading: boolean;
-  isTestOrderSelected: boolean;
 };
 
 const SpecimenFormSubsection = ({
-  specimenList,
+  systemCodeLoinc,
   specimen,
   setSpecimen,
-  loading,
-  isTestOrderSelected,
 }: SpecimenFormSectionProps) => {
+  let isTestOrderSelected = systemCodeLoinc.length > 0;
+
+  const { data, loading } = useGetSpecimensByLoincQuery({
+    variables: {
+      loinc: systemCodeLoinc,
+    },
+    skip: !isTestOrderSelected,
+  });
+
+  const specimenList = data?.specimens ?? [];
   const specimenOption = buildSpecimenOptionList(specimenList);
   const bodySiteOptions = buildBodySiteOptionsList(
     specimenList.find((s) => s.snomedCode === specimen.snomedTypeCode)
@@ -114,6 +123,8 @@ const SpecimenFormSubsection = ({
                 className="card-dropdown"
                 required={true}
                 options={specimenOption}
+                defaultSelect={true}
+                defaultOption={""}
               />
             </div>
           </div>

@@ -1,23 +1,68 @@
 import { ComboBox } from "@trussworks/react-uswds";
-import React from "react";
+import React, { Dispatch } from "react";
 
-import { Lab, useGetAllLabsQuery } from "../../generated/graphql";
+import {
+  GetAllLabsQuery,
+  SpecimenInput,
+  TestDetailsInput,
+} from "../../generated/graphql";
 
-import { buildLabDataOptionList } from "./LabReportFormUtils";
+import {
+  buildLabDataOptionList,
+  defaultSpecimenReportInputState,
+  mapScaleDisplayToResultScaleType,
+} from "./LabReportFormUtils";
 
 type TestOrderFormSectionProps = {
   testOrderLoinc: string;
-  updateTestOrderLoinc: (lab: Lab | undefined) => void;
+  labData: GetAllLabsQuery | undefined;
+  labDataLoading: boolean;
+  setSpecimen: Dispatch<SpecimenInput>;
+  setTestDetailList: Dispatch<TestDetailsInput[]>;
 };
 
 const TestOrderFormSubsection = ({
   testOrderLoinc,
-  updateTestOrderLoinc,
+  labData,
+  labDataLoading,
+  setSpecimen,
+  setTestDetailList,
 }: TestOrderFormSectionProps) => {
-  const { data: labData, loading: labDataLoading } = useGetAllLabsQuery();
-
   const labs = labData?.labs ?? [];
   const labOptions = buildLabDataOptionList(labs ?? []);
+
+  const updateTestOrder = (val: string | undefined) => {
+    if (val) {
+      const foundLab = labs.find((l) => l.code === val);
+
+      if (foundLab) {
+        setSpecimen(defaultSpecimenReportInputState);
+
+        const updatedList = [] as TestDetailsInput[];
+        updatedList.push({
+          //todo: make a new data type for test details without condition?
+          testOrderLoinc: foundLab.code,
+          testOrderDisplayName: foundLab.display,
+          testPerformedLoinc: foundLab.code,
+          testPerformedLoincLongCommonName: foundLab.longCommonName,
+          resultType: mapScaleDisplayToResultScaleType(
+            foundLab.scaleDisplay ?? ""
+          ),
+          resultValue: "",
+          resultDate: "",
+          resultInterpretation: "",
+        } as TestDetailsInput);
+        setTestDetailList(updatedList);
+      } else {
+        // Selection is somehow not in the labs list - do not update
+        console.error("Selected test order does not exist");
+      }
+    } else {
+      // Selection cleared - reset form to default state
+      setSpecimen(defaultSpecimenReportInputState);
+      setTestDetailList([]);
+    }
+  };
 
   return (
     <>
@@ -44,9 +89,10 @@ const TestOrderFormSubsection = ({
                 id="selected-lab"
                 name="selected-lab"
                 options={labOptions}
-                onChange={(e) => {
-                  const l = labs.find((l) => l.code === e);
-                  updateTestOrderLoinc(l);
+                onChange={(val) => {
+                  if (val !== testOrderLoinc) {
+                    updateTestOrder(val);
+                  }
                 }}
                 defaultValue={testOrderLoinc}
                 aria-required={true}

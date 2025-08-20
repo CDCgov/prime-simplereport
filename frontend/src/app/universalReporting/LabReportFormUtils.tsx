@@ -132,7 +132,7 @@ export const buildLabDataOptionList = (labs: Lab[]) => {
     return [
       {
         value: "",
-        label: "No labs found for selected condition",
+        label: "No labs found",
       },
     ];
   }
