@@ -199,7 +199,7 @@ describe("OrganizationForm", () => {
 
     expect(
       await screen.findByText(
-        "Your organization is already registered with SimpleReport. To begin using it, schedule a time",
+        "Your organization is already registered with SimpleReport. To begin using it, email",
         { exact: false }
       )
     );
