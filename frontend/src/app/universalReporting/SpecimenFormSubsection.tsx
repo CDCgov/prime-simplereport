@@ -1,5 +1,6 @@
 import moment from "moment";
 import React, { Dispatch } from "react";
+import { now } from "lodash";
 
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
@@ -74,7 +75,7 @@ const SpecimenFormSubsection = ({
   const handleCollectionTimeUpdate = (value: string) => {
     if (value) {
       const [hours, minutes] = value.split(":");
-      const newCollectionDate = moment(specimen.collectionDate)
+      const newCollectionDate = moment(specimen.collectionDate || now())
         .hours(parseInt(hours))
         .minutes(parseInt(minutes));
       setSpecimen({
@@ -107,7 +108,7 @@ const SpecimenFormSubsection = ({
       {!loading && (
         <>
           <div className="grid-row grid-gap">
-            <div className="grid-col-8">
+            <div className="grid-col-6">
               <Dropdown
                 label="Specimen type"
                 name="specimen-type"
@@ -121,7 +122,7 @@ const SpecimenFormSubsection = ({
             </div>
           </div>
           <div className="grid-row grid-gap">
-            <div className="grid-col-auto">
+            <div className="grid-col-6">
               <TextInput
                 name="specimen-collection-date"
                 type="date"
@@ -132,7 +133,7 @@ const SpecimenFormSubsection = ({
                 onChange={(e) => handleCollectionDateUpdate(e.target.value)}
               ></TextInput>
             </div>
-            <div className="grid-col-auto">
+            <div className="grid-col-6">
               <TextInput
                 name="specimen-collection-time"
                 type="time"
@@ -144,7 +145,7 @@ const SpecimenFormSubsection = ({
             </div>
           </div>
           <div className="grid-row grid-gap">
-            <div className="grid-col-4">
+            <div className="grid-col-6">
               <Dropdown
                 label="Specimen site (optional)"
                 name="specimen-collection-body-site"
