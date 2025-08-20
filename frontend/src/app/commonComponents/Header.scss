@@ -1,6 +1,12 @@
 @use "../../scss/settings" as *;
 
+header.usa-header {
+  background-color: $brand-darker;
+}
+
 .usa-nav-container.prime-header {
+  background-color: $brand-darker;
+  color: $brand-lightest;
   max-width: $site-max-width;
 
   .prime-organization-name {
