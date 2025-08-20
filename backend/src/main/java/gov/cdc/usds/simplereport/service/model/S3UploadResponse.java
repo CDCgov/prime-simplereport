@@ -35,22 +35,27 @@ public class S3UploadResponse implements GenericResponse {
     this.errorMessage = errorMessage;
   }
 
+  @Override
   public UUID getReportId() {
     return this.id;
   }
 
+  @Override
   public UploadStatus getStatus() {
     return success ? UploadStatus.SUCCESS : UploadStatus.FAILURE;
   }
 
+  @Override
   public Date getCreatedAt() {
     return this.timestamp;
   }
 
+  @Override
   public int getRecordsCount() {
     return this.reportItemCount;
   }
 
+  @Override
   public FeedbackMessage[] getErrors() {
     if (!success && errorMessage != null) {
       FeedbackMessage error = new FeedbackMessage();
@@ -60,6 +65,7 @@ public class S3UploadResponse implements GenericResponse {
     return new FeedbackMessage[0];
   }
 
+  @Override
   // TODO: Derive some level of warnings from S3 calls
   public FeedbackMessage[] getWarnings() {
     return new FeedbackMessage[0];
