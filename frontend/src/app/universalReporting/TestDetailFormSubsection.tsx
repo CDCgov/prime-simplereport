@@ -93,6 +93,7 @@ const TestDetailFormSubsection = ({
               updateTestDetails({
                 ...testDetails,
                 resultType: value,
+                resultValue: "",
               })
             }
             buttons={ResultScaleTypeOptions}
