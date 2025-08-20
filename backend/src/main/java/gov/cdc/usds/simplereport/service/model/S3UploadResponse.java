@@ -12,7 +12,7 @@ import lombok.Setter;
 public class S3UploadResponse implements GenericResponse {
   private UUID id;
   private Date timestamp;
-  private int recordsCount;
+  private int reportItemCount;
   private boolean success;
   private String errorMessage;
 
@@ -20,16 +20,16 @@ public class S3UploadResponse implements GenericResponse {
     return UUID.nameUUIDFromBytes((objectKey + timestamp.getTime()).getBytes());
   }
 
-  public S3UploadResponse(String objectKey, int recordsCount, boolean success) {
+  public S3UploadResponse(String objectKey, int reportItemCount, boolean success) {
     this.timestamp = new Date();
-    this.recordsCount = recordsCount;
+    this.reportItemCount = reportItemCount;
     this.id = generateId(objectKey, this.timestamp);
     this.success = success;
   }
 
-  public S3UploadResponse(String objectKey, int recordsCount, String errorMessage) {
+  public S3UploadResponse(String objectKey, int reportItemCount, String errorMessage) {
     this.timestamp = new Date();
-    this.recordsCount = recordsCount;
+    this.reportItemCount = reportItemCount;
     this.id = generateId(objectKey, this.timestamp);
     this.success = false;
     this.errorMessage = errorMessage;
@@ -45,6 +45,10 @@ public class S3UploadResponse implements GenericResponse {
 
   public Date getCreatedAt() {
     return this.timestamp;
+  }
+
+  public int getRecordsCount() {
+    return this.reportItemCount;
   }
 
   public FeedbackMessage[] getErrors() {
