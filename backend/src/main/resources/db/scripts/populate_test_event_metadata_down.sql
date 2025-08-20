@@ -1,0 +1,1 @@
+TRUNCATE TABLE simple_report.test_event_metadata;
