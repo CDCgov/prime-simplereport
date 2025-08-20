@@ -9,7 +9,7 @@ import {
 import "./universalReporting.scss";
 import TestOrderFormSubsection from "./TestOrderFormSubsection";
 import SpecimenFormSubsection from "./SpecimenFormSubsection";
-import TestDetailFormSubsection from "./TestDetailFormSubsection";
+import TestDetailsFormSubsection from "./TestDetailsFormSubsection";
 
 type LabResultsFormSectionProps = {
   specimen: SpecimenInput;
@@ -30,14 +30,6 @@ const LabResultsFormSection = ({
     (l) => l.code === testDetailList[0]?.testOrderLoinc
   );
 
-  const updateTestDetails = (modifiedTestDetails: TestDetailsInput) => {
-    let unmodifiedTestDetailsList = testDetailList.filter(
-      (x) => x.testPerformedLoinc !== modifiedTestDetails.testPerformedLoinc
-    );
-    let updatedList = [...unmodifiedTestDetailsList, modifiedTestDetails];
-    setTestDetailList(updatedList);
-  };
-
   return (
     <>
       <TestOrderFormSubsection
@@ -52,23 +44,13 @@ const LabResultsFormSection = ({
         specimen={specimen}
         setSpecimen={setSpecimen}
       />
-      {testDetailList
-        .sort((a, b) =>
-          a.testPerformedLoinc.localeCompare(b.testPerformedLoinc)
-        )
-        .map((testDetails) => {
-          return (
-            <div
-              className={"margin-top-2"}
-              key={testDetails.testPerformedLoinc}
-            >
-              <TestDetailFormSubsection
-                testDetails={testDetails}
-                updateTestDetails={updateTestDetails}
-              />
-            </div>
-          );
-        })}
+      <TestDetailsFormSubsection
+        labAndSpecimenSelected={
+          selectedLab !== undefined && specimen.snomedTypeCode !== ""
+        }
+        testDetailList={testDetailList}
+        setTestDetailList={setTestDetailList}
+      />
     </>
   );
 };

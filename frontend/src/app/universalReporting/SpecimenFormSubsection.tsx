@@ -99,19 +99,12 @@ const SpecimenFormSubsection = ({
     <>
       <div className="grid-row margin-top-2">
         <div className="grid-col-auto">
-          <h2 className={"font-sans-lg"}>Specimen Info</h2>
+          <h2 className={"font-sans-lg"}>Specimen information</h2>
+          <p>Choose a specimen type to enter test results</p>
         </div>
       </div>
-      {!isTestOrderSelected && (
-        <div>
-          Please select a condition and test order before filling out specimen
-          info.
-        </div>
-      )}
-      {isTestOrderSelected && loading && (
-        <div>Loading specimen list from selected test order...</div>
-      )}
-      {isTestOrderSelected && !loading && (
+      {loading && <div>Loading specimen list for selected test order...</div>}
+      {!loading && (
         <>
           <div className="grid-row grid-gap">
             <div className="grid-col-8">
@@ -121,7 +114,6 @@ const SpecimenFormSubsection = ({
                 selectedValue={specimen.snomedTypeCode}
                 onChange={(e) => handleSpecimenSelect(e.target.value)}
                 className="card-dropdown"
-                required={true}
                 options={specimenOption}
                 defaultSelect={true}
                 defaultOption={""}
@@ -133,8 +125,7 @@ const SpecimenFormSubsection = ({
               <TextInput
                 name="specimen-collection-date"
                 type="date"
-                label="Specimen collection date"
-                required={true}
+                label="Collection date"
                 min={formatDate(new Date("Jan 1, 2020"))}
                 max={formatDate(moment().toDate())}
                 value={formatDate(moment(specimen.collectionDate).toDate())}
@@ -145,35 +136,17 @@ const SpecimenFormSubsection = ({
               <TextInput
                 name="specimen-collection-time"
                 type="time"
-                label="Specimen collection time"
-                required={true}
+                label="Collection time"
                 step="60"
                 value={moment(specimen.collectionDate).format("HH:mm")}
                 onChange={(e) => handleCollectionTimeUpdate(e.target.value)}
-              ></TextInput>
-            </div>
-            <div className="grid-col-auto">
-              <TextInput
-                name="specimen-received-date"
-                type="date"
-                label="Specimen received date"
-                required={true}
-                min={formatDate(new Date("Jan 1, 2020"))}
-                max={formatDate(moment().toDate())}
-                value={formatDate(moment(specimen.receivedDate).toDate())}
-                onChange={(e) => {
-                  setSpecimen({
-                    ...specimen,
-                    receivedDate: moment(e.target.value),
-                  });
-                }}
               ></TextInput>
             </div>
           </div>
           <div className="grid-row grid-gap">
             <div className="grid-col-4">
               <Dropdown
-                label="Specimen collection body site"
+                label="Specimen site (optional)"
                 name="specimen-collection-body-site"
                 selectedValue={specimen.collectionBodySiteCode ?? ""}
                 onChange={(e) => handleBodySiteChange(e.target.value)}

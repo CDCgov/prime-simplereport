@@ -13,15 +13,17 @@ import {
   ResultScaleTypeOptions,
 } from "./LabReportFormUtils";
 
-type TestDetailSectionProps = {
+type TestDetailFormSubsectionProps = {
+  resultIndex: number;
   testDetails: TestDetailsInput;
   updateTestDetails: (details: TestDetailsInput) => void;
 };
 
 const TestDetailFormSubsection = ({
+  resultIndex,
   testDetails,
   updateTestDetails,
-}: TestDetailSectionProps) => {
+}: TestDetailFormSubsectionProps) => {
   const handleResultDateUpdate = (value: string) => {
     if (value) {
       const newResultDate = moment(value);
@@ -54,40 +56,16 @@ const TestDetailFormSubsection = ({
     <>
       <div className="grid-row grid-gap flex-justify">
         <div className="grid-col-auto">
-          <h3 className={"font-sans-lg"}>
-            Test Details - {testDetails.testPerformedLoincLongCommonName}
+          <h3>
+            Result {resultIndex + 1} -{" "}
+            {testDetails.testPerformedLoincLongCommonName}
           </h3>
         </div>
       </div>
       <div className="grid-row grid-gap">
         <div className="grid-col-4">
-          <TextInput
-            name={`test-detail-${testDetails.testPerformedLoinc}-test-result-date`}
-            type="date"
-            label="Test result date"
-            min={formatDate(new Date("Jan 1, 2020"))}
-            max={formatDate(moment().toDate())}
-            value={formatDate(moment(testDetails.resultDate).toDate())}
-            onChange={(e) => handleResultDateUpdate(e.target.value)}
-            required={true}
-          ></TextInput>
-        </div>
-        <div className="grid-col-4">
-          <TextInput
-            name={`test-detail-${testDetails.testPerformedLoinc}-test-result-time`}
-            type="time"
-            label="Test result time"
-            step="60"
-            value={moment(testDetails.resultDate).format("HH:mm")}
-            onChange={(e) => handleResultTimeUpdate(e.target.value)}
-            required={true}
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="grid-col-4">
           <RadioGroup<ResultScaleType>
-            legend="Type of test result"
+            legend="Test result type"
             name={`test-detail-${testDetails.testPerformedLoinc}-test-result-type`}
             onChange={(value) =>
               updateTestDetails({
@@ -104,7 +82,7 @@ const TestDetailFormSubsection = ({
         {testDetails.resultType === ResultScaleType.Ordinal && (
           <div className="grid-col-4">
             <RadioGroup<string>
-              legend={`Test result`}
+              legend={`Test result value`}
               buttons={ordinalResultOptions}
               name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
               selectedRadio={testDetails.resultValue}
@@ -121,7 +99,7 @@ const TestDetailFormSubsection = ({
             <TextInput
               name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
               type={"text"}
-              label={`Test result`}
+              label={`Test result value`}
               onChange={(e) =>
                 updateTestDetails({
                   ...testDetails,
@@ -135,12 +113,37 @@ const TestDetailFormSubsection = ({
         )}
       </div>
       <div className="grid-row grid-gap">
+        <div className="grid-col-4">
+          <TextInput
+            name={`test-detail-${testDetails.testPerformedLoinc}-test-result-date`}
+            type="date"
+            label="Result date"
+            min={formatDate(new Date("Jan 1, 2020"))}
+            max={formatDate(moment().toDate())}
+            value={formatDate(moment(testDetails.resultDate).toDate())}
+            onChange={(e) => handleResultDateUpdate(e.target.value)}
+            required={true}
+          ></TextInput>
+        </div>
+        <div className="grid-col-4">
+          <TextInput
+            name={`test-detail-${testDetails.testPerformedLoinc}-test-result-time`}
+            type="time"
+            label="Result time"
+            step="60"
+            value={moment(testDetails.resultDate).format("HH:mm")}
+            onChange={(e) => handleResultTimeUpdate(e.target.value)}
+            required={true}
+          ></TextInput>
+        </div>
+      </div>
+      <div className="grid-row grid-gap">
         <div className="grid-col-8">
           <div className="usa-form-group">
             <Label
               htmlFor={`test-detail-${testDetails.testPerformedLoinc}-test-result-interpretation`}
             >
-              Test result interpretation
+              Notes (optional)
             </Label>
             <Textarea
               id={`test-detail-${testDetails.testPerformedLoinc}-test-result-interpretation`}
