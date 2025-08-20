@@ -140,10 +140,10 @@ export const organizationBackendErrors = (error: string): ReactElement => {
       return (
         <Alert type="error" title="Duplicate organization">
           Your organization is already registered with SimpleReport. To begin
-          using it, schedule a time to complete our{" "}
-          <a href="https://calendly.com/simplereport-id-verification-sessions/simplereport-id-verification-sessions?back=1&month=2022-05">
-            online identity verification.
-          </a>{" "}
+          using it, email{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
+          to schedule a call to verify your identity and address any other
+          questions.
         </Alert>
       );
     // Duplicate org. Non-admin user is attempting to reregister the organization.
