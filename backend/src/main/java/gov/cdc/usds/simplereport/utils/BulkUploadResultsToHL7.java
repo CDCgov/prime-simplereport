@@ -41,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
@@ -72,6 +73,22 @@ public class BulkUploadResultsToHL7 {
   private final DateGenerator dateGenerator;
   private final ResultsUploaderCachingService resultsUploaderCachingService;
   private static final String ENCODING_CHARS = "^~\\&";
+  private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
+  private static final String SNOMED_REGEX = "(^\\d{9}$)|(^\\d{15}$)";
+
+  public static final String POSITIVE_SNOMED = "10828004";
+  public static final String DETECTED_SNOMED = "260373001";
+  public static final String NEGATIVE_SNOMED = "260385009";
+  public static final String NOT_DETECTED_SNOMED = "260415000";
+  public static final String INVALID_SNOMED = "455371000124106";
+
+  private final Map<String, String> testResultToSnomedMap =
+      Map.of(
+          "Positive".toLowerCase(), POSITIVE_SNOMED,
+          "Negative".toLowerCase(), NEGATIVE_SNOMED,
+          "Detected".toLowerCase(), DETECTED_SNOMED,
+          "Not Detected".toLowerCase(), NOT_DETECTED_SNOMED,
+          "Invalid Result".toLowerCase(), INVALID_SNOMED);
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
@@ -146,6 +163,7 @@ public class BulkUploadResultsToHL7 {
     String batchMessage = "";
     int batchMessageCount = 0;
     HashMap<String, Integer> diseasesReported = new HashMap<>();
+    String hl7Date = formatToHL7DateTime(dateGenerator.newDate());
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
@@ -195,7 +213,7 @@ public class BulkUploadResultsToHL7 {
                   try {
                     return future.get();
                   } catch (InterruptedException | ExecutionException e) {
-                    log.error("Bulk upload failure to convert to fhir.", e);
+                    log.error("Bulk upload failure to convert to HL7.", e);
                     Thread.currentThread().interrupt();
                     throw new CsvProcessingException("Unable to process file.");
                   }
@@ -222,7 +240,7 @@ public class BulkUploadResultsToHL7 {
                   "APHL",
                   APHL_ORG_OID,
                   "ISO",
-                  formatToHL7DateTime(dateGenerator.newDate()))));
+                  hl7Date)));
 
       // BHS
       parts.add(
@@ -241,7 +259,7 @@ public class BulkUploadResultsToHL7 {
                   "APHL",
                   APHL_ORG_OID,
                   "ISO",
-                  formatToHL7DateTime(dateGenerator.newDate()))));
+                  hl7Date)));
 
       // Append test result messages
       parts.add(messages);
@@ -352,9 +370,11 @@ public class BulkUploadResultsToHL7 {
   }
 
   private SpecimenInput getSpecimenInput(TestResultRow row) {
+    var specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
+
     return SpecimenInput.builder()
-        .snomedTypeCode(row.getSpecimenType().getValue())
-        .snomedDisplay(null)
+        .snomedTypeCode(specimenCode)
+        .snomedDisplay(getSpecimenTypeName(specimenCode))
         .collectionDate(
             Date.from(
                 LocalDate.parse(row.getSpecimenCollectionDate().getValue(), DATE_TIME_FORMATTER)
@@ -370,11 +390,48 @@ public class BulkUploadResultsToHL7 {
   }
 
   private TestDetailsInput getTestDetailsInput(TestResultRow row) {
+    var testPerformedCode = row.getTestPerformedCode().getValue();
+    var modelName = row.getEquipmentModelName().getValue();
+    var testOrderedCode = row.getTestOrderedCode().getValue();
+    var testOrderedLoincLongName = "";
+
+    var matchingDevice =
+        resultsUploaderCachingService
+            .getModelAndTestPerformedCodeToDeviceMap()
+            .get(ResultsUploaderCachingService.getKey(modelName, testPerformedCode));
+
+    if (matchingDevice != null) {
+      List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+          matchingDevice.getSupportedDiseaseTestPerformed().stream()
+              .filter(
+                  disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
+              .toList();
+
+      testOrderedCode =
+          StringUtils.isEmpty(testOrderedCode)
+              ? MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries)
+              : testOrderedCode;
+
+      String finalTestOrderedCode = testOrderedCode;
+      testOrderedLoincLongName =
+          deviceTypeDiseaseEntries.stream()
+              .filter(
+                  deviceTypeDisease ->
+                      Objects.equals(
+                          deviceTypeDisease.getTestOrderedLoincCode(), finalTestOrderedCode))
+              .findFirst()
+              .map(DeviceTypeDisease::getTestOrderedLoincLongName)
+              .orElse(null);
+    }
+
+    testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
+
     return TestDetailsInput.builder()
-        .testOrderLoinc(row.getTestOrderedCode().getValue())
-        .testPerformedLoinc(row.getTestPerformedCode().getValue())
+        .testOrderLoinc(testOrderedCode)
+        .testOrderDisplayName(testOrderedLoincLongName)
+        .testPerformedLoinc(testPerformedCode)
         .resultType(ResultScaleType.ORDINAL)
-        .resultValue(row.getTestResult().getValue())
+        .resultValue(getTestResultSnomed(row.getTestResult().getValue()))
         .resultDate(
             Date.from(
                 LocalDate.parse(row.getTestResultDate().getValue(), DATE_TIME_FORMATTER)
@@ -407,5 +464,32 @@ public class BulkUploadResultsToHL7 {
     }
 
     return Optional.ofNullable(diseaseSpecificLoincMap.get(testPerformedCode));
+  }
+
+  private String getTestResultSnomed(String input) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
+      return testResultToSnomedMap.get(input.toLowerCase());
+    }
+    return input;
+  }
+
+  private String getSpecimenTypeSnomed(String input) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
+      return resultsUploaderCachingService
+          .getSpecimenTypeNameToSNOMEDMap()
+          .get(input.toLowerCase());
+    } else if (input != null && input.matches(SNOMED_REGEX)) {
+      return input;
+    }
+
+    return null;
+  }
+
+  private String getSpecimenTypeName(String specimenSNOMED) {
+    if (specimenSNOMED != null) {
+      return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(specimenSNOMED);
+    }
+
+    return null;
   }
 }

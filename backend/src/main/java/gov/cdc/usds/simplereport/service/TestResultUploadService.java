@@ -20,6 +20,7 @@ import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TESTING_
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TEST_PERFORMED_CODE;
 import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7FileDateString;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
@@ -62,6 +63,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToHL7;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -112,6 +114,7 @@ public class TestResultUploadService {
   private final BulkUploadResultsToFhir fhirConverter;
   private final BulkUploadResultsToHL7 hl7Converter;
   private final FeatureFlagsConfig featureFlagsConfig;
+  private final DateGenerator dateGenerator;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -459,7 +462,10 @@ public class TestResultUploadService {
                       .build();
 
               S3UploadResponse s3Response;
-              String filename = String.format("hl7-batch-%d.hl7", start);
+              String filename =
+                  String.format(
+                      "InterPartner~DatapultELRPivot~Simple-Report~AIMSPlatform~Test~Test~%s~STOP~%s.hl7",
+                      formatToHL7FileDateString(dateGenerator.newDate()), submissionId);
               String objectKey = aimsUserId + "/SendTo/" + filename;
 
               try (s3) {
@@ -505,28 +511,6 @@ public class TestResultUploadService {
               }
             }));
   }
-
-  // private Optional<TestResultUpload> processAimsResponse(
-  //     CompletableFuture<AimsSubmissionSummary> futureSubmissionSummary)
-  //     throws CsvProcessingException, ExecutionException, InterruptedException {
-  //   try {
-  //     SubmissionSummary submissionSummary = futureSubmissionSummary.get();
-  //     if (submissionSummary != null && submissionSummary.submissionResponse() != null) {
-  //       return saveSubmissionToDb(
-  //           submissionSummary.submissionResponse(),
-  //           submissionSummary.org(),
-  //           submissionSummary.submissionId(),
-  //           Pipeline.AIMS,
-  //           submissionSummary.reportedDiseases());
-  //     }
-  //   } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
-  //     log.error("Error processing submission in bulk result upload", e);
-  //     Thread.currentThread().interrupt();
-  //     throw e;
-  //   }
-  //
-  //   return Optional.empty();
-  // }
 
   private Optional<TestResultUpload> processUniversalPipelineResponse(
       CompletableFuture<? extends SubmissionSummary> futureSubmissionSummary)

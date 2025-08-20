@@ -787,7 +787,7 @@ public class HL7Converter {
       // determine what the naming is (i.e. positive/negative vs reactive/non-reactive)
       observationValue.getCe3_NameOfCodingSystem().setValue(HL7_SNOMED_CODE_SYSTEM);
 
-      obx.getObservationValue(0).setData(observationValue);
+      obx.getObx5_ObservationValue(0).setData(observationValue);
     } else {
       // TODO: handle quantitative and nominal result types. See page 145, HL7 v2.5.1 IG
       throw new IllegalArgumentException("Non-ordinal result types are not currently supported");
