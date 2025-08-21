@@ -249,11 +249,10 @@ export async function SendToAIMS(
           );
         }
 
-        telemetry.trackEvent({
-          name: "Message processing failed",
+        telemetry.trackException({
+          exception: new Error(`SendToAimsError: ${errorMessage}`),
           properties: {
             operationId,
-            error: errorMessage,
             messageId: message.messageId,
             errorType:
               error instanceof S3ServiceException ? "S3Error" : "GeneralError",
@@ -265,8 +264,8 @@ export async function SendToAIMS(
     const errorMessage = error instanceof Error ? error.message : String(error);
     context.error(`SendToAIMS function failed: ${errorMessage}`);
 
-    telemetry.trackEvent({
-      name: "SendToAIMS function failed",
+    telemetry.trackException({
+      exception: new Error(`SendToAimsError: ${errorMessage}`),
       properties: {
         operationId,
         error: errorMessage,

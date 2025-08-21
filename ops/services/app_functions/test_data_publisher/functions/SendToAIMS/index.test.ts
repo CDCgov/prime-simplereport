@@ -34,6 +34,7 @@ jest.mock("applicationinsights", () => {
   const defaultClient = {
     trackEvent: jest.fn(),
     trackDependency: jest.fn(),
+    trackException: jest.fn(),
   };
   return {
     setup: jest.fn(() => ({ start: jest.fn() })),
@@ -158,11 +159,10 @@ describe("SendToAIMS", () => {
 
     expect(mockDeleteMessage).not.toHaveBeenCalled();
 
-    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-      name: "Message processing failed",
+    expect(appInsights.defaultClient.trackException).toHaveBeenCalledWith({
+      exception: new Error("SendToAimsError: S3 Upload Failed"),
       properties: {
         operationId: "test-operation-id",
-        error: "S3 Upload Failed",
         messageId: "queue-msg-1",
         errorType: "GeneralError",
       },
