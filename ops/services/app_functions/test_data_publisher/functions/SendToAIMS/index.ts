@@ -249,28 +249,61 @@ export async function SendToAIMS(
           );
         }
 
-        telemetry.trackException({
-          exception: new Error(`SendToAimsError: ${errorMessage}`),
-          properties: {
-            operationId,
-            messageId: message.messageId,
-            errorType:
-              error instanceof S3ServiceException ? "S3Error" : "GeneralError",
-          },
-        });
+        try {
+          telemetry.trackEvent({
+            name: "Message processing failed",
+            properties: {
+              operationId,
+              messageId: message.messageId,
+              errorType:
+                error instanceof S3ServiceException
+                  ? "S3Error"
+                  : "GeneralError",
+              errorMessage,
+            },
+          });
+
+          telemetry.trackException({
+            exception: new Error(`SendToAimsError: ${errorMessage}`),
+            properties: {
+              operationId,
+              messageId: message.messageId,
+              errorType:
+                error instanceof S3ServiceException
+                  ? "S3Error"
+                  : "GeneralError",
+            },
+          });
+        } catch (telemetryError) {
+          context.warn(`Failed to track telemetry: ${telemetryError}`);
+        }
       }
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     context.error(`SendToAIMS function failed: ${errorMessage}`);
 
-    telemetry.trackException({
-      exception: new Error(`SendToAimsError: ${errorMessage}`),
-      properties: {
-        operationId,
-        error: errorMessage,
-      },
-    });
+    try {
+      telemetry.trackEvent({
+        name: "SendToAIMS function failed",
+        properties: {
+          operationId,
+          errorMessage,
+        },
+      });
+
+      telemetry.trackException({
+        exception: new Error(`SendToAimsError: ${errorMessage}`),
+        properties: {
+          operationId,
+          error: errorMessage,
+        },
+      });
+    } catch (telemetryError) {
+      context.warn(
+        `Failed to track function failure telemetry: ${telemetryError}`,
+      );
+    }
     throw error;
   }
 }
