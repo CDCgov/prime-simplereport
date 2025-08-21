@@ -187,7 +187,7 @@ public class TestResultUploadService {
       }
 
       if (content.length > 0) {
-        if (featureFlagsConfig.isAimsBulkUploadEnabled()) {
+        if (featureFlagsConfig.isAimsEntryEnabled()) {
           CompletableFuture<AimsSubmissionSummary> aimsSubmission =
               submitResultsToAIMS(new ByteArrayInputStream(content), org, submissionId);
 
