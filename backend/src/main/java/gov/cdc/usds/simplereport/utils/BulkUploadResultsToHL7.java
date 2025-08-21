@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.APHL_ORG_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
@@ -25,6 +26,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -358,6 +360,12 @@ public class BulkUploadResultsToHL7 {
   }
 
   private FacilityReportInput getOrderingFacilityInput(TestResultRow row) {
+    String orderingFacilityPhoneNumber = row.getOrderingFacilityPhoneNumber().getValue();
+
+    if (StringUtils.isEmpty(orderingFacilityPhoneNumber)) {
+      orderingFacilityPhoneNumber = row.getTestingLabPhoneNumber().getValue();
+    }
+
     return FacilityReportInput.builder()
         .name(row.getOrderingFacilityName().getValue())
         .street(row.getOrderingFacilityStreet().getValue())
@@ -365,27 +373,47 @@ public class BulkUploadResultsToHL7 {
         .city(row.getOrderingFacilityCity().getValue())
         .state(row.getOrderingFacilityState().getValue())
         .zipCode(row.getOrderingFacilityZipCode().getValue())
-        .phone(row.getOrderingFacilityPhoneNumber().getValue())
+        .phone(orderingFacilityPhoneNumber)
         .build();
   }
 
   private SpecimenInput getSpecimenInput(TestResultRow row) {
     var specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
 
+    var providerAddr =
+        new StreetAddress(
+            row.getOrderingProviderStreet().getValue(),
+            row.getOrderingProviderStreet2().getValue(),
+            row.getOrderingProviderCity().getValue(),
+            row.getOrderingProviderState().getValue(),
+            row.getOrderingProviderZipCode().getValue(),
+            null);
+
+    var orderTestDate =
+        convertToZonedDateTime(
+            row.getOrderTestDate().getValue(), resultsUploaderCachingService, providerAddr);
+
+    var specimenCollectionDate =
+        StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
+            ? convertToZonedDateTime(
+                row.getSpecimenCollectionDate().getValue(),
+                resultsUploaderCachingService,
+                providerAddr)
+            : orderTestDate;
+
+    var testingLabSpecimenReceivedDate =
+        StringUtils.isNotBlank(row.getTestingLabSpecimenReceivedDate().getValue())
+            ? convertToZonedDateTime(
+                row.getTestingLabSpecimenReceivedDate().getValue(),
+                resultsUploaderCachingService,
+                providerAddr)
+            : orderTestDate;
+
     return SpecimenInput.builder()
         .snomedTypeCode(specimenCode)
         .snomedDisplay(getSpecimenTypeName(specimenCode))
-        .collectionDate(
-            Date.from(
-                LocalDate.parse(row.getSpecimenCollectionDate().getValue(), DATE_TIME_FORMATTER)
-                    .atStartOfDay(ZoneId.systemDefault())
-                    .toInstant()))
-        .receivedDate(
-            Date.from(
-                LocalDate.parse(
-                        row.getTestingLabSpecimenReceivedDate().getValue(), DATE_TIME_FORMATTER)
-                    .atStartOfDay(ZoneId.systemDefault())
-                    .toInstant()))
+        .collectionDate(Date.from(specimenCollectionDate.toInstant()))
+        .receivedDate(Date.from(testingLabSpecimenReceivedDate.toInstant()))
         .build();
   }
 

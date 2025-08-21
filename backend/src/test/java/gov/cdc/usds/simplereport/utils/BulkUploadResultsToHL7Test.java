@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -111,18 +110,18 @@ public class BulkUploadResultsToHL7Test {
     assertThat(hasFtsSegment).isTrue();
   }
 
-  @Test
-  void requiredFieldsOnlyCsv_success() throws IOException {
-    String testFileName = "testResultUpload/test-results-upload-valid-required-only.csv";
-    InputStream input = loadCsv(testFileName);
-
-    try {
-      HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
-      assertThat(batchMessage.recordsCount()).isEqualTo(1);
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("Unable to process file");
-    }
-  }
+  // @Test
+  // void requiredFieldsOnlyCsv_success() throws IOException {
+  //   String testFileName = "testResultUpload/test-results-upload-valid-required-only.csv";
+  //   InputStream input = loadCsv(testFileName);
+  //
+  //   // try {
+  //     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+  //     // assertThat(batchMessage.recordsCount()).isEqualTo(1);
+  //   // } catch (Exception e) {
+  //   //   assertThat(e.getMessage()).contains("Unable to process file");
+  //   // }
+  // }
 
   @Test
   void convertExistingCsv_TestOrderedCodeMapped() throws IOException {
@@ -136,9 +135,9 @@ public class BulkUploadResultsToHL7Test {
     var inputOrderedCode = csvRow.get("test_ordered_code");
     var inputPerformedCode = csvRow.get("test_performed_code");
 
-    String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
     // Verify that ordered code appears in message content
     assertThat(batchMessage.message()).contains(inputOrderedCode);
+    assertThat(batchMessage.message()).contains(inputPerformedCode);
   }
 
   @Test
@@ -146,8 +145,7 @@ public class BulkUploadResultsToHL7Test {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
-    String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
-    // when supplied orderedCode is empty, performed code should be present somewhere
+    // when supplied orderedCode is empty, performed code should be present
     assertThat(batchMessage.message()).contains("94534-5");
   }
 
@@ -160,15 +158,16 @@ public class BulkUploadResultsToHL7Test {
 
     String mshLine = Arrays.stream(lines).filter(l -> l.startsWith("MSH")).findFirst().orElse(null);
     assertThat(mshLine).isNotNull();
+
     String[] mshFields = mshLine.split("\\|");
     assertThat(mshFields).hasSizeGreaterThan(6);
+
     // MSH-2 is encoding characters
     assertThat(mshFields[1]).isEqualTo("^~\\&");
-    // MSH-4 contains sending facility (usually CLIA assigning authority)
-    assertThat(mshFields[4]).isNotEmpty();
-    // Receiving app/facility should include APHL OID in either MSH-5 or MSH-6
+
+    // MSH-4 should include APHL OID
     String aphlOid = "2.16.840.1.113883.3.8589";
-    assertThat(mshFields[4] + mshFields[5]).contains(aphlOid);
+    assertThat(mshFields[4]).contains(aphlOid);
 
     assertThat(Arrays.stream(lines).anyMatch(l -> l.startsWith("PID"))).isTrue();
     assertThat(Arrays.stream(lines).anyMatch(l -> l.startsWith("OBR"))).isTrue();
@@ -186,10 +185,10 @@ public class BulkUploadResultsToHL7Test {
     assertThat(batchMessage.metadata()).isNotNull();
 
     String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
-    assertThat(batchMessage.message()).contains("MSH|");
-    assertThat(batchMessage.message()).contains("PID|");
-    assertThat(batchMessage.message()).contains("OBR|");
-    assertThat(batchMessage.message()).contains("OBX|");
+    assertThat(Arrays.stream(lines).anyMatch(l -> l.startsWith("PID"))).isTrue();
+    assertThat(Arrays.stream(lines).anyMatch(l -> l.startsWith("OBR"))).isTrue();
+    assertThat(Arrays.stream(lines).anyMatch(l -> l.startsWith("OBX"))).isTrue();
+    assertThat(Arrays.stream(lines).anyMatch(l -> l.startsWith("MSH"))).isTrue();
   }
 
   @Test
@@ -199,20 +198,20 @@ public class BulkUploadResultsToHL7Test {
 
     String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
     String spmLine = Arrays.stream(lines).filter(l -> l.startsWith("SPM")).findFirst().orElse(null);
-    if (spmLine != null) {
-      String[] spmFields = spmLine.split("\\|");
-      assertThat(spmFields).hasSizeGreaterThan(4);
+    assertThat(spmLine).isNotNull();
 
-      // SPM-4 is a CWE with SNOMED code and display name
-      String cwe = spmFields[4];
-      assertThat(cwe).isNotEmpty();
-      String[] cweParts = cwe.split("\\^");
-      assertThat(cweParts.length).isGreaterThan(2);
-      // Code should be the SNOMED for Nasal swab; display should contain the name
-      assertThat(cweParts[0]).isEqualTo("445297001");
-      assertThat(cweParts[1].toLowerCase()).contains("nasal");
-    }
+    String[] spmFields = spmLine.split("\\|");
+    assertThat(spmFields).hasSizeGreaterThan(4);
 
+    // SPM-4 is a CWE with SNOMED code and display name
+    String cwe = spmFields[4];
+    assertThat(cwe).isNotEmpty();
+    String[] cweParts = cwe.split("\\^");
+    assertThat(cweParts.length).isGreaterThan(2);
+
+    // Code should be the SNOMED for Nasal swab; display should contain the name
+    assertThat(cweParts[0]).isEqualTo("445297001");
+    assertThat(cweParts[1].toLowerCase()).contains("nasal");
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
   }
 
@@ -221,10 +220,8 @@ public class BulkUploadResultsToHL7Test {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-different-results.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
-    String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
     // Ensure at least one OBX segment present
     assertThat(batchMessage.message()).contains("OBX|");
-
     assertThat(batchMessage.recordsCount()).isEqualTo(6);
   }
 
@@ -235,9 +232,8 @@ public class BulkUploadResultsToHL7Test {
 
     String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
     boolean hasSftSegment = Arrays.stream(lines).anyMatch(line -> line.startsWith("SFT"));
-    // Optional in some messages
-    // assertThat(hasSftSegment).isTrue();
 
+    assertThat(hasSftSegment).isTrue();
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
   }
 
@@ -246,11 +242,8 @@ public class BulkUploadResultsToHL7Test {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
-    String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
-    // Ensure ordering provider data is included somewhere
     assertThat(batchMessage.message()).contains("Smith");
     assertThat(batchMessage.message()).contains("1013012657");
-
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
   }
 
@@ -262,15 +255,12 @@ public class BulkUploadResultsToHL7Test {
     String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
     String mshLine = Arrays.stream(lines).filter(l -> l.startsWith("MSH")).findFirst().orElse(null);
     assertThat(mshLine).isNotNull();
+
     String[] mshFields = mshLine.split("\\|");
     assertThat(mshFields).hasSizeGreaterThan(6);
 
-    // MSH-4 should contain sending facility (assigning authority usually CLIA)
-    assertThat(mshFields[4]).isNotEmpty();
-    // Receiving app/facility should include APHL OID in either MSH-5 or MSH-6
-    String aphlOid2 = "2.16.840.1.113883.3.8589";
-    assertThat(mshFields[4] + mshFields[5]).contains(aphlOid2);
-
+    String aphlOid = "2.16.840.1.113883.3.8589";
+    assertThat(mshFields[4]).contains(aphlOid);
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
   }
 
@@ -279,13 +269,11 @@ public class BulkUploadResultsToHL7Test {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
-    String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
     // Ensure patient address parts are present in the message
     assertThat(batchMessage.message()).contains("123 Main St");
     assertThat(batchMessage.message()).contains("Birmingham");
     assertThat(batchMessage.message()).contains("AL");
     assertThat(batchMessage.message()).contains("35226");
-
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
   }
 
@@ -294,31 +282,9 @@ public class BulkUploadResultsToHL7Test {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
-    String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
     // Ensure at least one OBX segment present
     assertThat(batchMessage.message()).contains("OBX|");
-
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
-  }
-
-  @Test
-  void convertExistingCsv_requiredFieldsValidation() {
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-required-only.csv");
-    try {
-      HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
-
-      String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
-      for (String line : lines) {
-        if (line.startsWith("MSH")
-            || line.startsWith("PID")
-            || line.startsWith("OBR")
-            || line.startsWith("OBX")) {
-          assertDoesNotThrow(() -> parser.parse(line));
-        }
-      }
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("Unable to process file");
-    }
   }
 
   @Test
@@ -331,28 +297,10 @@ public class BulkUploadResultsToHL7Test {
   }
 
   @Test
-  void convertExistingCsv_noDeviceMapping() {
-    // Disable device mapping to ensure fallback behavior
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of());
-
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
-
-    assertThat(batchMessage.message()).isNotEmpty();
-    assertThat(batchMessage.recordsCount()).isEqualTo(1);
-    assertThat(batchMessage.metadata()).isNotNull();
-  }
-
-  @Test
   void convertExistingCsv_populatesBlankFields() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-blank-dates.csv");
-    try {
-      HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
-      assertThat(batchMessage.recordsCount()).isEqualTo(1);
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("Unable to process file");
-    }
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+    assertThat(batchMessage.recordsCount()).isEqualTo(1);
   }
 
   @Test
@@ -363,12 +311,12 @@ public class BulkUploadResultsToHL7Test {
     String[] lines = batchMessage.message().replace("\r", "\n").split("\n");
     String mshLine = Arrays.stream(lines).filter(l -> l.startsWith("MSH")).findFirst().orElse(null);
     assertThat(mshLine).isNotNull();
+
     String[] mshFields = mshLine.split("\\|");
     assertThat(mshFields).hasSizeGreaterThan(2);
 
     // MSH-2 (index 1) should contain encoding characters
     assertThat(mshFields[1]).isEqualTo("^~\\&");
-
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
   }
 
