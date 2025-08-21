@@ -199,7 +199,7 @@ public class BulkUploadResultsToHL7 {
                 try {
                   return convertRowToHL7(fileRow);
                 } catch (HL7Exception e) {
-                  // TODO: address exception gracefully
+                  // return empty string for message
                   return "";
                 }
               });
@@ -273,8 +273,9 @@ public class BulkUploadResultsToHL7 {
       parts.add(generateTrailingSegment("FTS", 1));
 
       batchMessage = String.join("\n", parts);
-    } catch (Exception e) {
+    } catch (NullPointerException e) {
       log.error("Encountered an error converting CSV to Batch HL7 Message");
+      throw new CsvProcessingException("Unable to generate HL7 Segments");
     }
 
     return new HL7BatchMessage(batchMessage, batchMessageCount, diseasesReported);

@@ -146,6 +146,7 @@ public class TestResultUploadService {
   @Value("${aims.encryption-key}")
   private String aimsEncryptionKey;
 
+  private static final int SUCCESS_CODE = 200;
   private static final int FIVE_MINUTES_MS = 300 * 1000;
   public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
   private static final String ORDER_TEST_DATE_COLUMN_NAME = "order_test_date";
@@ -484,7 +485,7 @@ public class TestResultUploadService {
                 log.info("Uploaded HL7 file {} in {} ms", objectKey, elapsed);
 
                 int statusCode = putResponse.sdkHttpResponse().statusCode();
-                boolean isSuccessful = statusCode == 200;
+                boolean isSuccessful = statusCode == SUCCESS_CODE;
 
                 if (isSuccessful) {
                   s3Response = new S3UploadResponse(objectKey, hl7Batch.recordsCount(), true);
@@ -504,7 +505,7 @@ public class TestResultUploadService {
 
                 return new AimsSubmissionSummary(
                     submissionId, org, s3Response, hl7Batch.metadata());
-              } catch (Exception e) {
+              } catch (CsvProcessingException e) {
                 log.error("Failed to upload HL7 batch to S3", e);
                 s3Response = new S3UploadResponse(objectKey, 0, e.getMessage());
                 return new AimsSubmissionSummary(submissionId, org, s3Response, new HashMap<>());

@@ -66,7 +66,6 @@ public class S3UploadResponse implements GenericResponse {
   }
 
   @Override
-  // TODO: Derive some level of warnings from S3 calls
   public FeedbackMessage[] getWarnings() {
     return new FeedbackMessage[0];
   }
