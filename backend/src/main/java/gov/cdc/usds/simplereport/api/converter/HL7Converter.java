@@ -53,6 +53,7 @@ import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -196,16 +197,16 @@ public class HL7Converter {
           messageTimestamp);
 
       // Populate the list of OBX associated with this OBR
-      int observationResultIndex = 0;
-      for (TestDetailsInput testDetail : entry.getValue()) {
-        OBX observationResult = orderGroup.getOBSERVATION(observationResultIndex).getOBX();
+      List<TestDetailsInput> obxTestDetails = entry.getValue();
+
+      for (int obxIndex = 0; obxIndex < obxTestDetails.size(); obxIndex++) {
+        OBX observationResult = orderGroup.getOBSERVATION(obxIndex).getOBX();
         populateObservationResult(
             observationResult,
-            observationResultIndex + 1,
+            obxIndex + 1,
             performingFacility,
             specimenInput.getCollectionDate(),
-            testDetail);
-        observationResultIndex++;
+            obxTestDetails.get(obxIndex));
       }
 
       // Only a single specimen can be associated with the OBR
@@ -226,13 +227,9 @@ public class HL7Converter {
     Map<String, List<TestDetailsInput>> testOrderLoincToTestDetailsMap = new HashMap<>();
     for (TestDetailsInput testDetail : testDetailsInputList) {
       String testOrderLoinc = testDetail.getTestOrderLoinc();
-      if (!testOrderLoincToTestDetailsMap.containsKey(testOrderLoinc)) {
-        testOrderLoincToTestDetailsMap.put(
-            testOrderLoinc,
-            testDetailsInputList.stream()
-                .filter(t -> t.getTestOrderLoinc().equals(testOrderLoinc))
-                .toList());
-      }
+      testOrderLoincToTestDetailsMap
+          .computeIfAbsent(testOrderLoinc, key -> new ArrayList<>())
+          .add(testDetail);
     }
     return testOrderLoincToTestDetailsMap;
   }
