@@ -808,6 +808,10 @@ public class HL7Converter {
         .getTs1_Time()
         .setValue(formatToHL7DateTime(specimenCollectionDate));
 
+    obx.getObx15_ProducerSReference().getCe1_Identifier().setValue(performingFacility.getClia());
+    obx.getObx15_ProducerSReference().getCe2_Text().setValue(performingFacility.getName());
+    obx.getObx15_ProducerSReference().getCe3_NameOfCodingSystem().setValue("CLIA");
+
     // "Time at which the testing was performed."
     // See page 143, HL7 v2.5.1 IG
     obx.getObx19_DateTimeOfTheAnalysis()
