@@ -8147,10 +8147,10 @@ eslint-plugin-react@^7.27.1:
     string.prototype.matchall "^4.0.11"
     string.prototype.repeat "^1.0.0"
 
-eslint-plugin-storybook@^9.1.2:
-  version "9.1.2"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-storybook/-/eslint-plugin-storybook-9.1.2.tgz#257ccb2b0af4e33119e8f63f43360d4a022960ac"
-  integrity sha512-EQa/kChrYrekxv36q3pvW57anqxMlAP4EdPXEDyA/EDrCQJaaTbWEdsMnVZtD744RjPP0M5wzaUjHbMhNooAwQ==
+eslint-plugin-storybook@^9.1.3:
+  version "9.1.3"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-storybook/-/eslint-plugin-storybook-9.1.3.tgz#a52c0a2fe675307fe8dd9595ea7bc8ae2429a357"
+  integrity sha512-CR576JrlvxLY2ebJIyR6z/YWy6+iyVsB7ORjPrwM3a9SshlRnAntdEn6hyMYbQmFoPIv7kYcRiDznDXBQ/jitA==
   dependencies:
     "@typescript-eslint/utils" "^8.8.1"
 
@@ -8161,18 +8161,18 @@ eslint-plugin-testing-library@^5.0.1:
   dependencies:
     "@typescript-eslint/utils" "^5.58.0"
 
-eslint-plugin-testing-library@^7.6.4:
-  version "7.6.4"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-testing-library/-/eslint-plugin-testing-library-7.6.4.tgz#3623465bb7e1958ff33e996a9fe5eb437f29c976"
-  integrity sha512-Ord5D9vksSVEdqVT1yUoJrh8rs5LU1P1nThERqEQV0TzoRaPBqoi4mIj3poqKetLgyrfHmGBOrigh3H8qxRGTQ==
+eslint-plugin-testing-library@^7.6.6:
+  version "7.6.6"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-testing-library/-/eslint-plugin-testing-library-7.6.6.tgz#b0a1f42b32670ede4967f546410a0b0b0dedba8f"
+  integrity sha512-eSexC+OPhDLuCpLbFEC7Qrk0x4IE4Mn+UW0db8YAhUatVB6CzGHdeHv4pyoInglbhhQc0Z9auY/2HKyMZW5s7Q==
   dependencies:
     "@typescript-eslint/scope-manager" "^8.15.0"
     "@typescript-eslint/utils" "^8.15.0"
 
-eslint-plugin-unused-imports@4.1.4:
-  version "4.1.4"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-unused-imports/-/eslint-plugin-unused-imports-4.1.4.tgz#62ddc7446ccbf9aa7b6f1f0b00a980423cda2738"
-  integrity sha512-YptD6IzQjDardkl0POxnnRBhU1OEePMV0nd6siHaRBbd+lyh6NAhFEobiznKU7kTsSsDeSD62Pe7kAM1b7dAZQ==
+eslint-plugin-unused-imports@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-unused-imports/-/eslint-plugin-unused-imports-4.2.0.tgz#d83b23be66ae7713734c884df95988f039eb8362"
+  integrity sha512-hLbJ2/wnjKq4kGA9AUaExVFIbNzyxYdVo49QZmKCnhk5pc9wcYRbfgLHvWJ8tnsdcseGhoUAddm9gn/lt+d74w==
 
 eslint-scope@5.1.1, eslint-scope@^5.1.1:
   version "5.1.1"
