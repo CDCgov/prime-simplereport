@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0 # Disable shallow clones: we need to be able to push
 
       - name: Set up JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
