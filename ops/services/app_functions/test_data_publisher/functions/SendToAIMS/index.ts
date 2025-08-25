@@ -28,15 +28,15 @@ export function formatInterPartnerFilename(
   sof: string,
 ): string {
   // Format: InterPartner~DatapultELRPivot~Simple-Report~AIMSPlatform~<SE>~<RE>~<Timestamp>~STOP~<SOF>
-  const uc = "DatapultELRPivot";
-  const sj = "Simple-Report";
-  const rj = "AIMSPlatform";
-  const se = env; //sending environment we could potentially consolidate to one variable
-  const re = env; //recieving environment
+  const use_case = "DatapultELRPivot";
+  const sending_jurisdiction = "Simple-Report";
+  const receiving_jurisdiction = "AIMSPlatform";
+  const sending_environment = env;
+  const receiving_environment = env;
   const formattedTimestamp = formatTimestamp(timestamp);
   const stop = "STOP";
 
-  return `InterPartner~${uc}~${sj}~${rj}~${se}~${re}~${formattedTimestamp}~${stop}~${sof}`;
+  return `InterPartner~${use_case}~${sending_jurisdiction}~${receiving_jurisdiction}~${sending_environment}~${receiving_environment}~${formattedTimestamp}~${stop}~${sof}`;
 }
 
 export function formatTimestamp(date: Date): string {
@@ -139,7 +139,7 @@ export async function SendToAIMS(
 
         // Parse messageID from HL7
         const messageId = hl7Message.messageId;
-        const filename = hl7Message.filename || `hl7-message-${Date.now()}.hl7`;
+        const filename = hl7Message.filename;
         const objectKey = `${ENV.AIMS_USER_ID}/SendTo/${filename}`;
 
         // Populate metadata following AIMS pattern
@@ -167,7 +167,17 @@ export async function SendToAIMS(
         // Track S3 dependency
         const startTime = Date.now();
         try {
-          await client.send(command);
+          const response = await client.send(command);
+
+          // Check if the response indicates success
+          if (
+            response.$metadata?.httpStatusCode &&
+            response.$metadata.httpStatusCode >= 400
+          ) {
+            throw new Error(
+              `S3 upload failed with status ${response.$metadata.httpStatusCode}`,
+            );
+          }
 
           telemetry.trackDependency({
             target: ENV.AIMS_OUTBOUND_ENDPOINT,
