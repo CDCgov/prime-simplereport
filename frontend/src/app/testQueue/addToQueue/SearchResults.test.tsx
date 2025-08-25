@@ -90,7 +90,9 @@ describe("SearchResults", () => {
         </RouterWithFacility>
       );
 
-      expect(screen.getByText("No results found.")).toBeInTheDocument();
+      expect(
+        screen.getByText("No results found in the last 30 days.")
+      ).toBeInTheDocument();
     });
 
     it("should show add patient button", async () => {
