@@ -5,8 +5,6 @@ header.usa-header {
 }
 
 .usa-nav-container.prime-header {
-  background-color: $brand-darker;
-  color: $brand-lightest;
   max-width: $site-max-width;
 
   .prime-organization-name {
@@ -15,7 +13,24 @@ header.usa-header {
   }
 
   .prime-nav-link {
+    color: $brand-lightest;
     font-size: 1.2rem;
+    position: relative;
+    display: inline-block;
+
+    &:hover {
+      color: $brand-lightest;
+    }
+
+    &.active-nav-item::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 2px;
+      width: 100%;
+      height: 4px;
+      background-color: $brand-lightest;
+    }
   }
 
   .prime-facility-select {
@@ -31,9 +46,9 @@ header.usa-header {
     }
   }
 
-  .usa-navbar {
-    margin-right: 1rem;
-  }
+  // .usa-navbar {
+  //   margin-right: 1rem;
+  // }
 
   .role-tag {
     border-bottom: 1px #dfe1e2 solid;
