@@ -125,6 +125,7 @@ export type Condition = {
   __typename?: "Condition";
   code: Scalars["String"]["output"];
   display: Scalars["String"]["output"];
+  snomedName?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type CreateDeviceType = {

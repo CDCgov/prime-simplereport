@@ -15,6 +15,7 @@ import feign.Response;
 import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -85,7 +86,11 @@ class ConditionServiceTest {
     CompletableFuture<Void> future =
         CompletableFuture.runAsync(
             () -> {
-              this.conditionService.syncConditions();
+              try {
+                this.conditionService.syncConditions();
+              } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+              }
             });
     future.get();
 
@@ -112,7 +117,11 @@ class ConditionServiceTest {
     CompletableFuture<Void> future =
         CompletableFuture.runAsync(
             () -> {
-              this.conditionService.syncConditions();
+              try {
+                this.conditionService.syncConditions();
+              } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+              }
             });
     future.get();
 
@@ -135,7 +144,11 @@ class ConditionServiceTest {
     CompletableFuture<Void> future =
         CompletableFuture.runAsync(
             () -> {
-              this.conditionService.syncConditions();
+              try {
+                this.conditionService.syncConditions();
+              } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+              }
             });
     future.get();
 
@@ -156,7 +169,11 @@ class ConditionServiceTest {
     CompletableFuture<Void> future =
         CompletableFuture.runAsync(
             () -> {
-              this.conditionService.syncConditions();
+              try {
+                this.conditionService.syncConditions();
+              } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+              }
             });
     assertThrows(ExecutionException.class, future::get);
   }
@@ -174,7 +191,11 @@ class ConditionServiceTest {
     CompletableFuture<Void> future =
         CompletableFuture.runAsync(
             () -> {
-              this.conditionService.syncConditions();
+              try {
+                this.conditionService.syncConditions();
+              } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+              }
             });
     future.get();
 

@@ -12,6 +12,10 @@ import gov.cdc.usds.simplereport.db.model.LoincStaging;
 import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +30,8 @@ import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Enumerations.PublicationStatus;
 import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +40,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @SuppressWarnings({"checkstyle:TodoComment"})
 public class ConditionService {
+
+  @Value("${umls.api-key}")
+  private String umlsApiKey;
 
   private final TerminologyExchangeClient tesClient;
   private final ConditionRepository conditionRepository;
@@ -74,7 +83,7 @@ public class ConditionService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @Async
-  public void syncConditions() {
+  public void syncConditions() throws IOException, InterruptedException {
     // TODO add handling for HTTP 429 in case we get into a rate limiting situation.
     int conditionsLoaded = 0;
 
@@ -173,15 +182,17 @@ public class ConditionService {
   }
 
   // TODO rename to something like findOrSaveCondition
-  private Condition saveCondition(CodeableConcept conditionConcept) {
+  private Condition saveCondition(CodeableConcept conditionConcept)
+      throws IOException, InterruptedException {
     String code = conditionConcept.getCoding().get(0).getCode();
+    String snomedName = getSnomedConditionInfo(code).getJSONObject("result").get("name").toString();
     String display = conditionConcept.getText();
 
     Condition foundCondition = conditionRepository.findConditionByCode(code);
 
     if (foundCondition == null) {
       log.info("Saving new condition {}", display);
-      return conditionRepository.save(new Condition(code, display));
+      return conditionRepository.save(new Condition(code, display, snomedName));
     }
     log.info("Found existing condition {}", display);
     return foundCondition;
@@ -191,5 +202,22 @@ public class ConditionService {
   public void clearConditions() {
     conditionRepository.deleteAll();
     log.info("All conditions deleted.");
+  }
+
+  private JSONObject getSnomedConditionInfo(String conditionSnomedCode)
+      throws IOException, InterruptedException {
+    String uriString =
+        String.format(
+            "https://uts-ws.nlm.nih.gov/rest/content/current/source/SNOMEDCT_US/%s?apiKey=%s&pageSize=500",
+            conditionSnomedCode, umlsApiKey);
+
+    URI uri = URI.create(uriString);
+
+    HttpClient client = HttpClient.newHttpClient();
+    HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
+
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+    return new JSONObject(response.body());
   }
 }
