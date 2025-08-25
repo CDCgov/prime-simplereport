@@ -97,7 +97,9 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           "display-flex flex-column flex-align-center margin-x-7 margin-y-2"
         }
       >
-        <div className="margin-bottom-105">No results found.</div>
+        <div className="margin-bottom-105">
+          No results found in the last 30 days.
+        </div>
         <div>
           Check for spelling errors
           {props.canAddPatient ? (

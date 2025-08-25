@@ -57,7 +57,7 @@ const UsersSideNav: React.FC<Props> = ({
                 No results found.
               </div>
               <div className={"padding-105 padding-left-3 padding-y-0"}>
-                Check for spelling errors or
+                Check for asdfspelling errors or
               </div>
               <div className={"padding-1 padding-left-3 padding-bottom-4"}>
                 <Button
