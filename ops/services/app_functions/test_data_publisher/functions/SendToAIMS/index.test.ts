@@ -236,6 +236,46 @@ describe("SendToAIMS", () => {
       },
     });
   });
+
+  it("should handle S3 non-200 status codes as failures", async () => {
+    const testMessage = {
+      messageId: "queue-msg-1",
+      popReceipt: "pop-receipt-1",
+      messageText:
+        "MSH|^~\\&|SimpleReport|Test|AIMS|Prod|20240115103045||ORU^R01|TEST123|T|2.3",
+    };
+
+    mockReceiveMessages.mockResolvedValue({
+      receivedMessageItems: [testMessage],
+    });
+
+    mockS3Send.mockResolvedValue({
+      $metadata: { httpStatusCode: 400 },
+    });
+
+    await SendToAIMS(timer, context);
+
+    expect(mockDeleteMessage).not.toHaveBeenCalled();
+
+    expect(appInsights.defaultClient.trackException).toHaveBeenCalledWith({
+      exception: new Error("SendToAimsError: S3 upload failed with status 400"),
+      properties: {
+        operationId: "test-operation-id",
+        messageId: "queue-msg-1",
+        errorType: "GeneralError",
+      },
+    });
+
+    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+      name: "Message processing failed",
+      properties: {
+        operationId: "test-operation-id",
+        messageId: "queue-msg-1",
+        errorType: "GeneralError",
+        errorMessage: "S3 upload failed with status 400",
+      },
+    });
+  });
 });
 
 describe("formatTimestamp", () => {
