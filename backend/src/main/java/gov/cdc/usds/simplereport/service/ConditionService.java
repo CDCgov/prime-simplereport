@@ -192,10 +192,14 @@ public class ConditionService {
 
     if (foundCondition == null) {
       log.info("Saving new condition {}", display);
-      return conditionRepository.save(new Condition(code, display, snomedName));
+      return conditionRepository.save(new Condition(code, display, null));
+    } else {
+      foundCondition.setDisplay(display);
+      foundCondition.setSnomedName(snomedName);
+      return conditionRepository.save(foundCondition);
     }
-    log.info("Found existing condition {}", display);
-    return foundCondition;
+    //    log.info("Found existing condition {}", display);
+    //    return foundCondition;
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
