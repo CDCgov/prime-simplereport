@@ -127,10 +127,11 @@ export const ResultScaleTypeOptions: {
 ];
 
 export const buildConditionsOptionList = (conditions: Condition[]) => {
+  console.log("here's the conditions list: " + JSON.stringify(conditions));
   const options = conditions.map((condition) => {
     const fullConditiondisplay = condition.snomedName
-      ? `${condition.display}  -  ${condition.snomedName}  -  ${condition.code}`
-      : `${condition.display}  -  ${condition.code}`;
+      ? `${condition.display} - ${condition.snomedName}  -  ${condition.code}`
+      : `${condition.display} - ${condition.code}`;
     return {
       value: condition.code,
       label: fullConditiondisplay,

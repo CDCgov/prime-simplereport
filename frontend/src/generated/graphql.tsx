@@ -3076,6 +3076,7 @@ export type GetConditionsQuery = {
     __typename?: "Condition";
     code: string;
     display: string;
+    snomedName?: string | null;
   }>;
 };
 
@@ -9629,6 +9630,7 @@ export const GetConditionsDocument = gql`
     conditions {
       code
       display
+      snomedName
     }
   }
 `;
