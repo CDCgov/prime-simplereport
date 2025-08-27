@@ -180,7 +180,6 @@ export async function SendToAIMS(
           }
 
           telemetry.trackDependency({
-            target: ENV.AIMS_OUTBOUND_ENDPOINT,
             name: "S3 PutObject",
             data: objectKey,
             duration: Date.now() - startTime,
@@ -189,7 +188,6 @@ export async function SendToAIMS(
           });
         } catch (s3Error) {
           telemetry.trackDependency({
-            target: ENV.AIMS_OUTBOUND_ENDPOINT,
             name: "S3 PutObject",
             data: objectKey,
             duration: Date.now() - startTime,

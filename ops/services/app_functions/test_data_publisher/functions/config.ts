@@ -20,7 +20,6 @@ export const ENV = (() => {
     AIMS_ACCESS_KEY_ID: "AWS access key ID for connecting to AIMS",
     AIMS_SECRET_ACCESS_KEY: "AWS secret access key for connecting to AIMS",
     AIMS_KMS_ENCRYPTION_KEY: "KMS encryption key for sending data to AIMS",
-    AIMS_OUTBOUND_ENDPOINT: "destination endpoint for sending data to AIMS",
     AIMS_USER_ID: "AIMS user ID for S3 object key prefix",
     AIMS_ENVIRONMENT: "AIMS environment (Test or Prod) for filename formatting",
     AIMS_BUCKET_NAME: "destination endpoint for sending data to AIMS",
