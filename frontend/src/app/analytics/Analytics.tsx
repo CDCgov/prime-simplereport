@@ -2,6 +2,7 @@ import React, { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment/moment";
 import classNames from "classnames";
+import { useFeature } from "flagged";
 
 import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
@@ -78,7 +79,7 @@ export const Analytics = (props: Props) => {
   const [endDate, setEndDate] = useState<string>(
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
-
+  let dataRetentionFlag = useFeature("dataRetentionDisabled");
   const supportedDiseaseList = useSupportedDiseaseList();
 
   const updateFacility = ({
@@ -144,6 +145,9 @@ export const Analytics = (props: Props) => {
   const negativeTests = totalTests - positiveTests;
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
+
+  let dataRetentionDate = new Date();
+  dataRetentionDate.setDate(new Date().getDate() - 30);
 
   return (
     <div className="prime-home flex-1">
@@ -214,18 +218,26 @@ export const Analytics = (props: Props) => {
               </div>
               {dateRange === "custom" && (
                 <div className="grid-row grid-gap margin-top-2">
-                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
+                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 usa-datepicker">
                     <label className={classNames("usa-label")}>Begin</label>
                     <input
                       id={"startDate"}
                       data-testid={"startDate"}
                       type={"date"}
                       max={formatDate(new Date())}
+                      min={
+                        dataRetentionFlag ? formatDate(dataRetentionDate) : ""
+                      }
+                      data-min-date={
+                        dataRetentionFlag ? formatDate(dataRetentionDate) : ""
+                      }
                       className={classNames("usa-input")}
                       aria-label={"Enter start date"}
                       onChange={(e) => {
                         if (Date.parse(e.target.value)) {
-                          const d = moment(e.target.value).toDate();
+                          let d = moment(e.target.value).toDate();
+                          const minD = moment(e.target.min).toDate();
+                          d = d < minD ? minD : d;
                           const startDateString = setStartTimeForDateRange(
                             new Date(d)
                           ).toLocaleDateString();
