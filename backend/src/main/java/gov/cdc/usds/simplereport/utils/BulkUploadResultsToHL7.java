@@ -95,14 +95,10 @@ public class BulkUploadResultsToHL7 {
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
 
-  private static String orEmpty(String value) {
-    return value == null ? "" : value;
-  }
-
   private String generateHD(String namespaceId, String universalId, String universalIdType) {
-    namespaceId = orEmpty(namespaceId);
-    universalId = orEmpty(universalId);
-    universalIdType = orEmpty(universalIdType);
+    namespaceId = Objects.toString(namespaceId, "");
+    universalId = Objects.toString(universalId, "");
+    universalIdType = Objects.toString(universalIdType, "");
 
     if (namespaceId.isEmpty() && universalId.isEmpty() && universalIdType.isEmpty()) {
       return "";
@@ -199,8 +195,7 @@ public class BulkUploadResultsToHL7 {
                 try {
                   return convertRowToHL7(fileRow);
                 } catch (HL7Exception e) {
-                  // return empty string for message
-                  return "";
+                  throw new RuntimeException(e);
                 }
               });
 
