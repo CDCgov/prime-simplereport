@@ -115,8 +115,8 @@ public class HL7Converter {
    * @param processingId indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
    * @param orderId used to populate the Filler Order Number in OBR-3 and ORC-3. This should be the
-   *     TestEvent id for single entry or the accession number for bulk upload. This parameter is
-   *     not the same as the message control id in MSH-10 which is randomly generated.
+   *     test event's TestOrderId for single entry or the accession number for bulk upload. This
+   *     parameter is not the same as the message control id in MSH-10 which is randomly generated.
    * @return ORU_R01 message
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
@@ -134,7 +134,8 @@ public class HL7Converter {
       String orderId)
       throws DataTypeException, IllegalArgumentException {
     // Lab reports from single entry and bulk upload should always have order id already populated.
-    // Single entry would use TestEvent internal id which is always required. Bulk upload would use
+    // Single entry would use the test event's TestOrderId which is always required. Bulk upload
+    // would use
     // Accession Number which is also required.
     if (StringUtils.isBlank(orderId)) {
       throw new IllegalArgumentException("Missing orderId for lab report message");
