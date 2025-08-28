@@ -35,7 +35,6 @@ function valOrThrow(name: keyof typeof DESC) {
 let memo: { [K in keyof typeof DESC]: string } | null = null;
 
 export function getEnv() {
-  // Only memoize a *resolved* snapshot.
   if (!memo) {
     const cfg = {} as { [K in keyof typeof DESC]: string };
     (Object.keys(DESC) as (keyof typeof DESC)[]).forEach((k) => {
@@ -47,7 +46,6 @@ export function getEnv() {
   return memo;
 }
 
-// For backward compatibility, export ENV that calls getEnv()
 export const ENV = new Proxy({} as { [K in keyof typeof DESC]: string }, {
   get(target, prop) {
     return getEnv()[prop as keyof typeof DESC];
