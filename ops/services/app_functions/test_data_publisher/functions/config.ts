@@ -2,16 +2,20 @@ function readEnv() {
   const v = (name: string, description: string) => {
     const raw = (process.env[name] ?? "").trim();
 
+    console.log(
+      `ENV ${name}: ${raw.substring(0, 50)}${raw.length > 50 ? "..." : ""}`,
+    );
+
     if (/^@Microsoft\.KeyVault\((SecretUri=|VaultName=)/i.test(raw)) {
-      throw new Error(
-        `KeyVaultReferenceNotResolved:${name} - Key Vault secret not resolved. Function app may need restart or identity permissions check.`,
-      );
+      const error = `KeyVaultReferenceNotResolved:${name} - Key Vault secret not resolved. Function app may need restart or identity permissions check.`;
+      console.error(error);
+      throw new Error(error);
     }
 
     if (!raw) {
-      throw new Error(
-        `MissingEnv:${name} - The ${description} must be provided via the ${name} environment variable, but this variable was empty.`,
-      );
+      const error = `MissingEnv:${name} - The ${description} must be provided via the ${name} environment variable, but this variable was empty.`;
+      console.error(error);
+      throw new Error(error);
     }
 
     return raw;
