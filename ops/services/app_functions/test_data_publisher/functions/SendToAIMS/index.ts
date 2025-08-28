@@ -153,9 +153,6 @@ export async function SendToAIMS(
           AIMSPlatformSenderMessageId: messageId,
           Base64Encoded: "False",
         };
-        if (ENV.AIMS_BUCKET_NAME.includes("/")) {
-          throw new Error(`InvalidBucketName:${ENV.AIMS_BUCKET_NAME}`);
-        }
         const uploadParams = {
           Bucket: ENV.AIMS_BUCKET_NAME,
           Key: objectKey,
