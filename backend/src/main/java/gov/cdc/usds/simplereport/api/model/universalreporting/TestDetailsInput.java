@@ -19,5 +19,4 @@ public class TestDetailsInput {
   @NonNull private final String resultValue;
   @NonNull private final Date resultDate;
   private final String resultInterpretation;
-  private final String correctionStatus;
 }

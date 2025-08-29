@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput
 import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +57,8 @@ public class UniversalReportService {
               testDetailsInputList,
               gitProperties,
               aimsProcessingModeCode,
-              String.valueOf(UUID.randomUUID()));
+              String.valueOf(UUID.randomUUID()),
+              TestCorrectionStatus.ORIGINAL);
       return parser.encode(message);
     } catch (HL7Exception e) {
       log.error("Encountered an error converting the form data to HL7");

@@ -95,7 +95,8 @@ public class HL7Converter {
         convertToTestDetailsInputList(testEvent),
         gitProperties,
         processingId,
-        testEvent.getTestOrderId().toString());
+        testEvent.getTestOrderId().toString(),
+        testEvent.getCorrectionStatus());
   }
 
   /**
@@ -117,6 +118,8 @@ public class HL7Converter {
    * @param orderId used to populate the Filler Order Number in OBR-3 and ORC-3. This should be the
    *     test event's TestOrderId for single entry or the accession number for bulk upload. This
    *     parameter is not the same as the message control id in MSH-10 which is randomly generated.
+   * @param correctionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
+   *     Status
    * @return ORU_R01 message
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
@@ -131,7 +134,8 @@ public class HL7Converter {
       List<TestDetailsInput> testDetailsInputList,
       GitProperties gitProperties,
       String processingId,
-      String orderId)
+      String orderId,
+      TestCorrectionStatus correctionStatus)
       throws DataTypeException, IllegalArgumentException {
     // Lab reports from single entry and bulk upload should always have order id already populated.
     // Single entry would use the test event's TestOrderId which is always required. Bulk upload
@@ -160,6 +164,9 @@ public class HL7Converter {
     if (orderingFacility == null) {
       orderingFacility = performingFacility;
     }
+    if (correctionStatus == null) {
+      correctionStatus = TestCorrectionStatus.ORIGINAL;
+    }
 
     // Since multiple ordered tests may be performed on a specimen, we need to group the test
     // details based on test order loinc in order to correctly populate the observation
@@ -181,10 +188,6 @@ public class HL7Converter {
         populateCommonOrderSegment(commonOrder, orderingFacility, providerInput, orderId);
       }
 
-      // First test detail is picked to get the test order display name
-      // and correction status for OBR
-      TestDetailsInput firstTestDetail = entry.getValue().get(0);
-
       OBR observationRequest = orderGroup.getOBR();
       populateObservationRequest(
           observationRequest,
@@ -193,8 +196,8 @@ public class HL7Converter {
           providerInput,
           specimenInput.getCollectionDate(),
           entry.getKey(),
-          firstTestDetail.getTestOrderDisplayName(),
-          firstTestDetail.getCorrectionStatus(),
+          entry.getValue().get(0).getTestOrderDisplayName(),
+          correctionStatus,
           messageTimestamp);
 
       // Populate the list of OBX associated with this OBR
@@ -207,7 +210,8 @@ public class HL7Converter {
             obxIndex + 1,
             performingFacility,
             specimenInput.getCollectionDate(),
-            obxTestDetails.get(obxIndex));
+            obxTestDetails.get(obxIndex),
+            correctionStatus);
       }
 
       // Only a single specimen can be associated with the OBR
@@ -700,6 +704,7 @@ public class HL7Converter {
    * @param testOrderLoinc All OBR segment repeats should use the same test order LOINC
    * @param testOrderDisplay This should be the same test order LOINC for all OBR within this
    *     message
+   * @param testCorrectionStatus used to populate OBR-25 Result Status
    * @param messageTimestamp Must be less than or equal to the value of MSH-7 Date Time of Message
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
@@ -711,7 +716,7 @@ public class HL7Converter {
       Date specimenCollectionDate,
       String testOrderLoinc,
       String testOrderDisplay,
-      String correctionStatus,
+      TestCorrectionStatus testCorrectionStatus,
       Date messageTimestamp)
       throws DataTypeException {
     observationRequest.getObr1_SetIDOBR().setValue(String.valueOf(sequenceNumber));
@@ -742,9 +747,18 @@ public class HL7Converter {
         .getTs1_Time()
         .setValue(formatToHL7DateTime(messageTimestamp));
 
-    // F for final results, from HL7 table 0123 Result Status
-    String resultStatus = StringUtils.isBlank(correctionStatus) ? "F" : correctionStatus;
-    observationRequest.getObr25_ResultStatus().setValue(resultStatus);
+    // OBR-25 uses HL7 table 0123 Result Status
+    String orderResultStatus;
+    switch (testCorrectionStatus) {
+      case ORIGINAL -> orderResultStatus = "F";
+      // Removals should also be C for corrected order where the result status in OBX-11 is marked D
+      // for deletion
+      case CORRECTED, REMOVED -> orderResultStatus = "C";
+      default ->
+          throw new IllegalArgumentException(
+              "Cannot convert invalid test correction status to observation result status");
+    }
+    observationRequest.getObr25_ResultStatus().setValue(orderResultStatus);
   }
 
   /**
@@ -757,6 +771,7 @@ public class HL7Converter {
    * @param performingFacility Facility that produced the test result described in this segment
    * @param specimenCollectionDate Used to populate the time of the observation
    * @param testDetail The test result data
+   * @param testCorrectionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    * @throws IllegalArgumentException if non-ordinal result type is provided
    */
@@ -765,7 +780,8 @@ public class HL7Converter {
       int sequenceNumber,
       FacilityReportInput performingFacility,
       Date specimenCollectionDate,
-      TestDetailsInput testDetail)
+      TestDetailsInput testDetail,
+      TestCorrectionStatus testCorrectionStatus)
       throws DataTypeException, IllegalArgumentException {
     obx.getObx1_SetIDOBX().setValue(String.valueOf(sequenceNumber));
 
@@ -792,11 +808,16 @@ public class HL7Converter {
 
     // TODO: determine how we should programmatically set OBX 8 - Abnormal flags
 
-    // F for final results, from HL7 table 0085 Observation result status codes interpretation
-    String resultStatus =
-        StringUtils.isBlank(testDetail.getCorrectionStatus())
-            ? "F"
-            : testDetail.getCorrectionStatus();
+    // OBX-11 uses HL7 table 0085 Observation result status codes interpretation
+    String resultStatus;
+    switch (testCorrectionStatus) {
+      case ORIGINAL -> resultStatus = "F";
+      case CORRECTED -> resultStatus = "C";
+      case REMOVED -> resultStatus = "D"; // Indicates the previously reported OBX should be deleted
+      default ->
+          throw new IllegalArgumentException(
+              "Cannot convert invalid test correction status to observation result status");
+    }
     obx.getObx11_ObservationResultStatus().setValue(resultStatus);
 
     // "For specimen-based laboratory reporting, the specimen collection date and time."
@@ -1025,19 +1046,13 @@ public class HL7Converter {
               }
 
               return convertToTestDetailsInput(
-                  result,
-                  deviceTypeDiseaseFromLoinc,
-                  testEvent.getDateTested(),
-                  testEvent.getCorrectionStatus());
+                  result, deviceTypeDiseaseFromLoinc, testEvent.getDateTested());
             })
         .toList();
   }
 
   private TestDetailsInput convertToTestDetailsInput(
-      Result result,
-      DeviceTypeDisease deviceTypeDisease,
-      Date resultDate,
-      TestCorrectionStatus testCorrectionStatus) {
+      Result result, DeviceTypeDisease deviceTypeDisease, Date resultDate) {
     return TestDetailsInput.builder()
         .condition(result.getDisease().getName())
         .testOrderLoinc(deviceTypeDisease.getTestOrderedLoincCode())
@@ -1048,29 +1063,6 @@ public class HL7Converter {
         .resultValue(result.getResultSNOMED())
         .resultDate(resultDate)
         .resultInterpretation(null)
-        .correctionStatus(convertToObservationResultStatus(testCorrectionStatus))
         .build();
-  }
-
-  /**
-   * Converts TestCorrectionStatus to value from HL7 table 0085 Observation result status codes
-   * interpretation
-   */
-  private String convertToObservationResultStatus(TestCorrectionStatus testCorrectionStatus) {
-    switch (testCorrectionStatus) {
-      case ORIGINAL -> {
-        return "F";
-      }
-      case CORRECTED -> {
-        return "C";
-      }
-      case REMOVED -> {
-        return "X";
-      }
-      default -> {
-        throw new IllegalArgumentException(
-            "Cannot convert invalid test correction status to observation result status");
-      }
-    }
   }
 }
