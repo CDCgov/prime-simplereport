@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -19,6 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -36,6 +40,8 @@ import org.hl7.fhir.r4.model.UsageContext;
 import org.hl7.fhir.r4.model.ValueSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -53,9 +59,13 @@ class ConditionServiceTest {
 
   private ConditionService conditionService;
   private FhirContext fhirContext;
+  private HttpClient mockHttpClient;
+  public HttpResponse<String> mockResponse;
 
   @BeforeEach
   void setup() {
+    mockHttpClient = mock(HttpClient.class);
+    mockResponse = mock(HttpResponse.class);
     conditionService = new ConditionService(tesClient, conditionRepository, loincStagingRepository);
     fhirContext = FhirContext.forR4();
     fhirContext.getParserOptions().setStripVersionsFromReferences(false);
@@ -76,85 +86,90 @@ class ConditionServiceTest {
   @Test
   @Transactional
   void syncConditions_singlePage() throws Exception {
-    // Arrange
-    String singlePageResponse = createSinglePageResponse();
-    Response mockResponse = createMockResponse(singlePageResponse);
-    when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
-    setupRepositoryMocks();
+    try (MockedStatic<HttpClient> httpClientMock = Mockito.mockStatic(HttpClient.class)) {
+      HttpClient.Builder mockBuilder = mock(HttpClient.Builder.class);
+      when(mockBuilder.version(any())).thenReturn(mockBuilder);
+      when(mockBuilder.build()).thenReturn(mockHttpClient);
+      httpClientMock.when(HttpClient::newBuilder).thenReturn(mockBuilder);
+      HttpResponse<String> snomedConditionMockResponse = mock(HttpResponse.class);
+      when(snomedConditionMockResponse.body()).thenReturn(sampleSnomedConditionResponse);
+      when(mockHttpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+          .thenReturn(snomedConditionMockResponse);
 
-    // Act
-    CompletableFuture<Void> future =
-        CompletableFuture.runAsync(
-            () -> {
-              try {
-                this.conditionService.syncConditions();
-              } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-              }
-            });
-    future.get();
+      // Arrange
+      String singlePageResponse = createSinglePageResponse();
+      Response mockResponse = createMockResponse(singlePageResponse);
+      when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
+      setupRepositoryMocks();
 
-    // Assert
-    verify(this.conditionRepository, times(1)).save(any());
-    verify(this.loincStagingRepository, times(1)).saveAll(any());
+      // Act
+      this.conditionService.syncConditions();
+
+      // Assert
+      verify(this.conditionRepository, times(1)).save(any());
+      verify(this.loincStagingRepository, times(1)).saveAll(any());
+    }
   }
 
   @Test
   @Transactional
   void syncConditions_multiplePages() throws Exception {
-    // Arrange
-    String firstPageResponse = createFirstPageResponse();
-    String secondPageResponse = createSecondPageResponse();
-    Response firstPageMockResponse = createMockResponse(firstPageResponse);
-    Response secondPageMockResponse = createMockResponse(secondPageResponse);
+    try (MockedStatic<HttpClient> httpClientMock = Mockito.mockStatic(HttpClient.class)) {
+      // Arrange
+      HttpClient.Builder mockBuilder = mock(HttpClient.Builder.class);
+      when(mockBuilder.version(any())).thenReturn(mockBuilder);
+      when(mockBuilder.build()).thenReturn(mockHttpClient);
+      httpClientMock.when(HttpClient::newBuilder).thenReturn(mockBuilder);
+      HttpResponse<String> snomedConditionMockResponse = mock(HttpResponse.class);
+      when(snomedConditionMockResponse.body()).thenReturn(sampleSnomedConditionResponse);
+      when(mockHttpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+          .thenReturn(snomedConditionMockResponse);
 
-    when(this.tesClient.getConditions(anyInt(), anyInt()))
-        .thenReturn(firstPageMockResponse)
-        .thenReturn(secondPageMockResponse);
-    setupRepositoryMocks();
+      String firstPageResponse = createFirstPageResponse();
+      String secondPageResponse = createSecondPageResponse();
+      Response firstPageMockResponse = createMockResponse(firstPageResponse);
+      Response secondPageMockResponse = createMockResponse(secondPageResponse);
 
-    // Act
-    CompletableFuture<Void> future =
-        CompletableFuture.runAsync(
-            () -> {
-              try {
-                this.conditionService.syncConditions();
-              } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-              }
-            });
-    future.get();
+      when(this.tesClient.getConditions(anyInt(), anyInt()))
+          .thenReturn(firstPageMockResponse)
+          .thenReturn(secondPageMockResponse);
+      setupRepositoryMocks();
 
-    // Assert
-    verify(this.conditionRepository, times(2)).save(any());
-    verify(this.loincStagingRepository, times(2)).saveAll(any());
+      // Act
+      this.conditionService.syncConditions();
+
+      // Assert
+      verify(this.conditionRepository, times(2)).save(any());
+      verify(this.loincStagingRepository, times(2)).saveAll(any());
+    }
   }
 
   @Test
   @Transactional
   void syncConditions_handlesPageLoop() throws Exception {
-    // Arrange
-    String firstPageResponse = createFirstPageResponse();
-    Response firstPageMockResponse = createMockResponse(firstPageResponse);
+    try (MockedStatic<HttpClient> httpClientMock = Mockito.mockStatic(HttpClient.class)) {
+      // Arrange
+      HttpClient.Builder mockBuilder = mock(HttpClient.Builder.class);
+      when(mockBuilder.version(any())).thenReturn(mockBuilder);
+      when(mockBuilder.build()).thenReturn(mockHttpClient);
+      httpClientMock.when(HttpClient::newBuilder).thenReturn(mockBuilder);
+      HttpResponse<String> snomedConditionMockResponse = mock(HttpResponse.class);
+      when(snomedConditionMockResponse.body()).thenReturn(sampleSnomedConditionResponse);
+      when(mockHttpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+          .thenReturn(snomedConditionMockResponse);
 
-    when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(firstPageMockResponse);
-    setupRepositoryMocks();
+      String firstPageResponse = createFirstPageResponse();
+      Response firstPageMockResponse = createMockResponse(firstPageResponse);
+      when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(firstPageMockResponse);
+      setupRepositoryMocks();
 
-    // Act
-    CompletableFuture<Void> future =
-        CompletableFuture.runAsync(
-            () -> {
-              try {
-                this.conditionService.syncConditions();
-              } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-              }
-            });
-    future.get();
+      // Act
+      this.conditionService.syncConditions();
 
-    // Assert
-    verify(this.conditionRepository, times(1000)).save(any());
-    verify(this.loincStagingRepository, times(1000)).saveAll(any());
+      // Assert
+      verify(this.conditionRepository, times(1000)).save(any());
+      verify(this.loincStagingRepository, times(1000)).saveAll(any());
+    }
   }
 
   @Test
@@ -181,27 +196,29 @@ class ConditionServiceTest {
   @Test
   @Transactional
   void syncConditions_checksCodeStatus() throws Exception {
-    // Arrange
-    String response = createActiveAndInactiveConditionResponse();
-    Response mockResponse = createMockResponse(response);
-    when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
-    setupRepositoryMocks();
+    try (MockedStatic<HttpClient> httpClientMock = Mockito.mockStatic(HttpClient.class)) {
+      // Arrange
+      HttpClient.Builder mockBuilder = mock(HttpClient.Builder.class);
+      when(mockBuilder.version(any())).thenReturn(mockBuilder);
+      when(mockBuilder.build()).thenReturn(mockHttpClient);
+      httpClientMock.when(HttpClient::newBuilder).thenReturn(mockBuilder);
+      HttpResponse<String> snomedConditionMockResponse = mock(HttpResponse.class);
+      when(snomedConditionMockResponse.body()).thenReturn(sampleSnomedConditionResponse);
+      when(mockHttpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+          .thenReturn(snomedConditionMockResponse);
 
-    // Act
-    CompletableFuture<Void> future =
-        CompletableFuture.runAsync(
-            () -> {
-              try {
-                this.conditionService.syncConditions();
-              } catch (IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-              }
-            });
-    future.get();
+      String response = createActiveAndInactiveConditionResponse();
+      Response mockResponse = createMockResponse(response);
+      when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
+      setupRepositoryMocks();
 
-    // Assert
-    verify(this.conditionRepository, times(1)).save(any());
-    verify(this.loincStagingRepository, times(1)).saveAll(any());
+      // Act
+      this.conditionService.syncConditions();
+
+      // Assert
+      verify(this.conditionRepository, times(1)).save(any());
+      verify(this.loincStagingRepository, times(1)).saveAll(any());
+    }
   }
 
   private Response createMockResponse(String responseBody) {
@@ -474,4 +491,31 @@ class ConditionServiceTest {
     IParser parser = fhirContext.newJsonParser();
     return parser.encodeResourceToString(bundle);
   }
+
+  private String sampleSnomedConditionResponse =
+      "{\n"
+          + "    \"pageSize\": 25,\n"
+          + "    \"pageNumber\": 1,\n"
+          + "    \"pageCount\": 1,\n"
+          + "    \"result\": {\n"
+          + "        \"classType\": \"SourceAtomCluster\",\n"
+          + "        \"ui\": \"3738000\",\n"
+          + "        \"suppressible\": false,\n"
+          + "        \"obsolete\": false,\n"
+          + "        \"rootSource\": \"SNOMEDCT_US\",\n"
+          + "        \"atomCount\": 5,\n"
+          + "        \"cVMemberCount\": 0,\n"
+          + "        \"attributes\": \"https://uts-ws.nlm.nih.gov/rest/content/2025AA/source/SNOMEDCT_US/3738000/attributes\",\n"
+          + "        \"atoms\": \"https://uts-ws.nlm.nih.gov/rest/content/2025AA/source/SNOMEDCT_US/3738000/atoms\",\n"
+          + "        \"ancestors\": \"https://uts-ws.nlm.nih.gov/rest/content/2025AA/source/SNOMEDCT_US/3738000/ancestors\",\n"
+          + "        \"parents\": \"https://uts-ws.nlm.nih.gov/rest/content/2025AA/source/SNOMEDCT_US/3738000/parents\",\n"
+          + "        \"children\": \"https://uts-ws.nlm.nih.gov/rest/content/2025AA/source/SNOMEDCT_US/3738000/children\",\n"
+          + "        \"descendants\": \"https://uts-ws.nlm.nih.gov/rest/content/2025AA/source/SNOMEDCT_US/3738000/descendants\",\n"
+          + "        \"relations\": \"https://uts-ws.nlm.nih.gov/rest/content/2025AA/source/SNOMEDCT_US/3738000/relations\",\n"
+          + "        \"definitions\": \"NONE\",\n"
+          + "        \"concepts\": \"https://uts-ws.nlm.nih.gov/rest/search/2025AA?string=3738000&sabs=SNOMEDCT_US&searchType=exact&inputType=sourceUi\",\n"
+          + "        \"defaultPreferredAtom\": \"https://uts-ws.nlm.nih.gov/rest/content/2025AA/source/SNOMEDCT_US/3738000/atoms/preferred\",\n"
+          + "        \"name\": \"Viral hepatitis\"\n"
+          + "    }\n"
+          + "}";
 }
