@@ -216,7 +216,11 @@ public class HL7Converter {
             correctionStatus);
       }
 
-      // Only a single specimen can be associated with the OBR
+      // "Only a single specimen can be associated with the OBR." HL7 allows for multiple specimens
+      // in a message as long as each specimen is associated with only one observation request (aka
+      // test ordered LOINC). With how the app currently works, we will only ever have one specimen
+      // in the entire HL7 message. That is only due to how the app is currently designed, not a
+      // constraint of HL7.
       // See page 83, HL7 v2.5.1 IG
       if (orderObservationIndex == 0) {
         SPM specimen = orderGroup.getSPECIMEN().getSPM();
