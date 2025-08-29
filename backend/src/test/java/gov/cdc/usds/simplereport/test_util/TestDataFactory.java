@@ -771,12 +771,12 @@ public class TestDataFactory {
     return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
   }
 
-  public Condition createCondition(String code, String display) {
-    return conditionRepository.save(new Condition(code, display));
+  public Condition createCondition(String code, String display, String snomedName) {
+    return conditionRepository.save(new Condition(code, display, snomedName));
   }
 
   public Condition createCondition(String code) {
-    return createCondition(code, "Lorem ipsumosis");
+    return createCondition(code, "Lorem ipsumosis", "the snomed name");
   }
 
   public List<Condition> createConditions(List<String> codes) {

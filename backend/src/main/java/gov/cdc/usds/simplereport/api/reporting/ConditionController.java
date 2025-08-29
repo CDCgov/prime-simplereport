@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.reporting;
 
 import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.service.ConditionService;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ public class ConditionController {
   private final ConditionService conditionService;
 
   @GetMapping("/sync")
-  public String syncConditions() {
+  public String syncConditions() throws IOException, InterruptedException {
     conditionService.syncConditions();
     return "Condition sync has been started successfully.";
   }

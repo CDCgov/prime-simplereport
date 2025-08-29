@@ -137,7 +137,7 @@ class OrganizationInitializingServiceTest extends BaseServiceTest<DiseaseService
 
   @Test
   void initUELRExampleData_success_addsConditionsLabsSpecimensSpecimenBodySites() {
-    Condition testCondition = new Condition("conditionCode", "conditionDisplay");
+    Condition testCondition = new Condition("conditionCode", "conditionDisplay", "snomedNameHere");
     testCondition.setLabs(
         Set.of(
             new Lab(

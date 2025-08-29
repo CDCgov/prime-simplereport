@@ -2,6 +2,7 @@ query GetConditions {
   conditions {
     code
     display
+    snomedName
   }
 }
 
