@@ -24,6 +24,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -115,7 +116,7 @@ public class ConditionService {
           continue;
         }
         CodeableConcept conditionConcept = parseCondition(valueSet);
-        Condition condition = saveCondition(conditionConcept);
+        Condition condition = createOrUpdateCondition(conditionConcept);
         conditionsLoaded++;
         var loincList = parseLoinc(valueSet);
         loincList.ifPresent(
@@ -182,7 +183,7 @@ public class ConditionService {
   }
 
   // TODO rename to something like findOrSaveCondition
-  private Condition saveCondition(CodeableConcept conditionConcept)
+  private Condition createOrUpdateCondition(CodeableConcept conditionConcept)
       throws IOException, InterruptedException {
     String code = conditionConcept.getCoding().get(0).getCode();
     String snomedName = getSnomedConditionInfo(code).getJSONObject("result").get("name").toString();
@@ -192,14 +193,17 @@ public class ConditionService {
 
     if (foundCondition == null) {
       log.info("Saving new condition {}", display);
-      return conditionRepository.save(new Condition(code, display, null));
-    } else {
+      return conditionRepository.save(new Condition(code, display, snomedName));
+    } else if (!StringUtils.equals(foundCondition.getDisplay(), display)
+        || !StringUtils.equals(foundCondition.getSnomedName(), snomedName)) {
+      log.info("Updating existing condition {}", display);
       foundCondition.setDisplay(display);
       foundCondition.setSnomedName(snomedName);
       return conditionRepository.save(foundCondition);
+    } else {
+      log.info("Condition is already up to date: {}", display);
+      return foundCondition;
     }
-    //    log.info("Found existing condition {}", display);
-    //    return foundCondition;
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -217,7 +221,7 @@ public class ConditionService {
 
     URI uri = URI.create(uriString);
 
-    HttpClient client = HttpClient.newHttpClient();
+    HttpClient client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
     HttpRequest request = HttpRequest.newBuilder().uri(uri).GET().build();
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
