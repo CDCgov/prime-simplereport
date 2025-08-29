@@ -13,6 +13,7 @@ import ca.uhn.fhir.parser.IParser;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
+import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.LoincStagingRepository;
 import java.io.ByteArrayInputStream;
@@ -101,12 +102,45 @@ class ConditionServiceTest {
       Response mockResponse = createMockResponse(singlePageResponse);
       when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
       setupRepositoryMocks();
+      Condition conditionToUpdate =
+          new Condition("conditionCode", "conditionDisplay", "snomedName");
+      when(this.conditionRepository.findConditionByCode(any())).thenReturn(conditionToUpdate);
 
       // Act
       this.conditionService.syncConditions();
 
       // Assert
-      verify(this.conditionRepository, times(1)).save(any());
+      verify(this.conditionRepository, times(1)).save(conditionToUpdate);
+      verify(this.loincStagingRepository, times(1)).saveAll(any());
+    }
+  }
+
+  @Test
+  @Transactional
+  void syncConditions_singlePageConditionAlreadyUpToDate() throws Exception {
+    try (MockedStatic<HttpClient> httpClientMock = Mockito.mockStatic(HttpClient.class)) {
+      HttpClient.Builder mockBuilder = mock(HttpClient.Builder.class);
+      when(mockBuilder.version(any())).thenReturn(mockBuilder);
+      when(mockBuilder.build()).thenReturn(mockHttpClient);
+      httpClientMock.when(HttpClient::newBuilder).thenReturn(mockBuilder);
+      HttpResponse<String> snomedConditionMockResponse = mock(HttpResponse.class);
+      when(snomedConditionMockResponse.body()).thenReturn(sampleSnomedConditionResponse);
+      when(mockHttpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+          .thenReturn(snomedConditionMockResponse);
+
+      // Arrange
+      String singlePageResponse = createSinglePageResponse();
+      Response mockResponse = createMockResponse(singlePageResponse);
+      when(this.tesClient.getConditions(anyInt(), anyInt())).thenReturn(mockResponse);
+      setupRepositoryMocks();
+      Condition conditionToUpdate = new Condition("428175000", "COVID-19", "Viral hepatitis");
+      when(this.conditionRepository.findConditionByCode(any())).thenReturn(conditionToUpdate);
+
+      // Act
+      this.conditionService.syncConditions();
+
+      // Assert
+      verify(this.conditionRepository, times(0)).save(any());
       verify(this.loincStagingRepository, times(1)).saveAll(any());
     }
   }
