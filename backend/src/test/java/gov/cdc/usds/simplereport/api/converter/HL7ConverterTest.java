@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithDate;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithNoCommonTestOrderedLoincDevice;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createSingleCovidTestEventOnMultiplexDevice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -17,6 +18,7 @@ import ca.uhn.hl7v2.model.v251.datatype.EI;
 import ca.uhn.hl7v2.model.v251.datatype.XAD;
 import ca.uhn.hl7v2.model.v251.datatype.XCN;
 import ca.uhn.hl7v2.model.v251.datatype.XTN;
+import ca.uhn.hl7v2.model.v251.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v251.message.ORU_R01;
 import ca.uhn.hl7v2.model.v251.segment.MSH;
 import ca.uhn.hl7v2.model.v251.segment.OBR;
@@ -45,6 +47,7 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -183,6 +186,35 @@ class HL7ConverterTest {
     Parser parser = hapiContext.getPipeParser();
     String encodedMessage = parser.encode(message);
     assertThat(StringUtils.countMatches(encodedMessage, "OBX|")).isEqualTo(1);
+  }
+
+  @Test
+  void createLabReportMessage_fromTestEvent_multiplex_onDeviceWithNoMultiplexTestOrderedLoinc()
+      throws HL7Exception {
+    Date dateTested = Date.from(LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC));
+    TestEvent testEvent = createMultiplexTestEventWithNoCommonTestOrderedLoincDevice(dateTested);
+
+    TestOrder testOrder = testEvent.getTestOrder();
+    var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
+    ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
+    testOrder.setTestEventRef(testEvent);
+
+    ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
+
+    List<OBR> obrs =
+        message.getPATIENT_RESULT().getORDER_OBSERVATIONAll().stream()
+            .map(ORU_R01_ORDER_OBSERVATION::getOBR)
+            .toList();
+    assertThat(obrs.size()).isEqualTo(2);
+    assertThat(
+            obrs.stream()
+                .map(o -> o.getObr4_UniversalServiceIdentifier().getCe1_Identifier().getValue())
+                .collect(Collectors.toSet()))
+        .contains("3456-7", "2345-6");
+
+    Parser parser = hapiContext.getPipeParser();
+    String encodedMessage = parser.encode(message);
+    assertThat(StringUtils.countMatches(encodedMessage, "OBR|")).isEqualTo(2);
   }
 
   @Test

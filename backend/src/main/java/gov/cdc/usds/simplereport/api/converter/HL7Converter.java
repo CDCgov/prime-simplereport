@@ -16,6 +16,7 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.NPI_NAMING_SY
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_NAME;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
+import static gov.cdc.usds.simplereport.utils.MultiplexUtils.inferMultiplexDeviceTypeDisease;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.CLIA_REGEX;
 
 import ca.uhn.hl7v2.model.DataTypeException;
@@ -50,7 +51,6 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
-import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -58,6 +58,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -1017,36 +1019,16 @@ public class HL7Converter {
     return testEvent.getResults().stream()
         .map(
             result -> {
-              String testOrderLoinc;
-              if (testEvent.getResults().size() == 1) {
-                testOrderLoinc =
-                    MultiplexUtils.inferTestOrderLoincForSingleResult(
-                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
-                        result.getDisease());
-              } else {
-                testOrderLoinc =
-                    MultiplexUtils.inferMultiplexTestOrderLoinc(
-                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
-              }
-
-              if (StringUtils.isBlank(testOrderLoinc)) {
-                throw new IllegalArgumentException("Inferred test order loinc was blank");
-              }
-
-              DeviceTypeDisease deviceTypeDiseaseFromLoinc =
+              Set<DeviceTypeDisease> matchingDeviceTypeDiseases =
                   testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
-                      .filter(d -> testOrderLoinc.equalsIgnoreCase(d.getTestOrderedLoincCode()))
                       .filter(d -> d.getSupportedDisease().equals(result.getDisease()))
-                      .findFirst()
-                      .orElse(null);
+                      .collect(Collectors.toSet());
 
-              if (deviceTypeDiseaseFromLoinc == null) {
-                throw new IllegalArgumentException(
-                    "DeviceTypeDisease from inferred loinc was null");
-              }
+              DeviceTypeDisease inferredDeviceTypeDisease =
+                  inferMultiplexDeviceTypeDisease(matchingDeviceTypeDiseases, testEvent);
 
               return convertToTestDetailsInput(
-                  result, deviceTypeDiseaseFromLoinc, testEvent.getDateTested());
+                  result, inferredDeviceTypeDisease, testEvent.getDateTested());
             })
         .toList();
   }
