@@ -182,7 +182,6 @@ public class ConditionService {
     return new CodeableConcept();
   }
 
-  // TODO rename to something like findOrSaveCondition
   private Condition createOrUpdateCondition(CodeableConcept conditionConcept)
       throws IOException, InterruptedException {
     String code = conditionConcept.getCoding().get(0).getCode();
