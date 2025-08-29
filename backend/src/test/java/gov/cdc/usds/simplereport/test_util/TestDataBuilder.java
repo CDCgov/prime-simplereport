@@ -522,7 +522,6 @@ public class TestDataBuilder {
             ResultScaleType.ORDINAL,
             "260373001",
             dateGenerator.newDate(),
-            "",
             ""),
         new TestDetailsInput(
             "186747009",
@@ -533,7 +532,6 @@ public class TestDataBuilder {
             ResultScaleType.ORDINAL,
             "260373001",
             dateGenerator.newDate(),
-            "",
             ""));
   }
 }

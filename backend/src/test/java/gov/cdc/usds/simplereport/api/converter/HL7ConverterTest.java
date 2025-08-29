@@ -93,6 +93,9 @@ class HL7ConverterTest {
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 
+    OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+    assertThat(obr.getObr25_ResultStatus().getValue()).isEqualTo("F");
+
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
     assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("F");
     assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
@@ -126,6 +129,9 @@ class HL7ConverterTest {
 
     ORU_R01 message = hl7Converter.createLabReportMessage(correctedTestEvent, gitProperties, "T");
 
+    OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+    assertThat(obr.getObr25_ResultStatus().getValue()).isEqualTo("C");
+
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
     assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("C");
     assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
@@ -150,8 +156,11 @@ class HL7ConverterTest {
 
     ORU_R01 message = hl7Converter.createLabReportMessage(correctedTestEvent, gitProperties, "T");
 
+    OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+    assertThat(obr.getObr25_ResultStatus().getValue()).isEqualTo("C");
+
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
-    assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("X");
+    assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("D");
   }
 
   @Test
@@ -197,7 +206,8 @@ class HL7ConverterTest {
                   testDetailsInputList,
                   gitProperties,
                   "T",
-                  uuidGenerator.randomUUID().toString());
+                  uuidGenerator.randomUUID().toString(),
+                  TestCorrectionStatus.ORIGINAL);
 
           Parser parser = hapiContext.getPipeParser();
           parser.encode(message);
@@ -223,7 +233,8 @@ class HL7ConverterTest {
             testDetailsInputList,
             gitProperties,
             "T",
-            uuidGenerator.randomUUID().toString());
+            uuidGenerator.randomUUID().toString(),
+            TestCorrectionStatus.ORIGINAL);
 
     EI commonOrderFillerOrderNumber =
         message.getPATIENT_RESULT().getORDER_OBSERVATION().getORC().getOrc3_FillerOrderNumber();
@@ -590,7 +601,7 @@ class HL7ConverterTest {
         Date.from(specimenCollectionDate),
         testOrderLoinc,
         testOrderDisplay,
-        "F",
+        TestCorrectionStatus.ORIGINAL,
         Date.from(STATIC_INSTANT));
 
     assertThat(
@@ -636,11 +647,15 @@ class HL7ConverterTest {
             ResultScaleType.ORDINAL,
             "260373001",
             Date.from(testResultDate),
-            "",
             "");
 
     hl7Converter.populateObservationResult(
-        observationResult, 1, performingFacility, Date.from(specimenCollectionDate), testDetail);
+        observationResult,
+        1,
+        performingFacility,
+        Date.from(specimenCollectionDate),
+        testDetail,
+        TestCorrectionStatus.ORIGINAL);
 
     assertThat(observationResult.getObx3_ObservationIdentifier().getCe1_Identifier().getValue())
         .isEqualTo(testDetail.getTestOrderLoinc());
@@ -676,7 +691,6 @@ class HL7ConverterTest {
             ResultScaleType.NOMINAL,
             "260373001",
             Date.from(STATIC_INSTANT),
-            "",
             "");
 
     IllegalArgumentException exception =
@@ -688,7 +702,8 @@ class HL7ConverterTest {
                     1,
                     performingFacility,
                     Date.from(STATIC_INSTANT),
-                    testDetail));
+                    testDetail,
+                    TestCorrectionStatus.ORIGINAL));
     assertThat(exception.getMessage())
         .isEqualTo("Non-ordinal result types are not currently supported");
   }
