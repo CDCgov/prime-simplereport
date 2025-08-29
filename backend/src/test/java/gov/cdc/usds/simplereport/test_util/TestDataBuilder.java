@@ -212,6 +212,20 @@ public class TestDataBuilder {
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
+  public static DeviceType createDeviceWithNoCommonTestOrderLoinc() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(
+        createDeviceTypeDiseaseWithTestOrderLoinc(
+            createFluASupportedDisease(), "2345-6", "Flu A order loinc"));
+    supportedDiseaseTestPerformed.add(
+        createDeviceTypeDiseaseWithTestOrderLoinc(
+            createFluBSupportedDisease(), "3456-7", "Flu B test order loinc"));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
   public static DeviceType createDeviceTypeForHIV() {
     List<SpecimenType> swabTypes = new ArrayList<>();
     List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
@@ -316,6 +330,14 @@ public class TestDataBuilder {
     return testOrder;
   }
 
+  public static TestOrder createTestOrderWithDeviceWithNoCommonTestOrderedLoinc() {
+    var testOrder = new TestOrder(createPerson(), createFacility());
+    DeviceType device = createDeviceWithNoCommonTestOrderLoinc();
+    testOrder.setDeviceTypeAndSpecimenType(device, createSpecimenType());
+    testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
+    return testOrder;
+  }
+
   public static TestOrder createTestOrderWithMultipleTestOrderDevice() {
     var testOrder = new TestOrder(createPerson(), createFacility());
     DeviceType multiplexDevice = createDeviceTypeForMultiplex();
@@ -403,6 +425,20 @@ public class TestDataBuilder {
 
     TestEvent testEvent = new TestEvent(testOrder, false);
     createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
+
+    return testEvent;
+  }
+
+  public static TestEvent createMultiplexTestEventWithNoCommonTestOrderedLoincDevice(
+      Date dateTested) {
+    TestOrder testOrder = createTestOrderWithDeviceWithNoCommonTestOrderedLoinc();
+    createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
+    testOrder.setDateTestedBackdate(dateTested);
+
+    TestEvent testEvent = new TestEvent(testOrder, false);
     createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
     createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
 
