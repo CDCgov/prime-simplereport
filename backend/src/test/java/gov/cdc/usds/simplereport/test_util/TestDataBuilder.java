@@ -33,6 +33,7 @@ import gov.cdc.usds.simplereport.utils.DateGenerator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -138,6 +139,20 @@ public class TestDataBuilder {
         "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
   }
 
+  public static DeviceTypeDisease createDeviceTypeDiseaseWithTestOrderLoinc(
+      SupportedDisease supportedDisease, String testOrderLoinc, String testOrderLoincLongName) {
+    return new DeviceTypeDisease(
+        UUID.randomUUID(),
+        supportedDisease,
+        supportedDisease.getLoinc(),
+        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
+        "543212134",
+        "MNI",
+        "BOOMX2",
+        testOrderLoinc,
+        testOrderLoincLongName);
+  }
+
   public static DeviceTypeDisease createDeviceTypeDiseaseForBulkUpload(
       SupportedDisease supportedDisease) {
     return new DeviceTypeDisease(
@@ -192,6 +207,20 @@ public class TestDataBuilder {
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createCovidSupportedDisease()));
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createFluASupportedDisease()));
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createFluBSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceWithNoCommonTestOrderLoinc() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(
+        createDeviceTypeDiseaseWithTestOrderLoinc(
+            createFluASupportedDisease(), "2345-6", "Flu A order loinc"));
+    supportedDiseaseTestPerformed.add(
+        createDeviceTypeDiseaseWithTestOrderLoinc(
+            createFluBSupportedDisease(), "3456-7", "Flu B test order loinc"));
 
     return new DeviceType(
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
@@ -264,7 +293,7 @@ public class TestDataBuilder {
         FacilityBuilder.builder()
             .org(createValidOrganization())
             .facilityName("Testing Paradise")
-            .cliaNumber("123456")
+            .cliaNumber("12D1234567")
             .facilityAddress(getAddress())
             .phone("555-867-5309")
             .email("facility@test.com")
@@ -297,6 +326,31 @@ public class TestDataBuilder {
     var testOrder = new TestOrder(createPerson(), createFacility());
     DeviceType multiplexDevice = createDeviceTypeForMultiplex();
     testOrder.setDeviceTypeAndSpecimenType(multiplexDevice, createSpecimenType());
+    testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
+    return testOrder;
+  }
+
+  public static TestOrder createTestOrderWithDeviceWithNoCommonTestOrderedLoinc() {
+    var testOrder = new TestOrder(createPerson(), createFacility());
+    DeviceType device = createDeviceWithNoCommonTestOrderLoinc();
+    testOrder.setDeviceTypeAndSpecimenType(device, createSpecimenType());
+    testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
+    return testOrder;
+  }
+
+  public static TestOrder createTestOrderWithMultipleTestOrderDevice() {
+    var testOrder = new TestOrder(createPerson(), createFacility());
+    DeviceType multiplexDevice = createDeviceTypeForMultiplex();
+
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed =
+        multiplexDevice.getSupportedDiseaseTestPerformed();
+    supportedDiseaseTestPerformed.add(
+        createDeviceTypeDiseaseWithTestOrderLoinc(
+            createCovidSupportedDisease(), "94534-5", "Single Covid only test order"));
+    multiplexDevice.setSupportedDiseaseTestPerformed(supportedDiseaseTestPerformed);
+
+    testOrder.setDeviceTypeAndSpecimenType(multiplexDevice, createSpecimenType());
+    testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
     return testOrder;
   }
 
@@ -362,6 +416,46 @@ public class TestDataBuilder {
     return result;
   }
 
+  public static TestEvent createMultiplexTestEventWithDate(Date dateTested) {
+    TestOrder testOrder = createTestOrderWithMultiplexDevice();
+    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
+    testOrder.setDateTestedBackdate(dateTested);
+
+    TestEvent testEvent = new TestEvent(testOrder, false);
+    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
+
+    return testEvent;
+  }
+
+  public static TestEvent createMultiplexTestEventWithNoCommonTestOrderedLoincDevice(
+      Date dateTested) {
+    TestOrder testOrder = createTestOrderWithDeviceWithNoCommonTestOrderedLoinc();
+    createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
+    testOrder.setDateTestedBackdate(dateTested);
+
+    TestEvent testEvent = new TestEvent(testOrder, false);
+    createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
+
+    return testEvent;
+  }
+
+  public static TestEvent createSingleCovidTestEventOnMultiplexDevice(Date dateTested) {
+    TestOrder testOrder = createTestOrderWithMultipleTestOrderDevice();
+    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
+    testOrder.setDateTestedBackdate(dateTested);
+
+    TestEvent testEvent = new TestEvent(testOrder, false);
+    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
+
+    return testEvent;
+  }
+
   public static TestEvent createMultiplexTestEvent() {
     var testOrder = createTestOrder();
     createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
@@ -409,7 +503,9 @@ public class TestDataBuilder {
         "native",
         "not_hispanic",
         "266",
-        "");
+        null,
+        null,
+        null);
   }
 
   public static FacilityReportInput createFacilityReportInput() {
