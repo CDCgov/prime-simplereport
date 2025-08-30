@@ -325,7 +325,7 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
 
     var patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
 
@@ -338,7 +338,9 @@ class HL7ConverterTest {
   @Test
   void populatePatientIdentification_valid_withPatientId() throws DataTypeException {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
-    String predefinedPatientId = "80b1f7ed-a865-47c9-8c52-38ea1a393a63";
+    String patientExternalId = "c4470e82-452c-43a7-8029-38473bf5e74b";
+    String patientInternalId = "80b1f7ed-a865-47c9-8c52-38ea1a393a63";
+
     PatientReportInput patientReportInput =
         new PatientReportInput(
             "John",
@@ -359,16 +361,71 @@ class HL7ConverterTest {
             "native",
             "not_hispanic",
             "266",
-            predefinedPatientId);
+            null,
+            patientExternalId,
+            patientInternalId);
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+    String clia = "12D1234567";
 
-    var patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, clia);
 
-    assertThat(patientIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(predefinedPatientId);
-    assertThat(patientIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
+    assertThat(pid.getPid3_PatientIdentifierListReps()).isEqualTo(2);
+
+    var internalIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
+
+    assertThat(internalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(patientInternalId);
+    assertThat(internalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
         .isEqualTo(SIMPLE_REPORT_ORG_OID);
-    assertThat(patientIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
+    assertThat(internalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
+
+    var externalIdentifierEntry = pid.getPid3_PatientIdentifierList(1);
+
+    assertThat(externalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(patientExternalId);
+    assertThat(externalIdentifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().getValue())
+        .isEqualTo(clia);
+    assertThat(externalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+    assertThat(externalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PT");
+  }
+
+  @Test
+  void populatePatientIdentification_valid_onlyRandomInternalId() throws DataTypeException {
+    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+
+    PatientReportInput patientReportInput =
+        new PatientReportInput(
+            "John",
+            "Jacob",
+            "Smith",
+            "Jr",
+            "john@example.com",
+            "716-555-1234",
+            "123 Main St",
+            "Apartment A",
+            "Buffalo",
+            "Erie",
+            "NY",
+            "14220",
+            "USA",
+            "male",
+            LocalDate.of(1990, 1, 1),
+            "native",
+            "not_hispanic",
+            "266",
+            null,
+            null,
+            null);
+
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+
+    assertThat(pid.getPid3_PatientIdentifierListReps()).isEqualTo(1);
+
+    var internalIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
+
+    assertThat(internalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(internalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+    assertThat(internalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
   }
 
   @Test
@@ -376,7 +433,7 @@ class HL7ConverterTest {
     PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
 
     assertThat(pid.getPid7_DateTimeOfBirth().getTs1_Time().getValue()).isEqualTo("19900101");
   }
@@ -404,9 +461,11 @@ class HL7ConverterTest {
             "native",
             "not_hispanic",
             "266",
-            "");
+            null,
+            null,
+            null);
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
 
     assertThat(pid.getPid13_PhoneNumberHome(0).getXtn4_EmailAddress().getValue())
         .isEqualTo("john@example.com");

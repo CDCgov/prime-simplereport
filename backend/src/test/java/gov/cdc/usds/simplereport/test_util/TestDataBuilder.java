@@ -503,7 +503,9 @@ public class TestDataBuilder {
         "native",
         "not_hispanic",
         "266",
-        "");
+        null,
+        null,
+        null);
   }
 
   public static FacilityReportInput createFacilityReportInput() {

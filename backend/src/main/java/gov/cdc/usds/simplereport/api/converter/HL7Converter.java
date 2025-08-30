@@ -159,7 +159,8 @@ public class HL7Converter {
     populateSoftwareSegment(softwareSegment, gitProperties);
 
     PID patientIdentificationSegment = message.getPATIENT_RESULT().getPATIENT().getPID();
-    populatePatientIdentification(patientIdentificationSegment, patientInput);
+    populatePatientIdentification(
+        patientIdentificationSegment, patientInput, performingFacility.getClia());
 
     String specimenId = String.valueOf(uuidGenerator.randomUUID());
 
@@ -354,32 +355,38 @@ public class HL7Converter {
    *
    * @param pid the PID object from the message's PATIENT_RESULT.PATIENT group
    * @param patientInput the input containing the form values for patient
+   * @param performingFacilityClia used to populate namespace ID for the assigning authority on a
+   *     patient external id if present
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
    */
-  void populatePatientIdentification(PID pid, PatientReportInput patientInput)
+  void populatePatientIdentification(
+      PID pid, PatientReportInput patientInput, String performingFacilityClia)
       throws DataTypeException {
     // PID Sequence 1 is "Set ID - PID" which is used to identify repetitions.
     // Since the ORU^R01 message only allows one Patient per message, the HL7 IG says this must be
     // the literal value '1'.
     pid.getPid1_SetIDPID().setValue("1");
 
-    CX patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
-
     // Legacy app test events should already have a patient ID on patientInput
-    String patientId = patientInput.getPatientId();
-    if (StringUtils.isBlank(patientId)) {
-      patientId = uuidGenerator.randomUUID().toString();
-    }
 
-    patientIdentifierEntry.getCx1_IDNumber().setValue(patientId);
-    patientIdentifierEntry
-        .getCx4_AssigningAuthority()
-        .getHd2_UniversalID()
-        .setValue(SIMPLE_REPORT_ORG_OID);
-    patientIdentifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
+    // ID used internally by SimpleReport
+    String internalId =
+        StringUtils.isNotBlank(patientInput.getPatientInternalId())
+            ? patientInput.getPatientInternalId()
+            : uuidGenerator.randomUUID().toString();
+    CX patientInternalIdEntry = pid.getPid3_PatientIdentifierList(0);
     // PI is the value for Patient internal identifier on HL7 table 0203 Identifier type
-    patientIdentifierEntry.getCx5_IdentifierTypeCode().setValue("PI");
+    populatePatientIdentifierEntry(patientInternalIdEntry, internalId, "PI", null);
+
+    // ID used by the facility, such as a medical record number
+    String externalId = patientInput.getPatientExternalId();
+    if (StringUtils.isNotBlank(externalId)) {
+      CX patientExternalIdEntry = pid.getPid3_PatientIdentifierList(1);
+      // PT is the value for Patient external identifier on HL7 table 0203 Identifier type
+      populatePatientIdentifierEntry(
+          patientExternalIdEntry, externalId, "PT", performingFacilityClia);
+    }
 
     populateName(
         pid.getPid5_PatientName(0),
@@ -426,6 +433,22 @@ public class HL7Converter {
             pid.getPid39_TribalCitizenship(0), patientInput.getTribalAffiliation());
      */
 
+  }
+
+  void populatePatientIdentifierEntry(
+      CX identifierEntry, String id, String identifierTypeCode, String namespaceId)
+      throws DataTypeException {
+    identifierEntry.getCx1_IDNumber().setValue(id);
+    identifierEntry
+        .getCx4_AssigningAuthority()
+        .getHd2_UniversalID()
+        .setValue(SIMPLE_REPORT_ORG_OID);
+    identifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
+    identifierEntry.getCx5_IdentifierTypeCode().setValue(identifierTypeCode);
+
+    if (StringUtils.isNotBlank(namespaceId)) {
+      identifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().setValue(namespaceId);
+    }
   }
 
   /** Populates the Extended Person Name (XPN) object */
@@ -968,7 +991,11 @@ public class HL7Converter {
         .ethnicity(testEvent.getPatientData().getEthnicity())
         .tribalAffiliation(
             hasTribalAffiliation ? testEvent.getPatientData().getTribalAffiliation().get(0) : null)
-        .patientId(
+        .patientExternalId(
+            testEvent.getPatientData().getLookupId() != null
+                ? testEvent.getPatientData().getLookupId()
+                : null)
+        .patientInternalId(
             testEvent.getPatientData().getInternalId() != null
                 ? testEvent.getPatientData().getInternalId().toString()
                 : null)

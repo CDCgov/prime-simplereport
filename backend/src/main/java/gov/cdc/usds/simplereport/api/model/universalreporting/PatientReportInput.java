@@ -28,5 +28,10 @@ public class PatientReportInput {
   private final String race;
   private final String ethnicity;
   private final String tribalAffiliation;
+
+  @Deprecated(forRemoval = true)
   private final String patientId;
+
+  private final String patientExternalId;
+  private final String patientInternalId;
 }
