@@ -201,13 +201,13 @@ class HL7ConverterTest {
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 
-    List<OBR> obrs =
+    List<OBR> obrList =
         message.getPATIENT_RESULT().getORDER_OBSERVATIONAll().stream()
             .map(ORU_R01_ORDER_OBSERVATION::getOBR)
             .toList();
-    assertThat(obrs.size()).isEqualTo(2);
+    assertThat(obrList).hasSize(2);
     assertThat(
-            obrs.stream()
+            obrList.stream()
                 .map(o -> o.getObr4_UniversalServiceIdentifier().getCe1_Identifier().getValue())
                 .collect(Collectors.toSet()))
         .contains("3456-7", "2345-6");
