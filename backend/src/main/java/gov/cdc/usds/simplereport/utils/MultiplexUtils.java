@@ -13,7 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 public class MultiplexUtils {
   private MultiplexUtils() {}
 
-  // Deprecated for when we remove FHIR bundling
+  /**
+   * @deprecated for when we remove FHIR bundling
+   */
   @Deprecated(forRemoval = true)
   public static String inferMultiplexTestOrderLoinc(List<DeviceTypeDisease> deviceTypeDiseases) {
     if (deviceTypeDiseases.isEmpty()) {
@@ -65,7 +67,7 @@ public class MultiplexUtils {
 
     DeviceTypeDisease correctTestPerformed;
     if (matchingDeviceTypeDiseases.size() == 1) {
-      correctTestPerformed = matchingDeviceTypeDiseases.stream().findFirst().get();
+      correctTestPerformed = matchingDeviceTypeDiseases.stream().findFirst().orElseThrow();
     } else {
       // Multiple matches for this result, need to infer correct DeviceTypeDisease
 

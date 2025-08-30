@@ -29,6 +29,9 @@ public class PatientReportInput {
   private final String ethnicity;
   private final String tribalAffiliation;
 
+  /**
+   * @deprecated to better distinguish which id is which
+   */
   @Deprecated(forRemoval = true)
   private final String patientId;
 
