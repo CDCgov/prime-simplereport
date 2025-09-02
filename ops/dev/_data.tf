@@ -286,11 +286,6 @@ data "azurerm_key_vault_secret" "aims_outbound_storage_endpoint" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "aims_message_queue_endpoint" {
-  name         = "aims-message-queue-endpoint-${local.token_env_suffix}"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
-}
-
 data "azurerm_key_vault_secret" "aims_user_id" {
   name         = "aims-user-id-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.sr_global.id
