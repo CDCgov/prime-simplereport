@@ -1,11 +1,18 @@
 import { InvocationContext, Timer } from "@azure/functions";
 import * as appInsights from "applicationinsights";
-import {
-  SendToAIMS,
-  formatTimestamp,
-  parseHL7Message,
-  formatInterPartnerFilename,
-} from "./index";
+
+const mockS3Send = jest.fn();
+const mockS3Client = {
+  send: mockS3Send,
+};
+
+jest.mock("@aws-sdk/client-s3", () => ({
+  S3Client: jest.fn().mockImplementation(() => mockS3Client),
+  PutObjectCommand: jest.fn(),
+  S3ServiceException: class S3ServiceException extends Error {
+    name = "S3ServiceException";
+  },
+}));
 
 // Mock config
 jest.mock("../config", () => ({
@@ -56,18 +63,13 @@ jest.mock("@azure/storage-queue", () => ({
   })),
 }));
 
-const mockS3Send = jest.fn();
-const mockS3Client = {
-  send: mockS3Send,
-};
-
-jest.mock("@aws-sdk/client-s3", () => ({
-  S3Client: jest.fn().mockImplementation(() => mockS3Client),
-  PutObjectCommand: jest.fn(),
-  S3ServiceException: class S3ServiceException extends Error {
-    name = "S3ServiceException";
-  },
-}));
+// Import main module after all mocks are set up
+import {
+  SendToAIMS,
+  formatTimestamp,
+  parseHL7Message,
+  formatInterPartnerFilename,
+} from "./index";
 
 describe("SendToAIMS", () => {
   const context = {
@@ -316,7 +318,7 @@ describe("parseHL7Message", () => {
     const hl7Content = "PID|1||123456789|||";
     const result = parseHL7Message(hl7Content);
 
-    expect(result.messageId).toBe("abcd1234messageIDNotFound");
+    expect(result.messageId).toBe("messageIDNotFound");
     expect(result.content).toBe(hl7Content);
     expect(result.filename).toContain("hl7-message-");
     expect(result.filename).toContain("InterPartner");
@@ -325,7 +327,7 @@ describe("parseHL7Message", () => {
   it("should handle empty message text", () => {
     const result = parseHL7Message("");
 
-    expect(result.messageId).toBe("abcd1234messageIDNotFound");
+    expect(result.messageId).toBe("messageIDNotFound");
     expect(result.content).toBe("");
     expect(result.filename).toContain("InterPartner");
   });
