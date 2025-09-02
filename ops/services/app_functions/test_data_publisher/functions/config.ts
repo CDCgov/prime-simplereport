@@ -13,10 +13,6 @@ const DESC = {
 function valOrThrow(name: keyof typeof DESC) {
   const raw = (process.env[name] ?? "").trim();
 
-  console.log(
-    `ENV ${name}: ${raw.substring(0, 50)}${raw.length > 50 ? "..." : ""}`,
-  );
-
   if (!raw) {
     const error = `MissingEnv:${name} (${DESC[name]})`;
     console.error(error);
