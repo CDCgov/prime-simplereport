@@ -1,4 +1,3 @@
-import * as appInsights from "applicationinsights";
 import { app, InvocationContext, Timer } from "@azure/functions";
 import {
   QueueServiceClient,
@@ -7,9 +6,7 @@ import {
 import { ENV } from "../config";
 import { S3Client } from "@aws-sdk/client-s3";
 import { processMessage } from "./messageProcessor";
-
-appInsights.setup();
-const telemetry = appInsights.defaultClient;
+import { getTelemetry } from "./telemetry";
 
 // Initialize S3 client
 const s3Client = new S3Client({
@@ -24,6 +21,7 @@ export async function SendToAIMS(
   _myTimer: Timer,
   context: InvocationContext,
 ): Promise<void> {
+  const telemetry = getTelemetry();
   const operationId = context.traceContext.traceParent;
 
   telemetry.trackEvent({

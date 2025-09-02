@@ -1,4 +1,3 @@
-import * as appInsights from "applicationinsights";
 import { InvocationContext } from "@azure/functions";
 import {
   PutObjectCommand,
@@ -8,8 +7,7 @@ import {
 import { QueueClient } from "@azure/storage-queue";
 import { ENV } from "../config";
 import { parseHL7Message } from "./hl7utils";
-
-const telemetry = appInsights.defaultClient;
+import { getTelemetry } from "./telemetry";
 
 interface ProcessMessageOptions {
   message: any;
@@ -26,6 +24,8 @@ export async function processMessage({
   context,
   operationId,
 }: ProcessMessageOptions): Promise<void> {
+  const telemetry = getTelemetry();
+
   try {
     const hl7Message = parseHL7Message(message.messageText);
 
@@ -63,6 +63,7 @@ export async function processMessage({
       objectKey,
       messageId,
       operationId,
+      telemetry,
     });
 
     // Delete message from queue only after successful S3 upload
@@ -156,6 +157,7 @@ interface UploadToS3Options {
   objectKey: string;
   messageId: string;
   operationId: string;
+  telemetry: any;
 }
 
 async function uploadToS3({
@@ -164,6 +166,7 @@ async function uploadToS3({
   objectKey,
   messageId,
   operationId,
+  telemetry,
 }: UploadToS3Options): Promise<void> {
   const filename = hl7Message.filename;
 
