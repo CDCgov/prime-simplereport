@@ -63,13 +63,17 @@ jest.mock("@azure/storage-queue", () => ({
   })),
 }));
 
-// Import main module after all mocks are set up
+const mockProcessMessage = jest.fn();
+jest.mock("./messageProcessor", () => ({
+  processMessage: mockProcessMessage,
+}));
+
+import { SendToAIMS } from "./index";
 import {
-  SendToAIMS,
   formatTimestamp,
   parseHL7Message,
   formatInterPartnerFilename,
-} from "./index";
+} from "./hl7utils";
 
 describe("SendToAIMS", () => {
   const context = {
@@ -86,6 +90,7 @@ describe("SendToAIMS", () => {
     mockReceiveMessages.mockResolvedValue({ receivedMessageItems: [] });
     mockS3Send.mockResolvedValue({});
     mockDeleteMessage.mockResolvedValue({});
+    mockProcessMessage.mockResolvedValue(undefined);
   });
 
   it("should start successfully and log when no messages are found", async () => {
@@ -121,28 +126,17 @@ describe("SendToAIMS", () => {
 
     expect(context.log).toHaveBeenCalledWith("Processing 1 messages");
 
-    expect(mockS3Send).toHaveBeenCalledTimes(1);
-
-    expect(mockDeleteMessage).toHaveBeenCalledWith(
-      "queue-msg-1",
-      "pop-receipt-1",
-    );
-
-    expect(context.log).toHaveBeenCalledWith(
-      expect.stringContaining("Successfully processed message TEST123"),
-    );
-
-    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-      name: "Message successfully processed",
-      properties: {
-        operationId: "test-operation-id",
-        messageId: "TEST123",
-        s3Key: expect.stringContaining("test-user/SendTo/"),
-      },
+    expect(mockProcessMessage).toHaveBeenCalledTimes(1);
+    expect(mockProcessMessage).toHaveBeenCalledWith({
+      message: testMessage,
+      queueClient: mockQueueClient,
+      s3Client: expect.any(Object),
+      context,
+      operationId: "test-operation-id",
     });
   });
 
-  it("should handle S3 upload failures", async () => {
+  it("should handle message processing failures", async () => {
     const testMessage = {
       messageId: "queue-msg-1",
       popReceipt: "pop-receipt-1",
@@ -154,129 +148,76 @@ describe("SendToAIMS", () => {
       receivedMessageItems: [testMessage],
     });
 
-    const s3Error = new Error("S3 Upload Failed");
-    mockS3Send.mockRejectedValue(s3Error);
+    const processingError = new Error("Message processing failed");
+    mockProcessMessage.mockRejectedValue(processingError);
 
     await SendToAIMS(timer, context);
 
-    expect(mockDeleteMessage).not.toHaveBeenCalled();
-
-    expect(appInsights.defaultClient.trackException).toHaveBeenCalledWith({
-      exception: new Error("SendToAimsError: S3 Upload Failed"),
-      properties: {
-        operationId: "test-operation-id",
-        messageId: "queue-msg-1",
-        errorType: "GeneralError",
-      },
+    expect(mockProcessMessage).toHaveBeenCalledTimes(1);
+    expect(mockProcessMessage).toHaveBeenCalledWith({
+      message: testMessage,
+      queueClient: mockQueueClient,
+      s3Client: expect.any(Object),
+      context,
+      operationId: "test-operation-id",
     });
   });
 
-  it("should handle queue deletion failures after successful S3 upload", async () => {
-    const testMessage = {
+  it("should process multiple messages", async () => {
+    const testMessages = [
+      {
+        messageId: "queue-msg-1",
+        popReceipt: "pop-receipt-1",
+        messageText:
+          "MSH|^~\\&|SimpleReport|Test|AIMS|Prod|20240115103045||ORU^R01|TEST123|T|2.3",
+      },
+      {
+        messageId: "queue-msg-2",
+        popReceipt: "pop-receipt-2",
+        messageText:
+          "MSH|^~\\&|SimpleReport|Test|AIMS|Prod|20240115103045||ORU^R01|TEST456|T|2.3",
+      },
+    ];
+
+    mockReceiveMessages.mockResolvedValue({
+      receivedMessageItems: testMessages,
+    });
+
+    await SendToAIMS(timer, context);
+
+    expect(context.log).toHaveBeenCalledWith("Processing 2 messages");
+    expect(mockProcessMessage).toHaveBeenCalledTimes(2);
+  });
+
+  it("should continue processing after a message fails", async () => {
+    const msg1 = {
       messageId: "queue-msg-1",
       popReceipt: "pop-receipt-1",
       messageText:
         "MSH|^~\\&|SimpleReport|Test|AIMS|Prod|20240115103045||ORU^R01|TEST123|T|2.3",
     };
-
-    mockReceiveMessages.mockResolvedValue({
-      receivedMessageItems: [testMessage],
-    });
-
-    const deleteError = new Error("Queue deletion failed");
-    mockDeleteMessage.mockRejectedValue(deleteError);
-
-    await SendToAIMS(timer, context);
-
-    expect(mockS3Send).toHaveBeenCalledTimes(1);
-
-    expect(context.warn).toHaveBeenCalledWith(
-      expect.stringContaining(
-        "Failed to delete message queue-msg-1 from queue",
-      ),
-    );
-
-    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-      name: "Queue message deletion failed",
-      properties: {
-        operationId: "test-operation-id",
-        messageId: "TEST123",
-        error: "Queue deletion failed",
-        s3Key: expect.stringContaining("test-user/SendTo/"),
-      },
-    });
-  });
-
-  it("should track large message events", async () => {
-    const largeContent =
-      "MSH|^~\\&|SimpleReport|Test|AIMS|Prod|20240115103045||ORU^R01|LARGE123|T|2.3\n" +
-      "A".repeat(70 * 1024);
-
-    const testMessage = {
-      messageId: "queue-msg-1",
-      popReceipt: "pop-receipt-1",
-      messageText: largeContent,
-    };
-
-    mockReceiveMessages.mockResolvedValue({
-      receivedMessageItems: [testMessage],
-    });
-
-    await SendToAIMS(timer, context);
-
-    expect(context.warn).toHaveBeenCalledWith(
-      expect.stringContaining("Large message detected:"),
-    );
-
-    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-      name: "LargeMessageDetected",
-      properties: {
-        operationId: "test-operation-id",
-        messageId: "LARGE123",
-        sizeBytes: expect.any(String),
-        threshold: "64KB",
-      },
-    });
-  });
-
-  it("should handle S3 non-200 status codes as failures", async () => {
-    const testMessage = {
-      messageId: "queue-msg-1",
-      popReceipt: "pop-receipt-1",
+    const msg2 = {
+      messageId: "queue-msg-2",
+      popReceipt: "pop-receipt-2",
       messageText:
-        "MSH|^~\\&|SimpleReport|Test|AIMS|Prod|20240115103045||ORU^R01|TEST123|T|2.3",
+        "MSH|^~\\&|SimpleReport|Test|AIMS|Prod|20240115103045||ORU^R01|TEST456|T|2.3",
     };
 
     mockReceiveMessages.mockResolvedValue({
-      receivedMessageItems: [testMessage],
+      receivedMessageItems: [msg1, msg2],
     });
 
-    mockS3Send.mockResolvedValue({
-      $metadata: { httpStatusCode: 400 },
-    });
+    mockProcessMessage
+      .mockRejectedValueOnce(new Error("broken which is ok!"))
+      .mockResolvedValueOnce(undefined);
 
     await SendToAIMS(timer, context);
 
-    expect(mockDeleteMessage).not.toHaveBeenCalled();
-
-    expect(appInsights.defaultClient.trackException).toHaveBeenCalledWith({
-      exception: new Error("SendToAimsError: S3 upload failed with status 400"),
-      properties: {
-        operationId: "test-operation-id",
-        messageId: "queue-msg-1",
-        errorType: "GeneralError",
-      },
-    });
-
-    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
-      name: "Message processing failed",
-      properties: {
-        operationId: "test-operation-id",
-        messageId: "queue-msg-1",
-        errorType: "GeneralError",
-        errorMessage: "S3 upload failed with status 400",
-      },
-    });
+    expect(mockProcessMessage).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ message: msg2 }),
+    );
+    expect(mockProcessMessage).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -314,22 +255,27 @@ describe("parseHL7Message", () => {
     expect(result.filename).toContain("InterPartner");
   });
 
-  it("should use fallback message ID when MSH segment not found", () => {
+  it("should throw error when MSH segment not found", () => {
     const hl7Content = "PID|1||123456789|||";
-    const result = parseHL7Message(hl7Content);
 
-    expect(result.messageId).toBe("messageIDNotFound");
-    expect(result.content).toBe(hl7Content);
-    expect(result.filename).toContain("hl7-message-");
-    expect(result.filename).toContain("InterPartner");
+    expect(() => parseHL7Message(hl7Content)).toThrow(
+      "Invalid message: unable to parse message ID from HL7 MSH segment",
+    );
   });
 
-  it("should handle empty message text", () => {
-    const result = parseHL7Message("");
+  it("should throw error for empty message text", () => {
+    expect(() => parseHL7Message("")).toThrow(
+      "Invalid message: empty message text",
+    );
+  });
 
-    expect(result.messageId).toBe("messageIDNotFound");
-    expect(result.content).toBe("");
-    expect(result.filename).toContain("InterPartner");
+  it("should throw error for null/undefined message text", () => {
+    expect(() => parseHL7Message(null as any)).toThrow(
+      "Invalid message: empty message text",
+    );
+    expect(() => parseHL7Message(undefined as any)).toThrow(
+      "Invalid message: empty message text",
+    );
   });
 
   it("should trim whitespace from extracted message ID", () => {
