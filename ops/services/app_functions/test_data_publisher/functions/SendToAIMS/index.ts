@@ -14,6 +14,15 @@ import {
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
+// Initialize S3 client at mod level
+const s3Client = new S3Client({
+  credentials: {
+    accessKeyId: ENV.AIMS_ACCESS_KEY_ID,
+    secretAccessKey: ENV.AIMS_SECRET_ACCESS_KEY,
+  },
+  region: "us-east-1",
+});
+
 interface HL7Message {
   content: string;
   messageId?: string;
@@ -80,15 +89,6 @@ export async function SendToAIMS(
     const queueClient = queueServiceClient.getQueueClient(
       "hl7v2-data-publishing",
     );
-
-    //Pattern to Access S3 Keys
-    const client = new S3Client({
-      credentials: {
-        accessKeyId: ENV.AIMS_ACCESS_KEY_ID,
-        secretAccessKey: ENV.AIMS_SECRET_ACCESS_KEY,
-      },
-      region: "us-east-1",
-    });
 
     context.log("Checking for messages in queue...");
 
@@ -167,9 +167,8 @@ export async function SendToAIMS(
         // Track S3 dependency
         const startTime = Date.now();
         try {
-          const response = await client.send(command);
+          const response = await s3Client.send(command);
 
-          // Check if the response indicates success
           if (
             response.$metadata?.httpStatusCode &&
             response.$metadata.httpStatusCode >= 400
@@ -318,7 +317,7 @@ export async function SendToAIMS(
 
 export function parseHL7Message(messageText: string): HL7Message {
   // Extract message ID from HL7 MSH segment if available
-  let messageId = "abcd1234messageIDNotFound";
+  let messageId = "messageIDNotFound";
   let baseFilename = `hl7-message-${Date.now()}.hl7`;
 
   if (messageText) {
@@ -332,8 +331,12 @@ export function parseHL7Message(messageText: string): HL7Message {
 
   // Generate InterPartner formatted filename with validation
   const rawEnv = ENV.AIMS_ENVIRONMENT;
-  const env: Environment =
-    rawEnv === "Test" || rawEnv === "Prod" ? rawEnv : "Test";
+  if (rawEnv !== "Test" && rawEnv !== "Prod") {
+    throw new Error(
+      `Invalid AIMS_ENVIRONMENT: ${rawEnv}. Expected 'Test' or 'Prod'.`,
+    );
+  }
+  const env: Environment = rawEnv;
   const timestamp = new Date();
   const interPartnerFilename = formatInterPartnerFilename(
     env,
