@@ -68,7 +68,6 @@ const OrganizationForm = () => {
   useDocumentTitle("Sign up - organization information");
 
   const experianEnabled = useFeature("experianEnabled");
-  console.log({ experianEnabled });
 
   const onDetailChange =
     (field: keyof OrganizationCreateRequest) =>
