@@ -1,5 +1,4 @@
 import { InvocationContext } from "@azure/functions";
-import { S3ServiceException } from "@aws-sdk/client-s3";
 
 const mockS3Send = jest.fn();
 const mockS3Client = {
