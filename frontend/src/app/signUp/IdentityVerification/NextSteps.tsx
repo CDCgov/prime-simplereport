@@ -9,7 +9,7 @@ const NextSteps = () => {
     <CardBackground>
       <Card logo>
         <h1 className="font-ui-lg margin-top-3 margin-bottom-3">
-          Experian was unable to verify your identity
+          We were unable to verify your identity
         </h1>
         <p className="margin-bottom-2">
           Your security and experience are important to us. Let's schedule a

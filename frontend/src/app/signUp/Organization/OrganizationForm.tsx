@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { useFeature } from "flagged";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -34,6 +35,8 @@ import {
 import "./OrganizationForm.scss";
 import { UnsupportedStateModal } from "./UnsupportedStateModal";
 
+import NextSteps from "../IdentityVerification/NextSteps";
+
 export interface OrganizationCreateRequest {
   name: string;
   type: OrganizationType | "";
@@ -64,6 +67,9 @@ const OrganizationForm = () => {
   const [formChanged, setFormChanged] = useState(false);
   const [orgExternalId, setOrgExternalId] = useState("");
   useDocumentTitle("Sign up - organization information");
+
+  const experianEnabled = useFeature("experianEnabled");
+  console.log({ experianEnabled });
 
   const onDetailChange =
     (field: keyof OrganizationCreateRequest) =>
@@ -133,6 +139,10 @@ const OrganizationForm = () => {
   };
 
   if (orgExternalId) {
+    if (!experianEnabled) {
+      return <NextSteps />;
+    }
+
     return (
       <Navigate
         to="/sign-up/identity-verification"
