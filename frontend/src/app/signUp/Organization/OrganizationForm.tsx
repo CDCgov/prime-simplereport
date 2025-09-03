@@ -23,6 +23,7 @@ import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { PersonalDetailsFormProps } from "../IdentityVerification/PersonalDetailsForm";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import NextSteps from "../IdentityVerification/NextSteps";
 
 import {
   initOrg,
@@ -34,8 +35,6 @@ import {
 } from "./utils";
 import "./OrganizationForm.scss";
 import { UnsupportedStateModal } from "./UnsupportedStateModal";
-
-import NextSteps from "../IdentityVerification/NextSteps";
 
 export interface OrganizationCreateRequest {
   name: string;
