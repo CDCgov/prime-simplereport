@@ -12,6 +12,7 @@ import { PATIENT_TERM_PLURAL } from "../../config/constants";
 import { useDocumentTitle } from "../utils/hooks";
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
 import { useSupportedDiseaseList } from "../utils/disease";
+import Alert from "../commonComponents/Alert";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -79,7 +80,9 @@ export const Analytics = (props: Props) => {
   const [endDate, setEndDate] = useState<string>(
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
+  const [showRetentionWarning, setRetentionWarning] = useState<boolean>(false);
   let dataRetentionFlag = useFeature("dataRetentionDisabled");
+
   const supportedDiseaseList = useSupportedDiseaseList();
 
   const updateFacility = ({
@@ -236,8 +239,14 @@ export const Analytics = (props: Props) => {
                       onChange={(e) => {
                         if (Date.parse(e.target.value)) {
                           let d = moment(e.target.value).toDate();
-                          const minD = moment(e.target.min).toDate();
-                          d = d < minD ? minD : d;
+                          if (e.target.checkValidity()) {
+                            setRetentionWarning(false);
+                          } else {
+                            // Because the min and max are mostly suggestions on this date picker we need to check
+                            setRetentionWarning(
+                              d <= moment(e.target.min).toDate()
+                            );
+                          }
                           const startDateString = setStartTimeForDateRange(
                             new Date(d)
                           ).toLocaleDateString();
@@ -275,6 +284,22 @@ export const Analytics = (props: Props) => {
                 <p>Loading...</p>
               ) : (
                 <>
+                  {showRetentionWarning && (
+                    <Alert
+                      type="warning"
+                      role="alert"
+                      className={
+                        "width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
+                      }
+                      bodyClassName={"data-retention-limits-alert-body"}
+                    >
+                      <div>
+                        Note: Patients tested earlier than{" "}
+                        {moment(dataRetentionDate).format("MM-DD-YYYY")} are not
+                        shown due to our 30 day data retention maximum.
+                      </div>
+                    </Alert>
+                  )}
                   <h2>
                     {facilityName} - {selectedCondition} testing data
                   </h2>
