@@ -452,10 +452,12 @@ describe("Analytics", () => {
     await user.clear(endDate);
     await user.type(endDate, "2021-08-01");
 
-    await screen.findByText(`7/2/2021 – 8/1/2021`);
+    await screen.findByText(
+      `Note: Patients tested earlier than 07-02-2021 are not shown due to our 30 day data retention maximum.`
+    );
     await screen.findByText(`All ${PATIENT_TERM_PLURAL} tested`);
 
-    expect(startDate.value).toEqual("2021-07-02");
+    expect(startDate.value).toEqual("2021-07-01");
     expect(endDate.value).toEqual("2021-08-01");
   });
 });
