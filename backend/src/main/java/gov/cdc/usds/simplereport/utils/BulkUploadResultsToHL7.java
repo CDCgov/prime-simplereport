@@ -27,6 +27,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -285,6 +286,10 @@ public class BulkUploadResultsToHL7 {
     var orderingFacility = getOrderingFacilityInput(row);
     var specimenInput = getSpecimenInput(row);
     var testDetailsInputList = List.of(getTestDetailsInput(row));
+    var testStatus =
+        row.getTestResultStatus().getValue().equals("C")
+            ? TestCorrectionStatus.CORRECTED
+            : TestCorrectionStatus.ORIGINAL;
 
     try {
       var labReportMessage =
@@ -297,7 +302,8 @@ public class BulkUploadResultsToHL7 {
               testDetailsInputList,
               gitProperties,
               processingModeCode,
-              testId);
+              testId,
+              testStatus);
 
       return parser.encode(labReportMessage);
     } catch (HL7Exception e) {

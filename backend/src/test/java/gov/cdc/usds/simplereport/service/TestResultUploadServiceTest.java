@@ -1034,6 +1034,38 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
   }
 
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_aimsEnabled_hl7ConversionFailure_returnsSavedResult()
+      throws Exception {
+    when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(true);
+
+    // Set required AIMS fields to avoid NPE during set up
+    ReflectionTestUtils.setField(sut, "aimsAccessKeyId", "test-access-key");
+    ReflectionTestUtils.setField(sut, "aimsSecretAccessKey", "test-secret-key");
+    ReflectionTestUtils.setField(sut, "aimsS3BucketName", "test-bucket");
+    ReflectionTestUtils.setField(sut, "aimsUserId", "test-user");
+
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(dateGenerator.newDate()).thenReturn(new Date());
+
+    // Force HL7 conversion to fail so we can verify error handling path without S3
+    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any()))
+        .thenThrow(new CsvProcessingException("hl7 conversion failed"));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    List<TestResultUpload> result = sut.processResultCSV(input);
+
+    assertEquals(1, result.size());
+    verify(bulkUploadHl7ConverterMock, times(1)).convertToHL7BatchMessage(any());
+
+    // ensure we did not attempt to call ReportStream CSV/FHIR paths
+    verify(dataHubMock, never()).uploadCSV(any());
+    verify(dataHubMock, never()).uploadFhir(anyString(), anyString());
+  }
+
   private InputStream loadCsv(String csvFile) {
     return TestResultUploadService.class.getClassLoader().getResourceAsStream(csvFile);
   }
