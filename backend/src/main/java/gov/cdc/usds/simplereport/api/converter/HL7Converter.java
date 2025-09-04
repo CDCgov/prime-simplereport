@@ -16,6 +16,7 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.NPI_NAMING_SY
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_NAME;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
+import static gov.cdc.usds.simplereport.utils.MultiplexUtils.inferMultiplexDeviceTypeDisease;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.CLIA_REGEX;
 
 import ca.uhn.hl7v2.model.DataTypeException;
@@ -50,7 +51,6 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
-import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -58,6 +58,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -95,7 +97,8 @@ public class HL7Converter {
         convertToTestDetailsInputList(testEvent),
         gitProperties,
         processingId,
-        testEvent.getTestOrderId().toString());
+        testEvent.getTestOrderId().toString(),
+        testEvent.getCorrectionStatus());
   }
 
   /**
@@ -115,8 +118,10 @@ public class HL7Converter {
    * @param processingId indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
    * @param orderId used to populate the Filler Order Number in OBR-3 and ORC-3. This should be the
-   *     TestEvent id for single entry or the accession number for bulk upload. This parameter is
-   *     not the same as the message control id in MSH-10 which is randomly generated.
+   *     test event's TestOrderId for single entry or the accession number for bulk upload. This
+   *     parameter is not the same as the message control id in MSH-10 which is randomly generated.
+   * @param correctionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
+   *     Status
    * @return ORU_R01 message
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
@@ -131,10 +136,12 @@ public class HL7Converter {
       List<TestDetailsInput> testDetailsInputList,
       GitProperties gitProperties,
       String processingId,
-      String orderId)
+      String orderId,
+      TestCorrectionStatus correctionStatus)
       throws DataTypeException, IllegalArgumentException {
     // Lab reports from single entry and bulk upload should always have order id already populated.
-    // Single entry would use TestEvent internal id which is always required. Bulk upload would use
+    // Single entry would use the test event's TestOrderId which is always required. Bulk upload
+    // would use
     // Accession Number which is also required.
     if (StringUtils.isBlank(orderId)) {
       throw new IllegalArgumentException("Missing orderId for lab report message");
@@ -152,12 +159,16 @@ public class HL7Converter {
     populateSoftwareSegment(softwareSegment, gitProperties);
 
     PID patientIdentificationSegment = message.getPATIENT_RESULT().getPATIENT().getPID();
-    populatePatientIdentification(patientIdentificationSegment, patientInput);
+    populatePatientIdentification(
+        patientIdentificationSegment, patientInput, performingFacility.getClia());
 
     String specimenId = String.valueOf(uuidGenerator.randomUUID());
 
     if (orderingFacility == null) {
       orderingFacility = performingFacility;
+    }
+    if (correctionStatus == null) {
+      correctionStatus = TestCorrectionStatus.ORIGINAL;
     }
 
     // Since multiple ordered tests may be performed on a specimen, we need to group the test
@@ -180,10 +191,6 @@ public class HL7Converter {
         populateCommonOrderSegment(commonOrder, orderingFacility, providerInput, orderId);
       }
 
-      // First test detail is picked to get the test order display name
-      // and correction status for OBR
-      TestDetailsInput firstTestDetail = entry.getValue().get(0);
-
       OBR observationRequest = orderGroup.getOBR();
       populateObservationRequest(
           observationRequest,
@@ -192,8 +199,8 @@ public class HL7Converter {
           providerInput,
           specimenInput.getCollectionDate(),
           entry.getKey(),
-          firstTestDetail.getTestOrderDisplayName(),
-          firstTestDetail.getCorrectionStatus(),
+          entry.getValue().get(0).getTestOrderDisplayName(),
+          correctionStatus,
           messageTimestamp);
 
       // Populate the list of OBX associated with this OBR
@@ -206,10 +213,15 @@ public class HL7Converter {
             obxIndex + 1,
             performingFacility,
             specimenInput.getCollectionDate(),
-            obxTestDetails.get(obxIndex));
+            obxTestDetails.get(obxIndex),
+            correctionStatus);
       }
 
-      // Only a single specimen can be associated with the OBR
+      // "Only a single specimen can be associated with the OBR." HL7 allows for multiple specimens
+      // in a message as long as each specimen is associated with only one observation request (aka
+      // test ordered LOINC). With how the app currently works, we will only ever have one specimen
+      // in the entire HL7 message. That is only due to how the app is currently designed, not a
+      // constraint of HL7.
       // See page 83, HL7 v2.5.1 IG
       if (orderObservationIndex == 0) {
         SPM specimen = orderGroup.getSPECIMEN().getSPM();
@@ -343,32 +355,38 @@ public class HL7Converter {
    *
    * @param pid the PID object from the message's PATIENT_RESULT.PATIENT group
    * @param patientInput the input containing the form values for patient
+   * @param performingFacilityClia used to populate namespace ID for the assigning authority on a
+   *     patient external id if present
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
    */
-  void populatePatientIdentification(PID pid, PatientReportInput patientInput)
+  void populatePatientIdentification(
+      PID pid, PatientReportInput patientInput, String performingFacilityClia)
       throws DataTypeException {
     // PID Sequence 1 is "Set ID - PID" which is used to identify repetitions.
     // Since the ORU^R01 message only allows one Patient per message, the HL7 IG says this must be
     // the literal value '1'.
     pid.getPid1_SetIDPID().setValue("1");
 
-    CX patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
-
     // Legacy app test events should already have a patient ID on patientInput
-    String patientId = patientInput.getPatientId();
-    if (StringUtils.isBlank(patientId)) {
-      patientId = uuidGenerator.randomUUID().toString();
-    }
 
-    patientIdentifierEntry.getCx1_IDNumber().setValue(patientId);
-    patientIdentifierEntry
-        .getCx4_AssigningAuthority()
-        .getHd2_UniversalID()
-        .setValue(SIMPLE_REPORT_ORG_OID);
-    patientIdentifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
+    // ID used internally by SimpleReport
+    String internalId =
+        StringUtils.isNotBlank(patientInput.getPatientInternalId())
+            ? patientInput.getPatientInternalId()
+            : uuidGenerator.randomUUID().toString();
+    CX patientInternalIdEntry = pid.getPid3_PatientIdentifierList(0);
     // PI is the value for Patient internal identifier on HL7 table 0203 Identifier type
-    patientIdentifierEntry.getCx5_IdentifierTypeCode().setValue("PI");
+    populatePatientIdentifierEntry(patientInternalIdEntry, internalId, "PI", null);
+
+    // ID used by the facility, such as a medical record number
+    String externalId = patientInput.getPatientExternalId();
+    if (StringUtils.isNotBlank(externalId)) {
+      CX patientExternalIdEntry = pid.getPid3_PatientIdentifierList(1);
+      // PT is the value for Patient external identifier on HL7 table 0203 Identifier type
+      populatePatientIdentifierEntry(
+          patientExternalIdEntry, externalId, "PT", performingFacilityClia);
+    }
 
     populateName(
         pid.getPid5_PatientName(0),
@@ -415,6 +433,22 @@ public class HL7Converter {
             pid.getPid39_TribalCitizenship(0), patientInput.getTribalAffiliation());
      */
 
+  }
+
+  void populatePatientIdentifierEntry(
+      CX identifierEntry, String id, String identifierTypeCode, String namespaceId)
+      throws DataTypeException {
+    identifierEntry.getCx1_IDNumber().setValue(id);
+    identifierEntry
+        .getCx4_AssigningAuthority()
+        .getHd2_UniversalID()
+        .setValue(SIMPLE_REPORT_ORG_OID);
+    identifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
+    identifierEntry.getCx5_IdentifierTypeCode().setValue(identifierTypeCode);
+
+    if (StringUtils.isNotBlank(namespaceId)) {
+      identifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().setValue(namespaceId);
+    }
   }
 
   /** Populates the Extended Person Name (XPN) object */
@@ -700,6 +734,7 @@ public class HL7Converter {
    * @param testOrderLoinc All OBR segment repeats should use the same test order LOINC
    * @param testOrderDisplay This should be the same test order LOINC for all OBR within this
    *     message
+   * @param testCorrectionStatus used to populate OBR-25 Result Status
    * @param messageTimestamp Must be less than or equal to the value of MSH-7 Date Time of Message
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
@@ -711,7 +746,7 @@ public class HL7Converter {
       Date specimenCollectionDate,
       String testOrderLoinc,
       String testOrderDisplay,
-      String correctionStatus,
+      TestCorrectionStatus testCorrectionStatus,
       Date messageTimestamp)
       throws DataTypeException {
     observationRequest.getObr1_SetIDOBR().setValue(String.valueOf(sequenceNumber));
@@ -742,9 +777,18 @@ public class HL7Converter {
         .getTs1_Time()
         .setValue(formatToHL7DateTime(messageTimestamp));
 
-    // F for final results, from HL7 table 0123 Result Status
-    String resultStatus = StringUtils.isBlank(correctionStatus) ? "F" : correctionStatus;
-    observationRequest.getObr25_ResultStatus().setValue(resultStatus);
+    // OBR-25 uses HL7 table 0123 Result Status
+    String orderResultStatus;
+    switch (testCorrectionStatus) {
+      case ORIGINAL -> orderResultStatus = "F";
+      // Removals should also be C for corrected order where the result status in OBX-11 is marked D
+      // for deletion
+      case CORRECTED, REMOVED -> orderResultStatus = "C";
+      default ->
+          throw new IllegalArgumentException(
+              "Cannot convert invalid test correction status to observation result status");
+    }
+    observationRequest.getObr25_ResultStatus().setValue(orderResultStatus);
   }
 
   /**
@@ -757,6 +801,7 @@ public class HL7Converter {
    * @param performingFacility Facility that produced the test result described in this segment
    * @param specimenCollectionDate Used to populate the time of the observation
    * @param testDetail The test result data
+   * @param testCorrectionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    * @throws IllegalArgumentException if non-ordinal result type is provided
    */
@@ -765,7 +810,8 @@ public class HL7Converter {
       int sequenceNumber,
       FacilityReportInput performingFacility,
       Date specimenCollectionDate,
-      TestDetailsInput testDetail)
+      TestDetailsInput testDetail,
+      TestCorrectionStatus testCorrectionStatus)
       throws DataTypeException, IllegalArgumentException {
     obx.getObx1_SetIDOBX().setValue(String.valueOf(sequenceNumber));
 
@@ -792,11 +838,16 @@ public class HL7Converter {
 
     // TODO: determine how we should programmatically set OBX 8 - Abnormal flags
 
-    // F for final results, from HL7 table 0085 Observation result status codes interpretation
-    String resultStatus =
-        StringUtils.isBlank(testDetail.getCorrectionStatus())
-            ? "F"
-            : testDetail.getCorrectionStatus();
+    // OBX-11 uses HL7 table 0085 Observation result status codes interpretation
+    String resultStatus;
+    switch (testCorrectionStatus) {
+      case ORIGINAL -> resultStatus = "F";
+      case CORRECTED -> resultStatus = "C";
+      case REMOVED -> resultStatus = "D"; // Indicates the previously reported OBX should be deleted
+      default ->
+          throw new IllegalArgumentException(
+              "Cannot convert invalid test correction status to observation result status");
+    }
     obx.getObx11_ObservationResultStatus().setValue(resultStatus);
 
     // "For specimen-based laboratory reporting, the specimen collection date and time."
@@ -945,7 +996,11 @@ public class HL7Converter {
         .ethnicity(testEvent.getPatientData().getEthnicity())
         .tribalAffiliation(
             hasTribalAffiliation ? testEvent.getPatientData().getTribalAffiliation().get(0) : null)
-        .patientId(
+        .patientExternalId(
+            testEvent.getPatientData().getLookupId() != null
+                ? testEvent.getPatientData().getLookupId()
+                : null)
+        .patientInternalId(
             testEvent.getPatientData().getInternalId() != null
                 ? testEvent.getPatientData().getInternalId().toString()
                 : null)
@@ -1000,48 +1055,22 @@ public class HL7Converter {
     return testEvent.getResults().stream()
         .map(
             result -> {
-              String testOrderLoinc;
-              if (testEvent.getResults().size() == 1) {
-                testOrderLoinc =
-                    MultiplexUtils.inferTestOrderLoincForSingleResult(
-                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
-                        result.getDisease());
-              } else {
-                testOrderLoinc =
-                    MultiplexUtils.inferMultiplexTestOrderLoinc(
-                        testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
-              }
-
-              if (StringUtils.isBlank(testOrderLoinc)) {
-                throw new IllegalArgumentException("Inferred test order loinc was blank");
-              }
-
-              DeviceTypeDisease deviceTypeDiseaseFromLoinc =
+              Set<DeviceTypeDisease> matchingDeviceTypeDiseases =
                   testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
-                      .filter(d -> testOrderLoinc.equalsIgnoreCase(d.getTestOrderedLoincCode()))
                       .filter(d -> d.getSupportedDisease().equals(result.getDisease()))
-                      .findFirst()
-                      .orElse(null);
+                      .collect(Collectors.toSet());
 
-              if (deviceTypeDiseaseFromLoinc == null) {
-                throw new IllegalArgumentException(
-                    "DeviceTypeDisease from inferred loinc was null");
-              }
+              DeviceTypeDisease inferredDeviceTypeDisease =
+                  inferMultiplexDeviceTypeDisease(matchingDeviceTypeDiseases, testEvent);
 
               return convertToTestDetailsInput(
-                  result,
-                  deviceTypeDiseaseFromLoinc,
-                  testEvent.getDateTested(),
-                  testEvent.getCorrectionStatus());
+                  result, inferredDeviceTypeDisease, testEvent.getDateTested());
             })
         .toList();
   }
 
   private TestDetailsInput convertToTestDetailsInput(
-      Result result,
-      DeviceTypeDisease deviceTypeDisease,
-      Date resultDate,
-      TestCorrectionStatus testCorrectionStatus) {
+      Result result, DeviceTypeDisease deviceTypeDisease, Date resultDate) {
     return TestDetailsInput.builder()
         .condition(result.getDisease().getName())
         .testOrderLoinc(deviceTypeDisease.getTestOrderedLoincCode())
@@ -1052,29 +1081,6 @@ public class HL7Converter {
         .resultValue(result.getResultSNOMED())
         .resultDate(resultDate)
         .resultInterpretation(null)
-        .correctionStatus(convertToObservationResultStatus(testCorrectionStatus))
         .build();
-  }
-
-  /**
-   * Converts TestCorrectionStatus to value from HL7 table 0085 Observation result status codes
-   * interpretation
-   */
-  private String convertToObservationResultStatus(TestCorrectionStatus testCorrectionStatus) {
-    switch (testCorrectionStatus) {
-      case ORIGINAL -> {
-        return "F";
-      }
-      case CORRECTED -> {
-        return "C";
-      }
-      case REMOVED -> {
-        return "X";
-      }
-      default -> {
-        throw new IllegalArgumentException(
-            "Cannot convert invalid test correction status to observation result status");
-      }
-    }
   }
 }

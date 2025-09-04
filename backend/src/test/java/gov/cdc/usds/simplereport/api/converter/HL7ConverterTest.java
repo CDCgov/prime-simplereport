@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithDate;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithNoCommonTestOrderedLoincDevice;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createSingleCovidTestEventOnMultiplexDevice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -17,6 +18,7 @@ import ca.uhn.hl7v2.model.v251.datatype.EI;
 import ca.uhn.hl7v2.model.v251.datatype.XAD;
 import ca.uhn.hl7v2.model.v251.datatype.XCN;
 import ca.uhn.hl7v2.model.v251.datatype.XTN;
+import ca.uhn.hl7v2.model.v251.group.ORU_R01_ORDER_OBSERVATION;
 import ca.uhn.hl7v2.model.v251.message.ORU_R01;
 import ca.uhn.hl7v2.model.v251.segment.MSH;
 import ca.uhn.hl7v2.model.v251.segment.OBR;
@@ -45,6 +47,7 @@ import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,6 +96,9 @@ class HL7ConverterTest {
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 
+    OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+    assertThat(obr.getObr25_ResultStatus().getValue()).isEqualTo("F");
+
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
     assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("F");
     assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
@@ -126,6 +132,9 @@ class HL7ConverterTest {
 
     ORU_R01 message = hl7Converter.createLabReportMessage(correctedTestEvent, gitProperties, "T");
 
+    OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+    assertThat(obr.getObr25_ResultStatus().getValue()).isEqualTo("C");
+
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
     assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("C");
     assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
@@ -150,8 +159,11 @@ class HL7ConverterTest {
 
     ORU_R01 message = hl7Converter.createLabReportMessage(correctedTestEvent, gitProperties, "T");
 
+    OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+    assertThat(obr.getObr25_ResultStatus().getValue()).isEqualTo("C");
+
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
-    assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("X");
+    assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("D");
   }
 
   @Test
@@ -177,6 +189,35 @@ class HL7ConverterTest {
   }
 
   @Test
+  void createLabReportMessage_fromTestEvent_multiplex_onDeviceWithNoMultiplexTestOrderedLoinc()
+      throws HL7Exception {
+    Date dateTested = Date.from(LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC));
+    TestEvent testEvent = createMultiplexTestEventWithNoCommonTestOrderedLoincDevice(dateTested);
+
+    TestOrder testOrder = testEvent.getTestOrder();
+    var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
+    ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
+    testOrder.setTestEventRef(testEvent);
+
+    ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
+
+    List<OBR> obrList =
+        message.getPATIENT_RESULT().getORDER_OBSERVATIONAll().stream()
+            .map(ORU_R01_ORDER_OBSERVATION::getOBR)
+            .toList();
+    assertThat(obrList).hasSize(2);
+    assertThat(
+            obrList.stream()
+                .map(o -> o.getObr4_UniversalServiceIdentifier().getCe1_Identifier().getValue())
+                .collect(Collectors.toSet()))
+        .contains("3456-7", "2345-6");
+
+    Parser parser = hapiContext.getPipeParser();
+    String encodedMessage = parser.encode(message);
+    assertThat(StringUtils.countMatches(encodedMessage, "OBR|")).isEqualTo(2);
+  }
+
+  @Test
   void createLabReportMessage_encodesWithoutException() {
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
     FacilityReportInput facilityReportInput = TestDataBuilder.createFacilityReportInput();
@@ -197,7 +238,8 @@ class HL7ConverterTest {
                   testDetailsInputList,
                   gitProperties,
                   "T",
-                  uuidGenerator.randomUUID().toString());
+                  uuidGenerator.randomUUID().toString(),
+                  TestCorrectionStatus.ORIGINAL);
 
           Parser parser = hapiContext.getPipeParser();
           parser.encode(message);
@@ -223,7 +265,8 @@ class HL7ConverterTest {
             testDetailsInputList,
             gitProperties,
             "T",
-            uuidGenerator.randomUUID().toString());
+            uuidGenerator.randomUUID().toString(),
+            TestCorrectionStatus.ORIGINAL);
 
     EI commonOrderFillerOrderNumber =
         message.getPATIENT_RESULT().getORDER_OBSERVATION().getORC().getOrc3_FillerOrderNumber();
@@ -282,7 +325,7 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
 
     var patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
 
@@ -295,7 +338,9 @@ class HL7ConverterTest {
   @Test
   void populatePatientIdentification_valid_withPatientId() throws DataTypeException {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
-    String predefinedPatientId = "80b1f7ed-a865-47c9-8c52-38ea1a393a63";
+    String patientExternalId = "c4470e82-452c-43a7-8029-38473bf5e74b";
+    String patientInternalId = "80b1f7ed-a865-47c9-8c52-38ea1a393a63";
+
     PatientReportInput patientReportInput =
         new PatientReportInput(
             "John",
@@ -316,16 +361,71 @@ class HL7ConverterTest {
             "native",
             "not_hispanic",
             "266",
-            predefinedPatientId);
+            null,
+            patientExternalId,
+            patientInternalId);
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+    String clia = "12D1234567";
 
-    var patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, clia);
 
-    assertThat(patientIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(predefinedPatientId);
-    assertThat(patientIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
+    assertThat(pid.getPid3_PatientIdentifierListReps()).isEqualTo(2);
+
+    var internalIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
+
+    assertThat(internalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(patientInternalId);
+    assertThat(internalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
         .isEqualTo(SIMPLE_REPORT_ORG_OID);
-    assertThat(patientIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
+    assertThat(internalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
+
+    var externalIdentifierEntry = pid.getPid3_PatientIdentifierList(1);
+
+    assertThat(externalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(patientExternalId);
+    assertThat(externalIdentifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().getValue())
+        .isEqualTo(clia);
+    assertThat(externalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+    assertThat(externalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PT");
+  }
+
+  @Test
+  void populatePatientIdentification_valid_onlyRandomInternalId() throws DataTypeException {
+    PID pid = TestDataBuilder.createPatientIdentificationSegment();
+
+    PatientReportInput patientReportInput =
+        new PatientReportInput(
+            "John",
+            "Jacob",
+            "Smith",
+            "Jr",
+            "john@example.com",
+            "716-555-1234",
+            "123 Main St",
+            "Apartment A",
+            "Buffalo",
+            "Erie",
+            "NY",
+            "14220",
+            "USA",
+            "male",
+            LocalDate.of(1990, 1, 1),
+            "native",
+            "not_hispanic",
+            "266",
+            null,
+            null,
+            null);
+
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+
+    assertThat(pid.getPid3_PatientIdentifierListReps()).isEqualTo(1);
+
+    var internalIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
+
+    assertThat(internalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(internalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+    assertThat(internalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
   }
 
   @Test
@@ -333,7 +433,7 @@ class HL7ConverterTest {
     PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
 
     assertThat(pid.getPid7_DateTimeOfBirth().getTs1_Time().getValue()).isEqualTo("19900101");
   }
@@ -361,9 +461,11 @@ class HL7ConverterTest {
             "native",
             "not_hispanic",
             "266",
-            "");
+            null,
+            null,
+            null);
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
 
     assertThat(pid.getPid13_PhoneNumberHome(0).getXtn4_EmailAddress().getValue())
         .isEqualTo("john@example.com");
@@ -590,7 +692,7 @@ class HL7ConverterTest {
         Date.from(specimenCollectionDate),
         testOrderLoinc,
         testOrderDisplay,
-        "F",
+        TestCorrectionStatus.ORIGINAL,
         Date.from(STATIC_INSTANT));
 
     assertThat(
@@ -636,11 +738,15 @@ class HL7ConverterTest {
             ResultScaleType.ORDINAL,
             "260373001",
             Date.from(testResultDate),
-            "",
             "");
 
     hl7Converter.populateObservationResult(
-        observationResult, 1, performingFacility, Date.from(specimenCollectionDate), testDetail);
+        observationResult,
+        1,
+        performingFacility,
+        Date.from(specimenCollectionDate),
+        testDetail,
+        TestCorrectionStatus.ORIGINAL);
 
     assertThat(observationResult.getObx3_ObservationIdentifier().getCe1_Identifier().getValue())
         .isEqualTo(testDetail.getTestOrderLoinc());
@@ -676,7 +782,6 @@ class HL7ConverterTest {
             ResultScaleType.NOMINAL,
             "260373001",
             Date.from(STATIC_INSTANT),
-            "",
             "");
 
     IllegalArgumentException exception =
@@ -688,7 +793,8 @@ class HL7ConverterTest {
                     1,
                     performingFacility,
                     Date.from(STATIC_INSTANT),
-                    testDetail));
+                    testDetail,
+                    TestCorrectionStatus.ORIGINAL));
     assertThat(exception.getMessage())
         .isEqualTo("Non-ordinal result types are not currently supported");
   }
