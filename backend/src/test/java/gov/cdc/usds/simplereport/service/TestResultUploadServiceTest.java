@@ -24,6 +24,7 @@ import feign.RequestTemplate;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
@@ -40,6 +41,8 @@ import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
+import gov.cdc.usds.simplereport.utils.BulkUploadResultsToHL7;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -92,13 +95,17 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private TokenAuthentication tokenAuthMock;
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
+  @Mock private BulkUploadResultsToHL7 bulkUploadHl7ConverterMock;
   @Mock private DiseaseService diseaseService;
+  @Mock private FeatureFlagsConfig featureFlagsConfig;
+  @Mock private DateGenerator dateGenerator;
   @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()
   public void init() {
     initSampleData();
     ReflectionTestUtils.setField(sut, "processingModeCodeValue", "P");
+    when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(false);
   }
 
   @Test
@@ -1025,6 +1032,38 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertEquals(1, output.size());
     verify(dataHubMock, never()).uploadCSV(any());
     verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_aimsEnabled_hl7ConversionFailure_returnsSavedResult()
+      throws Exception {
+    when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(true);
+
+    // Set required AIMS fields to avoid NPE during set up
+    ReflectionTestUtils.setField(sut, "aimsAccessKeyId", "test-access-key");
+    ReflectionTestUtils.setField(sut, "aimsSecretAccessKey", "test-secret-key");
+    ReflectionTestUtils.setField(sut, "aimsS3BucketName", "test-bucket");
+    ReflectionTestUtils.setField(sut, "aimsUserId", "test-user");
+
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(dateGenerator.newDate()).thenReturn(new Date());
+
+    // Force HL7 conversion to fail so we can verify error handling path without S3
+    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any()))
+        .thenThrow(new CsvProcessingException("hl7 conversion failed"));
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    List<TestResultUpload> result = sut.processResultCSV(input);
+
+    assertEquals(1, result.size());
+    verify(bulkUploadHl7ConverterMock, times(1)).convertToHL7BatchMessage(any());
+
+    // ensure we did not attempt to call ReportStream CSV/FHIR paths
+    verify(dataHubMock, never()).uploadCSV(any());
+    verify(dataHubMock, never()).uploadFhir(anyString(), anyString());
   }
 
   private InputStream loadCsv(String csvFile) {
