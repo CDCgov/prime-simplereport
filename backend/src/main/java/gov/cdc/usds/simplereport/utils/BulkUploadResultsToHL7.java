@@ -370,6 +370,7 @@ public class BulkUploadResultsToHL7 {
 
     return FacilityReportInput.builder()
         .name(row.getOrderingFacilityName().getValue())
+        .clia(row.getTestingLabClia().getValue())
         .street(row.getOrderingFacilityStreet().getValue())
         .streetTwo(row.getOrderingFacilityStreet2().getValue())
         .city(row.getOrderingFacilityCity().getValue())
