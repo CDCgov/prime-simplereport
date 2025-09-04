@@ -176,7 +176,7 @@ describe("messageProcessor", () => {
     );
   });
 
-  it("should handle S3 non-200 status codes", async () => {
+  it("should handle S3 >=400 status codes", async () => {
     mockS3Send.mockResolvedValue({ $metadata: { httpStatusCode: 400 } });
 
     await expect(
