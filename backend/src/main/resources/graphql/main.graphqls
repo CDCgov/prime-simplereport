@@ -532,6 +532,7 @@ enum ResultScaleType {
 type Condition {
   code: String!
   display: String!
+  snomedName: String
 }
 
 type Lab {
