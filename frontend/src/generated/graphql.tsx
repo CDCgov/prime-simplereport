@@ -125,6 +125,7 @@ export type Condition = {
   __typename?: "Condition";
   code: Scalars["String"]["output"];
   display: Scalars["String"]["output"];
+  snomedName?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type CreateDeviceType = {
@@ -3075,6 +3076,7 @@ export type GetConditionsQuery = {
     __typename?: "Condition";
     code: string;
     display: string;
+    snomedName?: string | null;
   }>;
 };
 
@@ -9628,6 +9630,7 @@ export const GetConditionsDocument = gql`
     conditions {
       code
       display
+      snomedName
     }
   }
 `;
