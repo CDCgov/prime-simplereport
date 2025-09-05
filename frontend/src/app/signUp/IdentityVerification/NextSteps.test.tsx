@@ -6,7 +6,7 @@ describe("NextSteps", () => {
   it("renders", () => {
     render(<NextSteps />);
     expect(
-      screen.getByText("Experian was unable to verify your identity", {
+      screen.getByText("We were unable to verify your identity", {
         exact: false,
       })
     ).toBeInTheDocument();
