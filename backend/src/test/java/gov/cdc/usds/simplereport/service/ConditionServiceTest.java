@@ -61,12 +61,10 @@ class ConditionServiceTest {
   private ConditionService conditionService;
   private FhirContext fhirContext;
   private HttpClient mockHttpClient;
-  public HttpResponse<String> mockResponse;
 
   @BeforeEach
   void setup() {
     mockHttpClient = mock(HttpClient.class);
-    mockResponse = mock(HttpResponse.class);
     conditionService = new ConditionService(tesClient, conditionRepository, loincStagingRepository);
     fhirContext = FhirContext.forR4();
     fhirContext.getParserOptions().setStripVersionsFromReferences(false);
