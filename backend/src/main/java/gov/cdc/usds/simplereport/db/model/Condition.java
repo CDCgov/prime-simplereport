@@ -24,10 +24,12 @@ public class Condition extends EternalAuditedEntity {
   @Column(nullable = false)
   private String code;
 
+  /** This value comes from APHL's Terminology Exchange Service */
   @Getter
   @Column(nullable = false)
   private String display;
 
+  /** This value comes from the UMLS Terminology Service endpoint for a SNOMED */
   @Getter @Column private String snomedName;
 
   @Column private boolean hasLabs;
