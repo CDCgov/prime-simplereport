@@ -2,11 +2,24 @@ import React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useFeature } from "flagged";
 
 import { Patient } from "../../patients/ManagePatients";
 import { PATIENT_TERM } from "../../../config/constants";
 
 import SearchResults from "./SearchResults";
+
+jest.mock("flagged", () => ({
+  useFeature: jest.fn(),
+}));
+
+jest.mock("react-router-dom", () => {
+  const original = jest.requireActual("react-router-dom");
+  return {
+    ...original,
+    Navigate: (props: any) => `Redirected to ${props.to}`,
+  };
+});
 
 const dummyTest = {
   dateAdded: "2020-01-01",
@@ -60,17 +73,18 @@ const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   </MemoryRouter>
 );
 
-jest.mock("react-router-dom", () => {
-  const original = jest.requireActual("react-router-dom");
-  return {
-    ...original,
-    Navigate: (props: any) => `Redirected to ${props.to}`,
-  };
-});
+const mockFlags = (flags: Record<string, boolean>) => {
+  const mockedUseFeature = useFeature as jest.MockedFunction<typeof useFeature>;
+  mockedUseFeature.mockImplementation((flagName) => {
+    return Boolean(flags[flagName]);
+  });
+};
 
 describe("SearchResults", () => {
   describe("No Results", () => {
-    it("should say 'No Results' for no matches", () => {
+    it("should say 'No Results' for no matches when data retention flag is disabled", () => {
+      mockFlags({ dataRetentionLimitsEnabled: false });
+
       render(
         <RouterWithFacility>
           <Route
@@ -91,6 +105,33 @@ describe("SearchResults", () => {
       );
 
       expect(screen.getByText("No results found.")).toBeInTheDocument();
+    });
+
+    it("should say data retention-specific text for no matches when data retention flag is not disabled", () => {
+      mockFlags({ dataRetentionLimitsEnabled: true });
+
+      render(
+        <RouterWithFacility>
+          <Route
+            path="/queue"
+            element={
+              <SearchResults
+                page="queue"
+                patients={[]}
+                patientsInQueue={[]}
+                onAddToQueue={jest.fn()}
+                shouldShowSuggestions={true}
+                loading={false}
+                canAddPatient={true}
+              />
+            }
+          />
+        </RouterWithFacility>
+      );
+
+      expect(
+        screen.getByText("No results found in the last 30 days.")
+      ).toBeInTheDocument();
     });
 
     it("should show add patient button", async () => {
