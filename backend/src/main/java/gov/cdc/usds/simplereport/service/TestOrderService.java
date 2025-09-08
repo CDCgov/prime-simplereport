@@ -373,10 +373,11 @@ public class TestOrderService {
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
 
-    applicationEventPublisher.publishEvent(
-        featureFlagsConfig.isAimsReportingEnabled()
-            ? new ReportToAIMSEvent(savedOrder.getTestEvent())
-            : new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
+    applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
+
+    if (featureFlagsConfig.isAimsReportingEnabled()) {
+      applicationEventPublisher.publishEvent(new ReportToAIMSEvent(savedOrder.getTestEvent()));
+    }
 
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
@@ -586,10 +587,11 @@ public class TestOrderService {
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
         _testOrderRepo.save(order);
 
-        applicationEventPublisher.publishEvent(
-            featureFlagsConfig.isAimsReportingEnabled()
-                ? new ReportToAIMSEvent(newRemoveEvent)
-                : new ReportTestEventToRSEvent(newRemoveEvent));
+        applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(newRemoveEvent));
+
+        if (featureFlagsConfig.isAimsReportingEnabled()) {
+          applicationEventPublisher.publishEvent(new ReportToAIMSEvent(newRemoveEvent));
+        }
 
         return newRemoveEvent;
       }
