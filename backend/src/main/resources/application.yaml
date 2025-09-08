@@ -208,7 +208,7 @@ features:
   syphilisEnabled: true
   hivEnabled: true
   universalReportingEnabled: true
-  aimsReportingEnabled: false
+  aimsReportingEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}
