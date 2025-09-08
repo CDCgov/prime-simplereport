@@ -67,7 +67,7 @@ const OrganizationForm = () => {
   const [orgExternalId, setOrgExternalId] = useState("");
   useDocumentTitle("Sign up - organization information");
 
-  const experianEnabled = useFeature("experianEnabled");
+  const identityVerificationEnabled = useFeature("identityVerificationEnabled");
 
   const onDetailChange =
     (field: keyof OrganizationCreateRequest) =>
@@ -137,7 +137,7 @@ const OrganizationForm = () => {
   };
 
   if (orgExternalId) {
-    if (!experianEnabled) {
+    if (!identityVerificationEnabled) {
       return <NextSteps />;
     }
 

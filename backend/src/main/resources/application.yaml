@@ -206,7 +206,7 @@ features:
   syphilisEnabled: true
   hivEnabled: true
   universalReportingEnabled: true
-  experianEnabled: true
+  identityVerificationEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}
