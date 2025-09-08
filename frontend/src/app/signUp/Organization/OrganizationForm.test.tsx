@@ -141,7 +141,7 @@ describe("OrganizationForm", () => {
   });
 
   it("redirects to identity verification when submitting valid input", async () => {
-    mockFlags({ experianEnabled: true });
+    mockFlags({ identityVerificationEnabled: true });
     const { user } = renderWithUser();
     await user.type(getOrgNameInput(), "Drake");
     await fillInDropDown(user, getOrgStateDropdown(), "TX");
