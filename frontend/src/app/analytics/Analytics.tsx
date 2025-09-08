@@ -81,7 +81,7 @@ export const Analytics = (props: Props) => {
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
   const [showRetentionWarning, setRetentionWarning] = useState<boolean>(false);
-  let dataRetentionFlag = useFeature("dataRetentionDisabled");
+  let dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
 
   const supportedDiseaseList = useSupportedDiseaseList();
 
@@ -229,10 +229,14 @@ export const Analytics = (props: Props) => {
                       type={"date"}
                       max={formatDate(new Date())}
                       min={
-                        dataRetentionFlag ? formatDate(dataRetentionDate) : ""
+                        dataRetentionLimitsEnabled
+                          ? formatDate(dataRetentionDate)
+                          : ""
                       }
                       data-min-date={
-                        dataRetentionFlag ? formatDate(dataRetentionDate) : ""
+                        dataRetentionLimitsEnabled
+                          ? formatDate(dataRetentionDate)
+                          : ""
                       }
                       className={classNames("usa-input")}
                       aria-label={"Enter start date"}
@@ -243,8 +247,10 @@ export const Analytics = (props: Props) => {
                             setRetentionWarning(false);
                           } else {
                             // Because the min and max are mostly suggestions on this date picker we need to check
+                            // and we only care about this if the dataRetentionLimitsEnabled flag is strue
                             setRetentionWarning(
-                              d <= moment(e.target.min).toDate()
+                              dataRetentionLimitsEnabled &&
+                                d <= moment(e.target.min).toDate()
                             );
                           }
                           const startDateString = setStartTimeForDateRange(

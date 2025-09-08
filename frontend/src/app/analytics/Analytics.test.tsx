@@ -432,7 +432,7 @@ describe("Analytics", () => {
   it("when data retention is disabled custom date range is limited to 30 days", async () => {
     const flagSpy = jest.spyOn(flaggedMock, "useFeature");
     flagSpy.mockImplementation((flagName) => {
-      return flagName === "dataRetentionDisabled";
+      return flagName === "dataRetentionLimitsEnabled";
     });
 
     const { user } = renderWithUser();
