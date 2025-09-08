@@ -205,7 +205,7 @@ features:
   hepatitisCEnabled: true
   syphilisEnabled: true
   hivEnabled: true
-  dataRetentionDisabled: true
+  dataRetentionLimitsEnabled: false
   universalReportingEnabled: true
 slack:
   hook:

@@ -48,7 +48,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   const activeFacilityId = getFacilityIdFromUrl(useLocation());
-  const dataRetentionDisabled = useFeature("dataRetentionDisabled");
+  const dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
 
   if (redirect) {
     return <Navigate to={redirect} />;
@@ -100,9 +100,9 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
         }
       >
         <div className="margin-bottom-105">
-          {dataRetentionDisabled
-            ? "No results found."
-            : "No results found in the last 30 days."}
+          {dataRetentionLimitsEnabled
+            ? "No results found in the last 30 days."
+            : "No results found."}
         </div>
         <div>
           Check for spelling errors

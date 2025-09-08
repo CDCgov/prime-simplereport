@@ -83,7 +83,7 @@ const mockFlags = (flags: Record<string, boolean>) => {
 describe("SearchResults", () => {
   describe("No Results", () => {
     it("should say 'No Results' for no matches when data retention flag is disabled", () => {
-      mockFlags({ dataRetentionDisabled: true });
+      mockFlags({ dataRetentionLimitsEnabled: false });
 
       render(
         <RouterWithFacility>
@@ -108,7 +108,7 @@ describe("SearchResults", () => {
     });
 
     it("should say data retention-specific text for no matches when data retention flag is not disabled", () => {
-      mockFlags({ dataRetentionDisabled: false });
+      mockFlags({ dataRetentionLimitsEnabled: true });
 
       render(
         <RouterWithFacility>
