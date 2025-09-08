@@ -274,8 +274,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(patientLinkService).createPatientLink(any());
 
     // make sure the corrected event is sent to storage queue
-    verifyNoInteractions(testEventReportingService);
-    verifyNoInteractions(fhirQueueReportingService);
+    verify(testEventReportingService).report(any());
+    verify(fhirQueueReportingService).report(any());
     verify(hl7QueueReportingService).report(testEventArgumentCaptor.capture());
 
     TestEvent sentEvent = testEventArgumentCaptor.getValue();
