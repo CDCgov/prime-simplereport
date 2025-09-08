@@ -210,7 +210,7 @@ features:
   dataRetentionLimitsEnabled: false
   universalReportingEnabled: true
   identityVerificationEnabled: true
-  aimsReportingEnabled: false
+  aimsReportingEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}
