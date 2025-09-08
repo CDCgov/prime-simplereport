@@ -22,6 +22,14 @@ const DownloadResultsCSVButton = ({
 
   return (
     <>
+      <Button label="Primary" />
+
+      <Button variant="outline" label="Outline" />
+
+      <Button variant="secondary" label="Secondary" />
+
+      <Button variant="accent-warm" label="Destructive / Accent-Warm" />
+
       <Button
         variant="outline"
         icon={faDownload}

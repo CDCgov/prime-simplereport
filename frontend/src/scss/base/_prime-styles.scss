@@ -59,85 +59,85 @@ a:visited {
   flex: 1 1 auto;
 }
 
-.usa-button {
-  background-color: $accent-primary;
-  box-shadow: inset 0 0 0 2px $accent-primary;
+// .usa-button {
+//   background-color: $accent-primary;
+//   box-shadow: inset 0 0 0 2px $accent-primary;
 
-  &:hover,
-  &--outline:hover {
-    box-shadow: inset 0 0 0 2px $accent-dark;
-    background-color: $accent-dark !important;
-  }
+//   &:hover,
+//   &--outline:hover {
+//     box-shadow: inset 0 0 0 2px $accent-dark;
+//     background-color: $accent-dark !important;
+//   }
 
-  &:active,
-  &--outline:active {
-    box-shadow: inset 0 0 0 2px $accent-darker;
-    background-color: $accent-darker !important;
-  }
+//   &:active,
+//   &--outline:active {
+//     box-shadow: inset 0 0 0 2px $accent-darker;
+//     background-color: $accent-darker !important;
+//   }
 
-  &--secondary {
-    background-color: white;
-    box-shadow: inset 0 0 0 2px $accent-primary;
-    color: $accent-primary !important;
-  }
+//   &--secondary {
+//     background-color: white;
+//     box-shadow: inset 0 0 0 2px $accent-primary;
+//     color: $accent-primary !important;
+//   }
 
-  &--secondary:hover {
-    background-color: white !important;
-    box-shadow: inset 0 0 0 2px $accent-dark;
-    color: $accent-dark !important;
-  }
+//   &--secondary:hover {
+//     background-color: white !important;
+//     box-shadow: inset 0 0 0 2px $accent-dark;
+//     color: $accent-dark !important;
+//   }
 
-  &--secondary:active {
-    background-color: white !important;
-    box-shadow: inset 0 0 0 2px $accent-darker;
-    color: $accent-darker !important;
-  }
+//   &--secondary:active {
+//     background-color: white !important;
+//     box-shadow: inset 0 0 0 2px $accent-darker;
+//     color: $accent-darker !important;
+//   }
 
-  &:disabled,
-  &:disabled:hover,
-  &:disabled:active {
-    box-shadow: none;
-    cursor: not-allowed;
-    opacity: 1;
-    background-color: color($theme-color-disabled-light) !important;
-  }
+//   &:disabled,
+//   &:disabled:hover,
+//   &:disabled:active {
+//     box-shadow: none;
+//     cursor: not-allowed;
+//     opacity: 1;
+//     background-color: color($theme-color-disabled-light) !important;
+//   }
 
-  &--unstyled {
-    box-shadow: none;
-    color: $brand-primary;
-    background-color: transparent !important;
-  }
+//   &--unstyled {
+//     box-shadow: none;
+//     color: $brand-primary;
+//     background-color: transparent !important;
+//   }
 
-  &--unstyled:hover {
-    box-shadow: none;
-    color: $brand-dark;
-    background-color: transparent !important;
-  }
+//   &--unstyled:hover {
+//     box-shadow: none;
+//     color: $brand-dark;
+//     background-color: transparent !important;
+//   }
 
-  &--unstyled:active {
-    box-shadow: none;
-    color: $brand-darker;
-    background-color: transparent !important;
-  }
+//   &--unstyled:active {
+//     box-shadow: none;
+//     color: $brand-darker;
+//     background-color: transparent !important;
+//   }
 
-  &--destructive {
-    box-shadow: none;
-    color: white;
-    background-color: $destructive-primary !important;
-  }
+//   &--destructive {
+//     box-shadow: none;
+//     color: white;
+//     background-color: $destructive-primary !important;
+//   }
 
-  &--destructive:hover {
-    box-shadow: none;
-    color: white;
-    background-color: $destructive-dark !important;
-  }
+//   &--destructive:hover {
+//     box-shadow: none;
+//     color: white;
+//     background-color: $destructive-dark !important;
+//   }
 
-  &--destructive:active {
-    box-shadow: none;
-    color: white;
-    background-color: $destructive-darker !important;
-  }
-}
+//   &--destructive:active {
+//     box-shadow: none;
+//     color: white;
+//     background-color: $destructive-darker !important;
+//   }
+// }
 
 .usa-alert--success {
   outline: 3px solid color($theme-color-success);
