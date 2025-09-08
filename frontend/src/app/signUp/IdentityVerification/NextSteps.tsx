@@ -12,8 +12,7 @@ const NextSteps = () => {
           Identity verification needed
         </h1>
         <p className="margin-bottom-2">
-          We were unable to verify your identity. Your security is important to
-          us. Let's schedule a phone call to get you back on track.
+          Your security and experience with SimpleReport are important to us.
         </p>
         <p className="margin-bottom-2">
           Email{" "}
