@@ -426,14 +426,10 @@ public class HL7Converter {
           pid.getPid13_PhoneNumberHome(nextRepetitionIndex), patientInput.getEmail());
     }
 
-    // TODO: determine HL7 valid tribal affiliation code system values
-    /*
-    Cannot currently populate tribal citizenship due to limitations on providing coding system data
-
-    populateTribalCitizenship(
-            pid.getPid39_TribalCitizenship(0), patientInput.getTribalAffiliation());
-     */
-
+    if (StringUtils.isNotBlank(patientInput.getTribalAffiliation())) {
+      populateTribalCitizenship(
+          pid.getPid39_TribalCitizenship(0), patientInput.getTribalAffiliation());
+    }
   }
 
   void populatePatientIdentifierEntry(
@@ -528,26 +524,17 @@ public class HL7Converter {
     codedElement.getCe3_NameOfCodingSystem().setValue(HL7_TABLE_ETHNIC_GROUP);
   }
 
-  // TODO: determine how we should send tribal citizenship data
   void populateTribalCitizenship(CWE codedElement, String tribalAffiliationCode)
       throws DataTypeException {
     /*
     There is an HL7 code system for tribal entity called TribalEntityUS.
     However, there is no way to refer to this system while still being constrained
     to the values in HL7 0396. This field is also limited to 12 characters,
-    so even TribalEntityUS is too long.
-
-    CWE-3 name of coding system is required if CWE-1 and CWE-2 are provided
-    codedElement.getCwe1_Identifier().setValue(tribalAffiliationCode);
-    codedElement.getCwe2_Text().setValue(PersonUtils.tribalMap().get(tribalAffiliationCode));
+    so even TribalEntityUS is too long. In the meantime, we can pass this data as original text.
+    */
     codedElement
-            .getCwe3_NameOfCodingSystem()
-            .setValue(TRIBAL_AFFILIATION_CODE_SYSTEM_NAME);
-
-    codedElement.getCwe7_CodingSystemVersionID().setValue(TRIBAL_AFFILIATION_CODE_SYSTEM_VERSION);
-
-    CWE datatype also has no object member for CWE 14 which should be Coding System OID
-     */
+        .getCwe9_OriginalText()
+        .setValue(PersonUtils.tribalMap().get(tribalAffiliationCode));
   }
 
   /**
