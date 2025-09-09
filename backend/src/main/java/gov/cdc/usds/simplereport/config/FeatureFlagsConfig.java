@@ -46,6 +46,7 @@ public class FeatureFlagsConfig {
   private boolean bulkUploadDisabled; // inverting logic because bulk uploader is enabled by default
   private boolean universalReportingEnabled;
   private boolean dataRetentionLimitsEnabled;
+  private boolean identityVerificationEnabled;
 
   private Map<UUID, Map<String, Boolean>> allFacilitiesMap = new HashMap<>();
 
@@ -80,6 +81,7 @@ public class FeatureFlagsConfig {
       case "bulkUploadDisabled" -> setBulkUploadDisabled(flagValue);
       case "universalReportingEnabled" -> setUniversalReportingEnabled(flagValue);
       case "dataRetentionLimitsEnabled" -> setDataRetentionLimitsEnabled(flagValue);
+      case "identityVerificationEnabled" -> setIdentityVerificationEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }

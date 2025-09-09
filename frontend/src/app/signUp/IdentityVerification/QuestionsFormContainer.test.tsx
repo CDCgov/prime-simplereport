@@ -105,7 +105,7 @@ describe("QuestionsFormContainer", () => {
       })[0]
     );
     expect(
-      await screen.findByText("Experian was unable to verify your identity", {
+      await screen.findByText("Identity verification needed", {
         exact: false,
       })
     ).toBeInTheDocument();
@@ -120,7 +120,7 @@ describe("QuestionsFormContainer", () => {
       jest.advanceTimersByTime(1000);
     });
     expect(
-      await screen.findByText("Experian was unable to verify your identity", {
+      await screen.findByText("Identity verification needed", {
         exact: false,
       })
     ).toBeInTheDocument();

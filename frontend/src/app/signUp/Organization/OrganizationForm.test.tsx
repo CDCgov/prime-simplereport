@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent, { UserEvent } from "@testing-library/user-event";
+import { useFeature } from "flagged";
 
 import OrganizationForm, {
   OrganizationCreateRequest,
@@ -56,7 +57,18 @@ jest.mock("react-router-dom", () => ({
   Navigate: (props: any) => `Redirected to ${props.to}`,
 }));
 
+jest.mock("flagged", () => ({
+  useFeature: jest.fn(),
+}));
+
 window.scrollTo = jest.fn();
+
+const mockFlags = (flags: Record<string, boolean>) => {
+  const mockedUseFeature = useFeature as jest.MockedFunction<typeof useFeature>;
+  mockedUseFeature.mockImplementation((flagName) => {
+    return Boolean(flags[flagName]);
+  });
+};
 
 describe("OrganizationForm", () => {
   const renderWithUser = () => ({
@@ -129,6 +141,7 @@ describe("OrganizationForm", () => {
   });
 
   it("redirects to identity verification when submitting valid input", async () => {
+    mockFlags({ identityVerificationEnabled: true });
     const { user } = renderWithUser();
     await user.type(getOrgNameInput(), "Drake");
     await fillInDropDown(user, getOrgStateDropdown(), "TX");
