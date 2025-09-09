@@ -683,6 +683,12 @@ class HL7ConverterTest {
 
     assertThat(orc.getOrc23_OrderingFacilityPhoneNumber(0).getEmailAddress().getValue())
         .isEqualTo("dracula@example.com");
+
+    assertThat(orc.getOrc14_CallBackPhoneNumberReps()).isEqualTo(2);
+    assertThat(orc.getOrc14_CallBackPhoneNumber(0).getLocalNumber().getValue())
+        .isEqualTo("5555555");
+    assertThat(orc.getOrc14_CallBackPhoneNumber(1).getEmailAddress().getValue())
+        .isEqualTo("flintstonemedical@example.com");
   }
 
   @Test
@@ -725,6 +731,20 @@ class HL7ConverterTest {
         .isEqualTo(expectedSpecimenCollectionDate);
     assertThat(observationRequest.getObr22_ResultsRptStatusChngDateTime().getTs1_Time().getValue())
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
+
+    assertThat(observationRequest.getObr17_OrderCallbackPhoneNumberReps()).isEqualTo(2);
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(0)
+                .getXtn7_LocalNumber()
+                .getValue())
+        .isEqualTo("5555555");
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(1)
+                .getXtn4_EmailAddress()
+                .getValue())
+        .isEqualTo("flintstonemedical@example.com");
   }
 
   @Test
