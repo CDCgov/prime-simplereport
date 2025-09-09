@@ -554,6 +554,17 @@ class HL7ConverterTest {
   }
 
   @Test
+  void populateTribalCitizenship_valid() throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    var tribalCitizenshipCodedElement = pid.getPid39_TribalCitizenship(0);
+
+    hl7Converter.populateTribalCitizenship(tribalCitizenshipCodedElement, "1");
+
+    assertThat(tribalCitizenshipCodedElement.getCwe9_OriginalText().getValue())
+        .isEqualTo("Absentee-Shawnee Tribe of Indians of Oklahoma");
+  }
+
+  @Test
   void populatePhoneNumber_valid() throws DataTypeException {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
