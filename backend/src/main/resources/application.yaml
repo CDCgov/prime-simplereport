@@ -207,6 +207,7 @@ features:
   hivEnabled: true
   dataRetentionLimitsEnabled: false
   universalReportingEnabled: true
+  identityVerificationEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}
