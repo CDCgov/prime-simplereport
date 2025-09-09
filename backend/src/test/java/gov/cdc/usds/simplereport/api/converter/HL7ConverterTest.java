@@ -593,7 +593,7 @@ class HL7ConverterTest {
     XAD address = pid.getPid11_PatientAddress(0);
 
     hl7Converter.populateExtendedAddress(
-        address, "123 Main St", "Apartment A", "Buffalo", "NY", "14220", "USA");
+        address, "123 Main St", "Apartment A", "Buffalo", "Erie", "NY", "14220", "USA");
 
     assertThat(address.getXad1_StreetAddress().getSad1_StreetOrMailingAddress().getValue())
         .isEqualTo("123 Main St");
@@ -602,6 +602,7 @@ class HL7ConverterTest {
     assertThat(address.getXad4_StateOrProvince().getValue()).isEqualTo("NY");
     assertThat(address.getXad5_ZipOrPostalCode().getValue()).isEqualTo("14220");
     assertThat(address.getXad6_Country().getValue()).isEqualTo("USA");
+    assertThat(address.getXad8_OtherGeographicDesignation().getValue()).isEqualTo("Erie");
   }
 
   @Test

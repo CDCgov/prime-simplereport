@@ -410,6 +410,7 @@ public class HL7Converter {
         patientInput.getStreet(),
         patientInput.getStreetTwo(),
         patientInput.getCity(),
+        patientInput.getCounty(),
         patientInput.getState(),
         patientInput.getZipCode(),
         patientInput.getCountry());
@@ -604,6 +605,7 @@ public class HL7Converter {
       String street,
       String streetTwo,
       String city,
+      String county,
       String state,
       String zipCode,
       String country)
@@ -614,8 +616,11 @@ public class HL7Converter {
     extendedAddress.getXad4_StateOrProvince().setValue(state);
     extendedAddress.getXad5_ZipOrPostalCode().setValue(zipCode);
     extendedAddress.getXad6_Country().setValue(country);
-    // To populate county code, we would need to use FIPS codes.
-    // extendedAddress.getXad9_CountyParishCode().setValue(county);
+    // XAD-9 County/Parish Code would be a better spot to send county data. However, that element is
+    // constrained to using FIPS codes, and we currently don't have any validation that the free
+    // text the user enters for county maps to a FIPS code. In the meantime, we can send the county
+    // name in XAD-8 Other Geographic Designation.
+    extendedAddress.getXad8_OtherGeographicDesignation().setValue(county);
   }
 
   /**
@@ -662,6 +667,7 @@ public class HL7Converter {
         orderingFacility.getStreet(),
         orderingFacility.getStreetTwo(),
         orderingFacility.getCity(),
+        orderingFacility.getCounty(),
         orderingFacility.getState(),
         orderingFacility.getZipCode(),
         DEFAULT_COUNTRY);
@@ -683,6 +689,7 @@ public class HL7Converter {
         orderingProvider.getStreet(),
         orderingProvider.getStreetTwo(),
         orderingProvider.getCity(),
+        orderingProvider.getCounty(),
         orderingProvider.getState(),
         orderingProvider.getZipCode(),
         DEFAULT_COUNTRY);
@@ -882,6 +889,7 @@ public class HL7Converter {
         performingFacility.getStreet(),
         performingFacility.getStreetTwo(),
         performingFacility.getCity(),
+        performingFacility.getCounty(),
         performingFacility.getState(),
         performingFacility.getZipCode(),
         DEFAULT_COUNTRY);
