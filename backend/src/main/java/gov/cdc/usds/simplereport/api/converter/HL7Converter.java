@@ -644,6 +644,17 @@ public class HL7Converter {
 
     populateOrderingProvider(commonOrder.getOrc12_OrderingProvider(0), orderingProvider);
 
+    if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
+      populatePhoneNumber(commonOrder.getOrc14_CallBackPhoneNumber(0), orderingProvider.getPhone());
+    }
+
+    if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
+      int nextRepetitionIndex = commonOrder.getOrc14_CallBackPhoneNumberReps();
+      populateEmailAddress(
+          commonOrder.getOrc14_CallBackPhoneNumber(nextRepetitionIndex),
+          orderingProvider.getEmail());
+    }
+
     commonOrder
         .getOrc21_OrderingFacilityName(0)
         .getXon1_OrganizationName()
@@ -764,6 +775,18 @@ public class HL7Converter {
         .setValue(formatToHL7DateTime(specimenCollectionDate));
 
     populateOrderingProvider(observationRequest.getObr16_OrderingProvider(0), orderingProvider);
+
+    if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
+      populatePhoneNumber(
+          observationRequest.getObr17_OrderCallbackPhoneNumber(0), orderingProvider.getPhone());
+    }
+
+    if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
+      int nextRepetitionIndex = observationRequest.getObr17_OrderCallbackPhoneNumberReps();
+      populateEmailAddress(
+          observationRequest.getObr17_OrderCallbackPhoneNumber(nextRepetitionIndex),
+          orderingProvider.getEmail());
+    }
 
     observationRequest
         .getObr22_ResultsRptStatusChngDateTime()
