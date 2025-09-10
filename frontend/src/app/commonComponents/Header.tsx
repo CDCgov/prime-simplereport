@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
-import siteLogo from "../../img/simplereport-logo-color.svg";
+import siteLogo from "../../img/simplereport-logo-white.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";

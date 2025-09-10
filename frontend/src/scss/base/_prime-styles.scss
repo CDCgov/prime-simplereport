@@ -59,6 +59,33 @@ a:visited {
   flex: 1 1 auto;
 }
 
+.usa-button {
+  &--secondary {
+    background-color: color("white");
+    color: color($theme-color-secondary);
+    box-shadow: inset 0 0 0 2px color($theme-color-secondary);
+  }
+
+  &--secondary:hover {
+    background-color: color("white");
+    color: color($theme-color-secondary-dark);
+    box-shadow: inset 0 0 0 2px color($theme-color-secondary-dark);
+  }
+
+  &--secondary:active {
+    background-color: color("white");
+    color: color($theme-color-secondary-darker);
+    box-shadow: inset 0 0 0 2px color($theme-color-secondary-darker);
+  }
+
+  &--secondary:disabled,
+  &--secondary:disabled:hover {
+    background-color: color("white");
+    color: color($theme-color-disabled-dark);
+    box-shadow: inset 0 0 0 2px color($theme-color-disabled-light);
+  }
+}
+
 // .usa-button {
 //   background-color: $accent-primary;
 //   box-shadow: inset 0 0 0 2px $accent-primary;
@@ -210,14 +237,14 @@ a:visited {
     inset 0 0 0 2px #fff;
 }
 
-.usa-checkbox__label {
-  cursor: pointer;
-  display: inherit;
-  font-weight: normal;
-  margin-top: 0;
-  padding-left: 2rem;
-  position: relative;
-}
+// .usa-checkbox__label {
+//   cursor: pointer;
+//   display: inherit;
+//   font-weight: normal;
+//   margin-top: 0;
+//   padding-left: 2rem;
+//   position: relative;
+// }
 
 .usa-accordion {
   border-radius: 4px;
