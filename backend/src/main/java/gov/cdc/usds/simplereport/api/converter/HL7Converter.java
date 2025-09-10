@@ -492,13 +492,15 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateRace(CE codedElement, String race) throws DataTypeException {
-    race = race.toLowerCase();
-    boolean isParseableRace =
-        StringUtils.isNotBlank(race) && PersonUtils.HL7_RACE_MAP.containsKey(race);
+    if (StringUtils.isBlank(race)) {
+      return;
+    }
 
-    if (isParseableRace) {
-      codedElement.getCe1_Identifier().setValue(PersonUtils.HL7_RACE_MAP.get(race).get(0));
-      codedElement.getCe2_Text().setValue(PersonUtils.HL7_RACE_MAP.get(race).get(1));
+    List<String> raceList = PersonUtils.HL7_RACE_MAP.get(race.toLowerCase());
+
+    if (raceList != null) {
+      codedElement.getCe1_Identifier().setValue(raceList.get(0));
+      codedElement.getCe2_Text().setValue(raceList.get(1));
       codedElement.getCe3_NameOfCodingSystem().setValue(HL7_TABLE_RACE);
     }
   }
@@ -514,14 +516,18 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateEthnicGroup(CE codedElement, String ethnicity) throws DataTypeException {
-    ethnicity = ethnicity.toLowerCase();
     boolean isParseableEthnicGroup =
-        StringUtils.isNotBlank(ethnicity) && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity);
+        StringUtils.isNotBlank(ethnicity)
+            && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity.toLowerCase());
 
     String identifier =
-        isParseableEthnicGroup ? PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0) : "U";
+        isParseableEthnicGroup
+            ? PersonUtils.ETHNICITY_MAP.get(ethnicity.toLowerCase()).get(0)
+            : "U";
     String text =
-        isParseableEthnicGroup ? PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1) : "unknown";
+        isParseableEthnicGroup
+            ? PersonUtils.ETHNICITY_MAP.get(ethnicity.toLowerCase()).get(1)
+            : "unknown";
 
     codedElement.getCe1_Identifier().setValue(identifier);
     codedElement.getCe2_Text().setValue(text);
