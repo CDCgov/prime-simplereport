@@ -15,19 +15,19 @@ export const defaultPatientReportInputState: PatientReportInput = {
   city: "",
   country: "USA",
   county: "",
-  dateOfBirth: "1990-01-01",
+  dateOfBirth: "",
   email: "",
   ethnicity: "",
   firstName: "",
   lastName: "",
   middleName: "",
+  patientId: "",
   phone: "",
   race: "",
   sex: "",
   state: "",
   street: "",
   streetTwo: "",
-  suffix: "",
   tribalAffiliation: "",
   zipCode: "",
 };
@@ -128,9 +128,12 @@ export const ResultScaleTypeOptions: {
 
 export const buildConditionsOptionList = (conditions: Condition[]) => {
   const options = conditions.map((condition) => {
+    const fullConditiondisplay = condition.snomedName
+      ? `${condition.display} - ${condition.snomedName} - ${condition.code}`
+      : `${condition.display} - ${condition.code}`;
     return {
       value: condition.code,
-      label: `${condition.display} - ${condition.code}`,
+      label: fullConditiondisplay,
     };
   });
   options.sort((a, b) => a.label.localeCompare(b.label));

@@ -452,6 +452,7 @@ type FacilityLab {
 }
 
 input PatientReportInput {
+  patientId: String
   firstName: String!
   middleName: String
   lastName: String!
@@ -531,6 +532,7 @@ enum ResultScaleType {
 type Condition {
   code: String!
   display: String!
+  snomedName: String
 }
 
 type Lab {

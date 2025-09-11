@@ -207,7 +207,9 @@ features:
   hepatitisCEnabled: true
   syphilisEnabled: true
   hivEnabled: true
+  dataRetentionLimitsEnabled: false
   universalReportingEnabled: true
+  identityVerificationEnabled: true
   aimsReportingEnabled: false
 slack:
   hook:

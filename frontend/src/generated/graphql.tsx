@@ -125,6 +125,7 @@ export type Condition = {
   __typename?: "Condition";
   code: Scalars["String"]["output"];
   display: Scalars["String"]["output"];
+  snomedName?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type CreateDeviceType = {
@@ -794,6 +795,7 @@ export type PatientReportInput = {
   firstName: Scalars["String"]["input"];
   lastName: Scalars["String"]["input"];
   middleName?: InputMaybe<Scalars["String"]["input"]>;
+  patientId?: InputMaybe<Scalars["String"]["input"]>;
   phone?: InputMaybe<Scalars["String"]["input"]>;
   race?: InputMaybe<Scalars["String"]["input"]>;
   sex?: InputMaybe<Scalars["String"]["input"]>;
@@ -3074,6 +3076,7 @@ export type GetConditionsQuery = {
     __typename?: "Condition";
     code: string;
     display: string;
+    snomedName?: string | null;
   }>;
 };
 
@@ -9627,6 +9630,7 @@ export const GetConditionsDocument = gql`
     conditions {
       code
       display
+      snomedName
     }
   }
 `;
