@@ -554,6 +554,17 @@ class HL7ConverterTest {
   }
 
   @Test
+  void populateTribalCitizenship_valid() throws DataTypeException {
+    PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
+    var tribalCitizenshipCodedElement = pid.getPid39_TribalCitizenship(0);
+
+    hl7Converter.populateTribalCitizenship(tribalCitizenshipCodedElement, "1");
+
+    assertThat(tribalCitizenshipCodedElement.getCwe9_OriginalText().getValue())
+        .isEqualTo("Absentee-Shawnee Tribe of Indians of Oklahoma");
+  }
+
+  @Test
   void populatePhoneNumber_valid() throws DataTypeException {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
@@ -593,7 +604,7 @@ class HL7ConverterTest {
     XAD address = pid.getPid11_PatientAddress(0);
 
     hl7Converter.populateExtendedAddress(
-        address, "123 Main St", "Apartment A", "Buffalo", "NY", "14220", "USA");
+        address, "123 Main St", "Apartment A", "Buffalo", "Erie", "NY", "14220", "USA");
 
     assertThat(address.getXad1_StreetAddress().getSad1_StreetOrMailingAddress().getValue())
         .isEqualTo("123 Main St");
@@ -602,6 +613,7 @@ class HL7ConverterTest {
     assertThat(address.getXad4_StateOrProvince().getValue()).isEqualTo("NY");
     assertThat(address.getXad5_ZipOrPostalCode().getValue()).isEqualTo("14220");
     assertThat(address.getXad6_Country().getValue()).isEqualTo("USA");
+    assertThat(address.getXad8_OtherGeographicDesignation().getValue()).isEqualTo("Erie");
   }
 
   @Test
@@ -671,6 +683,12 @@ class HL7ConverterTest {
 
     assertThat(orc.getOrc23_OrderingFacilityPhoneNumber(0).getEmailAddress().getValue())
         .isEqualTo("dracula@example.com");
+
+    assertThat(orc.getOrc14_CallBackPhoneNumberReps()).isEqualTo(2);
+    assertThat(orc.getOrc14_CallBackPhoneNumber(0).getLocalNumber().getValue())
+        .isEqualTo("5555555");
+    assertThat(orc.getOrc14_CallBackPhoneNumber(1).getEmailAddress().getValue())
+        .isEqualTo("flintstonemedical@example.com");
   }
 
   @Test
@@ -713,6 +731,20 @@ class HL7ConverterTest {
         .isEqualTo(expectedSpecimenCollectionDate);
     assertThat(observationRequest.getObr22_ResultsRptStatusChngDateTime().getTs1_Time().getValue())
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
+
+    assertThat(observationRequest.getObr17_OrderCallbackPhoneNumberReps()).isEqualTo(2);
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(0)
+                .getXtn7_LocalNumber()
+                .getValue())
+        .isEqualTo("5555555");
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(1)
+                .getXtn4_EmailAddress()
+                .getValue())
+        .isEqualTo("flintstonemedical@example.com");
   }
 
   @Test

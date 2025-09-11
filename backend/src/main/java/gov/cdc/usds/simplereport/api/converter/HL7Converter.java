@@ -410,6 +410,7 @@ public class HL7Converter {
         patientInput.getStreet(),
         patientInput.getStreetTwo(),
         patientInput.getCity(),
+        patientInput.getCounty(),
         patientInput.getState(),
         patientInput.getZipCode(),
         patientInput.getCountry());
@@ -425,14 +426,10 @@ public class HL7Converter {
           pid.getPid13_PhoneNumberHome(nextRepetitionIndex), patientInput.getEmail());
     }
 
-    // TODO: determine HL7 valid tribal affiliation code system values
-    /*
-    Cannot currently populate tribal citizenship due to limitations on providing coding system data
-
-    populateTribalCitizenship(
-            pid.getPid39_TribalCitizenship(0), patientInput.getTribalAffiliation());
-     */
-
+    if (StringUtils.isNotBlank(patientInput.getTribalAffiliation())) {
+      populateTribalCitizenship(
+          pid.getPid39_TribalCitizenship(0), patientInput.getTribalAffiliation());
+    }
   }
 
   void populatePatientIdentifierEntry(
@@ -534,26 +531,17 @@ public class HL7Converter {
     codedElement.getCe3_NameOfCodingSystem().setValue(HL7_TABLE_ETHNIC_GROUP);
   }
 
-  // TODO: determine how we should send tribal citizenship data
   void populateTribalCitizenship(CWE codedElement, String tribalAffiliationCode)
       throws DataTypeException {
     /*
     There is an HL7 code system for tribal entity called TribalEntityUS.
     However, there is no way to refer to this system while still being constrained
     to the values in HL7 0396. This field is also limited to 12 characters,
-    so even TribalEntityUS is too long.
-
-    CWE-3 name of coding system is required if CWE-1 and CWE-2 are provided
-    codedElement.getCwe1_Identifier().setValue(tribalAffiliationCode);
-    codedElement.getCwe2_Text().setValue(PersonUtils.tribalMap().get(tribalAffiliationCode));
+    so even TribalEntityUS is too long. In the meantime, we can pass this data as original text.
+    */
     codedElement
-            .getCwe3_NameOfCodingSystem()
-            .setValue(TRIBAL_AFFILIATION_CODE_SYSTEM_NAME);
-
-    codedElement.getCwe7_CodingSystemVersionID().setValue(TRIBAL_AFFILIATION_CODE_SYSTEM_VERSION);
-
-    CWE datatype also has no object member for CWE 14 which should be Coding System OID
-     */
+        .getCwe9_OriginalText()
+        .setValue(PersonUtils.tribalMap().get(tribalAffiliationCode));
   }
 
   /**
@@ -611,6 +599,7 @@ public class HL7Converter {
       String street,
       String streetTwo,
       String city,
+      String county,
       String state,
       String zipCode,
       String country)
@@ -621,8 +610,11 @@ public class HL7Converter {
     extendedAddress.getXad4_StateOrProvince().setValue(state);
     extendedAddress.getXad5_ZipOrPostalCode().setValue(zipCode);
     extendedAddress.getXad6_Country().setValue(country);
-    // To populate county code, we would need to use FIPS codes.
-    // extendedAddress.getXad9_CountyParishCode().setValue(county);
+    // XAD-9 County/Parish Code would be a better spot to send county data. However, that element is
+    // constrained to using FIPS codes, and we currently don't have any validation that the free
+    // text the user enters for county maps to a FIPS code. In the meantime, we can send the county
+    // name in XAD-8 Other Geographic Designation.
+    extendedAddress.getXad8_OtherGeographicDesignation().setValue(county);
   }
 
   /**
@@ -659,6 +651,17 @@ public class HL7Converter {
 
     populateOrderingProvider(commonOrder.getOrc12_OrderingProvider(0), orderingProvider);
 
+    if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
+      populatePhoneNumber(commonOrder.getOrc14_CallBackPhoneNumber(0), orderingProvider.getPhone());
+    }
+
+    if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
+      int nextRepetitionIndex = commonOrder.getOrc14_CallBackPhoneNumberReps();
+      populateEmailAddress(
+          commonOrder.getOrc14_CallBackPhoneNumber(nextRepetitionIndex),
+          orderingProvider.getEmail());
+    }
+
     commonOrder
         .getOrc21_OrderingFacilityName(0)
         .getXon1_OrganizationName()
@@ -669,6 +672,7 @@ public class HL7Converter {
         orderingFacility.getStreet(),
         orderingFacility.getStreetTwo(),
         orderingFacility.getCity(),
+        orderingFacility.getCounty(),
         orderingFacility.getState(),
         orderingFacility.getZipCode(),
         DEFAULT_COUNTRY);
@@ -690,6 +694,7 @@ public class HL7Converter {
         orderingProvider.getStreet(),
         orderingProvider.getStreetTwo(),
         orderingProvider.getCity(),
+        orderingProvider.getCounty(),
         orderingProvider.getState(),
         orderingProvider.getZipCode(),
         DEFAULT_COUNTRY);
@@ -777,6 +782,18 @@ public class HL7Converter {
         .setValue(formatToHL7DateTime(specimenCollectionDate));
 
     populateOrderingProvider(observationRequest.getObr16_OrderingProvider(0), orderingProvider);
+
+    if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
+      populatePhoneNumber(
+          observationRequest.getObr17_OrderCallbackPhoneNumber(0), orderingProvider.getPhone());
+    }
+
+    if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
+      int nextRepetitionIndex = observationRequest.getObr17_OrderCallbackPhoneNumberReps();
+      populateEmailAddress(
+          observationRequest.getObr17_OrderCallbackPhoneNumber(nextRepetitionIndex),
+          orderingProvider.getEmail());
+    }
 
     observationRequest
         .getObr22_ResultsRptStatusChngDateTime()
@@ -893,6 +910,7 @@ public class HL7Converter {
         performingFacility.getStreet(),
         performingFacility.getStreetTwo(),
         performingFacility.getCity(),
+        performingFacility.getCounty(),
         performingFacility.getState(),
         performingFacility.getZipCode(),
         DEFAULT_COUNTRY);
