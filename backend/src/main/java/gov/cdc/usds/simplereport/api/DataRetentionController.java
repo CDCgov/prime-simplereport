@@ -12,7 +12,7 @@ NOTE:  THIS FILE IS FOR MANUALLY TRIGGERING THE DELETION CHRON IT IS MEANT FOR T
  */
 
 @RestController
-@RequestMapping("/api/data-retention")
+@RequestMapping("/data-retention")
 @Slf4j
 public class DataRetentionController {
 
