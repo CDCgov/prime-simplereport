@@ -148,13 +148,12 @@ public class TestResultUploadService {
               submitResultsToAIMS(new ByteArrayInputStream(content), org, submissionId);
 
           processUniversalPipelineResponse(aimsSubmission).ifPresent(uploadSummary::add);
-        } else {
-          CompletableFuture<UniversalSubmissionSummary> universalSubmission =
-              submitResultsToUniversalPipeline(
-                  new ByteArrayInputStream(content), org, submissionId);
-
-          processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
         }
+
+        CompletableFuture<UniversalSubmissionSummary> universalSubmission =
+            submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
+
+        processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
