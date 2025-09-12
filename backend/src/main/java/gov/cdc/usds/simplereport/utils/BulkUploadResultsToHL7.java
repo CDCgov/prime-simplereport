@@ -326,7 +326,7 @@ public class BulkUploadResultsToHL7 {
         .dateOfBirth(LocalDate.parse(row.getPatientDob().getValue(), DATE_TIME_FORMATTER))
         .race(row.getPatientRace().getValue())
         .ethnicity(row.getPatientEthnicity().getValue())
-        .patientId(row.getPatientId().getValue())
+        .patientExternalId(row.getPatientId().getValue())
         .build();
   }
 
