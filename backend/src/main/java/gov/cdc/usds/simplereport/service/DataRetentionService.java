@@ -26,7 +26,7 @@ public class DataRetentionService {
   @Value("${simple-report.data-retention.max-execution-time-minutes:120}")
   private int maxExecutionTimeMinutes;
 
-  //  Daily scheduled job Runs at 2 AM Eastern Time
+  /** Daily scheduled job - Runs at 2 AM Eastern Time */
   @Scheduled(cron = "0 0 2 * * *", zone = "America/New_York")
   @SchedulerLock(
       name = "DataRetentionService_deleteOldData",
@@ -50,6 +50,13 @@ public class DataRetentionService {
           executionTime,
           executionTime / 60000);
 
+      // Log structured data for App Insights monitoring
+      log.info(
+          "DataRetentionJob_Success: duration_ms={}, retention_days={}, batch_size={}",
+          executionTime,
+          retentionDays,
+          batchSize);
+
     } catch (Exception e) {
       long executionTime = System.currentTimeMillis() - startTime;
       log.error(
@@ -69,17 +76,32 @@ public class DataRetentionService {
     }
   }
 
-  // Placerholder method
+  /**
+   * Manual trigger method for testing - can be called via test endpoint We will remove this code
+   * once we are done testing
+   */
+  public void manualTriggerDeleteOldData() {
+    log.info("Manual trigger for data retention job initiated");
+    scheduledDeleteOldData();
+  }
+
+  /** Placeholder method for actual deletion logic */
   public void deleteOldData() {
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
     LocalDate now = LocalDate.now(tz.toZoneId());
     LocalDate cutoffDate = now.minusDays(retentionDays);
+
     log.info(
         "Data retention job starting - cutoff date: {}, batch size: {}, max execution time: {} minutes",
         cutoffDate,
         batchSize,
         maxExecutionTimeMinutes);
-    // TODO: Replace with actual deletion logic in
 
+    // TODO: Replace with actual deletion logic in future ticket
+    log.info("PLACEHOLDER: Would delete patient and test data older than {}", cutoffDate);
+    log.info(
+        "DataRetentionJob_PlaceholderComplete: cutoff_date={}, batch_size={}",
+        cutoffDate,
+        batchSize);
   }
 }

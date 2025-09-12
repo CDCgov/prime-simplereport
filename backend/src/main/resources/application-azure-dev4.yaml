@@ -1,4 +1,9 @@
 simple-report:
+  data-retention:
+    enabled: true
+    retention-days: 7
+    batch-size: 100
+    max-execution-time-minutes: 10
   azure-reporting-queue:
     enabled: true
     fhir-queue-enabled: true
