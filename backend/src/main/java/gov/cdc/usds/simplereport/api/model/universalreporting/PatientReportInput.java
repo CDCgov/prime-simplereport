@@ -2,14 +2,17 @@ package gov.cdc.usds.simplereport.api.model.universalreporting;
 
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class PatientReportInput {
-  private final String firstName;
+  @NonNull private final String firstName;
   private final String middleName;
-  private final String lastName;
+  @NonNull private final String lastName;
   private final String suffix;
   private final String email;
   private final String phone;
@@ -21,9 +24,17 @@ public class PatientReportInput {
   private final String zipCode;
   private final String country;
   private final String sex;
-  private final LocalDate dateOfBirth;
+  @NonNull private final LocalDate dateOfBirth;
   private final String race;
   private final String ethnicity;
   private final String tribalAffiliation;
+
+  /**
+   * @deprecated to better distinguish which id is which
+   */
+  @Deprecated(forRemoval = true)
   private final String patientId;
+
+  private final String patientExternalId;
+  private final String patientInternalId;
 }
