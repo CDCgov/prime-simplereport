@@ -89,7 +89,7 @@ public class BulkUploadResultsToHL7Test {
 
     assertThat(batchMessage.message()).isNotEmpty();
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
-    assertThat(batchMessage.metadata()).isNotNull();
+    assertThat(batchMessage.reportedDiseases()).isNotNull();
 
     String[] lines = getHL7Lines(batchMessage);
     assertThat(lines).isNotEmpty();
@@ -166,7 +166,7 @@ public class BulkUploadResultsToHL7Test {
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
     assertThat(batchMessage.recordsCount()).isEqualTo(6);
-    assertThat(batchMessage.metadata()).isNotNull();
+    assertThat(batchMessage.reportedDiseases()).isNotNull();
 
     String[] lines = getHL7Lines(batchMessage);
     assertThat(hasSegment(lines, "PID")).isTrue();
@@ -290,7 +290,7 @@ public class BulkUploadResultsToHL7Test {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-different-results.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
-    assertThat(batchMessage.metadata()).isNotNull();
+    assertThat(batchMessage.reportedDiseases()).isNotNull();
     assertThat(batchMessage.recordsCount()).isEqualTo(6);
 
     String[] lines = getHL7Lines(batchMessage);

@@ -309,7 +309,7 @@ public class TestResultUploadService {
                 }
 
                 return new AimsSubmissionSummary(
-                    submissionId, org, s3Response, hl7Batch.metadata());
+                    submissionId, org, s3Response, hl7Batch.reportedDiseases());
               } catch (CsvProcessingException e) {
                 log.error("Failed to upload HL7 batch to S3", e);
                 s3Response = new S3UploadResponse(objectKey, 0, e.getMessage());
