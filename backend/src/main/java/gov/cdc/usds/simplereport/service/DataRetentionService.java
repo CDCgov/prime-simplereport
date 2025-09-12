@@ -59,7 +59,7 @@ public class DataRetentionService {
           retentionDays,
           batchSize);
 
-    } catch (RuntimeException e) {
+    } catch (IllegalArgumentException | IllegalStateException e) {
       long executionTime = System.currentTimeMillis() - startTime;
       log.error(
           "Data retention job failed after {} ms ({} minutes) with error: {}",

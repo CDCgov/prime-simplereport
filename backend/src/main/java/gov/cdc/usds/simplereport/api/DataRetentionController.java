@@ -32,7 +32,7 @@ public class DataRetentionController {
       dataRetentionService.manualTriggerDeleteOldData();
       return ResponseEntity.ok(
           "Data retention job triggered successfully. Check logs for details.");
-    } catch (RuntimeException e) {
+    } catch (IllegalArgumentException | IllegalStateException e) {
       log.error("Manual data retention job trigger failed: {}", e.getMessage(), e);
       return ResponseEntity.internalServerError()
           .body("Data retention job failed: " + e.getMessage());
