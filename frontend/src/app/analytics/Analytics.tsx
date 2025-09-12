@@ -2,6 +2,7 @@ import React, { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment/moment";
 import classNames from "classnames";
+import { useFeature } from "flagged";
 
 import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
@@ -11,6 +12,7 @@ import { PATIENT_TERM_PLURAL } from "../../config/constants";
 import { useDocumentTitle } from "../utils/hooks";
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
 import { useSupportedDiseaseList } from "../utils/disease";
+import Alert from "../commonComponents/Alert";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -78,6 +80,8 @@ export const Analytics = (props: Props) => {
   const [endDate, setEndDate] = useState<string>(
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
+  const [showRetentionWarning, setRetentionWarning] = useState<boolean>(false);
+  let dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
 
   const supportedDiseaseList = useSupportedDiseaseList();
 
@@ -144,6 +148,9 @@ export const Analytics = (props: Props) => {
   const negativeTests = totalTests - positiveTests;
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
+
+  let dataRetentionDate = new Date();
+  dataRetentionDate.setDate(new Date().getDate() - 30);
 
   return (
     <div className="prime-home flex-1">
@@ -214,18 +221,38 @@ export const Analytics = (props: Props) => {
               </div>
               {dateRange === "custom" && (
                 <div className="grid-row grid-gap margin-top-2">
-                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
+                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 usa-datepicker">
                     <label className={classNames("usa-label")}>Begin</label>
                     <input
                       id={"startDate"}
                       data-testid={"startDate"}
                       type={"date"}
                       max={formatDate(new Date())}
+                      min={
+                        dataRetentionLimitsEnabled
+                          ? formatDate(dataRetentionDate)
+                          : ""
+                      }
+                      data-min-date={
+                        dataRetentionLimitsEnabled
+                          ? formatDate(dataRetentionDate)
+                          : ""
+                      }
                       className={classNames("usa-input")}
                       aria-label={"Enter start date"}
                       onChange={(e) => {
                         if (Date.parse(e.target.value)) {
-                          const d = moment(e.target.value).toDate();
+                          let d = moment(e.target.value).toDate();
+                          if (e.target.checkValidity()) {
+                            setRetentionWarning(false);
+                          } else {
+                            // Because the min and max are mostly suggestions on this date picker we need to check
+                            // and we only care about this if the dataRetentionLimitsEnabled flag is strue
+                            setRetentionWarning(
+                              dataRetentionLimitsEnabled &&
+                                d <= moment(e.target.min).toDate()
+                            );
+                          }
                           const startDateString = setStartTimeForDateRange(
                             new Date(d)
                           ).toLocaleDateString();
@@ -263,6 +290,22 @@ export const Analytics = (props: Props) => {
                 <p>Loading...</p>
               ) : (
                 <>
+                  {showRetentionWarning && (
+                    <Alert
+                      type="warning"
+                      role="alert"
+                      className={
+                        "width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
+                      }
+                      bodyClassName={"data-retention-limits-alert-body"}
+                    >
+                      <div>
+                        Note: Patients tested earlier than{" "}
+                        {moment(dataRetentionDate).format("MM-DD-YYYY")} are not
+                        shown due to our 30 day data retention maximum.
+                      </div>
+                    </Alert>
+                  )}
                   <h2>
                     {facilityName} - {selectedCondition} testing data
                   </h2>
