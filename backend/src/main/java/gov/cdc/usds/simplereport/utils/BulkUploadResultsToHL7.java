@@ -1,11 +1,17 @@
 package gov.cdc.usds.simplereport.utils;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.INVALID_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NEGATIVE_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.APHL_ORG_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.SNOMED_REGEX;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
@@ -77,13 +83,6 @@ public class BulkUploadResultsToHL7 {
   private final ResultsUploaderCachingService resultsUploaderCachingService;
   private static final String ENCODING_CHARS = "^~\\&";
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
-  private static final String SNOMED_REGEX = "(^\\d{9}$)|(^\\d{15}$)";
-
-  public static final String POSITIVE_SNOMED = "10828004";
-  public static final String DETECTED_SNOMED = "260373001";
-  public static final String NEGATIVE_SNOMED = "260385009";
-  public static final String NOT_DETECTED_SNOMED = "260415000";
-  public static final String INVALID_SNOMED = "455371000124106";
 
   private final Map<String, String> testResultToSnomedMap =
       Map.of(
