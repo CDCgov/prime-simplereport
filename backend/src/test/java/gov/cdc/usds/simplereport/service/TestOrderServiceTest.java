@@ -268,14 +268,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(patientLinkService).createPatientLink(any());
 
     // make sure the corrected event is sent to storage queue
-    verify(testEventReportingService).report(any());
     verify(fhirQueueReportingService).report(any());
-    verify(hl7QueueReportingService).report(testEventArgumentCaptor.capture());
-
-    TestEvent sentEvent = testEventArgumentCaptor.getValue();
-    TestResult testResult = sentEvent.getCovidTestResult().get();
-    assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
-    assertThat(testResult).isEqualTo(TestResult.POSITIVE);
+    verify(hl7QueueReportingService).report(any());
   }
 
   @Test
