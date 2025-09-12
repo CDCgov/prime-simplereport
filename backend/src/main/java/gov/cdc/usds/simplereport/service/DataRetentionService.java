@@ -1,0 +1,85 @@
+package gov.cdc.usds.simplereport.service;
+
+import java.time.LocalDate;
+import java.util.TimeZone;
+import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional(readOnly = true)
+@Slf4j
+public class DataRetentionService {
+
+  @Value("${simple-report.data-retention.enabled:false}")
+  private boolean dataRetentionEnabled;
+
+  @Value("${simple-report.data-retention.retention-days:30}")
+  private int retentionDays;
+
+  @Value("${simple-report.data-retention.batch-size:1000}")
+  private int batchSize;
+
+  @Value("${simple-report.data-retention.max-execution-time-minutes:120}")
+  private int maxExecutionTimeMinutes;
+
+  //  Daily scheduled job Runs at 2 AM Eastern Time
+  @Scheduled(cron = "0 0 2 * * *", zone = "America/New_York")
+  @SchedulerLock(
+      name = "DataRetentionService_deleteOldData",
+      lockAtLeastFor = "PT30S",
+      lockAtMostFor = "PT150M")
+  public void scheduledDeleteOldData() {
+    if (!dataRetentionEnabled) {
+      log.info("Data retention job is disabled - skipping scheduled deletion");
+      return;
+    }
+
+    log.info(
+        "Starting scheduled data retention job - deleting data older than {} days", retentionDays);
+    long startTime = System.currentTimeMillis();
+
+    try {
+      deleteOldData();
+      long executionTime = System.currentTimeMillis() - startTime;
+      log.info(
+          "Data retention job completed successfully in {} ms ({} minutes)",
+          executionTime,
+          executionTime / 60000);
+
+    } catch (Exception e) {
+      long executionTime = System.currentTimeMillis() - startTime;
+      log.error(
+          "Data retention job failed after {} ms ({} minutes) with error: {}",
+          executionTime,
+          executionTime / 60000,
+          e.getMessage(),
+          e);
+
+      log.error(
+          "DataRetentionJob_Failed: duration_ms={}, retention_days={}, batch_size={}, error_type={}, error_message={}",
+          executionTime,
+          retentionDays,
+          batchSize,
+          e.getClass().getSimpleName(),
+          e.getMessage());
+    }
+  }
+
+  // Placerholder method
+  public void deleteOldData() {
+    TimeZone tz = TimeZone.getTimeZone("America/New_York");
+    LocalDate now = LocalDate.now(tz.toZoneId());
+    LocalDate cutoffDate = now.minusDays(retentionDays);
+    log.info(
+        "Data retention job starting - cutoff date: {}, batch size: {}, max execution time: {} minutes",
+        cutoffDate,
+        batchSize,
+        maxExecutionTimeMinutes);
+    // TODO: Replace with actual deletion logic in
+
+  }
+}
