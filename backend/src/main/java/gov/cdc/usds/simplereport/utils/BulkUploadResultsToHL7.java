@@ -93,25 +93,23 @@ public class BulkUploadResultsToHL7 {
           "Not Detected".toLowerCase(), NOT_DETECTED_SNOMED,
           "Invalid Result".toLowerCase(), INVALID_SNOMED);
 
-  @Value("${simple-report.processing-mode-code:P}")
-  private String processingModeCode = "P";
+  @Value("${simple-report.aims-processing-mode-code:T}")
+  private String aimsProcessingModeCode = "T";
 
   private String generateHD(String namespaceId, String universalId, String universalIdType) {
-    namespaceId = Objects.toString(namespaceId, "");
-    universalId = Objects.toString(universalId, "");
-    universalIdType = Objects.toString(universalIdType, "");
-
-    if (namespaceId.isEmpty() && universalId.isEmpty() && universalIdType.isEmpty()) {
+    if (StringUtils.isBlank(namespaceId)
+        && StringUtils.isBlank(universalId)
+        && StringUtils.isBlank(universalIdType)) {
       return "";
     }
 
     String result = namespaceId;
 
-    if (!universalId.isEmpty() || !universalIdType.isEmpty()) {
+    if (StringUtils.isNotBlank(universalId) || StringUtils.isNotBlank(universalIdType)) {
       result += "^" + universalId;
     }
 
-    if (!universalIdType.isEmpty()) {
+    if (StringUtils.isNotBlank(universalIdType)) {
       result += "^" + universalIdType;
     }
 
@@ -301,7 +299,7 @@ public class BulkUploadResultsToHL7 {
               specimenInput,
               testDetailsInputList,
               gitProperties,
-              processingModeCode,
+              aimsProcessingModeCode,
               testId,
               testStatus);
 
