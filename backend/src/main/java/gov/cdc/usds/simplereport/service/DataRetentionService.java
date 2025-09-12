@@ -26,6 +26,8 @@ public class DataRetentionService {
   @Value("${simple-report.data-retention.max-execution-time-minutes:120}")
   private int maxExecutionTimeMinutes;
 
+  private static final int MILLISECONDS_PER_MINUTE = 60000;
+
   /** Daily scheduled job - Runs at 2 AM Eastern Time */
   @Scheduled(cron = "0 0 2 * * *", zone = "America/New_York")
   @SchedulerLock(
@@ -48,7 +50,7 @@ public class DataRetentionService {
       log.info(
           "Data retention job completed successfully in {} ms ({} minutes)",
           executionTime,
-          executionTime / 60000);
+          executionTime / MILLISECONDS_PER_MINUTE);
 
       // Log structured data for App Insights monitoring
       log.info(
@@ -57,12 +59,12 @@ public class DataRetentionService {
           retentionDays,
           batchSize);
 
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
       long executionTime = System.currentTimeMillis() - startTime;
       log.error(
           "Data retention job failed after {} ms ({} minutes) with error: {}",
           executionTime,
-          executionTime / 60000,
+          executionTime / MILLISECONDS_PER_MINUTE,
           e.getMessage(),
           e);
 
@@ -97,7 +99,7 @@ public class DataRetentionService {
         batchSize,
         maxExecutionTimeMinutes);
 
-    // TODO: Replace with actual deletion logic in future ticket
+    // PLACEHOLDER: Replace with actual deletion logic in future ticket
     log.info("PLACEHOLDER: Would delete patient and test data older than {}", cutoffDate);
     log.info(
         "DataRetentionJob_PlaceholderComplete: cutoff_date={}, batch_size={}",
