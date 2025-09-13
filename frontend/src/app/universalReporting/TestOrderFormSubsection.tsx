@@ -75,7 +75,7 @@ const TestOrderFormSubsection = ({
         </div>
       </div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-6">
+        <div className="grid-col-6 grid-col-mobile">
           {labDataLoading && <div>Loading test orders...</div>}
           {!labDataLoading && labs.length === 0 && (
             <div>

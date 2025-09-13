@@ -6,7 +6,7 @@ import { now } from "lodash";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
 import { formatDate } from "../utils/date";
-import "./TestDetailSection.scss";
+import "./TestDetailFormSubsection.scss";
 import { ResultScaleType, TestDetailsInput } from "../../generated/graphql";
 
 import {
@@ -64,7 +64,7 @@ const TestDetailFormSubsection = ({
         </div>
       </div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-3">
+        <div className="grid-col-3 grid-col-mobile">
           <RadioGroup<ResultScaleType>
             legend="Test result type"
             name={`test-detail-${testDetails.testPerformedLoinc}-test-result-type`}
@@ -80,7 +80,7 @@ const TestDetailFormSubsection = ({
           />
         </div>
         {testDetails.resultType === ResultScaleType.Ordinal && (
-          <div className="grid-col-3">
+          <div className="grid-col-3 grid-col-mobile">
             <RadioGroup<string>
               legend={`Test result value`}
               buttons={ordinalResultOptions}
@@ -94,7 +94,7 @@ const TestDetailFormSubsection = ({
         )}
         {(testDetails.resultType === ResultScaleType.Quantitative ||
           testDetails.resultType === ResultScaleType.Nominal) && (
-          <div className="grid-col-3">
+          <div className="grid-col-3 grid-col-mobile">
             <TextInput
               name={`test-detail-${testDetails.testPerformedLoinc}-test-result-value`}
               type={"text"}
@@ -111,7 +111,7 @@ const TestDetailFormSubsection = ({
         )}
       </div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-6">
+        <div className="grid-col-6 grid-col-mobile">
           <TextInput
             name={`test-detail-${testDetails.testPerformedLoinc}-test-result-date`}
             type="date"
@@ -122,7 +122,7 @@ const TestDetailFormSubsection = ({
             onChange={(e) => handleResultDateUpdate(e.target.value)}
           ></TextInput>
         </div>
-        <div className="grid-col-6">
+        <div className="grid-col-6 grid-col-mobile">
           <TextInput
             name={`test-detail-${testDetails.testPerformedLoinc}-test-result-time`}
             type="time"
@@ -134,7 +134,7 @@ const TestDetailFormSubsection = ({
         </div>
       </div>
       <div className="grid-row grid-gap">
-        <div className="grid-col-6">
+        <div className="grid-col-6 grid-col-mobile">
           <div className="usa-form-group">
             <Label
               htmlFor={`test-detail-${testDetails.testPerformedLoinc}-test-result-interpretation`}

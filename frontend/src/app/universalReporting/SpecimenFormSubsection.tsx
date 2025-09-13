@@ -112,7 +112,7 @@ const SpecimenFormSubsection = ({
       {!loading && (
         <>
           <div className="grid-row grid-gap">
-            <div className="grid-col-6">
+            <div className="grid-col-6 grid-col-mobile">
               <Dropdown
                 label="Specimen type"
                 name="specimen-type"
@@ -126,7 +126,7 @@ const SpecimenFormSubsection = ({
             </div>
           </div>
           <div className="grid-row grid-gap">
-            <div className="grid-col-6">
+            <div className="grid-col-6 grid-col-mobile">
               <TextInput
                 name="specimen-collection-date"
                 type="date"
@@ -137,7 +137,7 @@ const SpecimenFormSubsection = ({
                 onChange={(e) => handleCollectionDateUpdate(e.target.value)}
               ></TextInput>
             </div>
-            <div className="grid-col-6">
+            <div className="grid-col-6 grid-col-mobile">
               <TextInput
                 name="specimen-collection-time"
                 type="time"
@@ -149,7 +149,7 @@ const SpecimenFormSubsection = ({
             </div>
           </div>
           <div className="grid-row grid-gap">
-            <div className="grid-col-6">
+            <div className="grid-col-6 grid-col-mobile">
               <Dropdown
                 label="Specimen site (optional)"
                 name="specimen-collection-body-site"
