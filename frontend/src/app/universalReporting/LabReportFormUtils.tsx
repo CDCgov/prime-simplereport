@@ -1,5 +1,4 @@
 import {
-  Condition,
   FacilityReportInput,
   Lab,
   PatientReportInput,
