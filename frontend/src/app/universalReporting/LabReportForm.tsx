@@ -179,9 +179,6 @@ const LabReportForm = () => {
       testDetailFieldsMissing
     ) {
       showError("Please fill out required fields", "Missing required fields");
-      console.log(
-        `${patientFieldsMissing} ${providerFieldsMissing} ${facilityFieldsMissing} ${specimenFieldsMissing} ${testDetailFieldsMissing}`
-      );
       return false;
     }
     return true;

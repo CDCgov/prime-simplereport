@@ -40,7 +40,6 @@ const TestOrderFormSubsection = ({
 
         const updatedList = [] as TestDetailsInput[];
         updatedList.push({
-          //todo: make a new data type for test details without condition?
           testOrderLoinc: foundLab.code,
           testOrderDisplayName: foundLab.display,
           testPerformedLoinc: foundLab.code,
