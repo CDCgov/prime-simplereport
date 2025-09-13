@@ -512,7 +512,7 @@ input SpecimenInput {
 }
 
 input TestDetailsInput {
-  condition: String!
+  condition: String
   testOrderLoinc: String!
   testOrderDisplayName: String
   testPerformedLoinc: String!

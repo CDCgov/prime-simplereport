@@ -163,7 +163,6 @@ const LabReportForm = () => {
 
   const testDetailFieldsMissing = testDetailList.some(
     (testDetail) =>
-      isEmpty(testDetail.condition) ||
       isEmpty(testDetail.testOrderLoinc) ||
       isEmpty(testDetail.testPerformedLoinc) ||
       isEmpty(testDetail.resultType) ||
@@ -180,6 +179,9 @@ const LabReportForm = () => {
       testDetailFieldsMissing
     ) {
       showError("Please fill out required fields", "Missing required fields");
+      console.log(
+        `${patientFieldsMissing} ${providerFieldsMissing} ${facilityFieldsMissing} ${specimenFieldsMissing} ${testDetailFieldsMissing}`
+      );
       return false;
     }
     return true;

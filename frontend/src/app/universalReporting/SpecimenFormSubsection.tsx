@@ -68,6 +68,7 @@ const SpecimenFormSubsection = ({
       setSpecimen({
         ...specimen,
         collectionDate: newCollectionDate.toISOString(),
+        receivedDate: newCollectionDate.toISOString(),
       });
     }
   };
@@ -81,6 +82,7 @@ const SpecimenFormSubsection = ({
       setSpecimen({
         ...specimen,
         collectionDate: newCollectionDate.toISOString(),
+        receivedDate: newCollectionDate.toISOString(),
       });
     }
   };

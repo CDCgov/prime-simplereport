@@ -945,10 +945,6 @@ export type QueryGetOrgAdminUserIdsArgs = {
   orgId: Scalars["ID"]["input"];
 };
 
-export type QueryLabsArgs = {
-  conditionCodes?: InputMaybe<Array<Scalars["String"]["input"]>>;
-};
-
 export type QueryOrganizationArgs = {
   id: Scalars["ID"]["input"];
 };
@@ -1204,7 +1200,7 @@ export enum TestCorrectionStatus {
 }
 
 export type TestDetailsInput = {
-  condition: Scalars["String"]["input"];
+  condition?: InputMaybe<Scalars["String"]["input"]>;
   resultDate?: InputMaybe<Scalars["DateTime"]["input"]>;
   resultInterpretation?: InputMaybe<Scalars["String"]["input"]>;
   resultType: ResultScaleType;
