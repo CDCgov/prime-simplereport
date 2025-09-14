@@ -1803,10 +1803,10 @@ array-union@^2.1.0:
   resolved "https://registry.yarnpkg.com/array-union/-/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
   integrity sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
 
-azure-functions-core-tools@^4.0.7317:
-  version "4.0.7317"
-  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-4.0.7317.tgz#4c82ae904eb5f7cf6a0a20bd1b680c95268a9eb3"
-  integrity sha512-BZLIQdUioK98mhDgdbjwm7wgwm69B8DWtjLyPdVZng2wsO+5l59nJ+I3ct7VcB+enui+bzaC6i2bSD04UbBgxw==
+azure-functions-core-tools@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-4.2.2.tgz#2a6969d57968aeaa16c62b17a28d634e66e50e35"
+  integrity sha512-TxafmfFZCOdv9hoU29W/IPEiwlwTT3jj4ZnM58DttG+LLxPz1Xc2+afSzQ502WpemHI9wvGLYXb55KDGCwKKRw==
   dependencies:
     chalk "3.0.0"
     extract-zip "^2.0.1"
