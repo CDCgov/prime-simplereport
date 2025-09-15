@@ -78,15 +78,6 @@ public class DataRetentionService {
     }
   }
 
-  /**
-   * Manual trigger method for testing - can be called via test endpoint We will remove this code
-   * once we are done testing
-   */
-  public void manualTriggerDeleteOldData() {
-    log.info("Manual trigger for data retention job initiated");
-    scheduledDeleteOldData();
-  }
-
   /** Placeholder method for actual deletion logic */
   public void deleteOldData() {
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
