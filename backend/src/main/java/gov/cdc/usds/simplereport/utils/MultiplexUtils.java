@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.utils;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -59,7 +59,9 @@ public class MultiplexUtils {
    * @return The inferred DeviceTypeDisease
    */
   public static DeviceTypeDisease inferMultiplexDeviceTypeDisease(
-      Set<DeviceTypeDisease> matchingDeviceTypeDiseases, TestEvent testEvent) {
+      Set<DeviceTypeDisease> matchingDeviceTypeDiseases,
+      DeviceType deviceType,
+      boolean isSingleResult) {
     if (matchingDeviceTypeDiseases.isEmpty()) {
       throw new IllegalArgumentException(
           "Could not find matching DeviceTypeDisease because the set was empty");
@@ -73,8 +75,7 @@ public class MultiplexUtils {
 
       // Get count of how many times test ordered LOINC is used for the device
       HashMap<String, Integer> testOrderedLoincCounts = new HashMap<>();
-      testEvent
-          .getDeviceType()
+      deviceType
           .getSupportedDiseaseTestPerformed()
           .forEach(
               deviceTypeDisease -> {
@@ -84,7 +85,7 @@ public class MultiplexUtils {
                 }
               });
 
-      if (testEvent.getResults().size() == 1) {
+      if (isSingleResult) {
         // Only single result on this test event, so get the DeviceTypeDisease with the least used
         // test ordered LOINC
         correctTestPerformed =

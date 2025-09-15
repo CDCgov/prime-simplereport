@@ -45,6 +45,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.Result;
@@ -1079,13 +1080,16 @@ public class HL7Converter {
     return testEvent.getResults().stream()
         .map(
             result -> {
+              DeviceType deviceType = testEvent.getDeviceType();
+
               Set<DeviceTypeDisease> matchingDeviceTypeDiseases =
-                  testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
+                  deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(d -> d.getSupportedDisease().equals(result.getDisease()))
                       .collect(Collectors.toSet());
 
               DeviceTypeDisease inferredDeviceTypeDisease =
-                  inferMultiplexDeviceTypeDisease(matchingDeviceTypeDiseases, testEvent);
+                  inferMultiplexDeviceTypeDisease(
+                      matchingDeviceTypeDiseases, deviceType, testEvent.getResults().size() == 1);
 
               return convertToTestDetailsInput(
                   result, inferredDeviceTypeDisease, testEvent.getDateTested());

@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -429,15 +430,17 @@ public class BulkUploadResultsToHL7 {
             .get(ResultsUploaderCachingService.getKey(modelName, testPerformedCode));
 
     if (matchingDevice != null) {
-      List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+      Set<DeviceTypeDisease> deviceTypeDiseaseEntries =
           matchingDevice.getSupportedDiseaseTestPerformed().stream()
               .filter(
                   disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
-              .toList();
+              .collect(Collectors.toSet());
 
       testOrderedCode =
           StringUtils.isEmpty(testOrderedCode)
-              ? MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries)
+              ? MultiplexUtils.inferMultiplexDeviceTypeDisease(
+                      deviceTypeDiseaseEntries, matchingDevice, true)
+                  .getTestOrderedLoincCode()
               : testOrderedCode;
 
       String finalTestOrderedCode = testOrderedCode;
