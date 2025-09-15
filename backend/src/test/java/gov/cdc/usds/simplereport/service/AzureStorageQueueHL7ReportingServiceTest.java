@@ -28,7 +28,7 @@ import reactor.core.publisher.MonoSink;
 
 @SpringBootTest
 @ActiveProfiles("test")
-public class AzureStorageQueueHL7ReportingServiceTest {
+class AzureStorageQueueHL7ReportingServiceTest {
   @Autowired private GitProperties gitProperties;
   @Autowired private HL7Converter hl7Converter;
   @SpyBean private HapiContext hapiContext;
