@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -184,7 +184,7 @@ jobs:
             ops/services/app_functions/test_data_publisher/functions/coverage/**
           key: ${{ runner.os }}-data-publisher-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -199,7 +199,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
@@ -217,7 +217,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
