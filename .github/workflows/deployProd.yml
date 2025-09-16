@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build and Push backend
         uses: ./.github/actions/build-and-push
         with:
@@ -32,7 +32,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: Production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/build-frontend
         name: Build front-end application
         with:
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build_frontend, build_docker ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/tf-deploy
         name: Deploy with Terraform
         with:
@@ -78,7 +78,7 @@ jobs:
       url: https://simplereport.gov
     needs: [ prerelease_backend ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Promote and deploy
         uses: ./.github/actions/deploy-application
         with:
@@ -91,7 +91,7 @@ jobs:
     if: failure()
     needs: [ deploy ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Send alert to Slack
         uses: ./.github/actions/slack-message
         with:
@@ -106,7 +106,7 @@ jobs:
     if: ${{ always() && needs.deploy.result != 'success' && github.event.workflow_run.conclusion == 'success' }}
     needs: [ deploy ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Trigger PagerDuty alert
         uses: ./.github/actions/pagerduty-alert
         with:
@@ -121,7 +121,7 @@ jobs:
     if: ${{ always() }}
     environment: Production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Smoke test the env
         uses: ./.github/actions/post-deploy-smoke-test
         with:
@@ -132,7 +132,7 @@ jobs:
     if: ${{ always() && needs.smoke_test_front_and_back_end.result == 'failure' }}
     needs: [ smoke_test_front_and_back_end ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Trigger PagerDuty alert
         uses: ./.github/actions/pagerduty-alert
         with:
