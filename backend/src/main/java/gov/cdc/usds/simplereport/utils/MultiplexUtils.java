@@ -55,7 +55,9 @@ public class MultiplexUtils {
    * test order LOINCs.
    *
    * @param matchingDeviceTypeDiseases The device type's set of SupportedDiseaseTestPerformed
-   * @param testEvent The test event
+   * @param deviceType The matching device type
+   * @param isSingleResult Used to determine which test order loinc to pick if there are multiple
+   *     test results
    * @return The inferred DeviceTypeDisease
    */
   public static DeviceTypeDisease inferMultiplexDeviceTypeDisease(
