@@ -135,9 +135,9 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     // GIVEN
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
-    var testResultUpload =
-        factory.createTestResultUpload(
-            reportId, UploadStatus.PENDING, orgServiceMock.getCurrentOrganization());
+    Organization org = factory.saveValidOrganization();
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
+    var testResultUpload = factory.createTestResultUpload(reportId, UploadStatus.PENDING, org);
 
     when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
         .thenReturn("fake-rs-sender-token");
