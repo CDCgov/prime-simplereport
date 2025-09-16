@@ -6563,3 +6563,15 @@ databaseChangeLog:
         - dropColumn:
             tableName: condition
             columnName: snomed_name
+  - changeSet:
+      id: add-aims-to-pipeline-enum
+      author: az01@cdc.gov
+      comment: Add AIMS value to PIPELINE enum type
+      changes:
+        - tagDatabase:
+            tag: add-aims-to-pipeline-enum
+        - sql:
+            remarks: Add AIMS to the PIPELINE enum type
+            # This cannot be rolled back. See: https://www.postgresql.org/docs/current/datatype-enum.html#DATATYPE-ENUM-IMPLEMENTATION-DETAILS
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.PIPELINE ADD VALUE 'AIMS';

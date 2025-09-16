@@ -147,13 +147,15 @@ public class TestResultUploadService {
           CompletableFuture<AimsSubmissionSummary> aimsSubmission =
               submitResultsToAIMS(new ByteArrayInputStream(content), org, submissionId);
 
-          processUniversalPipelineResponse(aimsSubmission).ifPresent(uploadSummary::add);
+          processUniversalPipelineResponse(aimsSubmission, Pipeline.AIMS)
+              .ifPresent(uploadSummary::add);
         }
 
         CompletableFuture<UniversalSubmissionSummary> universalSubmission =
             submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
 
-        processUniversalPipelineResponse(universalSubmission).ifPresent(uploadSummary::add);
+        processUniversalPipelineResponse(universalSubmission, Pipeline.UNIVERSAL)
+            .ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
@@ -318,7 +320,7 @@ public class TestResultUploadService {
   }
 
   private Optional<TestResultUpload> processUniversalPipelineResponse(
-      CompletableFuture<? extends SubmissionSummary> futureSubmissionSummary)
+      CompletableFuture<? extends SubmissionSummary> futureSubmissionSummary, Pipeline pipeline)
       throws CsvProcessingException, ExecutionException, InterruptedException {
     try {
       SubmissionSummary submissionSummary = futureSubmissionSummary.get();
@@ -327,11 +329,12 @@ public class TestResultUploadService {
             submissionSummary.submissionResponse(),
             submissionSummary.org(),
             submissionSummary.submissionId(),
-            Pipeline.UNIVERSAL,
+            pipeline,
             submissionSummary.reportedDiseases());
       }
     } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
-      log.error("Error processing submission in bulk result upload", e);
+      log.error(
+          String.format("Error processing submission in bulk result upload for %s", pipeline), e);
       Thread.currentThread().interrupt();
       throw e;
     }
