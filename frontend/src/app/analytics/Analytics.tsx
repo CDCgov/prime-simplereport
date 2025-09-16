@@ -301,7 +301,7 @@ export const Analytics = (props: Props) => {
                     >
                       <div>
                         Note: Patients tested earlier than{" "}
-                        {moment(dataRetentionDate).format("MM-DD-YYYY")} are not
+                        {moment(dataRetentionDate).format("MM/DD/YYYY")} are not
                         shown due to our 30 day data retention maximum.
                       </div>
                     </Alert>
