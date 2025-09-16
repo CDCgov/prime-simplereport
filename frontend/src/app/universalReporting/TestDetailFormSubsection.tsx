@@ -1,7 +1,6 @@
 import React from "react";
 import moment from "moment";
 import { Label, Textarea } from "@trussworks/react-uswds";
-import { now } from "lodash";
 
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
@@ -43,7 +42,7 @@ const TestDetailFormSubsection = ({
   const handleResultTimeUpdate = (value: string) => {
     if (value) {
       const [hours, minutes] = value.split(":");
-      const newResultDate = moment(testDetails.resultDate || now())
+      const newResultDate = moment(testDetails.resultDate || Date.now())
         .hours(parseInt(hours))
         .minutes(parseInt(minutes));
       updateTestDetails({

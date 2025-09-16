@@ -1,6 +1,5 @@
 import moment from "moment";
 import React, { Dispatch } from "react";
-import { now } from "lodash";
 
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
@@ -76,7 +75,7 @@ const SpecimenFormSubsection = ({
   const handleCollectionTimeUpdate = (value: string) => {
     if (value) {
       const [hours, minutes] = value.split(":");
-      const newCollectionDate = moment(specimen.collectionDate || now())
+      const newCollectionDate = moment(specimen.collectionDate || Date.now())
         .hours(parseInt(hours))
         .minutes(parseInt(minutes));
       setSpecimen({
