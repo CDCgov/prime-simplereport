@@ -329,6 +329,85 @@ public class BulkUploadResultsToHL7Test {
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
   }
 
+  @Test
+  void headerSegments_includeExpectedDatetimeAndIds() {
+    var mockedDateGenerator = mock(DateGenerator.class);
+    Date fixedDate = Date.from(Instant.parse("2023-05-24T19:33:06Z"));
+    when(mockedDateGenerator.newDate()).thenReturn(fixedDate);
+
+    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, dateGenerator);
+    BulkUploadResultsToHL7 localSut =
+        new BulkUploadResultsToHL7(
+            hl7Converter, gitProperties, mockedDateGenerator, resultsUploaderCachingService);
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    HL7BatchMessage batchMessage = localSut.convertToHL7BatchMessage(input);
+
+    String[] lines = getHL7Lines(batchMessage);
+    String fhs = getSegmentLine(lines, "FHS");
+    String bhs = getSegmentLine(lines, "BHS");
+
+    assertThat(fhs).isNotNull();
+    assertThat(bhs).isNotNull();
+
+    // second index should be encoding chars
+    assertThat(fhs.split("\\|")[1]).isEqualTo("^~\\&");
+    assertThat(bhs.split("\\|")[1]).isEqualTo("^~\\&");
+
+    // should include APHL OID
+    String aphlOid = "2.16.840.1.113883.3.8589";
+    assertThat(fhs).contains(aphlOid);
+    assertThat(bhs).contains(aphlOid);
+
+    // datetime should equal HL7-formatted value from DateTimeUtils
+    String[] fhsFields = fhs.split("\\|");
+    String[] bhsFields = bhs.split("\\|");
+    String expectedHl7Date = DateTimeUtils.formatToHL7DateTime(fixedDate);
+    assertThat(fhsFields[fhsFields.length - 1]).isEqualTo(expectedHl7Date);
+    assertThat(bhsFields[bhsFields.length - 1]).isEqualTo(expectedHl7Date);
+  }
+
+  @Test
+  void batchTrailerCounts_matchRecordCount() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-different-results.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    String[] lines = getHL7Lines(batchMessage);
+    String bts = getSegmentLine(lines, "BTS");
+    String fts = getSegmentLine(lines, "FTS");
+
+    assertThat(bts).isNotNull();
+    assertThat(fts).isNotNull();
+    // BTS is the count of messages; FTS is the number of batches (always 1)
+    assertThat(bts).isEqualTo("BTS|" + batchMessage.recordsCount());
+    assertThat(fts).isEqualTo("FTS|1");
+  }
+
+  @Test
+  void msh_containsProcessingModeCode() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    String[] lines = getHL7Lines(batchMessage);
+    String msh = getSegmentLine(lines, "MSH");
+
+    assertThat(msh).isNotNull();
+    assertThat(msh).containsPattern("\\|T\\|");
+  }
+
+  @Test
+  void obx_containsSnomedCodedResult() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    String[] lines = getHL7Lines(batchMessage);
+    String obxLine = getSegmentLine(lines, "OBX");
+    assertThat(obxLine).isNotNull();
+
+    // OBX CWE should contain a SNOMED code (9 or 15 digits)
+    assertThat(obxLine).containsPattern("\\b(\\d{9}|\\d{15})\\b");
+  }
+
   private InputStream loadCsv(String csvFile) {
     return getClass().getClassLoader().getResourceAsStream(csvFile);
   }
