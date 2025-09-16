@@ -5,7 +5,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.util.Date;
 import java.util.UUID;
 
-// TODO: This may better suited as an abstract class
+// might be better suited as an abstract class
 public interface GenericResponse {
   UUID getReportId();
 
