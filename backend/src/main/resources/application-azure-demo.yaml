@@ -1,9 +1,4 @@
 simple-report:
-  data-retention:
-    enabled: false
-    retention-days: 30
-    batch-size: 1000
-    max-execution-time-minutes: 120
   patient-link-url: https://demo.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://demo.simplereport.gov/api/pxp/callback
   sendgrid:
