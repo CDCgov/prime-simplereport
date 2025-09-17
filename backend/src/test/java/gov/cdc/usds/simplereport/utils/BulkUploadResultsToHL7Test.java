@@ -54,7 +54,7 @@ public class BulkUploadResultsToHL7Test {
   public void beforeEach() {
     // Stub device and specimen maps used by converter
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("ID NOW|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
 
     when(resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(
