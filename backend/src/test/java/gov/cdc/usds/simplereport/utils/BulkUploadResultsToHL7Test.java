@@ -408,6 +408,65 @@ public class BulkUploadResultsToHL7Test {
     assertThat(obxLine).containsPattern("\\b(\\d{9}|\\d{15})\\b");
   }
 
+  @Test
+  void fhsAndBhs_includeSendingFacilityClia() throws IOException {
+    var mappingIterator =
+        getIteratorForCsv(loadCsv("testResultUpload/test-results-upload-valid.csv"));
+    var csvRow = mappingIterator.next();
+    var facilityName = csvRow.get("testing_lab_name");
+    var facilityClia = csvRow.get("testing_lab_clia");
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    String[] lines = getHL7Lines(batchMessage);
+    String fhs = getSegmentLine(lines, "FHS");
+    String bhs = getSegmentLine(lines, "BHS");
+    assertThat(fhs).isNotNull();
+    assertThat(bhs).isNotNull();
+
+    // sending facility is an HD of name^CLIA^CLIA
+    String expectedHdPart = facilityName + "^" + facilityClia + "^CLIA";
+    assertThat(fhs).contains(expectedHdPart);
+    assertThat(bhs).contains(expectedHdPart);
+  }
+
+  @Test
+  void pid_containsPatientNameFromCsv() throws IOException {
+    var mappingIterator =
+        getIteratorForCsv(loadCsv("testResultUpload/test-results-upload-valid.csv"));
+    var csvRow = mappingIterator.next();
+    var firstName = csvRow.get("patient_first_name");
+    var lastName = csvRow.get("patient_last_name");
+
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    String[] lines = getHL7Lines(batchMessage);
+    String pid = getSegmentLine(lines, "PID");
+    assertThat(pid).isNotNull();
+
+    // patient name should appear in PID (formatted as Last^First^Middle)
+    assertThat(pid).contains(firstName);
+    assertThat(pid).contains(lastName);
+  }
+
+  @Test
+  void spm_datesPopulated_whenInputDatesBlank() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-blank-dates.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    String[] lines = getHL7Lines(batchMessage);
+    String spm = getSegmentLine(lines, "SPM");
+    assertThat(spm).isNotNull();
+
+    String[] spmFields = spm.split("\\|");
+    assertThat(spmFields.length).isGreaterThan(18);
+
+    assertThat(spmFields[17]).isNotBlank();
+    assertThat(spmFields[18]).isNotBlank();
+  }
+
   private InputStream loadCsv(String csvFile) {
     return getClass().getClassLoader().getResourceAsStream(csvFile);
   }
