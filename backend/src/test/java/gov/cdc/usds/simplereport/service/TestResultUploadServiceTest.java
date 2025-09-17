@@ -463,6 +463,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
         .thenReturn("fake-rs-sender-token");
     when(dataHubMock.uploadFhir(anyString(), anyString())).thenReturn(successfulResponse);
+    when(dateGenerator.newDate()).thenReturn(new Date());
 
     // Capture DB saves
     ArgumentCaptor<TestResultUpload> truCaptor = ArgumentCaptor.forClass(TestResultUpload.class);
@@ -479,7 +480,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
     verify(dataHubMock, never()).uploadCSV(any());
 
-    verify(repoMock, atLeast(2)).save(truCaptor.capture());
+    verify(repoMock, times(2)).save(truCaptor.capture());
     var savedPipelines =
         truCaptor.getAllValues().stream().map(TestResultUpload::getDestination).toList();
     assertThat(savedPipelines).contains(Pipeline.UNIVERSAL);
