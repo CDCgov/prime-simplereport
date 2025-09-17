@@ -467,6 +467,35 @@ public class BulkUploadResultsToHL7Test {
     assertThat(spmFields[18]).isNotBlank();
   }
 
+  @Test
+  void validCsv_infersOrderedLoincAndLongNameFromDevice_whenOrderedCodeBlank() throws IOException {
+    var mappingIterator =
+        getIteratorForCsv(loadCsv("testResultUpload/test-results-upload-valid.csv"));
+    var csvRow = mappingIterator.next();
+    var inputOrderedCode = csvRow.get("test_ordered_code");
+    var inputPerformedCode = csvRow.get("test_performed_code");
+    assertThat(inputOrderedCode).isEmpty();
+
+    HL7BatchMessage batchMessage =
+        sut.convertToHL7BatchMessage(loadCsv("testResultUpload/test-results-upload-valid.csv"));
+
+    String[] lines = getHL7Lines(batchMessage);
+    String obrLine = getSegmentLine(lines, "OBR");
+    assertThat(obrLine).isNotNull();
+
+    // OBR-4 should be a CWE with code^text, inferred from device
+    String[] obrFields = obrLine.split("\\|");
+    assertThat(obrFields.length).isGreaterThan(4);
+
+    String cwe = obrFields[4];
+    assertThat(cwe).isNotBlank();
+
+    String[] cweParts = cwe.split("\\^");
+    assertThat(cweParts.length).isGreaterThan(1);
+    assertThat(cweParts[0]).isEqualTo(inputPerformedCode);
+    assertThat(batchMessage.message()).contains(inputPerformedCode);
+  }
+
   private InputStream loadCsv(String csvFile) {
     return getClass().getClassLoader().getResourceAsStream(csvFile);
   }
