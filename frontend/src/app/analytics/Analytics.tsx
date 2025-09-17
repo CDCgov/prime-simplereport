@@ -80,7 +80,7 @@ export const Analytics = (props: Props) => {
   const [endDate, setEndDate] = useState<string>(
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
-  const [showRetentionWarning, setRetentionWarning] = useState<boolean>(false);
+
   let dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
 
   const supportedDiseaseList = useSupportedDiseaseList();
@@ -151,6 +151,11 @@ export const Analytics = (props: Props) => {
 
   let dataRetentionDate = new Date();
   dataRetentionDate.setDate(new Date().getDate() - 30);
+
+  const showRetentionWarning =
+    dataRetentionLimitsEnabled &&
+    new Date(startDate) < dataRetentionDate &&
+    dateRange === "custom";
 
   return (
     <div className="prime-home flex-1">
@@ -243,16 +248,6 @@ export const Analytics = (props: Props) => {
                       onChange={(e) => {
                         if (Date.parse(e.target.value)) {
                           let d = moment(e.target.value).toDate();
-                          if (e.target.checkValidity()) {
-                            setRetentionWarning(false);
-                          } else {
-                            // Because the min and max are mostly suggestions on this date picker we need to check
-                            // and we only care about this if the dataRetentionLimitsEnabled flag is strue
-                            setRetentionWarning(
-                              dataRetentionLimitsEnabled &&
-                                d <= moment(e.target.min).toDate()
-                            );
-                          }
                           const startDateString = setStartTimeForDateRange(
                             new Date(d)
                           ).toLocaleDateString();
