@@ -22,7 +22,6 @@ import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
-import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
@@ -445,13 +444,9 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     Organization org = factory.saveValidOrganization();
     when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
 
-    // Return a simple HL7 batch message from the HL7 converter
-    HL7BatchMessage hl7Batch =
-        new HL7BatchMessage(
-            "FHS|^~\\&|SimpleReport|||||20240524193306.0000+0000\nBHS|^~\\&|SimpleReport|||||20240524193306.0000+0000",
-            1,
-            new HashMap<>());
-    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any())).thenReturn(hl7Batch);
+    // Force HL7 conversion to fail to avoid real S3 calls while verifying behavior
+    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any()))
+        .thenThrow(new CsvProcessingException("hl7 conversion failed"));
 
     // Set up FHIR path success
     UploadResponse successfulResponse = buildSuccessfulUploadResponse();
