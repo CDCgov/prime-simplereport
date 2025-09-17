@@ -7,7 +7,7 @@
     "cypress": "^14.3.2",
     "cypress-localstorage-commands": "^2.2.7",
     "dayjs": "^1.11.13",
-    "eslint": "^9.31.0",
+    "eslint": "^9.33.0",
     "eslint-plugin-cypress": "^5.1.0",
     "otplib": "^12.0.1",
     "prettier": "3.6.2"
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "axe-core": "^4.10.3",
-    "cypress-axe": "^1.6.0"
+    "cypress-axe": "^1.6.0",
+    "form-data": "^4.0.4"
   }
 }

@@ -23,7 +23,7 @@
   },
   "main": "dist/**/index.js",
   "dependencies": {
-    "@azure/functions": "^4.6.0",
+    "@azure/functions": "^4.7.2",
     "@azure/storage-queue": "^12.26.0",
     "applicationinsights": "^3.7.0",
     "csv-stringify": "^6.6.0",
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.7.7",
+    "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "azure-functions-core-tools": "^4.0.7317",
@@ -46,7 +46,7 @@
     "jest-fetch-mock": "^3.0.3",
     "prettier": "3.5.3",
     "rimraf": "^6.0.1",
-    "ts-jest": "^29.2.6",
+    "ts-jest": "^29.4.1",
     "typescript": "^5.8.3"
   },
   "eslintConfig": {

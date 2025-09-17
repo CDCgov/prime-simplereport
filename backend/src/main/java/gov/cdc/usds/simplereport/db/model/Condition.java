@@ -24,9 +24,13 @@ public class Condition extends EternalAuditedEntity {
   @Column(nullable = false)
   private String code;
 
+  /** This value comes from APHL's Terminology Exchange Service */
   @Getter
   @Column(nullable = false)
   private String display;
+
+  /** This value comes from the UMLS Terminology Service endpoint for a SNOMED */
+  @Getter @Column private String snomedName;
 
   @Column private boolean hasLabs;
 
@@ -44,10 +48,11 @@ public class Condition extends EternalAuditedEntity {
   @Getter
   private Set<Lab> labs = new HashSet<>();
 
-  public Condition(String code, String display) {
+  public Condition(String code, String display, String snomedName) {
     super();
     this.code = code;
     this.display = display;
+    this.snomedName = snomedName;
   }
 
   protected Condition() {
