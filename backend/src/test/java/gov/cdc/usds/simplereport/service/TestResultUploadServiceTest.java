@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
+import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
@@ -425,6 +426,93 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertEquals(1, output.size());
     verify(dataHubMock, never()).uploadCSV(any());
     verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_aimsEnabled_invokesHl7Conversion_andSavesResults()
+      throws Exception {
+    // GIVEN
+    when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(true);
+
+    // Set required AIMS fields to avoid NPE during set up
+    ReflectionTestUtils.setField(sut, "aimsAccessKeyId", "test-access-key");
+    ReflectionTestUtils.setField(sut, "aimsSecretAccessKey", "test-secret-key");
+    ReflectionTestUtils.setField(sut, "aimsS3BucketName", "test-bucket");
+    ReflectionTestUtils.setField(sut, "aimsUserId", "test-user");
+
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
+    Organization org = factory.saveValidOrganization();
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
+
+    // Return a simple HL7 batch message from the HL7 converter
+    HL7BatchMessage hl7Batch =
+        new HL7BatchMessage(
+            "FHS|^~\\&|SimpleReport|||||20240524193306.0000+0000\nBHS|^~\\&|SimpleReport|||||20240524193306.0000+0000",
+            1,
+            new HashMap<>());
+    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any())).thenReturn(hl7Batch);
+
+    // Set up FHIR path success
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("bundle"), new HashMap<>()));
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(dataHubMock.uploadFhir(anyString(), anyString())).thenReturn(successfulResponse);
+
+    // Capture DB saves
+    ArgumentCaptor<TestResultUpload> truCaptor = ArgumentCaptor.forClass(TestResultUpload.class);
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+
+    // WHEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    List<TestResultUpload> result = sut.processResultCSV(input);
+
+    // THEN
+    assertEquals(2, result.size());
+    verify(bulkUploadHl7ConverterMock, times(1)).convertToHL7BatchMessage(any());
+    verify(bulkUploadFhirConverterMock, times(1)).convertToFhirBundles(any(), any());
+    verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
+    verify(dataHubMock, never()).uploadCSV(any());
+
+    verify(repoMock, atLeast(2)).save(truCaptor.capture());
+    var savedPipelines =
+        truCaptor.getAllValues().stream().map(TestResultUpload::getDestination).toList();
+    assertThat(savedPipelines).contains(Pipeline.UNIVERSAL);
+    assertThat(savedPipelines).contains(Pipeline.AIMS);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_aimsDisabled_doesNotInvokeHl7Conversion() throws Exception {
+    // GIVEN
+    when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(false);
+    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+
+    UploadResponse successfulResponse = buildSuccessfulUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(new FHIRBundleRecord(List.of("a"), new HashMap<>()));
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(dataHubMock.uploadFhir(anyString(), anyString())).thenReturn(successfulResponse);
+    when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
+
+    // WHEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    List<TestResultUpload> result = sut.processResultCSV(input);
+
+    // THEN
+    assertEquals(1, result.size());
+    verify(bulkUploadHl7ConverterMock, never()).convertToHL7BatchMessage(any());
+    verify(bulkUploadFhirConverterMock, times(1)).convertToFhirBundles(any(), any());
   }
 
   @Test
