@@ -11,7 +11,6 @@ import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseS
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.SNOMED_REGEX;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
@@ -379,7 +378,7 @@ public class BulkUploadResultsToHL7 {
   }
 
   private SpecimenInput getSpecimenInput(TestResultRow row) {
-    var specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
+    var specimenCode = StringUtils.defaultIfEmpty(row.getSpecimenType().getValue(), "");
 
     var providerAddr =
         new StreetAddress(
@@ -423,6 +422,8 @@ public class BulkUploadResultsToHL7 {
     var modelName = row.getEquipmentModelName().getValue();
     var testOrderedCode = row.getTestOrderedCode().getValue();
     var testOrderedLoincLongName = "";
+    var resultValue =
+        StringUtils.defaultIfEmpty(getTestResultSnomed(row.getTestResult().getValue()), "");
 
     var matchingDevice =
         resultsUploaderCachingService
@@ -455,14 +456,14 @@ public class BulkUploadResultsToHL7 {
               .orElse(null);
     }
 
-    testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
+    testOrderedCode = StringUtils.defaultIfEmpty(testOrderedCode, testPerformedCode);
 
     return TestDetailsInput.builder()
         .testOrderLoinc(testOrderedCode)
         .testOrderDisplayName(testOrderedLoincLongName)
         .testPerformedLoinc(testPerformedCode)
         .resultType(ResultScaleType.ORDINAL)
-        .resultValue(getTestResultSnomed(row.getTestResult().getValue()))
+        .resultValue(resultValue)
         .resultDate(
             Date.from(
                 LocalDate.parse(row.getTestResultDate().getValue(), DATE_TIME_FORMATTER)
@@ -502,18 +503,6 @@ public class BulkUploadResultsToHL7 {
       return testResultToSnomedMap.get(input.toLowerCase());
     }
     return input;
-  }
-
-  private String getSpecimenTypeSnomed(String input) {
-    if (input != null && input.matches(ALPHABET_REGEX)) {
-      return resultsUploaderCachingService
-          .getSpecimenTypeNameToSNOMEDMap()
-          .get(input.toLowerCase());
-    } else if (input != null && input.matches(SNOMED_REGEX)) {
-      return input;
-    }
-
-    return null;
   }
 
   private String getSpecimenTypeName(String specimenSNOMED) {
