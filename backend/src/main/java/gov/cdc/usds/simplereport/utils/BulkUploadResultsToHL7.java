@@ -11,6 +11,7 @@ import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseS
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.SNOMED_REGEX;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
@@ -378,7 +379,8 @@ public class BulkUploadResultsToHL7 {
   }
 
   private SpecimenInput getSpecimenInput(TestResultRow row) {
-    var specimenCode = StringUtils.defaultIfEmpty(row.getSpecimenType().getValue(), "");
+    var specimenType = StringUtils.defaultIfEmpty(row.getSpecimenType().getValue(), "");
+    var specimenCode = getSpecimenTypeSnomed(specimenType);
 
     var providerAddr =
         new StreetAddress(
@@ -503,6 +505,18 @@ public class BulkUploadResultsToHL7 {
       return testResultToSnomedMap.get(input.toLowerCase());
     }
     return input;
+  }
+
+  private String getSpecimenTypeSnomed(String input) {
+    if (input != null && input.matches(ALPHABET_REGEX)) {
+      return resultsUploaderCachingService
+          .getSpecimenTypeNameToSNOMEDMap()
+          .get(input.toLowerCase());
+    } else if (input != null && input.matches(SNOMED_REGEX)) {
+      return input;
+    }
+
+    return "";
   }
 
   private String getSpecimenTypeName(String specimenSNOMED) {
