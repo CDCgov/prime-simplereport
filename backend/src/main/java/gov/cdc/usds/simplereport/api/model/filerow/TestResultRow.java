@@ -19,6 +19,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePho
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateResidence;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResult;
@@ -119,6 +120,7 @@ public class TestResultRow implements FileRow {
   final ValueOrError gendersOfSexualPartners;
   final ValueOrError syphilisHistory;
   final ValueOrError patientGenderIdentity;
+  final ValueOrError sex;
 
   static final String PATIENT_LAST_NAME = "patient_last_name";
   static final String PATIENT_FIRST_NAME = "patient_first_name";
@@ -165,6 +167,7 @@ public class TestResultRow implements FileRow {
   public static final String GENDERS_OF_SEXUAL_PARTNERS = "genders_of_sexual_partners";
   public static final String SYPHILIS_HISTORY = "syphilis_history";
   public static final String PATIENT_GENDER_IDENTITY = "patient_gender_identity";
+  static final String SEX = "sex";
 
   public static final ImmutableMap<String, String> diseaseSpecificLoincMap =
       new ImmutableMap.Builder<String, String>()
@@ -471,6 +474,14 @@ public class TestResultRow implements FileRow {
     syphilisHistory = getValue(rawRow, SYPHILIS_HISTORY, isRequired(SYPHILIS_HISTORY));
     patientGenderIdentity =
         getValue(rawRow, PATIENT_GENDER_IDENTITY, isRequired(PATIENT_GENDER_IDENTITY));
+
+    // sex field with backwards compatibility - use patient_gender if sex is missing
+    ValueOrError sexValue = getValue(rawRow, SEX, isRequired(SEX));
+    if (sexValue.getValue() == null || sexValue.getValue().trim().isEmpty()) {
+      sex = patientGender; // fallback to deprecated patient_gender field
+    } else {
+      sex = sexValue;
+    }
   }
 
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
@@ -643,6 +654,7 @@ public class TestResultRow implements FileRow {
     errors.addAll(validateEmail(patientEmail));
     errors.addAll(validateRace(patientRace));
     errors.addAll(validateBiologicalSex(patientGender));
+    errors.addAll(validateSex(sex));
     errors.addAll(validateEthnicity(patientEthnicity));
 
     errors.addAll(validateYesNoUnknownAnswer(pregnant));
