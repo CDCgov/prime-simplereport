@@ -81,7 +81,7 @@ export const Analytics = (props: Props) => {
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
 
-  let dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
+  const dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
 
   const supportedDiseaseList = useSupportedDiseaseList();
 
