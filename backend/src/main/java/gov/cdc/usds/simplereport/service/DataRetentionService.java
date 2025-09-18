@@ -1,7 +1,9 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import java.time.LocalDate;
 import java.util.TimeZone;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @Slf4j
+@RequiredArgsConstructor
 public class DataRetentionService {
 
-  @Value("${simple-report.data-retention.enabled:false}")
-  private boolean dataRetentionEnabled;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   @Value("${simple-report.data-retention.retention-days:30}")
   private int retentionDays;
@@ -35,7 +37,7 @@ public class DataRetentionService {
       lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT150M")
   public void scheduledDeleteOldData() {
-    if (!dataRetentionEnabled) {
+    if (!featureFlagsConfig.isDataRetentionLimitsEnabled()) {
       log.info("Data retention job is disabled - skipping scheduled deletion");
       return;
     }

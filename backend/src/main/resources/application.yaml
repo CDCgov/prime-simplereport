@@ -101,7 +101,6 @@ smarty-streets:
   token: ${SMARTY_AUTH_TOKEN}
 simple-report:
   data-retention:
-    enabled: false
     retention-days: 30
     batch-size: 1000
     max-execution-time-minutes: 120
