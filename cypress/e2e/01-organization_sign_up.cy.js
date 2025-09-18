@@ -4,7 +4,7 @@ const {
   generateOrganization,
   generateUser,
 } = require("../support/e2e");
-
+// test
 const facility = generateFacility();
 const organization = generateOrganization();
 const user = generateUser();
