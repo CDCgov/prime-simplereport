@@ -1,5 +1,6 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { useFeature } from "flagged";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -22,6 +23,7 @@ import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { PersonalDetailsFormProps } from "../IdentityVerification/PersonalDetailsForm";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import NextSteps from "../IdentityVerification/NextSteps";
 
 import {
   initOrg,
@@ -64,6 +66,8 @@ const OrganizationForm = () => {
   const [formChanged, setFormChanged] = useState(false);
   const [orgExternalId, setOrgExternalId] = useState("");
   useDocumentTitle("Sign up - organization information");
+
+  const identityVerificationEnabled = useFeature("identityVerificationEnabled");
 
   const onDetailChange =
     (field: keyof OrganizationCreateRequest) =>
@@ -133,6 +137,10 @@ const OrganizationForm = () => {
   };
 
   if (orgExternalId) {
+    if (!identityVerificationEnabled) {
+      return <NextSteps />;
+    }
+
     return (
       <Navigate
         to="/sign-up/identity-verification"

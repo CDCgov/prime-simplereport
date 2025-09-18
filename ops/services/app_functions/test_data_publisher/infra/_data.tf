@@ -30,6 +30,21 @@ data "azurerm_key_vault_secret" "aims_outbound_storage_endpoint" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "aims_user_id" {
+  name         = "aims-user-id-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "aims_environment" {
+  name         = "aims-environment-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "aims_bucket_name" {
+  name         = "aims-outbound-storage-bucket-name-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 data "azurerm_application_insights" "app" {
   name                = "prime-simple-report-${var.environment}-insights"
   resource_group_name = local.resource_group_name

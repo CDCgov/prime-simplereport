@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import moment from "moment";
 import { Navigate, useLocation } from "react-router-dom";
+import { useFeature } from "flagged";
 
 import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
@@ -47,6 +48,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   const activeFacilityId = getFacilityIdFromUrl(useLocation());
+  const dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
 
   if (redirect) {
     return <Navigate to={redirect} />;
@@ -97,7 +99,11 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           "display-flex flex-column flex-align-center margin-x-7 margin-y-2"
         }
       >
-        <div className="margin-bottom-105">No results found.</div>
+        <div className="margin-bottom-105">
+          {dataRetentionLimitsEnabled
+            ? "No results found in the last 30 days."
+            : "No results found."}
+        </div>
         <div>
           Check for spelling errors
           {props.canAddPatient ? (
