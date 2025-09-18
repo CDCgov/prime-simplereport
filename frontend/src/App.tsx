@@ -45,7 +45,7 @@ import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
 import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
 import MaintenanceBannerWrapper from "./MaintenanceBannerWrapper";
-// test
+
 // Initialize telemetry early
 ai.initialize();
 withInsights(console);
