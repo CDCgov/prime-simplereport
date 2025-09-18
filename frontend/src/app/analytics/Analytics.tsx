@@ -149,7 +149,7 @@ export const Analytics = (props: Props) => {
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
 
-  let dataRetentionDate = new Date();
+  const dataRetentionDate = new Date();
   dataRetentionDate.setDate(new Date().getDate() - 30);
 
   const showRetentionWarning =
@@ -247,7 +247,7 @@ export const Analytics = (props: Props) => {
                       aria-label={"Enter start date"}
                       onChange={(e) => {
                         if (Date.parse(e.target.value)) {
-                          let d = moment(e.target.value).toDate();
+                          const d = moment(e.target.value).toDate();
                           const startDateString = setStartTimeForDateRange(
                             new Date(d)
                           ).toLocaleDateString();
