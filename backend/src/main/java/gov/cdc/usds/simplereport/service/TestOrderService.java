@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -79,6 +80,7 @@ public class TestOrderService {
   private final DiseaseService _diseaseService;
 
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -372,6 +374,11 @@ public class TestOrderService {
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
 
     applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
+
+    if (featureFlagsConfig.isAimsReportingEnabled()) {
+      applicationEventPublisher.publishEvent(new ReportToAIMSEvent(savedOrder.getTestEvent()));
+    }
+
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
@@ -581,6 +588,10 @@ public class TestOrderService {
         _testOrderRepo.save(order);
 
         applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(newRemoveEvent));
+
+        if (featureFlagsConfig.isAimsReportingEnabled()) {
+          applicationEventPublisher.publishEvent(new ReportToAIMSEvent(newRemoveEvent));
+        }
 
         return newRemoveEvent;
       }

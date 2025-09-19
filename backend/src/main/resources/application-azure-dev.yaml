@@ -2,6 +2,7 @@ simple-report:
   azure-reporting-queue:
     enabled: true
     fhir-queue-enabled: true
+    hl7-queue-enabled: true
     exception-webhook-enabled: true
   patient-link-url: https://dev.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://dev.simplereport.gov/api/pxp/callback
