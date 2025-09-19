@@ -20,3 +20,14 @@
     margin-top: 0;
   }
 }
+
+// mobile formatting
+@media (max-width: 768px) {
+  .grid-row {
+    flex-direction: column; /* stack columns in each row for mobile */
+  }
+
+  .grid-col-mobile {
+    width: 100% !important;
+  }
+}
