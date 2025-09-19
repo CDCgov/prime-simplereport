@@ -193,4 +193,9 @@ public class DateTimeUtils {
   public static String formatToHL7DateTime(Date date) {
     return formatToHL7DateTime(date.toInstant());
   }
+
+  public static String formatToHL7FileDateString(Date date) {
+    DateTimeFormatter filenameDateFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+    return (date.toInstant().atZone(ZoneOffset.UTC)).format(filenameDateFormatter);
+  }
 }

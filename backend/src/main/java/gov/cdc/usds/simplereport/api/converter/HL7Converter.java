@@ -45,6 +45,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.Result;
@@ -489,12 +490,15 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateRace(CE codedElement, String race) throws DataTypeException {
-    boolean isParseableRace =
-        StringUtils.isNotBlank(race) && PersonUtils.HL7_RACE_MAP.containsKey(race.toLowerCase());
+    if (StringUtils.isBlank(race)) {
+      return;
+    }
 
-    if (isParseableRace) {
-      codedElement.getCe1_Identifier().setValue(PersonUtils.HL7_RACE_MAP.get(race).get(0));
-      codedElement.getCe2_Text().setValue(PersonUtils.HL7_RACE_MAP.get(race).get(1));
+    List<String> raceList = PersonUtils.HL7_RACE_MAP.get(race.toLowerCase());
+
+    if (raceList != null) {
+      codedElement.getCe1_Identifier().setValue(raceList.get(0));
+      codedElement.getCe2_Text().setValue(raceList.get(1));
       codedElement.getCe3_NameOfCodingSystem().setValue(HL7_TABLE_RACE);
     }
   }
@@ -515,9 +519,13 @@ public class HL7Converter {
             && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity.toLowerCase());
 
     String identifier =
-        isParseableEthnicGroup ? PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0) : "U";
+        isParseableEthnicGroup
+            ? PersonUtils.ETHNICITY_MAP.get(ethnicity.toLowerCase()).get(0)
+            : "U";
     String text =
-        isParseableEthnicGroup ? PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1) : "unknown";
+        isParseableEthnicGroup
+            ? PersonUtils.ETHNICITY_MAP.get(ethnicity.toLowerCase()).get(1)
+            : "unknown";
 
     codedElement.getCe1_Identifier().setValue(identifier);
     codedElement.getCe2_Text().setValue(text);
@@ -872,6 +880,10 @@ public class HL7Converter {
         .getTs1_Time()
         .setValue(formatToHL7DateTime(specimenCollectionDate));
 
+    obx.getObx15_ProducerSReference().getCe1_Identifier().setValue(performingFacility.getClia());
+    obx.getObx15_ProducerSReference().getCe2_Text().setValue(performingFacility.getName());
+    obx.getObx15_ProducerSReference().getCe3_NameOfCodingSystem().setValue("CLIA");
+
     // "Time at which the testing was performed."
     // See page 143, HL7 v2.5.1 IG
     obx.getObx19_DateTimeOfTheAnalysis()
@@ -1068,13 +1080,16 @@ public class HL7Converter {
     return testEvent.getResults().stream()
         .map(
             result -> {
+              DeviceType deviceType = testEvent.getDeviceType();
+
               Set<DeviceTypeDisease> matchingDeviceTypeDiseases =
-                  testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
+                  deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(d -> d.getSupportedDisease().equals(result.getDisease()))
                       .collect(Collectors.toSet());
 
               DeviceTypeDisease inferredDeviceTypeDisease =
-                  inferMultiplexDeviceTypeDisease(matchingDeviceTypeDiseases, testEvent);
+                  inferMultiplexDeviceTypeDisease(
+                      matchingDeviceTypeDiseases, deviceType, testEvent.getResults().size() == 1);
 
               return convertToTestDetailsInput(
                   result, inferredDeviceTypeDisease, testEvent.getDateTested());
