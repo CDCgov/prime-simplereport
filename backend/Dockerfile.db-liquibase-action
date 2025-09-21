@@ -1,4 +1,4 @@
-FROM gradle:8.3-jdk17 AS build
+FROM gradle:9.1-jdk17 AS build
 
 WORKDIR /home/gradle/graphql-api
 
