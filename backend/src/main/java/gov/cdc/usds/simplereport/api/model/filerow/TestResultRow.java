@@ -478,9 +478,44 @@ public class TestResultRow implements FileRow {
     // use patient_gender if sex is missing
     ValueOrError sexValue = getValue(rawRow, SEX, isRequired(SEX));
     if (sexValue.getValue() == null || sexValue.getValue().trim().isEmpty()) {
-      sex = patientGender;
+      // fallback to patient_gender field,
+      String genderValue = patientGender.getValue();
+      if (genderValue != null) {
+        String mappedSexValue = mapGenderToSex(genderValue.toLowerCase().trim());
+        if (mappedSexValue != null) {
+          // Use the mapped value
+          sex = new ValueOrError(mappedSexValue, SEX);
+        } else {
+          // No valid mapping
+          sex = new ValueOrError(null, SEX);
+        }
+      } else {
+        sex = new ValueOrError(null, SEX);
+      }
     } else {
       sex = sexValue;
+    }
+  }
+
+  /**
+   * Maps gender values to sex values Only maps values that are valid for the sex field.
+   *
+   * @param genderValue the gender value (case insensitive)
+   * @return mapped sex value or null if no valid mapping exists
+   */
+  private String mapGenderToSex(String genderValue) {
+    if (genderValue == null) {
+      return null;
+    }
+    switch (genderValue) {
+      case "male":
+      case "m":
+        return "male";
+      case "female":
+      case "f":
+        return "female";
+      default:
+        return null;
     }
   }
 
