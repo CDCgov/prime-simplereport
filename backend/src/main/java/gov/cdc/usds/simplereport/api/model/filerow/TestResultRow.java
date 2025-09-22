@@ -475,10 +475,10 @@ public class TestResultRow implements FileRow {
     patientGenderIdentity =
         getValue(rawRow, PATIENT_GENDER_IDENTITY, isRequired(PATIENT_GENDER_IDENTITY));
 
-    // sex field with backwards compatibility - use patient_gender if sex is missing
+    // use patient_gender if sex is missing
     ValueOrError sexValue = getValue(rawRow, SEX, isRequired(SEX));
     if (sexValue.getValue() == null || sexValue.getValue().trim().isEmpty()) {
-      sex = patientGender; // fallback to deprecated patient_gender field
+      sex = patientGender;
     } else {
       sex = sexValue;
     }
