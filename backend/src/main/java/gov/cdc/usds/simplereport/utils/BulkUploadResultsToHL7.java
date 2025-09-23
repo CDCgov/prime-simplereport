@@ -37,7 +37,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,26 +93,14 @@ public class BulkUploadResultsToHL7 {
           "Invalid Result".toLowerCase(), INVALID_SNOMED);
 
   @Value("${simple-report.aims-processing-mode-code:T}")
-  private String aimsProcessingModeCode = "T";
+  private String aimsProcessingModeCode;
 
   private String generateHD(String namespaceId, String universalId, String universalIdType) {
-    if (StringUtils.isBlank(namespaceId)
-        && StringUtils.isBlank(universalId)
-        && StringUtils.isBlank(universalIdType)) {
-      return "";
+    if (StringUtils.isBlank(universalId) || StringUtils.isBlank(universalIdType)) {
+      throw new IllegalArgumentException("HD requires both universal ID and universal ID type");
     }
 
-    String result = namespaceId;
-
-    if (StringUtils.isNotBlank(universalId) || StringUtils.isNotBlank(universalIdType)) {
-      result += "^" + universalId;
-    }
-
-    if (StringUtils.isNotBlank(universalIdType)) {
-      result += "^" + universalIdType;
-    }
-
-    return result;
+    return String.format("%s^%s^%s", namespaceId, universalId, universalIdType);
   }
 
   private String generateHeaderSegment(HeaderSegmentFields fields) {
@@ -382,15 +369,7 @@ public class BulkUploadResultsToHL7 {
     var specimenType = StringUtils.defaultIfEmpty(row.getSpecimenType().getValue(), "");
     var specimenCode = getSpecimenTypeSnomed(specimenType);
 
-    var providerAddr =
-        new StreetAddress(
-            row.getOrderingProviderStreet().getValue(),
-            row.getOrderingProviderStreet2().getValue(),
-            row.getOrderingProviderCity().getValue(),
-            row.getOrderingProviderState().getValue(),
-            row.getOrderingProviderZipCode().getValue(),
-            null);
-
+    var providerAddr = getProviderAddress(row);
     var orderTestDate =
         convertToZonedDateTime(
             row.getOrderTestDate().getValue(), resultsUploaderCachingService, providerAddr);
@@ -432,6 +411,12 @@ public class BulkUploadResultsToHL7 {
             .getModelAndTestPerformedCodeToDeviceMap()
             .get(ResultsUploaderCachingService.getKey(modelName, testPerformedCode));
 
+    var providerAddr = getProviderAddress(row);
+
+    var testResultDate =
+        convertToZonedDateTime(
+            row.getTestResultDate().getValue(), resultsUploaderCachingService, providerAddr);
+
     if (matchingDevice != null) {
       Set<DeviceTypeDisease> deviceTypeDiseaseEntries =
           matchingDevice.getSupportedDiseaseTestPerformed().stream()
@@ -466,11 +451,7 @@ public class BulkUploadResultsToHL7 {
         .testPerformedLoinc(testPerformedCode)
         .resultType(ResultScaleType.ORDINAL)
         .resultValue(resultValue)
-        .resultDate(
-            Date.from(
-                LocalDate.parse(row.getTestResultDate().getValue(), DATE_TIME_FORMATTER)
-                    .atStartOfDay(ZoneId.systemDefault())
-                    .toInstant()))
+        .resultDate(Date.from(testResultDate.toInstant()))
         .build();
   }
 
@@ -525,5 +506,15 @@ public class BulkUploadResultsToHL7 {
     }
 
     return null;
+  }
+
+  private StreetAddress getProviderAddress(TestResultRow row) {
+    return new StreetAddress(
+        row.getOrderingProviderStreet().getValue(),
+        row.getOrderingProviderStreet2().getValue(),
+        row.getOrderingProviderCity().getValue(),
+        row.getOrderingProviderState().getValue(),
+        row.getOrderingProviderZipCode().getValue(),
+        null);
   }
 }
