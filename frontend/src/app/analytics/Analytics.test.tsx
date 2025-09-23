@@ -428,4 +428,36 @@ describe("Analytics", () => {
     const syphilisElement = screen.queryByText("syphilis");
     expect(syphilisElement).not.toBeInTheDocument();
   });
+
+  it("when data retention is disabled custom date range is limited to 30 days", async () => {
+    const flagSpy = jest.spyOn(flaggedMock, "useFeature");
+    flagSpy.mockImplementation((flagName) => {
+      return flagName === "dataRetentionLimitsEnabled";
+    });
+
+    const { user } = renderWithUser();
+    await screen.findByText("Central Schools - COVID-19 testing data");
+
+    await user.selectOptions(screen.getByLabelText("Date range"), [
+      "Custom date range",
+    ]);
+
+    await screen.findByText("Central Schools - COVID-19 testing data");
+    const startDate = screen.getByTestId("startDate") as HTMLInputElement;
+    const endDate = screen.getByTestId("endDate") as HTMLInputElement;
+
+    await user.clear(startDate);
+
+    await user.type(startDate, "2021-07-01");
+    await user.clear(endDate);
+    await user.type(endDate, "2021-08-01");
+
+    await screen.findByText(
+      `Note: Patients tested earlier than 07/02/2021 are not shown due to our 30 day data retention maximum.`
+    );
+    await screen.findByText(`All ${PATIENT_TERM_PLURAL} tested`);
+
+    expect(startDate.value).toEqual("2021-07-01");
+    expect(endDate.value).toEqual("2021-08-01");
+  });
 });

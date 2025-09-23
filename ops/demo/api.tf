@@ -59,6 +59,9 @@ module "simple_report_api" {
     LOINC_FHIR_API_USERNAME                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.loinc_fhir_api_username.id})"
     LOINC_FHIR_API_PASSWORD                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.loinc_fhir_api_password.id})"
     UMLS_API_KEY                                  = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.umls_api_key.id})"
+    AIMS_USER_ID                                  = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_user_id.id})"
+    AIMS_ENVIRONMENT                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_environment.id})"
+    AIMS_BUCKET_NAME                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.aims_bucket_name.id})"
     # true by default: can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows (and overrides) an identical declaration in application.yaml
