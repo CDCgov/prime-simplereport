@@ -286,11 +286,3 @@ datahub:
   url: http://localhost:9561
   api-key: "super-secret-api-key"
   jwt-scope: "simple_report.*.report"
-aims:
-  access-key-id: "super-secret-key-id"
-  secret-access-key: "super-secret-access-key"
-  encryption-key: "super-secret-encryption-key"
-  s3-bucket-name: "super-secret-bucket-name"
-  user-id: "super-secret-user-id"
-  outbound-endpoint: "super-secret-outbound-endpoint"
-  message-queue-endpoint: "super-secret-message-queue-endpoint"
