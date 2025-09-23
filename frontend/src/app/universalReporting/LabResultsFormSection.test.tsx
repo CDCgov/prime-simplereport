@@ -1,9 +1,5 @@
 import configureStore, { MockStoreEnhanced } from "redux-mock-store";
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -36,7 +32,7 @@ describe("LabResultsFormSection", () => {
     });
   });
 
-  it("renders successfully", async () => {
+  it("renders successfully after loading", async () => {
     const { container } = render(
       <MemoryRouter>
         <MockedProvider mocks={mocks}>
@@ -52,9 +48,7 @@ describe("LabResultsFormSection", () => {
       </MemoryRouter>
     );
 
-    await waitForElementToBeRemoved(() =>
-      screen.queryByText("Loading test orders...")
-    );
+    expect(await screen.findByText("Loading test orders..."));
 
     expect(
       await screen.findByText("Choose a specimen type to enter test results")
@@ -64,40 +58,6 @@ describe("LabResultsFormSection", () => {
         "Please select test order and specimen type above to see test result information"
       )
     );
-    expect(container).toMatchSnapshot();
-  });
-
-  it("renders loading state for loading test orders", async () => {
-    const loadingMock = [
-      {
-        request: {
-          query: GetAllLabsDocument,
-        },
-        result: {
-          data: {
-            labs: [],
-          },
-          loading: true,
-        },
-      },
-    ];
-
-    const { container } = render(
-      <MemoryRouter>
-        <MockedProvider mocks={loadingMock}>
-          <Provider store={store}>
-            <LabResultsFormSection
-              specimen={defaultSpecimenReportInputState}
-              setSpecimen={() => {}}
-              testDetailList={[]}
-              setTestDetailList={() => {}}
-            />
-          </Provider>
-        </MockedProvider>
-      </MemoryRouter>
-    );
-
-    expect(await screen.findByText("Loading test orders..."));
     expect(container).toMatchSnapshot();
   });
 });
