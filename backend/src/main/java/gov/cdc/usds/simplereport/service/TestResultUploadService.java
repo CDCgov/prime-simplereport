@@ -64,6 +64,7 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.model.ServerSideEncryption;
 
 @Service
 @RequiredArgsConstructor
@@ -93,9 +94,6 @@ public class TestResultUploadService {
 
   @Value("${data-hub.jwt-scope}")
   private String scope;
-
-  @Value("${simple-report.processing-mode-code:P}")
-  private String processingModeCodeValue;
 
   @Value("${aims.access-key-id}")
   private String aimsAccessKeyId;
@@ -271,7 +269,7 @@ public class TestResultUploadService {
               S3UploadResponse s3Response;
               String filename =
                   String.format(
-                      "InterPartner~DatapultELRPivot~Simple-Report~AIMSPlatform~Test~Test~%s~STOP~%s.hl7",
+                      "InterPartner~ExpandedELR~Simple-Report~AIMSPlatform~Test~Test~%s~STOP~%s.hl7",
                       formatToHL7FileDateString(dateGenerator.newDate()), submissionId);
               String objectKey = aimsUserId + "/SendTo/" + filename;
 
@@ -281,7 +279,9 @@ public class TestResultUploadService {
                 PutObjectResponse putResponse =
                     s3.putObject(
                         PutObjectRequest.builder()
+                            .serverSideEncryption(ServerSideEncryption.AWS_KMS)
                             .bucket(aimsS3BucketName)
+                            .ssekmsKeyId(aimsEncryptionKey)
                             .key(objectKey)
                             .contentType("text/plain")
                             .build(),
