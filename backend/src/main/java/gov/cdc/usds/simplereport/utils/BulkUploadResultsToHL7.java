@@ -93,7 +93,7 @@ public class BulkUploadResultsToHL7 {
           "Invalid Result".toLowerCase(), INVALID_SNOMED);
 
   @Value("${simple-report.aims-processing-mode-code:T}")
-  private String aimsProcessingModeCode;
+  private String aimsProcessingModeCode = "T";
 
   private String generateHD(String namespaceId, String universalId, String universalIdType) {
     if (StringUtils.isBlank(universalId) || StringUtils.isBlank(universalIdType)) {
