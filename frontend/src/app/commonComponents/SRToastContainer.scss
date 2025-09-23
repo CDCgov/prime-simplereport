@@ -1,3 +1,5 @@
+@use "../../scss/settings" as *;
+
 .Toastify {
   &__toast-container {
     max-width: 40rem;
@@ -28,7 +30,7 @@
 
   .sr-alert {
     &--error {
-      background-color: #f4e3db;
+      background-color: color($theme-color-error-lighter);
     }
 
     &--success {
