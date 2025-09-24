@@ -21,7 +21,7 @@ public final class AzureStorageQueueHL7ReportingService implements TestEventRepo
   private final HL7Converter hl7Converter;
 
   @Value("${simple-report.aims-processing-mode-code:T}")
-  private String aimsProcessingModeCode = "T";
+  private String aimsProcessingModeCode;
 
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
