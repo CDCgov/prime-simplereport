@@ -34,7 +34,14 @@ public final class AzureStorageQueueHL7ReportingService implements TestEventRepo
                   hl7Converter.createLabReportMessage(
                       testEvent, gitProperties, aimsProcessingModeCode)))
           .toFuture()
-          .thenApply(result -> null);
+          .thenApply(
+              result -> {
+                log.trace(
+                    "Added TestEvent [{}] to Azure HL7 storage queue with queue message ID [{}]",
+                    testEvent.getInternalId(),
+                    result.getMessageId());
+                return null;
+              });
     } catch (HL7Exception e) {
       log.error(
           "Encountered an HL7 conversion error for TestEvent [{}]", testEvent.getInternalId());
