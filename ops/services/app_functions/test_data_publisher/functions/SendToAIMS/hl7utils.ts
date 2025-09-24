@@ -20,7 +20,7 @@ export function formatInterPartnerFilename(
 ): string {
   return [
     "InterPartner",
-    "DatapultELRPivot",
+    "ExpandedELR",
     "Simple-Report",
     "AIMSPlatform",
     env, // sending env

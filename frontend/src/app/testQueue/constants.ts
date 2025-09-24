@@ -35,8 +35,12 @@ export const ALERT_CONTENT = {
     T extends SomeoneWithName
   >(
     patient: T,
-    startWithLastName: boolean = true
+    startWithLastName: boolean = true,
+    dataRetentionLimitsEnabled: boolean = false
   ): AlertContent => {
+    const resultText = dataRetentionLimitsEnabled
+      ? "has been sent."
+      : "was saved and reported.";
     return {
       type: "success",
       title: `Result for ${displayFullName(
@@ -44,7 +48,7 @@ export const ALERT_CONTENT = {
         patient.middleName,
         patient.lastName,
         startWithLastName
-      )} was saved and reported.`,
+      )} ${resultText}`,
       body: "See Results to view all test submissions",
     };
   },

@@ -2,6 +2,7 @@ import React, { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment/moment";
 import classNames from "classnames";
+import { useFeature } from "flagged";
 
 import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
@@ -11,6 +12,7 @@ import { PATIENT_TERM_PLURAL } from "../../config/constants";
 import { useDocumentTitle } from "../utils/hooks";
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
 import { useSupportedDiseaseList } from "../utils/disease";
+import Alert from "../commonComponents/Alert";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -79,6 +81,8 @@ export const Analytics = (props: Props) => {
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
 
+  const dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
+
   const supportedDiseaseList = useSupportedDiseaseList();
 
   const updateFacility = ({
@@ -144,6 +148,14 @@ export const Analytics = (props: Props) => {
   const negativeTests = totalTests - positiveTests;
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
+
+  const dataRetentionDate = new Date();
+  dataRetentionDate.setDate(new Date().getDate() - 30);
+
+  const showRetentionWarning =
+    dataRetentionLimitsEnabled &&
+    new Date(startDate) < dataRetentionDate &&
+    dateRange === "custom";
 
   return (
     <div className="prime-home flex-1">
@@ -214,13 +226,23 @@ export const Analytics = (props: Props) => {
               </div>
               {dateRange === "custom" && (
                 <div className="grid-row grid-gap margin-top-2">
-                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
+                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 usa-datepicker">
                     <label className={classNames("usa-label")}>Begin</label>
                     <input
                       id={"startDate"}
                       data-testid={"startDate"}
                       type={"date"}
                       max={formatDate(new Date())}
+                      min={
+                        dataRetentionLimitsEnabled
+                          ? formatDate(dataRetentionDate)
+                          : ""
+                      }
+                      data-min-date={
+                        dataRetentionLimitsEnabled
+                          ? formatDate(dataRetentionDate)
+                          : ""
+                      }
                       className={classNames("usa-input")}
                       aria-label={"Enter start date"}
                       onChange={(e) => {
@@ -263,6 +285,22 @@ export const Analytics = (props: Props) => {
                 <p>Loading...</p>
               ) : (
                 <>
+                  {showRetentionWarning && (
+                    <Alert
+                      type="warning"
+                      role="alert"
+                      className={
+                        "width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
+                      }
+                      bodyClassName={"data-retention-limits-alert-body"}
+                    >
+                      <div>
+                        Note: Patients tested earlier than{" "}
+                        {moment(dataRetentionDate).format("MM/DD/YYYY")} are not
+                        shown due to our 30 day data retention maximum.
+                      </div>
+                    </Alert>
+                  )}
                   <h2>
                     {facilityName} - {selectedCondition} testing data
                   </h2>

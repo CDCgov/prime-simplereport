@@ -7,6 +7,7 @@ import {
   Label,
 } from "@trussworks/react-uswds";
 import React, { useEffect, useReducer, useState } from "react";
+import { useFeature } from "flagged";
 
 import TextInput from "../../commonComponents/TextInput";
 import { formatDate } from "../../utils/date";
@@ -124,6 +125,9 @@ const TestCardForm = ({
     useSpecimenTypeOptions(state);
 
   const { patientFullName } = useTestOrderPatient(testOrder);
+  const dataRetentionLimitsEnabled = useFeature(
+    "dataRetentionLimitsEnabled"
+  ) as boolean;
 
   /**
    * When backend sends an updated test order, update the form state
@@ -367,7 +371,8 @@ const TestCardForm = ({
     });
     showTestResultDeliveryStatusAlert(
       result.data?.submitQueueItem?.deliverySuccess,
-      testOrder.patient
+      testOrder.patient,
+      dataRetentionLimitsEnabled
     );
     if (startTestPatientId === testOrder.patient.internalId) {
       setStartTestPatientId(null);

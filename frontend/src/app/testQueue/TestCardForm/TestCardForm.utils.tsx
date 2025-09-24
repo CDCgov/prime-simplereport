@@ -448,7 +448,8 @@ export function areSymptomAoeQuestionsAnswered(
 
 export const showTestResultDeliveryStatusAlert = (
   deliverySuccess: boolean | null | undefined,
-  patient: SomeoneWithName
+  patient: SomeoneWithName,
+  dataRetentionLimitsEnabled: boolean
 ) => {
   if (deliverySuccess === false) {
     const { title, body } = {
@@ -460,7 +461,9 @@ export const showTestResultDeliveryStatusAlert = (
   }
   const { title, body } = {
     ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
-      patient
+      patient,
+      true,
+      dataRetentionLimitsEnabled
     ),
   };
   showSuccess(body, title);
