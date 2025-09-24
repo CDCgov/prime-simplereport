@@ -31,7 +31,7 @@ public class UniversalReportService {
   private final Parser parser = hapiContext.getPipeParser();
 
   @Value("${simple-report.aims-processing-mode-code:T}")
-  private String aimsProcessingModeCode = "T";
+  private String aimsProcessingModeCode;
 
   // TODO: Maybe not right away but at some point we could have a service that generates an audit
   // trail of the bundle.We can track the bundle creation and keep a log of why the report is
