@@ -70,7 +70,7 @@ describe("messageProcessor", () => {
   const mockHL7Message = {
     messageId: "TEST123",
     filename:
-      "InterPartner~DatapultELRPivot~Simple-Report~AIMSPlatform~Test~Test~20240115103045123~STOP~TEST123.hl7",
+      "InterPartner~ExpandedELR~Simple-Report~AIMSPlatform~Test~Test~20240115103045123~STOP~TEST123.hl7",
     content: testMessage.messageText,
   };
 
@@ -103,7 +103,7 @@ describe("messageProcessor", () => {
         operationId: "test-op-id",
         messageId: "TEST123",
         s3Key:
-          "test-user/SendTo/InterPartner~DatapultELRPivot~Simple-Report~AIMSPlatform~Test~Test~20240115103045123~STOP~TEST123.hl7",
+          "test-user/SendTo/InterPartner~ExpandedELR~Simple-Report~AIMSPlatform~Test~Test~20240115103045123~STOP~TEST123.hl7",
       },
     });
 

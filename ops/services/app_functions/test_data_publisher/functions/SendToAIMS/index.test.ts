@@ -293,7 +293,7 @@ describe("formatInterPartnerFilename", () => {
     const result = formatInterPartnerFilename("Test", timestamp, "test.hl7");
 
     expect(result).toBe(
-      "InterPartner~DatapultELRPivot~Simple-Report~AIMSPlatform~Test~Test~20240115103045123~STOP~test.hl7",
+      "InterPartner~ExpandedELR~Simple-Report~AIMSPlatform~Test~Test~20240115103045123~STOP~test.hl7",
     );
   });
 
@@ -306,7 +306,7 @@ describe("formatInterPartnerFilename", () => {
     );
 
     expect(result).toBe(
-      "InterPartner~DatapultELRPivot~Simple-Report~AIMSPlatform~Prod~Prod~20241231235959999~STOP~prod-msg.hl7",
+      "InterPartner~ExpandedELR~Simple-Report~AIMSPlatform~Prod~Prod~20241231235959999~STOP~prod-msg.hl7",
     );
   });
 });
