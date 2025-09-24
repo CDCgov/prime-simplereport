@@ -15,7 +15,7 @@ public final class AzureStorageQueueReportingProperties {
   private final String fhirQueueEnabled;
   private final String name;
   private final String fhirQueueName;
-  private final String hl7QueueEnabled;
+  private final boolean hl7QueueEnabled;
   private final String hl7QueueName;
   private final String exceptionWebhookEnabled;
   private final String exceptionWebhookToken;
