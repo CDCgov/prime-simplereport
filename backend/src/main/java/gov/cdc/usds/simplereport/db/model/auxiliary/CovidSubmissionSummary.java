@@ -10,4 +10,10 @@ public record CovidSubmissionSummary(
     Organization org,
     UploadResponse submissionResponse,
     Exception processingException,
-    HashMap<String, Integer> reportedDiseases) {}
+    HashMap<String, Integer> reportedDiseases)
+    implements SubmissionSummary {
+
+  public Exception getProcessingException() {
+    return processingException;
+  }
+}

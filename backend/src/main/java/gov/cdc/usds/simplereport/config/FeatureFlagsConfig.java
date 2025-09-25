@@ -47,6 +47,7 @@ public class FeatureFlagsConfig {
   private boolean universalReportingEnabled;
   private boolean dataRetentionLimitsEnabled;
   private boolean identityVerificationEnabled;
+  private boolean aimsReportingEnabled;
 
   private Map<UUID, Map<String, Boolean>> allFacilitiesMap = new HashMap<>();
 
@@ -82,6 +83,7 @@ public class FeatureFlagsConfig {
       case "universalReportingEnabled" -> setUniversalReportingEnabled(flagValue);
       case "dataRetentionLimitsEnabled" -> setDataRetentionLimitsEnabled(flagValue);
       case "identityVerificationEnabled" -> setIdentityVerificationEnabled(flagValue);
+      case "aimsReportingEnabled" -> setAimsReportingEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }
