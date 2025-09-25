@@ -203,7 +203,7 @@
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
-    "axios": "^1.8.3",
+    "axios": "^1.12.0",
     "babel-jest": "^29.7.0",
     "chromatic": "^10.2.0",
     "dayjs": "^1.10.7",
