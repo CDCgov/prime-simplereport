@@ -4,7 +4,10 @@ import React, { Dispatch } from "react";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import { formatDate } from "../utils/date";
-import { Specimen, SpecimenInput } from "../../generated/graphql";
+import {
+  SpecimenInput,
+  useGetSpecimensByLoincQuery,
+} from "../../generated/graphql";
 
 import {
   buildBodySiteOptionsList,
@@ -12,20 +15,26 @@ import {
 } from "./LabReportFormUtils";
 
 type SpecimenFormSectionProps = {
+  systemCodeLoinc: string;
   specimen: SpecimenInput;
   setSpecimen: Dispatch<SpecimenInput>;
-  specimenList: Specimen[];
-  loading: boolean;
-  isTestOrderSelected: boolean;
 };
 
-const SpecimenFormSection = ({
-  specimenList,
+const SpecimenFormSubsection = ({
+  systemCodeLoinc,
   specimen,
   setSpecimen,
-  loading,
-  isTestOrderSelected,
 }: SpecimenFormSectionProps) => {
+  let isTestOrderSelected = systemCodeLoinc.length > 0;
+
+  const { data, loading } = useGetSpecimensByLoincQuery({
+    variables: {
+      loinc: systemCodeLoinc,
+    },
+    skip: !isTestOrderSelected,
+  });
+
+  const specimenList = data?.specimens ?? [];
   const specimenOption = buildSpecimenOptionList(specimenList);
   const bodySiteOptions = buildBodySiteOptionsList(
     specimenList.find((s) => s.snomedCode === specimen.snomedTypeCode)
@@ -58,6 +67,7 @@ const SpecimenFormSection = ({
       setSpecimen({
         ...specimen,
         collectionDate: newCollectionDate.toISOString(),
+        receivedDate: newCollectionDate.toISOString(),
       });
     }
   };
@@ -65,12 +75,13 @@ const SpecimenFormSection = ({
   const handleCollectionTimeUpdate = (value: string) => {
     if (value) {
       const [hours, minutes] = value.split(":");
-      const newCollectionDate = moment(specimen.collectionDate)
+      const newCollectionDate = moment(specimen.collectionDate || Date.now())
         .hours(parseInt(hours))
         .minutes(parseInt(minutes));
       setSpecimen({
         ...specimen,
         collectionDate: newCollectionDate.toISOString(),
+        receivedDate: newCollectionDate.toISOString(),
       });
     }
   };
@@ -90,79 +101,58 @@ const SpecimenFormSection = ({
     <>
       <div className="grid-row margin-top-2">
         <div className="grid-col-auto">
-          <h2 className={"font-sans-lg"}>Specimen Info</h2>
+          <h3 className={"margin-bottom-0 margin-top-5"}>
+            Specimen information
+          </h3>
+          <p className={"margin-bottom-0"}>
+            Choose a specimen type to enter test results
+          </p>
         </div>
       </div>
-      {!isTestOrderSelected && (
-        <div>
-          Please select a condition and test order before filling out specimen
-          info.
-        </div>
-      )}
-      {isTestOrderSelected && loading && (
-        <div>Loading specimen list from selected test order...</div>
-      )}
-      {isTestOrderSelected && !loading && (
+      {loading && <div>Loading specimen list for selected test order...</div>}
+      {!loading && (
         <>
           <div className="grid-row grid-gap">
-            <div className="grid-col-8">
+            <div className="grid-col-6 grid-col-mobile">
               <Dropdown
                 label="Specimen type"
                 name="specimen-type"
                 selectedValue={specimen.snomedTypeCode}
                 onChange={(e) => handleSpecimenSelect(e.target.value)}
                 className="card-dropdown"
-                required={true}
                 options={specimenOption}
+                defaultSelect={true}
+                defaultOption={""}
               />
             </div>
           </div>
           <div className="grid-row grid-gap">
-            <div className="grid-col-auto">
+            <div className="grid-col-6 grid-col-mobile">
               <TextInput
                 name="specimen-collection-date"
                 type="date"
-                label="Specimen collection date"
-                required={true}
+                label="Collection date"
                 min={formatDate(new Date("Jan 1, 2020"))}
                 max={formatDate(moment().toDate())}
                 value={formatDate(moment(specimen.collectionDate).toDate())}
                 onChange={(e) => handleCollectionDateUpdate(e.target.value)}
               ></TextInput>
             </div>
-            <div className="grid-col-auto">
+            <div className="grid-col-6 grid-col-mobile">
               <TextInput
                 name="specimen-collection-time"
                 type="time"
-                label="Specimen collection time"
-                required={true}
+                label="Collection time"
                 step="60"
                 value={moment(specimen.collectionDate).format("HH:mm")}
                 onChange={(e) => handleCollectionTimeUpdate(e.target.value)}
               ></TextInput>
             </div>
-            <div className="grid-col-auto">
-              <TextInput
-                name="specimen-received-date"
-                type="date"
-                label="Specimen received date"
-                required={true}
-                min={formatDate(new Date("Jan 1, 2020"))}
-                max={formatDate(moment().toDate())}
-                value={formatDate(moment(specimen.receivedDate).toDate())}
-                onChange={(e) => {
-                  setSpecimen({
-                    ...specimen,
-                    receivedDate: moment(e.target.value),
-                  });
-                }}
-              ></TextInput>
-            </div>
           </div>
           <div className="grid-row grid-gap">
-            <div className="grid-col-4">
+            <div className="grid-col-6 grid-col-mobile">
               <Dropdown
-                label="Specimen collection body site"
+                label="Specimen site (optional)"
                 name="specimen-collection-body-site"
                 selectedValue={specimen.collectionBodySiteCode ?? ""}
                 onChange={(e) => handleBodySiteChange(e.target.value)}
@@ -177,4 +167,4 @@ const SpecimenFormSection = ({
   );
 };
 
-export default SpecimenFormSection;
+export default SpecimenFormSubsection;

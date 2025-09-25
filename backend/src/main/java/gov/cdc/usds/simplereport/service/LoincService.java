@@ -17,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,8 +52,9 @@ public class LoincService {
   private final IParser parser = context.newJsonParser();
   private static final int PAGE_SIZE = 20;
 
-  public List<Lab> getLabsByConditionCodes(Collection<String> codes) {
-    return labRepository.getFilteredLabsByConditionCodes(codes);
+  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
+  public List<Lab> getAllSupportedLabs() {
+    return labRepository.getAllSupportedLabs();
   }
 
   // TODO: standardize how we authenticate REST endpoints
