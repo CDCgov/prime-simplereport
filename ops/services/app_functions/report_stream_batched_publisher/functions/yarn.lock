@@ -106,10 +106,10 @@
     long "^4.0.0"
     uuid "^8.3.0"
 
-"@azure/functions@^4.6.0", "@azure/functions@^4.7.2":
-  version "4.7.2"
-  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.7.2.tgz#0872c7530bc4356183514035f0c71c566a575f89"
-  integrity sha512-5ps8yz4gn6oZSzeQbpUreWHFYl/YS03F1Sk/pz7YJphfctRcHuLF5tcrdm9AyRiYzja4Bkd63bju+g/E27opPQ==
+"@azure/functions@^4.6.0", "@azure/functions@^4.8.0":
+  version "4.8.0"
+  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.8.0.tgz#9a758175dededfef34ab3ea1b702fea43aa8c024"
+  integrity sha512-LNtl3xZNE40vE7+SIST+GYQX5cnnI1M65fXPi26l9XCdPakuQrz54lHv+qQQt1GG5JbqLfQk75iM7A6Y9O+2dQ==
   dependencies:
     cookie "^0.7.0"
     long "^4.0.0"
