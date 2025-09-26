@@ -1,99 +1,40 @@
-@use "@uswds/uswds/packages/uswds-core" as *; // for color function
+@use "@uswds/uswds/packages/uswds-core" as *;
+@use "uswds-tokens" as *;
 
 $site-max-width: 1200px;
 
-// New Design System Color Tokens
-$violet-warm-60: #864381;
-$violet-warm-70: #5c395a;
-$violet-warm-80: #382936;
-
-// Blue cool palette
-$blue-cool-5: #e7f2f5;
-$blue-cool-10: #dae9ee;
-$blue-cool-20: #adcfdc;
-$blue-cool-50: #3a7d95;
-$blue-cool-70: #224a58;
-$blue-cool-80: #14333d;
-
-// Gray primitives
-$gray-600: #5c5c5c;
-$gray-500: #919191;
-$gray-400: #dfe1e2;
-$gray-300: #f0f0f0;
-$gray-200: #f3f3f3;
-$gray-100: #fbfcfd;
-
-$gray-1: #fcfcfc;
-$gray-2: #f9f9f9;
-$gray-3: #f6f6f6;
-$gray-4: #f3f3f3;
-$gray-5: #f0f0f0;
-$gray-10: #e6e6e6;
-$gray-20: #c9c9c9;
-$gray-30: #adadad;
-$gray-40: #919191;
-$gray-50: #757575;
-$gray-60: #5c5c5c;
-$gray-70: #454545;
-$gray-80: #2e2e2e;
-$gray-90: #1b1b1b;
-
-// Yellow vivid palette
-$yellow-vivid-5v: #fff5c2;
-$yellow-vivid-10v: #fee685;
-$yellow-vivid-20v: #face00;
-$yellow-vivid-30v: #ddaa01;
-$yellow-vivid-40v: #b38c00;
-$yellow-vivid-50v: #947100;
-$yellow-vivid-60v: #776017;
-
-// Blue vivid palette
-$blue-5v: #e8f5ff;
-$blue-10v: #cfe8ff;
-$blue-20v: #a1d3ff;
-$blue-30v: #58b4ff;
-$blue-40v: #2491ff;
-$blue-50v: #0076d6;
-$blue-60v: #005ea2;
-
-$blue-500: #112f4e;
-$blue-400: #005ea2;
-$blue-300: #0076d6;
-$blue-200: #a1d3ff;
-$blue-100: #e8f5ff;
-
 // Semantic Color Tokens
 $text-primary: black;
-$text-secondary: $gray-500;
+$text-secondary: $gray-40;
 $text-inactive: $gray-20;
-$text-inactive-dark: $gray-600;
+$text-inactive-dark: $gray-60;
 
-$brand-primary: $blue-cool-50; //branded text color
+$brand-primary: $blue-cool-50; // branded text color
 $brand-light: $blue-cool-20;
-$brand-lighter: $blue-cool-10; //tertiary link text color
-$brand-lightest: $blue-cool-5; //secondary button background
+$brand-lighter: $blue-cool-10; // tertiary link text color
+$brand-lightest: $blue-cool-5; // secondary button background
 $brand-dark: $blue-cool-70;
 $brand-darker: $blue-cool-80;
 
-$accent-primary: $violet-warm-60; //primary CTA / info color
-$accent-dark: $violet-warm-70; //CTA hover
+$accent-primary: $violet-warm-60; // primary CTA / info color
+$accent-dark: $violet-warm-70; // CTA hover
 $accent-darker: $violet-warm-80; // CTA active
 
-$destructive-primary: #d54309; // primary error / info color
-$destructive-dark: #b51d09; //error hover
-$destructive-darker: #6f3331; // error active
+$destructive-primary: $red-warm-50v; // primary error / info color
+$destructive-dark: #b51d09; // error hover
+$destructive-darker: $red-70; // error active
 
-$background: $gray-100;
-$background-dark: $gray-200;
-$background-darker: $gray-300;
-$background-darkest: $gray-500;
+$background: $gray-cool-1;
+$background-dark: $gray-4;
+$background-darker: $gray-5;
+$background-darkest: $gray-40;
 
-$border: $gray-400;
-$border-light: $gray-300;
-$border-dark: $gray-500;
+$border: $gray-cool-10;
+$border-light: $gray-5;
+$border-dark: $gray-40;
 
-$hover-neutral: $gray-200;
-$drop-shadow: $gray-200;
+$hover-neutral: $gray-4;
+$drop-shadow: $gray-4;
 $focus-outline: $blue-40v;
 $overlay-background: rgba(0, 0, 0, 0.5);
 
@@ -110,15 +51,15 @@ $theme-color-prime-blue-darkest: $brand-darker;
 $theme-color-prime-blue-cool-light: $blue-cool-20;
 $theme-color-prime-blue-cool-dark: $blue-cool-70;
 
-$theme-color-prime-red-lightest: color("red-5");
-$theme-color-prime-red-light: color("red-30");
+$theme-color-prime-red-lightest: $red-5;
+$theme-color-prime-red-light: $red-30;
 $theme-color-prime-red: $destructive-primary;
 $theme-color-prime-red-dark: $destructive-dark;
 
-$theme-color-prime-green-lightest: color("green-cool-5");
-$theme-color-prime-green-light: color("green-cool-20v");
-$theme-color-prime-green: color("green-cool-40v");
-$theme-color-prime-green-dark: color("green-cool-50");
+$theme-color-prime-green-lightest: $green-cool-5;
+$theme-color-prime-green-light: $green-cool-20v;
+$theme-color-prime-green: $green-cool-40v;
+$theme-color-prime-green-dark: $green-cool-50;
 
 $theme-color-prime-gray-light: $gray-10;
 $theme-color-prime-gray: $gray-30;

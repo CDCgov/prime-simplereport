@@ -37,7 +37,7 @@
 }
 
 .sr-single-file-input.selected {
-  background-color: color($theme-color-primary-lighter);
+  background-color: $blue-cool-10;
 
   input[type="file"] {
     font-weight: bold;

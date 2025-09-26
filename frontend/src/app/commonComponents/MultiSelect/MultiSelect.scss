@@ -14,17 +14,17 @@
     align-items: center;
     margin: 4px 8px 4px 0;
     padding: 4px 4px 4px 8px;
-    background: color($theme-color-primary-lighter);
+    background: $blue-cool-10;
     border-radius: 4px;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
-    color: color($theme-color-primary);
+    color: $blue-cool-60;
     cursor: default;
   }
 
   .close-button {
-    color: color($theme-color-primary);
+    color: $blue-cool-60;
     cursor: pointer;
     width: 24px;
     height: 24px;

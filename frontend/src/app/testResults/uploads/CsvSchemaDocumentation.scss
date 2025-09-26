@@ -22,7 +22,7 @@
   }
 
   mark {
-    background-color: #f0f0f0;
+    background-color: $gray-5;
   }
 
   .sub-header {
@@ -44,7 +44,7 @@
 
   .usa-process-list {
     .usa-process-list__item {
-      border-color: color($theme-color-primary-lighter);
+      border-color: $blue-cool-10;
     }
   }
 }
@@ -60,7 +60,7 @@
 
   .tab-selected,
   .tab-button:hover {
-    border-bottom: 0.25rem solid #005ea2;
+    border-bottom: 0.25rem solid $blue-60v;
     padding-bottom: 0.5rem;
     cursor: pointer;
   }

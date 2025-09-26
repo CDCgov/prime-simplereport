@@ -15,7 +15,7 @@
     margin-top: 0.5rem;
     margin-right: 0.5rem;
     opacity: 1;
-    color: #000;
+    color: black;
     width: 1.5rem;
 
     &:hover {
@@ -30,11 +30,11 @@
 
   .sr-alert {
     &--error {
-      background-color: color($theme-color-error-lighter);
+      background-color: $red-5v;
     }
 
     &--success {
-      background-color: color($theme-color-success-lighter);
+      background-color: $green-cool-5v;
 
       .usa-alert--success {
         outline: none;

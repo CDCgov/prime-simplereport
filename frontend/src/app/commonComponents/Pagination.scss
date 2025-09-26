@@ -17,10 +17,10 @@
   a:visited {
     padding: 4px 10px;
     text-decoration: none;
-    color: color($theme-link-color);
+    color: $blue-cool-50;
 
     &.is-active {
-      background-color: color($theme-color-primary-dark);
+      background-color: $blue-cool-70;
       border-radius: 100%;
       color: white;
     }

@@ -56,7 +56,7 @@
   .usa-current {
     .sidenav-user-name {
       font-weight: bold;
-      color: color($theme-link-color);
+      color: $blue-cool-50;
     }
   }
 
@@ -158,7 +158,7 @@
 
         &.usa-current button {
           font-weight: 600;
-          border-bottom: 0.25rem solid color($theme-color-primary);
+          border-bottom: 0.25rem solid $blue-cool-50;
         }
 
         &:hover {
