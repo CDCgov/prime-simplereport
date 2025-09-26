@@ -14,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Note: over time, replace the specialized methods below with new uses of <code>findAll()</code>
@@ -86,4 +88,13 @@ public interface TestEventRepository
       UUID facilityId, Date startDate, Date endDate, String diseaseLoinc);
 
   boolean existsByPatient(Person person);
+
+  @Modifying
+  @Query(
+      "UPDATE TestEvent te "
+          + "SET te.patientData = null,"
+          + "te.surveyData = null,"
+          + "te.patientHasPriorTests = null "
+          + "WHERE te.updatedAt <= :cutoffDate")
+  void archiveTestEventsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
 }

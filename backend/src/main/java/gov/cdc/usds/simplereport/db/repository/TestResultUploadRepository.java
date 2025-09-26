@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -24,4 +25,12 @@ public interface TestResultUploadRepository extends AuditedEntityRepository<Test
       @Param("startDate") Date startDate,
       @Param("endDate") Date endDate,
       Pageable p);
+
+  @Modifying
+  @Query(
+      "UPDATE TestResultUpload tru "
+          + "SET tru.warnings = null,"
+          + "tru.errors = null "
+          + "WHERE tru.updatedAt <= :cutoffDate")
+  void archiveTestResultUploadsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
 }

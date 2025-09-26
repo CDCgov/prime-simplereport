@@ -6563,3 +6563,29 @@ databaseChangeLog:
         - dropColumn:
             tableName: condition
             columnName: snomed_name
+  - changeSet:
+      id: drop-not-null-constraint_test_result
+      author: david@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraint_test_result
+        - dropNotNullConstraint:
+            tableName: result
+            columnName: test_result
+      rollback:
+        - addNotNullConstraint:
+            tableName: result
+            columnName: test_result
+  - changeSet:
+      id: drop-not-null-constraint_phone_number
+      author: david@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraint_phone_number
+        - dropNotNullConstraint:
+            tableName: phone_number
+            columnName: number
+      rollback:
+        - addNotNullConstraint:
+            tableName: phone_number
+            columnName: number
