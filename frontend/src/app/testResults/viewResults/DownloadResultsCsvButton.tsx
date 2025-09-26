@@ -23,7 +23,7 @@ const DownloadResultsCSVButton = ({
   return (
     <>
       <Button
-        variant="outline"
+        variant="secondary"
         icon={faDownload}
         label="Download results"
         onClick={openModal}

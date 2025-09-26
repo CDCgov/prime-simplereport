@@ -1,10 +1,11 @@
 import "./TouchpointsButton.scss";
+import Button from "../commonComponents/Button/Button";
 
 const TouchpointsButton: React.FC = () => {
   return (
-    <button className="touchpoints-wrapper sr-app-touchpoints-button">
+    <Button className="touchpoints-wrapper sr-app-touchpoints-button">
       How can we improve SimpleReport?
-    </button>
+    </Button>
   );
 };
 

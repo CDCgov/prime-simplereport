@@ -1,4 +1,4 @@
-// https://codepen.io/USWDS/pen/eVzGzq
+@use "../../scss/settings" as *;
 
 .usa-pagination {
   text-align: right;
@@ -13,12 +13,14 @@
     display: inline;
   }
 
-  a {
+  a,
+  a:visited {
     padding: 4px 10px;
     text-decoration: none;
+    color: $blue-cool-50;
 
     &.is-active {
-      background-color: #0071bc; //$color-primary;
+      background-color: $blue-cool-70;
       border-radius: 100%;
       color: white;
     }

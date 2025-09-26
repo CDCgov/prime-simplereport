@@ -1,3 +1,5 @@
+@use "../../scss/settings" as *;
+
 .usa-text-with-tooltip {
   .usa-button--unstyled {
     text-decoration: none;
@@ -16,7 +18,7 @@
   }
 
   svg {
-    color: #005ea2;
+    color: $brand-primary;
     display: inline-block !important;
     overflow: visible !important;
     vertical-align: -0.125em !important;

@@ -3,6 +3,45 @@
 @use "@uswds/uswds/packages/usa-prose";
 @use "@uswds/uswds/packages/usa-link";
 
+.usa-step-indicator__segment-label {
+  // Show labels only at the min-width
+  @include at-media($theme-step-indicator-min-width) {
+    padding-right: units(2);
+  }
+}
+
+ul.usa-sidenav > li.usa-sidenav__item > ul.usa-sidenav__sublist > li.usa-sidenav__item > a {
+  font-weight: bold;
+}
+
+ul.usa-sidenav > li.usa-sidenav__item > ul.usa-sidenav__sublist > li.usa-sidenav__item > a.usa-current {
+  &::after {
+    background-color: rgb(0, 94, 162);
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0.25rem;
+    top: 0.25rem;
+    width: 0.25rem;
+    left: 0;
+    border-radius: 99rem;
+  }
+}
+
+.usa-pagination__button:hover,
+.usa-pagination__button:focus,
+.usa-pagination__button:active {
+  border: 1px solid $border !important;
+  background-color: $hover-neutral !important;
+}
+
+.usa-step-indicator__segment--current::before,
+.usa-step-indicator__segment--complete::before {
+  box-shadow:
+    inset 0 0 0 0 $brand-darker,
+    0 0 0 0.25rem white !important;
+}
+
 .prime-home {
   background-color: color("base-lightest");
   padding-top: units(2);
@@ -347,12 +386,6 @@
   }
 }
 
-// other buttons
-.sr-active-button {
-  background-color: color($theme-color-primary-darker);
-  color: #fff;
-}
-
 .prime-red-icon {
   color: color($theme-color-secondary);
 }
@@ -585,10 +618,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   width: units(4);
 }
 
-.usa-alert--success {
-  outline: 3px solid #00a91c;
-}
-
 .prime-secondary-nav {
   margin-top: units(1);
 }
@@ -684,30 +713,30 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     }
   }
 
-  .usa-nav__primary {
-    > .usa-nav__primary-item {
-      > a {
-        border-right: 1px solid $theme-color-prime-gray-light;
-        font-size: size("heading", "lg");
-        font-weight: normal;
-        padding: units(3) units(2);
+  // .usa-nav__primary {
+  //   > .usa-nav__primary-item {
+  //     > a {
+  //       border-right: 1px solid $theme-color-prime-gray-light;
+  //       font-size: size("heading", "lg");
+  //       font-weight: normal;
+  //       padding: units(3) units(2);
 
-        &.active-nav-item {
-          font-weight: font-weight("bold");
-        }
-      }
+  //       &.active-nav-item {
+  //         font-weight: font-weight("bold");
+  //       }
+  //     }
 
-      &:first-child > a {
-        border-left: 1px solid $theme-color-prime-gray-light;
-      }
-    }
+  //     &:first-child > a {
+  //       border-left: 1px solid $theme-color-prime-gray-light;
+  //     }
+  //   }
 
-    .nav__primary-item-icon {
-      > a {
-        padding: 18.5px units(2.5);
-      }
-    }
-  }
+  //   .nav__primary-item-icon {
+  //     > a {
+  //       padding: 18.5px units(2.5);
+  //     }
+  //   }
+  // }
 
   .usa-logo {
     margin-top: 0;
@@ -726,10 +755,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 }
 
-.active-nav-item {
-  background-color: color($theme-color-primary-darker);
-  color: white !important;
-}
+// .active-nav-item {
+//   background-color: color($theme-color-primary-darker);
+//   color: white !important;
+// }
 
 .prime-nav-close-button {
   margin: 0 0 0 auto;
@@ -763,11 +792,11 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   font-weight: bolder;
 }
 
-.prime-organization-name {
-  color: color("base");
-  font-size: size("body", "3xs");
-  margin-left: units(4);
-}
+// .prime-organization-name {
+//   color: color("base");
+//   font-size: size("body", "3xs");
+//   margin-left: units(4);
+// }
 
 .usa-sidenav__sublist,
 .mobile-sublist-container {
@@ -976,13 +1005,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     &::before {
       box-shadow: 0 0 0 units(0.5) color("base-lightest");
     }
-  }
-}
-
-.usa-step-indicator__segment-label {
-  // Show labels only at the min-width
-  @include at-media($theme-step-indicator-min-width) {
-    padding-right: units(2);
   }
 }
 

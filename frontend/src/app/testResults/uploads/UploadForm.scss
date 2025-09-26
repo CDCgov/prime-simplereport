@@ -1,0 +1,9 @@
+@use "../../../scss/settings" as *;
+
+.sr-test-results-uploads {
+  .usa-process-list {
+    .usa-process-list__item {
+      border-color: color($theme-color-primary-lighter);
+    }
+  }
+}
