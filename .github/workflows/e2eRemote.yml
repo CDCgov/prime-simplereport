@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
         
     - name: Update files permissions
       # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265

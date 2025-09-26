@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service.model.reportstream;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.service.model.GenericResponse;
 import java.util.Date;
 import java.util.UUID;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UploadResponse {
+public class UploadResponse implements GenericResponse {
   private UUID id;
   private ReportStreamStatus overallStatus;
   private Date timestamp;
