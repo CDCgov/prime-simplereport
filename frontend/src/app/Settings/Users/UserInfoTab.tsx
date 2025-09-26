@@ -71,7 +71,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
             </p>
           </div>
           <Button
-            variant="outline"
+            variant="secondary"
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateEditUserNameModal(true)}
             label={"Edit name"}
@@ -89,7 +89,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
             <p className="userinfo-text">{user.email}</p>
           </div>
           <Button
-            variant="outline"
+            variant="secondary"
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateEditUserEmailModal(true)}
             label={"Edit email"}
@@ -112,7 +112,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
             </p>
           </div>
           <Button
-            variant="outline"
+            variant="secondary"
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResetPasswordModal(true)}
             label={"Send password reset email"}
@@ -134,7 +134,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
             </p>
           </div>
           <Button
-            variant="outline"
+            variant="secondary"
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResetMfaModal(true)}
             label={"Reset MFA"}
@@ -157,7 +157,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
               </p>
             </div>
             <Button
-              variant="outline"
+              variant="secondary"
               className="margin-left-auto margin-bottom-1"
               onClick={() => updateShowDeleteUserModal(true)}
               label={"Delete user"}

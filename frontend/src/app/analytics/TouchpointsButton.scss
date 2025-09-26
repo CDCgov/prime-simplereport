@@ -1,4 +1,3 @@
-
 .touchpoints-wrapper {
   display: none;
   // desktop width / same with that collapsible menu appears
@@ -17,19 +16,14 @@
 }
 
 .sr-app-touchpoints-button:hover {
-  color: #fff;
-  background-color: #1a4480;
   border-bottom: 0;
   text-decoration: none;
 }
 
 .sr-app-touchpoints-button {
-
   line-height: 0.9;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  color: #fff;
-  background-color: #005ea2;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -49,7 +43,6 @@
 }
 
 @supports ((-webkit-mask: url()) or (mask: url())) {
-
   // touchpoints banners had icons in the before pseudo element .
   // when they shouldn't have removing them so that only the solid
   // colors are there.

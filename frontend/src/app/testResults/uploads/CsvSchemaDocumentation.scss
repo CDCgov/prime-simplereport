@@ -1,3 +1,5 @@
+@use "../../../scss/settings" as *;
+
 .csv-guide-container {
   h1 {
     font-size: 24px;
@@ -38,6 +40,12 @@
 
   .normal-style {
     font-style: normal;
+  }
+
+  .usa-process-list {
+    .usa-process-list__item {
+      border-color: color($theme-color-primary-lighter);
+    }
   }
 }
 

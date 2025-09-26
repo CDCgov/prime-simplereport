@@ -75,8 +75,6 @@ header.usa-header {
     display: block;
     padding: 0;
     margin-top: 0.75rem;
-    // $theme-color-primary
-    color: #005ea2 !important;
   }
 
   .ghost-user-link:hover {
@@ -131,27 +129,20 @@ header.usa-header {
     margin-top: 0.75rem;
 
     button {
-      color: #005ea2;
       text-decoration: none;
       padding: 0 !important;
     }
 
     a {
-      color: #005ea2 !important;
       font-weight: 500;
       padding: 0 !important;
     }
 
     a:hover,
     button:hover {
-      color: #005ea2;
       text-decoration: underline;
       font-weight: 700;
       background-color: #fff;
-    }
-
-    a:visited {
-      color: #005ea2;
     }
   }
 

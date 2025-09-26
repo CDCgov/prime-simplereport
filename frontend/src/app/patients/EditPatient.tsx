@@ -332,7 +332,7 @@ const EditPatient = (props: Props) => {
             onClick={() => {
               onSave(true);
             }}
-            variant="outline"
+            variant="secondary"
             label={
               loading
                 ? `${t("common.button.saving")}...`

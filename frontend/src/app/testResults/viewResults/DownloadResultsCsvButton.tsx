@@ -22,10 +22,8 @@ const DownloadResultsCSVButton = ({
 
   return (
     <>
-      <Button variant="secondary" label="Sup secondary" />
-
       <Button
-        variant="outline"
+        variant="secondary"
         icon={faDownload}
         label="Download results"
         onClick={openModal}

@@ -34,7 +34,7 @@
     }
 
     &--success {
-      background-color: #ecf3ec;
+      background-color: color($theme-color-success-lighter);
 
       .usa-alert--success {
         outline: none;

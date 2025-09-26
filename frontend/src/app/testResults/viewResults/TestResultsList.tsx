@@ -200,7 +200,6 @@ const TestResultsList = () => {
                 activeFacilityId={activeFacilityId}
               />
               <Button
-                className="sr-active-button"
                 icon={faSlidersH}
                 onClick={handleClearFilters}
                 disabled={isClearFilterBtnDisabled(

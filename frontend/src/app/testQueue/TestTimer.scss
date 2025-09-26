@@ -1,5 +1,4 @@
-@use "../../scss/settings" as settings;
-@use "@uswds/uswds/packages/uswds-core" as uswds;
+@use "../../scss/settings" as *;
 
 .timer-button {
   border-radius: 3px;
@@ -12,24 +11,24 @@
 }
 
 .timer-reset {
-  color: #005ea2;
+  color: color($theme-color-secondary);
   background-color: white;
-  border: 1px solid settings.$theme-color-prime-blue;
+  border: 1px solid color($theme-color-secondary);
 }
 
 .timer-running {
-  background-color: #162e51;
+  background-color: color($theme-color-primary-dark);
   color: white;
 }
 
 .timer-ready {
   color: white;
-  background-color: uswds.color(settings.$theme-color-success-dark);
+  background-color: color($theme-color-primary-dark);
   border: none;
 }
 
 .timer-overtime {
-  color: settings.$color-white-transparent-80;
+  color: white;
   font-style: italic;
   min-width: 6rem;
 }

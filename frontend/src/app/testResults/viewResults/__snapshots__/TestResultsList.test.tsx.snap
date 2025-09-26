@@ -52,7 +52,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
             </button>
             <button
               aria-disabled="true"
-              class="usa-button usa-button-disabled sr-active-button"
+              class="usa-button usa-button-disabled"
               disabled=""
               type="button"
             >

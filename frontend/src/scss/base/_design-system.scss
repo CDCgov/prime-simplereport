@@ -164,17 +164,18 @@ a:active {
   }
 }
 
-.usa-checkbox__input:checked + [class*="__label"]::before {
-  background-color: $accent-primary !important;
-  box-shadow: none !important;
-}
+// SimpleReport keeps the default styles using $theme-link-color/blue-cool-50 bg-color and box-shadow
+// .usa-checkbox__input:checked + [class*="__label"]::before {
+//   background-color: $accent-primary !important;
+//   box-shadow: none !important;
+// }
 
-.usa-radio__input:checked + [class*="__label"]::before {
-  background-color: $accent-primary !important;
-  box-shadow:
-    0 0 0 2px $accent-primary,
-    inset 0 0 0 2px #fff;
-}
+// .usa-radio__input:checked + [class*="__label"]::before {
+//   background-color: $accent-primary !important;
+//   box-shadow:
+//     0 0 0 2px $accent-primary,
+//     inset 0 0 0 2px #fff;
+// }
 
 // This breaks checkbox spacing in SimpleReport
 // .usa-checkbox__label {

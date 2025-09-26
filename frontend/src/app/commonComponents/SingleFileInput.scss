@@ -1,3 +1,5 @@
+@use "../../scss/settings" as *;
+
 .sr-single-file-input {
   position: relative;
   max-width: 30rem;
@@ -35,7 +37,7 @@
 }
 
 .sr-single-file-input.selected {
-  background-color: #d9e8f6;
+  background-color: color($theme-color-primary-lighter);
 
   input[type="file"] {
     font-weight: bold;

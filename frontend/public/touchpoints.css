@@ -225,7 +225,6 @@
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    background-color: #005ea2;
     border: 0;
     border-radius: 0.25rem;
     color: white;
@@ -252,7 +251,6 @@
 #fba-modal-dialog .usa-button:hover,
 #fba-modal-dialog .usa-button,
 #fba-modal-dialog .usa-button--hover {
-    background-color: #1a4480;
     border-bottom: 0;
     color: white;
     text-decoration: none;
@@ -260,7 +258,6 @@
 
 #fba-modal-dialog .usa-button:active,
 #fba-modal-dialog .usa-button#fba-modal-dialog .usa-button--active {
-    background-color: #162e51;
     color: white;
 }
 
@@ -272,7 +269,6 @@
 #fba-modal-dialog .usa-button:disabled {
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
-    background-color: #c9c9c9;
     color: white;
     pointer-events: none;
 }
@@ -283,7 +279,6 @@
 #fba-modal-dialog .usa-button:disabled#fba-modal-dialog .usa-button--active,
 #fba-modal-dialog .usa-button:disabled:focus,
 #fba-modal-dialog .usa-button:disabled#fba-modal-dialog .usa-focus {
-    background-color: #c9c9c9;
     border: 0;
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -716,106 +711,6 @@ img {
 
 #fba-modal-dialog .usa-prose #fba-modal-dialog .usa-input-list li {
     line-height: 1.26796;
-}
-
-#fba-modal-dialog .usa-checkbox__input,
-#fba-modal-dialog .usa-radio__input {
-    position: absolute;
-    left: -999em;
-}
-
-.lt-ie9 #fba-modal-dialog .usa-checkbox__input,
-.lt-ie9#fba-modal-dialog .usa-radio__input {
-    border: 0;
-    float: left;
-    margin: 0.25rem 0.25rem 0 0;
-    position: static;
-    width: auto;
-}
-
-#fba-modal-dialog .usa-checkbox__label,
-#fba-modal-dialog .usa-radio__label {
-    cursor: pointer;
-    display: inherit;
-    font-weight: normal;
-    margin-bottom: 0.75rem;
-    padding-left: 2rem;
-    position: relative;
-    text-indent: -2rem;
-    border: 2px solid #e6e6e6;
-    border-radius: 0.25rem;
-    margin: 0.5rem 0;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-
-}
-
-#fba-modal-dialog .usa-checkbox__label::before,
-#fba-modal-dialog .usa-radio__label::before {
-    background: white;
-    content: \'\\a0\';
-    display: inline-block;
-    left: 2px;
-    position: relative;
-    vertical-align: middle\\0;
-}
-
-#fba-modal-dialog .usa-checkbox__label::before {
-    height: 1.25rem;
-    width: 1.25rem;
-    border-radius: 2px;
-}
-
-#fba-modal-dialog .usa-radio__label::before {
-    height: 1.25rem;
-    border-radius: 99rem;
-    width: 1.25rem;
-}
-
-#fba-modal-dialog .usa-checkbox__label::before,
-#fba-modal-dialog .usa-radio__label::before {
-    box-shadow: 0 0 0 2px #71767a;
-    line-height: 1.25rem;
-    margin-right: 0.75rem;
-}
-
-#fba-modal-dialog .usa-checkbox__input:checked+#fba-modal-dialog .usa-checkbox__label::before,
-#fba-modal-dialog .usa-radio__input:checked+#fba-modal-dialog .usa-radio__label::before {
-    background-color: #005ea2;
-    box-shadow: 0 0 0 2px #005ea2;
-}
-
-#fba-modal-dialog .usa-radio__input:checked+#fba-modal-dialog .usa-radio__label::before {
-    box-shadow: 0 0 0 2px #005ea2, inset 0 0 0 2px white;
-}
-
-#fba-modal-dialog .usa-checkbox__input:checked+#fba-modal-dialog .usa-checkbox__label::before,
-#fba-modal-dialog .usa-checkbox__input:checked:disabled+#fba-modal-dialog .usa-checkbox__label::before {
-    background-image: url(https://touchpoints.app.cloud.gov/assets/correct8-e2e0bf3b64bc9239c770fba3feebd2b4f5915c81e56be835992daab7cd1fdbde.svg),
-        linear-gradient(transparent, transparent);
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 1rem auto;
-}
-
-#fba-modal-dialog .usa-radio__input:focus+#fba-modal-dialog .usa-radio__label::before {
-    outline: 0.25rem solid #2491ff;
-    outline-offset: 0.25rem;
-}
-
-#fba-modal-dialog .usa-checkbox__input:disabled+#fba-modal-dialog .usa-checkbox__label {
-    color: #c9c9c9;
-}
-
-#fba-modal-dialog .usa-checkbox__input:focus+#fba-modal-dialog .usa-checkbox__label::before {
-    outline: 0.25rem solid #2491ff;
-    outline-offset: 0;
-}
-
-#fba-modal-dialog .usa-checkbox__input:disabled+#fba-modal-dialog .usa-checkbox__label::before,
-#fba-modal-dialog .usa-radio__input:disabled+#fba-modal-dialog .usa-radio__label::before {
-    background: #e6e6e6;
-    box-shadow: 0 0 0 2px #c9c9c9;
-    cursor: not-allowed;
 }
 
 #fba-modal-dialog .usa-memorable-date {
@@ -4093,12 +3988,12 @@ img {
     display: none;
 }
 
-#fba-modal-dialog .usa-radio__input:checked+.usa-radio__label:before {
+#f/*ba-modal-dialog .usa-radio__input:checked+.usa-radio__label:before {
     -webkit-box-shadow: 0 0 0 2px #005ea2, inset 0 0 0 2px #fff;
     box-shadow: 0 0 0 2px #005ea2, inset 0 0 0 2px #fff;
 }
-
-#fba-modal-dialog .usa-checkbox__input:checked+.usa-checkbox__label:before,
+*/
+/*#fba-modal-dialog .usa-checkbox__input:checked+.usa-checkbox__label:before,
 #fba-modal-dialog .usa-radio__input:checked+.usa-radio__label:before {
     background-color: #005ea2;
     -webkit-box-shadow: 0 0 0 2px #005ea2;
@@ -4107,7 +4002,7 @@ img {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 1rem auto;
-}
+}*/
 
 /* TP-795 disable uswds v1 overrides */
 #fba-modal-dialog .usa-label,
@@ -4142,13 +4037,13 @@ img {
             0 0 0 2px #005ea2;
     }
 
-    #fba-modal-dialog .usa-checkbox__input:checked+#fba-modal-dialog .usa-checkbox__label::before,
+/*    #fba-modal-dialog .usa-checkbox__input:checked+#fba-modal-dialog .usa-checkbox__label::before,
     #fba-modal-dialog .usa-checkbox__input:checked:disabled+#fba-modal-dialog .usa-checkbox__label::before {
         background-image: none;
         background-color: white;
         content: url(https://touchpoints.app.cloud.gov/assets/correct8-alt-ed334e8ba2110ac040edc4d63f2cca99ef68ac7fe508e228a422b23a6917b18d.svg);
         text-indent: 0;
-    }
+    }*/
 }
 
 @media all and (max-width: 39.99em) {
@@ -4350,7 +4245,7 @@ img {
 /* Checkboxes and radios with tap-friendly targets */
 /* These custom .usa-checkbox__input--tile styles will go away */
 /* after using USWDS when https://github.com/uswds/uswds/pull/3802 is merged */
-#fba-modal-dialog .usa-checkbox__input--tile+.usa-checkbox__label,
+/*#fba-modal-dialog .usa-checkbox__input--tile+.usa-checkbox__label,
 #fba-modal-dialog .usa-radio__input--tile+.usa-radio__label {
     border: 2px solid #e6e6e6;
     border-radius: 0.25rem;
@@ -4370,7 +4265,7 @@ img {
     font-size: 0.93rem;
     margin-top: 0.5rem;
     text-indent: 0;
-}
+}*/
 
 /* Override */
 #fba-modal-dialog .usa-form {

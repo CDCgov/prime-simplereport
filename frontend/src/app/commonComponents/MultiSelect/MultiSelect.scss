@@ -1,3 +1,5 @@
+@use "../../../scss/settings" as *;
+
 .multi-select-dropdown {
   max-width: unset !important;
 }
@@ -12,17 +14,17 @@
     align-items: center;
     margin: 4px 8px 4px 0;
     padding: 4px 4px 4px 8px;
-    background: #d9e8f6;
+    background: color($theme-color-primary-lighter);
     border-radius: 4px;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
-    color: #005ea2;
+    color: color($theme-color-primary);
     cursor: default;
   }
 
   .close-button {
-    color: #005ea2;
+    color: color($theme-color-primary);
     cursor: pointer;
     width: 24px;
     height: 24px;
