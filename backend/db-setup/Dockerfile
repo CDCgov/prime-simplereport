@@ -1,4 +1,4 @@
-FROM postgres:14.18-alpine3.22
+FROM postgres:18.0-alpine3.22
 
 RUN apk add py3-pip postgresql-libs gcc musl-dev postgresql-dev make
 COPY ./requirements.txt /usr/local/lib/requirements.txt
