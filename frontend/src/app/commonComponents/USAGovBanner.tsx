@@ -23,7 +23,7 @@ const AccordionContent = () => {
             className="usa-banner__icon usa-media-block__img"
             src={iconDotGov}
             role="img"
-            alt=""
+            alt="USA Dot Icon"
             aria-hidden="true"
           />
           <div className="usa-media-block__body">
