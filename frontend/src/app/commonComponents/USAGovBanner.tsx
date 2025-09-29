@@ -22,7 +22,6 @@ const AccordionContent = () => {
           <img
             className="usa-banner__icon usa-media-block__img"
             src={iconDotGov}
-            role="img"
             alt="USA Dot Icon"
             aria-hidden="true"
           />
@@ -79,6 +78,7 @@ const USAGovBanner = () => {
                 className="usa-banner__header-flag"
                 src={usFlagSmall}
                 aria-hidden="true"
+                alt="USA Flag"
               />
             </div>
             <div
