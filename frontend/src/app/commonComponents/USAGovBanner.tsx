@@ -1,8 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { useTranslation, Trans } from "react-i18next";
-import iconDotGov from "@uswds/uswds/img/icon-dot-gov.svg";
-import usFlagSmall from "@uswds/uswds/img/us_flag_small.png";
-import iconHttps from "@uswds/uswds/img/icon-https.svg";
+
+// These explicit imports are required for Jest tests to pass
+// TODO: After migrating to a different build tool, consider creating test import aliases
+import iconDotGov from "../../../node_modules/@uswds/uswds/dist/img/icon-dot-gov.svg";
+import usFlagSmall from "../../../node_modules/@uswds/uswds/dist/img/us_flag_small.png";
+import iconHttps from "../../../node_modules/@uswds/uswds/dist/img/icon-https.svg";
 
 import "./USAGovBanner.scss";
 

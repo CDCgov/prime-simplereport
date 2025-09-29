@@ -30,7 +30,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
           </div>
           <div>
             <button
-              class="usa-button usa-button--outline"
+              class="usa-button usa-button--secondary"
               type="button"
             >
               <svg

@@ -56,7 +56,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
               >
                 <button
                   aria-disabled="false"
-                  class="usa-button usa-button--outline prime-save-patient-changes-start-test"
+                  class="usa-button usa-button--secondary prime-save-patient-changes-start-test"
                   id="edit-patient-save-upper"
                   type="button"
                 >

@@ -270,7 +270,7 @@ exports[`Admin manage users Undelete user 1`] = `
                     </div>
                     <button
                       aria-disabled="true"
-                      class="usa-button usa-button--outline usa-button-disabled margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary usa-button-disabled margin-left-auto margin-bottom-1"
                       disabled=""
                       type="button"
                     >
@@ -294,7 +294,7 @@ exports[`Admin manage users Undelete user 1`] = `
                     </div>
                     <button
                       aria-disabled="true"
-                      class="usa-button usa-button--outline usa-button-disabled margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary usa-button-disabled margin-left-auto margin-bottom-1"
                       disabled=""
                       type="button"
                     >
@@ -328,7 +328,7 @@ exports[`Admin manage users Undelete user 1`] = `
                     </div>
                     <button
                       aria-disabled="true"
-                      class="usa-button usa-button--outline usa-button-disabled margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary usa-button-disabled margin-left-auto margin-bottom-1"
                       disabled=""
                       type="button"
                     >
@@ -354,7 +354,7 @@ exports[`Admin manage users Undelete user 1`] = `
                     </div>
                     <button
                       aria-disabled="true"
-                      class="usa-button usa-button--outline usa-button-disabled margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary usa-button-disabled margin-left-auto margin-bottom-1"
                       disabled=""
                       type="button"
                     >
@@ -653,7 +653,7 @@ exports[`Admin manage users Undelete user 2`] = `
                     </div>
                     <button
                       aria-disabled="true"
-                      class="usa-button usa-button--outline usa-button-disabled margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary usa-button-disabled margin-left-auto margin-bottom-1"
                       disabled=""
                       type="button"
                     >
@@ -677,7 +677,7 @@ exports[`Admin manage users Undelete user 2`] = `
                     </div>
                     <button
                       aria-disabled="true"
-                      class="usa-button usa-button--outline usa-button-disabled margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary usa-button-disabled margin-left-auto margin-bottom-1"
                       disabled=""
                       type="button"
                     >
@@ -711,7 +711,7 @@ exports[`Admin manage users Undelete user 2`] = `
                     </div>
                     <button
                       aria-disabled="true"
-                      class="usa-button usa-button--outline usa-button-disabled margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary usa-button-disabled margin-left-auto margin-bottom-1"
                       disabled=""
                       type="button"
                     >
@@ -737,7 +737,7 @@ exports[`Admin manage users Undelete user 2`] = `
                     </div>
                     <button
                       aria-disabled="true"
-                      class="usa-button usa-button--outline usa-button-disabled margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary usa-button-disabled margin-left-auto margin-bottom-1"
                       disabled=""
                       type="button"
                     >
@@ -1540,7 +1540,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                     </div>
                     <button
                       aria-disabled="false"
-                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                       type="button"
                     >
                       Edit name
@@ -1563,7 +1563,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                     </div>
                     <button
                       aria-disabled="false"
-                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                       type="button"
                     >
                       Edit email
@@ -1596,7 +1596,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                     </div>
                     <button
                       aria-disabled="false"
-                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                       type="button"
                     >
                       Send password reset email
@@ -1621,7 +1621,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                     </div>
                     <button
                       aria-disabled="false"
-                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                       type="button"
                     >
                       Reset MFA
@@ -1643,7 +1643,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                       </p>
                     </div>
                     <button
-                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                       type="button"
                     >
                       Delete user
