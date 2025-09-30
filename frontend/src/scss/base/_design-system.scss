@@ -164,39 +164,10 @@ a:active {
   }
 }
 
-// SimpleReport keeps the default styles using $theme-link-color/blue-cool-50 bg-color and box-shadow
-// .usa-checkbox__input:checked + [class*="__label"]::before {
-//   background-color: $accent-primary !important;
-//   box-shadow: none !important;
-// }
-
-// .usa-radio__input:checked + [class*="__label"]::before {
-//   background-color: $accent-primary !important;
-//   box-shadow:
-//     0 0 0 2px $accent-primary,
-//     inset 0 0 0 2px #fff;
-// }
-
-// This breaks checkbox spacing in SimpleReport
-// .usa-checkbox__label {
-//   cursor: pointer;
-//   display: inherit;
-//   font-weight: normal;
-//   margin-top: 0rem;
-//   padding-left: 2rem;
-//   position: relative;
-// }
-
 .usa-accordion {
   border-radius: 4px;
   padding: 0;
 }
-
-// .usa-accordion__button,
-// .usa-accordion__button:hover {
-//   background-color: $background-darker;
-//   color: $text-primary;
-// }
 
 .usa-step-indicator__segment-label {
   padding-right: 0;

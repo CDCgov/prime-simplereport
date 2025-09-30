@@ -3988,22 +3988,6 @@ img {
     display: none;
 }
 
-#f/*ba-modal-dialog .usa-radio__input:checked+.usa-radio__label:before {
-    -webkit-box-shadow: 0 0 0 2px #005ea2, inset 0 0 0 2px #fff;
-    box-shadow: 0 0 0 2px #005ea2, inset 0 0 0 2px #fff;
-}
-*/
-/*#fba-modal-dialog .usa-checkbox__input:checked+.usa-checkbox__label:before,
-#fba-modal-dialog .usa-radio__input:checked+.usa-radio__label:before {
-    background-color: #005ea2;
-    -webkit-box-shadow: 0 0 0 2px #005ea2;
-    box-shadow: 0 0 0 2px #005ea2;
-    background-image: url(https://touchpoints.app.cloud.gov/assets/correct8-e2e0bf3b64bc9239c770fba3feebd2b4f5915c81e56be835992daab7cd1fdbde.svg);    
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: 1rem auto;
-}*/
-
 /* TP-795 disable uswds v1 overrides */
 #fba-modal-dialog .usa-label,
 #fba-modal-dialog .usa-label-big {
@@ -4036,15 +4020,6 @@ img {
         box-shadow: inset 0 0 0 2px white, inset 0 0 0 1rem #005ea2,
             0 0 0 2px #005ea2;
     }
-
-/*    #fba-modal-dialog .usa-checkbox__input:checked+#fba-modal-dialog .usa-checkbox__label::before,
-    #fba-modal-dialog .usa-checkbox__input:checked:disabled+#fba-modal-dialog .usa-checkbox__label::before {
-        background-image: none;
-        background-color: white;
-        content: url(https://touchpoints.app.cloud.gov/assets/correct8-alt-ed334e8ba2110ac040edc4d63f2cca99ef68ac7fe508e228a422b23a6917b18d.svg);
-        text-indent: 0;
-    }*/
-}
 
 @media all and (max-width: 39.99em) {
     #fba-modal-dialog .usa-banner__button {
@@ -4241,31 +4216,6 @@ img {
     top: 0;
     transition: 0.2s ease-in-out;
 }
-
-/* Checkboxes and radios with tap-friendly targets */
-/* These custom .usa-checkbox__input--tile styles will go away */
-/* after using USWDS when https://github.com/uswds/uswds/pull/3802 is merged */
-/*#fba-modal-dialog .usa-checkbox__input--tile+.usa-checkbox__label,
-#fba-modal-dialog .usa-radio__input--tile+.usa-radio__label {
-    border: 2px solid #e6e6e6;
-    border-radius: 0.25rem;
-    margin: 0.5rem 0;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-}
-
-#fba-modal-dialog .usa-checkbox__input--tile:checked+.usa-checkbox__label,
-#fba-modal-dialog .usa-radio__input--tile:checked+.usa-radio__label {
-    background-color: #d9e8f6;
-    border-color: #73b3e7;
-}
-
-#fba-modal-dialog .usa-checkbox__label-description,
-#fba-modal-dialog .usa-radio__label-description {
-    display: block;
-    font-size: 0.93rem;
-    margin-top: 0.5rem;
-    text-indent: 0;
-}*/
 
 /* Override */
 #fba-modal-dialog .usa-form {

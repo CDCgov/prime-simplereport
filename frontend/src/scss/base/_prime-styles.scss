@@ -713,31 +713,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     }
   }
 
-  // .usa-nav__primary {
-  //   > .usa-nav__primary-item {
-  //     > a {
-  //       border-right: 1px solid $theme-color-prime-gray-light;
-  //       font-size: size("heading", "lg");
-  //       font-weight: normal;
-  //       padding: units(3) units(2);
-
-  //       &.active-nav-item {
-  //         font-weight: font-weight("bold");
-  //       }
-  //     }
-
-  //     &:first-child > a {
-  //       border-left: 1px solid $theme-color-prime-gray-light;
-  //     }
-  //   }
-
-  //   .nav__primary-item-icon {
-  //     > a {
-  //       padding: 18.5px units(2.5);
-  //     }
-  //   }
-  // }
-
   .usa-logo {
     margin-top: 0;
   }
@@ -754,11 +729,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     margin-bottom: 10px;
   }
 }
-
-// .active-nav-item {
-//   background-color: color($theme-color-primary-darker);
-//   color: white !important;
-// }
 
 .prime-nav-close-button {
   margin: 0 0 0 auto;
@@ -791,12 +761,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 .span-full-name {
   font-weight: bolder;
 }
-
-// .prime-organization-name {
-//   color: color("base");
-//   font-size: size("body", "3xs");
-//   margin-left: units(4);
-// }
 
 .usa-sidenav__sublist,
 .mobile-sublist-container {
@@ -954,6 +918,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
             margin-top: 0;
           }
         }
+
         // The way USWDS was interacting with the two column layout
         // in Chrome was causing checkboxes not to populate for some folks.
         // Using this as a workaround
