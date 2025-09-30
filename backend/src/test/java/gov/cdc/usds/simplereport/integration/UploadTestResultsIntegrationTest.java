@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
 import gov.cdc.usds.simplereport.api.BaseAuthenticatedFullStackTest;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhirTest;
@@ -60,6 +61,8 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
 
   @MockBean private DateGenerator dateGenerator;
 
+  @MockBean private FeatureFlagsConfig featureFlagsConfig;
+
   @MockBean private UUIDGenerator uuidGenerator;
 
   @SpyBean private BulkUploadResultsToFhir bulkUploadResultsToFhir;
@@ -67,6 +70,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   @BeforeEach
   void setup() throws IOException {
     Date date = Date.from(Instant.parse("2023-05-24T19:33:06.472Z"));
+    when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(false);
     when(dateGenerator.newDate()).thenReturn(date);
     when(uuidGenerator.randomUUID())
         .thenReturn(UUID.fromString("5c5cc8fd-7001-4ac2-9340-541d065eca87"));

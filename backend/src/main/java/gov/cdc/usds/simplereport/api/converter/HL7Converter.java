@@ -16,6 +16,7 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.NPI_NAMING_SY
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_NAME;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
+import static gov.cdc.usds.simplereport.utils.MultiplexUtils.inferMultiplexDeviceTypeDisease;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.CLIA_REGEX;
 
 import ca.uhn.hl7v2.model.DataTypeException;
@@ -44,11 +45,22 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
+import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -66,19 +78,51 @@ public class HL7Converter {
   private final DateGenerator dateGenerator;
 
   /**
+   * Creates HL7 message from a single entry TestEvent
+   *
+   * @param testEvent single entry test event data
+   * @param gitProperties used to populate the message software segment
+   * @param processingId indicates intent for processing. Must be either T for training, D for
+   *     debugging, or P for production (see HL7 table 0103)
+   * @return ORU_R01 message
+   */
+  public ORU_R01 createLabReportMessage(
+      @NotNull TestEvent testEvent, GitProperties gitProperties, String processingId)
+      throws DataTypeException {
+    return createLabReportMessage(
+        convertToPatientReportInput(testEvent),
+        convertToProviderReportInput(testEvent),
+        convertToFacilityReportInput(testEvent),
+        null,
+        convertToSpecimenInput(testEvent),
+        convertToTestDetailsInputList(testEvent),
+        gitProperties,
+        processingId,
+        testEvent.getTestOrderId().toString(),
+        testEvent.getCorrectionStatus());
+  }
+
+  /**
    * Creates an ORU_R01 message based on HL7 Version 2.5.1 Implementation Guide: Electronic
    * Laboratory Reporting to Public Health. ORU_R01 refers to an "Unsolicited transmission of an
    * observation message"
    *
    * @param patientInput patient data
    * @param providerInput ordering provider data
-   * @param facilityInput facility data (currently assumes ordering facility and performing facility
-   *     are the same)
+   * @param performingFacility facility that performed the testing
+   * @param orderingFacility facility that ordered the testing. If this is null, then ordering
+   *     facility will be populated with the performing facility data based on the legacy app
+   *     assumption that this is the same facility
    * @param specimenInput specimen data
    * @param testDetailsInputList test result data
    * @param gitProperties used to populate the message software segment
    * @param processingId indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
+   * @param orderId used to populate the Filler Order Number in OBR-3 and ORC-3. This should be the
+   *     test event's TestOrderId for single entry or the accession number for bulk upload. This
+   *     parameter is not the same as the message control id in MSH-10 which is randomly generated.
+   * @param correctionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
+   *     Status
    * @return ORU_R01 message
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
@@ -87,68 +131,120 @@ public class HL7Converter {
   public ORU_R01 createLabReportMessage(
       PatientReportInput patientInput,
       ProviderReportInput providerInput,
-      FacilityReportInput facilityInput,
+      FacilityReportInput performingFacility,
+      FacilityReportInput orderingFacility,
       SpecimenInput specimenInput,
       List<TestDetailsInput> testDetailsInputList,
       GitProperties gitProperties,
-      String processingId)
+      String processingId,
+      String orderId,
+      TestCorrectionStatus correctionStatus)
       throws DataTypeException, IllegalArgumentException {
+    // Lab reports from single entry and bulk upload should always have order id already populated.
+    // Single entry would use the test event's TestOrderId which is always required. Bulk upload
+    // would use
+    // Accession Number which is also required.
+    if (StringUtils.isBlank(orderId)) {
+      throw new IllegalArgumentException("Missing orderId for lab report message");
+    }
+
     ORU_R01 message = new ORU_R01();
 
     Date messageTimestamp = dateGenerator.newDate();
 
     MSH messageHeader = message.getMSH();
-    populateMessageHeader(messageHeader, facilityInput.getClia(), processingId, messageTimestamp);
+    populateMessageHeader(
+        messageHeader, performingFacility.getClia(), processingId, messageTimestamp);
 
     SFT softwareSegment = message.getSFT();
     populateSoftwareSegment(softwareSegment, gitProperties);
 
     PID patientIdentificationSegment = message.getPATIENT_RESULT().getPATIENT().getPID();
-    populatePatientIdentification(patientIdentificationSegment, patientInput);
+    populatePatientIdentification(
+        patientIdentificationSegment, patientInput, performingFacility.getClia());
 
-    String orderId = String.valueOf(uuidGenerator.randomUUID());
     String specimenId = String.valueOf(uuidGenerator.randomUUID());
 
-    for (int i = 0; i < testDetailsInputList.size(); i++) {
-      // The ORDER_OBSERVATION group is required and can repeat.
-      // This means that multiple ordered tests may be performed on a specimen.
+    if (orderingFacility == null) {
+      orderingFacility = performingFacility;
+    }
+    if (correctionStatus == null) {
+      correctionStatus = TestCorrectionStatus.ORIGINAL;
+    }
+
+    // Since multiple ordered tests may be performed on a specimen, we need to group the test
+    // details based on test order loinc in order to correctly populate the observation
+    // request OBR and its list of observation results OBX.
+    // See page 81, HL7 v2.5.1 IG
+    Map<String, List<TestDetailsInput>> testOrderLoincToTestDetailsMap =
+        mapTestOrderLoincToTestDetails(testDetailsInputList);
+
+    int orderObservationIndex = 0;
+    for (var entry : testOrderLoincToTestDetailsMap.entrySet()) {
+      ORU_R01_ORDER_OBSERVATION orderGroup =
+          message.getPATIENT_RESULT().getORDER_OBSERVATION(orderObservationIndex);
+
+      // The first ORDER_OBSERVATION group must contain an ORC segment (containing ordering facility
+      // information) if no ordering provider information is present in OBR-16 or OBR-17.
       // See page 81, HL7 v2.5.1 IG
-      ORU_R01_ORDER_OBSERVATION orderGroup = message.getPATIENT_RESULT().getORDER_OBSERVATION(i);
-
-      ORC commonOrder = orderGroup.getORC();
-      populateCommonOrderSegment(commonOrder, facilityInput, providerInput, orderId);
-
-      // "For the first repeat of the OBR segment, the sequence number shall be one (1),
-      //  for the second repeat, the sequence number shall be two (2), etc."
-      //  See page 124, HL7 v2.5.1 IG
-      String sequenceNumber = String.valueOf(i + 1);
-
-      TestDetailsInput testDetail = testDetailsInputList.get(i);
+      if (orderObservationIndex == 0) {
+        ORC commonOrder = orderGroup.getORC();
+        populateCommonOrderSegment(commonOrder, orderingFacility, providerInput, orderId);
+      }
 
       OBR observationRequest = orderGroup.getOBR();
       populateObservationRequest(
           observationRequest,
-          sequenceNumber,
+          orderObservationIndex + 1,
           orderId,
           providerInput,
           specimenInput.getCollectionDate(),
-          testDetail.getTestOrderLoinc(),
-          testDetail.getTestOrderDisplayName(),
+          entry.getKey(),
+          entry.getValue().get(0).getTestOrderDisplayName(),
+          correctionStatus,
           messageTimestamp);
 
-      OBX observationResult = orderGroup.getOBSERVATION().getOBX();
-      populateObservationResult(
-          observationResult,
-          sequenceNumber,
-          facilityInput,
-          specimenInput.getCollectionDate(),
-          testDetail);
+      // Populate the list of OBX associated with this OBR
+      List<TestDetailsInput> obxTestDetails = entry.getValue();
 
-      SPM specimen = orderGroup.getSPECIMEN().getSPM();
-      populateSpecimen(specimen, sequenceNumber, specimenId, specimenInput);
+      for (int obxIndex = 0; obxIndex < obxTestDetails.size(); obxIndex++) {
+        OBX observationResult = orderGroup.getOBSERVATION(obxIndex).getOBX();
+        populateObservationResult(
+            observationResult,
+            obxIndex + 1,
+            performingFacility,
+            specimenInput.getCollectionDate(),
+            obxTestDetails.get(obxIndex),
+            correctionStatus);
+      }
+
+      // "Only a single specimen can be associated with the OBR." HL7 allows for multiple specimens
+      // in a message as long as each specimen is associated with only one observation request (aka
+      // test ordered LOINC). With how the app currently works, we will only ever have one specimen
+      // in the entire HL7 message. That is only due to how the app is currently designed, not a
+      // constraint of HL7.
+      // See page 83, HL7 v2.5.1 IG
+      if (orderObservationIndex == 0) {
+        SPM specimen = orderGroup.getSPECIMEN().getSPM();
+        populateSpecimen(specimen, 1, specimenId, specimenInput);
+      }
+
+      orderObservationIndex++;
     }
 
     return message;
+  }
+
+  private Map<String, List<TestDetailsInput>> mapTestOrderLoincToTestDetails(
+      List<TestDetailsInput> testDetailsInputList) {
+    Map<String, List<TestDetailsInput>> testOrderLoincToTestDetailsMap = new HashMap<>();
+    for (TestDetailsInput testDetail : testDetailsInputList) {
+      String testOrderLoinc = testDetail.getTestOrderLoinc();
+      testOrderLoincToTestDetailsMap
+          .computeIfAbsent(testOrderLoinc, key -> new ArrayList<>())
+          .add(testDetail);
+    }
+    return testOrderLoincToTestDetailsMap;
   }
 
   /**
@@ -180,6 +276,7 @@ public class HL7Converter {
 
     msh.getMsh1_FieldSeparator().setValue("|");
     msh.getMsh2_EncodingCharacters().setValue("^~\\&");
+    msh.getMsh3_SendingApplication().getHd1_NamespaceID().setValue("SimpleReport");
     msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
@@ -259,32 +356,38 @@ public class HL7Converter {
    *
    * @param pid the PID object from the message's PATIENT_RESULT.PATIENT group
    * @param patientInput the input containing the form values for patient
+   * @param performingFacilityClia used to populate namespace ID for the assigning authority on a
+   *     patient external id if present
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
    */
-  void populatePatientIdentification(PID pid, PatientReportInput patientInput)
+  void populatePatientIdentification(
+      PID pid, PatientReportInput patientInput, String performingFacilityClia)
       throws DataTypeException {
     // PID Sequence 1 is "Set ID - PID" which is used to identify repetitions.
     // Since the ORU^R01 message only allows one Patient per message, the HL7 IG says this must be
     // the literal value '1'.
     pid.getPid1_SetIDPID().setValue("1");
 
-    CX patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
-
     // Legacy app test events should already have a patient ID on patientInput
-    String patientId = patientInput.getPatientId();
-    if (StringUtils.isBlank(patientId)) {
-      patientId = uuidGenerator.randomUUID().toString();
-    }
 
-    patientIdentifierEntry.getCx1_IDNumber().setValue(patientId);
-    patientIdentifierEntry
-        .getCx4_AssigningAuthority()
-        .getHd2_UniversalID()
-        .setValue(SIMPLE_REPORT_ORG_OID);
-    patientIdentifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
+    // ID used internally by SimpleReport
+    String internalId =
+        StringUtils.isNotBlank(patientInput.getPatientInternalId())
+            ? patientInput.getPatientInternalId()
+            : uuidGenerator.randomUUID().toString();
+    CX patientInternalIdEntry = pid.getPid3_PatientIdentifierList(0);
     // PI is the value for Patient internal identifier on HL7 table 0203 Identifier type
-    patientIdentifierEntry.getCx5_IdentifierTypeCode().setValue("PI");
+    populatePatientIdentifierEntry(patientInternalIdEntry, internalId, "PI", null);
+
+    // ID used by the facility, such as a medical record number
+    String externalId = patientInput.getPatientExternalId();
+    if (StringUtils.isNotBlank(externalId)) {
+      CX patientExternalIdEntry = pid.getPid3_PatientIdentifierList(1);
+      // PT is the value for Patient external identifier on HL7 table 0203 Identifier type
+      populatePatientIdentifierEntry(
+          patientExternalIdEntry, externalId, "PT", performingFacilityClia);
+    }
 
     populateName(
         pid.getPid5_PatientName(0),
@@ -308,6 +411,7 @@ public class HL7Converter {
         patientInput.getStreet(),
         patientInput.getStreetTwo(),
         patientInput.getCity(),
+        patientInput.getCounty(),
         patientInput.getState(),
         patientInput.getZipCode(),
         patientInput.getCountry());
@@ -323,14 +427,26 @@ public class HL7Converter {
           pid.getPid13_PhoneNumberHome(nextRepetitionIndex), patientInput.getEmail());
     }
 
-    // TODO: determine HL7 valid tribal affiliation code system values
-    /*
-    Cannot currently populate tribal citizenship due to limitations on providing coding system data
+    if (StringUtils.isNotBlank(patientInput.getTribalAffiliation())) {
+      populateTribalCitizenship(
+          pid.getPid39_TribalCitizenship(0), patientInput.getTribalAffiliation());
+    }
+  }
 
-    populateTribalCitizenship(
-            pid.getPid39_TribalCitizenship(0), patientInput.getTribalAffiliation());
-     */
+  void populatePatientIdentifierEntry(
+      CX identifierEntry, String id, String identifierTypeCode, String namespaceId)
+      throws DataTypeException {
+    identifierEntry.getCx1_IDNumber().setValue(id);
+    identifierEntry
+        .getCx4_AssigningAuthority()
+        .getHd2_UniversalID()
+        .setValue(SIMPLE_REPORT_ORG_OID);
+    identifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
+    identifierEntry.getCx5_IdentifierTypeCode().setValue(identifierTypeCode);
 
+    if (StringUtils.isNotBlank(namespaceId)) {
+      identifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().setValue(namespaceId);
+    }
   }
 
   /** Populates the Extended Person Name (XPN) object */
@@ -374,12 +490,15 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateRace(CE codedElement, String race) throws DataTypeException {
-    boolean isParseableRace =
-        StringUtils.isNotBlank(race) && PersonUtils.HL7_RACE_MAP.containsKey(race.toLowerCase());
+    if (StringUtils.isBlank(race)) {
+      return;
+    }
 
-    if (isParseableRace) {
-      codedElement.getCe1_Identifier().setValue(PersonUtils.HL7_RACE_MAP.get(race).get(0));
-      codedElement.getCe2_Text().setValue(PersonUtils.HL7_RACE_MAP.get(race).get(1));
+    List<String> raceList = PersonUtils.HL7_RACE_MAP.get(race.toLowerCase());
+
+    if (raceList != null) {
+      codedElement.getCe1_Identifier().setValue(raceList.get(0));
+      codedElement.getCe2_Text().setValue(raceList.get(1));
       codedElement.getCe3_NameOfCodingSystem().setValue(HL7_TABLE_RACE);
     }
   }
@@ -400,35 +519,30 @@ public class HL7Converter {
             && PersonUtils.ETHNICITY_MAP.containsKey(ethnicity.toLowerCase());
 
     String identifier =
-        isParseableEthnicGroup ? PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0) : "U";
+        isParseableEthnicGroup
+            ? PersonUtils.ETHNICITY_MAP.get(ethnicity.toLowerCase()).get(0)
+            : "U";
     String text =
-        isParseableEthnicGroup ? PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1) : "unknown";
+        isParseableEthnicGroup
+            ? PersonUtils.ETHNICITY_MAP.get(ethnicity.toLowerCase()).get(1)
+            : "unknown";
 
     codedElement.getCe1_Identifier().setValue(identifier);
     codedElement.getCe2_Text().setValue(text);
     codedElement.getCe3_NameOfCodingSystem().setValue(HL7_TABLE_ETHNIC_GROUP);
   }
 
-  // TODO: determine how we should send tribal citizenship data
   void populateTribalCitizenship(CWE codedElement, String tribalAffiliationCode)
       throws DataTypeException {
     /*
     There is an HL7 code system for tribal entity called TribalEntityUS.
     However, there is no way to refer to this system while still being constrained
     to the values in HL7 0396. This field is also limited to 12 characters,
-    so even TribalEntityUS is too long.
-
-    CWE-3 name of coding system is required if CWE-1 and CWE-2 are provided
-    codedElement.getCwe1_Identifier().setValue(tribalAffiliationCode);
-    codedElement.getCwe2_Text().setValue(PersonUtils.tribalMap().get(tribalAffiliationCode));
+    so even TribalEntityUS is too long. In the meantime, we can pass this data as original text.
+    */
     codedElement
-            .getCwe3_NameOfCodingSystem()
-            .setValue(TRIBAL_AFFILIATION_CODE_SYSTEM_NAME);
-
-    codedElement.getCwe7_CodingSystemVersionID().setValue(TRIBAL_AFFILIATION_CODE_SYSTEM_VERSION);
-
-    CWE datatype also has no object member for CWE 14 which should be Coding System OID
-     */
+        .getCwe9_OriginalText()
+        .setValue(PersonUtils.tribalMap().get(tribalAffiliationCode));
   }
 
   /**
@@ -486,6 +600,7 @@ public class HL7Converter {
       String street,
       String streetTwo,
       String city,
+      String county,
       String state,
       String zipCode,
       String country)
@@ -496,8 +611,11 @@ public class HL7Converter {
     extendedAddress.getXad4_StateOrProvince().setValue(state);
     extendedAddress.getXad5_ZipOrPostalCode().setValue(zipCode);
     extendedAddress.getXad6_Country().setValue(country);
-    // To populate county code, we would need to use FIPS codes.
-    // extendedAddress.getXad9_CountyParishCode().setValue(county);
+    // XAD-9 County/Parish Code would be a better spot to send county data. However, that element is
+    // constrained to using FIPS codes, and we currently don't have any validation that the free
+    // text the user enters for county maps to a FIPS code. In the meantime, we can send the county
+    // name in XAD-8 Other Geographic Designation.
+    extendedAddress.getXad8_OtherGeographicDesignation().setValue(county);
   }
 
   /**
@@ -534,6 +652,17 @@ public class HL7Converter {
 
     populateOrderingProvider(commonOrder.getOrc12_OrderingProvider(0), orderingProvider);
 
+    if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
+      populatePhoneNumber(commonOrder.getOrc14_CallBackPhoneNumber(0), orderingProvider.getPhone());
+    }
+
+    if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
+      int nextRepetitionIndex = commonOrder.getOrc14_CallBackPhoneNumberReps();
+      populateEmailAddress(
+          commonOrder.getOrc14_CallBackPhoneNumber(nextRepetitionIndex),
+          orderingProvider.getEmail());
+    }
+
     commonOrder
         .getOrc21_OrderingFacilityName(0)
         .getXon1_OrganizationName()
@@ -544,6 +673,7 @@ public class HL7Converter {
         orderingFacility.getStreet(),
         orderingFacility.getStreetTwo(),
         orderingFacility.getCity(),
+        orderingFacility.getCounty(),
         orderingFacility.getState(),
         orderingFacility.getZipCode(),
         DEFAULT_COUNTRY);
@@ -565,6 +695,7 @@ public class HL7Converter {
         orderingProvider.getStreet(),
         orderingProvider.getStreetTwo(),
         orderingProvider.getCity(),
+        orderingProvider.getCounty(),
         orderingProvider.getState(),
         orderingProvider.getZipCode(),
         DEFAULT_COUNTRY);
@@ -615,20 +746,22 @@ public class HL7Converter {
    * @param testOrderLoinc All OBR segment repeats should use the same test order LOINC
    * @param testOrderDisplay This should be the same test order LOINC for all OBR within this
    *     message
+   * @param testCorrectionStatus used to populate OBR-25 Result Status
    * @param messageTimestamp Must be less than or equal to the value of MSH-7 Date Time of Message
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateObservationRequest(
       OBR observationRequest,
-      String sequenceNumber,
+      int sequenceNumber,
       String orderId,
       ProviderReportInput orderingProvider,
       Date specimenCollectionDate,
       String testOrderLoinc,
       String testOrderDisplay,
+      TestCorrectionStatus testCorrectionStatus,
       Date messageTimestamp)
       throws DataTypeException {
-    observationRequest.getObr1_SetIDOBR().setValue(sequenceNumber);
+    observationRequest.getObr1_SetIDOBR().setValue(String.valueOf(sequenceNumber));
 
     // OBR-3 must contain the same value as ORC-3 Filler Order Number.
     populateEntityIdentifierOID(observationRequest.getObr3_FillerOrderNumber(), orderId);
@@ -651,13 +784,35 @@ public class HL7Converter {
 
     populateOrderingProvider(observationRequest.getObr16_OrderingProvider(0), orderingProvider);
 
+    if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
+      populatePhoneNumber(
+          observationRequest.getObr17_OrderCallbackPhoneNumber(0), orderingProvider.getPhone());
+    }
+
+    if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
+      int nextRepetitionIndex = observationRequest.getObr17_OrderCallbackPhoneNumberReps();
+      populateEmailAddress(
+          observationRequest.getObr17_OrderCallbackPhoneNumber(nextRepetitionIndex),
+          orderingProvider.getEmail());
+    }
+
     observationRequest
         .getObr22_ResultsRptStatusChngDateTime()
         .getTs1_Time()
         .setValue(formatToHL7DateTime(messageTimestamp));
 
-    // F for final results, from HL7 table 0123 Result Status
-    observationRequest.getObr25_ResultStatus().setValue("F");
+    // OBR-25 uses HL7 table 0123 Result Status
+    String orderResultStatus;
+    switch (testCorrectionStatus) {
+      case ORIGINAL -> orderResultStatus = "F";
+      // Removals should also be C for corrected order where the result status in OBX-11 is marked D
+      // for deletion
+      case CORRECTED, REMOVED -> orderResultStatus = "C";
+      default ->
+          throw new IllegalArgumentException(
+              "Cannot convert invalid test correction status to observation result status");
+    }
+    observationRequest.getObr25_ResultStatus().setValue(orderResultStatus);
   }
 
   /**
@@ -670,17 +825,19 @@ public class HL7Converter {
    * @param performingFacility Facility that produced the test result described in this segment
    * @param specimenCollectionDate Used to populate the time of the observation
    * @param testDetail The test result data
+   * @param testCorrectionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    * @throws IllegalArgumentException if non-ordinal result type is provided
    */
   void populateObservationResult(
       OBX obx,
-      String sequenceNumber,
+      int sequenceNumber,
       FacilityReportInput performingFacility,
       Date specimenCollectionDate,
-      TestDetailsInput testDetail)
+      TestDetailsInput testDetail,
+      TestCorrectionStatus testCorrectionStatus)
       throws DataTypeException, IllegalArgumentException {
-    obx.getObx1_SetIDOBX().setValue(sequenceNumber);
+    obx.getObx1_SetIDOBX().setValue(String.valueOf(sequenceNumber));
 
     CE observationIdentifier = obx.getObx3_ObservationIdentifier();
     observationIdentifier.getCe1_Identifier().setValue(testDetail.getTestPerformedLoinc());
@@ -697,7 +854,7 @@ public class HL7Converter {
       // determine what the naming is (i.e. positive/negative vs reactive/non-reactive)
       observationValue.getCe3_NameOfCodingSystem().setValue(HL7_SNOMED_CODE_SYSTEM);
 
-      obx.getObservationValue(0).setData(observationValue);
+      obx.getObx5_ObservationValue(0).setData(observationValue);
     } else {
       // TODO: handle quantitative and nominal result types. See page 145, HL7 v2.5.1 IG
       throw new IllegalArgumentException("Non-ordinal result types are not currently supported");
@@ -705,14 +862,27 @@ public class HL7Converter {
 
     // TODO: determine how we should programmatically set OBX 8 - Abnormal flags
 
-    // F for final results, from HL7 table 0085 Observation result status codes interpretation
-    obx.getObx11_ObservationResultStatus().setValue("F");
+    // OBX-11 uses HL7 table 0085 Observation result status codes interpretation
+    String resultStatus;
+    switch (testCorrectionStatus) {
+      case ORIGINAL -> resultStatus = "F";
+      case CORRECTED -> resultStatus = "C";
+      case REMOVED -> resultStatus = "D"; // Indicates the previously reported OBX should be deleted
+      default ->
+          throw new IllegalArgumentException(
+              "Cannot convert invalid test correction status to observation result status");
+    }
+    obx.getObx11_ObservationResultStatus().setValue(resultStatus);
 
     // "For specimen-based laboratory reporting, the specimen collection date and time."
     // See page 142, HL7 v2.5.1 IG
     obx.getObx14_DateTimeOfTheObservation()
         .getTs1_Time()
         .setValue(formatToHL7DateTime(specimenCollectionDate));
+
+    obx.getObx15_ProducerSReference().getCe1_Identifier().setValue(performingFacility.getClia());
+    obx.getObx15_ProducerSReference().getCe2_Text().setValue(performingFacility.getName());
+    obx.getObx15_ProducerSReference().getCe3_NameOfCodingSystem().setValue("CLIA");
 
     // "Time at which the testing was performed."
     // See page 143, HL7 v2.5.1 IG
@@ -741,6 +911,7 @@ public class HL7Converter {
         performingFacility.getStreet(),
         performingFacility.getStreetTwo(),
         performingFacility.getCity(),
+        performingFacility.getCounty(),
         performingFacility.getState(),
         performingFacility.getZipCode(),
         DEFAULT_COUNTRY);
@@ -763,9 +934,9 @@ public class HL7Converter {
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    */
   void populateSpecimen(
-      SPM specimen, String sequenceNumber, String specimenId, SpecimenInput specimenInput)
+      SPM specimen, int sequenceNumber, String specimenId, SpecimenInput specimenInput)
       throws DataTypeException {
-    specimen.getSpm1_SetIDSPM().setValue(sequenceNumber);
+    specimen.getSpm1_SetIDSPM().setValue(String.valueOf(sequenceNumber));
 
     populateEntityIdentifierOID(
         specimen.getSpm2_SpecimenID().getEip1_PlacerAssignedIdentifier(), specimenId);
@@ -788,23 +959,26 @@ public class HL7Converter {
     // but the HL7 data set says it "Shall contain a value descending from the SNOMED CT Anatomical
     // Structure (91723000) hierarchy"
 
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe1_Identifier()
-        .setValue(specimenInput.getCollectionBodySiteCode());
+    if (StringUtils.isNotBlank(specimenInput.getCollectionBodySiteCode())
+        && StringUtils.isNotBlank(specimenInput.getCollectionBodySiteName())) {
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe1_Identifier()
+          .setValue(specimenInput.getCollectionBodySiteCode());
 
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe2_Text()
-        .setValue(specimenInput.getCollectionBodySiteName());
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe3_NameOfCodingSystem()
-        .setValue(HL7_SNOMED_CODE_SYSTEM);
-    specimen
-        .getSpm8_SpecimenSourceSite()
-        .getCwe7_CodingSystemVersionID()
-        .setValue(HL7_SNOMED_CODE_SYSTEM_VERSION_ID);
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe2_Text()
+          .setValue(specimenInput.getCollectionBodySiteName());
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe3_NameOfCodingSystem()
+          .setValue(HL7_SNOMED_CODE_SYSTEM);
+      specimen
+          .getSpm8_SpecimenSourceSite()
+          .getCwe7_CodingSystemVersionID()
+          .setValue(HL7_SNOMED_CODE_SYSTEM_VERSION_ID);
+    }
 
     specimen
         .getSpm17_SpecimenCollectionDateTime()
@@ -821,5 +995,120 @@ public class HL7Converter {
         .getSpm18_SpecimenReceivedDateTime()
         .getTs1_Time()
         .setValue(formatToHL7DateTime(specimenInput.getReceivedDate()));
+  }
+
+  private PatientReportInput convertToPatientReportInput(@NotNull TestEvent testEvent) {
+    boolean hasTribalAffiliation =
+        testEvent.getPatientData().getTribalAffiliation() != null
+            && !testEvent.getPatientData().getTribalAffiliation().isEmpty();
+    return PatientReportInput.builder()
+        .firstName(testEvent.getPatientData().getFirstName())
+        .middleName(testEvent.getPatientData().getMiddleName())
+        .lastName(testEvent.getPatientData().getLastName())
+        .suffix(testEvent.getPatientData().getSuffix())
+        .email(testEvent.getPatientData().getEmail())
+        .phone(testEvent.getPatientData().getTelephone())
+        .street(testEvent.getPatientData().getStreet())
+        .streetTwo(testEvent.getPatientData().getStreetTwo())
+        .city(testEvent.getPatientData().getCity())
+        .county(testEvent.getPatientData().getCounty())
+        .state(testEvent.getPatientData().getState())
+        .zipCode(testEvent.getPatientData().getZipCode())
+        .country(testEvent.getPatientData().getCountry())
+        .sex(testEvent.getPatientData().getGender())
+        .dateOfBirth(testEvent.getPatient().getBirthDate())
+        .race(testEvent.getPatientData().getRace())
+        .ethnicity(testEvent.getPatientData().getEthnicity())
+        .tribalAffiliation(
+            hasTribalAffiliation ? testEvent.getPatientData().getTribalAffiliation().get(0) : null)
+        .patientExternalId(
+            testEvent.getPatientData().getLookupId() != null
+                ? testEvent.getPatientData().getLookupId()
+                : null)
+        .patientInternalId(
+            testEvent.getPatientData().getInternalId() != null
+                ? testEvent.getPatientData().getInternalId().toString()
+                : null)
+        .build();
+  }
+
+  private ProviderReportInput convertToProviderReportInput(@NotNull TestEvent testEvent) {
+    return ProviderReportInput.builder()
+        .firstName(testEvent.getProviderData().getNameInfo().getFirstName())
+        .middleName(testEvent.getProviderData().getNameInfo().getMiddleName())
+        .lastName(testEvent.getProviderData().getNameInfo().getLastName())
+        .suffix(testEvent.getProviderData().getNameInfo().getSuffix())
+        .npi(testEvent.getProviderData().getProviderId())
+        .street(testEvent.getProviderData().getStreet())
+        .streetTwo(testEvent.getProviderData().getStreetTwo())
+        .city(testEvent.getProviderData().getCity())
+        .county(testEvent.getProviderData().getCounty())
+        .state(testEvent.getProviderData().getState())
+        .zipCode(testEvent.getProviderData().getZipCode())
+        .phone(testEvent.getProviderData().getTelephone())
+        .email(null)
+        .build();
+  }
+
+  private FacilityReportInput convertToFacilityReportInput(@NotNull TestEvent testEvent) {
+    return FacilityReportInput.builder()
+        .name(testEvent.getFacility().getFacilityName())
+        .clia(testEvent.getFacility().getCliaNumber())
+        .street(testEvent.getFacility().getAddress().getStreetOne())
+        .streetTwo(testEvent.getFacility().getAddress().getStreetTwo())
+        .city(testEvent.getFacility().getAddress().getCity())
+        .county(testEvent.getFacility().getAddress().getCounty())
+        .state(testEvent.getFacility().getAddress().getState())
+        .zipCode(testEvent.getFacility().getAddress().getPostalCode())
+        .phone(testEvent.getFacility().getTelephone())
+        .email(testEvent.getFacility().getEmail())
+        .build();
+  }
+
+  private SpecimenInput convertToSpecimenInput(@NotNull TestEvent testEvent) {
+    return SpecimenInput.builder()
+        .snomedTypeCode(testEvent.getSpecimenType().getTypeCode())
+        .snomedDisplay(testEvent.getSpecimenType().getName())
+        .collectionDate(testEvent.getDateTested())
+        .receivedDate(testEvent.getDateTested())
+        .collectionBodySiteName(testEvent.getSpecimenType().getCollectionLocationName())
+        .collectionBodySiteCode(testEvent.getSpecimenType().getCollectionLocationCode())
+        .build();
+  }
+
+  private List<TestDetailsInput> convertToTestDetailsInputList(@NotNull TestEvent testEvent) {
+    return testEvent.getResults().stream()
+        .map(
+            result -> {
+              DeviceType deviceType = testEvent.getDeviceType();
+
+              Set<DeviceTypeDisease> matchingDeviceTypeDiseases =
+                  deviceType.getSupportedDiseaseTestPerformed().stream()
+                      .filter(d -> d.getSupportedDisease().equals(result.getDisease()))
+                      .collect(Collectors.toSet());
+
+              DeviceTypeDisease inferredDeviceTypeDisease =
+                  inferMultiplexDeviceTypeDisease(
+                      matchingDeviceTypeDiseases, deviceType, testEvent.getResults().size() == 1);
+
+              return convertToTestDetailsInput(
+                  result, inferredDeviceTypeDisease, testEvent.getDateTested());
+            })
+        .toList();
+  }
+
+  private TestDetailsInput convertToTestDetailsInput(
+      Result result, DeviceTypeDisease deviceTypeDisease, Date resultDate) {
+    return TestDetailsInput.builder()
+        .condition(result.getDisease().getName())
+        .testOrderLoinc(deviceTypeDisease.getTestOrderedLoincCode())
+        .testOrderDisplayName(deviceTypeDisease.getTestOrderedLoincLongName())
+        .testPerformedLoinc(deviceTypeDisease.getTestPerformedLoincCode())
+        .testPerformedLoincLongCommonName(deviceTypeDisease.getTestPerformedLoincLongName())
+        .resultType(ResultScaleType.ORDINAL)
+        .resultValue(result.getResultSNOMED())
+        .resultDate(resultDate)
+        .resultInterpretation(null)
+        .build();
   }
 }

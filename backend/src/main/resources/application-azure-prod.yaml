@@ -21,6 +21,7 @@ simple-report:
     enabled: true
   production:
     device-sync-enabled: false
+  aims-processing-mode-code: P
 twilio:
   enabled: true
   from-number: "+14045312484"
@@ -32,3 +33,4 @@ features:
   syphilisEnabled: false
   hivEnabled: false
   universalReportingEnabled: false
+  aimsReportingEnabled: false

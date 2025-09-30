@@ -9,4 +9,5 @@ public record UniversalSubmissionSummary(
     UUID submissionId,
     Organization org,
     UploadResponse submissionResponse,
-    HashMap<String, Integer> reportedDiseases) {}
+    HashMap<String, Integer> reportedDiseases)
+    implements SubmissionSummary {}

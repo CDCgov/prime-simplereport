@@ -164,22 +164,22 @@ data "azurerm_key_vault_secret" "db_password_no_phi" {
 }
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-test"
+  name         = "datahub-api-key-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_fhir_key" {
-  name         = "datahub-fhir-key-test"
+  name         = "datahub-fhir-key-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_url" {
-  name         = "datahub-url-test"
+  name         = "datahub-url-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_signing_key" {
-  name         = "datahub-signing-key-test"
+  name         = "datahub-signing-key-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
@@ -210,5 +210,20 @@ data "azurerm_key_vault_secret" "loinc_fhir_api_password" {
 
 data "azurerm_key_vault_secret" "umls_api_key" {
   name         = "umls-api-key-dev"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "aims_user_id" {
+  name         = "aims-user-id-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "aims_environment" {
+  name         = "aims-environment-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "aims_bucket_name" {
+  name         = "aims-outbound-storage-bucket-name-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.global.id
 }

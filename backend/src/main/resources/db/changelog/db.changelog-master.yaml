@@ -6542,3 +6542,41 @@ databaseChangeLog:
             columns:
               - column:
                   name: organization_id
+  - changeSet:
+      id: add-snomed-name-column-to-condition-table
+      author: david@skylight.digital
+      comment: Add a column for the display name associated with the SNOMED code
+      changes:
+        - tagDatabase:
+            tag: add-snomed-name-column-to-condition-table
+        - addColumn:
+            tableName: condition
+            columns:
+              - column:
+                  name: snomed_name
+                  type: text
+                  remarks: Condition name associated with the SNOMED code
+                  constraints:
+                    unique: false
+                    nullable: true
+      rollback:
+        - dropColumn:
+            tableName: condition
+            columnName: snomed_name
+  - changeSet:
+      id: add-aims-to-pipeline-enum
+      author: az01@cdc.gov
+      comment: Add AIMS value to PIPELINE enum type
+      changes:
+        - tagDatabase:
+            tag: add-aims-to-pipeline-enum
+        - sql:
+            remarks: Add AIMS to the PIPELINE enum type
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.PIPELINE ADD VALUE 'AIMS';
+      rollback:
+        - sql:
+            # See: https://www.postgresql.org/docs/current/datatype-enum.html#DATATYPE-ENUM-IMPLEMENTATION-DETAILS
+            remarks: Cannot automatically rollback enum value addition
+            sql: |
+              SELECT 1;

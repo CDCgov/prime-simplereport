@@ -193,11 +193,12 @@ loinc-fhir:
 umls:
   api-key: ${UMLS_API_KEY:super-secret-api-key}
 aims:
-  access-key-id: ${AIMS_ACCESS_KEY_ID}
-  secret-access-key: ${AIMS_SECRET_ACCESS_KEY}
-  encryption-key: ${AIMS_KMS_ENCRYPTION_KEY}
-  outbound-endpoint: ${AIMS_OUTBOUND_ENDPOINT}
-  message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT}
+  access-key-id: ${AIMS_ACCESS_KEY_ID:super-secret-access-key-id}
+  secret-access-key: ${AIMS_SECRET_ACCESS_KEY:super-secret-access-key}
+  encryption-key: ${AIMS_KMS_ENCRYPTION_KEY:super-secret-encryption-key}
+  s3-bucket-name: ${AIMS_S3_BUCKET_NAME:super-secret-bucket-name}
+  user-id: ${AIMS_USER_ID:super-secret-user-id}
+  message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT:super-secret-message-queue-endpoint}
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true
@@ -205,7 +206,10 @@ features:
   hepatitisCEnabled: true
   syphilisEnabled: true
   hivEnabled: true
+  dataRetentionLimitsEnabled: false
   universalReportingEnabled: true
+  identityVerificationEnabled: true
+  aimsReportingEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}

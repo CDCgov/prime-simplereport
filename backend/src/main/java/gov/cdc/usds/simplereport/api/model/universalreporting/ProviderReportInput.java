@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.api.model.universalreporting;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
+@Builder
 public class ProviderReportInput {
   private final String firstName;
   private final String middleName;
