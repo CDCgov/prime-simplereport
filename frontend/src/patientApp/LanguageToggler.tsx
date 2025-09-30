@@ -8,7 +8,7 @@ export default function LanguageToggler() {
     <div lang={i18n.language === "en" ? "es" : "en"}>
       <Button
         icon={"globe"}
-        className="sr-language-toggler usa-button--unstyled"
+        className="sr-language-toggler usa-button--unstyled text-base-lighter hover:text-base-lightest"
         onClick={() => {
           const displayLanguage = i18n.language === "en" ? "es" : "en";
           setLanguage(displayLanguage);
