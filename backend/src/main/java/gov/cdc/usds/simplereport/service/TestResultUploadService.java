@@ -1,12 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7FileDateString;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import gov.cdc.usds.simplereport.api.model.errors.AimsUploadException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.UploadDiseaseDetails;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AimsSubmissionSummary;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
+import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SubmissionSummary;
@@ -35,7 +36,6 @@ import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToHL7;
-import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -57,14 +57,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
-import software.amazon.awssdk.services.s3.model.ServerSideEncryption;
 
 @Service
 @RequiredArgsConstructor
@@ -81,7 +73,7 @@ public class TestResultUploadService {
   private final BulkUploadResultsToFhir fhirConverter;
   private final BulkUploadResultsToHL7 hl7Converter;
   private final FeatureFlagsConfig featureFlagsConfig;
-  private final DateGenerator dateGenerator;
+  private final AimsService aimsService;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -95,22 +87,6 @@ public class TestResultUploadService {
   @Value("${data-hub.jwt-scope}")
   private String scope;
 
-  @Value("${aims.access-key-id}")
-  private String aimsAccessKeyId;
-
-  @Value("${aims.secret-access-key}")
-  private String aimsSecretAccessKey;
-
-  @Value("${aims.s3-bucket-name}")
-  private String aimsS3BucketName;
-
-  @Value("${aims.user-id}")
-  private String aimsUserId;
-
-  @Value("${aims.encryption-key}")
-  private String aimsEncryptionKey;
-
-  private static final int SUCCESS_CODE = 200;
   private static final int FIVE_MINUTES_MS = 300 * 1000;
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
@@ -257,65 +233,21 @@ public class TestResultUploadService {
         withMDC(
             () -> {
               long start = System.currentTimeMillis();
-
-              S3Client s3 =
-                  S3Client.builder()
-                      .region(Region.US_EAST_1)
-                      .credentialsProvider(
-                          StaticCredentialsProvider.create(
-                              AwsBasicCredentials.create(aimsAccessKeyId, aimsSecretAccessKey)))
-                      .build();
-
-              S3UploadResponse s3Response;
-              String filename =
-                  String.format(
-                      "InterPartner~ExpandedELR~Simple-Report~AIMSPlatform~Test~Test~%s~STOP~%s.hl7",
-                      formatToHL7FileDateString(dateGenerator.newDate()), submissionId);
-              String objectKey = aimsUserId + "/SendTo/" + filename;
-
-              try (s3) {
-                var hl7Batch = hl7Converter.convertToHL7BatchMessage(content);
-
-                PutObjectResponse putResponse =
-                    s3.putObject(
-                        PutObjectRequest.builder()
-                            .serverSideEncryption(ServerSideEncryption.AWS_KMS)
-                            .bucket(aimsS3BucketName)
-                            .ssekmsKeyId(aimsEncryptionKey)
-                            .key(objectKey)
-                            .contentType("text/plain")
-                            .build(),
-                        RequestBody.fromString(hl7Batch.message()));
-
-                long elapsed = System.currentTimeMillis() - start;
-                log.info("Uploaded HL7 file {} in {} ms", objectKey, elapsed);
-
-                int statusCode = putResponse.sdkHttpResponse().statusCode();
-                boolean isSuccessful = statusCode == SUCCESS_CODE;
-
-                if (isSuccessful) {
-                  s3Response = new S3UploadResponse(objectKey, hl7Batch.recordsCount(), true);
-                } else {
-                  s3Response =
-                      new S3UploadResponse(
-                          objectKey,
-                          hl7Batch.recordsCount(),
-                          putResponse
-                              .sdkHttpResponse()
-                              .statusText()
-                              .orElse(
-                                  String.format(
-                                      "Status Code %d: Failed to upload %s",
-                                      statusCode, objectKey)));
-                }
-
-                return new AimsSubmissionSummary(
-                    submissionId, org, s3Response, hl7Batch.reportedDiseases());
-              } catch (CsvProcessingException e) {
-                log.error("Failed to upload HL7 batch to S3", e);
-                s3Response = new S3UploadResponse(objectKey, 0, e.getMessage());
-                return new AimsSubmissionSummary(submissionId, org, s3Response, new HashMap<>());
+              HL7BatchMessage hl7Batch = hl7Converter.convertToHL7BatchMessage(content);
+              S3UploadResponse aimsResponse;
+              try {
+                aimsResponse = aimsService.sendBatchMessageToAims(submissionId, hl7Batch);
+              } catch (AimsUploadException e) {
+                aimsResponse =
+                    new S3UploadResponse(
+                        submissionId.toString(),
+                        hl7Batch.recordsCount(),
+                        String.format("Failed sending batch to AIMS: %s", e.getMessage()));
               }
+              long elapsed = System.currentTimeMillis() - start;
+              log.info("Uploaded HL7 file {} in {} ms", submissionId, elapsed);
+              return new AimsSubmissionSummary(
+                  submissionId, org, aimsResponse, hl7Batch.reportedDiseases());
             }));
   }
 

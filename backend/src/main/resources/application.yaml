@@ -201,6 +201,8 @@ aims:
   s3-bucket-name: ${AIMS_S3_BUCKET_NAME:super-secret-bucket-name}
   user-id: ${AIMS_USER_ID:super-secret-user-id}
   message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT:super-secret-message-queue-endpoint}
+  sending-environment: ${AIMS_ENVIRONMENT:TEST}
+  receiving-environment: ${AIMS_ENVIRONMENT:TEST}
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true

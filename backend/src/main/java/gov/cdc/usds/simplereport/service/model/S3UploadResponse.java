@@ -20,13 +20,6 @@ public class S3UploadResponse implements GenericResponse {
     return UUID.nameUUIDFromBytes((objectKey + timestamp.getTime()).getBytes());
   }
 
-  public S3UploadResponse(String objectKey, int reportItemCount, boolean success) {
-    this.timestamp = new Date();
-    this.reportItemCount = reportItemCount;
-    this.id = generateId(objectKey, this.timestamp);
-    this.success = success;
-  }
-
   public S3UploadResponse(String objectKey, int reportItemCount, String errorMessage) {
     this.timestamp = new Date();
     this.reportItemCount = reportItemCount;

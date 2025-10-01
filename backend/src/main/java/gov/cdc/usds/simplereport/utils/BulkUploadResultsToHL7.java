@@ -46,6 +46,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -181,7 +182,7 @@ public class BulkUploadResultsToHL7 {
                 try {
                   return convertRowToHL7(fileRow);
                 } catch (HL7Exception e) {
-                  throw new RuntimeException(e);
+                  throw new CompletionException(e);
                 }
               });
 
@@ -195,7 +196,7 @@ public class BulkUploadResultsToHL7 {
                 future -> {
                   try {
                     return future.get();
-                  } catch (InterruptedException | ExecutionException e) {
+                  } catch (InterruptedException | ExecutionException | CompletionException e) {
                     log.error("Bulk upload failure to convert to HL7.", e);
                     Thread.currentThread().interrupt();
                     throw new CsvProcessingException("Unable to process file.");
@@ -276,25 +277,20 @@ public class BulkUploadResultsToHL7 {
             ? TestCorrectionStatus.CORRECTED
             : TestCorrectionStatus.ORIGINAL;
 
-    try {
-      var labReportMessage =
-          hl7Converter.createLabReportMessage(
-              patientInput,
-              providerInput,
-              performingFacility,
-              orderingFacility,
-              specimenInput,
-              testDetailsInputList,
-              gitProperties,
-              aimsProcessingModeCode,
-              testId,
-              testStatus);
+    var labReportMessage =
+        hl7Converter.createLabReportMessage(
+            patientInput,
+            providerInput,
+            performingFacility,
+            orderingFacility,
+            specimenInput,
+            testDetailsInputList,
+            gitProperties,
+            aimsProcessingModeCode,
+            testId,
+            testStatus);
 
-      return parser.encode(labReportMessage);
-    } catch (HL7Exception e) {
-      log.error("Encountered an error converting CSV row to HL7");
-      throw e;
-    }
+    return parser.encode(labReportMessage);
   }
 
   private PatientReportInput getPatientInput(TestResultRow row) {
