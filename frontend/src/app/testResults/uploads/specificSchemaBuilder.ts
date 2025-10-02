@@ -276,6 +276,16 @@ export const specificSchemaBuilder = (facilityId: string | null): CsvSchema => {
                 ],
               },
               {
+                name: "Patient sex",
+                colHeader: "sex",
+                requiredStatusTag: RequiredStatusTag.OPTIONAL,
+                acceptedValues: [
+                  "<mark><code>Female</code></mark> or <mark><code>F</code></mark>",
+                  "<mark><code>Male</code></mark> or <mark><code>M</code></mark>",
+                ],
+                description: ["Biological sex"],
+              },
+              {
                 name: "Patient preferred language ",
                 colHeader: "patient_preferred_language",
                 requiredStatusTag: RequiredStatusTag.OPTIONAL,

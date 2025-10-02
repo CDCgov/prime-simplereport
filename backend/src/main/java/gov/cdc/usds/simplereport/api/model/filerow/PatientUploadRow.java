@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.api.model.filerow;
 
 import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.isAddressUnknown;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
@@ -13,6 +12,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePho
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumberType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRole;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoUnknownAnswer;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
@@ -32,7 +32,7 @@ public class PatientUploadRow implements FileRow {
   final ValueOrError suffix;
   final ValueOrError race;
   final ValueOrError dateOfBirth;
-  final ValueOrError biologicalSex;
+  final ValueOrError sex;
   final ValueOrError ethnicity;
   final ValueOrError street;
   final ValueOrError street2;
@@ -54,7 +54,7 @@ public class PatientUploadRow implements FileRow {
   static final String LAST_NAME = "last_name";
   static final String RACE_FIELD = "race";
   static final String DATE_OF_BIRTH = "date_of_birth";
-  static final String BIOLOGICAL_SEX = "biological_sex";
+  static final String SEX = "sex";
   static final String ETHNICITY_FIELD = "ethnicity";
   static final String STREET_FIELD = "street";
   static final String STATE_FIELD = "state";
@@ -72,7 +72,6 @@ public class PatientUploadRow implements FileRow {
           LAST_NAME,
           RACE_FIELD,
           DATE_OF_BIRTH,
-          BIOLOGICAL_SEX,
           ETHNICITY_FIELD,
           STREET_FIELD,
           STATE_FIELD,
@@ -89,7 +88,7 @@ public class PatientUploadRow implements FileRow {
     suffix = getValue(rawRow, "suffix", isRequired("suffix"));
     race = getValue(rawRow, RACE_FIELD, isRequired(RACE_FIELD));
     dateOfBirth = getValue(rawRow, DATE_OF_BIRTH, isRequired(DATE_OF_BIRTH));
-    biologicalSex = getValue(rawRow, BIOLOGICAL_SEX, isRequired(BIOLOGICAL_SEX));
+    sex = getValue(rawRow, SEX, isRequired(SEX));
     ethnicity = getValue(rawRow, ETHNICITY_FIELD, isRequired(ETHNICITY_FIELD));
     street = getValue(rawRow, STREET_FIELD, isRequired(STREET_FIELD));
     street2 = getValue(rawRow, "street_2", isRequired("street_2"));
@@ -131,7 +130,7 @@ public class PatientUploadRow implements FileRow {
     // demographics
     errors.addAll(validateFlexibleDate(dateOfBirth));
     errors.addAll(validateRace(race));
-    errors.addAll(validateBiologicalSex(biologicalSex));
+    errors.addAll(validateSex(sex));
     errors.addAll(validateEthnicity(ethnicity));
     errors.addAll(validateGenderIdentity(genderIdentity));
 

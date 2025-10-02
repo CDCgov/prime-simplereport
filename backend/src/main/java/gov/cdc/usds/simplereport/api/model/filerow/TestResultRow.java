@@ -7,7 +7,6 @@ import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_RNA_NAME;
 import static gov.cdc.usds.simplereport.service.DiseaseService.RSV_NAME;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ITEM_SCOPE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateClia;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
@@ -19,6 +18,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePho
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateResidence;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResult;
@@ -642,7 +642,7 @@ public class TestResultRow implements FileRow {
 
     errors.addAll(validateEmail(patientEmail));
     errors.addAll(validateRace(patientRace));
-    errors.addAll(validateBiologicalSex(patientGender));
+    errors.addAll(validateSex(patientGender));
     errors.addAll(validateEthnicity(patientEthnicity));
 
     errors.addAll(validateYesNoUnknownAnswer(pregnant));
