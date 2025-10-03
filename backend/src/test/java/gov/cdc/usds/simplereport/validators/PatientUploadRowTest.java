@@ -88,8 +88,7 @@ class PatientUploadRowTest {
     assertThat(patientUploadRow.getRace().getValue()).isEqualTo(validRowMap.get("race"));
     assertThat(patientUploadRow.getDateOfBirth().getValue())
         .isEqualTo(validRowMap.get("date_of_birth"));
-    assertThat(patientUploadRow.getBiologicalSex().getValue())
-        .isEqualTo(validRowMap.get("biological_sex"));
+    assertThat(patientUploadRow.getSex().getValue()).isEqualTo(validRowMap.get("biological_sex"));
     assertThat(patientUploadRow.getEthnicity().getValue()).isEqualTo(validRowMap.get("ethnicity"));
     assertThat(patientUploadRow.getStreet().getValue()).isEqualTo(validRowMap.get("street"));
     assertThat(patientUploadRow.getStreet2().getValue()).isEqualTo(validRowMap.get("street_2"));

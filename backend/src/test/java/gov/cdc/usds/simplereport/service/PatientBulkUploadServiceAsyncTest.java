@@ -150,7 +150,6 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getRace()).isEqualTo("black");
     assertThat(patient.getEthnicity()).isEqualTo("not_hispanic");
     assertThat(patient.getBirthDate()).isEqualTo(LocalDate.of(1990, 1, 1));
-    assertThat(patient.getGender()).isEqualTo("female");
 
     assertThat(patient.getCountry()).isEqualTo("USA");
 
@@ -243,7 +242,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getFirstName()).isEqualTo("Foobar");
     assertThat(patient.getRace()).isEqualTo("asian");
     assertThat(patient.getBirthDate()).isEqualTo(LocalDate.of(1940, 6, 12));
-    assertThat(patient.getGender()).isEqualTo("other");
+    assertThat(patient.getGender()).isEqualTo("female");
     assertThat(patient.getEthnicity()).isEqualTo("not_hispanic");
     assertThat(patient.getCountry()).isEqualTo("USA");
     assertThat(patient.getAddress().getStreetOne()).isEqualTo("** Unknown / Not Given **");

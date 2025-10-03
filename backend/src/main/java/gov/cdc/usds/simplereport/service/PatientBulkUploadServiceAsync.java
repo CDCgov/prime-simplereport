@@ -141,7 +141,10 @@ public class PatientBulkUploadServiceAsync {
                         : List.of(extractedData.getEmail().getValue()))
                 .race(convertRaceToDatabaseValue(extractedData.getRace().getValue()))
                 .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
-                .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
+                .gender(
+                    StringUtils.isBlank(extractedData.getSex().getValue())
+                        ? null
+                        : convertSexToDatabaseValue(extractedData.getSex().getValue()))
                 .genderIdentity(
                     StringUtils.isBlank(extractedData.getGenderIdentity().getValue())
                         ? null
@@ -240,7 +243,7 @@ public class PatientBulkUploadServiceAsync {
 
   private void logProcessingFailure(String errorMessage, String externalId, UUID facilityId) {
     Map<String, String> customProperties =
-        Map.of("orgId", externalId, "facilityId", facilityId.toString());
+        Map.of("orgId", externalId, "facilityId", String.valueOf(facilityId));
     this.appInsights
         .getTelemetryClient()
         .trackTrace(errorMessage, SeverityLevel.Error, customProperties);

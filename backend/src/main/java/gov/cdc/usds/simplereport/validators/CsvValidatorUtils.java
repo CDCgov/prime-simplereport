@@ -603,24 +603,16 @@ public class CsvValidatorUtils {
     return displayValueToDatabaseValue.get(race.toLowerCase());
   }
 
-  public static String convertSexToDatabaseValue(String biologicalSex) {
+  public static String convertSexToDatabaseValue(String sex) {
     // fun fact: Map.of() has a limit of 10 key/value pairs
     Map<String, String> displayValueToDatabaseValue =
         Map.ofEntries(
             Map.entry("m", MALE_LITERAL),
             Map.entry(MALE_LITERAL, MALE_LITERAL),
             Map.entry("f", FEMALE_LITERAL),
-            Map.entry(FEMALE_LITERAL, FEMALE_LITERAL),
-            Map.entry("o", OTHER_LITERAL),
-            Map.entry(OTHER_LITERAL, OTHER_LITERAL),
-            Map.entry("u", REFUSED_LITERAL),
-            Map.entry(UNKNOWN_LITERAL, REFUSED_LITERAL),
-            Map.entry("a", OTHER_LITERAL),
-            Map.entry("ambiguous", OTHER_LITERAL),
-            Map.entry("n", OTHER_LITERAL),
-            Map.entry("not applicable", OTHER_LITERAL));
+            Map.entry(FEMALE_LITERAL, FEMALE_LITERAL));
 
-    return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
+    return displayValueToDatabaseValue.get(sex.toLowerCase());
   }
 
   private static List<FeedbackMessage> validateSpecificValueOrSNOMED(ValueOrError input) {

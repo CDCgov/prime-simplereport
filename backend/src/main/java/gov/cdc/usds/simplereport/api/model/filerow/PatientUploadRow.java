@@ -55,6 +55,7 @@ public class PatientUploadRow implements FileRow {
   static final String RACE_FIELD = "race";
   static final String DATE_OF_BIRTH = "date_of_birth";
   static final String SEX = "sex";
+  static final String BIOLOGICAL_SEX = "biological_sex";
   static final String ETHNICITY_FIELD = "ethnicity";
   static final String STREET_FIELD = "street";
   static final String STATE_FIELD = "state";
@@ -88,7 +89,6 @@ public class PatientUploadRow implements FileRow {
     suffix = getValue(rawRow, "suffix", isRequired("suffix"));
     race = getValue(rawRow, RACE_FIELD, isRequired(RACE_FIELD));
     dateOfBirth = getValue(rawRow, DATE_OF_BIRTH, isRequired(DATE_OF_BIRTH));
-    sex = getValue(rawRow, SEX, isRequired(SEX));
     ethnicity = getValue(rawRow, ETHNICITY_FIELD, isRequired(ETHNICITY_FIELD));
     street = getValue(rawRow, STREET_FIELD, isRequired(STREET_FIELD));
     street2 = getValue(rawRow, "street_2", isRequired("street_2"));
@@ -107,6 +107,10 @@ public class PatientUploadRow implements FileRow {
     email = getValue(rawRow, "email", isRequired("email"));
     genderIdentity = getValue(rawRow, GENDER_IDENTITY, isRequired("genderIdentity"));
     notes = getValue(rawRow, ADDRESS_NOTES, isRequired("notes"));
+
+    // Support deprecated `biological_sex` field name as well for backwards-compatibility
+    String sexHeader = rawRow.containsKey(SEX) ? SEX : BIOLOGICAL_SEX;
+    sex = getValue(rawRow, sexHeader, isRequired(SEX));
   }
 
   @Override
