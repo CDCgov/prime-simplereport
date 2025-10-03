@@ -30,7 +30,6 @@ class FileValidatorTest {
           "last_name",
           "race",
           "date_of_birth",
-          "biological_sex",
           "ethnicity",
           "street",
           "state",
@@ -135,7 +134,7 @@ class FileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(26);
+    assertThat(errors).hasSize(24);
     List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     errors.forEach(
         error -> {
@@ -230,7 +229,7 @@ class FileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(13);
+    assertThat(errors).hasSize(12);
     List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     List<List<Integer>> indices = errors.stream().map(FeedbackMessage::getIndices).toList();
     patientBulkUploadRequiredFields.forEach(
