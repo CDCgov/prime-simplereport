@@ -22,7 +22,6 @@ class PatientUploadRowTest {
           "last_name",
           "race",
           "date_of_birth",
-          "biological_sex",
           "ethnicity",
           "street",
           "state",
