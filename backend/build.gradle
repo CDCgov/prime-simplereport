@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '3.3.6'
+    id 'org.springframework.boot' version '3.4.10'
     id 'org.liquibase.gradle' version '3.0.2'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'java'
@@ -37,13 +37,13 @@ jar {
 
 dependencies {
     // core infrastructure
-    implementation 'org.springframework.boot:spring-boot-starter-web:3.3.7'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.4.10'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-actuator'
     implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
     // graphql
-    implementation 'org.springframework.boot:spring-boot-starter-graphql:3.4.4'
+    implementation 'org.springframework.boot:spring-boot-starter-graphql:3.4.10'
     implementation 'org.springframework.graphql:spring-graphql:1.4.1'
     implementation 'org.springframework:spring-web:6.2.9'
     testImplementation 'org.springframework:spring-webflux'
