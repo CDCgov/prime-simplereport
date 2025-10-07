@@ -32,8 +32,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
+@TestPropertySource(properties = {"twilio.enabled=true"})
 class TextMessageStatusServiceTest extends BaseServiceTest<TextMessageStatusService> {
 
   @Autowired TextMessageSentRepository _textMessageSentRepo;
