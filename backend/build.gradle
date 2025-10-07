@@ -23,7 +23,7 @@ java {
 }
 
 ext {
-    set('springCloudVersion', "2024.0.2")
+    set('springCloudVersion', "2025.0.0")
     set('oktaVersion', "13.0.2")
     set('hibernate.version', '6.6.2.Final')
     set('jacksonBomVersion', '2.17.2')
