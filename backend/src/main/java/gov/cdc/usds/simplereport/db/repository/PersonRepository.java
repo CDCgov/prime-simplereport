@@ -48,6 +48,7 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
           + "p.nameInfo.lastName = '', "
           + "p.nameInfo.suffix = '', "
           + "p.birthDate = null, "
+          + "p.address.street = null, "
           + "p.address.city = null, "
           + "p.address.county = null, "
           + "p.address.state = null, "
@@ -66,13 +67,14 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
           + "p.tribalAffiliation = null, "
           + "p.preferredLanguage = null, "
           + "p.notes = null, "
-          + "p.isDeleted = true "
+          + "p.isDeleted = true, "
+          + "p.piiDeleted = true "
           + "WHERE "
           + "p.updatedAt <= :cutoffDate "
           + "AND NOT EXISTS ("
           + "    SELECT 1 FROM TestEvent te "
           + "    WHERE te.patient = p "
-          + "      AND te.updatedAt >= :cutoffDate"
+          + "      AND te.updatedAt > :cutoffDate"
           + ")")
-  void archivePatientsWhoHaveNoTestEventsAfter(@Param("cutoffDate") Date cutoffDate);
+  void deletePiiForPatientsWhoHaveNoTestEventsAfter(@Param("cutoffDate") Date cutoffDate);
 }

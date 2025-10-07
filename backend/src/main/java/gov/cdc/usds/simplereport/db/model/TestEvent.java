@@ -63,6 +63,8 @@ public class TestEvent extends BaseTestInfo {
 
   private Boolean patientHasPriorTests;
 
+  @Column private Boolean piiDeleted;
+
   public TestEvent() {}
 
   // Convenience constructor, only used in tests

@@ -28,9 +28,12 @@ public interface TestResultUploadRepository extends AuditedEntityRepository<Test
 
   @Modifying
   @Query(
-      "UPDATE TestResultUpload tru "
-          + "SET tru.warnings = null,"
-          + "tru.errors = null "
-          + "WHERE tru.updatedAt <= :cutoffDate")
-  void archiveTestResultUploadsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
+      """
+      UPDATE TestResultUpload testResultUpload
+          SET testResultUpload.warnings = null,
+          testResultUpload.errors = null,
+          testResultUpload.piiDeleted = true
+          WHERE testResultUpload.updatedAt <= :cutoffDate
+      """)
+  void deletePiiForBulkTestResultUploadsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
 }

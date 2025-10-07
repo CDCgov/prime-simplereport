@@ -14,8 +14,18 @@ public interface PatientAnswersRepository extends DeletableEntityRepository<Pati
 
   @Modifying
   @Query(
-      "UPDATE PatientAnswers pa "
-          + "SET pa.askOnEntry = null "
-          + "WHERE pa.updatedAt <= :cutoffDate")
-  void archivePatientAnswersLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
+      """
+    UPDATE PatientAnswers pa
+    SET pa.askOnEntry = null,
+        pa.piiDeleted = true
+    WHERE pa.updatedAt <= :cutoffDate
+      AND NOT EXISTS (
+        SELECT 1
+        FROM TestEvent te
+        WHERE te.order.patientAnswersId = pa.internalId
+          AND te.updatedAt > :cutoffDate
+  )
+""")
+  void deletePiiForPatientAnswersIfTestOrderHasNoTestEventsUpdatedAfter(
+      @Param("cutoffDate") Date cutoffDate);
 }

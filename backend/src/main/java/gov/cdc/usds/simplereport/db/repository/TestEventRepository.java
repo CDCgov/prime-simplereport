@@ -91,10 +91,20 @@ public interface TestEventRepository
 
   @Modifying
   @Query(
-      "UPDATE TestEvent te "
-          + "SET te.patientData = null,"
-          + "te.surveyData = null,"
-          + "te.patientHasPriorTests = null "
-          + "WHERE te.updatedAt <= :cutoffDate")
-  void archiveTestEventsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
+      """
+    UPDATE TestEvent te
+    SET te.patientData = null,
+        te.surveyData = null,
+        te.patientHasPriorTests = null,
+        te.piiDeleted = true
+    WHERE te.updatedAt <= :cutoffDate
+      AND NOT EXISTS (
+        SELECT 1
+        FROM TestEvent te2
+        WHERE te2.order = te.order
+          AND te2.updatedAt > :cutoffDate
+  )
+""")
+  void deletePiiForTestEventIfTestOrderHasNoTestEventsUpdatedAfter(
+      @Param("cutoffDate") Date cutoffDate);
 }

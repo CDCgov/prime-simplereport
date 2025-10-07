@@ -47,6 +47,8 @@ public class Result extends EternalAuditedEntity {
   @Enumerated(EnumType.STRING)
   private TestResult testResult;
 
+  @Column private Boolean piiDeleted;
+
   public Result(SupportedDisease disease, TestResult testResult) {
     this.disease = disease;
     this.resultSNOMED = Translators.convertTestResultToSnomed(testResult);

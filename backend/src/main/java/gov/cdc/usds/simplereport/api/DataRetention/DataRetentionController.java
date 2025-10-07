@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,10 +17,10 @@ public class DataRetentionController {
   private final DataRetentionService dataRetentionService;
 
   @GetMapping("/delete")
-  //    public void deleteOldData(@RequestParam boolean dryRun) {
-  public void deleteOldData() {
+  public void deleteOldData(@RequestParam boolean dryRun) {
+    //  public void deleteOldData() {
     try {
-      dataRetentionService.deleteOldData();
+      dataRetentionService.deleteOldData(dryRun);
     } catch (DryRunException e) {
       log.info("Dry run");
     }

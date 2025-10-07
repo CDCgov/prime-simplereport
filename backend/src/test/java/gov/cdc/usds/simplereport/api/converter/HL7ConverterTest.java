@@ -92,7 +92,7 @@ class HL7ConverterTest {
     TestOrder testOrder = testEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 
@@ -121,7 +121,7 @@ class HL7ConverterTest {
     TestOrder originalTestOrder = originalTestEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(originalTestOrder, "internalId", testOrderId);
-    originalTestOrder.setTestEventRef(originalTestEvent);
+    originalTestOrder.setLatestTestEventRef(originalTestEvent);
 
     Date backdate = Date.from(LocalDate.of(2025, 7, 4).atStartOfDay().toInstant(ZoneOffset.UTC));
     originalTestOrder.setDateTestedBackdate(backdate);
@@ -151,7 +151,7 @@ class HL7ConverterTest {
     TestOrder originalTestOrder = originalTestEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(originalTestOrder, "internalId", testOrderId);
-    originalTestOrder.setTestEventRef(originalTestEvent);
+    originalTestOrder.setLatestTestEventRef(originalTestEvent);
 
     TestEvent correctedTestEvent =
         new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Incorrect person");
@@ -175,7 +175,7 @@ class HL7ConverterTest {
     TestOrder testOrder = testEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 
@@ -197,7 +197,7 @@ class HL7ConverterTest {
     TestOrder testOrder = testEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 

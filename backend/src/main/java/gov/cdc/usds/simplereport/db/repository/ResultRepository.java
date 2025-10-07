@@ -42,10 +42,27 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
 
   @Modifying
   @Query(
-      "UPDATE Result re "
-          + "SET re.resultSNOMED = '',"
-          + "re.testResult = null, "
-          + "re.isDeleted = true "
-          + "WHERE re.updatedAt <= :cutoffDate")
-  void archiveResultsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
+      """
+    UPDATE Result result
+    SET result.resultSNOMED = '',
+        result.testResult = null,
+        result.piiDeleted = true,
+        result.isDeleted = true
+    WHERE result.updatedAt <= :cutoffDate
+      AND
+           (result.testEvent IS NOT NULL AND NOT EXISTS (
+                SELECT 1
+                FROM TestEvent testEvent
+                WHERE testEvent.order = result.testEvent.order
+                  AND testEvent.updatedAt > :cutoffDate
+           ))
+        OR (result.testEvent IS NULL AND result.testOrder IS NOT NULL AND NOT EXISTS (
+                SELECT 1
+                FROM TestEvent testEvent
+                WHERE testEvent.order = result.testOrder
+                  AND testEvent.updatedAt > :cutoffDate
+           ))
+""")
+  void deletePiiForResultIfTestOrderHasNoTestEventsUpdatedAfter(
+      @Param("cutoffDate") Date cutoffDate);
 }

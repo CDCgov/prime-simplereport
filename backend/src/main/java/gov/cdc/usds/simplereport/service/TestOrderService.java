@@ -346,7 +346,7 @@ public class TestOrderService {
 
       savedEvent = resultService.addResultsToTestEvent(savedEvent, resultsForTestEvent);
 
-      order.setTestEventRef(savedEvent);
+      order.setLatestTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
     } finally {
       unlockOrder(order.getInternalId());
@@ -576,7 +576,7 @@ public class TestOrderService {
         newRemoveEvent = resultService.addResultsToTestEvent(newRemoveEvent, results);
 
         order.setReasonForCorrection(reasonForCorrection);
-        order.setTestEventRef(newRemoveEvent);
+        order.setLatestTestEventRef(newRemoveEvent);
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
         _testOrderRepo.save(order);
 

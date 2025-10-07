@@ -6606,3 +6606,100 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: phone_number
             columnName: number
+  - changeSet:
+      id: add-pii-deleted-to-pii-tables
+      author: david@skylight.digital
+      comment: Add PII deleted flag to tables with PII
+      changes:
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: result
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: patient_answers
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: result_upload_error
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: phone_number
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+      rollback:
+        - dropColumn:
+            tableName: test_event
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: result
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: patient_answers
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: person
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: upload
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: result_upload_error
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: phone_number
+            columnName: pii_deleted

@@ -1,8 +1,11 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.api.model.errors.DryRunException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
+import gov.cdc.usds.simplereport.db.repository.ReportStreamResponseRepository;
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -30,6 +33,7 @@ public class DataRetentionService {
   private final TestResultUploadRepository testResultUploadRepository;
   private final ResultUploadErrorRepository resultUploadErrorRepository;
   private final PhoneNumberRepository phoneNumberRepository;
+  private final ReportStreamResponseRepository reportStreamResponseRepository;
 
   @Value("${simple-report.data-retention.enabled:false}")
   private boolean dataRetentionEnabled;
@@ -52,7 +56,8 @@ public class DataRetentionService {
       PatientAnswersRepository patientAnswersRepository,
       TestResultUploadRepository testResultUploadRepository,
       ResultUploadErrorRepository resultUploadErrorRepository,
-      PhoneNumberRepository phoneNumberRepository) {
+      PhoneNumberRepository phoneNumberRepository,
+      ReportStreamResponseRepository reportStreamResponseRepository) {
     this.personRepository = personRepository;
     this.testEventRepository = testEventRepository;
     this.resultRepository = resultRepository;
@@ -60,6 +65,7 @@ public class DataRetentionService {
     this.testResultUploadRepository = testResultUploadRepository;
     this.resultUploadErrorRepository = resultUploadErrorRepository;
     this.phoneNumberRepository = phoneNumberRepository;
+    this.reportStreamResponseRepository = reportStreamResponseRepository;
   }
 
   /** Daily scheduled job - Runs at 2 AM Eastern Time */
@@ -79,7 +85,7 @@ public class DataRetentionService {
     long startTime = System.currentTimeMillis();
 
     try {
-      deleteOldData();
+      deleteOldData(false);
       long executionTime = System.currentTimeMillis() - startTime;
       log.info(
           "Data retention job completed successfully in {} ms ({} minutes)",
@@ -114,7 +120,8 @@ public class DataRetentionService {
 
   /** Placeholder method for actual deletion logic */
   @Transactional
-  public void deleteOldData() {
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void deleteOldData(boolean dryRun) {
     TimeZone tz = TimeZone.getTimeZone("America/New_York");
     LocalDate now = LocalDate.now(tz.toZoneId());
     //        LocalDate cutoffDate = now.minusDays(retentionDays);
@@ -157,23 +164,38 @@ public class DataRetentionService {
     //                System.currentTimeMillis() - (cutoffDays * 24L * 60 * 60 * 1000)
     //        );
 
-    testEventRepository.archiveTestEventsLastUpdatedBefore(
-        cutoffDate); // works, add "pii_deleted" column?
-    resultRepository.archiveResultsLastUpdatedBefore(cutoffDate); // works with isDeleted column
-    patientAnswersRepository.archivePatientAnswersLastUpdatedBefore(
-        cutoffDate); // works, add "pii_deleted"
-    personRepository.archivePatientsWhoHaveNoTestEventsAfter(cutoffDate);
-    testResultUploadRepository.archiveTestResultUploadsLastUpdatedBefore(
-        cutoffDate); // works, add pii_deleted?
-    resultUploadErrorRepository.archiveResultUploadErrorsLastUpdatedBefore(
-        cutoffDate); // works, but need to populate, add pii_deleted
-    phoneNumberRepository
-        .archivePhoneNumbersForPatientsWhoWereNotCreatedAfterAndHaveNoTestEventsAfter(cutoffDate);
-    // need to clear phone numbers tied to a person
+    // log time it takes to run each query, put in as much observability as possible before running
+    // in dev
+    // practice restoring DB from backup with Shanice
+    testEventRepository.deletePiiForTestEventIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
+
+    resultRepository.deletePiiForResultIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
+
+    patientAnswersRepository.deletePiiForPatientAnswersIfTestOrderHasNoTestEventsUpdatedAfter(
+        cutoffDate);
+
+    personRepository.deletePiiForPatientsWhoHaveNoTestEventsAfter(cutoffDate);
+
+    phoneNumberRepository.deletePiiForPhoneNumbersForPatientsCreatedBeforeAndHaveNoTestEventsAfter(
+        cutoffDate);
+
+    testResultUploadRepository.deletePiiForBulkTestResultUploadsLastUpdatedBefore(cutoffDate);
+
+    resultUploadErrorRepository.deletePiiForResultUploadErrorsLastUpdatedBefore(
+        cutoffDate); // works, but need to populate to test all the way
+
+    reportStreamResponseRepository
+        .deletePiiForReportStreamResponseIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
+
+    // make a record of how many rows had pii_deleted for each table?
 
     log.info(
         "DataRetentionJob_PlaceholderComplete: cutoff_date={}, batch_size={}",
         cutoffDate,
         batchSize);
+
+    if (dryRun) {
+      throw new DryRunException("Dry run, rolling back");
+    }
   }
 }

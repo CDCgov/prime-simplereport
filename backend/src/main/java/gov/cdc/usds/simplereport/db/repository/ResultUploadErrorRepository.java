@@ -11,8 +11,11 @@ import org.springframework.data.repository.query.Param;
 public interface ResultUploadErrorRepository extends CrudRepository<ResultUploadError, UUID> {
   @Modifying
   @Query(
-      "UPDATE ResultUploadError rue "
-          + "SET rue.message = null "
-          + "WHERE rue.updatedAt <= :cutoffDate")
-  void archiveResultUploadErrorsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
+      """
+      UPDATE ResultUploadError rue
+          SET rue.message = null,
+          rue.piiDeleted = true
+          WHERE rue.updatedAt <= :cutoffDate
+      """)
+  void deletePiiForResultUploadErrorsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
 }

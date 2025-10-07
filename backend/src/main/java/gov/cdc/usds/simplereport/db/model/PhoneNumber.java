@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.util.Objects;
 import java.util.UUID;
+import lombok.Getter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -28,6 +29,8 @@ public class PhoneNumber extends AuditedEntity {
   private PhoneType type;
 
   @Column private String number;
+
+  @Column @Getter private Boolean piiDeleted;
 
   public PhoneNumber() {
     /* For Hibernate */
