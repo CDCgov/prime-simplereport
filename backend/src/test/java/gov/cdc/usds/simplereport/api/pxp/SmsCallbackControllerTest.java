@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.service.sms.TextMessageStatusService;
+import gov.cdc.usds.simplereport.service.sms.TwilioWrapper;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.xml.bind.DatatypeConverter;
@@ -44,7 +45,12 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@TestPropertySource(properties = {"twilio.enabled=true"})
+@TestPropertySource(properties = {
+    "twilio.enabled=true",
+    "TWILIO_AUTH_TOKEN=test-token",
+    "twilio.messaging-service-sid=test-sid",
+    "TWILIO_ACCOUNT_SID=test-account-sid"
+})
 class SmsCallbackControllerTest extends BaseFullStackTest {
 
   @Autowired private MockMvc _mockMvc;
@@ -54,6 +60,7 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
   @MockBean private WebhookContextHolder contextHolder;
   @MockBean private CurrentAccountRequestContextHolder accountContextHolder;
   @MockBean private CurrentPatientContextHolder patientContextHolder;
+  @MockBean private TwilioWrapper twilioWrapper;
 
   @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
   private String twilioCallbackUrl;

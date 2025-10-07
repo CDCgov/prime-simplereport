@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.TextMessageSentRepository;
 import gov.cdc.usds.simplereport.db.repository.TextMessageStatusRepository;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
+import gov.cdc.usds.simplereport.service.sms.TwilioWrapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,14 +33,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-@TestPropertySource(properties = {"twilio.enabled=true"})
+@TestPropertySource(properties = {
+    "twilio.enabled=true",
+    "TWILIO_AUTH_TOKEN=test-token",
+    "twilio.messaging-service-sid=test-sid",
+    "TWILIO_ACCOUNT_SID=test-account-sid"
+})
 class TextMessageStatusServiceTest extends BaseServiceTest<TextMessageStatusService> {
 
   @Autowired TextMessageSentRepository _textMessageSentRepo;
   @Autowired TextMessageStatusRepository _textMessageStatusRepo;
+  @MockBean private TwilioWrapper twilioWrapper;
 
   @Mock private PhoneNumberRepository _phoneRepo;
   @Mock private RequestValidator validator;
