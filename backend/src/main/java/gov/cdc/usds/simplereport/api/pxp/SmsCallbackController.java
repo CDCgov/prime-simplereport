@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.MultiValueMap;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 @PreAuthorize("@textMessageStatusService.validateSmsCallback(#request)")
 @PostAuthorize("@restAuditLogManager.logWebhookSuccess(#request)")
 @Validated
+@ConditionalOnProperty(name = "twilio.enabled", havingValue = "true")
 public class SmsCallbackController {
   private final TextMessageStatusService statusService;
   private final WebhookContextHolder webhookContextHolder;
