@@ -22,11 +22,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("textMessageStatusService")
 @Transactional
+@ConditionalOnProperty(name = "twilio.enabled", havingValue = "true")
 public class TextMessageStatusService {
 
   private PhoneNumberRepository phoneRepo;
