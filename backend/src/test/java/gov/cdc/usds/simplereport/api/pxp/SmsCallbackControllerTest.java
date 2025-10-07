@@ -45,12 +45,13 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@TestPropertySource(properties = {
-    "twilio.enabled=true",
-    "TWILIO_AUTH_TOKEN=test-token",
-    "twilio.messaging-service-sid=test-sid",
-    "TWILIO_ACCOUNT_SID=test-account-sid"
-})
+@TestPropertySource(
+    properties = {
+      "twilio.enabled=true",
+      "TWILIO_AUTH_TOKEN=test-token",
+      "twilio.messaging-service-sid=test-sid",
+      "TWILIO_ACCOUNT_SID=test-account-sid"
+    })
 class SmsCallbackControllerTest extends BaseFullStackTest {
 
   @Autowired private MockMvc _mockMvc;
