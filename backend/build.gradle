@@ -26,6 +26,7 @@ ext {
     set('springCloudVersion', "2023.0.1")
     set('oktaVersion', "13.0.2")
     set('hibernate.version', '6.6.2.Final')
+    set('jacksonBomVersion', '2.17.2')
 }
 repositories {
     mavenCentral()
@@ -179,6 +180,7 @@ dependencies {
 
 dependencyManagement {
     imports {
+        mavenBom "com.fasterxml.jackson:jackson-bom:${jacksonBomVersion}"
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
