@@ -2,11 +2,11 @@ package gov.cdc.usds.simplereport.idp.repository;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Clients;
-import com.okta.sdk.resource.api.ApplicationApi;
-import com.okta.sdk.resource.api.ApplicationGroupsApi;
-import com.okta.sdk.resource.api.GroupApi;
-import com.okta.sdk.resource.api.UserApi;
-import com.okta.sdk.resource.client.ApiClient;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.api.ApplicationApi;
+import org.openapitools.client.api.ApplicationGroupsApi;
+import org.openapitools.client.api.GroupApi;
+import org.openapitools.client.api.UserApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

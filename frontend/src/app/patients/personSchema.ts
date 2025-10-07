@@ -22,10 +22,8 @@ import { TestResultDeliveryPreferences } from "./TestResultDeliveryPreference";
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 const MAX_LENGTH = 256;
-const NOTES_MAX_LENGTH = 10000;
 
-// eslint-disable-next-line
-type TranslatedSchema<T> = (t: TFunction) => yup.ObjectSchema<yup.AnyObject>;
+type TranslatedSchema<T> = (t: TFunction) => yup.SchemaOf<T>;
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -80,7 +78,7 @@ export function phoneNumberIsValid(input: any) {
   try {
     const number = phoneUtil.parseAndKeepRawInput(input, "US");
     return phoneUtil.isValidNumber(number);
-  } catch {
+  } catch (e: any) {
     return false;
   }
 }
@@ -112,7 +110,7 @@ function isPartiallyBlankPhoneNumber(phoneNumber: any) {
 }
 export function areValidPhoneNumbers(phoneNumbers: any) {
   // At least one phone number is required
-  if (!phoneNumbers) {
+  if (!phoneNumbers || phoneNumbers.length === 0) {
     return false;
   }
   return phoneNumbers.every((phoneNumber: any, idx: number) => {
@@ -218,38 +216,27 @@ const getPhoneNumberSchema = (t: TFunction) => {
       t("patient.form.errors.phoneNumbersType") || "",
       hasPhoneType
     )
-    .when("unknownPhoneNumber", {
-      is: undefined,
-      then: () =>
-        yup.array().min(1, t("patient.form.errors.phoneNumbers") || ""),
-    });
+    .required();
 };
 
 const getRequiredAddressSchema = (t: TFunction, key: string) => {
-  return yup.string().when("unknownAddress", {
-    is: false,
-    then: () =>
-      yup
-        .string()
-        .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
-        .required(t(key) || ""),
-  });
+  return yup
+    .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
+    .required(t(key) || "");
 };
 
 const updateFieldSchemata: (
   t: TFunction
 ) => Record<keyof PersonUpdate, yup.AnySchema> = (t) => ({
-  unknownPhoneNumber: yup.boolean().optional(),
-  unknownAddress: yup.boolean().optional(),
   lookupId: yup.string().nullable(),
   role: yup
     .mixed()
-    .nullable()
     .oneOf(
       [...getValues(ROLE_VALUES), "UNKNOWN", "", null],
       t("patient.form.errors.role") || ""
     ),
-  telephone: yup.string().nullable().optional(),
+  telephone: yup.mixed().optional(),
   phoneNumbers: getPhoneNumberSchema(t),
   emails: yup
     .array()
@@ -270,46 +257,36 @@ const updateFieldSchemata: (
   country: yup.string().required(t("patient.form.errors.country") || ""),
   race: yup
     .mixed()
-    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race") || "")
-    .required(),
+    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race") || ""),
   ethnicity: yup
     .mixed()
     .oneOf(
       getValues(ETHNICITY_VALUES),
       t("patient.form.errors.ethnicity") || ""
-    )
-    .required(),
+    ),
   gender: yup
     .mixed()
-    .oneOf(getValues(GENDER_VALUES), t("patient.form.errors.gender") || "")
-    .required(),
+    .oneOf(getValues(GENDER_VALUES), t("patient.form.errors.gender") || ""),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
     .mixed()
-    .nullable()
     .oneOf(
       [...getValues(TRIBAL_AFFILIATION_VALUES), "", null],
       t("patient.form.errors.tribalAffiliation") || ""
     ),
   preferredLanguage: yup
     .mixed()
-    .nullable()
     .oneOf(
       [...languages, "", null],
       t("patient.form.errors.preferredLanguage") || ""
     ),
   testResultDelivery: yup
     .mixed()
-    .nullable()
     .oneOf(
       [...Object.values(TestResultDeliveryPreferences), "", null],
       t("patient.form.errors.testResultDelivery") || ""
     ),
-  notes: yup
-    .string()
-    .max(NOTES_MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
-    .nullable(),
 });
 
 const updatePhoneNumberSchemata: (
@@ -329,8 +306,7 @@ const updatePhoneNumberSchemata: (
     .oneOf(
       getValues(PHONE_TYPE_VALUES),
       t("patient.form.errors.phoneNumbersType") || ""
-    )
-    .required(t("patient.form.errors.phoneNumbersType") || ""),
+    ),
 });
 
 const translateUpdateEmailSchemata = (t: TFunction) => {

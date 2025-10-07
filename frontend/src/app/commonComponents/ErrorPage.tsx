@@ -7,11 +7,11 @@ const ErrorPage = () => {
       <USAGovBanner />
       <header className="border-bottom border-base-lighter padding-y-1">
         <div className="grid-container">
-          <a href={process.env.PUBLIC_URL || "/"}>
+          <a href={import.meta.env.VITE_PUBLIC_URL || "/"}>
             <img
               className="maxh-4"
               src={siteLogo}
-              alt={process.env.REACT_APP_TITLE}
+              alt={import.meta.env.VITE_TITLE}
             />
           </a>
         </div>

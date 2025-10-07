@@ -1,8 +1,5 @@
 package gov.cdc.usds.simplereport.service.model;
 
-import static java.lang.String.CASE_INSENSITIVE_ORDER;
-
-import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -12,12 +9,12 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PersonEntity;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.openapitools.client.model.UserStatus;
 
 public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, PersonEntity {
 
@@ -36,11 +33,9 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
         orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()).stream()
             .collect(Collectors.toList());
     orgwrapper.map(OrganizationRoles::getGrantedPermissions).ifPresent(permissions::addAll);
-    List<Facility> facilityList =
+    this.facilities =
         orgwrapper.map(OrganizationRoles::getFacilities).orElse(Set.of()).stream()
             .collect(Collectors.toList());
-    facilityList.sort(Comparator.comparing(Facility::getFacilityName, CASE_INSENSITIVE_ORDER));
-    this.facilities = facilityList;
     this.isAdmin = isAdmin;
   }
 
@@ -100,6 +95,6 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
   }
 
   public boolean getIsDeleted() {
-    return wrapped.getIsDeleted();
+    return wrapped.isDeleted();
   }
 }

@@ -72,11 +72,11 @@ const ManageDeviceTypeFormContainer = () => {
       }))
     );
 
-    const supportedDiseaseData = supportedDiseaseResults.supportedDiseases.map(
-      (disease) => ({
+    const supportedDiseaseOptions = Array.from(
+      supportedDiseaseResults.supportedDiseases.map((disease) => ({
         label: disease.name,
         value: disease.internalId,
-      })
+      }))
     );
 
     const devices = Array.from(
@@ -90,7 +90,7 @@ const ManageDeviceTypeFormContainer = () => {
         formTitle={editDevicePageTitle}
         saveDeviceType={updateDevice}
         swabOptions={swabOptions}
-        supportedDiseaseOptions={supportedDiseaseData}
+        supportedDiseaseOptions={supportedDiseaseOptions}
         deviceOptions={devices}
       />
     );

@@ -9,7 +9,7 @@ ci:
       - https://localhost.simplereport.gov/app/results/1?facility=$FACILITY_ID
       - https://localhost.simplereport.gov/app/patients?facility=$FACILITY_ID
       - https://localhost.simplereport.gov/app/add-patient?facility=$FACILITY_ID
-      - https://localhost.simplereport.gov/app/settings/users/1?facility=$FACILITY_ID
+      - https://localhost.simplereport.gov/app/settings?facility=$FACILITY_ID
       - https://localhost.simplereport.gov/app/settings/facilities?facility=$FACILITY_ID
       - https://localhost.simplereport.gov/app/settings/add-facility/?facility=$FACILITY_ID
       - https://localhost.simplereport.gov/app/upload-patients?facility=$FACILITY_ID

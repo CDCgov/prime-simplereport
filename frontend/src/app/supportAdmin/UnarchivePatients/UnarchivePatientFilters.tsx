@@ -1,49 +1,40 @@
 import { useForm } from "react-hook-form";
-import React, { Ref } from "react";
+import React from "react";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { ComboBoxRef } from "@trussworks/react-uswds";
 
-import { Option } from "../../commonComponents/Select";
+import Select, { Option } from "../../commonComponents/Select";
 import Button from "../../commonComponents/Button/Button";
 import { unarchivePatientTitle } from "../pageTitles";
-import SupportHomeLink from "../SupportHomeLink";
-import ComboBox from "../../commonComponents/ComboBox";
+
+import { UnarchivePatientState } from "./UnarchivePatient";
 
 interface UnarchivePatientProps {
   orgOptions: Option<string>[];
-  facilityOptions: Option<string>[];
-  onSelectOrg: (orgInternalId: string | undefined) => void;
-  onSelectFacility: (id: string | undefined) => void;
+  onSelectOrg: (orgInternalId: string) => void;
+  onSelectFacility: (id: string) => void;
   onSearch: () => void;
   onClearFilter: () => void;
   loading: boolean;
-  disableClearFilters: boolean;
-  disableSearch: boolean;
-  facilityRef: Ref<ComboBoxRef> | undefined;
-  orgRef: Ref<ComboBoxRef> | undefined;
+  unarchivePatientState: UnarchivePatientState;
 }
-
 const UnarchivePatientFilters = ({
   orgOptions,
-  facilityOptions,
   onSelectOrg,
   onSelectFacility,
   onSearch,
   onClearFilter,
   loading,
-  disableClearFilters,
-  disableSearch,
-  orgRef,
-  facilityRef,
+  unarchivePatientState,
 }: UnarchivePatientProps) => {
-  const { handleSubmit } = useForm({});
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({});
 
   return (
     <div className="prime-container card-container">
-      <div className="width-full display-block margin-left-3 margin-top-3">
-        <SupportHomeLink />
-      </div>
-      <div className="usa-card__header padding-top-2">
+      <div className="usa-card__header">
         <div className="desktop:display-flex grid-row width-full">
           <div className="desktop:grid-col-6 desktop:display-flex desktop:flex-row flex-align-center">
             <h1 className="font-sans-lg margin-y-0">{unarchivePatientTitle}</h1>
@@ -51,7 +42,7 @@ const UnarchivePatientFilters = ({
           <div className="mobile-lg:display-block mobile-lg:grid-col-6 desktop:display-flex flex-align-end flex-column">
             <Button
               icon={faSlidersH}
-              disabled={disableClearFilters}
+              disabled={unarchivePatientState.orgId === ""}
               onClick={() => onClearFilter()}
               ariaLabel="Clear facility selection filters"
             >
@@ -66,32 +57,49 @@ const UnarchivePatientFilters = ({
           role="search"
           onSubmit={handleSubmit(onSearch)}
         >
-          <div
-            data-testid={"org-selection-container"}
-            className={"desktop:grid-col-4 mobile-lg:grid-col-12"}
-          >
-            <ComboBox
-              name={"Organization"}
-              id={"unarchive-patient-org-select"}
+          <div className={"desktop:grid-col-4 mobile-lg:grid-col-12"}>
+            <Select
+              label="Organization"
+              name="organization"
+              value={unarchivePatientState.orgId}
+              defaultOption={"- Select -"}
+              defaultSelect={true}
               required={true}
               options={orgOptions}
               disabled={loading}
-              onChange={(e) => onSelectOrg(e)}
-              ref={orgRef}
+              registrationProps={register("organization", {
+                onChange: (e) => onSelectOrg(e.target.value),
+                required: true,
+              })}
+              validationStatus={
+                errors?.organization?.type === "required" ? "error" : undefined
+              }
+              errorMessage="Organization is required"
             />
           </div>
-          <div
-            data-testid={"facility-selection-container"}
-            className={"desktop:grid-col-4 mobile-lg:grid-col-12"}
-          >
-            <ComboBox
-              name={"Testing facility"}
-              id={"unarchive-patient-facility-select"}
+          <div className={"desktop:grid-col-4 mobile-lg:grid-col-12"}>
+            <Select
+              label="Testing facility"
+              name="facilities"
+              defaultOption={"- Select -"}
+              defaultSelect={true}
               required={true}
-              options={facilityOptions}
+              value={unarchivePatientState.facilityId}
+              options={
+                unarchivePatientState.facilities.map((facility) => ({
+                  value: facility.id,
+                  label: facility.name,
+                })) ?? []
+              }
               disabled={loading}
-              onChange={(e) => onSelectFacility(e)}
-              ref={facilityRef}
+              registrationProps={register("facility", {
+                onChange: (e) => onSelectFacility(e.target.value),
+                required: true,
+              })}
+              validationStatus={
+                errors?.facility?.type === "required" ? "error" : undefined
+              }
+              errorMessage="Testing facility is required"
             />
           </div>
           <div className="margin-top-3">
@@ -99,7 +107,7 @@ const UnarchivePatientFilters = ({
               type="submit"
               label="Search"
               className="margin-right-0"
-              disabled={disableSearch}
+              disabled={loading}
             />
           </div>
         </form>

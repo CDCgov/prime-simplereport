@@ -6,8 +6,7 @@
     "coding": [
       {
         "system": "http://loinc.org",
-        "code": "85477-8",
-        "display": "Influenza virus A RNA [Presence] in Upper respiratory specimen by NAA with probe detection"
+        "code": "85477-8"
       }
     ],
     "text": "FLU A"
@@ -43,6 +42,12 @@
         "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
         "valueCoding": {
           "code": "fluTestkitNameId"
+        }
+      },
+      {
+        "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+        "valueCoding": {
+          "code": "fluEquipmentUID"
         }
       }
     ]

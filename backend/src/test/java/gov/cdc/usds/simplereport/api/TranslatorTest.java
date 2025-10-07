@@ -12,10 +12,6 @@ import static gov.cdc.usds.simplereport.api.Translators.parseTestResult;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNoUnk;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.INVALID_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,20 +20,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import gov.cdc.usds.simplereport.db.model.auxiliary.SnomedConceptRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 class TranslatorTest {
   @Test
@@ -50,20 +43,28 @@ class TranslatorTest {
     assertNull(parseUserShortDate(null));
   }
 
-  @ParameterizedTest(name = "{0} parses correctly")
-  @MethodSource("namedArguments")
-  void validUserShortDate_parsesCorrectly(String date) {
-    LocalDate result = parseUserShortDate(date);
+  @Test
+  void validUserShortDate_withStandardFormatParsesCorrectly() {
+    LocalDate result = parseUserShortDate("2/1/2021");
     assertEquals(2, result.getMonthValue());
     assertEquals(1, result.getDayOfMonth());
     assertEquals(2021, result.getYear());
   }
 
-  static Stream<Arguments> namedArguments() {
-    return Stream.of(
-        Arguments.of(Named.of("Standard format date", "2/1/2021")),
-        Arguments.of(Named.of("Leading zeros date", "02/01/2021")),
-        Arguments.of(Named.of("Short year date", "2/1/21")));
+  @Test
+  void validUserShortDate_withLeadingZerosParsesCorrectly() {
+    LocalDate result = parseUserShortDate("02/01/2021");
+    assertEquals(2, result.getMonthValue());
+    assertEquals(1, result.getDayOfMonth());
+    assertEquals(2021, result.getYear());
+  }
+
+  @Test
+  void validUserShortDate_withShortYearParsesCorrectly() {
+    LocalDate result = parseUserShortDate("2/1/80");
+    assertEquals(2, result.getMonthValue());
+    assertEquals(1, result.getDayOfMonth());
+    assertEquals(1980, result.getYear());
   }
 
   @Test
@@ -421,6 +422,24 @@ class TranslatorTest {
   }
 
   @Test
+  void convertsPositiveLoincToTestResult() {
+    TestResult result = Translators.convertSnomedToResult("260373001");
+    assertEquals(TestResult.POSITIVE, result);
+  }
+
+  @Test
+  void convertsNegativeLoincToTestResult() {
+    TestResult result = Translators.convertSnomedToResult("260415000");
+    assertEquals(TestResult.NEGATIVE, result);
+  }
+
+  @Test
+  void convertsUnknownLoincToTestResult() {
+    TestResult result = Translators.convertSnomedToResult("blah");
+    assertEquals(TestResult.UNDETERMINED, result);
+  }
+
+  @Test
   void convertsPositiveTestResultToAppropriateLoinc() {
     String loinc = Translators.convertTestResultToSnomed(TestResult.POSITIVE);
     assertEquals("260373001", loinc);
@@ -436,27 +455,6 @@ class TranslatorTest {
   void convertsUnknownTestResultToAppropriateLoinc() {
     String loinc = Translators.convertTestResultToSnomed(TestResult.UNDETERMINED);
     assertEquals("455371000124106", loinc);
-  }
-
-  @Test
-  void convertsSnomedCodeToAppropriateSnomedConceptName() {
-    SnomedConceptRecord result = Translators.getSnomedConceptByCode(POSITIVE_SNOMED);
-    assertEquals("Positive", result.name());
-
-    result = Translators.getSnomedConceptByCode(DETECTED_SNOMED);
-    assertEquals("Detected", result.name());
-
-    result = Translators.getSnomedConceptByCode(NOT_DETECTED_SNOMED);
-    assertEquals("Not detected", result.name());
-
-    result = Translators.getSnomedConceptByCode(INVALID_SNOMED);
-    assertEquals("Invalid result", result.name());
-
-    result = Translators.getSnomedConceptByCode("42425007");
-    assertEquals("Equivocal", result.name());
-
-    result = Translators.getSnomedConceptByCode("720735008");
-    assertEquals("Presumptive positive", result.name());
   }
 
   static class GoodNameArgumentsProvider implements ArgumentsProvider {

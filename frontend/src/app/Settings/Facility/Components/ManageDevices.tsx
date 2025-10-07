@@ -1,15 +1,11 @@
 import React from "react";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
+import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
 import "./ManageDevices.scss";
 import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
-import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
-import {
-  useDisabledFeatureDiseaseList,
-  mapStringToDiseaseEnum,
-} from "../../../utils/disease";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
@@ -28,37 +24,22 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
-  const disabledDiseases = useDisabledFeatureDiseaseList();
-
-  const filteredDeviceTypes = deviceTypes.filter((device) => {
-    const hasDisabledDisease = device.supportedDiseaseTestPerformed?.some(
-      (test: { supportedDisease: { name: string } }) => {
-        const mappedDisease = mapStringToDiseaseEnum(
-          test.supportedDisease?.name
-        );
-        return (
-          mappedDisease !== null && disabledDiseases.includes(mappedDisease)
-        );
-      }
-    );
-    return !hasDisabledDisease;
-  });
-
   const deviceTypeOptions = Array.from(
-    filteredDeviceTypes.map((device) => ({
+    deviceTypes.map((device) => ({
       label: device.model,
       value: device.internalId,
     }))
   );
 
-  const getUnselectedDevices = (): FacilityFormDeviceType[] => {
-    return filteredDeviceTypes.filter(
-      (device) => !formCurrentValues.devices.includes(device.internalId)
-    );
+  const getFilteredDevices = (
+    deviceIds: string[]
+  ): FacilityFormDeviceType[] => {
+    return (deviceTypes ?? []).filter((d) => deviceIds.includes(d.internalId));
   };
 
   const searchDevicesByInput = (inputValue: string) => {
-    return searchFacilityFormDevices(getUnselectedDevices(), inputValue);
+    const deviceIds = deviceTypeOptions.map((d) => d.value);
+    return searchFacilityFormDevices(getFilteredDevices(deviceIds), inputValue);
   };
 
   return (

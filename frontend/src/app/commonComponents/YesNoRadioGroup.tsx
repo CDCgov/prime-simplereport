@@ -4,24 +4,32 @@ import { useTranslatedConstants } from "../constants";
 
 import RadioGroup from "./RadioGroup";
 
-export const boolToYesNo = (
+export const boolToYesNoUnknown = (
   value: boolean | null | undefined
-): YesNo | undefined => {
+): YesNoUnknown | undefined => {
   if (value) {
     return "YES";
   }
   if (value === false) {
     return "NO";
   }
+  if (value === null) {
+    return "UNKNOWN";
+  }
   return undefined;
 };
 
-export const yesNoToBool = (value: YesNo): boolean | undefined => {
+export const yesNoUnknownToBool = (
+  value: YesNoUnknown
+): boolean | null | undefined => {
   if (value === "YES") {
     return true;
   }
   if (value === "NO") {
     return false;
+  }
+  if (value === "UNKNOWN") {
+    return null;
   }
   return undefined;
 };
@@ -29,8 +37,8 @@ export const yesNoToBool = (value: YesNo): boolean | undefined => {
 interface Props {
   name: string;
   legend: React.ReactNode;
-  value: YesNo | undefined;
-  onChange: (value: YesNo) => void;
+  value: YesNoUnknown | undefined;
+  onChange: (value: YesNoUnknown) => void;
   hintText?: string;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   validationStatus?: "error" | "success";
@@ -49,7 +57,7 @@ const YesNoRadioGroup: React.FC<Props> = ({
   errorMessage,
   required,
 }) => {
-  const { YES_NO_VALUES: values } = useTranslatedConstants();
+  const { YES_NO_UNKNOWN_VALUES: values } = useTranslatedConstants();
 
   return (
     <RadioGroup

@@ -164,66 +164,21 @@ data "azurerm_key_vault_secret" "db_password_no_phi" {
 }
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-${local.token_env_suffix}"
+  name         = "datahub-api-key-test"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_fhir_key" {
-  name         = "datahub-fhir-key-${local.token_env_suffix}"
+  name         = "datahub-fhir-key-test"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_url" {
-  name         = "datahub-url-${local.token_env_suffix}"
+  name         = "datahub-url-test"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_signing_key" {
-  name         = "datahub-signing-key-${local.token_env_suffix}"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "simple_report_prod_backend_url" {
-  name         = "simple-report-prod-backend-url"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "simple_report_prod_devices_token" {
-  name         = "simple-report-prod-devices-token"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "aphl_tes_api_key" {
-  name         = "aphl-tes-api-key-dev"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "loinc_fhir_api_username" {
-  name         = "loinc-fhir-api-username-dev"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "loinc_fhir_api_password" {
-  name         = "loinc-fhir-api-password-dev"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "umls_api_key" {
-  name         = "umls-api-key-dev"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "aims_user_id" {
-  name         = "aims-user-id-${local.token_env_suffix}"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "aims_environment" {
-  name         = "aims-environment-${local.token_env_suffix}"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
-data "azurerm_key_vault_secret" "aims_bucket_name" {
-  name         = "aims-outbound-storage-bucket-name-${local.token_env_suffix}"
+  name         = "datahub-signing-key-test"
   key_vault_id = data.azurerm_key_vault.global.id
 }

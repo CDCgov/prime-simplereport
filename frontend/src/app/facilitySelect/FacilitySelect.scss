@@ -1,9 +1,34 @@
 #facility-select {
-  height: 100vh;
+  height: 100%;
 
   .card-container {
-    max-width: 25rem;
+    max-width: 350px;
     margin: 0 auto;
-    margin-top: 3.125rem;
+    margin-top: 50px;
+  }
+
+  .usa-card__header {
+    color: #022e4e;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .organization-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .welcome {
+    font-weight: 600;
+    margin: 20px 0 0 0;
+  }
+
+  .select-text {
+    margin: 5px 0 15px 0;
+  }
+
+  button {
+    width: 100%;
+    margin-bottom: 10px;
   }
 }

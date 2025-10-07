@@ -3,7 +3,7 @@ import classnames from "classnames";
 
 import "./SingleFileInput.scss";
 
-export interface SingleFileInputProps {
+type SingleFileInputProps = {
   id: string;
   name: string;
   ariaLabel: string;
@@ -11,7 +11,7 @@ export interface SingleFileInputProps {
   onChange: ChangeEventHandler<HTMLInputElement>;
   required: boolean;
   ariaInvalid?: boolean;
-}
+};
 
 type FileState = "blank" | "invalid" | "selected";
 

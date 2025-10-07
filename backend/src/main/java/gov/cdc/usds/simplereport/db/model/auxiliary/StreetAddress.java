@@ -5,21 +5,20 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.hypersistence.utils.hibernate.type.array.ListArrayType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import org.hibernate.annotations.Type;
-import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** An embeddable address type for patients, facilities and providers. */
 @Embeddable
 public class StreetAddress {
 
-  @Type(ListArrayType.class)
+  @Type(type = "list-array")
   @Column
   private List<String> street = new ArrayList<>();
 

@@ -103,15 +103,3 @@ variable "function_memory_threshold" {
   description = "The threshold for the function app memory alert in bytes"
   default     = 1200000000
 }
-
-variable "wiki_docs_text" {
-  description = "Custom properties text to include the alert response docs"
-  type        = string
-  default     = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
-}
-
-variable "wiki_docs_json" {
-  description = "Custom properties json to include the alert response docs"
-  type        = map(string)
-  default     = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
-}

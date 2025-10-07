@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from "@storybook/react-webpack5";
+import { StoryFn, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 

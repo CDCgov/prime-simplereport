@@ -10,11 +10,11 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TextMessageSent;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import jakarta.persistence.PersistenceException;
 import java.util.stream.StreamSupport;
+import javax.persistence.PersistenceException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class TextMessageSentRepositoryTest extends BaseRepositoryTest {
@@ -62,6 +62,6 @@ class TextMessageSentRepositoryTest extends BaseRepositoryTest {
               flush();
             });
 
-    assertEquals(PSQLException.class, caught.getCause().getClass());
+    assertEquals(ConstraintViolationException.class, caught.getCause().getClass());
   }
 }

@@ -1,56 +1,11 @@
 package gov.cdc.usds.simplereport.validators;
 
-import static gov.cdc.usds.simplereport.api.Translators.ALL_ACCEPTED_RESULT_SNOMED_RECORDS;
 import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
-import static gov.cdc.usds.simplereport.api.Translators.GENDER_IDENTITIES;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOMELESS_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOMELESS_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPICE_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPICE_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPITAL_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPITAL_SHIP_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPITAL_SHIP_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPITAL_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSTEL_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSTEL_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.LONG_TERM_HOSPITAL_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.LONG_TERM_HOSPITAL_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.MILITARY_ACCOMMODATION_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.MILITARY_ACCOMMODATION_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.NURSING_HOME_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.NURSING_HOME_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.ORPHANAGE_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.ORPHANAGE_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.PENAL_INSTITUTION_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.PENAL_INSTITUTION_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.PRISON_BASED_CARE_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.PRISON_BASED_CARE_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.RELIGIOUS_RESIDENCE_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.RELIGIOUS_RESIDENCE_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.RETIREMENT_HOME_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.RETIREMENT_HOME_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.SECURE_HOSPITAL_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.SECURE_HOSPITAL_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.SHELTERED_HOUSING_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.SHELTERED_HOUSING_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.hasTimezoneSubstring;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.parseLocalDateTime;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.timezoneAbbreviationZoneIdMap;
-import static java.util.stream.Collectors.toSet;
-import static java.util.stream.Stream.concat;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
@@ -62,7 +17,6 @@ import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import gov.cdc.usds.simplereport.utils.UnknownAddressUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -72,12 +26,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 public class CsvValidatorUtils {
 
@@ -93,18 +47,27 @@ public class CsvValidatorUtils {
   private static final String DATE_REGEX =
       "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}$";
 
-  private static final String LOINC_CODE_REGEX = "([0-9]{5})-[0-9]";
+  /**
+   * Validates MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
+   *
+   * <p>Optional timezone code suffix which is checked as a valid timezone separately
+   *
+   * @see gov.cdc.usds.simplereport.utils.DateTimeUtils
+   */
+  private static final String DATE_TIME_REGEX =
+      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$";
+
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-  public static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
-  public static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
+  private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
+  private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final Set<String> VALID_STATE_CODES =
-      concat(
+      Stream.concat(
               STATE_CODES.stream().map(String::toLowerCase),
               CANADIAN_STATE_CODES.stream().map(String::toLowerCase))
-          .collect(toSet());
+          .collect(Collectors.toSet());
   private static final Set<String> VALID_COUNTRY_CODES =
-      COUNTRY_CODES.stream().map(String::toLowerCase).collect(toSet());
+      COUNTRY_CODES.stream().map(String::toLowerCase).collect(Collectors.toSet());
   private static final String UNKNOWN_LITERAL = "unknown";
   private static final String UNKNOWN_CODE = "unk";
   private static final String OTHER_LITERAL = "other";
@@ -134,13 +97,6 @@ public class CsvValidatorUtils {
   private static final String NOT_HISPANIC_LITERAL = "not hispanic or latino";
   private static final String NOT_HISPANIC_CODE = "2186-5";
   private static final String NOT_HISPANIC_DB_VALUE = "not_hispanic";
-  private static final String POSITIVE_LITERAL = "positive";
-  private static final String NEGATIVE_LITERAL = "negative";
-  private static final String DETECTED_LITERAL = "detected";
-  private static final String NOT_DETECTED_LITERAL = "not detected";
-  private static final String INVALID_RESULT_LITERAL = "invalid result";
-  private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
-      Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_SNOMED, DETECTED_SNOMED);
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "m", MALE_LITERAL,
@@ -149,7 +105,6 @@ public class CsvValidatorUtils {
           "u", UNKNOWN_LITERAL,
           "a", "ambiguous",
           "n", "not applicable");
-
   private static final Set<String> ETHNICITY_VALUES =
       Set.of(
           HISPANIC_CODE, HISPANIC_LITERAL,
@@ -173,115 +128,54 @@ public class CsvValidatorUtils {
           ASK_LITERAL,
           UNKNOWN_CODE,
           UNKNOWN_LITERAL);
-  private static final Set<String> YES_NO_UNKNOWN_VALUES =
+  private static final Set<String> YES_NO_VALUES =
       Set.of(
           "y", "yes",
           "n", "no",
           "u", UNKNOWN_CODE);
-  private static final Set<String> ACCEPTED_LITERAL_TEST_RESULT_VALUES =
-      Set.of(
-          POSITIVE_LITERAL,
-          NEGATIVE_LITERAL,
-          NOT_DETECTED_LITERAL,
-          DETECTED_LITERAL,
-          INVALID_RESULT_LITERAL);
+  private static final Set<String> TEST_RESULT_VALUES =
+      Set.of("positive", "negative", "not detected", "detected", "invalid result");
 
-  private static final Set<String> ALL_ACCEPTED_TEST_RESULT_VALUES =
-      concat(
-              ACCEPTED_LITERAL_TEST_RESULT_VALUES.stream(),
-              ALL_ACCEPTED_RESULT_SNOMED_RECORDS.keySet().stream())
-          .collect(toSet());
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
-          HOSPITAL_SNOMED, HOSPITAL_LITERAL,
-          HOSPITAL_SHIP_SNOMED, HOSPITAL_SHIP_LITERAL,
-          LONG_TERM_HOSPITAL_SNOMED, LONG_TERM_HOSPITAL_LITERAL,
-          SECURE_HOSPITAL_SNOMED, SECURE_HOSPITAL_LITERAL,
-          NURSING_HOME_SNOMED, NURSING_HOME_LITERAL,
-          RETIREMENT_HOME_SNOMED, RETIREMENT_HOME_LITERAL,
-          ORPHANAGE_SNOMED, ORPHANAGE_LITERAL,
-          PRISON_BASED_CARE_SNOMED, PRISON_BASED_CARE_LITERAL,
-          SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED, SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL,
-          BOARDING_HOUSE_SNOMED, BOARDING_HOUSE_LITERAL,
-          MILITARY_ACCOMMODATION_SNOMED, MILITARY_ACCOMMODATION_LITERAL,
-          HOSPICE_SNOMED, HOSPICE_LITERAL,
-          HOSTEL_SNOMED, HOSTEL_LITERAL,
-          SHELTERED_HOUSING_SNOMED, SHELTERED_HOUSING_LITERAL,
-          PENAL_INSTITUTION_SNOMED, PENAL_INSTITUTION_LITERAL,
-          RELIGIOUS_RESIDENCE_SNOMED, RELIGIOUS_RESIDENCE_LITERAL,
-          WORK_ENVIRONMENT_SNOMED, WORK_ENVIRONMENT_LITERAL,
-          HOMELESS_SNOMED, HOMELESS_LITERAL);
+          "22232009", "hospital",
+          "2081004", "hospital ship",
+          "32074000", "long term care hospital",
+          "224929004", "secure hospital",
+          "42665001", "nursing home",
+          "30629002", "retirement home",
+          "74056004", "orphanage",
+          "722173008", "prison-based care site",
+          "20078004", "substance abuse treatment center",
+          "257573002", "boarding house",
+          "224683003", "military accommodation",
+          "284546000", "hospice",
+          "257628001", "hostel",
+          "310207003", "sheltered housing",
+          "57656006", "penal institution",
+          "285113009", "religious institutional residence",
+          "285141008", "work (environment)",
+          "32911000", "homeless");
   private static final Set<String> PATIENT_ROLE_VALUES =
       Set.of("staff", "resident", "student", "visitor", UNKNOWN_LITERAL);
   private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
   public static final String ITEM_SCOPE = "item";
 
-  //  http://hl7.org/fhir/R4/codesystem-data-absent-reason.html#data-absent-reason-unknown
-  private static final Set<String> DATA_ABSENT_REASONS =
-      Set.of(
-          UNKNOWN_LITERAL,
-          "asked-unknown",
-          "temp-unknown",
-          "not-asked",
-          "asked-declined",
-          "masked",
-          "not-applicable",
-          "unsupported",
-          "as-text",
-          "error",
-          "not-a-number",
-          "negative-infinity",
-          "positive-infinity",
-          "not-performed",
-          "not-permitted");
-
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
   }
 
-  private static String getInvalidValueErrorMessage(String rowValue, String columnName) {
+  private static String getInValidValueErrorMessage(String rowValue, String columnName) {
     return rowValue + " is not an acceptable value for the " + columnName + " column.";
-  }
-
-  private static List<String> getOtherUnkAddressColumnNames(String columnName) {
-    Set<String> columnNames = UnknownAddressUtils.unknownAddressMap().keySet();
-    columnNames.remove(columnName);
-    return new ArrayList<>(columnNames);
-  }
-
-  public static String getInvalidUnknownAddressErrorMessage(String rowValue, String columnName) {
-    List<String> otherUnkAddressColumns = getOtherUnkAddressColumnNames(columnName);
-    String otherColumnsMsg =
-        otherUnkAddressColumns.get(0) + " and " + otherUnkAddressColumns.get(1);
-    return "If you include "
-        + rowValue
-        + " in the "
-        + columnName
-        + " column, make sure the values in the "
-        + otherColumnsMsg
-        + " columns also indicate the address is unknown.";
   }
 
   private static String getRequiredValueErrorMessage(String columnName) {
     return "File is missing data in the " + columnName + " column.";
   }
 
-  private static String getPositiveResultRequiredValueErrorMessage(
-      String columnName, String diseaseName) {
-    return "File is missing data in the "
-        + columnName
-        + " column. This is required because the row contains a positive "
-        + diseaseName
-        + " test result.";
-  }
-
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(input);
-  }
-
-  public static List<FeedbackMessage> validateTestPerformedCode(ValueOrError input) {
-    return validateRegex(input, LOINC_CODE_REGEX);
+    return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
   }
 
   public static List<FeedbackMessage> validateSpecimenType(
@@ -300,7 +194,7 @@ public class CsvValidatorUtils {
         errors.add(
             FeedbackMessage.builder()
                 .scope(ITEM_SCOPE)
-                .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+                .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
                 .errorType(ResultUploadErrorType.INVALID_DATA)
                 .source(ResultUploadErrorSource.SIMPLE_REPORT)
                 .fieldRequired(true)
@@ -315,7 +209,7 @@ public class CsvValidatorUtils {
       errors.add(
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .fieldRequired(true)
@@ -330,8 +224,8 @@ public class CsvValidatorUtils {
     return validateInSet(input, RESIDENCE_VALUES);
   }
 
-  public static List<FeedbackMessage> validateYesNoUnknownAnswer(ValueOrError input) {
-    return validateInSet(input, YES_NO_UNKNOWN_VALUES);
+  public static List<FeedbackMessage> validateYesNoAnswer(ValueOrError input) {
+    return validateInSet(input, YES_NO_VALUES);
   }
 
   public static List<FeedbackMessage> validateEthnicity(ValueOrError input) {
@@ -346,45 +240,12 @@ public class CsvValidatorUtils {
     return validateInSet(input, GENDER_VALUES);
   }
 
-  public static List<FeedbackMessage> validateGenderIdentity(ValueOrError input) {
-    return validateInSet(input, GENDER_IDENTITIES);
-  }
-
   public static List<FeedbackMessage> validateState(ValueOrError input) {
     return validateInSet(input, VALID_STATE_CODES);
   }
 
   public static List<FeedbackMessage> validateCountry(ValueOrError input) {
     return validateInSet(input, VALID_COUNTRY_CODES);
-  }
-
-  public static List<FeedbackMessage> validatePartialUnkAddress(
-      ValueOrError stateInput, ValueOrError zipInput, ValueOrError streetInput) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    List<ValueOrError> addressInputs = new ArrayList<>(List.of(stateInput, zipInput, streetInput));
-    addressInputs.forEach(
-        addressInput -> {
-          boolean isUnk =
-              UnknownAddressUtils.isAddressSectionUnk(
-                  addressInput.getValue(),
-                  UnknownAddressUtils.unknownAddressMap().get(addressInput.getHeader()));
-          if (isUnk) {
-            errors.add(
-                FeedbackMessage.builder()
-                    .scope(ITEM_SCOPE)
-                    .fieldHeader(addressInput.getHeader())
-                    .message(
-                        getInvalidUnknownAddressErrorMessage(
-                            addressInput.getValue(), addressInput.getHeader()))
-                    .errorType(ResultUploadErrorType.INVALID_DATA)
-                    .build());
-          }
-        });
-    // only return errors if some values are unknown
-    if (errors.stream().count() != addressInputs.stream().count()) {
-      return errors;
-    }
-    return new ArrayList<>();
   }
 
   public static List<FeedbackMessage> validateTestResultStatus(ValueOrError input) {
@@ -424,7 +285,7 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .fieldRequired(input.isRequired())
@@ -438,30 +299,12 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    String value = parseString(input.getValue());
-    List<FeedbackMessage> errors = new ArrayList<>();
-
-    if (value == null) {
-      return errors;
+    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
+    if (input.getValue() != null
+        && errors.isEmpty()
+        && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
+      errors.addAll(validateDateTimeZoneCode(input));
     }
-
-    try {
-      parseLocalDateTime(value, DATE_TIME_FORMATTER);
-
-      if (hasTimezoneSubstring(value)) {
-        errors.addAll(validateDateTimeZoneCode(input));
-      }
-    } catch (DateTimeParseException | StringIndexOutOfBoundsException e) {
-      errors.add(
-          FeedbackMessage.builder()
-              .scope(ITEM_SCOPE)
-              .fieldHeader(input.getHeader())
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(ResultUploadErrorType.INVALID_DATA)
-              .fieldRequired(input.isRequired())
-              .build());
-    }
-
     return errors;
   }
 
@@ -470,12 +313,12 @@ public class CsvValidatorUtils {
     String value = input.getValue();
     String timezoneCode = value.substring(value.lastIndexOf(' ')).trim();
     if (!ZoneId.getAvailableZoneIds().contains(timezoneCode)
-        && !timezoneAbbreviationZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
+        && !validTimeZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
       errors.add(
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(false)
               .build());
@@ -496,10 +339,6 @@ public class CsvValidatorUtils {
       throw new CsvProcessingException(
           e.getMessage(), location.getLineNr(), location.getColumnNr());
     }
-  }
-
-  public static List<FeedbackMessage> validateDataAbsentReason(ValueOrError input) {
-    return validateInSet(input, DATA_ABSENT_REASONS);
   }
 
   public static ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
@@ -562,14 +401,6 @@ public class CsvValidatorUtils {
     }
   }
 
-  /* Values need to be lower case to play nice with frontend */
-  public static String convertGenderIdentityToDatabaseValue(String genderIdentity) {
-    if (genderIdentity != null) {
-      return genderIdentity.toLowerCase();
-    }
-    return "";
-  }
-
   /* The acceptable values for race and ethnicity don't map to the values expected in our database. */
   public static String convertEthnicityToDatabaseValue(String ethnicity) {
     Map<String, String> displayValueToDatabaseValue =
@@ -627,96 +458,17 @@ public class CsvValidatorUtils {
     return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
   }
 
-  private static List<FeedbackMessage> validateSpecificValueOrSNOMED(ValueOrError input) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input.getValue());
-
-    if (value == null) {
-      return errors;
-    }
-
-    return validateInSet(input, ALL_ACCEPTED_TEST_RESULT_VALUES);
-  }
-
-  public static Set<String> extractSubstringsGenderOfSexualPartners(String value) {
-    Set<String> results = new HashSet<>();
-    String[] innerValues = value.split(",");
-    for (String innerValue : innerValues) {
-      results.add(innerValue.strip().toUpperCase());
-    }
-    return results;
-  }
-
-  public static List<FeedbackMessage> validateGendersOfSexualPartners(ValueOrError input) {
+  private static List<FeedbackMessage> validateSpecificValueOrSNOMED(
+      ValueOrError input, Set<String> acceptableValues) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
     if (value == null) {
       return errors;
     }
-    Set<String> genders = extractSubstringsGenderOfSexualPartners(value);
-    if (!getGenderIdentityAbbreviationMap().keySet().containsAll(genders)) {
-      errors.add(
-          FeedbackMessage.builder()
-              .scope(ITEM_SCOPE)
-              .fieldHeader(input.getHeader())
-              .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(ResultUploadErrorType.INVALID_DATA)
-              .fieldRequired(input.isRequired())
-              .build());
+    boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
+    if (nonSNOMEDValue) {
+      return validateInSet(input, acceptableValues);
     }
-    return errors;
-  }
-
-  public static List<FeedbackMessage> validatePatientGenderIdentity(ValueOrError input) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-    String value = parseString(input.getValue());
-    if (value == null) {
-      return errors;
-    }
-    if (!getGenderIdentityAbbreviationMap().containsKey(value.toUpperCase())) {
-      errors.add(
-          FeedbackMessage.builder()
-              .scope(ITEM_SCOPE)
-              .fieldHeader(input.getHeader())
-              .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(ResultUploadErrorType.INVALID_DATA)
-              .fieldRequired(input.isRequired())
-              .build());
-    }
-    return errors;
-  }
-
-  public static List<FeedbackMessage> validateRequiredFieldsForPositiveResult(
-      ValueOrError testResult, String diseaseName, List<ValueOrError> fields) {
-    List<FeedbackMessage> errors = new ArrayList<>();
-
-    if (testResult.getValue() == null) {
-      // if test result is null, then it should already give an error when validating required
-      // fields
-      return errors;
-    }
-
-    if (!POSITIVE_TEST_RESULT_VALUES.contains(testResult.getValue().toLowerCase())) {
-      return errors;
-    }
-
-    fields.forEach(
-        field -> {
-          if (StringUtils.isBlank(field.getValue())) {
-            errors.add(
-                FeedbackMessage.builder()
-                    .scope(ITEM_SCOPE)
-                    .fieldHeader(field.getHeader())
-                    .source(ResultUploadErrorSource.SIMPLE_REPORT)
-                    .message(
-                        getPositiveResultRequiredValueErrorMessage(field.getHeader(), diseaseName))
-                    .errorType(ResultUploadErrorType.MISSING_DATA)
-                    .fieldRequired(field.isRequired())
-                    .build());
-          }
-        });
     return errors;
   }
 
@@ -732,7 +484,7 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
               .source(ResultUploadErrorSource.SIMPLE_REPORT)
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
               .build());
@@ -752,7 +504,7 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .message(getInvalidValueErrorMessage(input.getValue(), input.getHeader()))
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
               .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())

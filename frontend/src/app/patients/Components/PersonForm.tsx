@@ -1,8 +1,13 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
-import { AnyObjectSchema } from "yup";
+import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
-import { ComboBox, Label, Textarea } from "@trussworks/react-uswds";
+import { ComboBox } from "@trussworks/react-uswds";
 
+import {
+  canadianProvinceCodes,
+  countryOptions,
+  stateCodes,
+} from "../../../config/constants";
 import getLanguages from "../../utils/languages";
 import i18n from "../../../i18n";
 import {
@@ -13,7 +18,11 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils/srToast";
 import FormGroup from "../../commonComponents/FormGroup";
-import { PersonErrors, usePersonSchemata } from "../personSchema";
+import {
+  PersonErrors,
+  PersonUpdateFields,
+  usePersonSchemata,
+} from "../personSchema";
 import { TestResultDeliveryPreference } from "../TestResultDeliveryPreference";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
@@ -38,8 +47,6 @@ import YesNoNotSureRadioGroup, {
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
 import ManageEmails from "./ManageEmails";
-import "./PersonForm.scss";
-import PersonAddressField from "./PersonAddressField";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
@@ -52,16 +59,12 @@ export enum PersonFormView {
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
-  savePerson: (
-    person: Nullable<PersonFormData>,
-    startTest: boolean,
-    formChanged: boolean
-  ) => void;
+  savePerson: (person: Nullable<PersonFormData>, startTest?: boolean) => void;
   onBlur?: (person: Nullable<PersonFormData>) => void;
   hideFacilitySelect?: boolean;
   getHeader?: (
     person: Nullable<PersonFormData>,
-    onSave: (startTest?: boolean, formChanged?: boolean) => void,
+    onSave: (startTest?: boolean) => void,
     formChanged: boolean
   ) => React.ReactNode;
   getFooter: (
@@ -76,7 +79,6 @@ const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [startTest, setStartTest] = useState(false);
   const [patient, setPatient] = useState(props.patient);
-
   // Default country to USA if it's not set
   if (patient.country === null) {
     setPatient({ ...patient, country: "USA" });
@@ -103,7 +105,7 @@ const PersonForm = (props: Props) => {
     getValidationError,
   } = usePersonSchemata();
 
-  const schemata: Record<PersonFormView, AnyObjectSchema> = {
+  const schemata: Record<PersonFormView, SchemaOf<PersonUpdateFields>> = {
     [PersonFormView.APP]: personSchema,
     [PersonFormView.PXP]: personUpdateSchema,
     [PersonFormView.SELF_REGISTRATION]: selfRegistrationSchema,
@@ -165,26 +167,6 @@ const PersonForm = (props: Props) => {
     <K extends keyof PersonFormData>(field: K) =>
     (value: PersonFormData[K]) => {
       if (value === patient[field]) {
-        return;
-      }
-      if (field === "unknownAddress") {
-        setFormChanged(true);
-
-        //if unknown address set to a valid default; else an empty string
-        const state = value ? "NA" : "";
-        const zip = value ? "00000" : "";
-        const street = value ? "** Unknown / Not Given **" : "";
-
-        setPatient({
-          ...patient,
-          [field]: value,
-          state: state,
-          zipCode: zip,
-          street: street,
-          streetTwo: "",
-          city: "",
-          county: "",
-        });
         return;
       }
       // If a patient has an international address, use special values for state and zip code
@@ -343,8 +325,7 @@ const PersonForm = (props: Props) => {
     if (
       JSON.stringify(getAddress(patient)) ===
         JSON.stringify(getAddress(props.patient)) ||
-      patient.country !== "USA" ||
-      patient.unknownAddress
+      patient.country !== "USA"
     ) {
       onSave(undefined, shouldStartTest);
     } else {
@@ -361,10 +342,10 @@ const PersonForm = (props: Props) => {
     person.phoneNumbers = person.phoneNumbers
       ? person.phoneNumbers.filter((pn) => pn.number && pn.type)
       : person.phoneNumbers;
-    props.savePerson(person, shouldStartTest, formChanged);
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
+    props.savePerson(person, shouldStartTest);
   };
 
   const commonInputProps = {
@@ -399,7 +380,6 @@ const PersonForm = (props: Props) => {
             field="firstName"
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
-            dataCy="personForm-firstName-input"
           />
           <Input
             {...commonInputProps}
@@ -413,7 +393,6 @@ const PersonForm = (props: Props) => {
             label={t("patient.form.general.lastName")}
             required={view !== PersonFormView.PXP}
             disabled={view === PersonFormView.PXP}
-            dataCy="personForm-lastName-input"
           />
         </div>
         <div className="usa-form">
@@ -425,14 +404,12 @@ const PersonForm = (props: Props) => {
             options={ROLE_VALUES}
             defaultOption={t("common.defaultDropdownOption")}
             defaultSelect={true}
-            dataCy={"personForm-role-input"}
           />
           {patient.role === "STUDENT" && (
             <Input
               {...commonInputProps}
               field="lookupId"
               label={t("patient.form.general.studentId")}
-              dataCy={"personForm-lookupId-input"}
             />
           )}
           {view !== PersonFormView.SELF_REGISTRATION && (
@@ -445,7 +422,6 @@ const PersonForm = (props: Props) => {
               validationStatus={validationStatus}
               errors={errors}
               hidden={props.hideFacilitySelect}
-              dataCy={"personForm-facility-input"}
             />
           )}
           <div className="usa-form-group">
@@ -484,7 +460,6 @@ const PersonForm = (props: Props) => {
             disabled={view === PersonFormView.PXP}
             min={formatDate(new Date("Jan 1, 1900"))}
             max={formatDate(new Date())}
-            dataCy="personForm-dob-input"
           />
         </div>
       </FormGroup>
@@ -492,21 +467,13 @@ const PersonForm = (props: Props) => {
         <p className="usa-hint maxw-prose">
           {t("patient.form.contact.helpText")}
         </p>
-        <div className="sr-patient-sub-header">
-          {t("patient.form.contact.phoneHeading")}
-        </div>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}
           updatePhoneNumbers={onPersonChange("phoneNumbers")}
           updateTestResultDelivery={onPersonChange("testResultDelivery")}
           phoneNumberValidator={phoneNumberValidator}
-          unknownPhoneNumber={patient.unknownPhoneNumber ?? undefined}
-          setUnknownPhoneNumber={onPersonChange("unknownPhoneNumber")}
         />
-        <div className="sr-patient-sub-header">
-          {t("patient.form.contact.emailHeading")}
-        </div>
         <div className="usa-form">
           <ManageEmails
             emails={patient.emails}
@@ -537,29 +504,111 @@ const PersonForm = (props: Props) => {
             />
           )}
         </div>
-        <div className="sr-patient-sub-header">
-          {t("patient.form.contact.addressHeading")}
+        <div className="usa-form">
+          <Select
+            label={t("patient.form.contact.country")}
+            name="country"
+            value={patient.country || "USA"}
+            options={countryOptions}
+            onChange={onPersonChange("country")}
+            onBlur={() => {
+              onBlurField("country");
+            }}
+            validationStatus={validationStatus("country")}
+            errorMessage={errors.country}
+            required
+          />
         </div>
-        <PersonAddressField {...commonInputProps} view={view} />
-        <div className="usa-form" style={{ maxWidth: "30rem" }}>
-          <div className="usa-form-group">
-            <Label htmlFor="patient-notes-textarea">
-              {t("patient.form.notes.heading")}
-            </Label>
-            <span id="with-hint-textarea-hint" className="usa-hint">
-              {t("patient.form.notes.helpText")}
-            </span>
-            <Textarea
-              id="patient-notes-textarea"
-              maxLength={10000}
-              aria-describedby="with-hint-textarea-info with-hint-textarea-hint"
-              onChange={(value) => {
-                onPersonChange("notes")(value.target.value);
-              }}
-              name="notes"
-              value={patient.notes || undefined}
+        <div className="usa-form">
+          <Input
+            {...commonInputProps}
+            field="street"
+            label={t("patient.form.contact.street1")}
+            required
+          />
+        </div>
+        <div className="usa-form">
+          <Input
+            {...commonInputProps}
+            field="streetTwo"
+            label={t("patient.form.contact.street2")}
+          />
+        </div>
+        <div className="usa-form">
+          <Input
+            {...commonInputProps}
+            field="city"
+            label={t("patient.form.contact.city")}
+            required
+          />
+          {view !== PersonFormView.SELF_REGISTRATION && (
+            <Input
+              {...commonInputProps}
+              field="county"
+              label={t("patient.form.contact.county")}
             />
-          </div>
+          )}
+          {patient.country === "USA" ? (
+            <div className="grid-row grid-gap">
+              <div className="mobile-lg:grid-col-6">
+                <Select
+                  label={t("patient.form.contact.state")}
+                  name="state"
+                  value={patient.state || ""}
+                  options={stateCodes.map((c) => ({ label: c, value: c }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={onPersonChange("state")}
+                  onBlur={() => {
+                    onBlurField("state");
+                  }}
+                  validationStatus={validationStatus("state")}
+                  errorMessage={errors.state}
+                  required
+                />
+              </div>
+              <div className="mobile-lg:grid-col-6">
+                <Input
+                  {...commonInputProps}
+                  field="zipCode"
+                  label={t("patient.form.contact.zip")}
+                  required
+                />
+              </div>
+            </div>
+          ) : null}
+          {patient.country === "CAN" ? (
+            <div className="grid-row grid-gap">
+              <div className="mobile-lg:grid-col-6">
+                <Select
+                  label={t("patient.form.contact.state")}
+                  name="state"
+                  value={patient.state || ""}
+                  options={canadianProvinceCodes.map((c) => ({
+                    label: c,
+                    value: c,
+                  }))}
+                  defaultOption={t("common.defaultDropdownOption")}
+                  defaultSelect
+                  onChange={onPersonChange("state")}
+                  onBlur={() => {
+                    onBlurField("state");
+                  }}
+                  validationStatus={validationStatus("state")}
+                  errorMessage={errors.state}
+                  required
+                />
+              </div>
+              <div className="mobile-lg:grid-col-6">
+                <Input
+                  {...commonInputProps}
+                  field="zipCode"
+                  label={t("patient.form.contact.zip")}
+                  required
+                />
+              </div>
+            </div>
+          ) : null}
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.demographics.heading")}>
@@ -602,6 +651,7 @@ const PersonForm = (props: Props) => {
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
+          hintText={t("patient.form.demographics.genderHelpText")}
           name="gender"
           required={view !== PersonFormView.PXP}
           validationStatus={validationStatus("gender")}

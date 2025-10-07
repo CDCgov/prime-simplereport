@@ -1,17 +1,15 @@
 const ChangeUser = () => {
-  if (process.env.NODE_ENV !== "development") {
+  if (import.meta.env.MODE !== "development") {
     return null;
   }
 
   const getLink = (email: string, name: string) => (
-    <li>
-      <a
-        className="ghost-user-link"
-        href={`/#access_token=SR-DEMO-LOGIN%20${email}`}
-      >
-        Login as {name}
-      </a>
-    </li>
+    <a
+      className="ghost-user-link"
+      href={`/#access_token=SR-DEMO-LOGIN%20${email}`}
+    >
+      Login as {name}
+    </a>
   );
 
   return (

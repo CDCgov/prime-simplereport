@@ -2,7 +2,6 @@ import React, { ChangeEvent, useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment/moment";
 import classNames from "classnames";
-import { useFeature } from "flagged";
 
 import Dropdown from "../commonComponents/Dropdown";
 import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql";
@@ -10,9 +9,6 @@ import "./Analytics.scss";
 import { formatDate } from "../utils/date";
 import { PATIENT_TERM_PLURAL } from "../../config/constants";
 import { useDocumentTitle } from "../utils/hooks";
-import { MULTIPLEX_DISEASES } from "../testResults/constants";
-import { useSupportedDiseaseList } from "../utils/disease";
-import Alert from "../commonComponents/Alert";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -60,7 +56,7 @@ interface Props {
 }
 
 export const Analytics = (props: Props) => {
-  useDocumentTitle("Testing data dashboard");
+  useDocumentTitle("COVID-19 testing data dashboard");
 
   const organization = useSelector(
     (state) => (state as any).organization as Organization
@@ -70,9 +66,6 @@ export const Analytics = (props: Props) => {
   );
   const [facilityId, setFacilityId] = useState<string>("");
   const [facilityName, setFacilityName] = useState<string>(organization.name);
-  const [selectedCondition, setSelectedCondition] = useState<string>(
-    MULTIPLEX_DISEASES.COVID_19
-  );
   const [dateRange, setDateRange] = useState<string>("week");
   const [startDate, setStartDate] = useState<string>(
     props.startDate || getStartDateStringFromDaysAgo(7)
@@ -81,10 +74,6 @@ export const Analytics = (props: Props) => {
     props.endDate || getEndDateStringFromDaysAgo(0)
   );
 
-  const dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
-
-  const supportedDiseaseList = useSupportedDiseaseList();
-
   const updateFacility = ({
     target: { value },
   }: ChangeEvent<HTMLSelectElement>) => {
@@ -92,12 +81,6 @@ export const Analytics = (props: Props) => {
       facilities.find((f) => f.id === value)?.name || "All facilities";
     setFacilityId(value);
     setFacilityName(facilityName);
-  };
-
-  const updateSelectedCondition = ({
-    target: { value },
-  }: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCondition(value);
   };
 
   const updateDateRange = ({
@@ -130,7 +113,6 @@ export const Analytics = (props: Props) => {
         getStartDateFromDaysAgo(7),
       endDate:
         setEndTimeForDateRange(new Date(endDate)) || getEndDateFromDaysAgo(0),
-      disease: selectedCondition,
     },
     fetchPolicy: "no-cache",
   });
@@ -149,20 +131,12 @@ export const Analytics = (props: Props) => {
   const positivityRate =
     totalTests > 0 ? (positiveTests / totalTests) * 100 : null;
 
-  const dataRetentionDate = new Date();
-  dataRetentionDate.setDate(new Date().getDate() - 30);
-
-  const showRetentionWarning =
-    dataRetentionLimitsEnabled &&
-    new Date(startDate) < dataRetentionDate &&
-    dateRange === "custom";
-
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="prime-container card-container margin-top-2">
           <div className="usa-card__header">
-            <h1 className="font-sans-xl">Dashboard</h1>
+            <h1 className="font-sans-lg">COVID-19 testing data</h1>
           </div>
           <div id="analytics-page">
             <div className="prime-container padding-3">
@@ -185,19 +159,6 @@ export const Analytics = (props: Props) => {
                   />
                 </div>
                 {/* TODO: filter by patient role */}
-                <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
-                  <Dropdown
-                    label="Condition"
-                    options={supportedDiseaseList.map((disease: string) => {
-                      return {
-                        label: disease,
-                        value: disease,
-                      };
-                    })}
-                    onChange={updateSelectedCondition}
-                    selectedValue={selectedCondition}
-                  />
-                </div>
                 <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
                   <Dropdown
                     label="Date range"
@@ -226,23 +187,13 @@ export const Analytics = (props: Props) => {
               </div>
               {dateRange === "custom" && (
                 <div className="grid-row grid-gap margin-top-2">
-                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 usa-datepicker">
+                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
                     <label className={classNames("usa-label")}>Begin</label>
                     <input
                       id={"startDate"}
                       data-testid={"startDate"}
                       type={"date"}
                       max={formatDate(new Date())}
-                      min={
-                        dataRetentionLimitsEnabled
-                          ? formatDate(dataRetentionDate)
-                          : ""
-                      }
-                      data-min-date={
-                        dataRetentionLimitsEnabled
-                          ? formatDate(dataRetentionDate)
-                          : ""
-                      }
                       className={classNames("usa-input")}
                       aria-label={"Enter start date"}
                       onChange={(e) => {
@@ -285,25 +236,7 @@ export const Analytics = (props: Props) => {
                 <p>Loading...</p>
               ) : (
                 <>
-                  {showRetentionWarning && (
-                    <Alert
-                      type="warning"
-                      role="alert"
-                      className={
-                        "width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
-                      }
-                      bodyClassName={"data-retention-limits-alert-body"}
-                    >
-                      <div>
-                        Note: Patients tested earlier than{" "}
-                        {moment(dataRetentionDate).format("MM/DD/YYYY")} are not
-                        shown due to our 30 day data retention maximum.
-                      </div>
-                    </Alert>
-                  )}
-                  <h2>
-                    {facilityName} - {selectedCondition} testing data
-                  </h2>
+                  <h2>{facilityName}</h2>
                   <p className="margin-bottom-0">
                     All {PATIENT_TERM_PLURAL} tested
                   </p>
@@ -311,7 +244,7 @@ export const Analytics = (props: Props) => {
                   <div className="grid-row grid-gap">
                     <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-row">
-                        <h3>Tests reported</h3>
+                        <h3>Tests conducted</h3>
                         <span className="font-sans-3xl text-bold margin-y-auto">
                           {totalTests}
                         </span>

@@ -1,10 +1,10 @@
-import { Meta, StoryFn } from "@storybook/react-webpack5";
+import { Meta, StoryFn } from "@storybook/react";
 import { ComponentProps } from "react";
 
 import SingleFileInput from "./SingleFileInput";
 
 export default {
-  title: "Components/Form controls/Single File Input",
+  title: "Components/Single File Input",
   component: SingleFileInput,
   args: {
     id: "mySingleFileInput",

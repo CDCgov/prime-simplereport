@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -65,14 +64,6 @@ public class ApiTestOrderDataResolver {
         .thenApply(patientAnswers -> patientAnswers.getSurvey().getPregnancy());
   }
 
-  @SchemaMapping(typeName = "TestOrder", field = "syphilisHistory")
-  public CompletableFuture<String> syphilisHistory(
-      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
-    return loader
-        .load(apiTestOrder.getWrapped().getPatientAnswersId())
-        .thenApply(patientAnswers -> patientAnswers.getSurvey().getSyphilisHistory());
-  }
-
   @SchemaMapping(typeName = "TestOrder", field = "noSymptoms")
   public CompletableFuture<Boolean> noSymptoms(
       ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
@@ -95,14 +86,6 @@ public class ApiTestOrderDataResolver {
     return loader
         .load(apiTestOrder.getWrapped().getPatientAnswersId())
         .thenApply(patientAnswers -> patientAnswers.getSurvey().getSymptomOnsetDate());
-  }
-
-  @SchemaMapping(typeName = "TestOrder", field = "genderOfSexualPartners")
-  public CompletableFuture<List<String>> genderOfSexualPartners(
-      ApiTestOrder apiTestOrder, DataLoader<UUID, PatientAnswers> loader) {
-    return loader
-        .load(apiTestOrder.getWrapped().getPatientAnswersId())
-        .thenApply(patientAnswers -> patientAnswers.getSurvey().getGenderOfSexualPartners());
   }
 
   @SchemaMapping(typeName = "TestOrder", field = "deviceType")

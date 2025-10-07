@@ -1,17 +1,20 @@
+import { MockedProvider } from "@apollo/client/testing";
 import {
   render,
   waitFor,
   screen,
   waitForElementToBeRemoved,
+  act,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import "../../../i18n";
 import { cloneDeep } from "lodash";
 
 import { displayFullName } from "../../utils";
 import { GetUserDocument, UserPermission } from "../../../generated/graphql";
-import { createGQLWrappedMemoryRouterWithDataApis } from "../../utils/reactRouter";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 import { LimitedUser } from "./ManageUsersContainer";
@@ -271,15 +274,20 @@ let reactivateUserAndResetPassword: (obj: any) => Promise<any>;
 let resetUserPassword: (obj: any) => Promise<any>;
 let resetUserMfa: (obj: any) => Promise<any>;
 let resendUserActivationEmail: (obj: any) => Promise<any>;
-let setQueryString = jest.fn();
 
 type TestContainerProps = {
   children: React.ReactNode;
 };
 
-const TestContainer: React.FC<TestContainerProps> = ({ children }) => {
-  return createGQLWrappedMemoryRouterWithDataApis(children, store, mocks);
-};
+const TestContainer: React.FC<TestContainerProps> = ({ children }) => (
+  <MemoryRouter>
+    <Provider store={store}>
+      <MockedProvider mocks={mocks}>
+        <>{children}</>
+      </MockedProvider>
+    </Provider>
+  </MemoryRouter>
+);
 
 describe("ManageUsers", () => {
   const { reload } = window.location;
@@ -346,8 +354,8 @@ describe("ManageUsers", () => {
   });
 
   describe("regular list of users", () => {
-    const renderAndWaitForLoad = async () => {
-      const { ...renderControls } = render(
+    beforeEach(async () => {
+      render(
         <TestContainer>
           <ManageUsers
             users={users as LimitedUser[]}
@@ -363,26 +371,17 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={updateUserName}
             updateUserEmail={updateUserEmail}
-            currentPage={1}
-            entriesPerPage={12}
-            totalEntries={3}
-            queryString={""}
-            setQueryString={setQueryString}
-            queryLoadingStatus={false}
-            totalUsersInOrg={3}
           />
         </TestContainer>
       );
       await waitForElementToBeRemoved(() => screen.queryByText("?, ?"));
-      return { user: userEvent.setup(), ...renderControls };
-    };
+    });
 
     it("enables logged-in user's settings except deletion and roles", async () => {
-      const { user } = await renderAndWaitForLoad();
       const nameButton = screen.getByRole("tab", {
         name: displayFullName("Bob", "", "Bobberoo"),
       });
-      await user.click(nameButton);
+      await act(async () => await userEvent.click(nameButton));
       await waitFor(() => {
         expect(screen.getByText("YOU")).toBeInTheDocument();
       });
@@ -393,7 +392,9 @@ describe("ManageUsers", () => {
       expect(
         screen.getByRole("button", { name: "Delete user" })
       ).toBeDisabled();
-      await user.click(screen.getByText("Facility access"));
+      await act(
+        async () => await userEvent.click(screen.getByText("Facility access"))
+      );
       expect(screen.getByLabelText("Admin", { exact: false })).toBeDisabled();
       expect(
         screen.getByLabelText("Testing only", { exact: false })
@@ -401,25 +402,30 @@ describe("ManageUsers", () => {
     });
 
     it("passes user details to the addUserToOrg function", async () => {
-      const { user } = await renderAndWaitForLoad();
       const newUser = {
         firstName: "Jane",
         lastName: "Smith",
         email: "jane@smith.co",
         role: "USER",
       };
-
-      await user.click(screen.getByText("Add user", { exact: false }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByText("Add user", { exact: false }))
+      );
       const [first, last, email] = await screen.findAllByRole("textbox");
       const select = screen.getByLabelText("Access level", { exact: false });
-      await user.type(first, newUser.firstName);
-      await user.type(last, newUser.lastName);
-      await user.type(email, newUser.email);
-      await user.selectOptions(select, newUser.role);
-      await user.click(screen.getAllByRole("checkbox")[0]);
+      await act(async () => await userEvent.type(first, newUser.firstName));
+      await act(async () => await userEvent.type(last, newUser.lastName));
+      await act(async () => await userEvent.type(email, newUser.email));
+      await act(
+        async () => await userEvent.selectOptions(select, newUser.role)
+      );
+      await act(
+        async () => await userEvent.click(screen.getAllByRole("checkbox")[0])
+      );
       const sendButton = screen.getByText("Send invite");
       await waitFor(() => expect(sendButton).toBeEnabled());
-      await user.click(sendButton);
+      await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
         variables: {
@@ -432,7 +438,6 @@ describe("ManageUsers", () => {
     });
 
     it("fails with invalid email address", async () => {
-      const { user } = await renderAndWaitForLoad();
       const newUser = {
         firstName: "Jane",
         lastName: "Smith",
@@ -440,17 +445,24 @@ describe("ManageUsers", () => {
         role: "USER",
       };
 
-      await user.click(screen.getByText("Add user", { exact: false }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByText("Add user", { exact: false }))
+      );
       const [first, last, email] = await screen.findAllByRole("textbox");
       const select = screen.getByLabelText("Access level", { exact: false });
-      await user.type(first, newUser.firstName);
-      await user.type(last, newUser.lastName);
-      await user.type(email, newUser.email);
-      await user.selectOptions(select, newUser.role);
-      await user.click(screen.getAllByRole("checkbox")[0]);
+      await act(async () => await userEvent.type(first, newUser.firstName));
+      await act(async () => await userEvent.type(last, newUser.lastName));
+      await act(async () => await userEvent.type(email, newUser.email));
+      await act(
+        async () => await userEvent.selectOptions(select, newUser.role)
+      );
+      await act(
+        async () => await userEvent.click(screen.getAllByRole("checkbox")[0])
+      );
       const sendButton = screen.getByText("Send invite");
       await waitFor(() => expect(sendButton).toBeEnabled());
-      await user.click(sendButton);
+      await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).not.toBeCalled());
       expect(
         screen.getByText("Email address must be a valid email address")
@@ -458,22 +470,26 @@ describe("ManageUsers", () => {
     });
 
     it("passes user details to the addUserToOrg function without a role", async () => {
-      const { user } = await renderAndWaitForLoad();
       const newUser = {
         firstName: "Jane",
         lastName: "Smith",
         email: "jane@smith.co",
       };
 
-      await user.click(screen.getByText("Add user", { exact: false }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByText("Add user", { exact: false }))
+      );
       const [first, last, email] = await screen.findAllByRole("textbox");
-      await user.type(first, newUser.firstName);
-      await user.type(last, newUser.lastName);
-      await user.type(email, newUser.email);
-      await user.click(screen.getAllByRole("checkbox")[0]);
+      await act(async () => await userEvent.type(first, newUser.firstName));
+      await act(async () => await userEvent.type(last, newUser.lastName));
+      await act(async () => await userEvent.type(email, newUser.email));
+      await act(
+        async () => await userEvent.click(screen.getAllByRole("checkbox")[0])
+      );
       const sendButton = screen.getByText("Send invite");
       await waitFor(() => expect(sendButton).toBeEnabled());
-      await user.click(sendButton);
+      await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
         variables: {
@@ -486,13 +502,12 @@ describe("ManageUsers", () => {
     });
 
     it("deletes a user", async () => {
-      const { user } = await renderAndWaitForLoad();
       const removeButton = await screen.findByRole("button", {
         name: "Delete user",
       });
-      await user.click(removeButton);
+      await act(async () => await userEvent.click(removeButton));
       const sureButton = await screen.findByText("Yes", { exact: false });
-      await user.click(sureButton);
+      await act(async () => await userEvent.click(sureButton));
       await waitFor(() => expect(deleteUser).toBeCalled());
       expect(deleteUser).toBeCalledWith({
         variables: { deleted: true, id: users[0].id },
@@ -500,32 +515,37 @@ describe("ManageUsers", () => {
     });
 
     it("focuses on next user after current is deleted", async () => {
-      const { user } = await renderAndWaitForLoad();
-      await user.click(screen.getByRole("tab", { name: /doe, jane/i }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("tab", { name: /doe, jane/i }))
+      );
       await waitFor(() =>
         expect(screen.getByRole("heading", { name: /doe, jane/i }))
       );
-
-      await user.click(
-        screen.getByRole("button", {
-          name: "Delete user",
-        })
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByRole("button", {
+              name: "Delete user",
+            })
+          )
       );
       const sureButton = await screen.findByText("Yes", { exact: false });
-      await user.click(sureButton);
+      await act(async () => await userEvent.click(sureButton));
       await waitFor(() =>
         expect(screen.getByRole("heading", { name: /bobberoo, bob/i }))
       );
     });
 
     it("updates someone from user to admin", async () => {
-      const { user } = await renderAndWaitForLoad();
-      await user.click(screen.getByText("Facility access"));
+      await act(
+        async () => await userEvent.click(screen.getByText("Facility access"))
+      );
       const [adminOption] = await screen.findAllByRole("radio");
-      await user.click(adminOption);
+      await act(async () => await userEvent.click(adminOption));
       const button = await screen.findByText("Save", { exact: false });
       await waitFor(() => expect(button).toBeEnabled());
-      await user.click(button);
+      await act(async () => await userEvent.click(button));
       await waitFor(() => expect(updateUserPrivileges).toBeCalled());
       expect(updateUserPrivileges).toBeCalledWith({
         variables: {
@@ -538,12 +558,15 @@ describe("ManageUsers", () => {
     });
 
     it("adds a facility for a user", async () => {
-      const { user } = await renderAndWaitForLoad();
-      await user.click(screen.getByText("Facility access"));
-      await user.click(screen.getAllByRole("checkbox")[1]);
+      await act(
+        async () => await userEvent.click(screen.getByText("Facility access"))
+      );
+      await act(
+        async () => await userEvent.click(screen.getAllByRole("checkbox")[1])
+      );
       const saveButton = screen.getByText("Save changes");
       await waitFor(() => expect(saveButton).toBeEnabled());
-      await user.click(saveButton);
+      await act(async () => await userEvent.click(saveButton));
       await waitForElementToBeRemoved(() => screen.queryByText("Saving..."));
       expect(updateUserPrivileges).toBeCalled();
       expect(updateUserPrivileges).toBeCalledWith({
@@ -557,11 +580,10 @@ describe("ManageUsers", () => {
     });
 
     it("resets a user's password", async () => {
-      const { user } = await renderAndWaitForLoad();
       const resetButton = await screen.findByText("Send password reset email");
-      await user.click(resetButton);
+      await act(async () => await userEvent.click(resetButton));
       const sureButton = await screen.findByText("Yes", { exact: false });
-      await user.click(sureButton);
+      await act(async () => await userEvent.click(sureButton));
       await waitFor(() => expect(resetUserPassword).toBeCalled());
       expect(resetUserPassword).toBeCalledWith({
         variables: { id: users[0].id },
@@ -569,13 +591,12 @@ describe("ManageUsers", () => {
     });
 
     it("resets a user's MFA", async () => {
-      const { user } = await renderAndWaitForLoad();
       const resetButton = await screen.findByText("Reset MFA");
-      await user.click(resetButton);
+      await act(async () => await userEvent.click(resetButton));
       const sureButton = await screen.findByRole("button", {
         name: "Reset multi-factor authentication",
       });
-      await user.click(sureButton);
+      await act(async () => await userEvent.click(sureButton));
       await waitFor(() => expect(resetUserMfa).toBeCalled());
       expect(resetUserMfa).toBeCalledWith({
         variables: { id: users[0].id },
@@ -592,24 +613,21 @@ describe("ManageUsers", () => {
         lastName: "Lastname",
       };
 
-      const renderAndStartEditName = async () => {
-        const { user, ...renderControls } = await renderAndWaitForLoad();
+      beforeEach(async () => {
         editButton = await screen.findByText("Edit name", { exact: true });
-        await user.click(editButton);
+        await act(async () => await userEvent.click(editButton));
         [first, last] = await screen.findAllByRole("textbox");
         confirmButton = await screen.findByText("Confirm", {
           exact: false,
         });
-        return { user, ...renderControls };
-      };
+      });
 
       it("successfully changes a user's name", async () => {
-        const { user } = await renderAndStartEditName();
-        await user.clear(first);
-        await user.type(first, newUser.firstName);
-        await user.clear(last);
-        await user.type(last, newUser.lastName);
-        await user.click(confirmButton);
+        await act(async () => await userEvent.clear(first));
+        await act(async () => await userEvent.type(first, newUser.firstName));
+        await act(async () => await userEvent.clear(last));
+        await act(async () => await userEvent.type(last, newUser.lastName));
+        await act(async () => await userEvent.click(confirmButton));
         await waitFor(() => expect(updateUserName).toBeCalled());
         expect(updateUserName).toBeCalledWith({
           variables: {
@@ -623,17 +641,15 @@ describe("ManageUsers", () => {
       });
 
       it("fails for a missing first name", async () => {
-        const { user } = await renderAndStartEditName();
-        await user.clear(first);
-        await user.click(confirmButton);
+        await act(async () => await userEvent.clear(first));
+        await act(async () => await userEvent.click(confirmButton));
         await expect(() => screen.findByText("First name is required"));
         await waitFor(() => expect(confirmButton).toBeEnabled());
       });
 
       it("fails for a missing last name", async () => {
-        const { user } = await renderAndStartEditName();
-        await user.clear(last);
-        await user.click(confirmButton);
+        await act(async () => await userEvent.clear(last));
+        await act(async () => await userEvent.click(confirmButton));
         await expect(() => screen.findByText("Last name is required"));
         await waitFor(() => expect(confirmButton).toBeEnabled());
       });
@@ -644,25 +660,21 @@ describe("ManageUsers", () => {
       let email: HTMLElement;
       let confirmButton: HTMLElement;
 
-      const renderAndStartEditEmail = async () => {
-        const { user, ...renderControls } = await renderAndWaitForLoad();
+      beforeEach(async () => {
         editButton = await screen.findByText("Edit email", { exact: true });
-        await user.click(editButton);
+        await act(async () => await userEvent.click(editButton));
         [email] = await screen.findAllByRole("textbox");
         confirmButton = await screen.findByText("Confirm", {
           exact: false,
         });
-
-        return { user, ...renderControls };
-      };
+      });
 
       it("successfully changes a user's email", async () => {
-        const { user } = await renderAndStartEditEmail();
         const newEmail = "thisisanewemail@newemail.com";
 
-        await user.clear(email);
-        await user.type(email, newEmail);
-        await user.click(confirmButton);
+        await act(async () => await userEvent.clear(email));
+        await act(async () => await userEvent.type(email, newEmail));
+        await act(async () => await userEvent.click(confirmButton));
         await waitFor(() => expect(updateUserEmail).toBeCalled());
         expect(updateUserEmail).toBeCalledWith({
           variables: {
@@ -673,31 +685,28 @@ describe("ManageUsers", () => {
       });
 
       it("fails for an invalid email", async () => {
-        const { user } = await renderAndStartEditEmail();
         const invalidEmail = "thisisanewemail@invalid";
-        await user.clear(email);
-        await user.type(email, invalidEmail);
-        await user.click(confirmButton);
+        await act(async () => await userEvent.clear(email));
+        await act(async () => await userEvent.type(email, invalidEmail));
+        await act(async () => await userEvent.click(confirmButton));
         await expect(await screen.findByText("Invalid email address"));
       });
 
       it("submit button disabled for same email", async () => {
-        const { user } = await renderAndStartEditEmail();
         await expect(await screen.findByLabelText(/Email address/i));
-        await user.clear(email);
-        await user.type(email, "john@example.com");
+        await act(async () => await userEvent.clear(email));
+        await act(async () => await userEvent.type(email, "john@example.com"));
         expect(confirmButton).toBeDisabled();
       });
 
       it("Error shows for required email field", async () => {
-        const { user } = await renderAndStartEditEmail();
-        await user.clear(email);
-        await user.click(confirmButton);
+        await act(async () => await userEvent.clear(email));
+        await act(async () => await userEvent.click(confirmButton));
         await expect(
           await screen.findByText("Email is required")
         ).toBeInTheDocument();
-        await user.type(email, "not an email");
-        await user.click(confirmButton);
+        await act(async () => await userEvent.type(email, "not an email"));
+        await act(async () => await userEvent.click(confirmButton));
         await expect(
           await screen.findByText("Invalid email address")
         ).toBeInTheDocument();
@@ -706,8 +715,8 @@ describe("ManageUsers", () => {
   });
 
   describe("empty list of users", () => {
-    const renderWithNoUsers = async () => {
-      const { ...renderControls } = render(
+    beforeEach(async () => {
+      render(
         <TestContainer>
           <ManageUsers
             users={[]}
@@ -723,45 +732,38 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
-            totalEntries={0}
-            entriesPerPage={12}
-            currentPage={1}
-            queryString={""}
-            setQueryString={setQueryString}
-            queryLoadingStatus={false}
-            totalUsersInOrg={0}
           />
         </TestContainer>
       );
       await screen.findByText("Add user", { exact: false });
-
-      return { user: userEvent.setup(), ...renderControls };
-    };
+    });
 
     it("fails gracefully when there are no users", async () => {
-      await renderWithNoUsers();
-      expect(
-        screen.getByText("There are no users in this organization.")
-      ).toBeInTheDocument();
+      const noUsers = await screen.findByText("no users", { exact: false });
+      expect(noUsers).toBeInTheDocument();
     });
 
     it("adds a user when zero users exist", async () => {
-      const { user } = await renderWithNoUsers();
       const newUser = {
         firstName: "Jane",
         lastName: "Smith",
         email: "jane@smith.co",
       };
 
-      await user.click(screen.getByText("Add user", { exact: false }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByText("Add user", { exact: false }))
+      );
       const [first, last, email] = await screen.findAllByRole("textbox");
-      await user.type(first, newUser.firstName);
-      await user.type(last, newUser.lastName);
-      await user.type(email, newUser.email);
-      await user.click(screen.getAllByRole("checkbox")[0]);
+      await act(async () => await userEvent.type(first, newUser.firstName));
+      await act(async () => await userEvent.type(last, newUser.lastName));
+      await act(async () => await userEvent.type(email, newUser.email));
+      await act(
+        async () => await userEvent.click(screen.getAllByRole("checkbox")[0])
+      );
       const sendButton = screen.getByText("Send invite");
       await waitFor(() => expect(sendButton).toBeEnabled());
-      await user.click(sendButton);
+      await act(async () => await userEvent.click(sendButton));
 
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
@@ -776,8 +778,9 @@ describe("ManageUsers", () => {
   });
 
   describe("suspended users", () => {
-    const renderWithSuspendedUsers = async () => {
-      const { ...renderControls } = render(
+    let defaultRender: ReturnType<typeof render>;
+    beforeEach(async () => {
+      defaultRender = render(
         <TestContainer>
           <ManageUsers
             users={suspendedUsers as LimitedUser[]}
@@ -793,27 +796,17 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
-            totalEntries={2}
-            entriesPerPage={12}
-            currentPage={1}
-            queryString={""}
-            setQueryString={setQueryString}
-            queryLoadingStatus={false}
-            totalUsersInOrg={2}
           />
         </TestContainer>
       );
       await screen.findByText("Add user", { exact: false });
-
-      return { user: userEvent.setup(), ...renderControls };
-    };
+    });
 
     it("reactivates a suspended user", async () => {
-      const { user } = await renderWithSuspendedUsers();
       const reactivateButton = await screen.findByText("Activate user");
-      await user.click(reactivateButton);
+      await act(async () => await userEvent.click(reactivateButton));
       const sureButton = await screen.findByText("Yes", { exact: false });
-      await user.click(sureButton);
+      await act(async () => await userEvent.click(sureButton));
       await waitFor(() => expect(reactivateUser).toBeCalled());
       expect(reactivateUser).toBeCalledWith({
         variables: { id: suspendedUsers[0].id },
@@ -821,10 +814,9 @@ describe("ManageUsers", () => {
     });
 
     it("when user is an admin account, reactivating triggers the reactivate and reset password hook", async () => {
-      const { user, rerender } = await renderWithSuspendedUsers();
       const loggedInSiteAdminUser = cloneDeep(loggedInUser);
       loggedInSiteAdminUser.isAdmin = true;
-      rerender(
+      defaultRender.rerender(
         <TestContainer>
           <ManageUsers
             users={suspendedUsers as LimitedUser[]}
@@ -840,21 +832,14 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
-            totalEntries={2}
-            entriesPerPage={12}
-            currentPage={1}
-            queryString={""}
-            setQueryString={setQueryString}
-            queryLoadingStatus={false}
-            totalUsersInOrg={2}
           />
         </TestContainer>
       );
 
       const reactivateButton = await screen.findByText("Activate user");
-      await user.click(reactivateButton);
+      await act(async () => await userEvent.click(reactivateButton));
       const sureButton = await screen.findByText("Yes", { exact: false });
-      await user.click(sureButton);
+      await act(async () => await userEvent.click(sureButton));
       await waitFor(() => expect(reactivateUserAndResetPassword).toBeCalled());
       expect(reactivateUserAndResetPassword).toBeCalledWith({
         variables: { id: suspendedUsers[0].id },
@@ -862,7 +847,6 @@ describe("ManageUsers", () => {
     });
 
     it("only shows status for non-active users", async () => {
-      await renderWithSuspendedUsers();
       expect(await screen.findByText("Activate user")).toBeInTheDocument();
       // status appears twice for each suspended user - once in the side nav, and once in the detail view.
       // the suspendedUsers list only has two users, one active and one suspended.
@@ -871,8 +855,8 @@ describe("ManageUsers", () => {
   });
 
   describe("pending account setup users", () => {
-    const renderWithPendingUsers = async () => {
-      const { ...renderControls } = render(
+    beforeEach(async () => {
+      render(
         <TestContainer>
           <ManageUsers
             users={pendingActivationUsers as LimitedUser[]}
@@ -888,27 +872,17 @@ describe("ManageUsers", () => {
             resendUserActivationEmail={resendUserActivationEmail}
             updateUserName={() => Promise.resolve()}
             updateUserEmail={() => Promise.resolve()}
-            totalEntries={2}
-            entriesPerPage={12}
-            currentPage={1}
-            queryString={""}
-            setQueryString={setQueryString}
-            queryLoadingStatus={false}
-            totalUsersInOrg={2}
           />
         </TestContainer>
       );
       await screen.findByText("Add user", { exact: false });
-
-      return { user: userEvent.setup(), ...renderControls };
-    };
+    });
 
     it("resends account activation email for pending user", async () => {
-      const { user } = await renderWithPendingUsers();
       const resendButton = await screen.findByText("Send account setup email");
-      await user.click(resendButton);
+      await act(async () => await userEvent.click(resendButton));
       const sureButton = await screen.findByText("Yes", { exact: false });
-      await user.click(sureButton);
+      await act(async () => await userEvent.click(sureButton));
       await waitFor(() => expect(resendUserActivationEmail).toBeCalled());
       expect(resendUserActivationEmail).toBeCalledWith({
         variables: { id: pendingActivationUsers[0].id },
@@ -976,44 +950,40 @@ describe("ManageUsers", () => {
         },
       },
     ];
-
-    const element = (
-      <ManageUsers
-        users={users as LimitedUser[]}
-        loggedInUser={loggedInUser}
-        allFacilities={allFacilities}
-        updateUserPrivileges={updateUserPrivileges}
-        addUserToOrg={addUserToOrg}
-        deleteUser={deleteUser}
-        getUsers={getUsers}
-        reactivateUser={reactivateUser}
-        resetUserPassword={() => Promise.resolve()}
-        resetUserMfa={() => Promise.resolve()}
-        resendUserActivationEmail={resendUserActivationEmail}
-        updateUserName={() => Promise.resolve()}
-        updateUserEmail={() => Promise.resolve()}
-        totalEntries={3}
-        entriesPerPage={12}
-        currentPage={1}
-        queryString={""}
-        setQueryString={setQueryString}
-        queryLoadingStatus={false}
-        totalUsersInOrg={3}
-      />
-    );
     render(
-      createGQLWrappedMemoryRouterWithDataApis(element, store, updatedMocks)
+      <MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={updatedMocks}>
+            <ManageUsers
+              users={users as LimitedUser[]}
+              loggedInUser={loggedInUser}
+              allFacilities={allFacilities}
+              updateUserPrivileges={updateUserPrivileges}
+              addUserToOrg={addUserToOrg}
+              deleteUser={deleteUser}
+              getUsers={getUsers}
+              reactivateUser={reactivateUser}
+              resetUserPassword={() => Promise.resolve()}
+              resetUserMfa={() => Promise.resolve()}
+              resendUserActivationEmail={resendUserActivationEmail}
+              updateUserName={() => Promise.resolve()}
+              updateUserEmail={() => Promise.resolve()}
+            />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
     );
 
-    const user = userEvent.setup();
-    await user.click(screen.getByText("Facility access"));
+    await act(
+      async () => await userEvent.click(screen.getByText("Facility access"))
+    );
     const facilityA2 = screen.getAllByRole("checkbox")[2];
     await waitFor(() => expect(facilityA2).toBeChecked());
-    await user.click(facilityA2);
+    await act(async () => await userEvent.click(facilityA2));
     await waitFor(() => expect(facilityA2).not.toBeChecked());
     const saveButton = await screen.findByText("Save changes");
     await waitFor(() => expect(saveButton).toBeEnabled());
-    await user.click(saveButton);
+    await act(async () => await userEvent.click(saveButton));
     await waitForElementToBeRemoved(() => screen.queryByText("Saving..."));
     expect(updateUserPrivileges).toBeCalledWith({
       variables: {

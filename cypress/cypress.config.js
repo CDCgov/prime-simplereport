@@ -1,19 +1,16 @@
-global.specRunVersions = new Map();
-const { defineConfig } = require("cypress");
-const fs = require("fs");
-
-module.exports = defineConfig({
+module.exports = {
   viewportWidth: 1200,
   viewportHeight: 800,
   defaultCommandTimeout: 10000,
   video: true,
+  videoUploadOnPasses: false,
   videoCompression: false,
   retries: {
     runMode: 1,
     openMode: 1,
   },
   e2e: {
-    supportFile: "cypress/support/e2e.js",
+    supportFile: 'cypress/support/e2e.js',
     setupNodeEvents(on, config) {
       on("task", {
         // These tasks set and read state to be passed between specs
@@ -32,27 +29,71 @@ module.exports = defineConfig({
           console.log(message);
           return null;
         },
-        setSpecRunVersionName(data) {
-          global.specRunVersions.set(data.specRunName, data.versionName);
+        setPatientName: (name) => {
+          global.patientName = name;
           return null;
         },
-        getSpecRunVersionName(specRunName) {
-          return global.specRunVersions.get(specRunName) || null;
+        getPatientName() {
+          return global.patientName;
         },
-      });
-      on("after:spec", (spec, results) => {
-        if (results && results.video) {
-          // Do we have failures for any retry attempts?
-          const failures = results.tests.some((test) =>
-            test.attempts.some((attempt) => attempt.state === "failed"),
-          );
-          if (!failures) {
-            // delete the video if the spec passed and no tests retried
-            fs.unlinkSync(results.video);
-          }
+        setPatientDOB(dob) {
+          global.patientDOB = dob;
+          return null;
+        },
+        getPatientDOB() {
+          return global.patientDOB;
+        },
+        setPatientLink(link) {
+          global.patientLink = link;
+          return null;
+        },
+        getPatientLink() {
+          return global.patientLink;
+        },
+        setPatientPhone(phone) {
+          global.patientPhone = phone;
+          return null;
+        },
+        getPatientPhone() {
+          return global.patientPhone;
+        },
+        setCovidOnlyDeviceName(name) {
+          global.covidOnlyDeviceName = name;
+          return null;
+        },
+        getCovidOnlyDeviceName() {
+          return global.covidOnlyDeviceName;
+        },
+        setMultiplexDeviceName(name) {
+          global.multiplexDeviceName = name;
+          return null;
+        },
+        getMultiplexDeviceName() {
+          return global.multiplexDeviceName;
         }
+      })
+      on("before:browser:launch", (browser = {}, launchOptions = {}) => {
+        launchOptions.args = launchOptions.args.filter(
+          (item) => item !== "--disable-dev-shm-usage"
+        );
+        if (browser.name === "chrome" && browser.isHeadless) {
+          launchOptions.args.push("--window-size=1200,800");
+          launchOptions.args.push("--force-device-scale-factor=1");
+        }
+
+        if (browser.name === "electron" && browser.isHeadless) {
+          launchOptions.preferences.width = 1200;
+          launchOptions.preferences.height = 1800;
+        }
+
+        if (browser.name === "firefox" && browser.isHeadless) {
+          launchOptions.args.push("--width=1200");
+          launchOptions.args.push("--height=800");
+        }
+
+        return launchOptions;
       });
     },
-    baseUrl: "http://localhost.simplereport.gov",
+    baseUrl: 'http://localhost.simplereport.gov',
   },
-});
+}

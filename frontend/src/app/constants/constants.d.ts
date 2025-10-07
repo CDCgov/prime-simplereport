@@ -7,8 +7,7 @@ type Race =
   | "other"
   | "refused";
 type Ethnicity = "hispanic" | "not_hispanic" | "refused";
-type Gender = "male" | "female";
-type GenderIdentity = "female" | "male";
+type Gender = "male" | "female" | "other" | "refused";
 type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
 type PhoneType = "MOBILE" | "LANDLINE" | "UNKNOWN";
@@ -597,10 +596,7 @@ interface PersonUpdate extends Address {
   country: string;
   emails: string[];
   preferredLanguage: Language | null;
-  notes: string | null;
   testResultDelivery: TestResultDeliveryPreference | null;
-  unknownPhoneNumber: boolean;
-  unknownAddress: boolean;
 }
 
 interface Person extends PersonUpdate {

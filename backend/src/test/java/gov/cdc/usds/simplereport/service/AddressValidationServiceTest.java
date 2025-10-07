@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
@@ -39,7 +38,7 @@ class AddressValidationServiceTest {
     Lookup lookup = mock(Lookup.class);
     when(lookup.getResult()).thenReturn(results);
 
-    StreetAddress address = s.getValidatedAddress(lookup);
+    StreetAddress address = s.getValidatedAddress(lookup, null);
 
     assertEquals("", address.getCounty());
   }
@@ -51,7 +50,7 @@ class AddressValidationServiceTest {
     Lookup lookup = mock(Lookup.class);
     when(lookup.getResult()).thenReturn(results);
 
-    StreetAddress address = s.getValidatedAddress(lookup);
+    StreetAddress address = s.getValidatedAddress(lookup, null);
 
     assertEquals("District of Columbia", address.getCounty());
   }
@@ -64,45 +63,21 @@ class AddressValidationServiceTest {
     when(lookup.getStreet()).thenReturn("User entered street");
     when(lookup.getResult()).thenReturn(results);
 
-    StreetAddress address = s.getValidatedAddress(lookup);
+    StreetAddress address = s.getValidatedAddress(lookup, null);
 
     assertEquals("User entered street", address.getStreetOne());
   }
 
   @Test
-  void withSupportedTimezoneCommonName_returnsCorrectZoneIdByLookup() {
+  void returnsCorrectZoneIdByLookup() {
     ArrayList<Candidate> results = new ArrayList<Candidate>();
-    results.add(getMockTimeZoneInfoResult("Central", -5.0));
+    results.add(getMockTimeZoneInfoResult());
     Lookup lookup = mock(Lookup.class);
     when(lookup.getResult()).thenReturn(results);
 
     ZoneId zoneId = s.getZoneIdByLookup(lookup);
 
-    assertEquals(ZoneId.of("US/Central"), zoneId);
-  }
-
-  @Test
-  void withSupportedUtcOffsetTimezone_returnsCorrectZoneIdByLookup() {
-    ArrayList<Candidate> results = new ArrayList<Candidate>();
-    results.add(getMockTimeZoneInfoResult("UTC+9", +9.0));
-    Lookup lookup = mock(Lookup.class);
-    when(lookup.getResult()).thenReturn(results);
-
-    ZoneId zoneId = s.getZoneIdByLookup(lookup);
-
-    assertEquals(ZoneId.of("+9"), zoneId);
-  }
-
-  @Test
-  void withUnsupportedTimezoneCommonName_returnsNull() {
-    ArrayList<Candidate> results = new ArrayList<Candidate>();
-    results.add(getMockTimeZoneInfoResult("FakeZoneId", -25.0));
-    Lookup lookup = mock(Lookup.class);
-    when(lookup.getResult()).thenReturn(results);
-
-    ZoneId zoneId = s.getZoneIdByLookup(lookup);
-
-    assertNull(zoneId);
+    assertEquals(zoneId, ZoneId.of("US/Central"));
   }
 
   @Test
@@ -128,10 +103,10 @@ class AddressValidationServiceTest {
     assertThrows(InvalidAddressException.class, () -> s.getTimezoneInfoByLookup(lookup));
   }
 
-  private Candidate getMockTimeZoneInfoResult(String commonName, Double utcOffset) {
+  private Candidate getMockTimeZoneInfoResult() {
     Metadata metadata = mock(Metadata.class);
-    when(metadata.getTimeZone()).thenReturn(commonName);
-    when(metadata.getUtcOffset()).thenReturn(utcOffset);
+    when(metadata.getTimeZone()).thenReturn("Central");
+    when(metadata.getUtcOffset()).thenReturn(-5.0);
     when(metadata.obeysDst()).thenReturn(true);
 
     Candidate result = mock(Candidate.class);

@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.pxp;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,9 +36,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class PatientExperienceControllerTest extends BaseFullStackTest {
 
   @Autowired private MockMvc mockMvc;
@@ -408,7 +411,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     mockMvc.perform(builder).andExpect(status().isOk());
     List<TimeOfConsent> tocList = tocService.getTimeOfConsent(patientLink);
     assertNotNull(tocList);
-    assertThat(tocList).isNotEmpty();
+    assertNotEquals(tocList.size(), 0);
   }
 
   @Test

@@ -101,13 +101,15 @@ const Header: React.FC<{}> = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("id_token");
     // Determine which Okta domain to use for logout
-    const oktaDomain = process.env.REACT_APP_OKTA_URL;
+    const oktaDomain =
+      import.meta.env.MODE !== "development" ? "okta" : "oktapreview";
     window.location.replace(
-      oktaDomain +
-        "/oauth2/default/v1/logout" +
+      "https://hhs-prime." +
+        encodeURIComponent(oktaDomain) +
+        ".com/oauth2/default/v1/logout" +
         `?id_token_hint=${encodeURIComponent(id_token || "")}` +
         `&post_logout_redirect_uri=${encodeURIComponent(
-          process.env.REACT_APP_BASE_URL || ""
+          import.meta.env.VITE_BASE_URL || ""
         )}` +
         `&state=${state}`
     );
@@ -127,10 +129,10 @@ const Header: React.FC<{}> = () => {
     },
     {
       url: "/queue",
-      displayText: "Report tests",
+      displayText: "Conduct tests",
       displayPermissions: canViewTestQueue,
       className: getNavItemClassName,
-      key: "report-test-nav-link",
+      key: "conduct-test-nav-link",
     },
     {
       url: "/results",
@@ -147,37 +149,23 @@ const Header: React.FC<{}> = () => {
       key: "patient-nav-link",
     },
   ];
-  const mainNavList = (deviceType: "desktop" | "mobile") => {
-    let navList = mainNavContent
-      .map((item) => {
-        return (
-          item.displayPermissions && (
-            <li key={item.key} className="usa-nav__primary-item">
-              <LinkWithQuery
-                to={item.url}
-                onClick={() => setMenuVisible(false)}
-                className={item.className}
-                id={`${deviceType}-${item.key}`}
-                data-cy={`${deviceType}-${item.key}`}
-              >
-                {item.displayText}
-              </LinkWithQuery>
-            </li>
-          )
-        );
-      })
-      .filter((item) => item);
-    if (deviceType === "mobile" && navList?.length > 0) {
+  const mainNavList = (deviceType: string) =>
+    mainNavContent.map((item) => {
       return (
-        <ul className="usa-nav__primary usa-accordion mobile-main-nav-container">
-          {navList}
-        </ul>
+        <li key={item.key} className="usa-nav__primary-item">
+          {item.displayPermissions ? (
+            <LinkWithQuery
+              to={item.url}
+              onClick={() => setMenuVisible(false)}
+              className={item.className}
+              id={`${deviceType}-${item.key}`}
+            >
+              {item.displayText}
+            </LinkWithQuery>
+          ) : null}
+        </li>
       );
-    } else if (deviceType === "desktop" && navList?.length > 0) {
-      return <ul className="usa-nav__primary usa-accordion">{navList}</ul>;
-    }
-  };
-
+    });
   const secondaryNavContent = [
     {
       url: "#",
@@ -203,7 +191,7 @@ const Header: React.FC<{}> = () => {
       mobileDisplay: false,
     },
     {
-      url: "/settings/users/1",
+      url: "/settings",
       displayPermissions: true,
       onClick: () => setMenuVisible(false),
       className: getNavItemClassName,
@@ -229,6 +217,7 @@ const Header: React.FC<{}> = () => {
       <li className="usa-sidenav__item role-tag">
         {formatRole(user.roleDescription)}
       </li>
+      <hr />
       <li className="usa-sidenav__item navlink__support">
         <div className="header-link-icon sparkle-icon-mask"></div>
         <a
@@ -279,13 +268,6 @@ const Header: React.FC<{}> = () => {
             className={item.className}
             data-testid={`${deviceType}-${item.dataTestId}`}
             id={`${deviceType}-${item.dataTestId}`}
-            role={item.hasSubmenu ? "button" : "link"}
-            aria-expanded={item.hasSubmenu ? staffDetailsVisible : undefined}
-            aria-controls={
-              item.hasSubmenu
-                ? `${deviceType}-${item.dataTestId}-submenu`
-                : undefined
-            }
           >
             {deviceType === "desktop" ? item.icon : item.mobileDisplayText}
           </LinkWithQuery>
@@ -293,9 +275,8 @@ const Header: React.FC<{}> = () => {
           staffDetailsVisible &&
           deviceType === "desktop" ? (
             <div
-              id={`${deviceType}-${item.dataTestId}-submenu`}
               ref={staffDefailsRef}
-              aria-label="Account navigation"
+              aria-label="Primary navigation"
               className={classNames("prime-staff-infobox", {
                 "is-prime-staff-infobox-visible": staffDetailsVisible,
               })}
@@ -318,7 +299,7 @@ const Header: React.FC<{}> = () => {
             <img
               className="width-card desktop:width-full"
               src={siteLogo}
-              alt={process.env.REACT_APP_TITLE}
+              alt={import.meta.env.VITE_TITLE}
             />
           </LinkWithQuery>
           <div className="prime-organization-name">{organization.name}</div>
@@ -332,7 +313,7 @@ const Header: React.FC<{}> = () => {
         </button>
 
         <nav
-          aria-label="Primary mobile navigation"
+          aria-label="Primary navigation"
           className={classNames(
             "usa-nav",
             "prime-nav",
@@ -350,18 +331,21 @@ const Header: React.FC<{}> = () => {
           >
             <FontAwesomeIcon icon={"window-close"} />
           </button>
-          {mainNavList("mobile")}
+          <ul className="usa-nav__primary usa-accordion mobile-main-nav-container">
+            {mainNavList("mobile")}
+          </ul>
           <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
             {secondaryNav("mobile")}
           </ul>
           <div className="usa-nav__primary mobile-sublist-container">
             {secondaryNavSublist("mobile")}
+            <hr />
+
             <label id="mobile-facility-label" className="usa-label ">
               Facility
             </label>
             <div className="prime-facility-select facility-select-mobile-container">
               <Dropdown
-                ariaLabel="Select testing facility"
                 selectedValue={facility.id}
                 onChange={onFacilitySelect}
                 className={"mobile-facility-select"}
@@ -378,14 +362,16 @@ const Header: React.FC<{}> = () => {
       </div>
 
       <nav
-        aria-label="Primary desktop navigation"
+        aria-label="Primary navigation"
         className="usa-nav prime-nav desktop-nav"
       >
-        {mainNavList("desktop")}
+        <ul className="usa-nav__primary usa-accordion">
+          {mainNavList("desktop")}
+        </ul>
         {facilities && facilities.length > 0 ? (
           <div className="prime-facility-select">
             <Dropdown
-              ariaLabel="Select testing facility"
+              aria-label={"Select facility"}
               selectedValue={facility.id}
               onChange={onFacilitySelect}
               options={facilities.map(({ name, id }) => ({

@@ -1,8 +1,5 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.NO_SYPHILIS_HISTORY_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.PREGNANT_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.YES_SYPHILIS_HISTORY_SNOMED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,7 +37,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @WithSimpleReportStandardUser // hackedy hack
 class TestResultTest extends BaseGraphqlTest {
 
@@ -141,16 +140,7 @@ class TestResultTest extends BaseGraphqlTest {
     Map<String, Boolean> symptoms = Map.of("25064002", true);
     LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
     _dataFactory.createTestOrder(
-        p,
-        _site,
-        AskOnEntrySurvey.builder()
-            .pregnancy(PREGNANT_SNOMED)
-            .syphilisHistory(YES_SYPHILIS_HISTORY_SNOMED)
-            .symptoms(symptoms)
-            .symptomOnsetDate(symptomOnsetDate)
-            .genderOfSexualPartners(List.of("male"))
-            .noSymptoms(false)
-            .build());
+        p, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     List<MultiplexResultInput> results = new ArrayList<>();
@@ -177,19 +167,17 @@ class TestResultTest extends BaseGraphqlTest {
 
     assertTrue(testResults.has(0), "Has at least one submitted test result=");
     assertEquals(dateTested, testResults.get(0).get("dateTested").asText());
-    assertEquals(
-        "{\"25064002\":\"true\"}", testResults.get(0).get("surveyData").get("symptoms").asText());
-    assertEquals("false", testResults.get(0).get("surveyData").get("noSymptoms").asText());
-    assertEquals("77386006", testResults.get(0).get("surveyData").get("pregnancy").asText());
-    assertEquals("2020-09-15", testResults.get(0).get("surveyData").get("symptomOnset").asText());
-    assertEquals(
-        "[\"male\"]",
-        testResults.get(0).get("surveyData").get("genderOfSexualPartners").toString());
+    assertEquals("{\"25064002\":\"true\"}", testResults.get(0).get("symptoms").asText());
+    assertEquals("false", testResults.get(0).get("noSymptoms").asText());
+    assertEquals("77386006", testResults.get(0).get("pregnancy").asText());
+    assertEquals("2020-09-15", testResults.get(0).get("symptomOnset").asText());
     testResults
+        .get(0)
+        .get("results")
         .elements()
         .forEachRemaining(
             r -> {
-              switch (r.get("disease").asText()) {
+              switch (r.get("disease").get("name").asText()) {
                 case "COVID-19":
                   assertEquals(TestResult.NEGATIVE.toString(), r.get("testResult").asText());
                   break;
@@ -200,7 +188,7 @@ class TestResultTest extends BaseGraphqlTest {
                   assertEquals(TestResult.UNDETERMINED.toString(), r.get("testResult").asText());
                   break;
                 default:
-                  fail("Unexpected disease=" + r.get("disease").asText());
+                  fail("Unexpected disease=" + r.get("disease").get("name").asText());
               }
             });
   }
@@ -215,32 +203,14 @@ class TestResultTest extends BaseGraphqlTest {
     LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
 
     _dataFactory.createTestOrder(
-        p1,
-        _site,
-        AskOnEntrySurvey.builder()
-            .pregnancy(PREGNANT_SNOMED)
-            .syphilisHistory(NO_SYPHILIS_HISTORY_SNOMED)
-            .symptoms(symptoms)
-            .symptomOnsetDate(symptomOnsetDate)
-            .genderOfSexualPartners(null)
-            .noSymptoms(false)
-            .build());
+        p1, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
     _dataFactory.createTestOrder(
-        p2,
-        _site,
-        AskOnEntrySurvey.builder()
-            .pregnancy(PREGNANT_SNOMED)
-            .syphilisHistory(NO_SYPHILIS_HISTORY_SNOMED)
-            .symptoms(symptoms)
-            .symptomOnsetDate(symptomOnsetDate)
-            .genderOfSexualPartners(null)
-            .noSymptoms(false)
-            .build());
+        p2, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     // The test default standard user is configured to access _site by default,
     // so we need to remove access to establish a baseline in this test
-    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
+    updateSelfPrivileges(Role.USER, false, Set.of());
     Map<String, Object> submitP1Variables =
         Map.of(
             "deviceId",
@@ -273,17 +243,17 @@ class TestResultTest extends BaseGraphqlTest {
     submitQueueItem(submitP1Variables, Optional.empty());
     submitQueueItem(submitP2Variables, Optional.empty());
 
-    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
+    updateSelfPrivileges(Role.USER, false, Set.of());
     Map<String, Object> fetchVariables = getFacilityScopedArguments();
     fetchTestResultsWithError(fetchVariables, ACCESS_ERROR);
 
     updateSelfPrivileges(Role.USER, true, Set.of());
     ArrayNode testResults = fetchTestResults(fetchVariables);
     assertEquals(2, testResults.size());
-    UUID t1Id = UUID.fromString(testResults.get(0).get("id").asText());
-    UUID t2Id = UUID.fromString(testResults.get(1).get("id").asText());
+    UUID t1Id = UUID.fromString(testResults.get(0).get("internalId").asText());
+    UUID t2Id = UUID.fromString(testResults.get(1).get("internalId").asText());
 
-    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
+    updateSelfPrivileges(Role.USER, false, Set.of());
 
     Map<String, Object> correctT1Variables =
         Map.of("id", t1Id.toString(), "reason", "nobody's perfect");
@@ -298,7 +268,7 @@ class TestResultTest extends BaseGraphqlTest {
     correctTest(correctT1Variables, Optional.empty());
     correctTest(correctT2Variables, Optional.empty());
 
-    updateSelfPrivileges(Role.USER, false, Set.of(_secondSite.getInternalId()));
+    updateSelfPrivileges(Role.USER, false, Set.of());
     Map<String, Object> fetchT1Variables = Map.of("id", t1Id.toString());
     Map<String, Object> fetchT2Variables = Map.of("id", t2Id.toString());
 
@@ -507,13 +477,13 @@ class TestResultTest extends BaseGraphqlTest {
 
   private ArrayNode fetchTestResults(Map<String, Object> variables) {
     return (ArrayNode)
-        runQuery("test-results-with-count-query", variables).get("resultsPage").get("content");
+        runQuery("test-results-with-count-query", variables).get("testResultsPage").get("content");
   }
 
   private ArrayNode fetchTestResultsMultiplex(Map<String, Object> variables) {
     return (ArrayNode)
         runQuery("test-results-with-count-multiplex-query", variables)
-            .get("resultsPage")
+            .get("testResultsPage")
             .get("content");
   }
 

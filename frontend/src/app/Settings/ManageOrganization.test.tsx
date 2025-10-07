@@ -7,6 +7,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
+import { DeepPartial } from "redux";
 import configureStore from "redux-mock-store";
 
 import { RootState } from "../store";
@@ -18,10 +19,6 @@ import {
 } from "../../generated/graphql";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
-
-type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
-};
 
 const mockStore = configureStore<DeepPartial<RootState>>([]);
 
@@ -200,6 +197,7 @@ describe("ManageOrganization", () => {
     });
   });
 });
+
 const mocks = [
   {
     request: {

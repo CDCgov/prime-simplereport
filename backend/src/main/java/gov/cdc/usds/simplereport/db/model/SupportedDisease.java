@@ -1,17 +1,15 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
-import gov.cdc.usds.simplereport.api.devicetype.PublicDeviceType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** A disease that SimpleReport supports testing for. */
 @Entity
@@ -20,11 +18,9 @@ import org.springframework.boot.context.properties.bind.ConstructorBinding;
 public class SupportedDisease extends IdentifiedEntity {
 
   @Column(nullable = false)
-  @JsonView(PublicDeviceType.class)
   private String name;
 
   @Column(nullable = false)
-  @JsonView(PublicDeviceType.class)
   private String loinc;
 
   @JsonIgnore

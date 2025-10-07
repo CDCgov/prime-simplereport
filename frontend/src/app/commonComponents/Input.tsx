@@ -18,7 +18,6 @@ interface Props<T> {
   hintText?: string;
   min?: number | string;
   max?: number | string;
-  dataCy?: string;
 }
 
 export const Input = <T extends { [key: string]: any }>({
@@ -37,7 +36,6 @@ export const Input = <T extends { [key: string]: any }>({
   hintText,
   min,
   max,
-  dataCy,
 }: Props<T>): React.ReactElement => {
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(field)(e.target.value);
@@ -68,7 +66,6 @@ export const Input = <T extends { [key: string]: any }>({
       min={min}
       max={max}
       hintText={hintText}
-      dataCy={dataCy}
     />
   );
 };

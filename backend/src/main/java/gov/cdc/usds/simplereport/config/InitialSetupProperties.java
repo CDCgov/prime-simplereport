@@ -1,33 +1,24 @@
 package gov.cdc.usds.simplereport.config;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseState;
-import static gov.cdc.usds.simplereport.api.Translators.parseString;
-
-import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
-import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
-import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "simple-report-initialization")
+@ConstructorBinding
 @RequiredArgsConstructor
 @Getter
 public class InitialSetupProperties {
@@ -38,10 +29,6 @@ public class InitialSetupProperties {
   private final List<String> configuredDeviceTypes;
   private final List<ConfigFacility> facilities;
   private final List<ConfigPatientRegistrationLink> patientRegistrationLinks;
-  private final List<ConfigPatient> patients;
-  private final List<Condition> conditions;
-  private final List<Lab> labs;
-  private final List<Specimen> specimens;
 
   public List<Organization> getOrganizations() {
     return organizations.stream()
@@ -123,45 +110,6 @@ public class InitialSetupProperties {
 
     public PatientSelfRegistrationLink makePatientRegistrationLink(Facility fac, String link) {
       return new PatientSelfRegistrationLink(fac, link);
-    }
-  }
-
-  @Value
-  public static class ConfigPatient {
-    String firstName;
-    String lastName;
-    String birthDate;
-    String organizationExternalId;
-
-    public Person makePatient(
-        Organization org, String firstName, String lastName, String birthDate) {
-      DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("M/d/yyyy");
-      LocalDate localDateBirthDate = LocalDate.parse(birthDate, dateTimeFormat);
-      StreetAddress patientAddress =
-          new StreetAddress(
-              parseString("123 Main Street"),
-              parseString(""),
-              parseString("Minneapolis"),
-              parseState("MN"),
-              parseString("55407"),
-              parseString("Hennepin"));
-      return Person.builder()
-          .firstName(firstName)
-          .lastName(lastName)
-          .birthDate(localDateBirthDate)
-          .facility(null)
-          .organization(org)
-          .address(patientAddress)
-          .country("USA")
-          .race("other")
-          .ethnicity("not_hispanic")
-          .gender("male")
-          .genderIdentity("male")
-          .employedInHealthcare(true)
-          .residentCongregateSetting(true)
-          .role(PersonRole.STAFF)
-          .testResultDeliveryPreference(TestResultDeliveryPreference.NONE)
-          .build();
     }
   }
 

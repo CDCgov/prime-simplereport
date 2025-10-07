@@ -1,7 +1,6 @@
 query GetCurrentOrganization {
     whoami {
         organization {
-            id
             name
             type
         }

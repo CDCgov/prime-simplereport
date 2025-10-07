@@ -39,7 +39,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @SuppressWarnings("checkstyle:MagicNumber")
 class PersonServiceTest extends BaseServiceTest<PersonService> {
 
@@ -100,11 +102,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        null,
         false,
         false,
         "English",
-        null,
         null);
     _service.addPatient(
         _site1.getInternalId(),
@@ -123,12 +123,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        null,
         false,
         false,
         "Spanish",
-        null,
-        "Outlandish spacefarer");
+        null);
     _service.addPatient(
         _site2.getInternalId(),
         "BAZ",
@@ -146,12 +144,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        null,
         false,
         false,
         "French",
-        null,
-        "Interstellar-traveling desperado");
+        null);
     List<Person> all =
         _service.getPatients(
             null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, ArchivedStatus.UNARCHIVED, null, false, "");
@@ -193,11 +189,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        null,
         false,
         false,
         "English",
-        null,
         null);
 
     LocalDate dob = LocalDate.of(1950, 1, 1);
@@ -223,11 +217,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 null,
                 null,
-                null,
                 false,
                 false,
                 "English",
-                null,
                 null));
 
     TestUserIdentities.setFacilityAuthorities(fac);
@@ -248,11 +240,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        null,
         false,
         false,
         "Spanish",
-        null,
         null);
   }
 
@@ -278,11 +268,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 null,
                 null,
-                null,
                 false,
                 false,
                 "English",
-                null,
                 null));
   }
 
@@ -320,11 +308,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                     null,
                     null,
                     null,
-                    null,
                     false,
                     false,
                     "English",
-                    null,
                     null));
     assertEquals("Duplicate phone number entered", e.getMessage());
   }
@@ -353,12 +339,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE,
-            null);
+            TestResultDeliveryPreference.NONE);
     UUID personInternalId = person.getInternalId();
 
     List<PhoneNumber> phoneNumbers = new ArrayList<>();
@@ -398,12 +382,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE,
-            null);
+            TestResultDeliveryPreference.NONE);
 
     List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
@@ -438,11 +420,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "Spanish",
-            null,
             null);
     TestUserIdentities.setFacilityAuthorities();
     UUID patientId = p.getInternalId();
@@ -489,11 +469,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            null,
             null);
 
     _service.setIsDeleted(p.getInternalId(), true, null);
@@ -535,11 +513,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "German",
-            null,
             null);
 
     assertEquals(
@@ -556,7 +532,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             .size());
     Person deletedPerson = _service.setIsDeleted(p.getInternalId(), true, null);
 
-    assertTrue(deletedPerson.getIsDeleted());
+    assertTrue(deletedPerson.isDeleted());
     assertEquals(
         0,
         _service
@@ -586,7 +562,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _service.getPatients(
             null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, ArchivedStatus.ALL, null, false, "");
     assertEquals(1, result.size());
-    assertTrue(result.get(0).getIsDeleted());
+    assertTrue(result.get(0).isDeleted());
     assertEquals(
         1,
         _service
@@ -643,7 +619,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             // no orgExternalId provided
             () -> _service.setIsDeleted(charlesId, true, null));
     // site admin needs to ghost into organization to delete this patient
-    assertEquals("Access Denied", caught.getMessage());
+    assertEquals("Access is denied", caught.getMessage());
   }
 
   @Test
@@ -764,11 +740,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "German",
-            null,
             null);
 
     assertEquals(
@@ -974,7 +948,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatients(
                     null, 0, 100, ArchivedStatus.ARCHIVED, "ma", false, externalId));
-    assertThat(err1.getMessage()).contains("Access Denied");
+    assertThat(err1.getMessage()).contains("Access is denied");
 
     AccessDeniedException err2 =
         assertThrows(
@@ -982,7 +956,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatientsCount(
                     null, ArchivedStatus.UNARCHIVED, null, false, externalId));
-    assertThat(err2.getMessage()).contains("Access Denied");
+    assertThat(err2.getMessage()).contains("Access is denied");
 
     AccessDeniedException err3 =
         assertThrows(
@@ -990,7 +964,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatients(
                     site1Id, 0, 100, ArchivedStatus.UNARCHIVED, "ma", false, externalId));
-    assertThat(err3.getMessage()).contains("Access Denied");
+    assertThat(err3.getMessage()).contains("Access is denied");
 
     AccessDeniedException err4 =
         assertThrows(
@@ -998,7 +972,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatientsCount(
                     site1Id, ArchivedStatus.UNARCHIVED, null, false, externalId));
-    assertThat(err4.getMessage()).contains("Access Denied");
+    assertThat(err4.getMessage()).contains("Access is denied");
   }
 
   @Test
@@ -1353,12 +1327,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE,
-            null);
+            TestResultDeliveryPreference.NONE);
 
     var result =
         _service.isDuplicatePatient(
@@ -1397,12 +1369,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE,
-            null);
+            TestResultDeliveryPreference.NONE);
 
     var result =
         _service.isDuplicatePatient(
@@ -1456,12 +1426,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE,
-            null);
+            TestResultDeliveryPreference.NONE);
 
     var result =
         _service.isDuplicatePatient(
@@ -1503,12 +1471,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE,
-            null);
+            TestResultDeliveryPreference.NONE);
 
     // Check for existing user in second facility
     var result =
@@ -1550,12 +1516,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE,
-            null);
+            TestResultDeliveryPreference.NONE);
 
     // Check if patient exists in constituent facility
     var result =

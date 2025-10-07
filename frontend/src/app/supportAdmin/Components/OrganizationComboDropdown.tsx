@@ -1,7 +1,6 @@
 import React from "react";
 import { ComboBox } from "@trussworks/react-uswds";
 import { Control, Controller } from "react-hook-form";
-import classnames from "classnames";
 
 import Required from "../../commonComponents/Required";
 import { showError } from "../../utils/srToast";
@@ -68,10 +67,9 @@ const OrganizationComboDropDown: React.FC<Props> = ({
               fieldState: { error },
             }) => (
               <div
-                className={classnames(
-                  "usa-form-group",
-                  error && "usa-form-group--error"
-                )}
+                className={
+                  error?.message && "usa-form-group usa-form-group--error"
+                }
               >
                 {error && (
                   <span className={"usa-error-message"} role={"alert"}>
@@ -85,9 +83,6 @@ const OrganizationComboDropDown: React.FC<Props> = ({
                   name={name}
                   defaultValue={value}
                   onChange={onChange}
-                  assistiveHint={
-                    error?.message ? `Error: ${error?.message}` : undefined
-                  }
                   ref={ref}
                 />
               </div>

@@ -1,38 +1,31 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import gov.cdc.usds.simplereport.api.devicetype.PublicDeviceType;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** The durable (and non-deletable) representation of a POC test device model. */
 @Entity
 @Getter
-@Setter
 public class DeviceType extends EternalAuditedEntity {
 
   @Column(nullable = false)
-  @JsonView(PublicDeviceType.class)
   private String name;
 
   @Column(nullable = false)
-  @JsonView(PublicDeviceType.class)
   private String manufacturer;
 
   @Column(nullable = false)
-  @JsonView(PublicDeviceType.class)
   private String model;
 
   @JoinTable(
@@ -40,15 +33,13 @@ public class DeviceType extends EternalAuditedEntity {
       joinColumns = @JoinColumn(name = "device_type_id"),
       inverseJoinColumns = @JoinColumn(name = "specimen_type_id"))
   @OneToMany(fetch = FetchType.LAZY)
-  @JsonView(PublicDeviceType.class)
   private List<SpecimenType> swabTypes;
 
   @Column(nullable = false)
-  @JsonView(PublicDeviceType.class)
   private int testLength;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "deviceTypeId", cascade = CascadeType.ALL, orphanRemoval = true)
-  @JsonView(PublicDeviceType.class)
   List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
 
   protected DeviceType() {
@@ -90,23 +81,35 @@ public class DeviceType extends EternalAuditedEntity {
     this.supportedDiseaseTestPerformed = supportedDiseaseTestPerformed;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    DeviceType that = (DeviceType) o;
-    return Objects.equals(model, that.model)
-        && Objects.equals(name, that.name)
-        && Objects.equals(testLength, that.testLength)
-        && Objects.equals(manufacturer, that.manufacturer);
+  public String getName() {
+    return name;
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(model, name, testLength, manufacturer);
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getManufacturer() {
+    return manufacturer;
+  }
+
+  public void setManufacturer(String manufacturer) {
+    this.manufacturer = manufacturer;
+  }
+
+  public String getModel() {
+    return model;
+  }
+
+  public void setModel(String model) {
+    this.model = model;
+  }
+
+  public int getTestLength() {
+    return this.testLength;
+  }
+
+  public void setTestLength(int testLength) {
+    this.testLength = testLength;
   }
 }

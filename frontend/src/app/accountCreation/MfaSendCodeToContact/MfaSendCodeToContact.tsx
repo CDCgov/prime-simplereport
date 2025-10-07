@@ -41,7 +41,7 @@ export const MfaSendCodeToContact = (props: Props) => {
     let valid;
     try {
       valid = contactIsValid(contact);
-    } catch {
+    } catch (e: any) {
       valid = false;
     }
 

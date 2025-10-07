@@ -10,14 +10,13 @@ import {
 } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
-import { useFeature } from "flagged";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
 import Page from "./commonComponents/Page/Page";
 import { setInitialState } from "./store";
-import TestResultsList from "./testResults/viewResults/TestResultsList";
-import CleanTestResultsList from "./testResults/viewResults/CleanTestResultsList";
+import TestResultsList from "./testResults/TestResultsList";
+import CleanTestResultsList from "./testResults/CleanTestResultsList";
 import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";
@@ -29,16 +28,15 @@ import Settings from "./Settings/Settings";
 import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
+import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
+import Uploads from "./testResults/uploads/Uploads";
 import Schema from "./testResults/uploads/CsvSchemaDocumentation";
 import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
 import UploadPatients from "./patients/UploadPatients";
-import DiseaseSpecificUploadContainer from "./testResults/uploads/DiseaseSpecificUploadContainer";
-import { specificSchemaBuilder } from "./testResults/uploads/specificSchemaBuilder";
-import LabReportForm from "./universalReporting/LabReportForm";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -63,17 +61,17 @@ export const WHOAMI_QUERY = gql`
   }
 `;
 
-export const checkOktaLoginStatus = (
+const checkOktaLoginStatus = (
   accessToken: string | null,
   location: Location
 ) => {
-  if (process.env.REACT_APP_OKTA_ENABLED === "true") {
+  if (import.meta.env.VITE_OKTA_ENABLED === "true") {
     if (!accessToken) {
       // If Okta login has been attempted and returned to SR with an error, don't redirect back to Okta
       const params = new URLSearchParams(location.hash.slice(1));
       if (params.get("error")) {
         throw new Error(
-          params.get("error_description") ?? "Unknown Okta error"
+          params.get("error_description") || "Unknown Okta error"
         );
       }
       throw new Error("Not authenticated, redirecting to Okta...");
@@ -82,7 +80,6 @@ export const checkOktaLoginStatus = (
 };
 
 const ReportingApp = () => {
-  const universalReportingEnabled = useFeature("universalReportingEnabled");
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -152,7 +149,7 @@ const ReportingApp = () => {
           console.error("Failed to decode access token", e);
         }
       }
-      const rolesFieldName = `${process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM}`;
+      const rolesFieldName = `${import.meta.env.VITE_OKTA_TOKEN_ROLE_CLAIM}`;
       appInsights.trackException({
         exception: error,
         properties: {
@@ -191,7 +188,10 @@ const ReportingApp = () => {
   return (
     <>
       <VersionEnforcer />
-      {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
+      {import.meta.env.VITE_DISABLE_MAINTENANCE_BANNER === "true" ? null : (
+        <MaintenanceBanner />
+      )}
+      {import.meta.env.VITE_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}
       <WithFacility>
@@ -244,24 +244,12 @@ const ReportingApp = () => {
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper>
-                        <DiseaseSpecificUploadContainer />
+                        <Uploads />
                       </ResultsNavWrapper>
                     }
                   />
                 }
               />
-              {universalReportingEnabled && (
-                <Route
-                  path="results/universal"
-                  element={
-                    <ProtectedRoute
-                      requiredPermissions={canViewResults}
-                      userPermissions={data.whoami.permissions}
-                      element={<LabReportForm />}
-                    />
-                  }
-                />
-              )}
               <Route
                 path="results/upload/submit/guide"
                 element={
@@ -270,10 +258,7 @@ const ReportingApp = () => {
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper>
-                        <Schema
-                          schemaBuilder={specificSchemaBuilder}
-                          returnUrl={"/results/upload/submit"}
-                        />
+                        <Schema />
                       </ResultsNavWrapper>
                     }
                   />

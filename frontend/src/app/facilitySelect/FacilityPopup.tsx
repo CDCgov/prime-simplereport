@@ -2,7 +2,6 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import { formatFullName } from "../utils/user";
-import siteLogo from "../../img/simplereport-logo-color.svg";
 
 import "./FacilitySelect.scss";
 
@@ -19,22 +18,18 @@ const FacilityPopup: React.FC<FacilityPopupProps> = ({ children }) => {
   return (
     <main className="prime-home" id="facility-select">
       <div className="grid-container">
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
-            <div className="text-center">
-              <img
-                className="flex-align-self-center maxw-card-lg width-full"
-                src={siteLogo}
-                alt="SimpleReport logo"
-              />
-              <h1 className="text-primary-darker text-bold font-heading-md">
-                {organization.name}
-              </h1>
-              <p className="text-bold text-center margin-7">
-                Welcome, {formatFullName(user)}
-              </p>
+        <div className="grid-row position-relative">
+          <div className="prime-container card-container">
+            <div className="usa-card__header">
+              <div>
+                <h2>SimpleReport</h2>
+                <div className="organization-name">{organization.name}</div>
+              </div>
             </div>
-            {children}
+            <div className="usa-card__body">
+              <p className="welcome">Welcome, {formatFullName(user)}</p>
+              {children}
+            </div>
           </div>
         </div>
       </div>

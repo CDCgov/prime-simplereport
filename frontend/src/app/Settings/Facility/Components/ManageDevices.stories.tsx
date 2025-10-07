@@ -1,11 +1,11 @@
-import { StoryFn, Meta } from "@storybook/react-webpack5";
+import { StoryFn, Meta } from "@storybook/react";
 import React from "react";
 import { userEvent, within } from "@storybook/testing-library";
 
 import ManageDevices from "./ManageDevices";
 
 export default {
-  title: "App/Settings/Manage Facilities/Manage Devices",
+  title: "App / Manage Facility / Manage Devices",
   component: ManageDevices,
   argTypes: {},
 } as Meta;

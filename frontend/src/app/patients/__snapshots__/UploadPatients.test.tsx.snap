@@ -13,7 +13,6 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
       >
         <div
           class="display-flex flex-justify"
-          data-cy="add-patient-header"
         >
           <div>
             <div
@@ -141,7 +140,6 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
-                  data-testid="facilitySector"
                   id="facilitySector"
                 >
                   <legend
@@ -165,7 +163,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-facilitySector-oneFacility"
+                        data-cy="radio-group-option-oneFacility"
                         for="1-val-oneFacility"
                       >
                         One facility
@@ -184,7 +182,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-facilitySector-allFacility"
+                        data-cy="radio-group-option-allFacility"
                         for="1-val-allFacility"
                       >
                         All facilities

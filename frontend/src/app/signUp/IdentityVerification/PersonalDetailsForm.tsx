@@ -84,7 +84,6 @@ const PersonalDetailsForm = ({
       setSubmitted(true);
       return;
     }
-    // @ts-ignore
     setErrors(validation.errors);
     focusOnce.current = true;
     showError(FORM_ERROR_MSG, FORM_ERROR_TITLE);
@@ -227,7 +226,7 @@ const PersonalDetailsForm = ({
               To create your account, we’ll need information to verify your
               identity directly with{" "}
               <a
-                href="https://www.experian.com/business/solutions/identity-solutions/identity-proofing"
+                href="https://www.experian.com/decision-analytics/identity-proofing"
                 target="_blank"
                 rel="noopener noreferrer"
               >

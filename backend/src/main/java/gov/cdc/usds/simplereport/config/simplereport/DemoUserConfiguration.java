@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 /**
  * Bound configuration for the default demo user, and possibly more demo users in the future if we
@@ -64,11 +64,11 @@ public class DemoUserConfiguration {
     return siteAdminEmails;
   }
 
+  @ConstructorBinding
   public static class DemoUser {
     private DemoAuthorization authorization;
     private IdentityAttributes identity;
 
-    @ConstructorBinding
     public DemoUser(DemoAuthorization authorization, IdentityAttributes identity) {
       super();
       this.authorization = authorization;
@@ -88,12 +88,12 @@ public class DemoUserConfiguration {
     }
   }
 
+  @ConstructorBinding
   public static class DemoAuthorization implements PermissionHolder {
     private String organizationExternalId;
     private Set<String> facilities;
     private Set<OrganizationRole> grantedRoles;
 
-    @ConstructorBinding
     public DemoAuthorization(
         String organizationExternalId, Set<String> facilities, Set<OrganizationRole> grantedRoles) {
       super();

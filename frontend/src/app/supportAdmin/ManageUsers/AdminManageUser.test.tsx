@@ -1,10 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { MockedProvider } from "@apollo/client/testing";
+import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import createMockStore from "redux-mock-store";
-import { configureAxe } from "jest-axe";
-import { MockedResponse } from "@apollo/client/testing/core";
-import { GraphQLError } from "graphql/error";
+import { Provider } from "react-redux";
+import { configureAxe, toHaveNoViolations } from "jest-axe";
 
 import {
   EditUserEmailDocument,
@@ -14,20 +14,11 @@ import {
   ResetUserMfaDocument,
   ResetUserPasswordDocument,
   SetUserIsDeletedDocument,
-  UndeleteUserDocument,
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
 import { OktaUserStatus } from "../../utils/user";
-import { createGQLWrappedMemoryRouterWithDataApis } from "../../utils/reactRouter";
 
 import { AdminManageUser } from "./AdminManageUser";
-import {
-  findUserByEmailMock,
-  getAllOrgsMock,
-  getFacilitiesByDatOrgMock,
-  getFacilitiesByDisOrgMock,
-  getTestResultCountByOrgMock,
-} from "./operationMocks";
 
 jest.mock("uuid", () => ({
   v4: jest
@@ -63,38 +54,29 @@ const validResponse = [
     },
   },
 ];
-const searchForValidUser = async (
-  user: UserEvent,
-  email = "ben@example.com",
-  fullName = "Barnes, Ben Billy"
-) => {
-  const searchInput = await screen.findByLabelText(
-    "Search by email address of user"
-  );
+const searchForValidUser = async () => {
+  const searchInput = screen.getByLabelText("Search by email address of user");
+  fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
+  fireEvent.click(screen.getByAltText("Search"));
 
-  await user.type(searchInput, email);
-
-  await user.click(screen.getByAltText("Search"));
-
-  expect(await screen.findByText(fullName)).toBeInTheDocument();
+  expect(await screen.findByText("Barnes, Ben Billy")).toBeInTheDocument();
 };
 const mockStore = createMockStore([]);
 const mockedStore = mockStore({ user: { isAdmin: true } });
-
-const renderComponent = (mocks: MockedResponse[]) => ({
-  user: userEvent.setup(),
-  ...render(
-    createGQLWrappedMemoryRouterWithDataApis(
-      <div>
-        <ToastContainer />
-        <AdminManageUser />
-      </div>,
-      mockedStore,
-      mocks
-    )
-  ),
-});
-
+expect.extend(toHaveNoViolations);
+const renderComponent = (mocks?: any[]) =>
+  render(
+    <Provider store={mockedStore}>
+      <MemoryRouter>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <div>
+            <ToastContainer />
+            <AdminManageUser />
+          </div>
+        </MockedProvider>
+      </MemoryRouter>
+    </Provider>
+  );
 const axe = configureAxe({
   rules: {
     // disable landmark rules when testing isolated components.
@@ -103,26 +85,24 @@ const axe = configureAxe({
 });
 describe("Admin manage users", () => {
   it("search results matches snapshot", async () => {
-    const { user } = renderComponent(validResponse);
-    await searchForValidUser(user);
+    renderComponent(validResponse);
+    await searchForValidUser();
 
     expect(document.body).toMatchSnapshot();
     expect(await axe(document.body)).toHaveNoViolations();
   });
   describe("clear filter button", () => {
     it("should clear search results", async () => {
-      const { user } = renderComponent(validResponse);
-      await searchForValidUser(user);
-
-      await user.click(screen.getByLabelText("Clear user search"));
-
+      renderComponent(validResponse);
+      await searchForValidUser();
+      fireEvent.click(screen.getByLabelText("Clear user search"));
       expect(
         await screen.findByPlaceholderText("email@example.com")
       ).toBeInTheDocument();
       expect(screen.queryByText("Ben")).not.toBeInTheDocument();
     });
     it("should clear error", async () => {
-      const { user } = renderComponent([
+      renderComponent([
         {
           request: {
             query: FindUserByEmailDocument,
@@ -136,12 +116,10 @@ describe("Admin manage users", () => {
       const searchInput = screen.getByLabelText(
         "Search by email address of user"
       );
-      await user.type(searchInput, "bad@example.com");
-      await user.click(screen.getByAltText("Search"));
-
+      fireEvent.change(searchInput, { target: { value: "bad@example.com" } });
+      fireEvent.click(screen.getByAltText("Search"));
       expect(await screen.findByText("User not found")).toBeInTheDocument();
-      await user.click(screen.getByLabelText("Clear user search"));
-
+      fireEvent.click(screen.getByLabelText("Clear user search"));
       expect(
         await screen.findByPlaceholderText("email@example.com")
       ).toBeInTheDocument();
@@ -150,7 +128,7 @@ describe("Admin manage users", () => {
   });
   describe("search error", () => {
     it("displays user not found", async () => {
-      const { user } = renderComponent([
+      renderComponent([
         {
           request: {
             query: FindUserByEmailDocument,
@@ -164,52 +142,31 @@ describe("Admin manage users", () => {
       const searchInput = screen.getByLabelText(
         "Search by email address of user"
       );
-      await user.type(searchInput, "bad@example.com");
-      await user.click(screen.getByAltText("Search"));
+      fireEvent.change(searchInput, { target: { value: "bad@example.com" } });
+      fireEvent.click(screen.getByAltText("Search"));
       expect(await screen.findByText("User not found")).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
       expect(document.body).toMatchSnapshot();
     });
     it("displays user is an admin", async () => {
-      const mockedResponse = {
-        request: {
-          query: FindUserByEmailDocument,
-          variables: { email: "admin@example.com" },
-        },
-        result: {
-          data: undefined,
-          errors: [
-            new GraphQLError(
-              "header: Error finding user email; body: Please escalate this issue to the SimpleReport team."
-            ),
-          ],
-        },
-      };
-      const { user } = renderComponent([mockedResponse as MockedResponse]);
-      const searchInput = screen.getByLabelText(
-        "Search by email address of user"
-      );
-      await user.type(searchInput, "admin@example.com");
-      await user.click(screen.getByAltText("Search"));
-      expect(
-        await screen.findByText("Can't determine user identity")
-      ).toBeInTheDocument();
-      expect(await axe(document.body)).toHaveNoViolations();
-      expect(document.body).toMatchSnapshot();
-    });
-    it("displays generic error", async () => {
-      const { user } = renderComponent([
+      renderComponent([
         {
           request: {
             query: FindUserByEmailDocument,
-            variables: { email: "bob@example.com" },
+            variables: { email: "admin@example.com" },
           },
           result: {
-            data: undefined,
+            data: null,
             errors: [
-              new GraphQLError(
-                "header: Something went wrong; body: Try again later."
-              ),
+              {
+                message:
+                  "header: Error finding user email; body: Please escalate this issue to the SimpleReport team.",
+                locations: [],
+                path: ["user"],
+                extensions: {
+                  classification: "ExecutionAborted",
+                },
+              },
             ],
           },
         },
@@ -217,8 +174,41 @@ describe("Admin manage users", () => {
       const searchInput = screen.getByLabelText(
         "Search by email address of user"
       );
-      await user.type(searchInput, "bob@example.com");
-      await user.click(screen.getByAltText("Search"));
+      fireEvent.change(searchInput, { target: { value: "admin@example.com" } });
+      fireEvent.click(screen.getByAltText("Search"));
+      expect(
+        await screen.findByText("Can't determine user identity")
+      ).toBeInTheDocument();
+      expect(await axe(document.body)).toHaveNoViolations();
+      expect(document.body).toMatchSnapshot();
+    });
+    it("displays generic error", async () => {
+      renderComponent([
+        {
+          request: {
+            query: FindUserByEmailDocument,
+            variables: { email: "bob@example.com" },
+          },
+          result: {
+            data: null,
+            errors: [
+              {
+                message: "header: Something went wrong; body: Try again later.",
+                locations: [],
+                path: ["user"],
+                extensions: {
+                  classification: "ExecutionAborted",
+                },
+              },
+            ],
+          },
+        },
+      ]);
+      const searchInput = screen.getByLabelText(
+        "Search by email address of user"
+      );
+      fireEvent.change(searchInput, { target: { value: "bob@example.com" } });
+      fireEvent.click(screen.getByAltText("Search"));
       expect(
         await screen.findByText("Something went wrong")
       ).toBeInTheDocument();
@@ -247,23 +237,19 @@ describe("Admin manage users", () => {
           },
         },
       };
-      const { user } = renderComponent([
-        ...validResponse,
-        updateUserNameResponse,
-      ]);
-      await searchForValidUser(user);
-      await user.click(screen.getByText("Edit name"));
-
+      renderComponent([...validResponse, updateUserNameResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getByText("Edit name"));
       await screen.findByText("Edit name for Barnes, Ben");
       const firstNameField = screen.getByLabelText("First name *");
       const lastNameField = screen.getByLabelText("Last name *");
-      await user.clear(lastNameField);
-      await user.type(lastNameField, "Smith");
-      await user.clear(firstNameField);
-      await user.type(firstNameField, "Granny");
+      fireEvent.change(firstNameField, { target: { value: "Granny" } });
+      fireEvent.change(lastNameField, { target: { value: "Smith" } });
+      fireEvent.click(screen.getByText("Confirm"));
 
-      await user.click(screen.getByText("Confirm"));
-      await screen.findByText("Smith, Granny Billy");
+      expect(
+        await screen.findByText("Smith, Granny Billy")
+      ).toBeInTheDocument();
     });
     it("edit email handler calls", async () => {
       const updateUserNameResponse = {
@@ -283,18 +269,13 @@ describe("Admin manage users", () => {
           },
         },
       };
-      const { user } = renderComponent([
-        ...validResponse,
-        updateUserNameResponse,
-      ]);
-      await searchForValidUser(user);
-
-      await user.click(screen.getByText("Edit email"));
+      renderComponent([...validResponse, updateUserNameResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getByText("Edit email"));
       await screen.findByText("Edit email address for Barnes, Ben Billy");
       const emailField = screen.getByLabelText("Email address *");
-      await user.clear(emailField);
-      await user.type(emailField, "granny@example.com");
-      await user.click(screen.getByText("Confirm"));
+      fireEvent.change(emailField, { target: { value: "granny@example.com" } });
+      fireEvent.click(screen.getByText("Confirm"));
 
       await screen.findByText("granny@example.com");
     });
@@ -316,15 +297,11 @@ describe("Admin manage users", () => {
           },
         },
       };
-      const { user } = renderComponent([
-        ...validResponse,
-        resetUserPasswordResponse,
-      ]);
-
-      await searchForValidUser(user);
-      await user.click(screen.getByText("Send password reset email"));
+      renderComponent([...validResponse, resetUserPasswordResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getByText("Send password reset email"));
       await screen.findByText("Reset Barnes, Ben Billy's password");
-      await user.click(screen.getByText("Yes, I'm sure"));
+      fireEvent.click(screen.getByText("Yes, I'm sure"));
 
       expect(
         await screen.findByText("Password reset for Barnes, Ben Billy")
@@ -346,14 +323,10 @@ describe("Admin manage users", () => {
           },
         },
       };
-      const { user } = renderComponent([
-        ...validResponse,
-        resetUserPasswordResponse,
-      ]);
-
-      await searchForValidUser(user);
-      await user.click(screen.getByText("Reset MFA"));
-      await user.click(
+      renderComponent([...validResponse, resetUserPasswordResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getByText("Reset MFA"));
+      fireEvent.click(
         await screen.findByText("Reset multi-factor authentication")
       );
 
@@ -361,9 +334,8 @@ describe("Admin manage users", () => {
         await screen.findByText("MFA reset for Barnes, Ben Billy")
       ).toBeInTheDocument();
     });
-
     it("delete user handler", async () => {
-      const deleteUserResponse = {
+      const resetUserPasswordResponse = {
         request: {
           query: SetUserIsDeletedDocument,
           variables: {
@@ -379,24 +351,22 @@ describe("Admin manage users", () => {
           },
         },
       };
-      const { user } = renderComponent([...validResponse, deleteUserResponse]);
+      renderComponent([...validResponse, resetUserPasswordResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getAllByText("Delete user")[1]);
+      fireEvent.click(await screen.findByText("Yes, I'm sure"));
 
-      await searchForValidUser(user);
-      await user.click(screen.getAllByText("Delete user")[1]);
-      await screen.findByText(/Remove user/i);
-      await user.click(await screen.findByText("Yes, I'm sure"));
-      expect(await axe(document.body)).toHaveNoViolations();
+      expect(
+        await screen.findByText("User account removed for Barnes, Ben Billy")
+      ).toBeInTheDocument();
       expect(await screen.findByText("Edit name")).toBeDisabled();
       expect(screen.getByText("Edit email")).toBeDisabled();
       expect(screen.getByText("Send password reset email")).toBeDisabled();
       expect(screen.getByText("Reset MFA")).toBeDisabled();
       expect(screen.queryByText("Delete user")).not.toBeInTheDocument();
-
-      expect(
-        await screen.findByText("User account removed for Barnes, Ben Billy")
-      ).toBeInTheDocument();
+      expect(screen.getByText("Account deleted")).toBeInTheDocument();
+      expect(await axe(document.body)).toHaveNoViolations();
     });
-
     it("reactivate user handler", async () => {
       const suspendedUserResponse = {
         request: {
@@ -437,21 +407,15 @@ describe("Admin manage users", () => {
           },
         },
       };
-      const { user } = renderComponent([
-        suspendedUserResponse,
-        reactivateUserResponse,
-      ]);
-      await searchForValidUser(user);
-
-      await user.click(await screen.findByText("Activate user"));
-
-      await user.click(await screen.findByText("Yes, reactivate"));
+      renderComponent([suspendedUserResponse, reactivateUserResponse]);
+      await searchForValidUser();
+      fireEvent.click(await screen.findByText("Activate user"));
+      fireEvent.click(await screen.findByText("Yes, reactivate"));
 
       expect(
         await screen.findByText("Barnes, Ben Billy has been reactivated.")
       ).toBeInTheDocument();
     });
-
     it("resend user activation handler", async () => {
       const suspendedUserResponse = {
         request: {
@@ -497,15 +461,10 @@ describe("Admin manage users", () => {
           },
         },
       };
-      const { user } = renderComponent([
-        suspendedUserResponse,
-        reactivateUserResponse,
-      ]);
-      await searchForValidUser(user);
-
-      await user.click(await screen.findByText("Send account setup email"));
-
-      await user.click(await screen.findByText("Yes, send email"));
+      renderComponent([suspendedUserResponse, reactivateUserResponse]);
+      await searchForValidUser();
+      fireEvent.click(await screen.findByText("Send account setup email"));
+      fireEvent.click(await screen.findByText("Yes, send email"));
 
       expect(
         await screen.findByText(
@@ -513,211 +472,5 @@ describe("Admin manage users", () => {
         )
       ).toBeInTheDocument();
     });
-  });
-
-  it("Undelete user", async () => {
-    const deletedUserResponse = {
-      request: {
-        query: FindUserByEmailDocument,
-        variables: { email: "ben@example.com" },
-      },
-      result: {
-        data: {
-          user: {
-            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-            firstName: "Ben",
-            middleName: "Billy",
-            lastName: "Barnes",
-            suffix: "III",
-            email: "ben@example.com",
-            isAdmin: false,
-            roleDescription: "Misconfigured user",
-            permissions: [],
-            role: null,
-            roles: [],
-            status: OktaUserStatus.SUSPENDED,
-            isDeleted: true,
-          },
-        },
-      },
-    };
-
-    const undeletedUserResponse = {
-      request: {
-        query: FindUserByEmailDocument,
-        variables: { email: "ben@example.com" },
-      },
-      result: {
-        data: {
-          user: {
-            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-            firstName: "Ben",
-            middleName: "Billy",
-            lastName: "Barnes",
-            suffix: "III",
-            email: "ben@example.com",
-            isAdmin: false,
-            roleDescription: "Misconfigured user",
-            permissions: [],
-            role: null,
-            roles: [],
-            status: OktaUserStatus.ACTIVE,
-            isDeleted: false,
-          },
-        },
-      },
-    };
-
-    const undeleteUserResponse = {
-      request: {
-        query: UndeleteUserDocument,
-        variables: {
-          userId: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-        },
-      },
-      result: {
-        data: {
-          setUserIsDeleted: {
-            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-            email: "ben@example.com",
-            isDeleted: false,
-            __typename: "User",
-          },
-        },
-      },
-    };
-    const { user } = renderComponent([
-      deletedUserResponse,
-      undeleteUserResponse,
-      undeletedUserResponse,
-    ]);
-    await searchForValidUser(user);
-    expect(document.body).toMatchSnapshot(); // deleted account
-    await screen.findByRole("heading", { name: /barnes, ben billy/i });
-    const undeleteBtn = screen.getByRole("button", { name: /undelete user/i });
-    await user.click(undeleteBtn);
-
-    await screen.findByRole("heading", { name: /undelete barnes, ben billy/i });
-    expect(document.body).toMatchSnapshot(); //confirmation modal
-    const confirmUndeleteBtn = screen.getByRole("button", {
-      name: /yes, undelete user/i,
-    });
-    await user.click(confirmUndeleteBtn);
-
-    await waitFor(() =>
-      expect(
-        screen.queryByRole("heading", { name: /undelete barnes, ben billy/i })
-      ).not.toBeInTheDocument()
-    );
-  });
-
-  describe("Organization access tab", () => {
-    it("loads organization access tab", async () => {
-      const { user } = renderComponent([
-        getAllOrgsMock,
-        getFacilitiesByDisOrgMock,
-        getFacilitiesByDisOrgMock,
-        findUserByEmailMock,
-      ]);
-      await searchForValidUser(
-        user,
-        "ruby@example.com",
-        "Reynolds, Ruby Raven"
-      );
-      const orgAccessTab = await screen.findByRole("tab", {
-        name: /organization access/i,
-      });
-
-      await user.click(orgAccessTab);
-
-      await screen.findByText(/user role/i);
-      const roleRadioBtn = await screen.findByRole("radio", {
-        name: /standard user report tests, bulk upload results, manage test results, and patient profiles/i,
-      });
-      await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
-    });
-
-    it("checks form validation happens on submit", async () => {
-      const { user } = renderComponent([
-        getAllOrgsMock,
-        getFacilitiesByDisOrgMock,
-        getFacilitiesByDisOrgMock,
-        findUserByEmailMock,
-      ]);
-      await searchForValidUser(
-        user,
-        "ruby@example.com",
-        "Reynolds, Ruby Raven"
-      );
-      const orgAccessTab = await screen.findByRole("tab", {
-        name: /organization access/i,
-      });
-      // eslint-disable-next-line testing-library/no-unnecessary-act
-      await user.click(orgAccessTab);
-
-      const roleRadioBtn = await screen.findByRole("radio", {
-        name: /standard user report tests, bulk upload results, manage test results, and patient profiles/i,
-      });
-      await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
-
-      await user.click(
-        screen.getByRole("button", { name: /clear the select contents/i })
-      );
-
-      const saveBtn = screen.getByRole("button", { name: /save changes/i });
-
-      await waitFor(() => expect(saveBtn).toBeEnabled());
-      await user.click(saveBtn);
-
-      await screen.findByText(/Error: Organization is required/i);
-    });
-  });
-
-  it("shows warning modal if org updates that will make user lose access to data are submitted", async () => {
-    const { user } = renderComponent([
-      findUserByEmailMock,
-      getAllOrgsMock,
-      getFacilitiesByDisOrgMock,
-      getFacilitiesByDisOrgMock,
-      getFacilitiesByDatOrgMock,
-      getTestResultCountByOrgMock,
-    ]);
-
-    await searchForValidUser(user, "ruby@example.com", "Reynolds, Ruby Raven");
-
-    const orgAccessTab = await screen.findByRole("tab", {
-      name: /organization access/i,
-    });
-
-    await user.click(orgAccessTab);
-
-    // change organization
-    const orgComboBoxInput = await screen.findByTestId("combo-box-input");
-
-    await user.clear(orgComboBoxInput);
-
-    await user.type(orgComboBoxInput, "Dat Organization");
-
-    await user.type(orgComboBoxInput, "{enter}");
-
-    // select facility
-    const downtownCheckbox = await screen.findByLabelText(/Downtown Clinic/i);
-
-    await user.click(downtownCheckbox);
-
-    // submit changes
-    const saveChangesBtn = screen.getByRole("button", {
-      name: /save changes/i,
-    });
-
-    await user.click(saveChangesBtn);
-
-    // verify warning modal shows
-    await screen.findByText(/organization update/i);
-    expect(
-      screen.getByText(
-        /this update will move to a different organization\. the user will lose access to test result reported under it\./i
-      )
-    ).toBeInTheDocument();
   });
 });

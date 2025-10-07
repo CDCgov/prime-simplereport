@@ -29,7 +29,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 /** Tests for adding and fetching patients through the API */
 class PatientManagementTest extends BaseGraphqlTest {
 
@@ -377,6 +379,14 @@ class PatientManagementTest extends BaseGraphqlTest {
                 Optional.of(facility2Id),
                 Optional.empty())
             .get("addPatient");
+
+    updateSelfPrivileges(Role.USER, false, Set.of());
+
+    executeDeletePersonMutation(
+        UUID.fromString(p2.get("internalId").asText()), Optional.of(ACCESS_ERROR));
+
+    executeDeletePersonMutation(
+        UUID.fromString(p3.get("internalId").asText()), Optional.of(ACCESS_ERROR));
 
     updateSelfPrivileges(Role.USER, false, Set.of(facility1Id));
     executeDeletePersonMutation(UUID.fromString(p2.get("internalId").asText()), Optional.empty());

@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -29,20 +30,9 @@ const validateDateOfBirthSpy = jest
 describe("DOB (valid UUID)", () => {
   let getTestResultUnauthenticatedSpy: jest.SpyInstance;
 
-  const renderWithUser = (store: any) => ({
-    user: userEvent.setup(),
-    ...render(mockContainer(store)),
-  });
-
-  const renderAndWaitForLoad = async () => {
-    const store = mockStore({ plid });
-    const { user, ...renderControls } = renderWithUser(store);
-    expect(await screen.findByText("John D.'s")).toBeInTheDocument();
-
-    return { user, ...renderControls };
-  };
-
   beforeEach(async () => {
+    const store = mockStore({ plid });
+
     getTestResultUnauthenticatedSpy = jest
       .spyOn(PxpApi, "getTestResultUnauthenticated")
       .mockImplementation((_plid) => {
@@ -64,15 +54,16 @@ describe("DOB (valid UUID)", () => {
           )
         );
       });
+
+    render(mockContainer(store));
+    expect(await screen.findByText("John D.'s")).toBeInTheDocument();
   });
 
   it("fetches unauthenticated test result data from server on render", async () => {
-    await renderAndWaitForLoad();
     expect(getTestResultUnauthenticatedSpy).toBeCalledWith(plid);
   });
 
   it("shows obfuscated patient name on verification screen", async () => {
-    await renderAndWaitForLoad();
     // Text is broken up by multiple HTML elements
     expect(await screen.findByText("John D.'s")).toBeInTheDocument();
     expect(
@@ -84,7 +75,6 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("shows facility name and phone number on verification screen", async () => {
-    await renderAndWaitForLoad();
     expect(
       await screen.findByText("Testing Facility", { exact: false })
     ).toBeInTheDocument();
@@ -94,7 +84,6 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("shows patient link expiration date on verification screen", async () => {
-    await renderAndWaitForLoad();
     expect(
       await screen.findByText("Note: this link will expire on ", {
         exact: false,
@@ -106,13 +95,22 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("Checks to make sure it is actually a possible date", async () => {
-    const { user } = await renderAndWaitForLoad();
     // GIVEN
-    await user.type(await screen.findByLabelText("Month"), "2");
-
-    await user.type(await screen.findByLabelText("Day"), "31");
-    await user.type(await screen.findByLabelText("Year"), "1990");
-    await user.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "2")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "31")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1990")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -126,12 +124,18 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("Does not allow partial dates", async () => {
-    const { user } = await renderAndWaitForLoad();
     // GIVEN
-    await user.type(await screen.findByLabelText("Month"), "7");
-
-    await user.type(await screen.findByLabelText("Day"), "31");
-    await user.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "7")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "31")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -145,14 +149,22 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("Checks to make sure it is a date after 1900", async () => {
-    const { user } = await renderAndWaitForLoad();
     // GIVEN
-
-    await user.type(await screen.findByLabelText("Month"), "08");
-
-    await user.type(await screen.findByLabelText("Day"), "21");
-    await user.type(await screen.findByLabelText("Year"), "1899");
-    await user.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1899")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -166,15 +178,22 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("Checks to make sure it is a date before this year", async () => {
-    const { user } = await renderAndWaitForLoad();
     // GIVEN
-
-    await user.type(await screen.findByLabelText("Month"), "08");
-
-    await user.type(await screen.findByLabelText("Day"), "21");
-
-    await user.type(await screen.findByLabelText("Year"), "2237");
-    await user.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "2237")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -188,16 +207,23 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("Rejects the wrong date (not what is stored for the user)", async () => {
-    const { user } = await renderAndWaitForLoad();
     // GIVEN
     validateDateOfBirthSpy.mockRejectedValue({ status: 403 });
-
-    await user.type(await screen.findByLabelText("Month"), "08");
-
-    await user.type(await screen.findByLabelText("Day"), "22");
-
-    await user.type(await screen.findByLabelText("Year"), "1987");
-    await user.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "22")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1987")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -210,20 +236,27 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("Accepts an otherwise valid date", async () => {
-    const { user } = await renderAndWaitForLoad();
     // GIVEN
     validateDateOfBirthSpy.mockImplementation(
       () => new Promise((res) => setTimeout(() => res({} as any), 300))
     );
-
-    await user.type(await screen.findByLabelText("Month"), "08");
-
-    await user.type(await screen.findByLabelText("Day"), "21");
-
-    await user.type(await screen.findByLabelText("Year"), "1987");
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1987")
+    );
 
     // WHEN
-    await user.click(await screen.findByText("Continue"));
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating birth date...")
     );
@@ -233,18 +266,28 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("Rejects an expired link", async () => {
-    const { user } = await renderAndWaitForLoad();
     // GIVEN
     validateDateOfBirthSpy.mockImplementation(
       () =>
         new Promise((res, rej) => setTimeout(() => rej({ status: 410 }), 300))
     );
-    await user.type(await screen.findByLabelText("Month"), "08");
-    await user.type(await screen.findByLabelText("Day"), "21");
-    await user.type(await screen.findByLabelText("Year"), "1987");
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1987")
+    );
 
     // WHEN
-    await user.click(await screen.findByText("Continue"));
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating birth date...")
     );
@@ -260,19 +303,28 @@ describe("DOB (valid UUID)", () => {
   });
 
   it("Rejects an invalid link", async () => {
-    const { user } = await renderAndWaitForLoad();
     // GIVEN
     validateDateOfBirthSpy.mockImplementation(
       () =>
         new Promise((res, rej) => setTimeout(() => rej({ status: 404 }), 300))
     );
-
-    await user.type(await screen.findByLabelText("Month"), "08");
-    await user.type(await screen.findByLabelText("Day"), "21");
-    await user.type(await screen.findByLabelText("Year"), "1987");
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1987")
+    );
 
     // WHEN
-    await user.click(await screen.findByText("Continue"));
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating birth date...")
     );

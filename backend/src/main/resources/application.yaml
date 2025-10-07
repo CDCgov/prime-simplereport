@@ -1,23 +1,6 @@
 spring:
-  profiles:
-    group:
-      test: no-security, no-okta-mgmt, no-okta-auth, no-experian
-      dev: no-security, no-okta-mgmt, server-debug, create-sample-data, local, no-okta-auth
-      e2e: server-debug, create-sample-devices
-      okta-local: server-debug, create-sample-devices
-      azure-dev: okta-dev, server-debug
-      azure-dev2: okta-dev2, server-debug
-      azure-dev3: okta-dev3, server-debug
-      azure-dev4: okta-dev4, server-debug
-      azure-dev5: okta-dev5, server-debug
-      azure-dev6: okta-dev6, server-debug
-      azure-pentest: okta-pentest
-      azure-training: no-security, no-okta-mgmt, create-sample-data, no-okta-auth
-      azure-test: okta-test, server-debug
-      azure-demo: no-security, no-okta-mgmt, create-sample-data, no-okta-auth
-      azure-stg: okta-stg
-      azure-prod: okta-prod
-      prod: okta-prod
+  config:
+    use-legacy-processing: true
   main:
     banner-mode: "OFF"
   datasource:
@@ -70,23 +53,13 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 60MB
-  mvc:
-    async:
-      request-timeout: 140000 #delete after patient and test result download is removed
 server:
   error:
     include-stacktrace: never
 management:
+  endpoint.health.probes.enabled: true
+  endpoint.info.enabled: true
   endpoints.web.exposure.include: health, info
-  endpoint:
-    info:
-      enabled: true
-    health:
-      show-components: always
-      status:
-        http-mapping:
-          okta_degraded: 204
-      probes.enabled: true
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
@@ -117,8 +90,6 @@ simple-report:
       - support@simplereport.gov
     waitlist-recipient:
       - support@simplereport.gov
-    outreach-mailing-list-recipient:
-      - tof4@cdc.gov
     dynamic-templates:
       # The templates are added and edited at: https://mc.sendgrid.com/dynamic-templates
       # The keys in this map should match (but don't have to) the names of SendGrid Dynamic Templates that
@@ -160,12 +131,6 @@ simple-report:
       - POST
   batch-size: 1000
   fhir-reporting-enabled: true
-  support-escalation:
-    enabled: false
-  production:
-    backend-url: ${SR_PROD_BACKEND_URL:http://localhost:8080}
-    devices-token: ${SR_PROD_DEVICES_TOKEN:sr-prod-devices-fake-token}
-    device-sync-enabled: true
 twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:
@@ -181,35 +146,11 @@ datahub:
   jwt-scope: "simple_report.*.report"
   signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
   csv-upload-api-client: "simple_report.csvuploader"
-  csv-upload-api-fhir-client: "simple_report.fullelr-bulkuploader"
-aphl:
-  tes:
-    api-key: ${APHL_TES_API_KEY:super-secret-api-key}
-    url: "https://tes.tools.aimsplatform.org/api/fhir"
-loinc-fhir:
-  username: ${LOINC_FHIR_API_USERNAME:simple-report-user}
-  password: ${LOINC_FHIR_API_PASSWORD:super-secret-password}
-  url: "https://fhir.loinc.org"
-umls:
-  api-key: ${UMLS_API_KEY:super-secret-api-key}
-aims:
-  access-key-id: ${AIMS_ACCESS_KEY_ID:super-secret-access-key-id}
-  secret-access-key: ${AIMS_SECRET_ACCESS_KEY:super-secret-access-key}
-  encryption-key: ${AIMS_KMS_ENCRYPTION_KEY:super-secret-encryption-key}
-  s3-bucket-name: ${AIMS_S3_BUCKET_NAME:super-secret-bucket-name}
-  user-id: ${AIMS_USER_ID:super-secret-user-id}
-  message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT:super-secret-message-queue-endpoint}
+  csv-upload-api-fhir-client: "simple_report.fullelr"
+  fhir-enabled: true
 features:
-  oktaMigrationEnabled: false
-  chlamydiaEnabled: true
-  gonorrheaEnabled: true
-  hepatitisCEnabled: true
-  syphilisEnabled: true
   hivEnabled: true
-  dataRetentionLimitsEnabled: false
-  universalReportingEnabled: true
-  identityVerificationEnabled: true
-  aimsReportingEnabled: true
+  rsvEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}

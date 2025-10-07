@@ -1,15 +1,5 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_CODE;
-import static gov.cdc.usds.simplereport.api.model.TestEventExport.DEFAULT_LOCATION_NAME;
-import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.NO_SYPHILIS_HISTORY_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.PREGNANT_UNKNOWN_SNOMED;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.YES_SYPHILIS_HISTORY_SNOMED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -18,7 +8,6 @@ import static org.mockito.Mockito.when;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.parser.IParser;
-import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -45,7 +34,6 @@ import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -66,7 +54,6 @@ import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
@@ -101,11 +88,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
-@ActiveProfiles("test")
 class FhirConverterTest {
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
@@ -114,7 +99,7 @@ class FhirConverterTest {
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String snomedCode = "http://snomed.info/sct";
   public static final ZoneId DEFAULT_TIME_ZONE_ID = ZoneId.of("US/Eastern");
-  final FhirContext ctx = FhirContextProvider.get();
+  final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
   private static final Instant instant = (new Date(1675891986000L)).toInstant();
   private static final Date currentDate = Date.from(Instant.parse("2023-07-14T15:52:34.540Z"));
@@ -129,8 +114,7 @@ class FhirConverterTest {
     when(gitProperties.getCommitTime()).thenReturn(instant);
     when(gitProperties.getShortCommitId()).thenReturn("FRIDAY");
     when(dateGenerator.newDate()).thenReturn(currentDate);
-    when(uuidGenerator.randomUUID())
-        .thenReturn(UUID.fromString("5db534ea-5e97-4861-ba18-d74acc46db15"));
+    when(uuidGenerator.randomUUID()).thenReturn(UUID.randomUUID());
   }
 
   @Test
@@ -315,18 +299,6 @@ class FhirConverterTest {
     assertThat(codeableConcept.getText()).isEqualTo(expectedText);
   }
 
-  @Test
-  void convertToRaceNull_convertsGracefully() {
-    var actual = fhirConverter.convertToRaceExtension(null);
-    var codeableConcept = actual.castToCodeableConcept(actual.getValue());
-    var code = codeableConcept.getCoding();
-
-    assertThat(code).hasSize(1);
-    assertThat(code.get(0).getSystem()).isEqualTo(NULL_CODE_SYSTEM);
-    assertThat(code.get(0).getCode()).isEqualTo(MappingConstants.UNK_CODE);
-    assertThat(codeableConcept.getText()).isEqualTo(MappingConstants.UNKNOWN_STRING);
-  }
-
   private static Stream<Arguments> raceArgs() {
     return Stream.of(
         arguments("native", raceCodeSystem, "1002-5", "native"),
@@ -485,7 +457,7 @@ class FhirConverterTest {
             new PhoneNumber(PhoneType.LANDLINE, "3045551233")));
     ReflectionTestUtils.setField(person, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToPatient(person, null);
+    var actual = fhirConverter.convertToPatient(person);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -497,60 +469,14 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToPatientWithUnknownFields_Person_matchesJson() throws IOException {
-    var birthDate = LocalDate.of(2022, 12, 13);
-    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var facility = TestDataBuilder.createFacility();
-    var person =
-        new Person(
-            null,
-            null,
-            null,
-            "Austin",
-            "Wingate",
-            "Curtis",
-            "Jr",
-            birthDate,
-            new StreetAddress(List.of(UNKNOWN_ADDRESS_INDICATOR, ""), "", "NA", "00000", ""),
-            "USA",
-            null,
-            List.of("email1", "email2"),
-            "black",
-            "hispanic",
-            List.of("123"),
-            "Male",
-            false,
-            false,
-            "English",
-            null);
-    ReflectionTestUtils.setField(person, "phoneNumbers", Collections.emptyList());
-    ReflectionTestUtils.setField(person, "internalId", UUID.fromString(internalId));
-
-    var actual = fhirConverter.convertToPatient(person, facility);
-
-    String actualSerialized = parser.encodeResourceToString(actual);
-    var expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/patient-unknown-fields.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
   void convertToDevice_Strings_valid() {
     var actual =
         fhirConverter.convertToDevice(
             "PHASE Scientific International, Ltd.\n",
             "INDICAID COVID-19 Rapid Antigen Test*",
-            "id-123",
-            "equipmentId",
-            "equipmentUidType");
+            "id-123");
 
     assertThat(actual.getId()).isEqualTo("id-123");
-    assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo("equipmentId");
     assertThat(actual.getManufacturer()).isEqualTo("PHASE Scientific International, Ltd.\n");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName())
@@ -562,15 +488,11 @@ class FhirConverterTest {
   void convertToDevice_DeviceType_valid() {
     var internalId = UUID.randomUUID();
     var deviceType = new DeviceType("name", "manufacturer", "model", 15);
-    var equipmentId = "equipmentId";
-    var equipmentUidType = "equipmentUidType";
-
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
-    var actual = fhirConverter.convertToDevice(deviceType, equipmentId, equipmentUidType);
+    var actual = fhirConverter.convertToDevice(deviceType);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
-    assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo(equipmentId);
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName()).isEqualTo("model");
@@ -583,12 +505,9 @@ class FhirConverterTest {
     DeviceType deviceType =
         new DeviceType(
             "name", "BioFire Diagnostics", "BioFire Respiratory Panel 2.1 (RP2.1)*@", 15);
-    var equipmentId = "equipmentId";
-    var equipmentUidType = "equipmentUidType";
-
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToDevice(deviceType, equipmentId, equipmentUidType);
+    var actual = fhirConverter.convertToDevice(deviceType);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -610,8 +529,8 @@ class FhirConverterTest {
             ConvertToSpecimenProps.builder()
                 .specimenCode("258500001")
                 .specimenName("Nasopharyngeal swab")
-                .collectionCode(DEFAULT_LOCATION_CODE + " but not the default one")
-                .collectionName(DEFAULT_LOCATION_NAME + " but not the default one")
+                .collectionCode("53342003")
+                .collectionName("Internal nose structure (body structure)")
                 .id("id-123")
                 .identifier("uuid-123")
                 .collectionDate(collectionDate)
@@ -629,9 +548,9 @@ class FhirConverterTest {
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
         .isEqualTo(snomedCode);
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo(DEFAULT_LOCATION_CODE + " but not the default one");
+        .isEqualTo("53342003");
     assertThat(actual.getCollection().getBodySite().getText())
-        .isEqualTo(DEFAULT_LOCATION_NAME + " but not the default one");
+        .isEqualTo("Internal nose structure (body structure)");
     assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
         .isEqualTo("2023-06-22T16:38:00Z");
   }
@@ -643,9 +562,8 @@ class FhirConverterTest {
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
     assertThat(actual.getType().getCoding()).isEmpty();
-    assertThat(actual.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
-    assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo(DEFAULT_LOCATION_CODE);
+    assertThat(actual.getCollection().getBodySite().getText()).isNull();
+    assertThat(actual.getCollection().getBodySite().getCoding()).isEmpty();
     assertThat(actual.getCollection().getCollected()).isNull();
     assertThat(actual.getReceivedTime()).isNull();
   }
@@ -654,7 +572,10 @@ class FhirConverterTest {
   void convertToSpecimen_SpecimenType_valid() {
     var specimenType =
         new SpecimenType(
-            "Nasopharyngeal swab", "258500001", DEFAULT_LOCATION_NAME, DEFAULT_LOCATION_CODE);
+            "Nasopharyngeal swab",
+            "258500001",
+            "Internal nose structure (body structure)",
+            "53342003");
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
@@ -676,8 +597,9 @@ class FhirConverterTest {
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getSystem())
         .isEqualTo(snomedCode);
     assertThat(actual.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo(DEFAULT_LOCATION_CODE);
-    assertThat(actual.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
+        .isEqualTo("53342003");
+    assertThat(actual.getCollection().getBodySite().getText())
+        .isEqualTo("Internal nose structure (body structure)");
     assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
         .isEqualTo("2023-06-22T13:16:00.00Z");
     assertThat(actual.getReceivedTimeElement().getValueAsString())
@@ -687,7 +609,7 @@ class FhirConverterTest {
   @Test
   void convertToSpecimen_SpecimenType_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    SpecimenType specimenType = new SpecimenType("nasal", "40001");
+    SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
     ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
 
     var actual =
@@ -716,7 +638,7 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             ConvertToObservationProps.builder()
-                .testPerformedLoinc("diseaseCode")
+                .diseaseCode("diseaseCode")
                 .diseaseName("diseaseName")
                 .resultCode("resultCode")
                 .correctionStatus(TestCorrectionStatus.ORIGINAL)
@@ -724,6 +646,7 @@ class FhirConverterTest {
                 .id("id-123")
                 .resultDescription(TestResult.POSITIVE.toString())
                 .testkitNameId("testKitName")
+                .equipmentUid("equipmentUid")
                 .deviceModel("modelName")
                 .issued(Date.from(Instant.parse("2023-06-10T23:15:00.00Z")))
                 .build());
@@ -734,7 +657,7 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("diseaseCode");
-    assertThat(actual.getMethod().getExtension()).hasSize(1);
+    assertThat(actual.getMethod().getExtension()).hasSize(2);
     assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
@@ -755,19 +678,11 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            new DeviceTypeDisease(
-                null,
-                new SupportedDisease("COVID-19", "96741-4"),
-                "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-                "covidEquipmentUID",
-                "covidEquipmentUIDType",
-                "covidTestkitNameId",
-                "94500-0",
-                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
+            "loinc",
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
+            "equipmentUid",
             "modelName",
             Date.from(Instant.parse("2023-06-10T23:15:00.00Z")));
 
@@ -776,7 +691,7 @@ class FhirConverterTest {
     assertThat(actual.getCode().getText()).isEqualTo("covid-19");
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
-    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("94500-6");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("loinc");
     assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
@@ -797,19 +712,11 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            new DeviceTypeDisease(
-                null,
-                new SupportedDisease("COVID-19", "96741-4"),
-                "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-                "covidEquipmentUID",
-                "covidEquipmentUIDType",
-                "covidTestkitNameId",
-                "94500-0",
-                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
+            "loinc",
             TestCorrectionStatus.CORRECTED,
             "Oopsy Daisy",
             "testkitName",
+            "equipmentUid",
             "modelName",
             new Date());
 
@@ -829,19 +736,11 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            new DeviceTypeDisease(
-                null,
-                new SupportedDisease("COVID-19", "96741-4"),
-                "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-                "covidEquipmentUID",
-                "covidEquipmentUIDType",
-                "covidTestkitNameId",
-                "94500-0",
-                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
+            "loinc",
             TestCorrectionStatus.REMOVED,
             null,
             "testkitName",
+            "equipmentUid",
             "modelName",
             new Date());
 
@@ -857,19 +756,11 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             null,
-            new DeviceTypeDisease(
-                null,
-                new SupportedDisease("COVID-19", "96741-4"),
-                "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-                "covidEquipmentUID",
-                "covidEquipmentUIDType",
-                "covidTestkitNameId",
-                "94500-0",
-                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
+            "",
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
+            "equipmentUid",
             "modelName",
             new Date());
 
@@ -883,19 +774,11 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToObservation(
             result,
-            new DeviceTypeDisease(
-                null,
-                new SupportedDisease("COVID-19", "96741-4"),
-                "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-                "covidEquipmentUID",
-                "covidEquipmentUIDType",
-                "covidTestkitNameId",
-                "94500-0",
-                "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"),
+            "",
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
+            "equipmentUid",
             "modelName",
             new Date());
 
@@ -917,26 +800,10 @@ class FhirConverterTest {
     var device = DeviceType.builder().build();
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null,
-            covidDisease,
-            "94500-6",
-            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-            "covidEquipmentUID",
-            "covidEquipmentUIDType",
-            "covidTestkitNameId",
-            "94500-0",
-            "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection");
+            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
     var fluDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null,
-            fluDisease,
-            "85477-8",
-            "Influenza virus A RNA [Presence] in Upper respiratory specimen by NAA with probe detection",
-            "fluEquipmentUID",
-            "fluEquipmentUidType",
-            "fluTestkitNameId",
-            "85477-0",
-            "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection");
+            null, fluDisease, "85477-8", "fluEquipmentUID", "fluTestkitNameId", "85477-0");
     ReflectionTestUtils.setField(
         device,
         "supportedDiseaseTestPerformed",
@@ -991,15 +858,7 @@ class FhirConverterTest {
     var device = DeviceType.builder().build();
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null,
-            covidDisease,
-            "94500-6",
-            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-            "covidEquipmentUID",
-            "covidEquipmentUIDType",
-            "covidTestkitNameId",
-            "94500-0",
-            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
+            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
 
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
     ReflectionTestUtils.setField(
@@ -1024,24 +883,10 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_noSymptoms_matchesJson() throws IOException {
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(null)
-            .syphilisHistory(null)
-            .symptoms(Map.of("195469007", true))
-            .noSymptoms(true)
-            .symptomOnsetDate(null)
-            .genderOfSexualPartners(null)
-            .build();
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null);
     String testId = "fakeId";
 
-    var actual =
-        fhirConverter.convertToAOEObservations(
-            testId,
-            answers,
-            new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL,
-            "Sample Reason");
+    var actual = fhirConverter.convertToAOEObservations(testId, answers);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1055,25 +900,10 @@ class FhirConverterTest {
 
   @Test
   void convertToAoeObservation_symptomatic_matchesJson() throws IOException {
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(null)
-            .syphilisHistory(null)
-            .symptoms(Map.of("fake", true))
-            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
-            .genderOfSexualPartners(null)
-            .noSymptoms(false)
-            .build();
-
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4));
     String testId = "fakeId";
 
-    var actual =
-        fhirConverter.convertToAOEObservations(
-            testId,
-            answers,
-            new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL,
-            "Sample Reason");
+    var actual = fhirConverter.convertToAOEObservations(testId, answers);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1088,322 +918,11 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToAoeObservation_employedInHealthcare_matchesJson() throws IOException {
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(null)
-            .syphilisHistory(null)
-            .symptoms(Map.of("fake", false))
-            .genderOfSexualPartners(null)
-            .noSymptoms(null)
-            .build();
-
-    String testId = "fakeId";
-
-    var birthDate = LocalDate.of(2022, 12, 13);
-    var person =
-        new Person(
-            null,
-            null,
-            null,
-            "Austin",
-            "Wingate",
-            "Curtis",
-            "Jr",
-            birthDate,
-            new StreetAddress(
-                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
-            "USA",
-            null,
-            List.of("email1", "email2"),
-            "black",
-            "hispanic",
-            List.of("123"),
-            "Male",
-            null,
-            true,
-            "English",
-            null);
-
-    var actual =
-        fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.ORIGINAL, "Sample Reason");
-
-    String actualSerialized =
-        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
-    var expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/observationEmployedInHealthcare.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
-  void convertToAoeObservation_residesInCongregateSetting_matchesJson() throws IOException {
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(null)
-            .syphilisHistory(null)
-            .symptoms(Map.of("fake", false))
-            .genderOfSexualPartners(null)
-            .noSymptoms(null)
-            .build();
-
-    String testId = "fakeId";
-
-    var birthDate = LocalDate.of(2022, 12, 13);
-    var person =
-        new Person(
-            null,
-            null,
-            null,
-            "Austin",
-            "Wingate",
-            "Curtis",
-            "Jr",
-            birthDate,
-            new StreetAddress(
-                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
-            "USA",
-            null,
-            List.of("email1", "email2"),
-            "black",
-            "hispanic",
-            List.of("123"),
-            "Male",
-            true,
-            null,
-            "English",
-            null);
-
-    var actual =
-        fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.ORIGINAL, "Sample Reason");
-
-    String actualSerialized =
-        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
-    var expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/observationResidesInCongregateSetting.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
-  void convertToAoeObservation_pregnancyStatus_matchesJson() throws IOException {
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy("77386006")
-            .syphilisHistory(null)
-            .symptoms(Map.of("fake", false))
-            .genderOfSexualPartners(null)
-            .symptomOnsetDate(null)
-            .noSymptoms(null)
-            .build();
-
-    String testId = "fakeId";
-
-    var actual =
-        fhirConverter.convertToAOEObservations(
-            testId,
-            answers,
-            new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL,
-            "Sample Reason");
-
-    String actualSerialized =
-        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
-    var expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/observationPregnancyStatus.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
-  void convertToAoeObservation_genderOfSexualPartners_matchesJson() throws IOException {
-    List<String> sexualPartners = List.of("transwoman", "transman", "nonbinary");
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(null)
-            .syphilisHistory(null)
-            .symptoms(Map.of("fake", false))
-            .genderOfSexualPartners(sexualPartners)
-            .noSymptoms(null)
-            .build();
-
-    String testId = "fakeId";
-
-    var actual =
-        fhirConverter.convertToAOEObservations(
-            testId,
-            answers,
-            new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL,
-            "Sample Reason");
-    String actualSerialized =
-        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
-    var expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/observationGenderOfSexualPartners.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
-  void convertToAoeObservation_syphilisHistory_matchesJson() throws IOException {
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(null)
-            .syphilisHistory(YES_SYPHILIS_HISTORY_SNOMED)
-            .symptoms(null)
-            .genderOfSexualPartners(null)
-            .symptomOnsetDate(null)
-            .noSymptoms(false)
-            .build();
-
-    String testId = "fakeId";
-
-    Set<Observation> actual =
-        fhirConverter.convertToAOEObservations(
-            testId,
-            answers,
-            new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL,
-            "Sample Reason");
-
-    String actualSerialized =
-        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
-    String expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/observationSyphilisHistory.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
-  void convertToAoeObservation_symptoms_matchesJson() throws IOException {
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(null)
-            .syphilisHistory(null)
-            .symptoms(
-                Map.of("36955009", true, "261665006", false, "68962001", true, "195469007", true))
-            .genderOfSexualPartners(null)
-            .symptomOnsetDate(null)
-            .noSymptoms(false)
-            .build();
-
-    String testId = "fakeId";
-
-    Set<Observation> actual =
-        fhirConverter.convertToAOEObservations(
-            testId,
-            answers,
-            new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL,
-            "Sample Reason");
-
-    String actualSerialized =
-        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
-    String expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getClassLoader().getResourceAsStream("fhir/observationSymptom.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
-  void convertToAoeObservation_allAOE_matchesJson() throws IOException {
-    List<String> sexualPartners = List.of("male", "female");
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(PREGNANT_UNKNOWN_SNOMED)
-            .syphilisHistory(NO_SYPHILIS_HISTORY_SNOMED)
-            .symptoms(Map.of("36955009", true))
-            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
-            .genderOfSexualPartners(sexualPartners)
-            .noSymptoms(false)
-            .build();
-
-    String testId = "fakeId";
-
-    LocalDate birthDate = LocalDate.of(2022, 12, 13);
-    Person person =
-        new Person(
-            null,
-            null,
-            null,
-            "Austin",
-            "Wingate",
-            "Curtis",
-            "Jr",
-            birthDate,
-            new StreetAddress(
-                List.of("501 Virginia St E", "#1"), "Charleston", "WV", "25301", "Kanawha"),
-            "USA",
-            null,
-            List.of("email1", "email2"),
-            "black",
-            "hispanic",
-            List.of("123"),
-            "Male",
-            false,
-            false,
-            "English",
-            null);
-
-    Set<Observation> actual =
-        fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.ORIGINAL, "Sample Reason");
-
-    String actualSerialized =
-        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
-    String expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getClassLoader().getResourceAsStream("fhir/observationAllAoe.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
   void convertToAoeObservation_noAnswer_matchesJson() throws IOException {
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(null)
-            .syphilisHistory(null)
-            .symptoms(Map.of("fake", false))
-            .symptomOnsetDate(null)
-            .genderOfSexualPartners(null)
-            .noSymptoms(false)
-            .build();
-
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null);
     String testId = "fakeId";
 
-    var actual =
-        fhirConverter.convertToAOEObservations(
-            testId,
-            answers,
-            new Person("first", "last", "middle", "suffix", null),
-            TestCorrectionStatus.ORIGINAL,
-            "");
+    var actual = fhirConverter.convertToAOEObservations(testId, answers);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -1432,41 +951,24 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_TestEvent_correctedTestEvent() {
-    var invalidTestEvent = TestDataBuilder.createMultiplexTestEvent();
-
+    var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
         new TestEvent(invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo");
-
-    String priorCorrectedTestEventId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    ReflectionTestUtils.setField(
-        correctedTestEvent,
-        "priorCorrectedTestEventId",
-        UUID.fromString(priorCorrectedTestEventId));
 
     var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.CORRECTED);
-    assertThat(actual.getId())
-        .isEqualTo(correctedTestEvent.getPriorCorrectedTestEventId().toString());
   }
 
   @Test
   void convertToDiagnosticReport_TestEvent_removedTestEvent() {
-    var invalidTestEvent = TestDataBuilder.createMultiplexTestEvent();
+    var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
         new TestEvent(invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person");
-
-    String priorCorrectedTestEventId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    ReflectionTestUtils.setField(
-        correctedTestEvent,
-        "priorCorrectedTestEventId",
-        UUID.fromString(priorCorrectedTestEventId));
 
     var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.ENTEREDINERROR);
-    assertThat(actual.getId())
-        .isEqualTo(correctedTestEvent.getPriorCorrectedTestEventId().toString());
   }
 
   @Test
@@ -1494,15 +996,6 @@ class FhirConverterTest {
                     date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone(ZoneOffset.UTC))
                 .getValueAsString());
 
-    expectedSerialized =
-        expectedSerialized.replace(
-            "$EFFECTIVE_DATETIME_ZONE",
-            new DateTimeType(
-                    new Date(date.toInstant().minus(Duration.ofMinutes(15)).toEpochMilli()),
-                    TemporalPrecisionEnum.SECOND,
-                    TimeZone.getTimeZone(ZoneOffset.UTC))
-                .getValueAsString());
-
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
@@ -1518,7 +1011,7 @@ class FhirConverterTest {
                 TimeZone.getTimeZone(DEFAULT_TIME_ZONE_ID));
     var actual =
         fhirConverter.convertToDiagnosticReport(
-            DiagnosticReportStatus.FINAL, "95422-2", "", "id-123", zonedDateTime, zonedDateTime);
+            DiagnosticReportStatus.FINAL, "95422-2", "id-123", zonedDateTime, zonedDateTime);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -1532,7 +1025,7 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_Strings_null() {
-    var actual = fhirConverter.convertToDiagnosticReport(null, null, null, null, null, null);
+    var actual = fhirConverter.convertToDiagnosticReport(null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
@@ -1631,8 +1124,7 @@ class FhirConverterTest {
             "94533-7",
             "id-123",
             ZonedDateTime.ofInstant(
-                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID),
-            "very important comment");
+                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID));
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
     assertThat(actual.getCode().getCoding()).hasSize(1);
@@ -1647,20 +1139,16 @@ class FhirConverterTest {
                         .getValue())
                 .getValue())
         .isEqualTo("2023-06-22T10:35:00.00Z");
-    assertThat(actual.getNote().get(0).getText()).isEqualTo("very important comment");
-    assertThat(actual.getNote().get(0).getExtension().get(0).getUrl())
-        .isEqualTo(NOTE_TYPE_EXTENSION_URL);
   }
 
   @Test
   void convertToServiceRequest_Strings_null() {
     var actual =
         fhirConverter.convertToServiceRequest(
-            null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID), null);
+            null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
-    assertThat(actual.getNote()).isEmpty();
   }
 
   @Test
@@ -1793,13 +1281,6 @@ class FhirConverterTest {
     serviceRequest.setId(UUID.randomUUID().toString());
     diagnosticReport.setId(UUID.randomUUID().toString());
 
-    observation.setStatus(Observation.ObservationStatus.CORRECTED);
-    observation.addNote().setText("Corrected Result: Test reason");
-    aoeobservation1.setStatus(Observation.ObservationStatus.CORRECTED);
-    aoeobservation1.addNote().setText("Corrected Result: Test reason");
-    aoeobservation2.setStatus(Observation.ObservationStatus.CORRECTED);
-    aoeobservation2.addNote().setText("Corrected Result: Test reason");
-
     var actual =
         fhirConverter.createFhirBundle(
             CreateFhirBundleProps.builder()
@@ -1881,11 +1362,6 @@ class FhirConverterTest {
         .isEqualTo("Specimen/" + specimen.getId());
     assertThat(((Observation) observationEntry.getResource()).getDevice().getReference())
         .isEqualTo("Device/" + device.getId());
-    assertThat(((Observation) observationEntry.getResource()).getStatus().toCode())
-        .isEqualTo(ObservationStatus.CORRECTED.toCode());
-    assertThat(((Observation) observationEntry.getResource()).getNote()).hasSize(1);
-    assertThat(((Observation) observationEntry.getResource()).getNoteFirstRep().getText())
-        .isEqualTo("Corrected Result: Test reason");
 
     var aoeObservationEntry1 =
         actual.getEntry().stream()
@@ -1894,11 +1370,6 @@ class FhirConverterTest {
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
     assertThat(((Observation) aoeObservationEntry1.getResource()).getSubject().getReference())
         .isEqualTo("Patient/" + patient.getId());
-    assertThat(((Observation) aoeObservationEntry1.getResource()).getStatus().toCode())
-        .isEqualTo(ObservationStatus.CORRECTED.toCode());
-    assertThat(((Observation) aoeObservationEntry1.getResource()).getNote()).hasSize(1);
-    assertThat(((Observation) aoeObservationEntry1.getResource()).getNoteFirstRep().getText())
-        .isEqualTo("Corrected Result: Test reason");
 
     var aoeObservationEntry2 =
         actual.getEntry().stream()
@@ -1907,11 +1378,6 @@ class FhirConverterTest {
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
     assertThat(((Observation) aoeObservationEntry2.getResource()).getSubject().getReference())
         .isEqualTo("Patient/" + patient.getId());
-    assertThat(((Observation) aoeObservationEntry2.getResource()).getStatus().toCode())
-        .isEqualTo(ObservationStatus.CORRECTED.toCode());
-    assertThat(((Observation) aoeObservationEntry2.getResource()).getNote()).hasSize(1);
-    assertThat(((Observation) aoeObservationEntry2.getResource()).getNoteFirstRep().getText())
-        .isEqualTo("Corrected Result: Test reason");
 
     var serviceRequestEntry =
         actual.getEntry().stream()
@@ -1975,7 +1441,7 @@ class FhirConverterTest {
     supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluADisease));
     supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluBDisease));
     var deviceType =
-        new DeviceType("name", "manufacturer", "model", 7, new ArrayList<>(), supportedTestOrders);
+        new DeviceType("name", "manufacturer", "model", 0, new ArrayList<>(), supportedTestOrders);
 
     var specimenType = new SpecimenType("name", "typeCode");
     var provider =
@@ -2013,24 +1479,13 @@ class FhirConverterTest {
             "not hispanic",
             Collections.emptyList(),
             "male",
-            "male",
             false,
             false,
             "",
-            null,
-            "Adventurer of the cosmos");
+            null);
     var testOrder = new TestOrder(person, facility);
-    PatientAnswers answers =
-        new PatientAnswers(
-            AskOnEntrySurvey.builder()
-                .pregnancy(null)
-                .syphilisHistory(null)
-                .symptoms(Map.of("fake", false))
-                .symptomOnsetDate(null)
-                .genderOfSexualPartners(null)
-                .noSymptoms(false)
-                .build());
-
+    var answers =
+        new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));
     testOrder.setAskOnEntrySurvey(answers);
 
     var covidResult =
@@ -2055,35 +1510,16 @@ class FhirConverterTest {
     var testPerformedCodesList =
         List.of(
             new DeviceTypeDisease(
-                deviceTypeId,
-                covidDisease,
-                "94533-7",
-                "SARS-CoV-2 (COVID-19) N gene [Presence] in Respiratory specimen by NAA with probe detection",
-                "equipmentUID1",
-                "equipmentUIDType1",
-                "testkitNameId1",
-                null,
-                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
+                deviceTypeId, covidDisease, "333-123", "equipmentUID1", "testkitNameId1", null),
             new DeviceTypeDisease(
-                deviceTypeId,
-                fluADisease,
-                "92142-9",
-                "Influenza virus A RNA [Presence] in Respiratory specimen by NAA with probe detection",
-                "equipmentUID2",
-                "equipmentUIDType2",
-                "testkitNameId2",
-                "95422-2",
-                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
+                deviceTypeId, fluADisease, "444-123", "equipmentUID2", "testkitNameId2", "95422-2"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluBDisease,
-                "92141-1",
-                "Influenza virus B RNA [Presence] in Respiratory specimen by NAA with probe detection",
+                "444-456",
                 "equipmentUID3",
-                "equipmentUIDType3",
                 "testkitNameId3",
-                "95422-2",
-                "Influenza virus A and B and SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"));
+                "95422-2"));
 
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
@@ -2136,178 +1572,5 @@ class FhirConverterTest {
                 .getValue());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, JSONCompareMode.NON_EXTENSIBLE);
-  }
-
-  // https://github.com/CDCgov/prime-simplereport/pull/6955#discussion_r1395360817
-  @Test
-  void convertToSpecimen_withCollectionCodeAndName_useProvided() {
-    ConvertToSpecimenProps props =
-        ConvertToSpecimenProps.builder()
-            .collectionCode("Some collection code")
-            .collectionName("Some collection name")
-            .build();
-
-    Specimen specimen = fhirConverter.convertToSpecimen(props);
-    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo("Some collection code");
-    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo("Some collection name");
-  }
-
-  @Test
-  void convertToSpecimen_withCollectionCodeAndWithoutName_setsCodeButLeavesNameBlank() {
-    ConvertToSpecimenProps props =
-        ConvertToSpecimenProps.builder().collectionCode("Some collection code").build();
-
-    Specimen specimen = fhirConverter.convertToSpecimen(props);
-    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo("Some collection code");
-    assertThat(specimen.getCollection().getBodySite().getText()).isBlank();
-  }
-
-  @Test
-  void convertToSpecimen_withoutCollectionCodeAndWithName_useDefaults() {
-    ConvertToSpecimenProps props =
-        ConvertToSpecimenProps.builder().collectionName("Some collection name").build();
-
-    Specimen specimen = fhirConverter.convertToSpecimen(props);
-    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo(DEFAULT_LOCATION_CODE);
-    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
-  }
-
-  @Test
-  void convertToSpecimen_withoutCollectionCodeAndName_useDefaults() {
-    ConvertToSpecimenProps props = ConvertToSpecimenProps.builder().build();
-    Specimen specimen = fhirConverter.convertToSpecimen(props);
-    assertThat(specimen.getCollection().getBodySite().getCodingFirstRep().getCode())
-        .isEqualTo(DEFAULT_LOCATION_CODE);
-    assertThat(specimen.getCollection().getBodySite().getText()).isEqualTo(DEFAULT_LOCATION_NAME);
-  }
-
-  @Test
-  void convertToAbnormalFlagInterpretation_withUnsupportedSnomed_returnsNull() {
-    String snomed = "1111";
-    Coding actual = fhirConverter.convertToAbnormalFlagInterpretation(snomed);
-    assertThat(actual).isNull();
-  }
-
-  @Test
-  void convertToAOEObservation_corrected() {
-    var observation =
-        fhirConverter.convertToAOEYesNoUnkObservation(
-            true,
-            LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
-            AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY,
-            TestCorrectionStatus.CORRECTED,
-            "Sample Reason");
-
-    assertThat(observation.getStatus().toCode()).isEqualTo(ObservationStatus.CORRECTED.toCode());
-  }
-
-  @Test
-  void convertToAOEObservation_removed() {
-    var observation =
-        fhirConverter.convertToAOEYesNoUnkObservation(
-            true,
-            LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
-            AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY,
-            TestCorrectionStatus.REMOVED,
-            "Sample Reason");
-
-    assertThat(observation.getStatus().toCode())
-        .isEqualTo(ObservationStatus.ENTEREDINERROR.toCode());
-  }
-
-  @Test
-  void convertToAOEObservations_setStatus() {
-    List<String> sexualPartners = List.of("male", "female");
-    AskOnEntrySurvey answers =
-        AskOnEntrySurvey.builder()
-            .pregnancy(PREGNANT_UNKNOWN_SNOMED)
-            .syphilisHistory(NO_SYPHILIS_HISTORY_SNOMED)
-            .symptoms(Map.of("36955009", true))
-            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
-            .genderOfSexualPartners(sexualPartners)
-            .noSymptoms(false)
-            .build();
-
-    String testId = "fakeId";
-    Person person = new Person("first", "last", "middle", "suffix", null);
-
-    Set<Observation> correctedObservations =
-        fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.CORRECTED, "Sample Reason");
-
-    for (Observation obs : correctedObservations) {
-      assertThat(obs.getStatus().toCode()).isEqualTo(ObservationStatus.CORRECTED.toCode());
-    }
-
-    Set<Observation> removedObservations =
-        fhirConverter.convertToAOEObservations(
-            testId, answers, person, TestCorrectionStatus.REMOVED, "Sample Reason");
-
-    for (Observation obs : removedObservations) {
-      assertThat(obs.getStatus().toCode()).isEqualTo(ObservationStatus.ENTEREDINERROR.toCode());
-    }
-  }
-
-  @Test
-  void convertToAOEPregnancyObservation_withCorrectionReason_addsNote() {
-    var observation =
-        fhirConverter.convertToAOEPregnancyObservation(
-            "77386006", TestCorrectionStatus.CORRECTED, "Pregnancy correction");
-
-    assertThat(observation.getStatus().toCode()).isEqualTo(ObservationStatus.CORRECTED.toCode());
-    assertThat(observation.getNote()).hasSize(1);
-    assertThat(observation.getNoteFirstRep().getText())
-        .isEqualTo("Corrected Result: Pregnancy correction");
-  }
-
-  @Test
-  void convertToAOEObservations_withCorrectionReason_propagatesToAllObservations() {
-    AskOnEntrySurvey survey =
-        AskOnEntrySurvey.builder()
-            .pregnancy("77386006")
-            .syphilisHistory(YES_SYPHILIS_HISTORY_SNOMED)
-            .symptoms(Map.of("36955009", true))
-            .symptomOnsetDate(LocalDate.of(2023, 3, 4))
-            .genderOfSexualPartners(List.of("male", "female"))
-            .noSymptoms(false)
-            .build();
-
-    Person person = new Person("first", "last", "middle", "suffix", null);
-    ReflectionTestUtils.setField(person, "employedInHealthcare", true);
-
-    Set<Observation> observations =
-        fhirConverter.convertToAOEObservations(
-            "test-id",
-            survey,
-            person,
-            TestCorrectionStatus.CORRECTED,
-            "Multi-observation correction");
-
-    assertThat(observations).isNotEmpty();
-    for (Observation obs : observations) {
-      assertThat(obs.getStatus().toCode()).isEqualTo(ObservationStatus.CORRECTED.toCode());
-      assertThat(obs.getNote()).hasSize(1);
-      assertThat(obs.getNoteFirstRep().getText())
-          .isEqualTo("Corrected Result: Multi-observation correction");
-    }
-  }
-
-  @ParameterizedTest
-  @MethodSource("snomedArgs")
-  void convertToAbnormalFlagInterpretation_matches(
-      String snomed, String expectedCode, String expectedCodeName) {
-    Coding actual = fhirConverter.convertToAbnormalFlagInterpretation(snomed);
-    assertThat(actual.getCode()).isEqualTo(expectedCode);
-    assertThat(actual.getDisplay()).isEqualTo(expectedCodeName);
-  }
-
-  private static Stream<Arguments> snomedArgs() {
-    return Stream.of(
-        arguments("10828004", "A", "Abnormal"),
-        arguments("131194007", "N", "Normal"),
-        arguments("455371000124106", "N", "Normal"));
   }
 }

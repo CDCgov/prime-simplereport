@@ -43,7 +43,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v3
 
     - name: Set Swap Space
       uses: ./.github/actions/set-swap-space
@@ -60,7 +60,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Log in to the Container registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -98,13 +98,13 @@ jobs:
         SPEC_PATH: "cypress/e2e/**"
         TEST_ENV: "https://localhost.simplereport.gov"
         # frontend settings
-        REACT_APP_OKTA_URL: "http://wiremock:8088"
-        REACT_APP_OKTA_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
-        REACT_APP_BASE_URL: https://localhost.simplereport.gov
-        REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
+        VITE_OKTA_URL: "http://wiremock:8088"
+        VITE_OKTA_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
+        VITE_BASE_URL: https://localhost.simplereport.gov
+        VITE_BACKEND_URL: https://localhost.simplereport.gov/apis
         PUBLIC_URL: /app/
-        REACT_APP_OKTA_ENABLED: "true"
-        REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+        VITE_OKTA_ENABLED: "true"
+        VITE_DISABLE_MAINTENANCE_BANNER: "true"
       shell: bash
       run: |
         echo "::group::Run Cypress locally"
@@ -133,7 +133,7 @@ jobs:
 
     - name: Archive cypress failures
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: cypress-results
         path: |
@@ -142,7 +142,7 @@ jobs:
 
     - name: Archive docker logs
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: logs
         path: cypress-run.log

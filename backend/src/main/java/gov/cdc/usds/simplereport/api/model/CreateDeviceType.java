@@ -4,11 +4,9 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 @Builder
 @Getter
-@ToString
 public class CreateDeviceType {
   private String name;
   private String manufacturer;

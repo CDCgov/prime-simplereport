@@ -1,8 +1,8 @@
 {
   "id": "fa27b1b3-40a3-4ac8-8204-a54c93e2f4cf",
-  "name": "api_v1_users_00ugnh0inq8miBNYg4h6_factors",
+  "name": "api_v1_users_00ugnjag7ekhoymoa4h6_factors",
   "request": {
-    "url": "/api/v1/users/00ugnh0inq8miBNYg4h6/factors",
+    "url": "/api/v1/users/00ugnjag7EKhOyMoA4h6/factors",
     "method": "POST",
     "bodyPatterns": [
       {
@@ -14,7 +14,7 @@
   },
   "response": {
     "status": 200,
-    "body": "{\"id\":\"uftgnld798AmF0YK34h6\",\"factorType\":\"token:software:totp\",\"provider\":\"GOOGLE\",\"vendorName\":\"GOOGLE\",\"status\":\"PENDING_ACTIVATION\",\"created\":\"2021-07-30T19:23:12.000Z\",\"lastUpdated\":\"2021-07-30T19:23:12.000Z\",\"profile\":{\"credentialId\":\"tester@test.com\"},\"_links\":{\"activate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/uftgnld798AmF0YK34h6/lifecycle/activate\",\"hints\":{\"allow\":[\"POST\"]}},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/uftgnld798AmF0YK34h6\",\"hints\":{\"allow\":[\"GET\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6\",\"hints\":{\"allow\":[\"GET\"]}}},\"_embedded\":{\"activation\":{\"timeStep\":30,\"sharedSecret\":\"G36FHHIW6MCBM6OP\",\"encoding\":\"base32\",\"keyLength\":6,\"factorResult\":\"WAITING\",\"_links\":{\"qrcode\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/uftgnld798AmF0YK34h6/qr/20111Vc7tukp4J8wmkI28pIqel8f8MNh5l8vf903y-tTR3IM5jmABoM\",\"type\":\"image/png\"}}}}}",
+    "body": "{\"id\":\"uftgnld798AmF0YK34h6\",\"factorType\":\"token:software:totp\",\"provider\":\"GOOGLE\",\"vendorName\":\"GOOGLE\",\"status\":\"PENDING_ACTIVATION\",\"created\":\"2021-07-30T19:23:12.000Z\",\"lastUpdated\":\"2021-07-30T19:23:12.000Z\",\"profile\":{\"credentialId\":\"tester@test.com\"},\"_links\":{\"activate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnjag7EKhOyMoA4h6/factors/uftgnld798AmF0YK34h6/lifecycle/activate\",\"hints\":{\"allow\":[\"POST\"]}},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnjag7EKhOyMoA4h6/factors/uftgnld798AmF0YK34h6\",\"hints\":{\"allow\":[\"GET\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnjag7EKhOyMoA4h6\",\"hints\":{\"allow\":[\"GET\"]}}},\"_embedded\":{\"activation\":{\"timeStep\":30,\"sharedSecret\":\"G36FHHIW6MCBM6OP\",\"encoding\":\"base32\",\"keyLength\":6,\"factorResult\":\"WAITING\",\"_links\":{\"qrcode\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnjag7EKhOyMoA4h6/factors/uftgnld798AmF0YK34h6/qr/20111Vc7tukp4J8wmkI28pIqel8f8MNh5l8vf903y-tTR3IM5jmABoM\",\"type\":\"image/png\"}}}}}",
     "headers": {
       "Date": "Fri, 30 Jul 2021 19:23:12 GMT",
       "Content-Type": "application/json",

@@ -4,10 +4,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNoUnk;
-import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.getUnknownStreetAddress;
-import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.isAddressUnknown;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertEthnicityToDatabaseValue;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertGenderIdentityToDatabaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertRaceToDatabaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexToDatabaseValue;
 
@@ -37,7 +34,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -95,22 +91,15 @@ public class PatientBulkUploadServiceAsync {
 
         PatientUploadRow extractedData = new PatientUploadRow(row);
 
-        String street = extractedData.getStreet().getValue();
-        String state = extractedData.getState().getValue();
-        String zip = extractedData.getZipCode().getValue();
-
-        StreetAddress address = getUnknownStreetAddress();
-
-        if (!isAddressUnknown(state, zip, street)) {
-          // Fetch address information
-          address =
-              addressValidationService.getValidatedAddress(
-                  street,
-                  extractedData.getStreet2().getValue(),
-                  extractedData.getCity().getValue(),
-                  state,
-                  zip);
-        }
+        // Fetch address information
+        StreetAddress address =
+            addressValidationService.getValidatedAddress(
+                extractedData.getStreet().getValue(),
+                extractedData.getStreet2().getValue(),
+                extractedData.getCity().getValue(),
+                extractedData.getState().getValue(),
+                extractedData.getZipCode().getValue(),
+                null);
 
         String country =
             extractedData.getCountry().getValue() == null
@@ -128,35 +117,30 @@ public class PatientBulkUploadServiceAsync {
 
         // create new person with current organization, then add to new patients list
         Person newPatient =
-            Person.builder()
-                .organization(currentOrganization)
-                .facility(assignedFacility.orElse(null))
-                .birthDate(parseUserShortDate(extractedData.getDateOfBirth().getValue()))
-                .address(address)
-                .country(country)
-                .role(parsePersonRole(extractedData.getRole().getValue(), false))
-                .emails(
-                    StringUtils.isBlank(extractedData.getEmail().getValue())
-                        ? Collections.emptyList()
-                        : List.of(extractedData.getEmail().getValue()))
-                .race(convertRaceToDatabaseValue(extractedData.getRace().getValue()))
-                .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
-                .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
-                .genderIdentity(
-                    StringUtils.isBlank(extractedData.getGenderIdentity().getValue())
-                        ? null
-                        : convertGenderIdentityToDatabaseValue(
-                            extractedData.getGenderIdentity().getValue()))
-                .residentCongregateSetting(
-                    parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()))
-                .employedInHealthcare(
-                    parseYesNoUnk(extractedData.getEmployedInHealthcare().getValue()))
-                .firstName(extractedData.getFirstName().getValue())
-                .middleName(extractedData.getMiddleName().getValue())
-                .lastName(extractedData.getLastName().getValue())
-                .suffix(extractedData.getSuffix().getValue())
-                .notes(extractedData.getNotes().getValue())
-                .build();
+            new Person(
+                currentOrganization,
+                assignedFacility.orElse(null),
+                null, // lookupid
+                extractedData.getFirstName().getValue(),
+                extractedData.getMiddleName().getValue(),
+                extractedData.getLastName().getValue(),
+                extractedData.getSuffix().getValue(),
+                parseUserShortDate(extractedData.getDateOfBirth().getValue()),
+                address,
+                country,
+                parsePersonRole(extractedData.getRole().getValue(), false),
+                extractedData.getEmail().getValue() == null
+                    ? Collections.emptyList()
+                    : List.of(extractedData.getEmail().getValue()),
+                convertRaceToDatabaseValue(extractedData.getRace().getValue()),
+                convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
+                null, // tribalAffiliation
+                convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
+                parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()),
+                parseYesNoUnk(extractedData.getEmployedInHealthcare().getValue()),
+                null, // preferredLanguage
+                null // testResultDeliveryPreference
+                );
 
         if (!allPatients.contains(newPatient)) {
           // collect phone numbers and associate them with the patient

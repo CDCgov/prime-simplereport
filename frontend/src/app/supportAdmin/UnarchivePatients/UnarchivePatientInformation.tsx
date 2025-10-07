@@ -19,15 +19,12 @@ interface UnarchivePatientInformationProps {
   currentPage: number;
   loading: boolean;
   handlePaginationClick: (pageNumber: number) => void;
-  onUnarchivePatient: (patient: UnarchivePatientPatient) => void;
 }
-
 const UnarchivePatientInformation = ({
   unarchivePatientState,
   currentPage,
   loading,
   handlePaginationClick,
-  onUnarchivePatient,
 }: UnarchivePatientInformationProps) => {
   const displayInstructions =
     unarchivePatientState.patients === undefined &&
@@ -56,7 +53,6 @@ const UnarchivePatientInformation = ({
                   type="button"
                   label="Unarchive"
                   aria-label={`Unarchive ${fullName}`}
-                  onClick={() => onUnarchivePatient(patient)}
                 />
               </td>
             </tr>
@@ -73,7 +69,7 @@ const UnarchivePatientInformation = ({
   };
   const setInstructions = () => {
     if (
-      unarchivePatientState.orgId !== undefined &&
+      unarchivePatientState.orgId !== "" &&
       unarchivePatientState.facilities.length === 0
     ) {
       return "This organization has no facilities. Select a different organization.";
@@ -119,6 +115,7 @@ const UnarchivePatientInformation = ({
               {displayFacilityName()}
             </h2>
             <div className="sr-showing-patients-on-page display-flex flex-align-center">
+              {loading && "Loading..."}
               {displayPagination() && (
                 <>
                   Showing{" "}

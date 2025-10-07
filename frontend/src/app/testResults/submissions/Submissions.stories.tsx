@@ -1,4 +1,4 @@
-import { Meta, StoryFn } from "@storybook/react-webpack5";
+import { Meta, StoryFn } from "@storybook/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -19,7 +19,7 @@ const store = mockStore({
 });
 
 export default {
-  title: "App/Results/Upload history",
+  title: "App/Test results/Submissions",
   component: Submissions,
   argTypes: {},
   args: {},

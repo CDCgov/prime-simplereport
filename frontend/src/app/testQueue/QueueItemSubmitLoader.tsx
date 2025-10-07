@@ -18,7 +18,7 @@ export const QueueItemSubmitLoader = ({ name, show }: Props) => {
     "height-full",
     "width-full",
     "text-center",
-    "test-card-submit-loader"
+    "radius-lg"
   );
 
   return (
@@ -28,7 +28,9 @@ export const QueueItemSubmitLoader = ({ name, show }: Props) => {
       classNames="sr-queue-item-submit-loader"
     >
       <div className={classnames} aria-hidden={!show}>
-        <h4>Submitting test data for {name}...</h4>
+        <h4 className="margin-top-6 margin-bottom-5">
+          Submitting test data for {name}...
+        </h4>
         <img src={iconLoader} alt="submitting" className="square-5" />
       </div>
     </CSSTransition>

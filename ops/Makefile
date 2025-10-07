@@ -34,7 +34,7 @@ default:
 
 # Internal target: check if the passed-in wildcard is a known environment name. Hard-coding them because let's be real here.
 .valid-env-%:
-	@case $* in test|dev|dev2|dev3|dev4|dev5|dev6|demo|training|pentest|stg|prod) ;; *) echo "$* is not a valid environment"; exit 1;; esac
+	@case $* in test|dev|dev2|dev3|dev4|dev5|dev6|dev7|demo|training|pentest|stg|prod) ;; *) echo "$* is not a valid environment"; exit 1;; esac
 
 api.tfvars: /dev/null
 	echo "acr_image_tag=\"$(DEPLOYED_COMMIT)\"" > $@; \
@@ -68,7 +68,7 @@ deploy-%: .valid-env-% api.tfvars
 	terraform -chdir=$* apply -auto-approve -var-file=../api.tfvars -lock-timeout=30m
 
 promote-%: .be-logged-in .valid-env-%
-	@case $* in dev2|dev3|dev4|dev5|dev6) az webapp deployment slot swap -g prime-simple-report-dev -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT) ;; *) az webapp deployment slot swap -g prime-simple-report-$* -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT) ;; esac
+	@case $* in dev2|dev3|dev4|dev5|dev6|dev7) az webapp deployment slot swap -g prime-simple-report-dev -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT) ;; *) az webapp deployment slot swap -g prime-simple-report-$* -n $(API_NAME) --slot $(SOURCE_SLOT) --target-slot $(TARGET_SLOT) ;; esac
 
 wait-for-%-slot-commit: .valid-env-%
 	@echo "Starting wait for commit $(DEPLOYED_COMMIT) in $(SOURCE_SLOT) slot of $* at `date`"

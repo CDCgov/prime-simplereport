@@ -19,7 +19,6 @@ type Props = {
   focusOnMount?: boolean;
   showSubmitButton?: boolean;
   labeledBy?: string;
-  dataCy?: string;
 };
 
 const SearchInput = ({
@@ -33,7 +32,6 @@ const SearchInput = ({
   focusOnMount,
   showSubmitButton = true,
   labeledBy,
-  dataCy,
 }: Props) => {
   const classes = classnames(
     "usa-search",
@@ -72,7 +70,6 @@ const SearchInput = ({
             onFocus={onInputChange}
             aria-labelledby={labeledBy}
             style={!showSubmitButton ? { borderRight: "solid 1px" } : undefined}
-            data-cy={dataCy}
           />
           <button
             type="submit"

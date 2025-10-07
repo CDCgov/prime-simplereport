@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Link, MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 
@@ -58,12 +58,15 @@ describe("VersionEnforcer", () => {
         </Routes>
       </MemoryRouter>
     );
-    const user = userEvent.setup();
     expect(await screen.findByText("This is the first page", { exact: false }));
 
     // WHEN
-
-    await user.click(screen.getByText("Go to a new page", { exact: false }));
+    await act(
+      async () =>
+        await userEvent.click(
+          screen.getByText("Go to a new page", { exact: false })
+        )
+    );
 
     // THEN
     expect(await screen.findByText("Went to a new page!", { exact: false }));

@@ -7,8 +7,6 @@ query GetAllOrganizations {
 
 query GetFacilitiesByOrgId($orgId: ID!) {
     organization(id: $orgId){
-        id
-        externalId
         name
         type
         facilities {

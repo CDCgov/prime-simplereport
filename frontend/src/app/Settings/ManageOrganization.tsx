@@ -20,6 +20,9 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   onSave,
   canEditOrganizationName,
 }: ManageOrganizationProps) => {
+  /**
+   * Form state setup
+   */
   const {
     register,
     handleSubmit,
@@ -31,6 +34,9 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   });
   const formCurrentValues = watch();
 
+  /**
+   * Submit organization data
+   */
   const onSubmit = async (orgData: Organization) => {
     const updatedOrganization = {
       ...organization,
@@ -39,23 +45,27 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
     };
     try {
       await onSave(updatedOrganization);
+      // update default values so the isDirty check applies to current updated data
       reset({ ...orgData });
-    } catch {}
+    } catch (e) {
+      /* do nothing as the container component already displays error toast */
+    }
   };
 
+  /**
+   * HTML
+   */
   return (
     <div className="grid-row position-relative">
       <div className="prime-container card-container settings-tab">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="usa-card__header">
             <h1>Manage organization</h1>
-            <div className="display-flex flex-gap-1">
-              <Button
-                type="submit"
-                label="Save settings"
-                disabled={isSubmitting || !isDirty}
-              />
-            </div>
+            <Button
+              type="submit"
+              label="Save settings"
+              disabled={isSubmitting || !isDirty}
+            />
           </div>
           <div className="usa-card__body">
             <RequiredMessage />

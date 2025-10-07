@@ -4,7 +4,6 @@ import static gov.cdc.usds.simplereport.service.DiseaseService.COVID19_NAME;
 import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.ImmutableMap;
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
@@ -21,6 +20,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import graphql.com.google.common.collect.ImmutableMap;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,9 +44,8 @@ import org.jetbrains.annotations.Nullable;
  * practice.
  */
 public class TestEventExport {
-  public static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
+  private static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
   public static final String USA = "USA";
-  public static final String UNKNOWN_ADDRESS_INDICATOR = "** Unknown / Not Given **";
   private String processingModeCode = "P";
   private final TestEvent testEvent;
   private final Optional<Person> patient;
@@ -75,13 +74,10 @@ public class TestEventExport {
   }
 
   private String genderUnknown = "U";
-  public static final String DEFAULT_LOCATION_CODE = "87100004"; // http://snomed.info/id/87100004
-  // Topography unknown (body structure)
+  private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
+  // "Internal nose structure"
+  // values pulled from
   // https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
-
-  public static final String DEFAULT_LOCATION_NAME =
-      "Topography unknown (body structure)"; // http://snomed.info/id/87100004
-
   private final Map<String, String> genderMap =
       Map.of(
           "male", "M",
@@ -297,37 +293,21 @@ public class TestEventExport {
 
   @JsonProperty("Patient_city")
   public String getPatientCity() {
-    var street = patient.map(Person::getStreet).orElse(null);
-    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(street)) {
-      return getOrderingFacilityCity();
-    }
     return patient.map(Person::getCity).orElse(null);
   }
 
   @JsonProperty("Patient_county")
   public String getPatientCounty() {
-    var street = patient.map(Person::getStreet).orElse(null);
-    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(street)) {
-      return getOrderingFacilityCounty();
-    }
     return patient.map(Person::getCounty).orElse(null);
   }
 
   @JsonProperty("Patient_state")
   public String getPatientState() {
-    var street = patient.map(Person::getStreet).orElse(null);
-    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(street)) {
-      return getOrderingFacilityState();
-    }
     return patient.map(Person::getState).orElse(null);
   }
 
   @JsonProperty("Patient_zip_code")
   public String getPatientZipCode() {
-    var street = patient.map(Person::getStreet).orElse(null);
-    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(street)) {
-      return getOrderingFacilityZipCode();
-    }
     return patient.map(Person::getZipCode).orElse(null);
   }
 
@@ -338,11 +318,7 @@ public class TestEventExport {
 
   @JsonProperty("Patient_phone_number")
   public String getPatientPhoneNumber() {
-    var phone = patient.map(Person::getTelephone).orElse(null);
-    if (phone == null || phone.isBlank()) {
-      return getOrderingFacilityPhoneNumber();
-    }
-    return phone;
+    return patient.map(Person::getTelephone).orElse(null);
   }
 
   @JsonProperty("Patient_email")

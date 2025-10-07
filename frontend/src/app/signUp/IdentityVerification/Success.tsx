@@ -10,7 +10,9 @@ interface Props {
 
 const Success: React.FC<Props> = ({ email, activationToken }) => {
   const activationLink = activationToken
-    ? `${process.env.PUBLIC_URL}/uac/?activationToken=${activationToken}`
+    ? `${
+        import.meta.env.VITE_PUBLIC_URL
+      }/uac/?activationToken=${activationToken}`
     : null;
   useDocumentTitle("Sign up - success");
 

@@ -1,29 +1,27 @@
 {
-  "name": "simple-report-cypress",
-  "version": "0.1.0",
-  "private": true,
-  "devDependencies": {
-    "@faker-js/faker": "^9.8.0",
-    "cypress": "^14.3.2",
-    "cypress-localstorage-commands": "^2.2.7",
-    "dayjs": "^1.11.13",
-    "eslint": "^9.33.0",
-    "eslint-plugin-cypress": "^5.1.0",
-    "otplib": "^12.0.1",
-    "prettier": "3.6.2"
-  },
-  "scripts": {
-    "e2e:local": "CYPRESS_IS_LOCAL_RUN=true CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=http://localhost:3000,video=false",
-    "e2e:local:run": "CYPRESS_IS_LOCAL_RUN=true CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress run --e2e --project ./../ --config-file cypress/cypress.config.js --browser=chrome --config baseUrl=http://localhost:3000",
-    "e2e:local:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_IS_LOCAL_RUN=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=http://localhost:3000",
-    "e2e:nginx": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=https://localhost.simplereport.gov/app",
-    "e2e:nginx:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=https://localhost.simplereport.gov/app",
-    "lint": "eslint --quiet .",
-    "lint:write": "eslint --fix . && prettier . --write"
-  },
-  "dependencies": {
-    "axe-core": "^4.10.3",
-    "cypress-axe": "^1.6.0",
-    "form-data": "^4.0.4"
-  }
+    "name": "simple-report-cypress",
+    "version": "0.1.0",
+    "private": true,
+    "devDependencies": {
+        "@faker-js/faker": "^8.0.2",
+        "cypress": "^11.0.0",
+        "cypress-localstorage-commands": "^2.2.4",
+        "eslint": "^8.47.0",
+        "eslint-plugin-cypress": "^2.14.0",
+        "dayjs": "^1.11.9",
+        "otplib": "^12.0.1"
+    },
+    "scripts": {
+        "e2e:local": "CYPRESS_IS_LOCAL_RUN=true CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=http://localhost:3000,video=false",
+        "e2e:local:run": "CYPRESS_IS_LOCAL_RUN=true CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress run --e2e --project ./../ --config-file cypress/cypress.config.js --browser=chrome --config baseUrl=http://localhost:3000",
+        "e2e:local:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_IS_LOCAL_RUN=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=http://localhost:3000",
+        "e2e:nginx": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_SKIP_OKTA=true CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=https://localhost.simplereport.gov/app",
+        "e2e:nginx:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=https://localhost.simplereport.gov/app",
+        "lint": "eslint --quiet .",
+        "lint:write": "eslint --fix ."
+    },
+    "dependencies": {
+        "axe-core": "^4.7.2",
+        "cypress-axe": "^1.0.0"
+    }
 }

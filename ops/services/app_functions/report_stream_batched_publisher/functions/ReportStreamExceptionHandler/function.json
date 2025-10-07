@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "body",
+      "type": "queueTrigger",
+      "direction": "in",
+      "queueName": "test-event-publishing-exceptions",
+      "connection": "AZ_STORAGE_QUEUE_CXN_STRING"
+    }
+  ],
+  "scriptFile": "../dist/ReportStreamExceptionHandler/index.js"
+}

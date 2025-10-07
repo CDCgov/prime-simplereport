@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -35,8 +34,6 @@ import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,9 +43,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -75,6 +76,15 @@ public class TestOrderService {
   private final PatientLinkService _patientLinkService;
   private final ResultService resultService;
 
+  @Qualifier("csvQueueReportingService")
+  private final TestEventReportingService _testEventReportingService;
+
+  @Qualifier("fhirQueueReportingService")
+  private final TestEventReportingService _fhirQueueReportingService;
+
+  @Value("${simple-report.fhir-reporting-enabled:false}")
+  private boolean fhirReportingEnabled;
+
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
 
@@ -95,17 +105,13 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
-      SupportedDisease disease,
       Date startDate,
       Date endDate,
       UUID orgId) {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
-      order.on(
-          cb.equal(
-              root.get(IdentifiedEntity_.internalId),
-              order.get(TestOrder_.testEvent).get(IdentifiedEntity_.internalId)));
+      order.on(cb.equal(root.get(IdentifiedEntity_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
       query.distinct(true);
 
@@ -138,14 +144,6 @@ public class TestOrderService {
       }
       if (role != null) {
         p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(Person_.role), role));
-      }
-      if (disease != null) {
-        p =
-            cb.and(
-                p,
-                cb.equal(
-                    resultJoin.get(Result_.disease).get(IdentifiedEntity_.internalId),
-                    disease.getInternalId()));
       }
       if (startDate != null) {
         p =
@@ -183,7 +181,6 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
-      SupportedDisease disease,
       Date startDate,
       Date endDate,
       int pageOffset,
@@ -193,8 +190,7 @@ public class TestOrderService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return _testEventRepo.findAll(
-        buildTestEventSearchFilter(
-            facilityId, patientId, result, role, disease, startDate, endDate, null),
+        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate, null),
         pageRequest);
   }
 
@@ -204,7 +200,6 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
-      SupportedDisease disease,
       Date startDate,
       Date endDate,
       int pageOffset,
@@ -214,8 +209,7 @@ public class TestOrderService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return _testEventRepo.findAll(
-        buildTestEventSearchFilter(
-            null, patientId, result, role, disease, startDate, endDate, null),
+        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate, null),
         pageRequest);
   }
 
@@ -225,14 +219,13 @@ public class TestOrderService {
       UUID patientId,
       TestResult result,
       PersonRole role,
-      SupportedDisease disease,
       Date startDate,
       Date endDate,
       UUID orgId) {
     return (int)
         _testEventRepo.count(
             buildTestEventSearchFilter(
-                facilityId, patientId, result, role, disease, startDate, endDate, orgId));
+                facilityId, patientId, result, role, startDate, endDate, orgId));
   }
 
   @Transactional(readOnly = true)
@@ -417,7 +410,6 @@ public class TestOrderService {
       UUID facilityId,
       Person patient,
       String pregnancy,
-      String syphilisHistory,
       Map<String, Boolean> symptoms,
       LocalDate symptomOnsetDate,
       Boolean noSymptoms) {
@@ -458,7 +450,6 @@ public class TestOrderService {
     AskOnEntrySurvey survey =
         AskOnEntrySurvey.builder()
             .pregnancy(pregnancy)
-            .syphilisHistory(syphilisHistory)
             .symptoms(symptoms)
             .noSymptoms(noSymptoms)
             .symptomOnsetDate(symptomOnsetDate)
@@ -470,24 +461,29 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
-  public void updateAoeQuestions(
+  public void updateTimeOfTestQuestions(
       UUID patientId,
       String pregnancy,
-      String syphilisHistory,
       Map<String, Boolean> symptoms,
       LocalDate symptomOnsetDate,
-      Boolean noSymptoms,
-      List<String> genderOfSexualPartners) {
-
+      Boolean noSymptoms) {
     TestOrder order = retrieveTestOrder(patientId);
+
+    updateTimeOfTest(order, pregnancy, symptoms, symptomOnsetDate, noSymptoms);
+  }
+
+  private void updateTimeOfTest(
+      TestOrder order,
+      String pregnancy,
+      Map<String, Boolean> symptoms,
+      LocalDate symptomOnsetDate,
+      Boolean noSymptoms) {
     PatientAnswers answers = order.getAskOnEntrySurvey();
     AskOnEntrySurvey survey = answers.getSurvey();
     survey.setPregnancy(pregnancy);
-    survey.setSyphilisHistory(syphilisHistory);
     survey.setSymptoms(symptoms);
     survey.setNoSymptoms(noSymptoms);
     survey.setSymptomOnsetDate(symptomOnsetDate);
-    survey.setGenderOfSexualPartners(genderOfSexualPartners);
     answers.setSurvey(survey);
     _patientAnswersRepo.save(answers);
   }
@@ -497,18 +493,6 @@ public class TestOrderService {
     TestOrder order = retrieveTestOrder(patientId);
     order.cancelOrder();
     _testOrderRepo.save(order);
-  }
-
-  @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
-  public void updateTimerStartedAt(UUID id, String startedAt) {
-    Optional<TestOrder> optionalTestOrder = _testOrderRepo.findById(id);
-    if (optionalTestOrder.isPresent()) {
-      TestOrder order = optionalTestOrder.get();
-      order.setTimerStartedAt(startedAt);
-      _testOrderRepo.save(order);
-    } else {
-      throw new IllegalGraphqlArgumentException("Cannot find TestOrder");
-    }
   }
 
   private TestOrder retrieveTestOrder(UUID patientId) {
@@ -551,14 +535,6 @@ public class TestOrderService {
         ensureCorrectionFlowBackwardCompatibility(event);
         order.setCorrectionStatus(status);
         order.setReasonForCorrection(reasonForCorrection);
-        Person currentPatient = order.getPatient();
-        Optional<TestOrder> pendingTestOrder =
-            _testOrderRepo.fetchQueueItem(currentPatient.getOrganization(), currentPatient);
-        if (pendingTestOrder.isPresent()) {
-          throw new IllegalGraphqlArgumentException(
-              "Cannot correct a test for a patient with an active test");
-        }
-
         order.markPending();
         if (order.getDateTestedBackdate() == null) {
           order.setDateTestedBackdate(event.getDateTested());
@@ -637,13 +613,9 @@ public class TestOrderService {
 
     List<AggregateFacilityMetrics> facilityMetrics = new ArrayList<AggregateFacilityMetrics>();
 
-    // we don't seem to be using the "organizationLevelDashboardMetrics" query anywhere so we can
-    // probably clean up this method
-    String diseaseLoinc = "96741-4";
-
     for (UUID facilityId : facilityIds) {
       List<TestResultWithCount> results =
-          _testEventRepo.countByResultForFacility(facilityId, startDate, endDate, diseaseLoinc);
+          _testEventRepo.countByResultForFacility(facilityId, startDate, endDate);
       Facility facility = _organizationService.getFacilityInCurrentOrg(facilityId);
       Map<TestResult, Long> testResultMap =
           results.stream()
@@ -675,7 +647,7 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionEditOrganization
   public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
-      UUID facilityId, Date startDate, Date endDate, String disease) {
+      UUID facilityId, Date startDate, Date endDate) {
     Set<UUID> facilityIds;
 
     if (startDate == null || endDate == null) {
@@ -694,15 +666,8 @@ public class TestOrderService {
               .collect(Collectors.toSet());
     }
 
-    // default to COVID-19
-    String diseaseLoinc = "96741-4";
-
-    if (disease != null && !disease.isBlank()) {
-      diseaseLoinc = _diseaseService.getDiseaseByName(disease).getLoinc();
-    }
-
     List<TestResultWithCount> testResultList =
-        _testEventRepo.countByResultByFacility(facilityIds, startDate, endDate, diseaseLoinc);
+        _testEventRepo.countByResultByFacility(facilityIds, startDate, endDate);
     Map<TestResult, Long> testResultMap =
         testResultList.stream()
             .collect(

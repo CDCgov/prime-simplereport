@@ -54,7 +54,7 @@ const mock = [
 ];
 
 describe("ManageFacilitiesContainer", () => {
-  it("displays facilities", async () => {
+  beforeEach(() => {
     render(
       <Provider store={store}>
         <MockedProvider mocks={mock}>
@@ -69,6 +69,9 @@ describe("ManageFacilitiesContainer", () => {
         </MockedProvider>
       </Provider>
     );
+  });
+
+  it("displays facilities", async () => {
     expect(await screen.findByText(mockFacility.name));
     expect(await screen.findByText(mockFacility.cliaNumber));
     expect(await screen.findByText(mockFacility.name));

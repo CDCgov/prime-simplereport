@@ -51,19 +51,22 @@ export default class PrimeErrorBoundary extends React.Component<
     }
 
     if (this.state.redirectToOkta) {
-      const url = `${process.env.REACT_APP_OKTA_URL}/oauth2/default/v1/authorize`;
-      const clientId = `?client_id=${process.env.REACT_APP_OKTA_CLIENT_ID}`;
+      const url = `${
+        import.meta.env.VITE_OKTA_URL
+      }/oauth2/default/v1/authorize`;
+      const clientId = `?client_id=${import.meta.env.VITE_OKTA_CLIENT_ID}`;
       const sanitizedRedirectUri = stripIdTokenFromOktaRedirectUri(getUrl());
       const redirectUri = `&redirect_uri=${encodeURIComponent(
         sanitizedRedirectUri
       )}`;
+
       const responseType = `&response_type=${encodeURIComponent(
         "token id_token"
       )}`;
       const scope =
         "&scope=" +
         encodeURIComponent(
-          `openid simple_report ${process.env.REACT_APP_OKTA_SCOPE}`
+          `openid simple_report ${import.meta.env.VITE_OKTA_SCOPE}`
         );
       const nonce = "&nonce=thisisnotsafe";
       const state = "&state=thisisbogus";
@@ -72,6 +75,7 @@ export default class PrimeErrorBoundary extends React.Component<
       return false;
     }
 
+    //@ts-ignore props children not property of read only
     return this.props.children;
   }
 }

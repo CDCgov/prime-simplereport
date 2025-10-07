@@ -31,7 +31,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -45,7 +44,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
-import gov.cdc.usds.simplereport.service.datasource.QueryCountService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
@@ -63,7 +61,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -72,6 +69,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -79,7 +77,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
-@TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
+@TestPropertySource(
+    properties = {
+      "hibernate.query.interceptor.error-level=ERROR",
+      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
+    })
 @SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
@@ -99,6 +101,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   TestEventReportingService fhirQueueReportingService;
 
   @SpyBean ReportTestEventToRSEventListener reportTestEventToRSEventListener;
+
+  @Captor ArgumentCaptor<TestEvent> testEventArgumentCaptor;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -144,17 +148,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            null,
             null);
 
     _service.addPatientToQueue(
         facility.getInternalId(),
         patient,
-        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -186,9 +187,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(patientLinkService).createPatientLink(any());
 
     // make sure the corrected event is sent to storage queue
-    verify(fhirQueueReportingService).report(any());
-    // improve fhir verification? test was only asserting csv / covid pipeline values
-    // was asserting: patient ids match, test results match
+    verify(testEventReportingService).report(testEventArgumentCaptor.capture());
+    verifyNoInteractions(fhirQueueReportingService);
+    TestEvent sentEvent = testEventArgumentCaptor.getValue();
+    TestResult testResult = sentEvent.getCovidTestResult().get();
+    assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
+    assertThat(testResult).isEqualTo(TestResult.POSITIVE);
   }
 
   @Test
@@ -214,21 +218,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            null,
             null);
 
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
     _service.addMultiplexResult(
@@ -238,7 +234,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         p.getInternalId(),
         null);
 
-    verify(fhirQueueReportingService).report(any());
+    verify(testEventReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
 
     List<TestEvent> testEvents =
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
@@ -246,13 +243,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
 
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1866, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1866, 12, 25), false);
     _service.addMultiplexResult(
         _dataFactory.getGenericDevice().getInternalId(),
         _dataFactory.getGenericSpecimen().getInternalId(),
@@ -264,7 +255,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThat(testEvents).hasSize(2);
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
     assertThat(testEvents.get(1).getPatientHasPriorTests()).isTrue();
-    verify(fhirQueueReportingService, times(2)).report(any());
+    verify(testEventReportingService, times(2)).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -304,21 +296,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "Spanish",
-            null,
-            "Space-faring maverick");
+            null);
 
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -347,12 +331,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "German",
-            null,
-            "success depends on Fred's access");
+            null);
 
     UUID facilityId = facility.getInternalId();
     Map<String, Boolean> symptoms = Collections.emptyMap();
@@ -360,17 +342,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.addPatientToQueue(facilityId, p, "", "", symptoms, symptomOnsetDate, false));
+        () -> _service.addPatientToQueue(facilityId, p, "", symptoms, symptomOnsetDate, false));
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     TestUserIdentities.setFacilityAuthorities();
 
     assertThrows(AccessDeniedException.class, () -> _service.getQueue(facilityId));
@@ -403,22 +379,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "French",
-            null,
             null);
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     UUID defaultDeviceType = facility.getDefaultDeviceType().getInternalId();
     UUID defaultSpecimenType = facility.getDefaultSpecimenType().getInternalId();
@@ -432,7 +400,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
-    verify(fhirQueueReportingService).report(any());
+    verify(testEventReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -458,20 +427,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "Spanish",
-            null,
             null);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     UUID defaultDeviceType = facility.getDefaultDeviceType().getInternalId();
     UUID defaultSpecimenType = facility.getDefaultSpecimenType().getInternalId();
@@ -483,7 +444,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
-    verify(fhirQueueReportingService).report(any());
+    verify(testEventReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -513,11 +475,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "English",
-            null,
             null);
     Person p2 =
         _personService.addPatient(
@@ -537,17 +497,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "Spanish",
-            null,
             null);
 
     _service.addPatientToQueue(
         facility1.getInternalId(),
         p1,
-        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -555,7 +512,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility1.getInternalId(),
         p2,
-        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -593,7 +549,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(1, queue.size());
 
     // make sure the corrected event is sent to storage queue
-    verify(fhirQueueReportingService).report(any());
+    verify(testEventReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
 
     List<MultiplexResultInput> negativeCovidResult = makeCovidOnlyResult(TestResult.NEGATIVE);
 
@@ -604,8 +561,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(0, queue.size());
 
     // make sure the second event is sent to storage queue
-    verifyNoInteractions(testEventReportingService);
-    verify(fhirQueueReportingService, times(2)).report(any());
+    verify(testEventReportingService, times(2)).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -617,13 +574,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType deviceType = _dataFactory.getGenericDevice();
     SpecimenType specimenType = _dataFactory.getGenericSpecimen();
     facility.setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
@@ -650,13 +601,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType deviceType = _dataFactory.getGenericDevice();
     SpecimenType specimenType = _dataFactory.getGenericSpecimen();
     facility.setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
@@ -686,13 +631,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
     _service.addPatientToQueue(
-        facility.getInternalId(),
-        p,
-        "",
-        "",
-        Collections.emptyMap(),
-        LocalDate.of(1865, 12, 25),
-        false);
+        facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     DeviceType deviceType = _dataFactory.getGenericDevice();
     SpecimenType specimenType = _dataFactory.getGenericSpecimen();
     facility.setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
@@ -755,7 +694,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
-        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -798,7 +736,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
-        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -838,7 +775,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(),
         patient,
-        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -883,7 +819,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
-        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -923,7 +858,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(),
         patient,
-        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -966,7 +900,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
-        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -987,7 +920,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // THEN
     assertTrue(res.getDeliverySuccess());
     verifyNoInteractions(testResultsDeliveryService);
-    verify(fhirQueueReportingService).report(any());
+    verify(testEventReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -1001,7 +935,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addPatientToQueue(
         facility.getInternalId(),
         patient,
-        "",
         "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
@@ -1244,12 +1177,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThrows(
         AccessDeniedException.class,
         () ->
-            _service.getFacilityTestEventsResults(
-                facilityId, null, null, null, null, null, null, 0, 10));
+            _service.getFacilityTestEventsResults(facilityId, null, null, null, null, null, 0, 10));
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.getFacilityTestEventsResults(
-        facility.getInternalId(), null, null, null, null, null, null, 0, 10);
+        facility.getInternalId(), null, null, null, null, null, 0, 10);
   }
 
   @Test
@@ -1262,7 +1194,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     Page<TestEvent> testEventsByFacility =
         _service.getFacilityTestEventsResults(
-            facility.getInternalId(), null, null, null, null, null, null, 0, 10);
+            facility.getInternalId(), null, null, null, null, null, 0, 10);
     assertThat(testEventsByFacility.getTotalElements()).isEqualTo(1);
     assertThat(testEventsByFacility.getTotalPages()).isEqualTo(1);
   }
@@ -1279,8 +1211,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThrows(
         AccessDeniedException.class,
         () ->
-            _service.getFacilityTestEventsResults(
-                facilityId, null, null, null, null, null, null, 0, 10));
+            _service.getFacilityTestEventsResults(facilityId, null, null, null, null, null, 0, 10));
   }
 
   @Test
@@ -1292,7 +1223,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(p, facility);
 
     Page<TestEvent> testEventsByOrg =
-        _service.getOrganizationTestEventsResults(null, null, null, null, null, null, 0, 10);
+        _service.getOrganizationTestEventsResults(null, null, null, null, null, 0, 10);
     assertThat(testEventsByOrg.getTotalElements()).isEqualTo(1);
     assertThat(testEventsByOrg.getTotalPages()).isEqualTo(1);
   }
@@ -1307,7 +1238,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getOrganizationTestEventsResults(null, null, null, null, null, null, 0, 10));
+        () -> _service.getOrganizationTestEventsResults(null, null, null, null, null, 0, 10));
   }
 
   @Test
@@ -1347,6 +1278,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createFullPerson(org);
     _dataFactory.createTestEvent(p, facility);
 
+    // https://github.com/CDCgov/prime-simplereport/issues/677
+    // assertSecurityError(() ->
+    // _service.getTestResults(facility.getInternalId()));
     assertSecurityError(() -> _service.getTestResults(p));
   }
 
@@ -1365,10 +1299,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(p, facility);
 
     // count queries
-    long startQueryCount = QueryCountService.get().getSelect();
+    long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     _service.getFacilityTestEventsResults(
-        facility.getInternalId(), null, null, null, null, null, null, 0, 50);
-    long firstPassTotal = QueryCountService.get().getSelect() - startQueryCount;
+        facility.getInternalId(), null, null, null, null, null, 0, 50);
+    long firstPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
     // add more data
     _dataFactory.createTestEvent(p, facility);
@@ -1378,10 +1312,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(p, facility);
 
     // count queries again and make sure queries made didn't increase
-    startQueryCount = QueryCountService.get().getSelect();
+    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     _service.getFacilityTestEventsResults(
-        facility.getInternalId(), null, null, null, null, null, null, 0, 50);
-    long secondPassTotal = QueryCountService.get().getSelect() - startQueryCount;
+        facility.getInternalId(), null, null, null, null, null, 0, 50);
+    long secondPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
     assertEquals(firstPassTotal, secondPassTotal);
   }
 
@@ -1412,20 +1346,18 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            null,
             false,
             false,
             "Spanish",
-            null,
             null);
 
     _service.addPatientToQueue(
-        facilityId, p1, "", "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+        facilityId, p1, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     // get the first query count
-    long startQueryCount = QueryCountService.get().getSelect();
+    long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     _service.getQueue(facility.getInternalId());
-    long firstRunCount = QueryCountService.get().getSelect() - startQueryCount;
+    long firstRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
     for (int ii = 0; ii < 2; ii++) {
       // add more tests to the queue. (which needs more patients)
@@ -1447,20 +1379,18 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               null,
               null,
               null,
-              null,
               false,
               false,
               "French",
-              null,
               null);
 
       _service.addPatientToQueue(
-          facilityId, p, "", "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
+          facilityId, p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     }
 
-    startQueryCount = QueryCountService.get().getSelect();
+    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     _service.getQueue(facility.getInternalId());
-    long secondRunCount = QueryCountService.get().getSelect() - startQueryCount;
+    long secondRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
     assertEquals(firstRunCount, secondRunCount);
   }
 
@@ -1486,7 +1416,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestEvent> events_before =
         _service
             .getFacilityTestEventsResults(
-                facility.getInternalId(), null, null, null, null, null, null, 0, 50)
+                facility.getInternalId(), null, null, null, null, null, 0, 50)
             .toList();
     assertEquals(1, events_before.size());
 
@@ -1503,7 +1433,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestEvent> events_after =
         _service
             .getFacilityTestEventsResults(
-                facility.getInternalId(), null, null, null, null, null, null, 0, 50)
+                facility.getInternalId(), null, null, null, null, null, 0, 50)
             .toList();
     assertEquals(1, events_after.size());
     assertEquals(
@@ -1518,7 +1448,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
-    verify(fhirQueueReportingService).report(any());
+    verify(testEventReportingService).report(deleteMarkerEvent);
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -1582,54 +1513,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(1, testEventCount);
 
     // Does not report to ReportStream
-    verify(fhirQueueReportingService, times(0)).report(e);
-  }
-
-  @Test
-  @WithSimpleReportOrgAdminUser
-  void aoeCorrectionsTest() {
-    Organization org = _organizationService.getCurrentOrganization();
-    Facility facility = _organizationService.getFacilities(org).get(0);
-    facility.setDefaultDeviceTypeSpecimenType(
-        _dataFactory.getGenericDevice(), _dataFactory.getGenericSpecimen());
-    Person p = _dataFactory.createFullPerson(org);
-    AskOnEntrySurvey survey =
-        new AskOnEntrySurvey("77386006", null, Map.of("fake", true), false, null, null);
-    TestOrder order = _dataFactory.createTestOrder(p, facility, survey);
-    TestEvent testEvent = _dataFactory.createTestEvent(order);
-
-    // pregnancy marked as Yes on test event
-    assertEquals("77386006", testEvent.getSurveyData().getPregnancy());
-
-    String reasonMsg = "Testing AOE correction " + LocalDateTime.now();
-    TestEvent originalEvent = _service.markAsCorrection(testEvent.getInternalId(), reasonMsg);
-    TestOrder updatedOrder = originalEvent.getTestOrder();
-
-    // now mark pregnancy as No
-    _service.updateAoeQuestions(p.getInternalId(), "60001007", null, null, null, null, null);
-    assertEquals("60001007", updatedOrder.getAskOnEntrySurvey().getSurvey().getPregnancy());
-
-    assertEquals(TestCorrectionStatus.CORRECTED, updatedOrder.getCorrectionStatus());
-    assertEquals(reasonMsg, updatedOrder.getReasonForCorrection());
-    assertEquals(testEvent.getInternalId(), updatedOrder.getTestEvent().getInternalId());
-    assertEquals(OrderStatus.PENDING, updatedOrder.getOrderStatus());
-
-    List<MultiplexResultInput> results =
-        originalEvent.getResults().stream()
-            .map(r -> new MultiplexResultInput(r.getDisease().getName(), r.getTestResult()))
-            .toList();
-
-    // submit queue item
-    AddTestResultResponse response =
-        _service.addMultiplexResult(
-            facility.getDefaultDeviceType().getInternalId(),
-            facility.getDefaultSpecimenType().getInternalId(),
-            results,
-            p.getInternalId(),
-            originalEvent.getDateTested());
-
-    // pregnancy is marked as No on test event
-    assertEquals("60001007", response.getTestOrder().getTestEvent().getSurveyData().getPregnancy());
+    verify(testEventReportingService, times(0)).report(e);
   }
 
   @Test
@@ -1892,23 +1776,19 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestEvent> testEvents = makedata();
     List<TestEvent> results_page0 =
         _service
-            .getFacilityTestEventsResults(
-                _site.getInternalId(), null, null, null, null, null, null, 0, 5)
+            .getFacilityTestEventsResults(_site.getInternalId(), null, null, null, null, null, 0, 5)
             .toList();
     List<TestEvent> results_page1 =
         _service
-            .getFacilityTestEventsResults(
-                _site.getInternalId(), null, null, null, null, null, null, 1, 5)
+            .getFacilityTestEventsResults(_site.getInternalId(), null, null, null, null, null, 1, 5)
             .toList();
     List<TestEvent> results_page2 =
         _service
-            .getFacilityTestEventsResults(
-                _site.getInternalId(), null, null, null, null, null, null, 2, 5)
+            .getFacilityTestEventsResults(_site.getInternalId(), null, null, null, null, null, 2, 5)
             .toList();
     List<TestEvent> results_page3 =
         _service
-            .getFacilityTestEventsResults(
-                _site.getInternalId(), null, null, null, null, null, null, 3, 5)
+            .getFacilityTestEventsResults(_site.getInternalId(), null, null, null, null, null, 3, 5)
             .toList();
 
     Collections.reverse(testEvents);
@@ -1923,38 +1803,35 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportOrgAdminUser
   void getTestEventsResults_filtering() {
     List<TestEvent> testEvents = makedata();
-    List<TestEvent> fluATestEvents = makeSpecificDiseaseData(_diseaseService.fluA(), _site);
-    testEvents.addAll(fluATestEvents);
     List<TestEvent> positives =
         _service
             .getFacilityTestEventsResults(
-                _site.getInternalId(), null, TestResult.POSITIVE, null, null, null, null, 0, 10)
+                _site.getInternalId(), null, TestResult.POSITIVE, null, null, null, 0, 10)
             .toList();
     List<TestEvent> negatives =
         _service
             .getFacilityTestEventsResults(
-                _site.getInternalId(), null, TestResult.NEGATIVE, null, null, null, null, 0, 10)
+                _site.getInternalId(), null, TestResult.NEGATIVE, null, null, null, 0, 10)
             .toList();
     List<TestEvent> inconclusives =
         _service
             .getFacilityTestEventsResults(
-                _site.getInternalId(), null, TestResult.UNDETERMINED, null, null, null, null, 0, 10)
+                _site.getInternalId(), null, TestResult.UNDETERMINED, null, null, null, 0, 10)
             .toList();
     List<TestEvent> students =
         _service
             .getFacilityTestEventsResults(
-                _site.getInternalId(), null, null, PersonRole.STUDENT, null, null, null, 0, 10)
+                _site.getInternalId(), null, null, PersonRole.STUDENT, null, null, 0, 10)
             .toList();
     List<TestEvent> visitors =
         _service
             .getFacilityTestEventsResults(
-                _site.getInternalId(), null, null, PersonRole.VISITOR, null, null, null, 0, 10)
+                _site.getInternalId(), null, null, PersonRole.VISITOR, null, null, 0, 10)
             .toList();
     List<TestEvent> june1to3 =
         _service
             .getFacilityTestEventsResults(
                 _site.getInternalId(),
-                null,
                 null,
                 null,
                 null,
@@ -1967,7 +1844,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _service
             .getFacilityTestEventsResults(
                 _site.getInternalId(),
-                null,
                 null,
                 null,
                 null,
@@ -1985,7 +1861,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 null,
                 null,
                 null,
-                null,
                 0,
                 10)
             .toList();
@@ -1998,14 +1873,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 null,
                 null,
                 null,
-                null,
                 0,
                 10)
-            .toList();
-    List<TestEvent> fluAResults =
-        _service
-            .getFacilityTestEventsResults(
-                _site.getInternalId(), null, null, null, _diseaseService.fluA(), null, null, 0, 10)
             .toList();
     List<TestEvent> allFilters =
         _service
@@ -2014,7 +1883,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 _dataFactory.getPersonByName(CHARLES).getInternalId(),
                 TestResult.POSITIVE,
                 PersonRole.RESIDENT,
-                _diseaseService.covid(),
                 convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)),
                 convertDate(LocalDateTime.of(2021, 6, 1, 23, 59, 59)),
                 0,
@@ -2026,24 +1894,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertTestResultsList(
         positives,
         testEvents.stream()
-            .filter(
-                t ->
-                    t.getResults().stream().anyMatch(r -> r.getTestResult() == TestResult.POSITIVE))
+            .filter(t -> t.getCovidTestResult().orElse(null) == TestResult.POSITIVE)
             .collect(Collectors.toList()));
     assertTestResultsList(
         negatives,
         testEvents.stream()
-            .filter(
-                t ->
-                    t.getResults().stream().anyMatch(r -> r.getTestResult() == TestResult.NEGATIVE))
+            .filter(t -> t.getCovidTestResult().orElse(null) == TestResult.NEGATIVE)
             .collect(Collectors.toList()));
     assertTestResultsList(
         inconclusives,
         testEvents.stream()
-            .filter(
-                t ->
-                    t.getResults().stream()
-                        .anyMatch(r -> r.getTestResult() == TestResult.UNDETERMINED))
+            .filter(t -> t.getCovidTestResult().orElse(null) == TestResult.UNDETERMINED)
             .collect(Collectors.toList()));
     assertTestResultsList(
         students,
@@ -2087,17 +1948,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                         && t.getPatient().getNameInfo().equals(AMOS))
             .collect(Collectors.toList()));
     assertTestResultsList(
-        fluAResults,
-        testEvents.stream()
-            .filter(
-                t ->
-                    t.getResults().stream()
-                        .anyMatch(
-                            r ->
-                                Objects.equals(
-                                    r.getDisease().getName(), _diseaseService.fluA().getName())))
-            .collect(Collectors.toList()));
-    assertTestResultsList(
         allFilters,
         testEvents.stream()
             .filter(
@@ -2105,12 +1955,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                     t.getPatient().getNameInfo().equals(CHARLES)
                         && t.getCovidTestResult().orElse(null) == TestResult.POSITIVE
                         && t.getPatient().getRole() == PersonRole.RESIDENT
-                        && t.getResults().stream()
-                            .anyMatch(
-                                r ->
-                                    Objects.equals(
-                                        r.getDisease().getName(),
-                                        _diseaseService.covid().getName()))
                         && !t.getDateTested()
                             .before(convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)))
                         && !t.getDateTested()
@@ -2130,7 +1974,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     var res =
         _service
             .getFacilityTestEventsResults(
-                facility.getInternalId(), null, null, null, null, null, null, 0, 10)
+                facility.getInternalId(), null, null, null, null, null, 0, 10)
             .toList();
     assertEquals(1, res.size());
   }
@@ -2148,7 +1992,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     var res =
         _service
             .getFacilityTestEventsResults(
-                facility.getInternalId(), null, null, null, null, null, null, 0, 10)
+                facility.getInternalId(), null, null, null, null, null, 0, 10)
             .toList();
     assertEquals(2, res.size());
   }
@@ -2171,10 +2015,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     var res =
         _service.getFacilityTestEventsResults(
-            facility.getInternalId(), null, TestResult.NEGATIVE, null, null, null, null, 0, 10);
+            facility.getInternalId(), null, TestResult.NEGATIVE, null, null, null, 0, 10);
 
     var expected = List.of(expected_allNeg.getInternalId(), expected_covidPos.getInternalId());
-    var actualInternalIds = res.stream().map(TestEvent::getInternalId).toList();
+    var actualInternalIds = res.stream().map(TestEvent::getInternalId).collect(Collectors.toList());
     assertTrue(actualInternalIds.containsAll(expected));
     assertEquals(expected.size(), actualInternalIds.size());
     assertFalse(actualInternalIds.contains(notExpected_allPos.getInternalId()));
@@ -2185,8 +2029,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void getTestResultsCount() {
     makedata();
     int size =
-        _service.getTestResultsCount(
-            _site.getInternalId(), null, null, null, null, null, null, null);
+        _service.getTestResultsCount(_site.getInternalId(), null, null, null, null, null, null);
     assertEquals(11, size);
   }
 
@@ -2195,7 +2038,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void getTestResultsCount_forOrganization() {
     var testEvents = makeAdminData();
     var orgId = testEvents.get(0).getOrganization().getInternalId();
-    int size = _service.getTestResultsCount(null, null, null, null, null, null, null, orgId);
+    int size = _service.getTestResultsCount(null, null, null, null, null, null, orgId);
     assertEquals(4, size);
   }
 
@@ -2205,7 +2048,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     var otherOrgId = UUID.randomUUID();
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getTestResultsCount(null, null, null, null, null, null, null, otherOrgId));
+        () -> _service.getTestResultsCount(null, null, null, null, null, null, otherOrgId));
   }
 
   @Test
@@ -2243,7 +2086,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
 
     TopLevelDashboardMetrics metrics =
-        _service.getTopLevelDashboardMetrics(null, startDate, endDate, "COVID-19");
+        _service.getTopLevelDashboardMetrics(null, startDate, endDate);
     assertEquals(3, metrics.getPositiveTestCount());
     assertEquals(12, metrics.getTotalTestCount());
   }
@@ -2257,21 +2100,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getTopLevelDashboardMetrics(null, startDate, endDate, "COVID-19"));
-  }
-
-  @Test
-  @WithSimpleReportOrgAdminUser
-  void getTopLevelDashboardMetrics_showsNonCovidResults() {
-    makedata();
-    makeSpecificDiseaseData(_diseaseService.fluA(), null);
-    Date startDate = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
-    Date endDate = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
-
-    TopLevelDashboardMetrics metrics =
-        _service.getTopLevelDashboardMetrics(null, startDate, endDate, "Flu A");
-    assertEquals(1, metrics.getPositiveTestCount());
-    assertEquals(2, metrics.getTotalTestCount());
+        () -> _service.getTopLevelDashboardMetrics(null, startDate, endDate));
   }
 
   @Test
@@ -2289,8 +2118,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThrows(
         AccessDeniedException.class,
         () ->
-            _service.getFacilityTestEventsResults(
-                facilityId, null, null, null, null, null, null, 0, 10));
+            _service.getFacilityTestEventsResults(facilityId, null, null, null, null, null, 0, 10));
     assertThrows(AccessDeniedException.class, () -> _service.getTestResult(testEventId));
 
     // make sure the corrected event is not sent to storage queue
@@ -2298,11 +2126,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verifyNoInteractions(fhirQueueReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility);
-    _service.markAsError(_e.getInternalId(), reasonMsg);
+    TestEvent correctedTestEvent = _service.markAsError(_e.getInternalId(), reasonMsg);
     _service.getFacilityTestEventsResults(
-        facility.getInternalId(), null, null, null, null, null, null, 0, 10);
+        facility.getInternalId(), null, null, null, null, null, 0, 10);
+    _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue
-    verify(fhirQueueReportingService).report(any());
+    verify(testEventReportingService).report(correctedTestEvent);
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -2350,7 +2180,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(),
         patient,
         "",
-        "",
         Collections.emptyMap(),
         LocalDate.of(1865, 12, 25),
         false);
@@ -2369,7 +2198,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // THEN
     verify(reportTestEventToRSEventListener, times(1)).handleEvent(any());
-    verify(fhirQueueReportingService, times(1)).report(any());
+    verify(testEventReportingService, times(1)).report(any());
   }
 
   @Test
@@ -2396,41 +2225,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // THEN
     // Invoked once when result is added, invoked again when marked as error
     verify(reportTestEventToRSEventListener, times(2)).handleEvent(any());
-    verify(fhirQueueReportingService, times(2)).report(any());
-  }
-
-  @Test
-  @WithSimpleReportOrgAdminUser
-  void updateTimer_savesCorrectly() {
-    TestOrder timerOrder = addTestToQueue();
-    long currentTime = System.currentTimeMillis();
-    String currentTimeString = Long.toString(currentTime);
-
-    // saves a time value
-    _service.updateTimerStartedAt(timerOrder.getInternalId(), currentTimeString);
-    TestOrder modifiedTimerOrder = _service.getTestOrder(timerOrder.getInternalId());
-    assertEquals(modifiedTimerOrder.getTimerStartedAt(), currentTimeString);
-
-    // saves a null time value
-    _service.updateTimerStartedAt(timerOrder.getInternalId(), null);
-    TestOrder modifiedNoTimerOrder = _service.getTestOrder(timerOrder.getInternalId());
-    assertNull(modifiedNoTimerOrder.getTimerStartedAt());
-  }
-
-  @Test
-  @WithSimpleReportOrgAdminUser
-  void updateTimer_testOrderNotFound_throwsException() {
-    long currentTime = System.currentTimeMillis();
-    String currentTimeString = Long.toString(currentTime);
-    UUID testOrderId = UUID.randomUUID();
-
-    IllegalGraphqlArgumentException caught =
-        assertThrows(
-            IllegalGraphqlArgumentException.class,
-            () -> {
-              _service.updateTimerStartedAt(testOrderId, currentTimeString);
-            });
-    assertEquals("Cannot find TestOrder", caught.getMessage());
+    verify(testEventReportingService, times(2)).report(any());
   }
 
   private List<TestEvent> makeAdminData() {
@@ -2488,28 +2283,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     patientsToRoles.put(LEELOO, PersonRole.STUDENT);
 
     Map<PersonName, AskOnEntrySurvey> patientsToSurveys = new HashMap<>();
-    patientsToSurveys.put(
-        AMOS, new AskOnEntrySurvey(null, null, Map.of("fake", true), false, null, null));
-    patientsToSurveys.put(
-        CHARLES, new AskOnEntrySurvey(null, null, Collections.emptyMap(), false, null, null));
-    patientsToSurveys.put(
-        DEXTER, new AskOnEntrySurvey(null, null, Collections.emptyMap(), true, null, null));
-    patientsToSurveys.put(
-        ELIZABETH, new AskOnEntrySurvey(null, null, Map.of("fake", true), false, null, null));
-    patientsToSurveys.put(
-        FRANK, new AskOnEntrySurvey(null, null, Collections.emptyMap(), false, null, null));
-    patientsToSurveys.put(
-        GALE, new AskOnEntrySurvey(null, null, Collections.emptyMap(), true, null, null));
-    patientsToSurveys.put(
-        HEINRICK, new AskOnEntrySurvey(null, null, Map.of("fake", true), false, null, null));
-    patientsToSurveys.put(
-        IAN, new AskOnEntrySurvey(null, null, Collections.emptyMap(), false, null, null));
-    patientsToSurveys.put(
-        JANNELLE, new AskOnEntrySurvey(null, null, Collections.emptyMap(), true, null, null));
-    patientsToSurveys.put(
-        KACEY, new AskOnEntrySurvey(null, null, Map.of("fake", true), false, null, null));
-    patientsToSurveys.put(
-        LEELOO, new AskOnEntrySurvey(null, null, Collections.emptyMap(), false, null, null));
+    patientsToSurveys.put(AMOS, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(CHARLES, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(DEXTER, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(ELIZABETH, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(FRANK, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(GALE, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(HEINRICK, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(IAN, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
+    patientsToSurveys.put(JANNELLE, new AskOnEntrySurvey(null, Collections.emptyMap(), true, null));
+    patientsToSurveys.put(KACEY, new AskOnEntrySurvey(null, Map.of("fake", true), false, null));
+    patientsToSurveys.put(LEELOO, new AskOnEntrySurvey(null, Collections.emptyMap(), false, null));
 
     List<TestEvent> testEvents =
         patientsToResults.keySet().stream()
@@ -2529,44 +2313,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(
         _dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite, TestResult.NEGATIVE);
     return testEvents;
-  }
-
-  private List<TestEvent> makeSpecificDiseaseData(SupportedDisease disease, Facility site) {
-    Organization org = _organizationService.getCurrentOrganization();
-    if (site == null) {
-      site = _dataFactory.createValidFacility(org, "The Facility for " + disease.getName());
-    }
-    Map<PersonName, TestResult> patientsToResults = new HashMap<>();
-    patientsToResults.put(DEXTER, TestResult.POSITIVE);
-    patientsToResults.put(ELIZABETH, TestResult.NEGATIVE);
-
-    Map<PersonName, Date> patientsToDates = new HashMap<>();
-    patientsToDates.put(DEXTER, convertDate(LocalDateTime.of(2021, 6, 1, 0, 0, 0)));
-    patientsToDates.put(ELIZABETH, convertDate(LocalDateTime.of(2021, 6, 1, 12, 0, 0)));
-
-    Map<PersonName, PersonRole> patientsToRoles = new HashMap<>();
-    patientsToRoles.put(DEXTER, PersonRole.RESIDENT);
-    patientsToRoles.put(ELIZABETH, PersonRole.RESIDENT);
-
-    Map<PersonName, AskOnEntrySurvey> patientsToSurveys = new HashMap<>();
-    patientsToSurveys.put(
-        DEXTER, new AskOnEntrySurvey(null, null, Map.of("fake", true), false, null, null));
-    patientsToSurveys.put(
-        ELIZABETH, new AskOnEntrySurvey(null, null, Collections.emptyMap(), false, null, null));
-
-    Facility finalSite = site;
-    return patientsToResults.keySet().stream()
-        .map(
-            n -> {
-              TestResult t = patientsToResults.get(n);
-              PersonRole r = patientsToRoles.get(n);
-              AskOnEntrySurvey s = patientsToSurveys.get(n);
-              Date d = patientsToDates.get(n);
-
-              Person person = _dataFactory.createMinimalPerson(org, finalSite, n, r);
-              return _dataFactory.createTestEvent(person, finalSite, s, t, d, disease);
-            })
-        .collect(Collectors.toList());
   }
 
   private List<MultiplexResultInput> makeCovidOnlyResult(TestResult covidTestResult) {
@@ -2612,7 +2358,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _service.addPatientToQueue(
             facility.getInternalId(),
             patient,
-            "",
             "",
             Collections.emptyMap(),
             LocalDate.of(2022, 6, 5),

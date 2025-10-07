@@ -9,11 +9,9 @@ import {
 } from "@apollo/client";
 import {
   Route,
-  RouterProvider,
+  BrowserRouter as Router,
+  Routes,
   Navigate,
-  createBrowserRouter,
-  createRoutesFromElements,
-  Outlet,
 } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
 import { ErrorResponse, onError } from "@apollo/client/link/error";
@@ -22,7 +20,6 @@ import Modal from "react-modal";
 
 import ReportingApp from "./app/ReportingApp";
 import PatientApp from "./patientApp/PatientApp";
-import PilotApp from "./app/PilotApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import SignUpApp from "./app/signUp/SignUpApp";
 import HealthChecks from "./app/HealthChecks";
@@ -44,7 +41,6 @@ import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
 import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
-import MaintenanceBannerWrapper from "./MaintenanceBannerWrapper";
 
 // Initialize telemetry early
 ai.initialize();
@@ -69,7 +65,7 @@ if (window.location.hash) {
 }
 
 const httpLink = createUploadLink({
-  uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
+  uri: `${import.meta.env.VITE_BACKEND_URL}/graphql`,
 });
 
 const apolloMiddleware = new ApolloLink((operation, forward) => {
@@ -86,7 +82,7 @@ const apolloMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const logoutLink = onError(({ networkError, graphQLErrors }: ErrorResponse) => {
-  if (networkError && process.env.REACT_APP_BASE_URL) {
+  if (networkError && import.meta.env.VITE_BASE_URL) {
     // If unauthorized (expired or missing token), remove the access token and reload
     if ("statusCode" in networkError && networkError.statusCode === 401) {
       console.warn("[UNATHORIZED_ACCESS] !!");
@@ -123,77 +119,34 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: logoutLink.concat(concat(apolloMiddleware, httpLink as any)),
 });
-const routes = createRoutesFromElements(
-  <Route element={<AppRouterShell />}>
-    <Route path="/health/*" element={<HealthChecks />} />
-    <Route
-      path="/pxp/*"
-      element={
-        <MaintenanceBannerWrapper>
-          <PatientApp />
-        </MaintenanceBannerWrapper>
-      }
-    />
-    <Route path="/uac/*" element={<AccountCreationApp />} />
-    <Route
-      path="/sign-up/*"
-      element={
-        <MaintenanceBannerWrapper>
-          <SignUpApp />
-        </MaintenanceBannerWrapper>
-      }
-    />
-    <Route
-      path="/pilot/*"
-      element={
-        <MaintenanceBannerWrapper>
-          <PilotApp />
-        </MaintenanceBannerWrapper>
-      }
-    />
-    <Route
-      path="/register/:registrationLink"
-      element={
-        <MaintenanceBannerWrapper>
-          <SelfRegistration />
-        </MaintenanceBannerWrapper>
-      }
-    />
-    <Route path="/session-timeout" element={<SessionTimeout />} />
-    <Route path="/reload-app" element={<Navigate to="/" />} />
-    <Route
-      path="/*"
-      element={
-        <MaintenanceBannerWrapper>
-          <ReportingApp />{" "}
-        </MaintenanceBannerWrapper>
-      }
-    />
-    <Route element={<>Page not found</>} />
-  </Route>
-);
-const router = createBrowserRouter(routes, {
-  basename: process.env.PUBLIC_URL,
-});
 
 export const ReactApp = () => (
   <ApolloProvider client={client}>
     <React.StrictMode>
       <Provider store={store}>
         <WithFeatureFlags>
-          <RouterProvider router={router} />
+          <Router basename={import.meta.env.VITE_PUBLIC_URL}>
+            <TelemetryProvider>
+              <PrimeErrorBoundary>
+                <Routes>
+                  <Route path="/health/*" element={<HealthChecks />} />
+                  <Route path="/pxp/*" element={<PatientApp />} />
+                  <Route path="/uac/*" element={<AccountCreationApp />} />
+                  <Route path="/sign-up/*" element={<SignUpApp />} />
+                  <Route
+                    path="/register/:registrationLink"
+                    element={<SelfRegistration />}
+                  />
+                  <Route path="/session-timeout" element={<SessionTimeout />} />
+                  <Route path="/reload-app" element={<Navigate to="/" />} />
+                  <Route path="/*" element={<ReportingApp />} />
+                  <Route element={<>Page not found</>} />
+                </Routes>
+              </PrimeErrorBoundary>
+            </TelemetryProvider>
+          </Router>
         </WithFeatureFlags>
       </Provider>
     </React.StrictMode>
   </ApolloProvider>
 );
-
-function AppRouterShell() {
-  return (
-    <TelemetryProvider>
-      <PrimeErrorBoundary>
-        <Outlet />
-      </PrimeErrorBoundary>
-    </TelemetryProvider>
-  );
-}

@@ -1,48 +1,33 @@
 name: Build SimpleReport Front End
 description: Build the React application
 inputs:
-  deploy_env:
+  deploy-env:
     description: The environment being deployed (e.g. "prod" or "test")
     required: true
-  smarty_streets_key:
+  smarty-streets-key:
     description: The Smarty-Streets API token for this environment. (Should be fetched from vault but is not)
     required: true
-  base_domain_name:
+  base-domain-name:
     description: The domain where the application is deployed (e.g. "simplereport.gov" or "test.simplereport.gov")
     required: false
-  client_tarball:
+  client-tarball:
     description: The path to the tar file containing the client code to deploy
     required: true
-  is_training_site:
+  is-training-site:
     description: If this is set, special training branding will be applied.
     required: false
-  okta_enabled:
+  okta-enabled:
     description: If this is set, the app will redirect to Okta if no one is logged in.
     required: true
-  okta_url:
+  okta-url:
     description: The Okta instance to redirect to.
     required: false
-  okta_client_id:
+  okta-client-id:
     description: The Okta client ID for this environment.
     required: false
-  azure_creds:
-    description: The Azure credentials for this environment.
-    required: true
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-    - name: Use cache for node_modules
-      uses: actions/cache@v4
-      with:
-        path: |
-          ./frontend/node_modules
-        key: npm-${{ env.NODE_VERSION }}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
-    - uses: azure/login@v2
-      with:
-        creds: ${{ inputs.azure_creds }}
     - name: Install dependencies
       working-directory: ./frontend
       shell: bash
@@ -55,34 +40,34 @@ runs:
       working-directory: ./frontend
       run: |
           echo "::group::Set build variables"
-          ENVLVL=${{ inputs.deploy_env }}
+          ENVLVL=${{inputs.deploy-env}}
           ENVLVL=${ENVLVL//[[:digit:]]/}
           echo "Environment level: $ENVLVL"
           az config set extension.use_dynamic_install=yes_without_prompt
           INSIGHTS_CONNECTION_STRING=$(
             az monitor app-insights component show \
               -g prime-simple-report-$ENVLVL \
-              -a prime-simple-report-${{ inputs.deploy_env }}-insights \
+              -a prime-simple-report-${{inputs.deploy-env}}-insights \
             | jq -r '.connectionString')
-          echo "REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING=${INSIGHTS_CONNECTION_STRING}" > .env.production.local
-          if [[ -n "${{ inputs.base_domain_name }}" ]]
-            then echo "REACT_APP_BASE_URL=https://${{ inputs.base_domain_name }}" >> .env.production.local
+          echo "VITE_APPLICATIONINSIGHTS_CONNECTION_STRING=${INSIGHTS_CONNECTION_STRING}" > .env.production.local
+          if [[ -n "${{ inputs.base-domain-name }}" ]]
+            then echo "VITE_BASE_URL=https://${{inputs.base-domain-name}}" >> .env.production.local
           fi
-          if [[ "true" == "${{ inputs.is_training_site }}" ]]
-            then echo "REACT_APP_IS_TRAINING_SITE=true" >> .env.production.local
+          if [[ "true" == "${{ inputs.is-training-site }}" ]]
+            then echo "VITE_IS_TRAINING_SITE=true" >> .env.production.local
           fi
-          if [[ "true" == "${{ inputs.okta_enabled }}" ]]; then 
-            echo "REACT_APP_OKTA_ENABLED=true" >> .env.production.local
-            echo "REACT_APP_OKTA_URL=${{ inputs.okta_url }}" >> .env.production.local
-            echo "REACT_APP_OKTA_CLIENT_ID=${{ inputs.okta_client_id }}" >> .env.production.local
+          if [[ "true" == "${{ inputs.okta-enabled }}" ]]; then 
+            echo "VITE_OKTA_ENABLED=true" >> .env.production.local
+            echo "VITE_OKTA_URL=${{inputs.okta-url}}" >> .env.production.local
+            echo "VITE_OKTA_CLIENT_ID=${{inputs.okta-client-id}}" >> .env.production.local
           fi
           echo "::endgroup::"
     - name: Build deployable application
       shell: bash
       working-directory: ./frontend
       env:
-        REACT_APP_SMARTY_STREETS_KEY: ${{ inputs.smarty_streets_key }}
-        DEPLOY_ENV: ${{ inputs.deploy_env }}
+        VITE_SMARTY_STREETS_KEY: ${{ inputs.smarty-streets-key }}
+        DEPLOY_ENV: ${{ inputs.deploy-env }}
       run: |
         echo "::group::Build application"
         yarn run build
@@ -91,12 +76,5 @@ runs:
       shell: bash
       run: |
         echo "::group::Create application archive"
-        tar -C ./frontend/build -czf ${{ inputs.client_tarball }} .
+        tar -C ./frontend/build -czf ${{inputs.client-tarball}} .
         echo "::endgroup::"
-    - name: Save compiled frontend application
-      uses: actions/upload-artifact@v4
-      if: success()
-      with:
-        name: frontend-tarball
-        path: ${{ inputs.client_tarball }}
-        retention-days: 1

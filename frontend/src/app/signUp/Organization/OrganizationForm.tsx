@@ -1,6 +1,5 @@
 import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { useFeature } from "flagged";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
@@ -23,7 +22,6 @@ import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { PersonalDetailsFormProps } from "../IdentityVerification/PersonalDetailsForm";
 import StepIndicator from "../../commonComponents/StepIndicator";
-import NextSteps from "../IdentityVerification/NextSteps";
 
 import {
   initOrg,
@@ -67,8 +65,6 @@ const OrganizationForm = () => {
   const [orgExternalId, setOrgExternalId] = useState("");
   useDocumentTitle("Sign up - organization information");
 
-  const identityVerificationEnabled = useFeature("identityVerificationEnabled");
-
   const onDetailChange =
     (field: keyof OrganizationCreateRequest) =>
     (value: OrganizationCreateRequest[typeof field]) => {
@@ -105,7 +101,6 @@ const OrganizationForm = () => {
       setErrors(initOrgErrors());
       return;
     }
-    // @ts-ignore
     setErrors(validation.errors);
     focusOnce.current = true;
     showError(FORM_ERROR_MSG, FORM_ERROR_TITLE);
@@ -128,7 +123,15 @@ const OrganizationForm = () => {
       focusOnFirstInputWithError();
       focusOnce.current = false;
     }
-  }, [errors]);
+  }, [
+    errors.name,
+    errors.state,
+    errors.type,
+    errors.firstName,
+    errors.lastName,
+    errors.email,
+    errors.workPhoneNumber,
+  ]);
 
   const validateSupportedJurisdiction = async () => {
     if (organization.state && !liveJurisdictions.includes(organization.state)) {
@@ -137,10 +140,6 @@ const OrganizationForm = () => {
   };
 
   if (orgExternalId) {
-    if (!identityVerificationEnabled) {
-      return <NextSteps />;
-    }
-
     return (
       <Navigate
         to="/sign-up/identity-verification"

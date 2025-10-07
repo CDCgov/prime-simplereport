@@ -3,14 +3,13 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
 import java.util.UUID;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "result_upload_error")
@@ -19,21 +18,26 @@ public class ResultUploadError extends AuditedEntity {
   @Column private UUID orgId;
   @Column private UUID submissionId;
 
-  @Column(columnDefinition = "TEST_RESULT_UPLOAD_ERROR")
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column
+  @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private ResultUploadErrorType type;
 
-  @Column private String field;
+  @Column
+  @Type(type = "text")
+  private String field;
 
-  @Column(columnDefinition = "RESULT_UPLOAD_ERROR_SOURCE")
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Enumerated(EnumType.STRING)
+  @Column
+  @Type(type = "pg_enum")
   private ResultUploadErrorSource source;
 
-  @Column private boolean required;
+  @Column
+  @Type(type = "boolean")
+  private boolean required;
 
-  @Column private String message;
+  @Column
+  @Type(type = "text")
+  private String message;
 
   protected ResultUploadError() {}
 

@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`App should show error UI 1`] = `
+<div>
+  <p>
+    Server connection error...
+  </p>
+</div>
+`;
+
 exports[`Escalations Renders the page 1`] = `
 <div>
   <div
@@ -9,53 +17,23 @@ exports[`Escalations Renders the page 1`] = `
       class="grid-container"
     >
       <div
-        class="prime-container card-container padding-bottom-3"
+        class="grid-row"
       >
-        <div
-          class="usa-card__header"
+        <form
+          class="prime-container card-container"
         >
           <div
-            class="width-full"
+            class="usa-card__header"
           >
-            <div
-              class="display-flex flex-align-center"
+            <h1
+              class="font-heading-lg margin-top-0 margin-bottom-0"
             >
-              <svg
-                aria-hidden="true"
-                class="usa-icon text-base margin-left-neg-2px"
-                focusable="false"
-                height="1em"
-                role="img"
-                viewBox="0 0 24 24"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-                />
-              </svg>
-              <a
-                class="margin-left-05"
-                href="/admin"
-              >
-                Support admin
-              </a>
-            </div>
-            <div
-              class="grid-row width-full margin-top-1"
-            >
-              <h1
-                class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
-              >
-                Escalate to engineering
-              </h1>
-            </div>
+              Escalate to engineering
+            </h1>
           </div>
-        </div>
-        <div
-          class="usa-card__body margin-top-1"
-        >
-          <form>
+          <div
+            class="usa-card__body margin-top-1"
+          >
             <div
               class="grid-row grid-gap margin-top-2"
             >
@@ -83,8 +61,8 @@ exports[`Escalations Renders the page 1`] = `
                 </button>
               </div>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

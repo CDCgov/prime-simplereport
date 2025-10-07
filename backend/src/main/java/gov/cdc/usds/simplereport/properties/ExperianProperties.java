@@ -3,8 +3,10 @@ package gov.cdc.usds.simplereport.properties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 @AllArgsConstructor
+@ConstructorBinding
 @ConfigurationProperties(prefix = "simple-report.experian")
 @Getter
 public class ExperianProperties {

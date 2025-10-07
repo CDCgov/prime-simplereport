@@ -39,7 +39,6 @@ export enum FocusMode {
   Input,
   Item,
 }
-
 export interface RegistrationProps {
   inputTextRef?: Ref<any>;
   setFocus: Function;
@@ -267,14 +266,7 @@ export const MultiSelectDropdown = ({
       !newTarget ||
       (newTarget instanceof Node && !containerRef.current?.contains(newTarget));
 
-    const blurConditionsForRegularList =
-      !state.isExtended && newTargetIsOutside;
-
-    // don't blur if we're clicking within the list but outside the input (ie on table labels)
-    const blurConditionsForExtendedList =
-      state.isExtended && newTargetIsOutside && !state.isOpen;
-
-    if (blurConditionsForRegularList || blurConditionsForExtendedList) {
+    if (newTargetIsOutside) {
       dispatch({ type: ActionTypes.BLUR });
     }
   };
@@ -315,9 +307,7 @@ export const MultiSelectDropdown = ({
         onChange={(e): void =>
           dispatch({ type: ActionTypes.UPDATE_FILTER, value: e.target.value })
         }
-        onClick={(): void => {
-          dispatch({ type: ActionTypes.OPEN_LIST });
-        }}
+        onClick={(): void => dispatch({ type: ActionTypes.OPEN_LIST })}
         onBlur={handleInputBlur}
         onKeyDown={handleInputKeyDown(dispatch, state, selectOption)}
         value={state.inputValue}

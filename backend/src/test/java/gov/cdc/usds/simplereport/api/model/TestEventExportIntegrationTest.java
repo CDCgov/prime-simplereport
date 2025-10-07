@@ -26,7 +26,11 @@ import org.springframework.test.context.TestPropertySource;
 
 // added enable_lazy_load_no_trans=true because I couldn't figure out how to make the hibernate
 // session work within a test that also tests our API
-@TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
+@TestPropertySource(
+    properties = {
+      "hibernate.query.interceptor.error-level=ERROR",
+      "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
+    })
 @WithSimpleReportStandardUser
 class TestEventExportIntegrationTest extends BaseGraphqlTest {
   @Autowired private TestEventService _testEventService;

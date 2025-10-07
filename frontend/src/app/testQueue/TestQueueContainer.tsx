@@ -4,7 +4,7 @@ import { useDocumentTitle } from "../utils/hooks";
 import TestQueue from "./TestQueue";
 
 const TestQueueContainer = () => {
-  useDocumentTitle("Report test");
+  useDocumentTitle("Conduct test");
   const [facility] = useSelectedFacility();
   const activeFacilityId = facility?.id;
 

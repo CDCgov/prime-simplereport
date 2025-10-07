@@ -1,13 +1,12 @@
 locals {
-  project          = "prime"
-  name             = "simple-report"
-  env              = "dev"
-  env_level        = "dev"
-  token_env_suffix = "test"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "dev"
+  env_level = "dev"
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
-    resource_group = data.azurerm_resource_group.rg.name
+    resource_group = "${local.project}-${local.name}-${local.env}"
   }
 }
 
@@ -64,11 +63,6 @@ resource "azurerm_storage_queue" "fhir_data_queue" {
 
 resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
   name                 = "fhir-data-publishing-error"
-  storage_account_name = azurerm_storage_account.app.name
-}
-
-resource "azurerm_storage_queue" "hl7v2_data_queue" {
-  name                 = "hl7v2-data-publishing"
   storage_account_name = azurerm_storage_account.app.name
 }
 

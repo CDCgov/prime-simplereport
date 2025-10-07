@@ -1,3 +1,5 @@
+spring:
+  profiles.include: okta-prod
 simple-report:
   cors:
     allowed-origins:

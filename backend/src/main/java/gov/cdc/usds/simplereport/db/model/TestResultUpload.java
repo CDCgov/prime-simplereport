@@ -1,46 +1,34 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.util.List;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
-import org.hibernate.type.SqlTypes;
 
+@Getter
+@Setter
 @Entity
 @Slf4j
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-@Setter
-@Getter
 @Table(name = "upload")
 public class TestResultUpload extends AuditedEntity {
 
   @Column private UUID reportId;
   @Column private UUID submissionId;
 
-  @Column(columnDefinition = "UPLOAD_STATUS")
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column
+  @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private UploadStatus status;
 
@@ -52,20 +40,31 @@ public class TestResultUpload extends AuditedEntity {
   private Organization organization;
 
   @Column()
-  @Type(JsonBinaryType.class)
+  @Type(type = "jsonb")
   private FeedbackMessage[] warnings;
 
   @Column()
-  @Type(JsonBinaryType.class)
+  @Type(type = "jsonb")
   private FeedbackMessage[] errors;
 
-  @Column(columnDefinition = "PIPELINE")
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-  @Enumerated(EnumType.STRING)
-  private Pipeline destination;
+  protected TestResultUpload() {}
 
-  @OneToMany(mappedBy = "upload")
-  List<UploadDiseaseDetails> uploadDiseaseDetails;
+  public TestResultUpload(
+      UUID reportId,
+      UUID submissionId,
+      UploadStatus status,
+      int recordsCount,
+      Organization organization,
+      FeedbackMessage[] warnings,
+      FeedbackMessage[] errors) {
+    this.reportId = reportId;
+    this.submissionId = submissionId;
+    this.status = status;
+    this.recordsCount = recordsCount;
+    this.organization = organization;
+    this.warnings = warnings;
+    this.errors = errors;
+  }
 
   public TestResultUpload(UploadStatus status) {
     this.status = status;

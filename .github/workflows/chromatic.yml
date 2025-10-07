@@ -2,30 +2,23 @@ name: Chromatic
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - "**"
-    paths:
-      - "frontend/**"
   push:
-    branches:
-      - main
     paths:
       - "frontend/**"
 
 env:
-  NODE_VERSION: 23
+  NODE_VERSION: 18
 
 jobs:
   chromatic-deployment:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Chromatic wants the history
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v3.7.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -35,7 +28,7 @@ jobs:
 
       - name: Publish to Chromatic
         if: github.ref != 'refs/heads/main'
-        uses: chromaui/action@v13
+        uses: chromaui/action@v1
         with:
           workingDir: frontend
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -46,7 +39,7 @@ jobs:
 
       - name: Publish to Chromatic (auto-accept changes on merge main)
         if: github.ref == 'refs/heads/main'
-        uses: chromaui/action@v13
+        uses: chromaui/action@v1
         with:
           workingDir: frontend
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -58,7 +51,7 @@ jobs:
 
       - name: Artifact Chromatic logs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: logs
           path: frontend/*.log

@@ -35,8 +35,8 @@ type Facility {
   isDeleted: Boolean
 }
 
-type FacilityStats {
-  usersSingleAccessCount: Int
+type FacilityStats{
+  usersSingleAccessCount:Int
   patientsSingleAccessCount: Int
 }
 
@@ -79,12 +79,9 @@ input UpdateDeviceType {
 input SupportedDiseaseTestPerformedInput {
   supportedDisease: ID!
   testPerformedLoincCode: String!
-  testPerformedLoincLongName: String
   equipmentUid: String
-  equipmentUidType: String
   testkitNameId: String
   testOrderedLoincCode: String
-  testOrderedLoincLongName: String
 }
 
 type DeviceType {
@@ -100,12 +97,9 @@ type DeviceType {
 type SupportedDiseaseTestPerformed {
   supportedDisease: SupportedDisease!
   testPerformedLoincCode: String!
-  testPerformedLoincLongName: String
   equipmentUid: String
-  equipmentUidType: String
   testkitNameId: String
   testOrderedLoincCode: String
-  testOrderedLoincLongName: String
 }
 
 type SupportedDisease {
@@ -115,13 +109,6 @@ type SupportedDisease {
 }
 
 input CreateSpecimenType {
-  name: String!
-  typeCode: String!
-  collectionLocationName: String
-  collectionLocationCode: String
-}
-
-input UpdateSpecimenType {
   name: String!
   typeCode: String!
   collectionLocationName: String
@@ -204,16 +191,6 @@ type ApiUserWithStatus {
   status: String
 }
 
-type ApiUserWithStatusPage {
-  totalElements: Int!
-  content: [ApiUserWithStatus!]
-}
-
-type ApiUserWithStatusAndCountPage {
-  pageContent: ApiUserWithStatusPage!
-  totalUsersInOrg: Int!
-}
-
 # Patient and test types
 
 type Patient
@@ -232,8 +209,6 @@ type Patient
   race: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   birthDate: LocalDate
   gender: String
-    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
-  genderIdentity: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   ethnicity: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   tribalAffiliation: [String] @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
@@ -265,8 +240,6 @@ type Patient
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   preferredLanguage: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
-  notes: String
-    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
 
 # TestResult and TestOrder should have the same properties
@@ -274,22 +247,17 @@ type TestOrder {
   id: ID!
   internalId: ID! @deprecated(reason: "alias for 'id'")
   patient: Patient!
-  facility: Facility!
   dateAdded: String!
-  dateUpdated: DateTime
   pregnancy: String
-  syphilisHistory: String
   noSymptoms: Boolean
   symptoms: String
   symptomOnset: LocalDate
-  genderOfSexualPartners: [String]
   deviceType: DeviceType!
   specimenType: SpecimenType!
   results: [MultiplexResult!]!
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
-  timerStartedAt: String
 }
 
 type TestResult {
@@ -299,19 +267,16 @@ type TestResult {
   dateAdded: String
   dateUpdated: DateTime
   pregnancy: String
-  syphilisHistory: String
   noSymptoms: Boolean
   symptoms: String
   symptomOnset: LocalDate
-  genderOfSexualPartners: [String]
   deviceType: DeviceType
-  results: [MultiplexResult!]
+  results: [MultiplexResult]
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser
   patientLink: PatientLink
-  surveyData: AskOnEntrySurvey
 }
 
 type TestResultsPage {
@@ -319,40 +284,9 @@ type TestResultsPage {
   content: [TestResult]
 }
 
-type AskOnEntrySurvey {
-  pregnancy: String
-  syphilisHistory: String
-  symptoms: String
-  symptomOnset: LocalDate
-  noSymptoms: Boolean
-  genderOfSexualPartners: [String!]
-}
-
-type Result {
-  id: ID!
-  facility: Facility!
-  patient: Patient!
-  dateAdded: String!
-  dateUpdated: DateTime
-  deviceType: DeviceType!
-  disease: String!
-  testResult: String!
-  dateTested: DateTime!
-  correctionStatus: String
-  reasonForCorrection: String
-  createdBy: ApiUser
-  surveyData: AskOnEntrySurvey
-  patientLink: PatientLink
-}
-
-type ResultsPage {
-  totalElements: Int
-  content: [Result]
-}
-
 type MultiplexResult {
-  disease: SupportedDisease!
-  testResult: String!
+  disease: SupportedDisease
+  testResult: String
 }
 
 input MultiplexResultInput {
@@ -382,7 +316,6 @@ type AggregateFacilityMetrics {
 type AddTestResultResponse {
   testResult: TestOrder!
   deliverySuccess: Boolean
-  testEventId: ID!
 }
 
 type PatientLink {
@@ -433,135 +366,6 @@ type FeedbackMessage {
 type UploadSubmissionPage {
   totalElements: Int!
   content: [UploadResult!]!
-}
-
-type FeatureFlag {
-  name: String!
-  value: Boolean!
-}
-
-type FacilityLab {
-  internalId: ID!
-  facilityId: ID!
-  labId: ID!
-  name: String!
-  description: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  specimens: [Specimen!]!
-}
-
-input PatientReportInput {
-  patientId: String
-  firstName: String!
-  middleName: String
-  lastName: String!
-  suffix: String
-  email: String
-  phone: String
-  street: String
-  streetTwo: String
-  city: String
-  county: String
-  state: String
-  zipCode: String
-  country: String
-  sex: String
-  dateOfBirth: LocalDate!
-  race: String
-  ethnicity: String
-  tribalAffiliation: String
-}
-
-input ProviderReportInput {
-  firstName: String!
-  middleName: String
-  lastName: String!
-  suffix: String
-  npi: String!
-  street: String
-  streetTwo: String
-  city: String
-  county: String
-  state: String
-  zipCode: String
-  email: String
-  phone: String
-}
-
-input FacilityReportInput {
-  name: String!
-  phone: String
-  email: String
-  street: String
-  streetTwo: String
-  city: String
-  county: String
-  state: String
-  zipCode: String
-  clia: String!
-}
-
-input SpecimenInput {
-  snomedTypeCode: String!
-  snomedDisplayName: String
-  collectionDate: DateTime
-  receivedDate: DateTime
-  collectionBodySiteName: String
-  collectionBodySiteCode: String
-}
-
-input TestDetailsInput {
-  condition: String!
-  testOrderLoinc: String!
-  testOrderDisplayName: String
-  testPerformedLoinc: String!
-  testPerformedLoincLongCommonName: String
-  resultType: ResultScaleType!
-  resultValue: String!
-  resultDate: DateTime
-  resultInterpretation: String
-}
-
-enum ResultScaleType {
-  QUANTITATIVE
-  ORDINAL
-  NOMINAL
-}
-
-type Condition {
-  code: String!
-  display: String!
-  snomedName: String
-}
-
-type Lab {
-  code: String!
-  display: String!
-  description: String
-  longCommonName: String!
-  scaleCode: String
-  scaleDisplay: String
-  systemCode: String!
-  systemDisplay: String
-  answerList: String
-  orderOrObservation: String!
-  panel: Boolean!
-}
-
-# specimen for universal reporting
-type Specimen {
-  loincSystemCode: String!
-  snomedCode: String!
-  snomedDisplay: String!
-  bodySiteList: [SpecimenBodySite!]!
-}
-
-type SpecimenBodySite {
-  snomedSpecimenCode: String
-  snomedSpecimenDisplay: String
-  snomedSiteCode: String!
-  snomedSiteDisplay: String!
 }
 
 # Queries and mutations for everyday use
@@ -637,7 +441,6 @@ type Query {
     patientId: ID
     result: String
     role: String
-    disease: String
     startDate: DateTime
     endDate: DateTime
     pageNumber: Int = 0
@@ -654,17 +457,6 @@ type Query {
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  resultsPage(
-    facilityId: ID
-    patientId: ID
-    result: String
-    role: String
-    disease: String
-    startDate: DateTime
-    endDate: DateTime
-    pageNumber: Int = 0
-    pageSize: Int = 5000
-  ): ResultsPage @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   organizationLevelDashboardMetrics(
     startDate: DateTime!
     endDate: DateTime!
@@ -674,14 +466,11 @@ type Query {
     facilityId: ID
     startDate: DateTime
     endDate: DateTime
-    disease: String
   ): TopLevelDashboardMetrics @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!]
     @requiredPermissions(allOf: ["MANAGE_USERS"])
-  usersWithStatusPage(pageNumber: Int, searchQuery: String): ApiUserWithStatusAndCountPage! @requiredPermissions(allOf: ["MANAGE_USERS"])
-  user(id: ID, email: String): User
-    @requiredPermissions(allOf: ["MANAGE_USERS"])
+  user(id: ID, email: String): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
   uploadSubmission(id: ID!): UploadResponse!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
@@ -692,19 +481,18 @@ type Query {
     pageSize: Int
   ): UploadSubmissionPage!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
-  conditions: [Condition!]!
-  labs(conditionCodes: [String!]): [Lab!]!
-  specimens(loinc: String!): [Specimen!]!
-  facilityLabs(facilityId: ID): [FacilityLab]
 }
 
 type Mutation {
-  updateFacility(facilityInfo: UpdateFacilityInput!): Facility
-    @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  addFacility(facilityInfo: AddFacilityInput!): Facility
-    @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  addUserToCurrentOrg(userInput: UserInput!): User
-    @requiredPermissions(allOf: ["MANAGE_USERS"])
+  updateFacility(
+    facilityInfo: UpdateFacilityInput!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  addFacility(
+    facilityInfo: AddFacilityInput!
+  ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  addUserToCurrentOrg(
+    userInput: UserInput!
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
     name: NameInput
@@ -728,8 +516,7 @@ type Mutation {
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resendActivationEmail(id: ID!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
-  reactivateUserAndResetPassword(id: ID!): User
-    @requiredPermissions(allOf: ["MANAGE_USERS"])
+  reactivateUserAndResetPassword(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setCurrentUserTenantDataAccess(
     organizationExternalId: String
     justification: String
@@ -758,12 +545,10 @@ type Mutation {
     ethnicity: String
     tribalAffiliation: String
     gender: String
-    genderIdentity: String
     residentCongregateSetting: Boolean
     employedInHealthcare: Boolean
     preferredLanguage: String
     testResultDelivery: TestResultDeliveryPreference
-    notes: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
     facilityId: ID @Size(min: 36, max: 36)
@@ -795,18 +580,17 @@ type Mutation {
     ethnicity: String @Size(min: 0, max: 32)
     tribalAffiliation: String @Size(min: 0, max: 3)
     gender: String @Size(min: 0, max: 32)
-    genderIdentity: String
     residentCongregateSetting: Boolean
     employedInHealthcare: Boolean
     preferredLanguage: String
     testResultDelivery: TestResultDeliveryPreference
-    notes: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(
     id: ID!
     deleted: Boolean!
     orgExternalId: String
-  ): Patient @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
+  ): Patient
+    @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   submitQueueItem(
     deviceTypeId: ID!
     specimenTypeId: ID!
@@ -829,7 +613,6 @@ type Mutation {
     facilityId: ID!
     patientId: ID!
     pregnancy: String
-    syphilisHistory: String
     symptoms: String @Size(min: 0, max: 1024)
     symptomOnset: LocalDate
     noSymptoms: Boolean
@@ -837,19 +620,13 @@ type Mutation {
   ): String @requiredPermissions(allOf: ["START_TEST"])
   removePatientFromQueue(patientId: ID!): String
     @requiredPermissions(allOf: ["UPDATE_TEST"])
-  updateAoeQuestions(
+  updateTimeOfTestQuestions(
     patientId: ID!
     pregnancy: String
-    syphilisHistory: String
     symptoms: String @Size(min: 0, max: 1024)
     symptomOnset: LocalDate
     noSymptoms: Boolean
-    genderOfSexualPartners: [String]
     testResultDelivery: TestResultDeliveryPreference
-  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
-  updateTestOrderTimerStartedAt(
-    testOrderId: ID!
-    startedAt: String
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   sendPatientLinkSms(internalId: ID!): Boolean
     @requiredPermissions(allOf: ["UPDATE_TEST"])
@@ -859,26 +636,4 @@ type Mutation {
   sendPatientLinkEmailByTestEventId(testEventId: ID!): Boolean
   updateOrganization(type: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
-  submitLabReport(
-    patient: PatientReportInput
-    provider: ProviderReportInput,
-    facility: FacilityReportInput,
-    specimen: SpecimenInput,
-    testDetailsList: [TestDetailsInput]
-  ): String
-  updateFacilityLab(
-    facilityId: ID!
-    labId: ID!
-    name: String
-    description: String
-  ): FacilityLab
-  addFacilityLab(
-    facilityId: ID!
-    labId: ID!
-    name: String!
-    description: String!
-  ): FacilityLab
-  removeFacilityLab(facilityId: ID!, labId: ID!): Boolean
-  addFacilityLabSpecimen(facilityId: ID!, labId: ID!, specimenId: ID!): [Specimen]
-  removeFacilityLabSpecimen(facilityId: ID!, labId: ID!, specimenId: ID!): Boolean
 }

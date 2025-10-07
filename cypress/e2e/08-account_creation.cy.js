@@ -1,3 +1,4 @@
+// Selector constants
 const mfaRadios = {
   sms: 'input[value="SMS"]+label',
   okta: 'input[value="Okta"]+label',
@@ -20,7 +21,7 @@ Cypress.Commands.add("setPassword", () => {
 
 Cypress.Commands.add("setSecurityQuestion", () => {
   cy.get('select[name="security-question"]').select(
-    "In what city or town was your first job?",
+    "In what city or town was your first job?"
   );
   cy.get('input[name="answer"]').type("Omaha");
   cy.get(submitButton).click();
@@ -55,69 +56,169 @@ Cypress.Commands.add("scanQrCode", () => {
 
 Cypress.Commands.add("verifySecurityCode", (code) => {
   cy.contains("Verify your security code.");
-  cy.contains("One-time security code");
+  cy.contains('One-time security code');
   cy.checkAccessibility();
   cy.get('input[name="security-code"]').type(code);
   cy.get(submitButton).first().click();
 });
 
-describe("Checks each of the account creation MFA options", () => {
+describe("Okta account creation", () => {
   beforeEach(() => {
-    cy.clearCookies();
-    cy.resetWiremock();
-
-    cy.visit("/uac/?activationToken=NOr20VqF5M6m8AnwcSUJ");
-    cy.contains("Create your password");
-    cy.injectSRAxe();
-
-    // activation page
-    cy.checkAccessibility();
-
-    cy.setPassword();
-    // set password page
-    cy.checkAccessibility();
-
-    cy.setSecurityQuestion();
-    // MFA page
-    cy.checkAccessibility();
+    // Cypress clears cookies by default, but for these tests
+    // we want to preserve the Spring session cookie
+    Cypress.Cookies.preserveOnce("SESSION");
+  });
+  describe("Account creation w/ SMS MFA", () => {
+    before(() => {
+      cy.clearCookies();
+      cy.resetWiremock();
+    });
+    it("navigates to the activation link", () => {
+      cy.visit("/uac/?activationToken=h971awbXda7y7jGaxN8f");
+      cy.contains("Create your password");
+      cy.injectSRAxe();
+      cy.checkAccessibility();
+    });
+    it("sets a password", () => {
+      cy.setPassword();
+    });
+    it("sets a security question", () => {
+      cy.setSecurityQuestion();
+    });
+    it("selects SMS MFA", () => {
+      cy.mfaSelect("sms");
+    });
+    it("enters a phone number", () => {
+      cy.enterPhoneNumber();
+    });
+    it("enters a verification code", () => {
+      cy.verifySecurityCode("033457");
+    });
+    it("displays a success message", () => {
+      cy.contains("Account set up complete");
+      cy.checkAccessibility();
+    });
   });
 
-  it("Account creation w/ SMS MFA", () => {
-    cy.mfaSelect("sms");
-    cy.enterPhoneNumber();
-    cy.verifySecurityCode("033457");
-
-    cy.contains("Account set up complete");
+  describe("Account creation w/ Okta Verify MFA", () => {
+    before(() => {
+      cy.clearCookies();
+      cy.resetWiremock();
+    });
+    it("navigates to the activation link", () => {
+      cy.visit("/uac/?activationToken=NOr20VqF5M6m8AnwcSUJ");
+      cy.contains("Create your password");
+      cy.injectSRAxe();
+    });
+    it("sets a password", () => {
+      cy.setPassword();
+    });
+    it("sets a security question", () => {
+      cy.setSecurityQuestion();
+    });
+    it("selects Okta Verify MFA", () => {
+      cy.mfaSelect("okta");
+    });
+    it("'scans' a QR code", () => {
+      cy.scanQrCode();
+    });
+    it("enters a verification code", () => {
+      cy.verifySecurityCode("543663");
+    });
+    it("displays a success message", () => {
+      cy.contains("Account set up complete");
+      cy.checkAccessibility();
+    });
   });
 
-  it("Account creation w/ Okta Verify MFA", () => {
-    cy.mfaSelect("okta");
-    cy.scanQrCode();
-    cy.verifySecurityCode("543663");
-    cy.contains("Account set up complete");
-    cy.checkAccessibility();
-  });
-  it("Account creation w/ Google Authenticator MFA", () => {
-    cy.mfaSelect("google");
-    cy.scanQrCode();
-    cy.verifySecurityCode("985721");
+  describe("Account creation w/ Google Authenticator MFA", () => {
+    before(() => {
+      cy.clearCookies();
+      cy.resetWiremock();
 
-    cy.contains("Account set up complete");
-    cy.checkAccessibility();
+    });
+    it("navigates to the activation link", () => {
+      cy.visit("/uac/?activationToken=gqYPzH1FlPzVr0U3tQ7H");
+      cy.contains("Create your password");
+      cy.injectSRAxe();
+    });
+    it("sets a password", () => {
+      cy.setPassword();
+    });
+    it("sets a security question", () => {
+      cy.setSecurityQuestion();
+    });
+    it("selects Google Authenticator MFA", () => {
+      cy.mfaSelect("google");
+    });
+    it("'scans' a QR code", () => {
+      cy.scanQrCode();
+    });
+    it("enters a verification code", () => {
+      cy.verifySecurityCode("985721");
+    });
+    it("displays a success message", () => {
+      cy.contains("Account set up complete");
+      cy.checkAccessibility();
+    });
   });
-  it("Account creation w/ Voice Call MFA", () => {
-    cy.mfaSelect("voice");
-    cy.enterPhoneNumber();
-    cy.verifySecurityCode("30835");
 
-    cy.contains("Account set up complete");
-    cy.checkAccessibility();
+  describe("Account creation w/ Voice Call MFA", () => {
+    before(() => {
+      cy.clearCookies();
+      cy.resetWiremock();
+    });
+    it("navigates to the activation link", () => {
+      cy.visit("/uac/?activationToken=wN5mR-8SXao1TP2PLaFe");
+      cy.contains("Create your password");
+      cy.injectSRAxe();
+    });
+    it("sets a password", () => {
+      cy.setPassword();
+    });
+    it("sets a security question", () => {
+      cy.setSecurityQuestion();
+    });
+    it("selects voice call MFA", () => {
+      cy.mfaSelect("voice");
+    });
+    it("enters a phone number", () => {
+      cy.enterPhoneNumber();
+    });
+    it("enters a verification code", () => {
+      cy.verifySecurityCode("30835");
+    });
+    it("displays a success message", () => {
+      cy.contains("Account set up complete");
+      cy.checkAccessibility();
+    });
   });
-  it("Account creation w/ Email MFA", () => {
-    cy.mfaSelect("email");
 
-    cy.verifySecurityCode("007781");
-    cy.contains("Account set up complete");
-    cy.checkAccessibility();
+  describe("Account creation w/ Email MFA", () => {
+    before(() => {
+      cy.clearCookies();
+      cy.resetWiremock();
+    });
+    it("navigates to the activation link", () => {
+      cy.visit("/uac/?activationToken=4OVwdVhc6M1I-UwvLrNX");
+      cy.contains("Create your password");
+      cy.injectSRAxe();
+    });
+    it("sets a password", () => {
+      cy.setPassword();
+    });
+    it("sets a security question", () => {
+      cy.setSecurityQuestion();
+    });
+    it("selects email MFA", () => {
+      cy.mfaSelect("email");
+    });
+    it("enters a verification code", () => {
+      cy.verifySecurityCode("007781");
+    });
+    it("displays a success message", () => {
+      cy.contains("Account set up complete");
+      cy.checkAccessibility();
+    });
   });
 });

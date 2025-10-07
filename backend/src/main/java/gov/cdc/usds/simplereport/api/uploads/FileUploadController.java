@@ -1,22 +1,21 @@
 package gov.cdc.usds.simplereport.api.uploads;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
+import static gov.cdc.usds.simplereport.config.WebConfiguration.HIV_RESULT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
-import gov.cdc.usds.simplereport.api.model.errors.BulkUploadDisabledException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +28,6 @@ public class FileUploadController {
   public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
   private final PatientBulkUploadService patientBulkUploadService;
   private final TestResultUploadService testResultUploadService;
-  private final FeatureFlagsConfig featureFlagsConfig;
 
   @PostMapping(PATIENT_UPLOAD)
   public PatientBulkUploadResponse handlePatientsUpload(
@@ -50,20 +48,25 @@ public class FileUploadController {
     }
   }
 
-  @PostMapping(RESULT_UPLOAD)
-  @SuppressWarnings({"checkstyle:illegalcatch"})
-  public List<TestResultUpload> handleResultsUpload(@RequestParam("file") MultipartFile file) {
-    if (featureFlagsConfig.isBulkUploadDisabled()) {
-      throw new BulkUploadDisabledException("Bulk upload feature is temporarily disabled.");
+  @PostMapping(HIV_RESULT_UPLOAD)
+  @PreAuthorize("@featureFlagsConfig.isHivEnabled()")
+  public TestResultUpload handleHIVResultsUpload(@RequestParam("file") MultipartFile file) {
+    assertCsvFileType(file);
+    try (InputStream resultsUpload = file.getInputStream()) {
+      return testResultUploadService.processHIVResultCSV(resultsUpload);
+    } catch (IOException e) {
+      log.error("Test result CSV encountered an unexpected error", e);
+      throw new CsvProcessingException("Unable to process test result CSV upload");
     }
+  }
 
+  @PostMapping(RESULT_UPLOAD)
+  public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);
 
     try (InputStream resultsUpload = file.getInputStream()) {
       return testResultUploadService.processResultCSV(resultsUpload);
-      // catching every exception here ensures that the user will see an error toast for any bulk
-      // upload exception. Removing this could result in silent bulk upload failures.
-    } catch (Exception e) {
+    } catch (IOException e) {
       log.error("Test result CSV encountered an unexpected error", e);
       throw new CsvProcessingException("Unable to process test result CSV upload");
     }

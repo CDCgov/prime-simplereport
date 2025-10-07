@@ -35,23 +35,23 @@ jest.mock("../AccountCreationApiService", () => ({
   },
 }));
 
-const renderContainer = () => {
-  render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={["/set-password"]}>
-        <Routes>
-          <Route path="/set-password" element={<PasswordCreate />} />
-          <Route
-            path="/set-recovery-question"
-            element={<p>Password set successfully.</p>}
-          />
-        </Routes>
-      </MemoryRouter>
-    </Provider>
-  );
-};
-
 describe("PasswordCreate", () => {
+  beforeEach(() => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/set-password"]}>
+          <Routes>
+            <Route path="/set-password" element={<PasswordCreate />} />
+            <Route
+              path="/set-recovery-question"
+              element={<p>Password set successfully.</p>}
+            />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
+    );
+  });
+
   const strengthLabel = (label: string) => (content: string, element: any) => {
     return (
       element.tagName.toLowerCase() === "span" && content.startsWith(label)
@@ -59,7 +59,6 @@ describe("PasswordCreate", () => {
   };
 
   it("requires a password", async () => {
-    renderContainer();
     fireEvent.click(screen.getByText("Continue"));
     expect(
       screen.getByText(
@@ -69,7 +68,6 @@ describe("PasswordCreate", () => {
   });
 
   it("thinks 'foo' is a weak password", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "foo" },
     });
@@ -77,7 +75,6 @@ describe("PasswordCreate", () => {
   });
 
   it("thinks 'fooBAR' is a weak password", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "fooBAR" },
     });
@@ -85,7 +82,6 @@ describe("PasswordCreate", () => {
   });
 
   it("thinks 'fooB1' is an okay password", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "fooB1" },
     });
@@ -93,7 +89,6 @@ describe("PasswordCreate", () => {
   });
 
   it("thinks 'fooBAR123!' is a good password", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "fooBAR123!" },
     });
@@ -101,7 +96,6 @@ describe("PasswordCreate", () => {
   });
 
   it("can type in the password confirmation", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "fooBAR123!" },
     });
@@ -113,7 +107,6 @@ describe("PasswordCreate", () => {
   });
 
   it("requires password to be valid", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "foo" },
     });
@@ -131,7 +124,6 @@ describe("PasswordCreate", () => {
   });
 
   it("requires passwords to match", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "fooBAR123!" },
     });
@@ -144,7 +136,6 @@ describe("PasswordCreate", () => {
   });
 
   it("succeeds on submit with valid password", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "validPASS123!" },
     });
@@ -161,7 +152,6 @@ describe("PasswordCreate", () => {
   });
 
   it("fails on submit with invalid password", async () => {
-    renderContainer();
     fireEvent.change(screen.getByLabelText("Password *"), {
       target: { value: "INvalidPASS123!" },
     });

@@ -20,13 +20,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 
 @SpringBootTest
-@ActiveProfiles("test")
 class AzureStorageQueueFhirReportingServiceTest {
   @Autowired GitProperties gitProperties;
   @Autowired FhirConverter fhirConverter;
@@ -69,10 +67,9 @@ class AzureStorageQueueFhirReportingServiceTest {
     var context = spy(FhirContext.class);
     var client = mock(QueueAsyncClient.class);
     AzureStorageQueueFhirReportingService service =
-        new AzureStorageQueueFhirReportingService(context, client, gitProperties, fhirConverter);
+        new AzureStorageQueueFhirReportingService(context, client, null, fhirConverter);
 
     var multiplexTestEvent = createCovidTestEvent();
-    ReflectionTestUtils.setField(multiplexTestEvent, "internalId", UUID.randomUUID());
     ReflectionTestUtils.setField(multiplexTestEvent.getPatient(), "internalId", UUID.randomUUID());
     ReflectionTestUtils.setField(
         multiplexTestEvent.getPatient(),
@@ -91,9 +88,8 @@ class AzureStorageQueueFhirReportingServiceTest {
         .getResults()
         .forEach(result -> ReflectionTestUtils.setField(result, "internalId", UUID.randomUUID()));
 
-    when(client.sendMessage(anyString())).thenReturn(Mono.create(MonoSink::success));
     service.reportAsync(multiplexTestEvent);
-    verify(context, times(1)).newJsonParser();
-    verify(client, times(1)).sendMessage(anyString());
+    verify(context, times(0)).newJsonParser();
+    verify(client, times(0)).sendMessage(anyString());
   }
 }

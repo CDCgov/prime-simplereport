@@ -1,20 +1,18 @@
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter as Router } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
-import { FetchMock } from "jest-fetch-mock";
 
 import { appPermissions } from "../permissions";
 import { GetFacilitiesDocument as GET_FACILITY_QUERY } from "../../generated/graphql";
 import i18n from "../../i18n";
-import { createGQLWrappedMemoryRouterWithDataApis } from "../utils/reactRouter";
 
 import WithFacility from "./WithFacility";
 
 const mockStore = configureStore([]);
-const fetchMock = fetch as FetchMock;
 
 const mocks = [
   {
@@ -41,10 +39,6 @@ const mocks = [
 describe("WithFacility", () => {
   let store: any;
 
-  beforeEach(() => {
-    fetchMock.resetMocks();
-  });
-
   describe("With zero facilities", () => {
     beforeEach(() => {
       store = mockStore({
@@ -60,9 +54,6 @@ describe("WithFacility", () => {
         facilities: [],
       });
       store.dispatch = jest.fn();
-    });
-
-    it("should notify user to contact an admin", () => {
       render(
         <Router>
           <Provider store={store}>
@@ -70,11 +61,11 @@ describe("WithFacility", () => {
           </Provider>
         </Router>
       );
+    });
+
+    it("should notify user to contact an admin", () => {
       expect(
-        screen.getByText(
-          "You do not have access to any facilities at this time. Ask an admin to give you access, then try logging in again.",
-          { exact: false }
-        )
+        screen.getByText("Ask an administrator", { exact: false })
       ).toBeInTheDocument();
     });
   });
@@ -93,9 +84,6 @@ describe("WithFacility", () => {
         },
         facilities: [{ id: "1", name: "Facility 1" }],
       });
-    });
-
-    it("should bypass the facility selection screen", async () => {
       render(
         <Router>
           <Provider store={store}>
@@ -103,64 +91,57 @@ describe("WithFacility", () => {
           </Provider>
         </Router>
       );
+    });
+
+    it("should bypass the facility selection screen", async () => {
       const renderedApp = await screen.findByText("App");
       expect(renderedApp).toBeInTheDocument();
     });
   });
 
   describe("With two facilities", () => {
-    const storeMock = mockStore({
-      dataLoaded: true,
-      organization: {
-        name: "Organization Name",
-      },
-      user: {
-        firstName: "Kim",
-        lastName: "Mendoza",
-        permissions: [],
-      },
-      facilities: [
-        { id: "1", name: "Facility 1" },
-        { id: "2", name: "Facility 2" },
-      ],
-    });
-
-    const renderWithUser = () => ({
-      user: userEvent.setup(),
-      ...render(
+    beforeEach(() => {
+      store = mockStore({
+        dataLoaded: true,
+        organization: {
+          name: "Organization Name",
+        },
+        user: {
+          firstName: "Kim",
+          lastName: "Mendoza",
+          permissions: [],
+        },
+        facilities: [
+          { id: "1", name: "Facility 1" },
+          { id: "2", name: "Facility 2" },
+        ],
+      });
+      render(
         <Router>
-          <Provider store={storeMock}>
+          <Provider store={store}>
             <WithFacility>App</WithFacility>
           </Provider>
         </Router>
-      ),
-    });
-
-    it("should show the facility selection screen", async () => {
-      renderWithUser();
-      const text = await screen.findByText("Select your facility", {
-        exact: false,
-      });
-      expect(text).toBeInTheDocument();
-    });
-
-    it("should show the app after selecting facility", async () => {
-      const { user } = renderWithUser();
-      const continueBtn = await screen.findByRole("button", {
-        name: "Continue",
-      });
-      await user.type(
-        screen.getByLabelText("Select your facility"),
-        "Facility 1{enter}"
       );
-      await waitFor(() => expect(continueBtn).toBeEnabled());
-      await user.click(continueBtn);
+    });
 
-      const renderedApp = await screen.findByText("App");
-      expect(renderedApp).toBeInTheDocument();
+    it("should show the facility selection screen", () => {
+      expect(
+        screen.getByText("Please select the testing facility", { exact: false })
+      ).toBeInTheDocument();
+    });
+
+    describe("On facility select", () => {
+      beforeEach(async () => {
+        const options = await screen.findAllByRole("button");
+        userEvent.click(options[0]);
+      });
+      it("should show the app", async () => {
+        const renderedApp = await screen.findByText("App");
+        expect(renderedApp).toBeInTheDocument();
+      });
     });
   });
-
   describe("Facility ID from URL", () => {
     beforeEach(() => {
       store = mockStore({
@@ -178,9 +159,6 @@ describe("WithFacility", () => {
           { id: "2", name: "Facility 2" },
         ],
       });
-    });
-
-    it("loads facility directly from URL", async () => {
       render(
         <Router
           initialEntries={[{ pathname: "/", search: "?facility=2" }]}
@@ -191,11 +169,12 @@ describe("WithFacility", () => {
           </Provider>
         </Router>
       );
+    });
+    it("loads facility directly from URL", async () => {
       const renderedApp = await screen.findByText("App");
       expect(renderedApp).toBeInTheDocument();
     });
   });
-
   describe("A new org", () => {
     beforeEach(async () => {
       store = mockStore({
@@ -210,17 +189,15 @@ describe("WithFacility", () => {
         },
         facilities: [],
       });
-    });
-
-    it("should render the facility form", async () => {
-      const WithFacilityElement = <WithFacility>App</WithFacility>;
       render(
         <I18nextProvider i18n={i18n}>
-          {createGQLWrappedMemoryRouterWithDataApis(
-            WithFacilityElement,
-            store,
-            mocks
-          )}
+          <Router>
+            <Provider store={store}>
+              <MockedProvider mocks={mocks} addTypename={false}>
+                <WithFacility>App</WithFacility>
+              </MockedProvider>
+            </Provider>
+          </Router>
         </I18nextProvider>
       );
       expect(
@@ -230,6 +207,9 @@ describe("WithFacility", () => {
           })
         )[0]
       ).toBeInTheDocument();
+    });
+
+    it("should render the facility form", async () => {
       expect(
         await screen.findByText("To get started, add a testing facility", {
           exact: false,

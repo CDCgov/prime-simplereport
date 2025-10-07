@@ -27,7 +27,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class DeviceManagementTest extends BaseGraphqlTest {
 
   @Test
@@ -124,13 +126,8 @@ class DeviceManagementTest extends BaseGraphqlTest {
                         .supportedDisease(supportedDiseaseIds.get(0))
                         .testPerformedLoincCode("loinc1")
                         .equipmentUid("equipmentUid1")
-                        .equipmentUidType("equipmentUid1Type")
                         .testkitNameId("testkitNameId1")
                         .testOrderedLoincCode("loinc3")
-                        .testPerformedLoincLongName(
-                            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection")
-                        .testOrderedLoincLongName(
-                            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")
                         .build()))
             .build();
 
@@ -158,13 +155,8 @@ class DeviceManagementTest extends BaseGraphqlTest {
                         .supportedDisease(supportedDiseaseIds.get(0))
                         .testPerformedLoincCode("loinc1")
                         .equipmentUid("equipmentUid1")
-                        .equipmentUidType("equipmentUidType1")
                         .testkitNameId("testkitNameId1")
                         .testOrderedLoincCode("loinc3")
-                        .testPerformedLoincLongName(
-                            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection")
-                        .testOrderedLoincLongName(
-                            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")
                         .build()))
             .build();
 

@@ -26,6 +26,7 @@ module "metric_alerts" {
     "fhir_batched_uploader_function_not_triggering",
     "function_app_memory_alert",
     "fhir_function_app_duration_alert"
+
   ]
 
   action_group_ids = [

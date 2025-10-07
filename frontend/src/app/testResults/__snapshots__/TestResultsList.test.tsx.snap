@@ -1,0 +1,655 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TestResultsList should render a list of tests 1`] = `
+<div>
+  <div
+    class="grid-row"
+  >
+    <div
+      class="prime-container card-container sr-test-results-list"
+    >
+      <div
+        class="sticky-heading"
+      >
+        <div
+          class="usa-card__header"
+        >
+          <h1
+            class="font-sans-lg"
+          >
+            Test results
+            <span
+              class="sr-showing-results-on-page"
+            >
+              Showing 1-3 of 3
+            </span>
+          </h1>
+          <div>
+            <button
+              class="usa-button usa-button--outline"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-download margin-right-1"
+                data-icon="download"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V274.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32zM64 352c-35.3 0-64 28.7-64 64v32c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V416c0-35.3-28.7-64-64-64H346.5l-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352H64zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"
+                  fill="currentColor"
+                />
+              </svg>
+              Download results
+            </button>
+            <button
+              aria-disabled="true"
+              class="usa-button usa-button-disabled sr-active-button"
+              disabled=""
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-sliders margin-right-1"
+                data-icon="sliders"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm32-80c-32.8 0-61 19.7-73.3 48L32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l246.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48l54.7 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-54.7 0c-12.3-28.3-40.5-48-73.3-48zM192 128a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm73.3-64C253 35.7 224.8 16 192 16s-61 19.7-73.3 48L32 64C14.3 64 0 78.3 0 96s14.3 32 32 32l86.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 128c17.7 0 32-14.3 32-32s-14.3-32-32-32L265.3 64z"
+                  fill="currentColor"
+                />
+              </svg>
+              Clear filters
+            </button>
+          </div>
+        </div>
+        <div
+          class="position-relative bg-base-lightest"
+          id="test-results-search-by-patient-input"
+          role="search"
+        >
+          <div
+            class="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2"
+          >
+            <div
+              class="person-search"
+            >
+              <div
+                class="prime-search-container usa-form-group search-input_without_submit_button"
+              >
+                <form
+                  class="usa-search usa-search--small prime-search-input display-inline-block"
+                  role="search"
+                >
+                  <label
+                    class="display-block"
+                    for="search-field-small"
+                  >
+                    Search by name
+                  </label>
+                  <div>
+                    <input
+                      autocomplete="off"
+                      class="usa-input"
+                      id="search-field-small"
+                      name="search"
+                      style="border-right: 1px solid;"
+                      type="search"
+                      value=""
+                    />
+                    <button
+                      class="usa-button"
+                      disabled=""
+                      style="display: none;"
+                      type="submit"
+                    >
+                      <img
+                        alt="Search"
+                        class="usa-search__submit-icon"
+                        src="search--white.svg"
+                      />
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div
+              class="usa-form-group date-filter-group"
+            >
+              <label
+                class="usa-label"
+                data-testid="label"
+                for="start-date"
+              >
+                Date range (start)
+              </label>
+              <input
+                class="usa-input"
+                id="start-date"
+                max="2022-09-26"
+                min="2000-01-01"
+                type="date"
+                value=""
+              />
+            </div>
+            <div
+              class="usa-form-group date-filter-group"
+            >
+              <label
+                class="usa-label"
+                data-testid="label"
+                for="end-date"
+              >
+                Date range (end)
+              </label>
+              <input
+                class="usa-input"
+                id="end-date"
+                max="2022-09-26"
+                min="2000-01-01"
+                type="date"
+                value=""
+              />
+            </div>
+            <div
+              class="usa-form-group prime-dropdown "
+            >
+              <label
+                class="usa-label"
+                for="1"
+              >
+                Test result
+              </label>
+              <select
+                aria-required="false"
+                class="usa-select"
+                id="1"
+                name="result"
+              >
+                <option
+                  value=""
+                >
+                  - Select -
+                </option>
+                <option
+                  aria-selected="false"
+                  value="POSITIVE"
+                >
+                  Positive
+                </option>
+                <option
+                  aria-selected="false"
+                  value="NEGATIVE"
+                >
+                  Negative
+                </option>
+                <option
+                  aria-selected="false"
+                  value="UNDETERMINED"
+                >
+                  Inconclusive
+                </option>
+              </select>
+            </div>
+            <div
+              class="usa-form-group prime-dropdown "
+            >
+              <label
+                class="usa-label"
+                for="2"
+              >
+                Role
+              </label>
+              <select
+                aria-required="false"
+                class="usa-select"
+                id="2"
+                name="role"
+              >
+                <option
+                  value=""
+                >
+                  - Select -
+                </option>
+                <option
+                  aria-selected="false"
+                  value="STAFF"
+                >
+                  Staff
+                </option>
+                <option
+                  aria-selected="false"
+                  value="RESIDENT"
+                >
+                  Resident
+                </option>
+                <option
+                  aria-selected="false"
+                  value="STUDENT"
+                >
+                  Student
+                </option>
+                <option
+                  aria-selected="false"
+                  value="VISITOR"
+                >
+                  Visitor
+                </option>
+              </select>
+            </div>
+            <div
+              class="usa-form-group prime-dropdown "
+            >
+              <label
+                class="usa-label"
+                for="3"
+              >
+                Testing facility
+              </label>
+              <select
+                aria-required="false"
+                class="usa-select-narrow usa-select"
+                id="3"
+                name="facility"
+              >
+                <option
+                  aria-selected="false"
+                  value="all"
+                >
+                  All facilities
+                </option>
+                <option
+                  aria-selected="true"
+                  value="1"
+                >
+                  Facility 1
+                </option>
+                <option
+                  aria-selected="false"
+                  value="2"
+                >
+                  Facility 2
+                </option>
+                <option
+                  aria-selected="false"
+                  value="3"
+                >
+                  Facility 3 (Archived)
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <table
+          aria-hidden="true"
+          class="usa-table usa-table--borderless width-full"
+        >
+          <thead>
+            <tr>
+              <th
+                class="patient-name-cell"
+                scope="col"
+              >
+                Patient
+              </th>
+              <th
+                class="test-date-cell"
+                scope="col"
+              >
+                Test date
+              </th>
+              <th
+                class="test-result-cell"
+                scope="col"
+              >
+                COVID-19
+              </th>
+              <th
+                class="test-device-cell"
+                scope="col"
+              >
+                Test device
+              </th>
+              <th
+                class="submitted-by-cell"
+                scope="col"
+              >
+                Submitted by
+              </th>
+              <th
+                class="actions-cell"
+                scope="col"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+      <div
+        title="filtered-result"
+      >
+        <table
+          class="usa-table usa-table--borderless width-full"
+        >
+          <thead
+            class="sr-element__sr-only"
+          >
+            <tr>
+              <th
+                class="patient-name-cell"
+                scope="col"
+              >
+                Patient
+              </th>
+              <th
+                class="test-date-cell"
+                scope="col"
+              >
+                Test date
+              </th>
+              <th
+                class="test-result-cell"
+                scope="col"
+              >
+                COVID-19
+              </th>
+              <th
+                class="test-device-cell"
+                scope="col"
+              >
+                Test device
+              </th>
+              <th
+                class="submitted-by-cell"
+                scope="col"
+              >
+                Submitted by
+              </th>
+              <th
+                class="actions-cell"
+                scope="col"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              class="sr-test-result-row"
+              data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
+              data-testid="test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5"
+              title=""
+            >
+              <td
+                class="patient-name-cell"
+              >
+                <button
+                  aria-label="Click for more detailed results information for Gerard, Sam G conducted on March 19th 2021, 7:27:21 pm"
+                  class="usa-button usa-button--unstyled sr-link__primary"
+                  type="button"
+                >
+                  Gerard, Sam G
+                </button>
+                <span
+                  class="display-block text-base font-ui-2xs"
+                >
+                  DOB: 
+                  11/07/1960
+                </span>
+              </td>
+              <td
+                class="test-date-cell"
+              >
+                03/19/2021 7:27pm
+              </td>
+              <td
+                class="test-result-cell"
+                data-testid="covid-19-result"
+              >
+                Positive
+              </td>
+              <td
+                class="test-device-cell"
+              >
+                Abbott IDNow
+              </td>
+              <td
+                class="submitted-by-cell"
+              >
+                Entry, Ethan
+              </td>
+              <td
+                class="actions-cell"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="rc-menu-button sr-actions-menu"
+                  data-testid="action_7c768a5d-ef90-44cd-8050-b96dd7aaa1d5"
+                  id="action_7c768a5d-ef90-44cd-8050-b96dd7aaa1d5"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-ellipsis fa-2x "
+                    data-icon="ellipsis"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 448 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <span
+                    class="usa-sr-only"
+                  >
+                    More actions
+                  </span>
+                </button>
+                <div
+                  class="rc-menu-container"
+                />
+              </td>
+            </tr>
+            <tr
+              class="sr-test-result-row"
+              data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
+              data-testid="test-result-7c768a5d-ef90-44cd-8050-b96dd77f51d5"
+              title=""
+            >
+              <td
+                class="patient-name-cell"
+              >
+                <button
+                  aria-label="Click for more detailed results information for Colleer, Barde X conducted on March 18th 2021, 7:27:21 pm"
+                  class="usa-button usa-button--unstyled sr-link__primary"
+                  type="button"
+                >
+                  Colleer, Barde X
+                </button>
+                <span
+                  class="display-block text-base font-ui-2xs"
+                >
+                  DOB: 
+                  11/07/1960
+                </span>
+              </td>
+              <td
+                class="test-date-cell"
+              >
+                03/18/2021 7:27pm
+              </td>
+              <td
+                class="test-result-cell"
+                data-testid="covid-19-result"
+              >
+                Negative
+              </td>
+              <td
+                class="test-device-cell"
+              >
+                Abbott IDNow
+              </td>
+              <td
+                class="submitted-by-cell"
+              >
+                User, Ursula
+              </td>
+              <td
+                class="actions-cell"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="rc-menu-button sr-actions-menu"
+                  data-testid="action_7c768a5d-ef90-44cd-8050-b96dd77f51d5"
+                  id="action_7c768a5d-ef90-44cd-8050-b96dd77f51d5"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-ellipsis fa-2x "
+                    data-icon="ellipsis"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 448 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <span
+                    class="usa-sr-only"
+                  >
+                    More actions
+                  </span>
+                </button>
+                <div
+                  class="rc-menu-container"
+                />
+              </td>
+            </tr>
+            <tr
+              class="sr-test-result-row"
+              data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
+              data-testid="test-result-0969da96-b211-41cd-ba61-002181f0918d"
+              title=""
+            >
+              <td
+                class="patient-name-cell"
+              >
+                <button
+                  aria-label="Click for more detailed results information for Cragell, Barb Whitaker conducted on March 17th 2021, 7:27:23 pm"
+                  class="usa-button usa-button--unstyled sr-link__primary"
+                  type="button"
+                >
+                  Cragell, Barb Whitaker
+                </button>
+                <span
+                  class="display-block text-base font-ui-2xs"
+                >
+                  DOB: 
+                  11/07/1960
+                </span>
+              </td>
+              <td
+                class="test-date-cell"
+              >
+                03/17/2021 7:27pm
+              </td>
+              <td
+                class="test-result-cell"
+                data-testid="covid-19-result"
+              >
+                Negative
+              </td>
+              <td
+                class="test-device-cell"
+              >
+                Abbott IDNow
+              </td>
+              <td
+                class="submitted-by-cell"
+              >
+                Admin, Arthur
+              </td>
+              <td
+                class="actions-cell"
+              >
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  class="rc-menu-button sr-actions-menu"
+                  data-testid="action_0969da96-b211-41cd-ba61-002181f0918d"
+                  id="action_0969da96-b211-41cd-ba61-002181f0918d"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="svg-inline--fa fa-ellipsis fa-2x "
+                    data-icon="ellipsis"
+                    data-prefix="fas"
+                    focusable="false"
+                    role="img"
+                    viewBox="0 0 448 512"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <span
+                    class="usa-sr-only"
+                  >
+                    More actions
+                  </span>
+                </button>
+                <div
+                  class="rc-menu-container"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div
+        class="usa-card__footer"
+      >
+        <nav
+          aria-label="Pagination"
+          class="usa-pagination"
+          role="navigation"
+        >
+          <ol>
+            <li>
+              <a
+                aria-label="Page 1"
+                class="is-active"
+                href="/results/1?facility=1"
+              >
+                <span>
+                  1
+                </span>
+              </a>
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+`;

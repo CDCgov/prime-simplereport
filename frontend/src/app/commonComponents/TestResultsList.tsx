@@ -1,52 +1,31 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import { getResultByDiseaseName, getSortedResults } from "../utils/testResults";
+import {
+  getResultByDiseaseName,
+  getResultObjByDiseaseName,
+  getSortedResults,
+  hasMultiplexResults,
+} from "../utils/testResults";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
 
-interface TestResultsListProps {
+interface Props {
   results: MultiplexResults;
   isPatientApp: boolean;
+  multiplexEnabled: boolean;
 }
 
-const setDiseaseResultTitle = (
-  diseaseName: MULTIPLEX_DISEASES,
-  t: translateFn,
-  isPxp: boolean
-) => {
-  const translationKey = isPxp
-    ? diseaseResultTitlePxpMap[diseaseName]
-    : diseaseResultReportingAppMap[diseaseName];
-  if (translationKey) {
-    return t(translationKey);
+const setDiseaseName = (diseaseName: MultiplexDisease, t: translateFn) => {
+  switch (diseaseName) {
+    case MULTIPLEX_DISEASES.COVID_19:
+      return t("constants.disease.COVID19");
+    case MULTIPLEX_DISEASES.FLU_A:
+      return t("constants.disease.FLUA");
+    case MULTIPLEX_DISEASES.FLU_B:
+      return t("constants.disease.FLUB");
+    default:
+      return "";
   }
-  return "";
-};
-
-const diseaseResultTitlePxpMap: Record<MULTIPLEX_DISEASES, string> = {
-  [MULTIPLEX_DISEASES.COVID_19]: "constants.diseaseResultTitle.COVID19",
-  [MULTIPLEX_DISEASES.FLU_A]: "constants.diseaseResultTitle.FLUA",
-  [MULTIPLEX_DISEASES.FLU_B]: "constants.diseaseResultTitle.FLUB",
-  [MULTIPLEX_DISEASES.FLU_A_AND_B]: "constants.diseaseResultTitle.FLUAB",
-  [MULTIPLEX_DISEASES.HIV]: "constants.diseaseResultTitle.HIV",
-  [MULTIPLEX_DISEASES.RSV]: "constants.diseaseResultTitle.RSV",
-  [MULTIPLEX_DISEASES.SYPHILIS]: "constants.diseaseResultTitle.SYPHILIS",
-  [MULTIPLEX_DISEASES.HEPATITIS_C]: "constants.diseaseResultTitle.HEPATITIS_C",
-  [MULTIPLEX_DISEASES.GONORRHEA]: "constants.diseaseResultTitle.GONORRHEA",
-  [MULTIPLEX_DISEASES.CHLAMYDIA]: "constants.diseaseResultTitle.CHLAMYDIA",
-};
-
-const diseaseResultReportingAppMap: Record<MULTIPLEX_DISEASES, string> = {
-  [MULTIPLEX_DISEASES.COVID_19]: "constants.disease.COVID19",
-  [MULTIPLEX_DISEASES.FLU_A]: "constants.disease.FLUA",
-  [MULTIPLEX_DISEASES.FLU_B]: "constants.disease.FLUB",
-  [MULTIPLEX_DISEASES.FLU_A_AND_B]: "constants.disease.FLUAB",
-  [MULTIPLEX_DISEASES.HIV]: "constants.disease.HIV",
-  [MULTIPLEX_DISEASES.RSV]: "constants.disease.RSV",
-  [MULTIPLEX_DISEASES.SYPHILIS]: "constants.disease.SYPHILIS",
-  [MULTIPLEX_DISEASES.HEPATITIS_C]: "constants.disease.HEPATITIS_C",
-  [MULTIPLEX_DISEASES.GONORRHEA]: "constants.disease.GONORRHEA",
-  [MULTIPLEX_DISEASES.CHLAMYDIA]: "constants.disease.CHLAMYDIA",
 };
 
 const setResult = (result: string, t: translateFn) => {
@@ -72,13 +51,13 @@ const setResultSymbol = (result: string, t: translateFn) => {
 };
 
 const reportingAppResultListItem = (
-  diseaseName: MULTIPLEX_DISEASES,
+  diseaseName: MultiplexDisease,
   result: TestResult,
   t: translateFn
 ) => {
   return (
     <li key={`${diseaseName}-${result}`}>
-      <b>{setDiseaseResultTitle(diseaseName, t, false)}</b>
+      <b>{setDiseaseName(diseaseName, t)}</b>
       <div>
         <strong>
           <span className="text-uppercase">{setResult(result, t)}</span>
@@ -93,14 +72,14 @@ const reportingAppResultListItem = (
 };
 
 const pxpAppResultListItem = (
-  diseaseName: MULTIPLEX_DISEASES,
+  diseaseName: MultiplexDisease,
   result: TestResult,
   t: translateFn
 ) => {
   return (
     <div key={`${diseaseName}-${result}`}>
       <h2 className="font-heading-sm">
-        {setDiseaseResultTitle(diseaseName, t, true)}
+        {setDiseaseName(diseaseName, t) + " " + t("testResult.resultLiteral")}
       </h2>
       <p className="margin-top-05 text-uppercase">
         {setResult(result, t)}
@@ -113,13 +92,16 @@ const pxpAppResultListItem = (
   );
 };
 
-const TestResultsList: React.FC<TestResultsListProps> = ({
-  results,
-  isPatientApp,
-}) => {
+const TestResultsList = (props: Props) => {
+  const results = props.results;
+  const multiplexEnabled = props.multiplexEnabled;
+  const isPatientApp = props.isPatientApp;
   const { t } = useTranslation();
 
-  const sortedTestResults = getSortedResults(results);
+  const sortedTestResults =
+    multiplexEnabled && hasMultiplexResults(results)
+      ? getSortedResults(results)
+      : [getResultObjByDiseaseName(results, "COVID-19")];
 
   return (
     <>

@@ -5,13 +5,13 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.nimbusds.jose.util.StandardCharset;
 import gov.cdc.usds.simplereport.api.model.errors.AuditLogFailureException;
-import jakarta.servlet.http.Part;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.servlet.http.Part;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -12,97 +11,75 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T
-> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
-    };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  DateTime: { input: any; output: any };
-  LocalDate: { input: any; output: any };
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  DateTime: any;
+  LocalDate: any;
 };
 
 export type AddFacilityInput = {
   address: FacilityAddressInput;
-  cliaNumber?: InputMaybe<Scalars["String"]["input"]>;
-  deviceIds: Array<InputMaybe<Scalars["ID"]["input"]>>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  facilityName: Scalars["String"]["input"];
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  deviceIds: Array<InputMaybe<Scalars["ID"]>>;
+  email?: InputMaybe<Scalars["String"]>;
+  facilityName: Scalars["String"];
   orderingProvider?: InputMaybe<ProviderInput>;
-  phone?: InputMaybe<Scalars["String"]["input"]>;
+  phone?: InputMaybe<Scalars["String"]>;
 };
 
 export type AddTestResultResponse = {
   __typename?: "AddTestResultResponse";
-  deliverySuccess?: Maybe<Scalars["Boolean"]["output"]>;
-  testEventId: Scalars["ID"]["output"];
+  deliverySuccess?: Maybe<Scalars["Boolean"]>;
   testResult: TestOrder;
 };
 
 export type AddressInfo = {
   __typename?: "AddressInfo";
-  city?: Maybe<Scalars["String"]["output"]>;
-  county?: Maybe<Scalars["String"]["output"]>;
-  postalCode?: Maybe<Scalars["String"]["output"]>;
-  state?: Maybe<Scalars["String"]["output"]>;
-  streetOne?: Maybe<Scalars["String"]["output"]>;
-  streetTwo?: Maybe<Scalars["String"]["output"]>;
+  city?: Maybe<Scalars["String"]>;
+  county?: Maybe<Scalars["String"]>;
+  postalCode?: Maybe<Scalars["String"]>;
+  state?: Maybe<Scalars["String"]>;
+  streetOne?: Maybe<Scalars["String"]>;
+  streetTwo?: Maybe<Scalars["String"]>;
 };
 
 export type AggregateFacilityMetrics = {
   __typename?: "AggregateFacilityMetrics";
-  facilityName?: Maybe<Scalars["String"]["output"]>;
-  negativeTestCount?: Maybe<Scalars["Int"]["output"]>;
-  positiveTestCount?: Maybe<Scalars["Int"]["output"]>;
-  totalTestCount?: Maybe<Scalars["Int"]["output"]>;
+  facilityName?: Maybe<Scalars["String"]>;
+  negativeTestCount?: Maybe<Scalars["Int"]>;
+  positiveTestCount?: Maybe<Scalars["Int"]>;
+  totalTestCount?: Maybe<Scalars["Int"]>;
 };
 
 export type ApiUser = {
   __typename?: "ApiUser";
-  email: Scalars["String"]["output"];
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  id?: Maybe<Scalars["ID"]["output"]>;
-  lastName: Scalars["String"]["output"];
-  middleName?: Maybe<Scalars["String"]["output"]>;
+  email: Scalars["String"];
+  firstName?: Maybe<Scalars["String"]>;
+  id?: Maybe<Scalars["ID"]>;
+  lastName: Scalars["String"];
+  middleName?: Maybe<Scalars["String"]>;
   name: NameInfo;
   /** @deprecated needless connection of type to field name */
   nameInfo?: Maybe<NameInfo>;
-  suffix?: Maybe<Scalars["String"]["output"]>;
+  suffix?: Maybe<Scalars["String"]>;
 };
 
 export type ApiUserWithStatus = {
   __typename?: "ApiUserWithStatus";
-  email: Scalars["String"]["output"];
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  id: Scalars["ID"]["output"];
-  lastName: Scalars["String"]["output"];
-  middleName?: Maybe<Scalars["String"]["output"]>;
+  email: Scalars["String"];
+  firstName?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  lastName: Scalars["String"];
+  middleName?: Maybe<Scalars["String"]>;
   name: NameInfo;
-  status?: Maybe<Scalars["String"]["output"]>;
-  suffix?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type ApiUserWithStatusAndCountPage = {
-  __typename?: "ApiUserWithStatusAndCountPage";
-  pageContent: ApiUserWithStatusPage;
-  totalUsersInOrg: Scalars["Int"]["output"];
-};
-
-export type ApiUserWithStatusPage = {
-  __typename?: "ApiUserWithStatusPage";
-  content?: Maybe<Array<ApiUserWithStatus>>;
-  totalElements: Scalars["Int"]["output"];
+  status?: Maybe<Scalars["String"]>;
+  suffix?: Maybe<Scalars["String"]>;
 };
 
 export enum ArchivedStatus {
@@ -111,272 +88,179 @@ export enum ArchivedStatus {
   Unarchived = "UNARCHIVED",
 }
 
-export type AskOnEntrySurvey = {
-  __typename?: "AskOnEntrySurvey";
-  genderOfSexualPartners?: Maybe<Array<Scalars["String"]["output"]>>;
-  noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
-  pregnancy?: Maybe<Scalars["String"]["output"]>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
-  symptoms?: Maybe<Scalars["String"]["output"]>;
-  syphilisHistory?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type Condition = {
-  __typename?: "Condition";
-  code: Scalars["String"]["output"];
-  display: Scalars["String"]["output"];
-  snomedName?: Maybe<Scalars["String"]["output"]>;
-};
-
 export type CreateDeviceType = {
-  manufacturer: Scalars["String"]["input"];
-  model: Scalars["String"]["input"];
-  name: Scalars["String"]["input"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
-  swabTypes: Array<Scalars["ID"]["input"]>;
-  testLength: Scalars["Int"]["input"];
+  swabTypes: Array<Scalars["ID"]>;
+  testLength: Scalars["Int"];
 };
 
 export type CreateSpecimenType = {
-  collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
-  collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
-  name: Scalars["String"]["input"];
-  typeCode: Scalars["String"]["input"];
+  collectionLocationCode?: InputMaybe<Scalars["String"]>;
+  collectionLocationName?: InputMaybe<Scalars["String"]>;
+  name: Scalars["String"];
+  typeCode: Scalars["String"];
 };
 
 export type DeviceType = {
   __typename?: "DeviceType";
-  internalId: Scalars["ID"]["output"];
-  manufacturer: Scalars["String"]["output"];
-  model: Scalars["String"]["output"];
-  name: Scalars["String"]["output"];
+  internalId: Scalars["ID"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformed>;
   swabTypes: Array<SpecimenType>;
-  testLength: Scalars["Int"]["output"];
+  testLength: Scalars["Int"];
 };
 
 export type Facility = {
   __typename?: "Facility";
   address?: Maybe<AddressInfo>;
-  city?: Maybe<Scalars["String"]["output"]>;
-  cliaNumber?: Maybe<Scalars["String"]["output"]>;
-  county?: Maybe<Scalars["String"]["output"]>;
+  city?: Maybe<Scalars["String"]>;
+  cliaNumber?: Maybe<Scalars["String"]>;
+  county?: Maybe<Scalars["String"]>;
   deviceTypes: Array<DeviceType>;
-  email?: Maybe<Scalars["String"]["output"]>;
-  id: Scalars["ID"]["output"];
-  isDeleted?: Maybe<Scalars["Boolean"]["output"]>;
-  name: Scalars["String"]["output"];
+  email?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  isDeleted?: Maybe<Scalars["Boolean"]>;
+  name: Scalars["String"];
   orderingProvider?: Maybe<Provider>;
-  patientSelfRegistrationLink?: Maybe<Scalars["String"]["output"]>;
-  phone?: Maybe<Scalars["String"]["output"]>;
-  state?: Maybe<Scalars["String"]["output"]>;
-  street?: Maybe<Scalars["String"]["output"]>;
-  streetTwo?: Maybe<Scalars["String"]["output"]>;
-  zipCode?: Maybe<Scalars["String"]["output"]>;
+  patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
+  phone?: Maybe<Scalars["String"]>;
+  state?: Maybe<Scalars["String"]>;
+  street?: Maybe<Scalars["String"]>;
+  streetTwo?: Maybe<Scalars["String"]>;
+  zipCode?: Maybe<Scalars["String"]>;
 };
 
 export type FacilityAddressInput = {
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  state: Scalars["String"]["input"];
-  street: Scalars["String"]["input"];
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  zipCode: Scalars["String"]["input"];
-};
-
-export type FacilityLab = {
-  __typename?: "FacilityLab";
-  createdAt: Scalars["DateTime"]["output"];
-  description: Scalars["String"]["output"];
-  facilityId: Scalars["ID"]["output"];
-  internalId: Scalars["ID"]["output"];
-  labId: Scalars["ID"]["output"];
-  name: Scalars["String"]["output"];
-  specimens: Array<Specimen>;
-  updatedAt: Scalars["DateTime"]["output"];
-};
-
-export type FacilityReportInput = {
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  clia: Scalars["String"]["input"];
-  county?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  name: Scalars["String"]["input"];
-  phone?: InputMaybe<Scalars["String"]["input"]>;
-  state?: InputMaybe<Scalars["String"]["input"]>;
-  street?: InputMaybe<Scalars["String"]["input"]>;
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  zipCode?: InputMaybe<Scalars["String"]["input"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  zipCode: Scalars["String"];
 };
 
 export type FacilityStats = {
   __typename?: "FacilityStats";
-  patientsSingleAccessCount?: Maybe<Scalars["Int"]["output"]>;
-  usersSingleAccessCount?: Maybe<Scalars["Int"]["output"]>;
-};
-
-export type FeatureFlag = {
-  __typename?: "FeatureFlag";
-  name: Scalars["String"]["output"];
-  value: Scalars["Boolean"]["output"];
+  patientsSingleAccessCount?: Maybe<Scalars["Int"]>;
+  usersSingleAccessCount?: Maybe<Scalars["Int"]>;
 };
 
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
-  errorType: Scalars["String"]["output"];
-  fieldHeader: Scalars["String"]["output"];
-  fieldRequired: Scalars["Boolean"]["output"];
-  indices?: Maybe<Array<Maybe<Scalars["Int"]["output"]>>>;
-  message?: Maybe<Scalars["String"]["output"]>;
-  scope?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type Lab = {
-  __typename?: "Lab";
-  answerList?: Maybe<Scalars["String"]["output"]>;
-  code: Scalars["String"]["output"];
-  description?: Maybe<Scalars["String"]["output"]>;
-  display: Scalars["String"]["output"];
-  longCommonName: Scalars["String"]["output"];
-  orderOrObservation: Scalars["String"]["output"];
-  panel: Scalars["Boolean"]["output"];
-  scaleCode?: Maybe<Scalars["String"]["output"]>;
-  scaleDisplay?: Maybe<Scalars["String"]["output"]>;
-  systemCode: Scalars["String"]["output"];
-  systemDisplay?: Maybe<Scalars["String"]["output"]>;
+  errorType: Scalars["String"];
+  fieldHeader: Scalars["String"];
+  fieldRequired: Scalars["Boolean"];
+  indices?: Maybe<Array<Maybe<Scalars["Int"]>>>;
+  message?: Maybe<Scalars["String"]>;
+  scope?: Maybe<Scalars["String"]>;
 };
 
 export type MultiplexResult = {
   __typename?: "MultiplexResult";
-  disease: SupportedDisease;
-  testResult: Scalars["String"]["output"];
+  disease?: Maybe<SupportedDisease>;
+  testResult?: Maybe<Scalars["String"]>;
 };
 
 export type MultiplexResultInput = {
-  diseaseName?: InputMaybe<Scalars["String"]["input"]>;
-  testResult?: InputMaybe<Scalars["String"]["input"]>;
+  diseaseName?: InputMaybe<Scalars["String"]>;
+  testResult?: InputMaybe<Scalars["String"]>;
 };
 
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
-  addFacilityLab?: Maybe<FacilityLab>;
-  addFacilityLabSpecimen?: Maybe<Array<Maybe<Specimen>>>;
   addPatient?: Maybe<Patient>;
-  addPatientToQueue?: Maybe<Scalars["String"]["output"]>;
+  addPatientToQueue?: Maybe<Scalars["String"]>;
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
-  adminUpdateOrganization?: Maybe<Scalars["String"]["output"]>;
-  clearUserRolesAndFacilities?: Maybe<ApiUser>;
+  adminUpdateOrganization?: Maybe<Scalars["String"]>;
   correctTestMarkAsCorrection?: Maybe<TestResult>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createApiUserNoOkta?: Maybe<ApiUser>;
   createDeviceType?: Maybe<DeviceType>;
-  createFacilityRegistrationLink?: Maybe<Scalars["String"]["output"]>;
-  createOrganizationRegistrationLink?: Maybe<Scalars["String"]["output"]>;
+  createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
+  createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
   createSpecimenType?: Maybe<SpecimenType>;
-  deleteE2EOktaOrganizations?: Maybe<Organization>;
-  editPendingOrganization?: Maybe<Scalars["String"]["output"]>;
+  editPendingOrganization?: Maybe<Scalars["String"]>;
   editQueueItem?: Maybe<TestOrder>;
   markDeviceTypeAsDeleted?: Maybe<DeviceType>;
-  markFacilityAsDeleted?: Maybe<Scalars["String"]["output"]>;
-  markOrganizationAsDeleted?: Maybe<Scalars["String"]["output"]>;
-  markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]["output"]>;
+  markFacilityAsDeleted?: Maybe<Scalars["String"]>;
+  markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
+  markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
   reactivateUserAndResetPassword?: Maybe<User>;
-  removeFacilityLab?: Maybe<Scalars["Boolean"]["output"]>;
-  removeFacilityLabSpecimen?: Maybe<Scalars["Boolean"]["output"]>;
-  removePatientFromQueue?: Maybe<Scalars["String"]["output"]>;
+  removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
-  resendToReportStream?: Maybe<Scalars["Boolean"]["output"]>;
+  resendToReportStream?: Maybe<Scalars["Boolean"]>;
   resetUserMfa?: Maybe<User>;
   resetUserPassword?: Maybe<User>;
-  sendOrgAdminEmailCSV?: Maybe<Scalars["Boolean"]["output"]>;
-  sendPatientLinkEmail?: Maybe<Scalars["Boolean"]["output"]>;
-  sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]["output"]>;
-  sendPatientLinkSms?: Maybe<Scalars["Boolean"]["output"]>;
-  sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]["output"]>;
-  sendSupportEscalation?: Maybe<Scalars["String"]["output"]>;
+  sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
+  sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]>;
+  sendSupportEscalation?: Maybe<Scalars["String"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
-  setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]["output"]>;
+  setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
-  setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]["output"]>;
+  setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]>;
   setUserIsDeleted?: Maybe<User>;
-  submitLabReport?: Maybe<Scalars["String"]["output"]>;
   submitQueueItem?: Maybe<AddTestResultResponse>;
-  updateAoeQuestions?: Maybe<Scalars["String"]["output"]>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
-  updateFacilityFeatureFlag?: Maybe<FeatureFlag>;
-  updateFacilityLab?: Maybe<FacilityLab>;
-  updateFeatureFlag?: Maybe<FeatureFlag>;
-  updateOrganization?: Maybe<Scalars["String"]["output"]>;
+  updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
-  updateRegistrationLink?: Maybe<Scalars["String"]["output"]>;
-  updateSpecimenType?: Maybe<SpecimenType>;
-  updateTestOrderTimerStartedAt?: Maybe<Scalars["String"]["output"]>;
+  updateRegistrationLink?: Maybe<Scalars["String"]>;
+  updateTimeOfTestQuestions?: Maybe<Scalars["String"]>;
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
-  updateUserPrivilegesAndGroupAccess: User;
 };
 
 export type MutationAddFacilityArgs = {
   facilityInfo: AddFacilityInput;
 };
 
-export type MutationAddFacilityLabArgs = {
-  description: Scalars["String"]["input"];
-  facilityId: Scalars["ID"]["input"];
-  labId: Scalars["ID"]["input"];
-  name: Scalars["String"]["input"];
-};
-
-export type MutationAddFacilityLabSpecimenArgs = {
-  facilityId: Scalars["ID"]["input"];
-  labId: Scalars["ID"]["input"];
-  specimenId: Scalars["ID"]["input"];
-};
-
 export type MutationAddPatientArgs = {
-  birthDate: Scalars["LocalDate"]["input"];
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  country?: InputMaybe<Scalars["String"]["input"]>;
-  county?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  employedInHealthcare?: InputMaybe<Scalars["Boolean"]["input"]>;
-  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  firstName: Scalars["String"]["input"];
-  gender?: InputMaybe<Scalars["String"]["input"]>;
-  genderIdentity?: InputMaybe<Scalars["String"]["input"]>;
-  lastName: Scalars["String"]["input"];
-  lookupId?: InputMaybe<Scalars["String"]["input"]>;
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  notes?: InputMaybe<Scalars["String"]["input"]>;
+  birthDate: Scalars["LocalDate"];
+  city?: InputMaybe<Scalars["String"]>;
+  country?: InputMaybe<Scalars["String"]>;
+  county?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
+  ethnicity?: InputMaybe<Scalars["String"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  firstName: Scalars["String"];
+  gender?: InputMaybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  lookupId?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
-  preferredLanguage?: InputMaybe<Scalars["String"]["input"]>;
-  race?: InputMaybe<Scalars["String"]["input"]>;
-  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  state: Scalars["String"]["input"];
-  street: Scalars["String"]["input"];
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
-  telephone?: InputMaybe<Scalars["String"]["input"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]>;
+  race?: InputMaybe<Scalars["String"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
+  telephone?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
-  zipCode: Scalars["String"]["input"];
+  tribalAffiliation?: InputMaybe<Scalars["String"]>;
+  zipCode: Scalars["String"];
 };
 
 export type MutationAddPatientToQueueArgs = {
-  facilityId: Scalars["ID"]["input"];
-  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
-  patientId: Scalars["ID"]["input"];
-  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  symptoms?: InputMaybe<Scalars["String"]["input"]>;
-  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId: Scalars["ID"];
+  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
+  patientId: Scalars["ID"];
+  pregnancy?: InputMaybe<Scalars["String"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
+  symptoms?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
@@ -389,31 +273,27 @@ export type MutationAddUserToCurrentOrgArgs = {
 };
 
 export type MutationAdminUpdateOrganizationArgs = {
-  name: Scalars["String"]["input"];
-  type: Scalars["String"]["input"];
-};
-
-export type MutationClearUserRolesAndFacilitiesArgs = {
-  username: Scalars["String"]["input"];
+  name: Scalars["String"];
+  type: Scalars["String"];
 };
 
 export type MutationCorrectTestMarkAsCorrectionArgs = {
-  id: Scalars["ID"]["input"];
-  reason?: InputMaybe<Scalars["String"]["input"]>;
+  id: Scalars["ID"];
+  reason?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationCorrectTestMarkAsErrorArgs = {
-  id: Scalars["ID"]["input"];
-  reason?: InputMaybe<Scalars["String"]["input"]>;
+  id: Scalars["ID"];
+  reason?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationCreateApiUserNoOktaArgs = {
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationCreateDeviceTypeArgs = {
@@ -421,176 +301,134 @@ export type MutationCreateDeviceTypeArgs = {
 };
 
 export type MutationCreateFacilityRegistrationLinkArgs = {
-  facilityId: Scalars["ID"]["input"];
-  link: Scalars["String"]["input"];
-  organizationExternalId: Scalars["String"]["input"];
+  facilityId: Scalars["ID"];
+  link: Scalars["String"];
+  organizationExternalId: Scalars["String"];
 };
 
 export type MutationCreateOrganizationRegistrationLinkArgs = {
-  link: Scalars["String"]["input"];
-  organizationExternalId: Scalars["String"]["input"];
+  link: Scalars["String"];
+  organizationExternalId: Scalars["String"];
 };
 
 export type MutationCreateSpecimenTypeArgs = {
   input: CreateSpecimenType;
 };
 
-export type MutationDeleteE2EOktaOrganizationsArgs = {
-  orgExternalId: Scalars["String"]["input"];
-};
-
 export type MutationEditPendingOrganizationArgs = {
-  adminEmail?: InputMaybe<Scalars["String"]["input"]>;
-  adminFirstName?: InputMaybe<Scalars["String"]["input"]>;
-  adminLastName?: InputMaybe<Scalars["String"]["input"]>;
-  adminPhone?: InputMaybe<Scalars["String"]["input"]>;
-  name?: InputMaybe<Scalars["String"]["input"]>;
-  orgExternalId: Scalars["String"]["input"];
+  adminEmail?: InputMaybe<Scalars["String"]>;
+  adminFirstName?: InputMaybe<Scalars["String"]>;
+  adminLastName?: InputMaybe<Scalars["String"]>;
+  adminPhone?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<Scalars["String"]>;
+  orgExternalId: Scalars["String"];
 };
 
 export type MutationEditQueueItemArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
-  deviceTypeId?: InputMaybe<Scalars["ID"]["input"]>;
-  id: Scalars["ID"]["input"];
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceTypeId?: InputMaybe<Scalars["ID"]>;
+  id: Scalars["ID"];
   results?: InputMaybe<Array<InputMaybe<MultiplexResultInput>>>;
-  specimenTypeId?: InputMaybe<Scalars["ID"]["input"]>;
+  specimenTypeId?: InputMaybe<Scalars["ID"]>;
 };
 
 export type MutationMarkDeviceTypeAsDeletedArgs = {
-  deviceId?: InputMaybe<Scalars["ID"]["input"]>;
-  deviceName?: InputMaybe<Scalars["String"]["input"]>;
+  deviceId?: InputMaybe<Scalars["ID"]>;
+  deviceName?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
-  deleted: Scalars["Boolean"]["input"];
-  facilityId: Scalars["ID"]["input"];
+  deleted: Scalars["Boolean"];
+  facilityId: Scalars["ID"];
 };
 
 export type MutationMarkOrganizationAsDeletedArgs = {
-  deleted: Scalars["Boolean"]["input"];
-  organizationId: Scalars["ID"]["input"];
+  deleted: Scalars["Boolean"];
+  organizationId: Scalars["ID"];
 };
 
 export type MutationMarkPendingOrganizationAsDeletedArgs = {
-  deleted: Scalars["Boolean"]["input"];
-  orgExternalId: Scalars["String"]["input"];
+  deleted: Scalars["Boolean"];
+  orgExternalId: Scalars["String"];
 };
 
 export type MutationReactivateUserArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 };
 
 export type MutationReactivateUserAndResetPasswordArgs = {
-  id: Scalars["ID"]["input"];
-};
-
-export type MutationRemoveFacilityLabArgs = {
-  facilityId: Scalars["ID"]["input"];
-  labId: Scalars["ID"]["input"];
-};
-
-export type MutationRemoveFacilityLabSpecimenArgs = {
-  facilityId: Scalars["ID"]["input"];
-  labId: Scalars["ID"]["input"];
-  specimenId: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 };
 
 export type MutationRemovePatientFromQueueArgs = {
-  patientId: Scalars["ID"]["input"];
+  patientId: Scalars["ID"];
 };
 
 export type MutationResendActivationEmailArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 };
 
 export type MutationResendToReportStreamArgs = {
-  covidOnly?: InputMaybe<Scalars["Boolean"]["input"]>;
-  fhirOnly?: InputMaybe<Scalars["Boolean"]["input"]>;
-  testEventIds: Array<Scalars["ID"]["input"]>;
+  fhirOnly: Scalars["Boolean"];
+  testEventIds: Array<Scalars["ID"]>;
 };
 
 export type MutationResetUserMfaArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 };
 
 export type MutationResetUserPasswordArgs = {
-  id: Scalars["ID"]["input"];
-};
-
-export type MutationSendOrgAdminEmailCsvArgs = {
-  state: Scalars["String"]["input"];
-  type: Scalars["String"]["input"];
+  id: Scalars["ID"];
 };
 
 export type MutationSendPatientLinkEmailArgs = {
-  internalId: Scalars["ID"]["input"];
+  internalId: Scalars["ID"];
 };
 
 export type MutationSendPatientLinkEmailByTestEventIdArgs = {
-  testEventId: Scalars["ID"]["input"];
+  testEventId: Scalars["ID"];
 };
 
 export type MutationSendPatientLinkSmsArgs = {
-  internalId: Scalars["ID"]["input"];
+  internalId: Scalars["ID"];
 };
 
 export type MutationSendPatientLinkSmsByTestEventIdArgs = {
-  testEventId: Scalars["ID"]["input"];
+  testEventId: Scalars["ID"];
 };
 
 export type MutationSetCurrentUserTenantDataAccessArgs = {
-  justification?: InputMaybe<Scalars["String"]["input"]>;
-  organizationExternalId?: InputMaybe<Scalars["String"]["input"]>;
+  justification?: InputMaybe<Scalars["String"]>;
+  organizationExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetOrganizationIdentityVerifiedArgs = {
-  externalId: Scalars["String"]["input"];
-  verified: Scalars["Boolean"]["input"];
+  externalId: Scalars["String"];
+  verified: Scalars["Boolean"];
 };
 
 export type MutationSetPatientIsDeletedArgs = {
-  deleted: Scalars["Boolean"]["input"];
-  id: Scalars["ID"]["input"];
-  orgExternalId?: InputMaybe<Scalars["String"]["input"]>;
+  deleted: Scalars["Boolean"];
+  id: Scalars["ID"];
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetRegistrationLinkIsDeletedArgs = {
-  deleted: Scalars["Boolean"]["input"];
-  link?: InputMaybe<Scalars["String"]["input"]>;
+  deleted: Scalars["Boolean"];
+  link?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetUserIsDeletedArgs = {
-  deleted: Scalars["Boolean"]["input"];
-  id: Scalars["ID"]["input"];
-};
-
-export type MutationSubmitLabReportArgs = {
-  facility?: InputMaybe<FacilityReportInput>;
-  patient?: InputMaybe<PatientReportInput>;
-  provider?: InputMaybe<ProviderReportInput>;
-  specimen?: InputMaybe<SpecimenInput>;
-  testDetailsList?: InputMaybe<Array<InputMaybe<TestDetailsInput>>>;
+  deleted: Scalars["Boolean"];
+  id: Scalars["ID"];
 };
 
 export type MutationSubmitQueueItemArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
-  deviceTypeId: Scalars["ID"]["input"];
-  patientId: Scalars["ID"]["input"];
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  deviceTypeId: Scalars["ID"];
+  patientId: Scalars["ID"];
   results: Array<InputMaybe<MultiplexResultInput>>;
-  specimenTypeId: Scalars["ID"]["input"];
-};
-
-export type MutationUpdateAoeQuestionsArgs = {
-  genderOfSexualPartners?: InputMaybe<
-    Array<InputMaybe<Scalars["String"]["input"]>>
-  >;
-  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
-  patientId: Scalars["ID"]["input"];
-  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  symptoms?: InputMaybe<Scalars["String"]["input"]>;
-  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
-  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+  specimenTypeId: Scalars["ID"];
 };
 
 export type MutationUpdateDeviceTypeArgs = {
@@ -601,232 +439,180 @@ export type MutationUpdateFacilityArgs = {
   facilityInfo: UpdateFacilityInput;
 };
 
-export type MutationUpdateFacilityFeatureFlagArgs = {
-  facilityId: Scalars["ID"]["input"];
-  name: Scalars["String"]["input"];
-  value: Scalars["Boolean"]["input"];
-};
-
-export type MutationUpdateFacilityLabArgs = {
-  description?: InputMaybe<Scalars["String"]["input"]>;
-  facilityId: Scalars["ID"]["input"];
-  labId: Scalars["ID"]["input"];
-  name?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type MutationUpdateFeatureFlagArgs = {
-  name: Scalars["String"]["input"];
-  value: Scalars["Boolean"]["input"];
-};
-
 export type MutationUpdateOrganizationArgs = {
-  type: Scalars["String"]["input"];
+  type: Scalars["String"];
 };
 
 export type MutationUpdatePatientArgs = {
-  birthDate: Scalars["LocalDate"]["input"];
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  country?: InputMaybe<Scalars["String"]["input"]>;
-  county?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
-  employedInHealthcare?: InputMaybe<Scalars["Boolean"]["input"]>;
-  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  firstName: Scalars["String"]["input"];
-  gender?: InputMaybe<Scalars["String"]["input"]>;
-  genderIdentity?: InputMaybe<Scalars["String"]["input"]>;
-  lastName: Scalars["String"]["input"];
-  lookupId?: InputMaybe<Scalars["String"]["input"]>;
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  notes?: InputMaybe<Scalars["String"]["input"]>;
-  patientId: Scalars["ID"]["input"];
+  birthDate: Scalars["LocalDate"];
+  city?: InputMaybe<Scalars["String"]>;
+  country?: InputMaybe<Scalars["String"]>;
+  county?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
+  ethnicity?: InputMaybe<Scalars["String"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  firstName: Scalars["String"];
+  gender?: InputMaybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  lookupId?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  patientId: Scalars["ID"];
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
-  preferredLanguage?: InputMaybe<Scalars["String"]["input"]>;
-  race?: InputMaybe<Scalars["String"]["input"]>;
-  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  state: Scalars["String"]["input"];
-  street: Scalars["String"]["input"];
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
-  telephone?: InputMaybe<Scalars["String"]["input"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]>;
+  race?: InputMaybe<Scalars["String"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
+  telephone?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
-  zipCode: Scalars["String"]["input"];
+  tribalAffiliation?: InputMaybe<Scalars["String"]>;
+  zipCode: Scalars["String"];
 };
 
 export type MutationUpdateRegistrationLinkArgs = {
-  link: Scalars["String"]["input"];
-  newLink: Scalars["String"]["input"];
+  link: Scalars["String"];
+  newLink: Scalars["String"];
 };
 
-export type MutationUpdateSpecimenTypeArgs = {
-  input: UpdateSpecimenType;
-};
-
-export type MutationUpdateTestOrderTimerStartedAtArgs = {
-  startedAt?: InputMaybe<Scalars["String"]["input"]>;
-  testOrderId: Scalars["ID"]["input"];
+export type MutationUpdateTimeOfTestQuestionsArgs = {
+  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
+  patientId: Scalars["ID"];
+  pregnancy?: InputMaybe<Scalars["String"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
+  symptoms?: InputMaybe<Scalars["String"]>;
+  testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
 export type MutationUpdateUserArgs = {
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  id: Scalars["ID"]["input"];
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationUpdateUserEmailArgs = {
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  id: Scalars["ID"]["input"];
+  email?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"];
 };
 
 export type MutationUpdateUserPrivilegesArgs = {
-  accessAllFacilities: Scalars["Boolean"]["input"];
-  facilities?: InputMaybe<Array<Scalars["ID"]["input"]>>;
-  id: Scalars["ID"]["input"];
+  accessAllFacilities: Scalars["Boolean"];
+  facilities?: InputMaybe<Array<Scalars["ID"]>>;
+  id: Scalars["ID"];
   role: Role;
-};
-
-export type MutationUpdateUserPrivilegesAndGroupAccessArgs = {
-  accessAllFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
-  facilities?: InputMaybe<Array<InputMaybe<Scalars["ID"]["input"]>>>;
-  orgExternalId: Scalars["String"]["input"];
-  role: Role;
-  username: Scalars["String"]["input"];
 };
 
 export type NameInfo = {
   __typename?: "NameInfo";
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  lastName: Scalars["String"]["output"];
-  middleName?: Maybe<Scalars["String"]["output"]>;
-  suffix?: Maybe<Scalars["String"]["output"]>;
+  firstName?: Maybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  middleName?: Maybe<Scalars["String"]>;
+  suffix?: Maybe<Scalars["String"]>;
 };
 
 export type NameInput = {
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export type Organization = {
   __typename?: "Organization";
-  externalId: Scalars["String"]["output"];
+  externalId: Scalars["String"];
   facilities: Array<Facility>;
-  id: Scalars["ID"]["output"];
-  identityVerified: Scalars["Boolean"]["output"];
+  id: Scalars["ID"];
+  identityVerified: Scalars["Boolean"];
   /** @deprecated alias for 'id' */
-  internalId: Scalars["ID"]["output"];
-  name: Scalars["String"]["output"];
-  patientSelfRegistrationLink?: Maybe<Scalars["String"]["output"]>;
+  internalId: Scalars["ID"];
+  name: Scalars["String"];
+  patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
   /** @deprecated Use the one that makes sense */
   testingFacility: Array<Facility>;
-  type: Scalars["String"]["output"];
+  type: Scalars["String"];
 };
 
 export type OrganizationLevelDashboardMetrics = {
   __typename?: "OrganizationLevelDashboardMetrics";
   facilityMetrics?: Maybe<Array<Maybe<AggregateFacilityMetrics>>>;
-  organizationNegativeTestCount?: Maybe<Scalars["Int"]["output"]>;
-  organizationPositiveTestCount?: Maybe<Scalars["Int"]["output"]>;
-  organizationTotalTestCount?: Maybe<Scalars["Int"]["output"]>;
+  organizationNegativeTestCount?: Maybe<Scalars["Int"]>;
+  organizationPositiveTestCount?: Maybe<Scalars["Int"]>;
+  organizationTotalTestCount?: Maybe<Scalars["Int"]>;
 };
 
 export type Patient = {
   __typename?: "Patient";
   address?: Maybe<AddressInfo>;
-  birthDate?: Maybe<Scalars["LocalDate"]["output"]>;
-  city?: Maybe<Scalars["String"]["output"]>;
-  country?: Maybe<Scalars["String"]["output"]>;
-  county?: Maybe<Scalars["String"]["output"]>;
-  email?: Maybe<Scalars["String"]["output"]>;
-  emails?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
-  employedInHealthcare?: Maybe<Scalars["Boolean"]["output"]>;
-  ethnicity?: Maybe<Scalars["String"]["output"]>;
+  birthDate?: Maybe<Scalars["LocalDate"]>;
+  city?: Maybe<Scalars["String"]>;
+  country?: Maybe<Scalars["String"]>;
+  county?: Maybe<Scalars["String"]>;
+  email?: Maybe<Scalars["String"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  employedInHealthcare?: Maybe<Scalars["Boolean"]>;
+  ethnicity?: Maybe<Scalars["String"]>;
   facility?: Maybe<Facility>;
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  gender?: Maybe<Scalars["String"]["output"]>;
-  genderIdentity?: Maybe<Scalars["String"]["output"]>;
-  id: Scalars["ID"]["output"];
+  firstName?: Maybe<Scalars["String"]>;
+  gender?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
   /** @deprecated alias for 'id' */
-  internalId: Scalars["ID"]["output"];
-  isDeleted?: Maybe<Scalars["Boolean"]["output"]>;
-  lastName?: Maybe<Scalars["String"]["output"]>;
+  internalId: Scalars["ID"];
+  isDeleted?: Maybe<Scalars["Boolean"]>;
+  lastName?: Maybe<Scalars["String"]>;
   lastTest?: Maybe<TestResult>;
-  lookupId?: Maybe<Scalars["String"]["output"]>;
-  middleName?: Maybe<Scalars["String"]["output"]>;
+  lookupId?: Maybe<Scalars["String"]>;
+  middleName?: Maybe<Scalars["String"]>;
   name?: Maybe<NameInfo>;
-  notes?: Maybe<Scalars["String"]["output"]>;
   phoneNumbers?: Maybe<Array<Maybe<PhoneNumber>>>;
-  preferredLanguage?: Maybe<Scalars["String"]["output"]>;
-  race?: Maybe<Scalars["String"]["output"]>;
-  residentCongregateSetting?: Maybe<Scalars["Boolean"]["output"]>;
-  role?: Maybe<Scalars["String"]["output"]>;
-  state?: Maybe<Scalars["String"]["output"]>;
-  street?: Maybe<Scalars["String"]["output"]>;
-  streetTwo?: Maybe<Scalars["String"]["output"]>;
-  suffix?: Maybe<Scalars["String"]["output"]>;
-  telephone?: Maybe<Scalars["String"]["output"]>;
+  preferredLanguage?: Maybe<Scalars["String"]>;
+  race?: Maybe<Scalars["String"]>;
+  residentCongregateSetting?: Maybe<Scalars["Boolean"]>;
+  role?: Maybe<Scalars["String"]>;
+  state?: Maybe<Scalars["String"]>;
+  street?: Maybe<Scalars["String"]>;
+  streetTwo?: Maybe<Scalars["String"]>;
+  suffix?: Maybe<Scalars["String"]>;
+  telephone?: Maybe<Scalars["String"]>;
   testResultDelivery?: Maybe<TestResultDeliveryPreference>;
-  tribalAffiliation?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
-  zipCode?: Maybe<Scalars["String"]["output"]>;
+  tribalAffiliation?: Maybe<Array<Maybe<Scalars["String"]>>>;
+  zipCode?: Maybe<Scalars["String"]>;
 };
 
 export type PatientLink = {
   __typename?: "PatientLink";
-  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
-  expiresAt?: Maybe<Scalars["DateTime"]["output"]>;
-  internalId?: Maybe<Scalars["ID"]["output"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+  expiresAt?: Maybe<Scalars["DateTime"]>;
+  internalId?: Maybe<Scalars["ID"]>;
   testOrder?: Maybe<TestOrder>;
-};
-
-export type PatientReportInput = {
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  country?: InputMaybe<Scalars["String"]["input"]>;
-  county?: InputMaybe<Scalars["String"]["input"]>;
-  dateOfBirth: Scalars["LocalDate"]["input"];
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
-  firstName: Scalars["String"]["input"];
-  lastName: Scalars["String"]["input"];
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  patientId?: InputMaybe<Scalars["String"]["input"]>;
-  phone?: InputMaybe<Scalars["String"]["input"]>;
-  race?: InputMaybe<Scalars["String"]["input"]>;
-  sex?: InputMaybe<Scalars["String"]["input"]>;
-  state?: InputMaybe<Scalars["String"]["input"]>;
-  street?: InputMaybe<Scalars["String"]["input"]>;
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
-  zipCode?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type PendingOrganization = {
   __typename?: "PendingOrganization";
-  adminEmail: Scalars["String"]["output"];
-  adminFirstName: Scalars["String"]["output"];
-  adminLastName: Scalars["String"]["output"];
-  adminPhone: Scalars["String"]["output"];
-  createdAt: Scalars["DateTime"]["output"];
-  externalId: Scalars["String"]["output"];
-  name: Scalars["String"]["output"];
+  adminEmail: Scalars["String"];
+  adminFirstName: Scalars["String"];
+  adminLastName: Scalars["String"];
+  adminPhone: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  externalId: Scalars["String"];
+  name: Scalars["String"];
 };
 
 export type PhoneNumber = {
   __typename?: "PhoneNumber";
-  number?: Maybe<Scalars["String"]["output"]>;
+  number?: Maybe<Scalars["String"]>;
   type?: Maybe<PhoneType>;
 };
 
 export type PhoneNumberInput = {
-  number?: InputMaybe<Scalars["String"]["input"]>;
-  type?: InputMaybe<Scalars["String"]["input"]>;
+  number?: InputMaybe<Scalars["String"]>;
+  type?: InputMaybe<Scalars["String"]>;
 };
 
 export enum PhoneType {
@@ -836,84 +622,61 @@ export enum PhoneType {
 
 export type Provider = {
   __typename?: "Provider";
-  NPI?: Maybe<Scalars["String"]["output"]>;
+  NPI?: Maybe<Scalars["String"]>;
   address?: Maybe<AddressInfo>;
-  city?: Maybe<Scalars["String"]["output"]>;
-  county?: Maybe<Scalars["String"]["output"]>;
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  lastName?: Maybe<Scalars["String"]["output"]>;
-  middleName?: Maybe<Scalars["String"]["output"]>;
+  city?: Maybe<Scalars["String"]>;
+  county?: Maybe<Scalars["String"]>;
+  firstName?: Maybe<Scalars["String"]>;
+  lastName?: Maybe<Scalars["String"]>;
+  middleName?: Maybe<Scalars["String"]>;
   name?: Maybe<NameInfo>;
-  phone?: Maybe<Scalars["String"]["output"]>;
-  state?: Maybe<Scalars["String"]["output"]>;
-  street?: Maybe<Scalars["String"]["output"]>;
-  streetTwo?: Maybe<Scalars["String"]["output"]>;
-  suffix?: Maybe<Scalars["String"]["output"]>;
-  zipCode?: Maybe<Scalars["String"]["output"]>;
+  phone?: Maybe<Scalars["String"]>;
+  state?: Maybe<Scalars["String"]>;
+  street?: Maybe<Scalars["String"]>;
+  streetTwo?: Maybe<Scalars["String"]>;
+  suffix?: Maybe<Scalars["String"]>;
+  zipCode?: Maybe<Scalars["String"]>;
 };
 
 export type ProviderInput = {
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  county?: InputMaybe<Scalars["String"]["input"]>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  npi?: InputMaybe<Scalars["String"]["input"]>;
-  phone?: InputMaybe<Scalars["String"]["input"]>;
-  state?: InputMaybe<Scalars["String"]["input"]>;
-  street?: InputMaybe<Scalars["String"]["input"]>;
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
-  zipCode?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type ProviderReportInput = {
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  county?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  firstName: Scalars["String"]["input"];
-  lastName: Scalars["String"]["input"];
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  npi: Scalars["String"]["input"];
-  phone?: InputMaybe<Scalars["String"]["input"]>;
-  state?: InputMaybe<Scalars["String"]["input"]>;
-  street?: InputMaybe<Scalars["String"]["input"]>;
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
-  zipCode?: InputMaybe<Scalars["String"]["input"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  county?: InputMaybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  npi?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]>;
+  state?: InputMaybe<Scalars["String"]>;
+  street?: InputMaybe<Scalars["String"]>;
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
+  zipCode?: InputMaybe<Scalars["String"]>;
 };
 
 export type Query = {
   __typename?: "Query";
-  conditions: Array<Condition>;
   /** @deprecated use the pluralized form to reduce confusion */
   deviceType: Array<DeviceType>;
   deviceTypes: Array<DeviceType>;
   facilities?: Maybe<Array<Maybe<Facility>>>;
   facility?: Maybe<Facility>;
-  facilityLabs?: Maybe<Array<Maybe<FacilityLab>>>;
   facilityStats?: Maybe<FacilityStats>;
-  getOrgAdminUserIds?: Maybe<Array<Maybe<Scalars["ID"]["output"]>>>;
-  labs: Array<Lab>;
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
-  organizationsByName?: Maybe<Array<Maybe<Organization>>>;
   patient?: Maybe<Patient>;
-  patientExists?: Maybe<Scalars["Boolean"]["output"]>;
-  patientExistsWithoutZip?: Maybe<Scalars["Boolean"]["output"]>;
+  patientExists?: Maybe<Scalars["Boolean"]>;
+  patientExistsWithoutZip?: Maybe<Scalars["Boolean"]>;
   patients?: Maybe<Array<Maybe<Patient>>>;
-  patientsCount?: Maybe<Scalars["Int"]["output"]>;
+  patientsCount?: Maybe<Scalars["Int"]>;
   pendingOrganizations: Array<PendingOrganization>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
-  resultsPage?: Maybe<ResultsPage>;
   specimenType?: Maybe<Array<Maybe<SpecimenType>>>;
   specimenTypes: Array<SpecimenType>;
-  specimens: Array<Specimen>;
   supportedDiseases: Array<SupportedDisease>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
-  testResultsCount?: Maybe<Scalars["Int"]["output"]>;
+  testResultsCount?: Maybe<Scalars["Int"]>;
   testResultsPage?: Maybe<TestResultsPage>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
   uploadSubmission: UploadResponse;
@@ -921,210 +684,139 @@ export type Query = {
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
-  usersWithStatusPage: ApiUserWithStatusAndCountPage;
   whoami: User;
 };
 
 export type QueryFacilitiesArgs = {
-  showArchived?: InputMaybe<Scalars["Boolean"]["input"]>;
+  showArchived?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryFacilityArgs = {
-  id: Scalars["ID"]["input"];
-};
-
-export type QueryFacilityLabsArgs = {
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  id: Scalars["ID"];
 };
 
 export type QueryFacilityStatsArgs = {
-  facilityId: Scalars["ID"]["input"];
-};
-
-export type QueryGetOrgAdminUserIdsArgs = {
-  orgId: Scalars["ID"]["input"];
-};
-
-export type QueryLabsArgs = {
-  conditionCodes?: InputMaybe<Array<Scalars["String"]["input"]>>;
+  facilityId: Scalars["ID"];
 };
 
 export type QueryOrganizationArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 };
 
 export type QueryOrganizationLevelDashboardMetricsArgs = {
-  endDate: Scalars["DateTime"]["input"];
-  startDate: Scalars["DateTime"]["input"];
+  endDate: Scalars["DateTime"];
+  startDate: Scalars["DateTime"];
 };
 
 export type QueryOrganizationsArgs = {
-  identityVerified?: InputMaybe<Scalars["Boolean"]["input"]>;
-};
-
-export type QueryOrganizationsByNameArgs = {
-  isDeleted?: InputMaybe<Scalars["Boolean"]["input"]>;
-  name: Scalars["String"]["input"];
+  identityVerified?: InputMaybe<Scalars["Boolean"]>;
 };
 
 export type QueryPatientArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 };
 
 export type QueryPatientExistsArgs = {
-  birthDate: Scalars["LocalDate"]["input"];
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  firstName: Scalars["String"]["input"];
-  lastName: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
+  birthDate: Scalars["LocalDate"];
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  firstName: Scalars["String"];
+  lastName: Scalars["String"];
+  zipCode: Scalars["String"];
 };
 
 export type QueryPatientExistsWithoutZipArgs = {
-  birthDate: Scalars["LocalDate"]["input"];
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  firstName: Scalars["String"]["input"];
-  lastName: Scalars["String"]["input"];
+  birthDate: Scalars["LocalDate"];
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  firstName: Scalars["String"];
+  lastName: Scalars["String"];
 };
 
 export type QueryPatientsArgs = {
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  includeArchived?: InputMaybe<Scalars["Boolean"]["input"]>;
-  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
-  orgExternalId?: InputMaybe<Scalars["String"]["input"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  includeArchived?: InputMaybe<Scalars["Boolean"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
 };
 
 export type QueryPatientsCountArgs = {
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  includeArchived?: InputMaybe<Scalars["Boolean"]["input"]>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
-  orgExternalId?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  includeArchived?: InputMaybe<Scalars["Boolean"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type QueryQueueArgs = {
-  facilityId: Scalars["ID"]["input"];
-};
-
-export type QueryResultsPageArgs = {
-  disease?: InputMaybe<Scalars["String"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
-  patientId?: InputMaybe<Scalars["ID"]["input"]>;
-  result?: InputMaybe<Scalars["String"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-};
-
-export type QuerySpecimensArgs = {
-  loinc: Scalars["String"]["input"];
+  facilityId: Scalars["ID"];
 };
 
 export type QueryTestResultArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 };
 
 export type QueryTestResultsArgs = {
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
-  patientId?: InputMaybe<Scalars["ID"]["input"]>;
-  result?: InputMaybe<Scalars["String"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
 export type QueryTestResultsCountArgs = {
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  orgId?: InputMaybe<Scalars["ID"]["input"]>;
-  patientId?: InputMaybe<Scalars["ID"]["input"]>;
-  result?: InputMaybe<Scalars["String"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  orgId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
 export type QueryTestResultsPageArgs = {
-  disease?: InputMaybe<Scalars["String"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
-  patientId?: InputMaybe<Scalars["ID"]["input"]>;
-  result?: InputMaybe<Scalars["String"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
 export type QueryTopLevelDashboardMetricsArgs = {
-  disease?: InputMaybe<Scalars["String"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
 export type QueryUploadSubmissionArgs = {
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 };
 
 export type QueryUploadSubmissionsArgs = {
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
 };
 
 export type QueryUserArgs = {
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  id?: InputMaybe<Scalars["ID"]["input"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
 };
-
-export type QueryUsersWithStatusPageArgs = {
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  searchQuery?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type Result = {
-  __typename?: "Result";
-  correctionStatus?: Maybe<Scalars["String"]["output"]>;
-  createdBy?: Maybe<ApiUser>;
-  dateAdded: Scalars["String"]["output"];
-  dateTested: Scalars["DateTime"]["output"];
-  dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
-  deviceType: DeviceType;
-  disease: Scalars["String"]["output"];
-  facility: Facility;
-  id: Scalars["ID"]["output"];
-  patient: Patient;
-  patientLink?: Maybe<PatientLink>;
-  reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
-  surveyData?: Maybe<AskOnEntrySurvey>;
-  testResult: Scalars["String"]["output"];
-};
-
-export enum ResultScaleType {
-  Nominal = "NOMINAL",
-  Ordinal = "ORDINAL",
-  Quantitative = "QUANTITATIVE",
-}
 
 export enum ResultValue {
   Negative = "NEGATIVE",
   Positive = "POSITIVE",
   Undetermined = "UNDETERMINED",
 }
-
-export type ResultsPage = {
-  __typename?: "ResultsPage";
-  content?: Maybe<Array<Maybe<Result>>>;
-  totalElements?: Maybe<Scalars["Int"]["output"]>;
-};
 
 export enum Role {
   Admin = "ADMIN",
@@ -1133,68 +825,37 @@ export enum Role {
   User = "USER",
 }
 
-export type Specimen = {
-  __typename?: "Specimen";
-  bodySiteList: Array<SpecimenBodySite>;
-  loincSystemCode: Scalars["String"]["output"];
-  snomedCode: Scalars["String"]["output"];
-  snomedDisplay: Scalars["String"]["output"];
-};
-
-export type SpecimenBodySite = {
-  __typename?: "SpecimenBodySite";
-  snomedSiteCode: Scalars["String"]["output"];
-  snomedSiteDisplay: Scalars["String"]["output"];
-  snomedSpecimenCode?: Maybe<Scalars["String"]["output"]>;
-  snomedSpecimenDisplay?: Maybe<Scalars["String"]["output"]>;
-};
-
-export type SpecimenInput = {
-  collectionBodySiteCode?: InputMaybe<Scalars["String"]["input"]>;
-  collectionBodySiteName?: InputMaybe<Scalars["String"]["input"]>;
-  collectionDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  receivedDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  snomedDisplayName?: InputMaybe<Scalars["String"]["input"]>;
-  snomedTypeCode: Scalars["String"]["input"];
-};
-
 export type SpecimenType = {
   __typename?: "SpecimenType";
-  collectionLocationCode?: Maybe<Scalars["String"]["output"]>;
-  collectionLocationName?: Maybe<Scalars["String"]["output"]>;
-  internalId: Scalars["ID"]["output"];
-  name: Scalars["String"]["output"];
-  typeCode: Scalars["String"]["output"];
+  collectionLocationCode?: Maybe<Scalars["String"]>;
+  collectionLocationName?: Maybe<Scalars["String"]>;
+  internalId: Scalars["ID"];
+  name: Scalars["String"];
+  typeCode: Scalars["String"];
 };
 
 export type SupportedDisease = {
   __typename?: "SupportedDisease";
-  internalId: Scalars["ID"]["output"];
-  loinc: Scalars["String"]["output"];
-  name: Scalars["String"]["output"];
+  internalId: Scalars["ID"];
+  loinc: Scalars["String"];
+  name: Scalars["String"];
 };
 
 export type SupportedDiseaseTestPerformed = {
   __typename?: "SupportedDiseaseTestPerformed";
-  equipmentUid?: Maybe<Scalars["String"]["output"]>;
-  equipmentUidType?: Maybe<Scalars["String"]["output"]>;
+  equipmentUid?: Maybe<Scalars["String"]>;
   supportedDisease: SupportedDisease;
-  testOrderedLoincCode?: Maybe<Scalars["String"]["output"]>;
-  testOrderedLoincLongName?: Maybe<Scalars["String"]["output"]>;
-  testPerformedLoincCode: Scalars["String"]["output"];
-  testPerformedLoincLongName?: Maybe<Scalars["String"]["output"]>;
-  testkitNameId?: Maybe<Scalars["String"]["output"]>;
+  testOrderedLoincCode?: Maybe<Scalars["String"]>;
+  testPerformedLoincCode: Scalars["String"];
+  testkitNameId?: Maybe<Scalars["String"]>;
 };
 
 export type SupportedDiseaseTestPerformedInput = {
-  equipmentUid?: InputMaybe<Scalars["String"]["input"]>;
-  equipmentUidType?: InputMaybe<Scalars["String"]["input"]>;
-  supportedDisease: Scalars["ID"]["input"];
-  testOrderedLoincCode?: InputMaybe<Scalars["String"]["input"]>;
-  testOrderedLoincLongName?: InputMaybe<Scalars["String"]["input"]>;
-  testPerformedLoincCode: Scalars["String"]["input"];
-  testPerformedLoincLongName?: InputMaybe<Scalars["String"]["input"]>;
-  testkitNameId?: InputMaybe<Scalars["String"]["input"]>;
+  equipmentUid?: InputMaybe<Scalars["String"]>;
+  supportedDisease: Scalars["ID"];
+  testOrderedLoincCode?: InputMaybe<Scalars["String"]>;
+  testPerformedLoincCode: Scalars["String"];
+  testkitNameId?: InputMaybe<Scalars["String"]>;
 };
 
 export enum TestCorrectionStatus {
@@ -1203,63 +864,43 @@ export enum TestCorrectionStatus {
   Removed = "REMOVED",
 }
 
-export type TestDetailsInput = {
-  condition: Scalars["String"]["input"];
-  resultDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  resultInterpretation?: InputMaybe<Scalars["String"]["input"]>;
-  resultType: ResultScaleType;
-  resultValue: Scalars["String"]["input"];
-  testOrderDisplayName?: InputMaybe<Scalars["String"]["input"]>;
-  testOrderLoinc: Scalars["String"]["input"];
-  testPerformedLoinc: Scalars["String"]["input"];
-  testPerformedLoincLongCommonName?: InputMaybe<Scalars["String"]["input"]>;
-};
-
 export type TestOrder = {
   __typename?: "TestOrder";
-  correctionStatus?: Maybe<Scalars["String"]["output"]>;
-  dateAdded: Scalars["String"]["output"];
-  dateTested?: Maybe<Scalars["DateTime"]["output"]>;
-  dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
+  correctionStatus?: Maybe<Scalars["String"]>;
+  dateAdded: Scalars["String"];
+  dateTested?: Maybe<Scalars["DateTime"]>;
   deviceType: DeviceType;
-  facility: Facility;
-  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
-  id: Scalars["ID"]["output"];
+  id: Scalars["ID"];
   /** @deprecated alias for 'id' */
-  internalId: Scalars["ID"]["output"];
-  noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
+  internalId: Scalars["ID"];
+  noSymptoms?: Maybe<Scalars["Boolean"]>;
   patient: Patient;
-  pregnancy?: Maybe<Scalars["String"]["output"]>;
-  reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
+  pregnancy?: Maybe<Scalars["String"]>;
+  reasonForCorrection?: Maybe<Scalars["String"]>;
   results: Array<MultiplexResult>;
   specimenType: SpecimenType;
-  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
-  symptoms?: Maybe<Scalars["String"]["output"]>;
-  syphilisHistory?: Maybe<Scalars["String"]["output"]>;
-  timerStartedAt?: Maybe<Scalars["String"]["output"]>;
+  symptomOnset?: Maybe<Scalars["LocalDate"]>;
+  symptoms?: Maybe<Scalars["String"]>;
 };
 
 export type TestResult = {
   __typename?: "TestResult";
-  correctionStatus?: Maybe<Scalars["String"]["output"]>;
+  correctionStatus?: Maybe<Scalars["String"]>;
   createdBy?: Maybe<ApiUser>;
-  dateAdded?: Maybe<Scalars["String"]["output"]>;
-  dateTested?: Maybe<Scalars["DateTime"]["output"]>;
-  dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
+  dateAdded?: Maybe<Scalars["String"]>;
+  dateTested?: Maybe<Scalars["DateTime"]>;
+  dateUpdated?: Maybe<Scalars["DateTime"]>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
-  genderOfSexualPartners?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
-  internalId?: Maybe<Scalars["ID"]["output"]>;
-  noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
+  internalId?: Maybe<Scalars["ID"]>;
+  noSymptoms?: Maybe<Scalars["Boolean"]>;
   patient?: Maybe<Patient>;
   patientLink?: Maybe<PatientLink>;
-  pregnancy?: Maybe<Scalars["String"]["output"]>;
-  reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
-  results?: Maybe<Array<MultiplexResult>>;
-  surveyData?: Maybe<AskOnEntrySurvey>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
-  symptoms?: Maybe<Scalars["String"]["output"]>;
-  syphilisHistory?: Maybe<Scalars["String"]["output"]>;
+  pregnancy?: Maybe<Scalars["String"]>;
+  reasonForCorrection?: Maybe<Scalars["String"]>;
+  results?: Maybe<Array<Maybe<MultiplexResult>>>;
+  symptomOnset?: Maybe<Scalars["LocalDate"]>;
+  symptoms?: Maybe<Scalars["String"]>;
 };
 
 export enum TestResultDeliveryPreference {
@@ -1272,60 +913,53 @@ export enum TestResultDeliveryPreference {
 export type TestResultsPage = {
   __typename?: "TestResultsPage";
   content?: Maybe<Array<Maybe<TestResult>>>;
-  totalElements?: Maybe<Scalars["Int"]["output"]>;
+  totalElements?: Maybe<Scalars["Int"]>;
 };
 
 export type TopLevelDashboardMetrics = {
   __typename?: "TopLevelDashboardMetrics";
-  positiveTestCount?: Maybe<Scalars["Int"]["output"]>;
-  totalTestCount?: Maybe<Scalars["Int"]["output"]>;
+  positiveTestCount?: Maybe<Scalars["Int"]>;
+  totalTestCount?: Maybe<Scalars["Int"]>;
 };
 
 export type UpdateDeviceType = {
-  internalId: Scalars["ID"]["input"];
-  manufacturer: Scalars["String"]["input"];
-  model: Scalars["String"]["input"];
-  name: Scalars["String"]["input"];
+  internalId: Scalars["ID"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
-  swabTypes: Array<Scalars["ID"]["input"]>;
-  testLength: Scalars["Int"]["input"];
+  swabTypes: Array<Scalars["ID"]>;
+  testLength: Scalars["Int"];
 };
 
 export type UpdateFacilityInput = {
   address: FacilityAddressInput;
-  cliaNumber?: InputMaybe<Scalars["String"]["input"]>;
-  deviceIds: Array<InputMaybe<Scalars["ID"]["input"]>>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  facilityId: Scalars["ID"]["input"];
-  facilityName: Scalars["String"]["input"];
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  deviceIds: Array<InputMaybe<Scalars["ID"]>>;
+  email?: InputMaybe<Scalars["String"]>;
+  facilityId: Scalars["ID"];
+  facilityName: Scalars["String"];
   orderingProvider?: InputMaybe<ProviderInput>;
-  phone?: InputMaybe<Scalars["String"]["input"]>;
-};
-
-export type UpdateSpecimenType = {
-  collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
-  collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
-  name: Scalars["String"]["input"];
-  typeCode: Scalars["String"]["input"];
+  phone?: InputMaybe<Scalars["String"]>;
 };
 
 export type UploadResponse = {
   __typename?: "UploadResponse";
-  createdAt: Scalars["DateTime"]["output"];
+  createdAt: Scalars["DateTime"];
   errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
-  recordsCount: Scalars["Int"]["output"];
-  reportId: Scalars["ID"]["output"];
+  recordsCount: Scalars["Int"];
+  reportId: Scalars["ID"];
   status: UploadStatus;
   warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
 };
 
 export type UploadResult = {
   __typename?: "UploadResult";
-  createdAt: Scalars["DateTime"]["output"];
+  createdAt: Scalars["DateTime"];
   errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
-  internalId: Scalars["ID"]["output"];
-  recordsCount: Scalars["Int"]["output"];
-  reportId?: Maybe<Scalars["ID"]["output"]>;
+  internalId: Scalars["ID"];
+  recordsCount: Scalars["Int"];
+  reportId?: Maybe<Scalars["ID"]>;
   status: UploadStatus;
   warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
 };
@@ -1339,40 +973,40 @@ export enum UploadStatus {
 export type UploadSubmissionPage = {
   __typename?: "UploadSubmissionPage";
   content: Array<UploadResult>;
-  totalElements: Scalars["Int"]["output"];
+  totalElements: Scalars["Int"];
 };
 
 export type User = {
   __typename?: "User";
-  email: Scalars["String"]["output"];
-  firstName?: Maybe<Scalars["String"]["output"]>;
-  id: Scalars["ID"]["output"];
-  isAdmin?: Maybe<Scalars["Boolean"]["output"]>;
-  isDeleted?: Maybe<Scalars["Boolean"]["output"]>;
-  lastName: Scalars["String"]["output"];
-  middleName?: Maybe<Scalars["String"]["output"]>;
+  email: Scalars["String"];
+  firstName?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  isAdmin?: Maybe<Scalars["Boolean"]>;
+  isDeleted?: Maybe<Scalars["Boolean"]>;
+  lastName: Scalars["String"];
+  middleName?: Maybe<Scalars["String"]>;
   name: NameInfo;
   organization?: Maybe<Organization>;
   permissions: Array<UserPermission>;
   role?: Maybe<Role>;
-  roleDescription: Scalars["String"]["output"];
+  roleDescription: Scalars["String"];
   /** @deprecated Users have only one role now */
   roles: Array<Role>;
-  status?: Maybe<Scalars["String"]["output"]>;
-  suffix?: Maybe<Scalars["String"]["output"]>;
+  status?: Maybe<Scalars["String"]>;
+  suffix?: Maybe<Scalars["String"]>;
 };
 
 export type UserInput = {
-  accessAllFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
-  email: Scalars["String"]["input"];
-  facilities?: InputMaybe<Array<Scalars["ID"]["input"]>>;
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  email: Scalars["String"];
+  facilities?: InputMaybe<Array<Scalars["ID"]>>;
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  organizationExternalId?: InputMaybe<Scalars["String"]["input"]>;
+  organizationExternalId?: InputMaybe<Scalars["String"]>;
   role: Role;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export enum UserPermission {
@@ -1497,29 +1131,27 @@ export type GetFacilitiesQuery = {
 };
 
 export type AddFacilityMutationVariables = Exact<{
-  testingFacilityName: Scalars["String"]["input"];
-  cliaNumber?: InputMaybe<Scalars["String"]["input"]>;
-  street: Scalars["String"]["input"];
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  state: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
-  phone?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]["input"]>;
-  devices:
-    | Array<InputMaybe<Scalars["ID"]["input"]>>
-    | InputMaybe<Scalars["ID"]["input"]>;
+  testingFacilityName: Scalars["String"];
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  zipCode: Scalars["String"];
+  phone?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  devices: Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>;
 }>;
 
 export type AddFacilityMutation = {
@@ -1528,30 +1160,28 @@ export type AddFacilityMutation = {
 };
 
 export type UpdateFacilityMutationVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
-  testingFacilityName: Scalars["String"]["input"];
-  cliaNumber?: InputMaybe<Scalars["String"]["input"]>;
-  street: Scalars["String"]["input"];
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  state: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
-  phone?: InputMaybe<Scalars["String"]["input"]>;
-  email?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]["input"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]["input"]>;
-  devices:
-    | Array<InputMaybe<Scalars["ID"]["input"]>>
-    | InputMaybe<Scalars["ID"]["input"]>;
+  facilityId: Scalars["ID"];
+  testingFacilityName: Scalars["String"];
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  zipCode: Scalars["String"];
+  phone?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  devices: Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>;
 }>;
 
 export type UpdateFacilityMutation = {
@@ -1580,7 +1210,7 @@ export type AllSelfRegistrationLinksQuery = {
 };
 
 export type GetUserQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type GetUserQuery = {
@@ -1622,34 +1252,8 @@ export type GetUsersAndStatusQuery = {
   }> | null;
 };
 
-export type GetUsersAndStatusPageQueryVariables = Exact<{
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  searchQuery?: InputMaybe<Scalars["String"]["input"]>;
-}>;
-
-export type GetUsersAndStatusPageQuery = {
-  __typename?: "Query";
-  usersWithStatusPage: {
-    __typename?: "ApiUserWithStatusAndCountPage";
-    totalUsersInOrg: number;
-    pageContent: {
-      __typename?: "ApiUserWithStatusPage";
-      totalElements: number;
-      content?: Array<{
-        __typename?: "ApiUserWithStatus";
-        id: string;
-        firstName?: string | null;
-        middleName?: string | null;
-        lastName: string;
-        email: string;
-        status?: string | null;
-      }> | null;
-    };
-  };
-};
-
 export type ResendActivationEmailMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type ResendActivationEmailMutation = {
@@ -1666,11 +1270,11 @@ export type ResendActivationEmailMutation = {
 };
 
 export type UpdateUserNameMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  firstName: Scalars["String"]["input"];
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName: Scalars["String"]["input"];
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  id: Scalars["ID"];
+  firstName: Scalars["String"];
+  middleName?: InputMaybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  suffix?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type UpdateUserNameMutation = {
@@ -1679,8 +1283,8 @@ export type UpdateUserNameMutation = {
 };
 
 export type EditUserEmailMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  email?: InputMaybe<Scalars["String"]["input"]>;
+  id: Scalars["ID"];
+  email?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type EditUserEmailMutation = {
@@ -1689,7 +1293,7 @@ export type EditUserEmailMutation = {
 };
 
 export type ResetUserMfaMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type ResetUserMfaMutation = {
@@ -1698,7 +1302,7 @@ export type ResetUserMfaMutation = {
 };
 
 export type ReactivateUserAndResetPasswordMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type ReactivateUserAndResetPasswordMutation = {
@@ -1707,7 +1311,7 @@ export type ReactivateUserAndResetPasswordMutation = {
 };
 
 export type ReactivateUserMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type ReactivateUserMutation = {
@@ -1716,10 +1320,10 @@ export type ReactivateUserMutation = {
 };
 
 export type UpdateUserPrivilegesMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
   role: Role;
-  accessAllFacilities: Scalars["Boolean"]["input"];
-  facilities: Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"];
+  accessAllFacilities: Scalars["Boolean"];
+  facilities: Array<Scalars["ID"]> | Scalars["ID"];
 }>;
 
 export type UpdateUserPrivilegesMutation = {
@@ -1728,7 +1332,7 @@ export type UpdateUserPrivilegesMutation = {
 };
 
 export type ResetUserPasswordMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type ResetUserPasswordMutation = {
@@ -1737,8 +1341,8 @@ export type ResetUserPasswordMutation = {
 };
 
 export type SetUserIsDeletedMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  deleted: Scalars["Boolean"]["input"];
+  id: Scalars["ID"];
+  deleted: Scalars["Boolean"];
 }>;
 
 export type SetUserIsDeletedMutation = {
@@ -1747,14 +1351,12 @@ export type SetUserIsDeletedMutation = {
 };
 
 export type AddUserToCurrentOrgMutationVariables = Exact<{
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName: Scalars["String"]["input"];
-  email: Scalars["String"]["input"];
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  email: Scalars["String"];
   role: Role;
-  accessAllFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
-  facilities?: InputMaybe<
-    Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"]
-  >;
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  facilities?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
 }>;
 
 export type AddUserToCurrentOrgMutation = {
@@ -1772,7 +1374,6 @@ export type GetCurrentOrganizationQuery = {
     __typename?: "User";
     organization?: {
       __typename?: "Organization";
-      id: string;
       name: string;
       type: string;
     } | null;
@@ -1780,8 +1381,8 @@ export type GetCurrentOrganizationQuery = {
 };
 
 export type AdminSetOrganizationMutationVariables = Exact<{
-  name: Scalars["String"]["input"];
-  type: Scalars["String"]["input"];
+  name: Scalars["String"];
+  type: Scalars["String"];
 }>;
 
 export type AdminSetOrganizationMutation = {
@@ -1790,7 +1391,7 @@ export type AdminSetOrganizationMutation = {
 };
 
 export type SetOrganizationMutationVariables = Exact<{
-  type: Scalars["String"]["input"];
+  type: Scalars["String"];
 }>;
 
 export type SetOrganizationMutation = {
@@ -1799,10 +1400,9 @@ export type SetOrganizationMutation = {
 };
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  disease?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
 export type GetTopLevelDashboardMetricsNewQuery = {
@@ -1815,10 +1415,10 @@ export type GetTopLevelDashboardMetricsNewQuery = {
 };
 
 export type PatientExistsQueryVariables = Exact<{
-  firstName: Scalars["String"]["input"];
-  lastName: Scalars["String"]["input"];
-  birthDate: Scalars["LocalDate"]["input"];
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  firstName: Scalars["String"];
+  lastName: Scalars["String"];
+  birthDate: Scalars["LocalDate"];
+  facilityId?: InputMaybe<Scalars["ID"]>;
 }>;
 
 export type PatientExistsQuery = {
@@ -1827,35 +1427,33 @@ export type PatientExistsQuery = {
 };
 
 export type AddPatientMutationVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  firstName: Scalars["String"]["input"];
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName: Scalars["String"]["input"];
-  birthDate: Scalars["LocalDate"]["input"];
-  street: Scalars["String"]["input"];
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  state: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
-  country: Scalars["String"]["input"];
-  telephone?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  firstName: Scalars["String"];
+  middleName?: InputMaybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  birthDate: Scalars["LocalDate"];
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  zipCode: Scalars["String"];
+  country: Scalars["String"];
+  telephone?: InputMaybe<Scalars["String"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput> | PhoneNumberInput>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  lookupId?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  lookupId?: InputMaybe<Scalars["String"]>;
   emails?: InputMaybe<
-    | Array<InputMaybe<Scalars["String"]["input"]>>
-    | InputMaybe<Scalars["String"]["input"]>
+    Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
   >;
-  county?: InputMaybe<Scalars["String"]["input"]>;
-  race?: InputMaybe<Scalars["String"]["input"]>;
-  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
-  gender?: InputMaybe<Scalars["String"]["input"]>;
-  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]["input"]>;
-  employedInHealthcare?: InputMaybe<Scalars["Boolean"]["input"]>;
-  preferredLanguage?: InputMaybe<Scalars["String"]["input"]>;
+  county?: InputMaybe<Scalars["String"]>;
+  race?: InputMaybe<Scalars["String"]>;
+  ethnicity?: InputMaybe<Scalars["String"]>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]>;
+  gender?: InputMaybe<Scalars["String"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  notes?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type AddPatientMutation = {
@@ -1868,8 +1466,8 @@ export type AddPatientMutation = {
 };
 
 export type ArchivePersonMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  deleted: Scalars["Boolean"]["input"];
+  id: Scalars["ID"];
+  deleted: Scalars["Boolean"];
 }>;
 
 export type ArchivePersonMutation = {
@@ -1878,7 +1476,7 @@ export type ArchivePersonMutation = {
 };
 
 export type GetPatientDetailsQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type GetPatientDetailsQuery = {
@@ -1905,12 +1503,10 @@ export type GetPatientDetailsQuery = {
     ethnicity?: string | null;
     tribalAffiliation?: Array<string | null> | null;
     gender?: string | null;
-    genderIdentity?: string | null;
     residentCongregateSetting?: boolean | null;
     employedInHealthcare?: boolean | null;
     preferredLanguage?: string | null;
     testResultDelivery?: TestResultDeliveryPreference | null;
-    notes?: string | null;
     phoneNumbers?: Array<{
       __typename?: "PhoneNumber";
       type?: PhoneType | null;
@@ -1921,37 +1517,34 @@ export type GetPatientDetailsQuery = {
 };
 
 export type UpdatePatientMutationVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  patientId: Scalars["ID"]["input"];
-  firstName: Scalars["String"]["input"];
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName: Scalars["String"]["input"];
-  birthDate: Scalars["LocalDate"]["input"];
-  street: Scalars["String"]["input"];
-  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
-  city?: InputMaybe<Scalars["String"]["input"]>;
-  state: Scalars["String"]["input"];
-  zipCode: Scalars["String"]["input"];
-  telephone?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId: Scalars["ID"];
+  firstName: Scalars["String"];
+  middleName?: InputMaybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  birthDate: Scalars["LocalDate"];
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  zipCode: Scalars["String"];
+  telephone?: InputMaybe<Scalars["String"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput> | PhoneNumberInput>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  lookupId?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  lookupId?: InputMaybe<Scalars["String"]>;
   emails?: InputMaybe<
-    | Array<InputMaybe<Scalars["String"]["input"]>>
-    | InputMaybe<Scalars["String"]["input"]>
+    Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
   >;
-  county?: InputMaybe<Scalars["String"]["input"]>;
-  country?: InputMaybe<Scalars["String"]["input"]>;
-  race?: InputMaybe<Scalars["String"]["input"]>;
-  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
-  gender?: InputMaybe<Scalars["String"]["input"]>;
-  genderIdentity?: InputMaybe<Scalars["String"]["input"]>;
-  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]["input"]>;
-  employedInHealthcare?: InputMaybe<Scalars["Boolean"]["input"]>;
-  preferredLanguage?: InputMaybe<Scalars["String"]["input"]>;
+  county?: InputMaybe<Scalars["String"]>;
+  country?: InputMaybe<Scalars["String"]>;
+  race?: InputMaybe<Scalars["String"]>;
+  ethnicity?: InputMaybe<Scalars["String"]>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]>;
+  gender?: InputMaybe<Scalars["String"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  notes?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type UpdatePatientMutation = {
@@ -1960,9 +1553,9 @@ export type UpdatePatientMutation = {
 };
 
 export type GetPatientsCountByFacilityQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  facilityId: Scalars["ID"];
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type GetPatientsCountByFacilityQuery = {
@@ -1971,11 +1564,11 @@ export type GetPatientsCountByFacilityQuery = {
 };
 
 export type GetPatientsByFacilityQueryVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
-  pageNumber: Scalars["Int"]["input"];
-  pageSize: Scalars["Int"]["input"];
+  facilityId: Scalars["ID"];
+  pageNumber: Scalars["Int"];
+  pageSize: Scalars["Int"];
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type GetPatientsByFacilityQuery = {
@@ -1994,12 +1587,12 @@ export type GetPatientsByFacilityQuery = {
 };
 
 export type AddUserMutationVariables = Exact<{
-  firstName?: InputMaybe<Scalars["String"]["input"]>;
-  middleName?: InputMaybe<Scalars["String"]["input"]>;
-  lastName?: InputMaybe<Scalars["String"]["input"]>;
-  suffix?: InputMaybe<Scalars["String"]["input"]>;
-  email: Scalars["String"]["input"];
-  organizationExternalId: Scalars["String"]["input"];
+  firstName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]>;
+  email: Scalars["String"];
+  organizationExternalId: Scalars["String"];
   role: Role;
 }>;
 
@@ -2009,14 +1602,14 @@ export type AddUserMutation = {
 };
 
 export type CreateDeviceTypeMutationVariables = Exact<{
-  name: Scalars["String"]["input"];
-  manufacturer: Scalars["String"]["input"];
-  model: Scalars["String"]["input"];
-  swabTypes: Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"];
+  name: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseaseTestPerformed:
     | Array<SupportedDiseaseTestPerformedInput>
     | SupportedDiseaseTestPerformedInput;
-  testLength: Scalars["Int"]["input"];
+  testLength: Scalars["Int"];
 }>;
 
 export type CreateDeviceTypeMutation = {
@@ -2025,15 +1618,15 @@ export type CreateDeviceTypeMutation = {
 };
 
 export type UpdateDeviceTypeMutationVariables = Exact<{
-  internalId: Scalars["ID"]["input"];
-  name: Scalars["String"]["input"];
-  manufacturer: Scalars["String"]["input"];
-  model: Scalars["String"]["input"];
-  swabTypes: Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"];
+  internalId: Scalars["ID"];
+  name: Scalars["String"];
+  manufacturer: Scalars["String"];
+  model: Scalars["String"];
+  swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseaseTestPerformed:
     | Array<SupportedDiseaseTestPerformedInput>
     | SupportedDiseaseTestPerformedInput;
-  testLength: Scalars["Int"]["input"];
+  testLength: Scalars["Int"];
 }>;
 
 export type UpdateDeviceTypeMutation = {
@@ -2062,10 +1655,7 @@ export type GetDeviceTypeListQuery = {
       testPerformedLoincCode: string;
       testkitNameId?: string | null;
       equipmentUid?: string | null;
-      equipmentUidType?: string | null;
       testOrderedLoincCode?: string | null;
-      testOrderedLoincLongName?: string | null;
-      testPerformedLoincLongName?: string | null;
       supportedDisease: {
         __typename?: "SupportedDisease";
         internalId: string;
@@ -2112,15 +1702,13 @@ export type GetAllOrganizationsQuery = {
 };
 
 export type GetFacilitiesByOrgIdQueryVariables = Exact<{
-  orgId: Scalars["ID"]["input"];
+  orgId: Scalars["ID"];
 }>;
 
 export type GetFacilitiesByOrgIdQuery = {
   __typename?: "Query";
   organization?: {
     __typename?: "Organization";
-    id: string;
-    externalId: string;
     name: string;
     type: string;
     facilities: Array<{
@@ -2135,7 +1723,7 @@ export type GetFacilitiesByOrgIdQuery = {
 };
 
 export type GetFacilityStatsQueryVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
+  facilityId: Scalars["ID"];
 }>;
 
 export type GetFacilityStatsQuery = {
@@ -2148,7 +1736,7 @@ export type GetFacilityStatsQuery = {
 };
 
 export type DeleteFacilityMutationVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
+  facilityId: Scalars["ID"];
 }>;
 
 export type DeleteFacilityMutation = {
@@ -2157,7 +1745,7 @@ export type DeleteFacilityMutation = {
 };
 
 export type FindUserByEmailQueryVariables = Exact<{
-  email: Scalars["String"]["input"];
+  email: Scalars["String"];
 }>;
 
 export type FindUserByEmailQuery = {
@@ -2176,7 +1764,6 @@ export type FindUserByEmailQuery = {
     isDeleted?: boolean | null;
     organization?: {
       __typename?: "Organization";
-      id: string;
       testingFacility: Array<{
         __typename?: "Facility";
         id: string;
@@ -2184,45 +1771,6 @@ export type FindUserByEmailQuery = {
       }>;
     } | null;
   } | null;
-};
-
-export type UndeleteUserMutationVariables = Exact<{
-  userId: Scalars["ID"]["input"];
-}>;
-
-export type UndeleteUserMutation = {
-  __typename?: "Mutation";
-  setUserIsDeleted?: {
-    __typename?: "User";
-    id: string;
-    email: string;
-    isDeleted?: boolean | null;
-  } | null;
-};
-
-export type UpdateUserPrivilegesAndGroupAccessMutationVariables = Exact<{
-  username: Scalars["String"]["input"];
-  orgExternalId: Scalars["String"]["input"];
-  accessAllFacilities: Scalars["Boolean"]["input"];
-  role: Role;
-  facilities?: InputMaybe<
-    | Array<InputMaybe<Scalars["ID"]["input"]>>
-    | InputMaybe<Scalars["ID"]["input"]>
-  >;
-}>;
-
-export type UpdateUserPrivilegesAndGroupAccessMutation = {
-  __typename?: "Mutation";
-  updateUserPrivilegesAndGroupAccess: { __typename?: "User"; id: string };
-};
-
-export type GetTestResultCountByOrgQueryVariables = Exact<{
-  orgId: Scalars["ID"]["input"];
-}>;
-
-export type GetTestResultCountByOrgQuery = {
-  __typename?: "Query";
-  testResultsCount?: number | null;
 };
 
 export type GetPendingOrganizationsQueryVariables = Exact<{
@@ -2244,8 +1792,8 @@ export type GetPendingOrganizationsQuery = {
 };
 
 export type SetOrgIdentityVerifiedMutationVariables = Exact<{
-  externalId: Scalars["String"]["input"];
-  verified: Scalars["Boolean"]["input"];
+  externalId: Scalars["String"];
+  verified: Scalars["Boolean"];
 }>;
 
 export type SetOrgIdentityVerifiedMutation = {
@@ -2254,8 +1802,8 @@ export type SetOrgIdentityVerifiedMutation = {
 };
 
 export type MarkPendingOrganizationAsDeletedMutationVariables = Exact<{
-  orgExternalId: Scalars["String"]["input"];
-  deleted: Scalars["Boolean"]["input"];
+  orgExternalId: Scalars["String"];
+  deleted: Scalars["Boolean"];
 }>;
 
 export type MarkPendingOrganizationAsDeletedMutation = {
@@ -2264,12 +1812,12 @@ export type MarkPendingOrganizationAsDeletedMutation = {
 };
 
 export type EditPendingOrganizationMutationVariables = Exact<{
-  externalId: Scalars["String"]["input"];
-  name?: InputMaybe<Scalars["String"]["input"]>;
-  adminFirstName?: InputMaybe<Scalars["String"]["input"]>;
-  adminLastName?: InputMaybe<Scalars["String"]["input"]>;
-  adminEmail?: InputMaybe<Scalars["String"]["input"]>;
-  adminPhone?: InputMaybe<Scalars["String"]["input"]>;
+  externalId: Scalars["String"];
+  name?: InputMaybe<Scalars["String"]>;
+  adminFirstName?: InputMaybe<Scalars["String"]>;
+  adminLastName?: InputMaybe<Scalars["String"]>;
+  adminEmail?: InputMaybe<Scalars["String"]>;
+  adminPhone?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type EditPendingOrganizationMutation = {
@@ -2278,7 +1826,7 @@ export type EditPendingOrganizationMutation = {
 };
 
 export type GetOrganizationsQueryVariables = Exact<{
-  identityVerified?: InputMaybe<Scalars["Boolean"]["input"]>;
+  identityVerified?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type GetOrganizationsQuery = {
@@ -2292,8 +1840,8 @@ export type GetOrganizationsQuery = {
 };
 
 export type SetCurrentUserTenantDataAccessOpMutationVariables = Exact<{
-  organizationExternalId?: InputMaybe<Scalars["String"]["input"]>;
-  justification?: InputMaybe<Scalars["String"]["input"]>;
+  organizationExternalId?: InputMaybe<Scalars["String"]>;
+  justification?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type SetCurrentUserTenantDataAccessOpMutation = {
@@ -2313,7 +1861,7 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
 };
 
 export type GetOrganizationWithFacilitiesQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type GetOrganizationWithFacilitiesQuery = {
@@ -2327,11 +1875,11 @@ export type GetOrganizationWithFacilitiesQuery = {
 };
 
 export type GetPatientsByFacilityWithOrgQueryVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
-  pageNumber: Scalars["Int"]["input"];
-  pageSize: Scalars["Int"]["input"];
+  facilityId: Scalars["ID"];
+  pageNumber: Scalars["Int"];
+  pageSize: Scalars["Int"];
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  orgExternalId: Scalars["String"]["input"];
+  orgExternalId: Scalars["String"];
 }>;
 
 export type GetPatientsByFacilityWithOrgQuery = {
@@ -2349,24 +1897,14 @@ export type GetPatientsByFacilityWithOrgQuery = {
 };
 
 export type GetPatientsCountByFacilityWithOrgQueryVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
+  facilityId: Scalars["ID"];
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  orgExternalId: Scalars["String"]["input"];
+  orgExternalId: Scalars["String"];
 }>;
 
 export type GetPatientsCountByFacilityWithOrgQuery = {
   __typename?: "Query";
   patientsCount?: number | null;
-};
-
-export type UnarchivePatientMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  orgExternalId: Scalars["String"]["input"];
-}>;
-
-export type UnarchivePatientMutation = {
-  __typename?: "Mutation";
-  setPatientIsDeleted?: { __typename?: "Patient"; internalId: string } | null;
 };
 
 export type SendSupportEscalationMutationVariables = Exact<{
@@ -2379,7 +1917,7 @@ export type SendSupportEscalationMutation = {
 };
 
 export type GetPatientQueryVariables = Exact<{
-  internalId: Scalars["ID"]["input"];
+  internalId: Scalars["ID"];
 }>;
 
 export type GetPatientQuery = {
@@ -2404,10 +1942,10 @@ export type GetPatientQuery = {
 };
 
 export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]>;
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type GetPatientsByFacilityForQueueQuery = {
@@ -2433,13 +1971,12 @@ export type GetPatientsByFacilityForQueueQuery = {
 };
 
 export type AddPatientToQueueMutationVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
-  patientId: Scalars["ID"]["input"];
-  symptoms?: InputMaybe<Scalars["String"]["input"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
-  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
-  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
+  facilityId: Scalars["ID"];
+  patientId: Scalars["ID"];
+  symptoms?: InputMaybe<Scalars["String"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
+  pregnancy?: InputMaybe<Scalars["String"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 }>;
 
@@ -2449,26 +1986,21 @@ export type AddPatientToQueueMutation = {
 };
 
 export type UpdateAoeMutationVariables = Exact<{
-  patientId: Scalars["ID"]["input"];
-  symptoms?: InputMaybe<Scalars["String"]["input"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
-  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
-  syphilisHistory?: InputMaybe<Scalars["String"]["input"]>;
-  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
+  patientId: Scalars["ID"];
+  symptoms?: InputMaybe<Scalars["String"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
+  pregnancy?: InputMaybe<Scalars["String"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  genderOfSexualPartners?: InputMaybe<
-    | Array<InputMaybe<Scalars["String"]["input"]>>
-    | InputMaybe<Scalars["String"]["input"]>
-  >;
 }>;
 
 export type UpdateAoeMutation = {
   __typename?: "Mutation";
-  updateAoeQuestions?: string | null;
+  updateTimeOfTestQuestions?: string | null;
 };
 
 export type RemovePatientFromQueueMutationVariables = Exact<{
-  patientId: Scalars["ID"]["input"];
+  patientId: Scalars["ID"];
 }>;
 
 export type RemovePatientFromQueueMutation = {
@@ -2477,13 +2009,13 @@ export type RemovePatientFromQueueMutation = {
 };
 
 export type EditQueueItemMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  deviceTypeId?: InputMaybe<Scalars["ID"]["input"]>;
-  specimenTypeId?: InputMaybe<Scalars["ID"]["input"]>;
+  id: Scalars["ID"];
+  deviceTypeId?: InputMaybe<Scalars["ID"]>;
+  specimenTypeId?: InputMaybe<Scalars["ID"]>;
   results?: InputMaybe<
     Array<InputMaybe<MultiplexResultInput>> | InputMaybe<MultiplexResultInput>
   >;
-  dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
 export type EditQueueItemMutation = {
@@ -2493,8 +2025,8 @@ export type EditQueueItemMutation = {
     dateTested?: any | null;
     results: Array<{
       __typename?: "MultiplexResult";
-      testResult: string;
-      disease: { __typename?: "SupportedDisease"; name: string };
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
     }>;
     deviceType: {
       __typename?: "DeviceType";
@@ -2505,13 +2037,13 @@ export type EditQueueItemMutation = {
 };
 
 export type SubmitQueueItemMutationVariables = Exact<{
-  patientId: Scalars["ID"]["input"];
-  deviceTypeId: Scalars["ID"]["input"];
-  specimenTypeId: Scalars["ID"]["input"];
+  patientId: Scalars["ID"];
+  deviceTypeId: Scalars["ID"];
+  specimenTypeId: Scalars["ID"];
   results:
     | Array<InputMaybe<MultiplexResultInput>>
     | InputMaybe<MultiplexResultInput>;
-  dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
 export type SubmitQueueItemMutation = {
@@ -2519,13 +2051,12 @@ export type SubmitQueueItemMutation = {
   submitQueueItem?: {
     __typename?: "AddTestResultResponse";
     deliverySuccess?: boolean | null;
-    testEventId: string;
     testResult: { __typename?: "TestOrder"; internalId: string };
   } | null;
 };
 
 export type GetFacilityQueueQueryVariables = Exact<{
-  facilityId: Scalars["ID"]["input"];
+  facilityId: Scalars["ID"];
 }>;
 
 export type GetFacilityQueueQuery = {
@@ -2534,16 +2065,13 @@ export type GetFacilityQueueQuery = {
     __typename?: "TestOrder";
     internalId: string;
     pregnancy?: string | null;
-    syphilisHistory?: string | null;
     dateAdded: string;
     symptoms?: string | null;
     symptomOnset?: any | null;
     noSymptoms?: boolean | null;
-    genderOfSexualPartners?: Array<string | null> | null;
     dateTested?: any | null;
     correctionStatus?: string | null;
     reasonForCorrection?: string | null;
-    timerStartedAt?: string | null;
     deviceType: {
       __typename?: "DeviceType";
       internalId: string;
@@ -2578,8 +2106,8 @@ export type GetFacilityQueueQuery = {
     };
     results: Array<{
       __typename?: "MultiplexResult";
-      testResult: string;
-      disease: { __typename?: "SupportedDisease"; name: string };
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
     }>;
   } | null> | null;
   facility?: {
@@ -2612,18 +2140,131 @@ export type GetFacilityQueueQuery = {
   } | null;
 };
 
-export type UpdateTestOrderTimerStartedAtMutationVariables = Exact<{
-  testOrderId: Scalars["ID"]["input"];
-  startedAt?: InputMaybe<Scalars["String"]["input"]>;
+export type GetTestResultForCorrectionQueryVariables = Exact<{
+  id: Scalars["ID"];
 }>;
 
-export type UpdateTestOrderTimerStartedAtMutation = {
+export type GetTestResultForCorrectionQuery = {
+  __typename?: "Query";
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    correctionStatus?: string | null;
+    results?: Array<{
+      __typename?: "MultiplexResult";
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
+    } | null> | null;
+    deviceType?: { __typename?: "DeviceType"; name: string } | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      birthDate?: any | null;
+    } | null;
+  } | null;
+};
+
+export type MarkTestAsErrorMutationVariables = Exact<{
+  id: Scalars["ID"];
+  reason: Scalars["String"];
+}>;
+
+export type MarkTestAsErrorMutation = {
   __typename?: "Mutation";
-  updateTestOrderTimerStartedAt?: string | null;
+  correctTestMarkAsError?: {
+    __typename?: "TestResult";
+    internalId?: string | null;
+  } | null;
+};
+
+export type MarkTestAsCorrectionMutationVariables = Exact<{
+  id: Scalars["ID"];
+  reason: Scalars["String"];
+}>;
+
+export type MarkTestAsCorrectionMutation = {
+  __typename?: "Mutation";
+  correctTestMarkAsCorrection?: {
+    __typename?: "TestResult";
+    internalId?: string | null;
+  } | null;
+};
+
+export type GetTestResultDetailsQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetTestResultDetailsQuery = {
+  __typename?: "Query";
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    correctionStatus?: string | null;
+    symptoms?: string | null;
+    symptomOnset?: any | null;
+    pregnancy?: string | null;
+    results?: Array<{
+      __typename?: "MultiplexResult";
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
+    } | null> | null;
+    deviceType?: { __typename?: "DeviceType"; name: string } | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      birthDate?: any | null;
+    } | null;
+    createdBy?: {
+      __typename?: "ApiUser";
+      name: {
+        __typename?: "NameInfo";
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName: string;
+      };
+    } | null;
+  } | null;
+};
+
+export type GetTestResultForTextQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetTestResultForTextQuery = {
+  __typename?: "Query";
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      birthDate?: any | null;
+      phoneNumbers?: Array<{
+        __typename?: "PhoneNumber";
+        type?: PhoneType | null;
+        number?: string | null;
+      } | null> | null;
+    } | null;
+  } | null;
+};
+
+export type SendSmsMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type SendSmsMutation = {
+  __typename?: "Mutation";
+  sendPatientLinkSmsByTestEventId?: boolean | null;
 };
 
 export type GetTestResultForResendingEmailsQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type GetTestResultForResendingEmailsQuery = {
@@ -2643,7 +2284,7 @@ export type GetTestResultForResendingEmailsQuery = {
 };
 
 export type ResendTestResultsEmailMutationVariables = Exact<{
-  testEventId: Scalars["ID"]["input"];
+  testEventId: Scalars["ID"];
 }>;
 
 export type ResendTestResultsEmailMutation = {
@@ -2652,15 +2293,14 @@ export type ResendTestResultsEmailMutation = {
 };
 
 export type GetFacilityResultsForCsvWithCountQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  patientId?: InputMaybe<Scalars["ID"]["input"]>;
-  result?: InputMaybe<Scalars["String"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  disease?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
 }>;
 
 export type GetFacilityResultsForCsvWithCountQuery = {
@@ -2684,9 +2324,9 @@ export type GetFacilityResultsForCsvWithCountQuery = {
       } | null;
       results?: Array<{
         __typename?: "MultiplexResult";
-        testResult: string;
-        disease: { __typename?: "SupportedDisease"; name: string };
-      }> | null;
+        testResult?: string | null;
+        disease?: { __typename?: "SupportedDisease"; name: string } | null;
+      } | null> | null;
       deviceType?: {
         __typename?: "DeviceType";
         name: string;
@@ -2736,43 +2376,38 @@ export type GetFacilityResultsForCsvWithCountQuery = {
   } | null;
 };
 
-export type GetResultsMultiplexWithCountQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  patientId?: InputMaybe<Scalars["ID"]["input"]>;
-  result?: InputMaybe<Scalars["String"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  disease?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+export type GetFacilityResultsMultiplexWithCountQueryVariables = Exact<{
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
 }>;
 
-export type GetResultsMultiplexWithCountQuery = {
+export type GetFacilityResultsMultiplexWithCountQuery = {
   __typename?: "Query";
-  resultsPage?: {
-    __typename?: "ResultsPage";
+  testResultsPage?: {
+    __typename?: "TestResultsPage";
     totalElements?: number | null;
     content?: Array<{
-      __typename?: "Result";
-      id: string;
-      dateAdded: string;
-      dateTested: any;
-      disease: string;
-      testResult: string;
+      __typename?: "TestResult";
+      internalId?: string | null;
+      dateTested?: any | null;
       correctionStatus?: string | null;
-      reasonForCorrection?: string | null;
-      facility: {
-        __typename?: "Facility";
-        name: string;
-        isDeleted?: boolean | null;
-      };
-      deviceType: {
+      results?: Array<{
+        __typename?: "MultiplexResult";
+        testResult?: string | null;
+        disease?: { __typename?: "SupportedDisease"; name: string } | null;
+      } | null> | null;
+      deviceType?: {
         __typename?: "DeviceType";
         internalId: string;
         name: string;
-      };
-      patient: {
+      } | null;
+      patient?: {
         __typename?: "Patient";
         internalId: string;
         firstName?: string | null;
@@ -2780,29 +2415,37 @@ export type GetResultsMultiplexWithCountQuery = {
         lastName?: string | null;
         birthDate?: any | null;
         gender?: string | null;
-        role?: string | null;
+        lookupId?: string | null;
         email?: string | null;
         phoneNumbers?: Array<{
           __typename?: "PhoneNumber";
           type?: PhoneType | null;
           number?: string | null;
         } | null> | null;
-      };
+      } | null;
       createdBy?: {
         __typename?: "ApiUser";
         nameInfo?: {
           __typename?: "NameInfo";
           firstName?: string | null;
-          middleName?: string | null;
           lastName: string;
         } | null;
+      } | null;
+      patientLink?: {
+        __typename?: "PatientLink";
+        internalId?: string | null;
+      } | null;
+      facility?: {
+        __typename?: "Facility";
+        name: string;
+        isDeleted?: boolean | null;
       } | null;
     } | null> | null;
   } | null;
 };
 
 export type GetAllFacilitiesQueryVariables = Exact<{
-  showArchived?: InputMaybe<Scalars["Boolean"]["input"]>;
+  showArchived?: InputMaybe<Scalars["Boolean"]>;
 }>;
 
 export type GetAllFacilitiesQuery = {
@@ -2816,12 +2459,12 @@ export type GetAllFacilitiesQuery = {
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
-  patientId?: InputMaybe<Scalars["ID"]["input"]>;
-  result?: InputMaybe<Scalars["String"]["input"]>;
-  role?: InputMaybe<Scalars["String"]["input"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]>;
+  patientId?: InputMaybe<Scalars["ID"]>;
+  result?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
 }>;
 
 export type GetResultsCountByFacilityQuery = {
@@ -2830,7 +2473,7 @@ export type GetResultsCountByFacilityQuery = {
 };
 
 export type GetTestResultForPrintQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type GetTestResultForPrintQuery = {
@@ -2841,9 +2484,9 @@ export type GetTestResultForPrintQuery = {
     correctionStatus?: string | null;
     results?: Array<{
       __typename?: "MultiplexResult";
-      testResult: string;
-      disease: { __typename?: "SupportedDisease"; name: string };
-    }> | null;
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
+    } | null> | null;
     deviceType?: {
       __typename?: "DeviceType";
       name: string;
@@ -2878,7 +2521,7 @@ export type GetTestResultForPrintQuery = {
 };
 
 export type GetUploadSubmissionQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
+  id: Scalars["ID"];
 }>;
 
 export type GetUploadSubmissionQuery = {
@@ -2903,10 +2546,10 @@ export type GetUploadSubmissionQuery = {
 };
 
 export type GetUploadSubmissionsQueryVariables = Exact<{
-  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
-  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]>;
+  pageSize?: InputMaybe<Scalars["Int"]>;
 }>;
 
 export type GetUploadSubmissionsQuery = {
@@ -2933,252 +2576,6 @@ export type GetUploadSubmissionsQuery = {
       } | null> | null;
     }>;
   };
-};
-
-export type GetTestResultForCorrectionQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
-}>;
-
-export type GetTestResultForCorrectionQuery = {
-  __typename?: "Query";
-  testResult?: {
-    __typename?: "TestResult";
-    dateTested?: any | null;
-    correctionStatus?: string | null;
-    results?: Array<{
-      __typename?: "MultiplexResult";
-      testResult: string;
-      disease: { __typename?: "SupportedDisease"; name: string };
-    }> | null;
-    deviceType?: { __typename?: "DeviceType"; name: string } | null;
-    patient?: {
-      __typename?: "Patient";
-      firstName?: string | null;
-      middleName?: string | null;
-      lastName?: string | null;
-      birthDate?: any | null;
-    } | null;
-  } | null;
-};
-
-export type MarkTestAsErrorMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  reason: Scalars["String"]["input"];
-}>;
-
-export type MarkTestAsErrorMutation = {
-  __typename?: "Mutation";
-  correctTestMarkAsError?: {
-    __typename?: "TestResult";
-    internalId?: string | null;
-  } | null;
-};
-
-export type MarkTestAsCorrectionMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-  reason: Scalars["String"]["input"];
-}>;
-
-export type MarkTestAsCorrectionMutation = {
-  __typename?: "Mutation";
-  correctTestMarkAsCorrection?: {
-    __typename?: "TestResult";
-    internalId?: string | null;
-  } | null;
-};
-
-export type GetTestResultForTextQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
-}>;
-
-export type GetTestResultForTextQuery = {
-  __typename?: "Query";
-  testResult?: {
-    __typename?: "TestResult";
-    dateTested?: any | null;
-    patient?: {
-      __typename?: "Patient";
-      firstName?: string | null;
-      middleName?: string | null;
-      lastName?: string | null;
-      birthDate?: any | null;
-      phoneNumbers?: Array<{
-        __typename?: "PhoneNumber";
-        type?: PhoneType | null;
-        number?: string | null;
-      } | null> | null;
-    } | null;
-  } | null;
-};
-
-export type SendSmsMutationVariables = Exact<{
-  id: Scalars["ID"]["input"];
-}>;
-
-export type SendSmsMutation = {
-  __typename?: "Mutation";
-  sendPatientLinkSmsByTestEventId?: boolean | null;
-};
-
-export type GetTestResultDetailsQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
-}>;
-
-export type GetTestResultDetailsQuery = {
-  __typename?: "Query";
-  testResult?: {
-    __typename?: "TestResult";
-    dateTested?: any | null;
-    correctionStatus?: string | null;
-    symptoms?: string | null;
-    symptomOnset?: any | null;
-    pregnancy?: string | null;
-    genderOfSexualPartners?: Array<string | null> | null;
-    results?: Array<{
-      __typename?: "MultiplexResult";
-      testResult: string;
-      disease: { __typename?: "SupportedDisease"; name: string };
-    }> | null;
-    surveyData?: {
-      __typename?: "AskOnEntrySurvey";
-      pregnancy?: string | null;
-      syphilisHistory?: string | null;
-      symptoms?: string | null;
-      symptomOnset?: any | null;
-      noSymptoms?: boolean | null;
-      genderOfSexualPartners?: Array<string> | null;
-    } | null;
-    deviceType?: { __typename?: "DeviceType"; name: string } | null;
-    patient?: {
-      __typename?: "Patient";
-      firstName?: string | null;
-      middleName?: string | null;
-      lastName?: string | null;
-      birthDate?: any | null;
-    } | null;
-    createdBy?: {
-      __typename?: "ApiUser";
-      name: {
-        __typename?: "NameInfo";
-        firstName?: string | null;
-        middleName?: string | null;
-        lastName: string;
-      };
-    } | null;
-  } | null;
-};
-
-export type GetConditionsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetConditionsQuery = {
-  __typename?: "Query";
-  conditions: Array<{
-    __typename?: "Condition";
-    code: string;
-    display: string;
-    snomedName?: string | null;
-  }>;
-};
-
-export type GetLabsByConditionsQueryVariables = Exact<{
-  conditionCodes?: InputMaybe<
-    Array<Scalars["String"]["input"]> | Scalars["String"]["input"]
-  >;
-}>;
-
-export type GetLabsByConditionsQuery = {
-  __typename?: "Query";
-  labs: Array<{
-    __typename?: "Lab";
-    code: string;
-    display: string;
-    description?: string | null;
-    longCommonName: string;
-    scaleCode?: string | null;
-    scaleDisplay?: string | null;
-    systemCode: string;
-    systemDisplay?: string | null;
-    answerList?: string | null;
-    orderOrObservation: string;
-    panel: boolean;
-  }>;
-};
-
-export type GetSpecimensByLoincQueryVariables = Exact<{
-  loinc: Scalars["String"]["input"];
-}>;
-
-export type GetSpecimensByLoincQuery = {
-  __typename?: "Query";
-  specimens: Array<{
-    __typename?: "Specimen";
-    loincSystemCode: string;
-    snomedCode: string;
-    snomedDisplay: string;
-    bodySiteList: Array<{
-      __typename?: "SpecimenBodySite";
-      snomedSiteCode: string;
-      snomedSiteDisplay: string;
-    }>;
-  }>;
-};
-
-export type GetFacilityQueryVariables = Exact<{
-  id: Scalars["ID"]["input"];
-}>;
-
-export type GetFacilityQuery = {
-  __typename?: "Query";
-  facility?: {
-    __typename?: "Facility";
-    id: string;
-    name: string;
-    cliaNumber?: string | null;
-    email?: string | null;
-    phone?: string | null;
-    address?: {
-      __typename?: "AddressInfo";
-      streetOne?: string | null;
-      streetTwo?: string | null;
-      city?: string | null;
-      county?: string | null;
-      state?: string | null;
-      postalCode?: string | null;
-    } | null;
-    orderingProvider?: {
-      __typename?: "Provider";
-      firstName?: string | null;
-      middleName?: string | null;
-      lastName?: string | null;
-      suffix?: string | null;
-      phone?: string | null;
-      NPI?: string | null;
-      address?: {
-        __typename?: "AddressInfo";
-        streetOne?: string | null;
-        streetTwo?: string | null;
-        city?: string | null;
-        county?: string | null;
-        state?: string | null;
-        postalCode?: string | null;
-      } | null;
-    } | null;
-  } | null;
-};
-
-export type SubmitLabReportMutationVariables = Exact<{
-  patient?: InputMaybe<PatientReportInput>;
-  provider?: InputMaybe<ProviderReportInput>;
-  facility?: InputMaybe<FacilityReportInput>;
-  specimen?: InputMaybe<SpecimenInput>;
-  testDetailsList?: InputMaybe<
-    Array<InputMaybe<TestDetailsInput>> | InputMaybe<TestDetailsInput>
-  >;
-}>;
-
-export type SubmitLabReportMutation = {
-  __typename?: "Mutation";
-  submitLabReport?: string | null;
 };
 
 export type GetDeviceTypesForLookupQueryVariables = Exact<{
@@ -3271,25 +2668,8 @@ export function useWhoAmILazyQuery(
     options
   );
 }
-export function useWhoAmISuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<WhoAmIQuery, WhoAmIQueryVariables>
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<WhoAmIQuery, WhoAmIQueryVariables>(
-    WhoAmIDocument,
-    options
-  );
-}
 export type WhoAmIQueryHookResult = ReturnType<typeof useWhoAmIQuery>;
 export type WhoAmILazyQueryHookResult = ReturnType<typeof useWhoAmILazyQuery>;
-export type WhoAmISuspenseQueryHookResult = ReturnType<
-  typeof useWhoAmISuspenseQuery
->;
 export type WhoAmIQueryResult = Apollo.QueryResult<
   WhoAmIQuery,
   WhoAmIQueryVariables
@@ -3347,31 +2727,11 @@ export function useGetManagedFacilitiesLazyQuery(
     GetManagedFacilitiesQueryVariables
   >(GetManagedFacilitiesDocument, options);
 }
-export function useGetManagedFacilitiesSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetManagedFacilitiesQuery,
-        GetManagedFacilitiesQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetManagedFacilitiesQuery,
-    GetManagedFacilitiesQueryVariables
-  >(GetManagedFacilitiesDocument, options);
-}
 export type GetManagedFacilitiesQueryHookResult = ReturnType<
   typeof useGetManagedFacilitiesQuery
 >;
 export type GetManagedFacilitiesLazyQueryHookResult = ReturnType<
   typeof useGetManagedFacilitiesLazyQuery
->;
-export type GetManagedFacilitiesSuspenseQueryHookResult = ReturnType<
-  typeof useGetManagedFacilitiesSuspenseQuery
 >;
 export type GetManagedFacilitiesQueryResult = Apollo.QueryResult<
   GetManagedFacilitiesQuery,
@@ -3466,31 +2826,11 @@ export function useGetFacilitiesLazyQuery(
     options
   );
 }
-export function useGetFacilitiesSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetFacilitiesQuery,
-        GetFacilitiesQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetFacilitiesQuery,
-    GetFacilitiesQueryVariables
-  >(GetFacilitiesDocument, options);
-}
 export type GetFacilitiesQueryHookResult = ReturnType<
   typeof useGetFacilitiesQuery
 >;
 export type GetFacilitiesLazyQueryHookResult = ReturnType<
   typeof useGetFacilitiesLazyQuery
->;
-export type GetFacilitiesSuspenseQueryHookResult = ReturnType<
-  typeof useGetFacilitiesSuspenseQuery
 >;
 export type GetFacilitiesQueryResult = Apollo.QueryResult<
   GetFacilitiesQuery,
@@ -3792,31 +3132,11 @@ export function useAllSelfRegistrationLinksLazyQuery(
     AllSelfRegistrationLinksQueryVariables
   >(AllSelfRegistrationLinksDocument, options);
 }
-export function useAllSelfRegistrationLinksSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        AllSelfRegistrationLinksQuery,
-        AllSelfRegistrationLinksQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    AllSelfRegistrationLinksQuery,
-    AllSelfRegistrationLinksQueryVariables
-  >(AllSelfRegistrationLinksDocument, options);
-}
 export type AllSelfRegistrationLinksQueryHookResult = ReturnType<
   typeof useAllSelfRegistrationLinksQuery
 >;
 export type AllSelfRegistrationLinksLazyQueryHookResult = ReturnType<
   typeof useAllSelfRegistrationLinksLazyQuery
->;
-export type AllSelfRegistrationLinksSuspenseQueryHookResult = ReturnType<
-  typeof useAllSelfRegistrationLinksSuspenseQuery
 >;
 export type AllSelfRegistrationLinksQueryResult = Apollo.QueryResult<
   AllSelfRegistrationLinksQuery,
@@ -3861,8 +3181,7 @@ export const GetUserDocument = gql`
  * });
  */
 export function useGetUserQuery(
-  baseOptions: Apollo.QueryHookOptions<GetUserQuery, GetUserQueryVariables> &
-    ({ variables: GetUserQueryVariables; skip?: boolean } | { skip: boolean })
+  baseOptions: Apollo.QueryHookOptions<GetUserQuery, GetUserQueryVariables>
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<GetUserQuery, GetUserQueryVariables>(
@@ -3879,25 +3198,8 @@ export function useGetUserLazyQuery(
     options
   );
 }
-export function useGetUserSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<GetUserQuery, GetUserQueryVariables>
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<GetUserQuery, GetUserQueryVariables>(
-    GetUserDocument,
-    options
-  );
-}
 export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
 export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
-export type GetUserSuspenseQueryHookResult = ReturnType<
-  typeof useGetUserSuspenseQuery
->;
 export type GetUserQueryResult = Apollo.QueryResult<
   GetUserQuery,
   GetUserQueryVariables
@@ -3954,125 +3256,15 @@ export function useGetUsersAndStatusLazyQuery(
     GetUsersAndStatusQueryVariables
   >(GetUsersAndStatusDocument, options);
 }
-export function useGetUsersAndStatusSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetUsersAndStatusQuery,
-        GetUsersAndStatusQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetUsersAndStatusQuery,
-    GetUsersAndStatusQueryVariables
-  >(GetUsersAndStatusDocument, options);
-}
 export type GetUsersAndStatusQueryHookResult = ReturnType<
   typeof useGetUsersAndStatusQuery
 >;
 export type GetUsersAndStatusLazyQueryHookResult = ReturnType<
   typeof useGetUsersAndStatusLazyQuery
 >;
-export type GetUsersAndStatusSuspenseQueryHookResult = ReturnType<
-  typeof useGetUsersAndStatusSuspenseQuery
->;
 export type GetUsersAndStatusQueryResult = Apollo.QueryResult<
   GetUsersAndStatusQuery,
   GetUsersAndStatusQueryVariables
->;
-export const GetUsersAndStatusPageDocument = gql`
-  query GetUsersAndStatusPage($pageNumber: Int, $searchQuery: String) {
-    usersWithStatusPage(pageNumber: $pageNumber, searchQuery: $searchQuery) {
-      pageContent {
-        content {
-          id
-          firstName
-          middleName
-          lastName
-          email
-          status
-        }
-        totalElements
-      }
-      totalUsersInOrg
-    }
-  }
-`;
-
-/**
- * __useGetUsersAndStatusPageQuery__
- *
- * To run a query within a React component, call `useGetUsersAndStatusPageQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUsersAndStatusPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUsersAndStatusPageQuery({
- *   variables: {
- *      pageNumber: // value for 'pageNumber'
- *      searchQuery: // value for 'searchQuery'
- *   },
- * });
- */
-export function useGetUsersAndStatusPageQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetUsersAndStatusPageQuery,
-    GetUsersAndStatusPageQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetUsersAndStatusPageQuery,
-    GetUsersAndStatusPageQueryVariables
-  >(GetUsersAndStatusPageDocument, options);
-}
-export function useGetUsersAndStatusPageLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetUsersAndStatusPageQuery,
-    GetUsersAndStatusPageQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetUsersAndStatusPageQuery,
-    GetUsersAndStatusPageQueryVariables
-  >(GetUsersAndStatusPageDocument, options);
-}
-export function useGetUsersAndStatusPageSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetUsersAndStatusPageQuery,
-        GetUsersAndStatusPageQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetUsersAndStatusPageQuery,
-    GetUsersAndStatusPageQueryVariables
-  >(GetUsersAndStatusPageDocument, options);
-}
-export type GetUsersAndStatusPageQueryHookResult = ReturnType<
-  typeof useGetUsersAndStatusPageQuery
->;
-export type GetUsersAndStatusPageLazyQueryHookResult = ReturnType<
-  typeof useGetUsersAndStatusPageLazyQuery
->;
-export type GetUsersAndStatusPageSuspenseQueryHookResult = ReturnType<
-  typeof useGetUsersAndStatusPageSuspenseQuery
->;
-export type GetUsersAndStatusPageQueryResult = Apollo.QueryResult<
-  GetUsersAndStatusPageQuery,
-  GetUsersAndStatusPageQueryVariables
 >;
 export const ResendActivationEmailDocument = gql`
   mutation ResendActivationEmail($id: ID!) {
@@ -4637,7 +3829,6 @@ export const GetCurrentOrganizationDocument = gql`
   query GetCurrentOrganization {
     whoami {
       organization {
-        id
         name
         type
       }
@@ -4684,31 +3875,11 @@ export function useGetCurrentOrganizationLazyQuery(
     GetCurrentOrganizationQueryVariables
   >(GetCurrentOrganizationDocument, options);
 }
-export function useGetCurrentOrganizationSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetCurrentOrganizationQuery,
-        GetCurrentOrganizationQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetCurrentOrganizationQuery,
-    GetCurrentOrganizationQueryVariables
-  >(GetCurrentOrganizationDocument, options);
-}
 export type GetCurrentOrganizationQueryHookResult = ReturnType<
   typeof useGetCurrentOrganizationQuery
 >;
 export type GetCurrentOrganizationLazyQueryHookResult = ReturnType<
   typeof useGetCurrentOrganizationLazyQuery
->;
-export type GetCurrentOrganizationSuspenseQueryHookResult = ReturnType<
-  typeof useGetCurrentOrganizationSuspenseQuery
 >;
 export type GetCurrentOrganizationQueryResult = Apollo.QueryResult<
   GetCurrentOrganizationQuery,
@@ -4816,13 +3987,11 @@ export const GetTopLevelDashboardMetricsNewDocument = gql`
     $facilityId: ID
     $startDate: DateTime
     $endDate: DateTime
-    $disease: String
   ) {
     topLevelDashboardMetrics(
       facilityId: $facilityId
       startDate: $startDate
       endDate: $endDate
-      disease: $disease
     ) {
       positiveTestCount
       totalTestCount
@@ -4845,7 +4014,6 @@ export const GetTopLevelDashboardMetricsNewDocument = gql`
  *      facilityId: // value for 'facilityId'
  *      startDate: // value for 'startDate'
  *      endDate: // value for 'endDate'
- *      disease: // value for 'disease'
  *   },
  * });
  */
@@ -4873,31 +4041,11 @@ export function useGetTopLevelDashboardMetricsNewLazyQuery(
     GetTopLevelDashboardMetricsNewQueryVariables
   >(GetTopLevelDashboardMetricsNewDocument, options);
 }
-export function useGetTopLevelDashboardMetricsNewSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetTopLevelDashboardMetricsNewQuery,
-        GetTopLevelDashboardMetricsNewQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetTopLevelDashboardMetricsNewQuery,
-    GetTopLevelDashboardMetricsNewQueryVariables
-  >(GetTopLevelDashboardMetricsNewDocument, options);
-}
 export type GetTopLevelDashboardMetricsNewQueryHookResult = ReturnType<
   typeof useGetTopLevelDashboardMetricsNewQuery
 >;
 export type GetTopLevelDashboardMetricsNewLazyQueryHookResult = ReturnType<
   typeof useGetTopLevelDashboardMetricsNewLazyQuery
->;
-export type GetTopLevelDashboardMetricsNewSuspenseQueryHookResult = ReturnType<
-  typeof useGetTopLevelDashboardMetricsNewSuspenseQuery
 >;
 export type GetTopLevelDashboardMetricsNewQueryResult = Apollo.QueryResult<
   GetTopLevelDashboardMetricsNewQuery,
@@ -4942,11 +4090,7 @@ export function usePatientExistsQuery(
   baseOptions: Apollo.QueryHookOptions<
     PatientExistsQuery,
     PatientExistsQueryVariables
-  > &
-    (
-      | { variables: PatientExistsQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<PatientExistsQuery, PatientExistsQueryVariables>(
@@ -4966,31 +4110,11 @@ export function usePatientExistsLazyQuery(
     options
   );
 }
-export function usePatientExistsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        PatientExistsQuery,
-        PatientExistsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    PatientExistsQuery,
-    PatientExistsQueryVariables
-  >(PatientExistsDocument, options);
-}
 export type PatientExistsQueryHookResult = ReturnType<
   typeof usePatientExistsQuery
 >;
 export type PatientExistsLazyQueryHookResult = ReturnType<
   typeof usePatientExistsLazyQuery
->;
-export type PatientExistsSuspenseQueryHookResult = ReturnType<
-  typeof usePatientExistsSuspenseQuery
 >;
 export type PatientExistsQueryResult = Apollo.QueryResult<
   PatientExistsQuery,
@@ -5023,7 +4147,6 @@ export const AddPatientDocument = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
-    $notes: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -5051,7 +4174,6 @@ export const AddPatientDocument = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
-      notes: $notes
     ) {
       internalId
       facility {
@@ -5103,7 +4225,6 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'
  *      testResultDelivery: // value for 'testResultDelivery'
- *      notes: // value for 'notes'
  *   },
  * });
  */
@@ -5206,7 +4327,6 @@ export const GetPatientDetailsDocument = gql`
       ethnicity
       tribalAffiliation
       gender
-      genderIdentity
       residentCongregateSetting
       employedInHealthcare
       preferredLanguage
@@ -5214,7 +4334,6 @@ export const GetPatientDetailsDocument = gql`
         id
       }
       testResultDelivery
-      notes
     }
   }
 `;
@@ -5239,11 +4358,7 @@ export function useGetPatientDetailsQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetPatientDetailsQuery,
     GetPatientDetailsQueryVariables
-  > &
-    (
-      | { variables: GetPatientDetailsQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
@@ -5263,31 +4378,11 @@ export function useGetPatientDetailsLazyQuery(
     GetPatientDetailsQueryVariables
   >(GetPatientDetailsDocument, options);
 }
-export function useGetPatientDetailsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetPatientDetailsQuery,
-        GetPatientDetailsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetPatientDetailsQuery,
-    GetPatientDetailsQueryVariables
-  >(GetPatientDetailsDocument, options);
-}
 export type GetPatientDetailsQueryHookResult = ReturnType<
   typeof useGetPatientDetailsQuery
 >;
 export type GetPatientDetailsLazyQueryHookResult = ReturnType<
   typeof useGetPatientDetailsLazyQuery
->;
-export type GetPatientDetailsSuspenseQueryHookResult = ReturnType<
-  typeof useGetPatientDetailsSuspenseQuery
 >;
 export type GetPatientDetailsQueryResult = Apollo.QueryResult<
   GetPatientDetailsQuery,
@@ -5317,12 +4412,10 @@ export const UpdatePatientDocument = gql`
     $ethnicity: String
     $tribalAffiliation: String
     $gender: String
-    $genderIdentity: String
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
-    $notes: String
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -5347,12 +4440,10 @@ export const UpdatePatientDocument = gql`
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
       gender: $gender
-      genderIdentity: $genderIdentity
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
-      notes: $notes
     ) {
       internalId
     }
@@ -5398,12 +4489,10 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      ethnicity: // value for 'ethnicity'
  *      tribalAffiliation: // value for 'tribalAffiliation'
  *      gender: // value for 'gender'
- *      genderIdentity: // value for 'genderIdentity'
  *      residentCongregateSetting: // value for 'residentCongregateSetting'
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'
  *      testResultDelivery: // value for 'testResultDelivery'
- *      notes: // value for 'notes'
  *   },
  * });
  */
@@ -5430,7 +4519,7 @@ export type UpdatePatientMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const GetPatientsCountByFacilityDocument = gql`
   query GetPatientsCountByFacility(
-    $facilityId: ID
+    $facilityId: ID!
     $archivedStatus: ArchivedStatus = UNARCHIVED
     $namePrefixMatch: String
   ) {
@@ -5461,7 +4550,7 @@ export const GetPatientsCountByFacilityDocument = gql`
  * });
  */
 export function useGetPatientsCountByFacilityQuery(
-  baseOptions?: Apollo.QueryHookOptions<
+  baseOptions: Apollo.QueryHookOptions<
     GetPatientsCountByFacilityQuery,
     GetPatientsCountByFacilityQueryVariables
   >
@@ -5484,31 +4573,11 @@ export function useGetPatientsCountByFacilityLazyQuery(
     GetPatientsCountByFacilityQueryVariables
   >(GetPatientsCountByFacilityDocument, options);
 }
-export function useGetPatientsCountByFacilitySuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetPatientsCountByFacilityQuery,
-        GetPatientsCountByFacilityQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetPatientsCountByFacilityQuery,
-    GetPatientsCountByFacilityQueryVariables
-  >(GetPatientsCountByFacilityDocument, options);
-}
 export type GetPatientsCountByFacilityQueryHookResult = ReturnType<
   typeof useGetPatientsCountByFacilityQuery
 >;
 export type GetPatientsCountByFacilityLazyQueryHookResult = ReturnType<
   typeof useGetPatientsCountByFacilityLazyQuery
->;
-export type GetPatientsCountByFacilitySuspenseQueryHookResult = ReturnType<
-  typeof useGetPatientsCountByFacilitySuspenseQuery
 >;
 export type GetPatientsCountByFacilityQueryResult = Apollo.QueryResult<
   GetPatientsCountByFacilityQuery,
@@ -5567,11 +4636,7 @@ export function useGetPatientsByFacilityQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetPatientsByFacilityQuery,
     GetPatientsByFacilityQueryVariables
-  > &
-    (
-      | { variables: GetPatientsByFacilityQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
@@ -5591,31 +4656,11 @@ export function useGetPatientsByFacilityLazyQuery(
     GetPatientsByFacilityQueryVariables
   >(GetPatientsByFacilityDocument, options);
 }
-export function useGetPatientsByFacilitySuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetPatientsByFacilityQuery,
-        GetPatientsByFacilityQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetPatientsByFacilityQuery,
-    GetPatientsByFacilityQueryVariables
-  >(GetPatientsByFacilityDocument, options);
-}
 export type GetPatientsByFacilityQueryHookResult = ReturnType<
   typeof useGetPatientsByFacilityQuery
 >;
 export type GetPatientsByFacilityLazyQueryHookResult = ReturnType<
   typeof useGetPatientsByFacilityLazyQuery
->;
-export type GetPatientsByFacilitySuspenseQueryHookResult = ReturnType<
-  typeof useGetPatientsByFacilitySuspenseQuery
 >;
 export type GetPatientsByFacilityQueryResult = Apollo.QueryResult<
   GetPatientsByFacilityQuery,
@@ -5859,10 +4904,7 @@ export const GetDeviceTypeListDocument = gql`
         testPerformedLoincCode
         testkitNameId
         equipmentUid
-        equipmentUidType
         testOrderedLoincCode
-        testOrderedLoincLongName
-        testPerformedLoincLongName
       }
       testLength
     }
@@ -5908,31 +4950,11 @@ export function useGetDeviceTypeListLazyQuery(
     GetDeviceTypeListQueryVariables
   >(GetDeviceTypeListDocument, options);
 }
-export function useGetDeviceTypeListSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetDeviceTypeListQuery,
-        GetDeviceTypeListQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetDeviceTypeListQuery,
-    GetDeviceTypeListQueryVariables
-  >(GetDeviceTypeListDocument, options);
-}
 export type GetDeviceTypeListQueryHookResult = ReturnType<
   typeof useGetDeviceTypeListQuery
 >;
 export type GetDeviceTypeListLazyQueryHookResult = ReturnType<
   typeof useGetDeviceTypeListLazyQuery
->;
-export type GetDeviceTypeListSuspenseQueryHookResult = ReturnType<
-  typeof useGetDeviceTypeListSuspenseQuery
 >;
 export type GetDeviceTypeListQueryResult = Apollo.QueryResult<
   GetDeviceTypeListQuery,
@@ -5987,31 +5009,11 @@ export function useGetSpecimenTypesLazyQuery(
     GetSpecimenTypesQueryVariables
   >(GetSpecimenTypesDocument, options);
 }
-export function useGetSpecimenTypesSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetSpecimenTypesQuery,
-        GetSpecimenTypesQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetSpecimenTypesQuery,
-    GetSpecimenTypesQueryVariables
-  >(GetSpecimenTypesDocument, options);
-}
 export type GetSpecimenTypesQueryHookResult = ReturnType<
   typeof useGetSpecimenTypesQuery
 >;
 export type GetSpecimenTypesLazyQueryHookResult = ReturnType<
   typeof useGetSpecimenTypesLazyQuery
->;
-export type GetSpecimenTypesSuspenseQueryHookResult = ReturnType<
-  typeof useGetSpecimenTypesSuspenseQuery
 >;
 export type GetSpecimenTypesQueryResult = Apollo.QueryResult<
   GetSpecimenTypesQuery,
@@ -6065,31 +5067,11 @@ export function useGetSupportedDiseasesLazyQuery(
     GetSupportedDiseasesQueryVariables
   >(GetSupportedDiseasesDocument, options);
 }
-export function useGetSupportedDiseasesSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetSupportedDiseasesQuery,
-        GetSupportedDiseasesQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetSupportedDiseasesQuery,
-    GetSupportedDiseasesQueryVariables
-  >(GetSupportedDiseasesDocument, options);
-}
 export type GetSupportedDiseasesQueryHookResult = ReturnType<
   typeof useGetSupportedDiseasesQuery
 >;
 export type GetSupportedDiseasesLazyQueryHookResult = ReturnType<
   typeof useGetSupportedDiseasesLazyQuery
->;
-export type GetSupportedDiseasesSuspenseQueryHookResult = ReturnType<
-  typeof useGetSupportedDiseasesSuspenseQuery
 >;
 export type GetSupportedDiseasesQueryResult = Apollo.QueryResult<
   GetSupportedDiseasesQuery,
@@ -6143,31 +5125,11 @@ export function useGetAllOrganizationsLazyQuery(
     GetAllOrganizationsQueryVariables
   >(GetAllOrganizationsDocument, options);
 }
-export function useGetAllOrganizationsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetAllOrganizationsQuery,
-        GetAllOrganizationsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetAllOrganizationsQuery,
-    GetAllOrganizationsQueryVariables
-  >(GetAllOrganizationsDocument, options);
-}
 export type GetAllOrganizationsQueryHookResult = ReturnType<
   typeof useGetAllOrganizationsQuery
 >;
 export type GetAllOrganizationsLazyQueryHookResult = ReturnType<
   typeof useGetAllOrganizationsLazyQuery
->;
-export type GetAllOrganizationsSuspenseQueryHookResult = ReturnType<
-  typeof useGetAllOrganizationsSuspenseQuery
 >;
 export type GetAllOrganizationsQueryResult = Apollo.QueryResult<
   GetAllOrganizationsQuery,
@@ -6176,8 +5138,6 @@ export type GetAllOrganizationsQueryResult = Apollo.QueryResult<
 export const GetFacilitiesByOrgIdDocument = gql`
   query GetFacilitiesByOrgId($orgId: ID!) {
     organization(id: $orgId) {
-      id
-      externalId
       name
       type
       facilities {
@@ -6211,11 +5171,7 @@ export function useGetFacilitiesByOrgIdQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetFacilitiesByOrgIdQuery,
     GetFacilitiesByOrgIdQueryVariables
-  > &
-    (
-      | { variables: GetFacilitiesByOrgIdQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
@@ -6235,31 +5191,11 @@ export function useGetFacilitiesByOrgIdLazyQuery(
     GetFacilitiesByOrgIdQueryVariables
   >(GetFacilitiesByOrgIdDocument, options);
 }
-export function useGetFacilitiesByOrgIdSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetFacilitiesByOrgIdQuery,
-        GetFacilitiesByOrgIdQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetFacilitiesByOrgIdQuery,
-    GetFacilitiesByOrgIdQueryVariables
-  >(GetFacilitiesByOrgIdDocument, options);
-}
 export type GetFacilitiesByOrgIdQueryHookResult = ReturnType<
   typeof useGetFacilitiesByOrgIdQuery
 >;
 export type GetFacilitiesByOrgIdLazyQueryHookResult = ReturnType<
   typeof useGetFacilitiesByOrgIdLazyQuery
->;
-export type GetFacilitiesByOrgIdSuspenseQueryHookResult = ReturnType<
-  typeof useGetFacilitiesByOrgIdSuspenseQuery
 >;
 export type GetFacilitiesByOrgIdQueryResult = Apollo.QueryResult<
   GetFacilitiesByOrgIdQuery,
@@ -6294,11 +5230,7 @@ export function useGetFacilityStatsQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetFacilityStatsQuery,
     GetFacilityStatsQueryVariables
-  > &
-    (
-      | { variables: GetFacilityStatsQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<GetFacilityStatsQuery, GetFacilityStatsQueryVariables>(
@@ -6318,31 +5250,11 @@ export function useGetFacilityStatsLazyQuery(
     GetFacilityStatsQueryVariables
   >(GetFacilityStatsDocument, options);
 }
-export function useGetFacilityStatsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetFacilityStatsQuery,
-        GetFacilityStatsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetFacilityStatsQuery,
-    GetFacilityStatsQueryVariables
-  >(GetFacilityStatsDocument, options);
-}
 export type GetFacilityStatsQueryHookResult = ReturnType<
   typeof useGetFacilityStatsQuery
 >;
 export type GetFacilityStatsLazyQueryHookResult = ReturnType<
   typeof useGetFacilityStatsLazyQuery
->;
-export type GetFacilityStatsSuspenseQueryHookResult = ReturnType<
-  typeof useGetFacilityStatsSuspenseQuery
 >;
 export type GetFacilityStatsQueryResult = Apollo.QueryResult<
   GetFacilityStatsQuery,
@@ -6409,7 +5321,6 @@ export const FindUserByEmailDocument = gql`
       email
       status
       organization {
-        id
         testingFacility {
           id
           name
@@ -6441,11 +5352,7 @@ export function useFindUserByEmailQuery(
   baseOptions: Apollo.QueryHookOptions<
     FindUserByEmailQuery,
     FindUserByEmailQueryVariables
-  > &
-    (
-      | { variables: FindUserByEmailQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<FindUserByEmailQuery, FindUserByEmailQueryVariables>(
@@ -6465,235 +5372,15 @@ export function useFindUserByEmailLazyQuery(
     FindUserByEmailQueryVariables
   >(FindUserByEmailDocument, options);
 }
-export function useFindUserByEmailSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        FindUserByEmailQuery,
-        FindUserByEmailQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    FindUserByEmailQuery,
-    FindUserByEmailQueryVariables
-  >(FindUserByEmailDocument, options);
-}
 export type FindUserByEmailQueryHookResult = ReturnType<
   typeof useFindUserByEmailQuery
 >;
 export type FindUserByEmailLazyQueryHookResult = ReturnType<
   typeof useFindUserByEmailLazyQuery
 >;
-export type FindUserByEmailSuspenseQueryHookResult = ReturnType<
-  typeof useFindUserByEmailSuspenseQuery
->;
 export type FindUserByEmailQueryResult = Apollo.QueryResult<
   FindUserByEmailQuery,
   FindUserByEmailQueryVariables
->;
-export const UndeleteUserDocument = gql`
-  mutation undeleteUser($userId: ID!) {
-    setUserIsDeleted(id: $userId, deleted: false) {
-      id
-      email
-      isDeleted
-    }
-  }
-`;
-export type UndeleteUserMutationFn = Apollo.MutationFunction<
-  UndeleteUserMutation,
-  UndeleteUserMutationVariables
->;
-
-/**
- * __useUndeleteUserMutation__
- *
- * To run a mutation, you first call `useUndeleteUserMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUndeleteUserMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [undeleteUserMutation, { data, loading, error }] = useUndeleteUserMutation({
- *   variables: {
- *      userId: // value for 'userId'
- *   },
- * });
- */
-export function useUndeleteUserMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UndeleteUserMutation,
-    UndeleteUserMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UndeleteUserMutation,
-    UndeleteUserMutationVariables
-  >(UndeleteUserDocument, options);
-}
-export type UndeleteUserMutationHookResult = ReturnType<
-  typeof useUndeleteUserMutation
->;
-export type UndeleteUserMutationResult =
-  Apollo.MutationResult<UndeleteUserMutation>;
-export type UndeleteUserMutationOptions = Apollo.BaseMutationOptions<
-  UndeleteUserMutation,
-  UndeleteUserMutationVariables
->;
-export const UpdateUserPrivilegesAndGroupAccessDocument = gql`
-  mutation updateUserPrivilegesAndGroupAccess(
-    $username: String!
-    $orgExternalId: String!
-    $accessAllFacilities: Boolean!
-    $role: Role!
-    $facilities: [ID]
-  ) {
-    updateUserPrivilegesAndGroupAccess(
-      username: $username
-      orgExternalId: $orgExternalId
-      accessAllFacilities: $accessAllFacilities
-      facilities: $facilities
-      role: $role
-    ) {
-      id
-    }
-  }
-`;
-export type UpdateUserPrivilegesAndGroupAccessMutationFn =
-  Apollo.MutationFunction<
-    UpdateUserPrivilegesAndGroupAccessMutation,
-    UpdateUserPrivilegesAndGroupAccessMutationVariables
-  >;
-
-/**
- * __useUpdateUserPrivilegesAndGroupAccessMutation__
- *
- * To run a mutation, you first call `useUpdateUserPrivilegesAndGroupAccessMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateUserPrivilegesAndGroupAccessMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateUserPrivilegesAndGroupAccessMutation, { data, loading, error }] = useUpdateUserPrivilegesAndGroupAccessMutation({
- *   variables: {
- *      username: // value for 'username'
- *      orgExternalId: // value for 'orgExternalId'
- *      accessAllFacilities: // value for 'accessAllFacilities'
- *      role: // value for 'role'
- *      facilities: // value for 'facilities'
- *   },
- * });
- */
-export function useUpdateUserPrivilegesAndGroupAccessMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UpdateUserPrivilegesAndGroupAccessMutation,
-    UpdateUserPrivilegesAndGroupAccessMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UpdateUserPrivilegesAndGroupAccessMutation,
-    UpdateUserPrivilegesAndGroupAccessMutationVariables
-  >(UpdateUserPrivilegesAndGroupAccessDocument, options);
-}
-export type UpdateUserPrivilegesAndGroupAccessMutationHookResult = ReturnType<
-  typeof useUpdateUserPrivilegesAndGroupAccessMutation
->;
-export type UpdateUserPrivilegesAndGroupAccessMutationResult =
-  Apollo.MutationResult<UpdateUserPrivilegesAndGroupAccessMutation>;
-export type UpdateUserPrivilegesAndGroupAccessMutationOptions =
-  Apollo.BaseMutationOptions<
-    UpdateUserPrivilegesAndGroupAccessMutation,
-    UpdateUserPrivilegesAndGroupAccessMutationVariables
-  >;
-export const GetTestResultCountByOrgDocument = gql`
-  query getTestResultCountByOrg($orgId: ID!) {
-    testResultsCount(orgId: $orgId)
-  }
-`;
-
-/**
- * __useGetTestResultCountByOrgQuery__
- *
- * To run a query within a React component, call `useGetTestResultCountByOrgQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTestResultCountByOrgQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTestResultCountByOrgQuery({
- *   variables: {
- *      orgId: // value for 'orgId'
- *   },
- * });
- */
-export function useGetTestResultCountByOrgQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetTestResultCountByOrgQuery,
-    GetTestResultCountByOrgQueryVariables
-  > &
-    (
-      | { variables: GetTestResultCountByOrgQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetTestResultCountByOrgQuery,
-    GetTestResultCountByOrgQueryVariables
-  >(GetTestResultCountByOrgDocument, options);
-}
-export function useGetTestResultCountByOrgLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTestResultCountByOrgQuery,
-    GetTestResultCountByOrgQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetTestResultCountByOrgQuery,
-    GetTestResultCountByOrgQueryVariables
-  >(GetTestResultCountByOrgDocument, options);
-}
-export function useGetTestResultCountByOrgSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetTestResultCountByOrgQuery,
-        GetTestResultCountByOrgQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetTestResultCountByOrgQuery,
-    GetTestResultCountByOrgQueryVariables
-  >(GetTestResultCountByOrgDocument, options);
-}
-export type GetTestResultCountByOrgQueryHookResult = ReturnType<
-  typeof useGetTestResultCountByOrgQuery
->;
-export type GetTestResultCountByOrgLazyQueryHookResult = ReturnType<
-  typeof useGetTestResultCountByOrgLazyQuery
->;
-export type GetTestResultCountByOrgSuspenseQueryHookResult = ReturnType<
-  typeof useGetTestResultCountByOrgSuspenseQuery
->;
-export type GetTestResultCountByOrgQueryResult = Apollo.QueryResult<
-  GetTestResultCountByOrgQuery,
-  GetTestResultCountByOrgQueryVariables
 >;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {
@@ -6748,31 +5435,11 @@ export function useGetPendingOrganizationsLazyQuery(
     GetPendingOrganizationsQueryVariables
   >(GetPendingOrganizationsDocument, options);
 }
-export function useGetPendingOrganizationsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetPendingOrganizationsQuery,
-        GetPendingOrganizationsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetPendingOrganizationsQuery,
-    GetPendingOrganizationsQueryVariables
-  >(GetPendingOrganizationsDocument, options);
-}
 export type GetPendingOrganizationsQueryHookResult = ReturnType<
   typeof useGetPendingOrganizationsQuery
 >;
 export type GetPendingOrganizationsLazyQueryHookResult = ReturnType<
   typeof useGetPendingOrganizationsLazyQuery
->;
-export type GetPendingOrganizationsSuspenseQueryHookResult = ReturnType<
-  typeof useGetPendingOrganizationsSuspenseQuery
 >;
 export type GetPendingOrganizationsQueryResult = Apollo.QueryResult<
   GetPendingOrganizationsQuery,
@@ -7004,31 +5671,11 @@ export function useGetOrganizationsLazyQuery(
     GetOrganizationsQueryVariables
   >(GetOrganizationsDocument, options);
 }
-export function useGetOrganizationsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetOrganizationsQuery,
-        GetOrganizationsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetOrganizationsQuery,
-    GetOrganizationsQueryVariables
-  >(GetOrganizationsDocument, options);
-}
 export type GetOrganizationsQueryHookResult = ReturnType<
   typeof useGetOrganizationsQuery
 >;
 export type GetOrganizationsLazyQueryHookResult = ReturnType<
   typeof useGetOrganizationsLazyQuery
->;
-export type GetOrganizationsSuspenseQueryHookResult = ReturnType<
-  typeof useGetOrganizationsSuspenseQuery
 >;
 export type GetOrganizationsQueryResult = Apollo.QueryResult<
   GetOrganizationsQuery,
@@ -7133,14 +5780,7 @@ export function useGetOrganizationWithFacilitiesQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetOrganizationWithFacilitiesQuery,
     GetOrganizationWithFacilitiesQueryVariables
-  > &
-    (
-      | {
-          variables: GetOrganizationWithFacilitiesQueryVariables;
-          skip?: boolean;
-        }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
@@ -7160,31 +5800,11 @@ export function useGetOrganizationWithFacilitiesLazyQuery(
     GetOrganizationWithFacilitiesQueryVariables
   >(GetOrganizationWithFacilitiesDocument, options);
 }
-export function useGetOrganizationWithFacilitiesSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetOrganizationWithFacilitiesQuery,
-        GetOrganizationWithFacilitiesQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetOrganizationWithFacilitiesQuery,
-    GetOrganizationWithFacilitiesQueryVariables
-  >(GetOrganizationWithFacilitiesDocument, options);
-}
 export type GetOrganizationWithFacilitiesQueryHookResult = ReturnType<
   typeof useGetOrganizationWithFacilitiesQuery
 >;
 export type GetOrganizationWithFacilitiesLazyQueryHookResult = ReturnType<
   typeof useGetOrganizationWithFacilitiesLazyQuery
->;
-export type GetOrganizationWithFacilitiesSuspenseQueryHookResult = ReturnType<
-  typeof useGetOrganizationWithFacilitiesSuspenseQuery
 >;
 export type GetOrganizationWithFacilitiesQueryResult = Apollo.QueryResult<
   GetOrganizationWithFacilitiesQuery,
@@ -7243,14 +5863,7 @@ export function useGetPatientsByFacilityWithOrgQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetPatientsByFacilityWithOrgQuery,
     GetPatientsByFacilityWithOrgQueryVariables
-  > &
-    (
-      | {
-          variables: GetPatientsByFacilityWithOrgQueryVariables;
-          skip?: boolean;
-        }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
@@ -7270,31 +5883,11 @@ export function useGetPatientsByFacilityWithOrgLazyQuery(
     GetPatientsByFacilityWithOrgQueryVariables
   >(GetPatientsByFacilityWithOrgDocument, options);
 }
-export function useGetPatientsByFacilityWithOrgSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetPatientsByFacilityWithOrgQuery,
-        GetPatientsByFacilityWithOrgQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetPatientsByFacilityWithOrgQuery,
-    GetPatientsByFacilityWithOrgQueryVariables
-  >(GetPatientsByFacilityWithOrgDocument, options);
-}
 export type GetPatientsByFacilityWithOrgQueryHookResult = ReturnType<
   typeof useGetPatientsByFacilityWithOrgQuery
 >;
 export type GetPatientsByFacilityWithOrgLazyQueryHookResult = ReturnType<
   typeof useGetPatientsByFacilityWithOrgLazyQuery
->;
-export type GetPatientsByFacilityWithOrgSuspenseQueryHookResult = ReturnType<
-  typeof useGetPatientsByFacilityWithOrgSuspenseQuery
 >;
 export type GetPatientsByFacilityWithOrgQueryResult = Apollo.QueryResult<
   GetPatientsByFacilityWithOrgQuery,
@@ -7336,14 +5929,7 @@ export function useGetPatientsCountByFacilityWithOrgQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetPatientsCountByFacilityWithOrgQuery,
     GetPatientsCountByFacilityWithOrgQueryVariables
-  > &
-    (
-      | {
-          variables: GetPatientsCountByFacilityWithOrgQueryVariables;
-          skip?: boolean;
-        }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
@@ -7363,89 +5949,15 @@ export function useGetPatientsCountByFacilityWithOrgLazyQuery(
     GetPatientsCountByFacilityWithOrgQueryVariables
   >(GetPatientsCountByFacilityWithOrgDocument, options);
 }
-export function useGetPatientsCountByFacilityWithOrgSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetPatientsCountByFacilityWithOrgQuery,
-        GetPatientsCountByFacilityWithOrgQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetPatientsCountByFacilityWithOrgQuery,
-    GetPatientsCountByFacilityWithOrgQueryVariables
-  >(GetPatientsCountByFacilityWithOrgDocument, options);
-}
 export type GetPatientsCountByFacilityWithOrgQueryHookResult = ReturnType<
   typeof useGetPatientsCountByFacilityWithOrgQuery
 >;
 export type GetPatientsCountByFacilityWithOrgLazyQueryHookResult = ReturnType<
   typeof useGetPatientsCountByFacilityWithOrgLazyQuery
 >;
-export type GetPatientsCountByFacilityWithOrgSuspenseQueryHookResult =
-  ReturnType<typeof useGetPatientsCountByFacilityWithOrgSuspenseQuery>;
 export type GetPatientsCountByFacilityWithOrgQueryResult = Apollo.QueryResult<
   GetPatientsCountByFacilityWithOrgQuery,
   GetPatientsCountByFacilityWithOrgQueryVariables
->;
-export const UnarchivePatientDocument = gql`
-  mutation UnarchivePatient($id: ID!, $orgExternalId: String!) {
-    setPatientIsDeleted(
-      id: $id
-      deleted: false
-      orgExternalId: $orgExternalId
-    ) {
-      internalId
-    }
-  }
-`;
-export type UnarchivePatientMutationFn = Apollo.MutationFunction<
-  UnarchivePatientMutation,
-  UnarchivePatientMutationVariables
->;
-
-/**
- * __useUnarchivePatientMutation__
- *
- * To run a mutation, you first call `useUnarchivePatientMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUnarchivePatientMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [unarchivePatientMutation, { data, loading, error }] = useUnarchivePatientMutation({
- *   variables: {
- *      id: // value for 'id'
- *      orgExternalId: // value for 'orgExternalId'
- *   },
- * });
- */
-export function useUnarchivePatientMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UnarchivePatientMutation,
-    UnarchivePatientMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UnarchivePatientMutation,
-    UnarchivePatientMutationVariables
-  >(UnarchivePatientDocument, options);
-}
-export type UnarchivePatientMutationHookResult = ReturnType<
-  typeof useUnarchivePatientMutation
->;
-export type UnarchivePatientMutationResult =
-  Apollo.MutationResult<UnarchivePatientMutation>;
-export type UnarchivePatientMutationOptions = Apollo.BaseMutationOptions<
-  UnarchivePatientMutation,
-  UnarchivePatientMutationVariables
 >;
 export const SendSupportEscalationDocument = gql`
   mutation SendSupportEscalation {
@@ -7534,11 +6046,7 @@ export function useGetPatientQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetPatientQuery,
     GetPatientQueryVariables
-  > &
-    (
-      | { variables: GetPatientQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<GetPatientQuery, GetPatientQueryVariables>(
@@ -7558,26 +6066,9 @@ export function useGetPatientLazyQuery(
     options
   );
 }
-export function useGetPatientSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<GetPatientQuery, GetPatientQueryVariables>
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<GetPatientQuery, GetPatientQueryVariables>(
-    GetPatientDocument,
-    options
-  );
-}
 export type GetPatientQueryHookResult = ReturnType<typeof useGetPatientQuery>;
 export type GetPatientLazyQueryHookResult = ReturnType<
   typeof useGetPatientLazyQuery
->;
-export type GetPatientSuspenseQueryHookResult = ReturnType<
-  typeof useGetPatientSuspenseQuery
 >;
 export type GetPatientQueryResult = Apollo.QueryResult<
   GetPatientQuery,
@@ -7659,31 +6150,11 @@ export function useGetPatientsByFacilityForQueueLazyQuery(
     GetPatientsByFacilityForQueueQueryVariables
   >(GetPatientsByFacilityForQueueDocument, options);
 }
-export function useGetPatientsByFacilityForQueueSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetPatientsByFacilityForQueueQuery,
-        GetPatientsByFacilityForQueueQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetPatientsByFacilityForQueueQuery,
-    GetPatientsByFacilityForQueueQueryVariables
-  >(GetPatientsByFacilityForQueueDocument, options);
-}
 export type GetPatientsByFacilityForQueueQueryHookResult = ReturnType<
   typeof useGetPatientsByFacilityForQueueQuery
 >;
 export type GetPatientsByFacilityForQueueLazyQueryHookResult = ReturnType<
   typeof useGetPatientsByFacilityForQueueLazyQuery
->;
-export type GetPatientsByFacilityForQueueSuspenseQueryHookResult = ReturnType<
-  typeof useGetPatientsByFacilityForQueueSuspenseQuery
 >;
 export type GetPatientsByFacilityForQueueQueryResult = Apollo.QueryResult<
   GetPatientsByFacilityForQueueQuery,
@@ -7696,7 +6167,6 @@ export const AddPatientToQueueDocument = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $syphilisHistory: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
   ) {
@@ -7704,7 +6174,6 @@ export const AddPatientToQueueDocument = gql`
       facilityId: $facilityId
       patientId: $patientId
       pregnancy: $pregnancy
-      syphilisHistory: $syphilisHistory
       noSymptoms: $noSymptoms
       symptoms: $symptoms
       symptomOnset: $symptomOnset
@@ -7735,7 +6204,6 @@ export type AddPatientToQueueMutationFn = Apollo.MutationFunction<
  *      symptoms: // value for 'symptoms'
  *      symptomOnset: // value for 'symptomOnset'
  *      pregnancy: // value for 'pregnancy'
- *      syphilisHistory: // value for 'syphilisHistory'
  *      noSymptoms: // value for 'noSymptoms'
  *      testResultDelivery: // value for 'testResultDelivery'
  *   },
@@ -7768,20 +6236,16 @@ export const UpdateAoeDocument = gql`
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
-    $syphilisHistory: String
     $noSymptoms: Boolean
     $testResultDelivery: TestResultDeliveryPreference
-    $genderOfSexualPartners: [String]
   ) {
-    updateAoeQuestions(
+    updateTimeOfTestQuestions(
       patientId: $patientId
       pregnancy: $pregnancy
-      syphilisHistory: $syphilisHistory
       symptoms: $symptoms
       noSymptoms: $noSymptoms
       symptomOnset: $symptomOnset
       testResultDelivery: $testResultDelivery
-      genderOfSexualPartners: $genderOfSexualPartners
     )
   }
 `;
@@ -7807,10 +6271,8 @@ export type UpdateAoeMutationFn = Apollo.MutationFunction<
  *      symptoms: // value for 'symptoms'
  *      symptomOnset: // value for 'symptomOnset'
  *      pregnancy: // value for 'pregnancy'
- *      syphilisHistory: // value for 'syphilisHistory'
  *      noSymptoms: // value for 'noSymptoms'
  *      testResultDelivery: // value for 'testResultDelivery'
- *      genderOfSexualPartners: // value for 'genderOfSexualPartners'
  *   },
  * });
  */
@@ -7977,7 +6439,6 @@ export const SubmitQueueItemDocument = gql`
         internalId
       }
       deliverySuccess
-      testEventId
     }
   }
 `;
@@ -8033,12 +6494,10 @@ export const GetFacilityQueueDocument = gql`
     queue(facilityId: $facilityId) {
       internalId
       pregnancy
-      syphilisHistory
       dateAdded
       symptoms
       symptomOnset
       noSymptoms
-      genderOfSexualPartners
       deviceType {
         internalId
         name
@@ -8076,7 +6535,6 @@ export const GetFacilityQueueDocument = gql`
       dateTested
       correctionStatus
       reasonForCorrection
-      timerStartedAt
     }
     facility(id: $facilityId) {
       name
@@ -8124,11 +6582,7 @@ export function useGetFacilityQueueQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetFacilityQueueQuery,
     GetFacilityQueueQueryVariables
-  > &
-    (
-      | { variables: GetFacilityQueueQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<GetFacilityQueueQuery, GetFacilityQueueQueryVariables>(
@@ -8148,1028 +6602,15 @@ export function useGetFacilityQueueLazyQuery(
     GetFacilityQueueQueryVariables
   >(GetFacilityQueueDocument, options);
 }
-export function useGetFacilityQueueSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetFacilityQueueQuery,
-        GetFacilityQueueQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetFacilityQueueQuery,
-    GetFacilityQueueQueryVariables
-  >(GetFacilityQueueDocument, options);
-}
 export type GetFacilityQueueQueryHookResult = ReturnType<
   typeof useGetFacilityQueueQuery
 >;
 export type GetFacilityQueueLazyQueryHookResult = ReturnType<
   typeof useGetFacilityQueueLazyQuery
 >;
-export type GetFacilityQueueSuspenseQueryHookResult = ReturnType<
-  typeof useGetFacilityQueueSuspenseQuery
->;
 export type GetFacilityQueueQueryResult = Apollo.QueryResult<
   GetFacilityQueueQuery,
   GetFacilityQueueQueryVariables
->;
-export const UpdateTestOrderTimerStartedAtDocument = gql`
-  mutation UpdateTestOrderTimerStartedAt(
-    $testOrderId: ID!
-    $startedAt: String
-  ) {
-    updateTestOrderTimerStartedAt(
-      testOrderId: $testOrderId
-      startedAt: $startedAt
-    )
-  }
-`;
-export type UpdateTestOrderTimerStartedAtMutationFn = Apollo.MutationFunction<
-  UpdateTestOrderTimerStartedAtMutation,
-  UpdateTestOrderTimerStartedAtMutationVariables
->;
-
-/**
- * __useUpdateTestOrderTimerStartedAtMutation__
- *
- * To run a mutation, you first call `useUpdateTestOrderTimerStartedAtMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTestOrderTimerStartedAtMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateTestOrderTimerStartedAtMutation, { data, loading, error }] = useUpdateTestOrderTimerStartedAtMutation({
- *   variables: {
- *      testOrderId: // value for 'testOrderId'
- *      startedAt: // value for 'startedAt'
- *   },
- * });
- */
-export function useUpdateTestOrderTimerStartedAtMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UpdateTestOrderTimerStartedAtMutation,
-    UpdateTestOrderTimerStartedAtMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UpdateTestOrderTimerStartedAtMutation,
-    UpdateTestOrderTimerStartedAtMutationVariables
-  >(UpdateTestOrderTimerStartedAtDocument, options);
-}
-export type UpdateTestOrderTimerStartedAtMutationHookResult = ReturnType<
-  typeof useUpdateTestOrderTimerStartedAtMutation
->;
-export type UpdateTestOrderTimerStartedAtMutationResult =
-  Apollo.MutationResult<UpdateTestOrderTimerStartedAtMutation>;
-export type UpdateTestOrderTimerStartedAtMutationOptions =
-  Apollo.BaseMutationOptions<
-    UpdateTestOrderTimerStartedAtMutation,
-    UpdateTestOrderTimerStartedAtMutationVariables
-  >;
-export const GetTestResultForResendingEmailsDocument = gql`
-  query getTestResultForResendingEmails($id: ID!) {
-    testResult(id: $id) {
-      dateTested
-      patient {
-        firstName
-        middleName
-        lastName
-        email
-        emails
-      }
-    }
-  }
-`;
-
-/**
- * __useGetTestResultForResendingEmailsQuery__
- *
- * To run a query within a React component, call `useGetTestResultForResendingEmailsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTestResultForResendingEmailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTestResultForResendingEmailsQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetTestResultForResendingEmailsQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetTestResultForResendingEmailsQuery,
-    GetTestResultForResendingEmailsQueryVariables
-  > &
-    (
-      | {
-          variables: GetTestResultForResendingEmailsQueryVariables;
-          skip?: boolean;
-        }
-      | { skip: boolean }
-    )
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetTestResultForResendingEmailsQuery,
-    GetTestResultForResendingEmailsQueryVariables
-  >(GetTestResultForResendingEmailsDocument, options);
-}
-export function useGetTestResultForResendingEmailsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTestResultForResendingEmailsQuery,
-    GetTestResultForResendingEmailsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetTestResultForResendingEmailsQuery,
-    GetTestResultForResendingEmailsQueryVariables
-  >(GetTestResultForResendingEmailsDocument, options);
-}
-export function useGetTestResultForResendingEmailsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetTestResultForResendingEmailsQuery,
-        GetTestResultForResendingEmailsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetTestResultForResendingEmailsQuery,
-    GetTestResultForResendingEmailsQueryVariables
-  >(GetTestResultForResendingEmailsDocument, options);
-}
-export type GetTestResultForResendingEmailsQueryHookResult = ReturnType<
-  typeof useGetTestResultForResendingEmailsQuery
->;
-export type GetTestResultForResendingEmailsLazyQueryHookResult = ReturnType<
-  typeof useGetTestResultForResendingEmailsLazyQuery
->;
-export type GetTestResultForResendingEmailsSuspenseQueryHookResult = ReturnType<
-  typeof useGetTestResultForResendingEmailsSuspenseQuery
->;
-export type GetTestResultForResendingEmailsQueryResult = Apollo.QueryResult<
-  GetTestResultForResendingEmailsQuery,
-  GetTestResultForResendingEmailsQueryVariables
->;
-export const ResendTestResultsEmailDocument = gql`
-  mutation resendTestResultsEmail($testEventId: ID!) {
-    sendPatientLinkEmailByTestEventId(testEventId: $testEventId)
-  }
-`;
-export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
-  ResendTestResultsEmailMutation,
-  ResendTestResultsEmailMutationVariables
->;
-
-/**
- * __useResendTestResultsEmailMutation__
- *
- * To run a mutation, you first call `useResendTestResultsEmailMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useResendTestResultsEmailMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [resendTestResultsEmailMutation, { data, loading, error }] = useResendTestResultsEmailMutation({
- *   variables: {
- *      testEventId: // value for 'testEventId'
- *   },
- * });
- */
-export function useResendTestResultsEmailMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    ResendTestResultsEmailMutation,
-    ResendTestResultsEmailMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    ResendTestResultsEmailMutation,
-    ResendTestResultsEmailMutationVariables
-  >(ResendTestResultsEmailDocument, options);
-}
-export type ResendTestResultsEmailMutationHookResult = ReturnType<
-  typeof useResendTestResultsEmailMutation
->;
-export type ResendTestResultsEmailMutationResult =
-  Apollo.MutationResult<ResendTestResultsEmailMutation>;
-export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
-  ResendTestResultsEmailMutation,
-  ResendTestResultsEmailMutationVariables
->;
-export const GetFacilityResultsForCsvWithCountDocument = gql`
-  query GetFacilityResultsForCsvWithCount(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $disease: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResultsPage(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      disease: $disease
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      content {
-        facility {
-          name
-          isDeleted
-        }
-        dateTested
-        dateUpdated
-        results {
-          disease {
-            name
-          }
-          testResult
-        }
-        correctionStatus
-        reasonForCorrection
-        deviceType {
-          name
-          manufacturer
-          model
-          swabTypes {
-            internalId
-            name
-          }
-        }
-        patient {
-          firstName
-          middleName
-          lastName
-          birthDate
-          gender
-          race
-          ethnicity
-          tribalAffiliation
-          lookupId
-          telephone
-          email
-          street
-          streetTwo
-          city
-          county
-          state
-          zipCode
-          country
-          role
-          residentCongregateSetting
-          employedInHealthcare
-          preferredLanguage
-        }
-        createdBy {
-          nameInfo {
-            firstName
-            middleName
-            lastName
-          }
-        }
-        symptoms
-        noSymptoms
-        symptomOnset
-      }
-      totalElements
-    }
-  }
-`;
-
-/**
- * __useGetFacilityResultsForCsvWithCountQuery__
- *
- * To run a query within a React component, call `useGetFacilityResultsForCsvWithCountQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFacilityResultsForCsvWithCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetFacilityResultsForCsvWithCountQuery({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      patientId: // value for 'patientId'
- *      result: // value for 'result'
- *      role: // value for 'role'
- *      disease: // value for 'disease'
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *      pageNumber: // value for 'pageNumber'
- *      pageSize: // value for 'pageSize'
- *   },
- * });
- */
-export function useGetFacilityResultsForCsvWithCountQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetFacilityResultsForCsvWithCountQuery,
-    GetFacilityResultsForCsvWithCountQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetFacilityResultsForCsvWithCountQuery,
-    GetFacilityResultsForCsvWithCountQueryVariables
-  >(GetFacilityResultsForCsvWithCountDocument, options);
-}
-export function useGetFacilityResultsForCsvWithCountLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFacilityResultsForCsvWithCountQuery,
-    GetFacilityResultsForCsvWithCountQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetFacilityResultsForCsvWithCountQuery,
-    GetFacilityResultsForCsvWithCountQueryVariables
-  >(GetFacilityResultsForCsvWithCountDocument, options);
-}
-export function useGetFacilityResultsForCsvWithCountSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetFacilityResultsForCsvWithCountQuery,
-        GetFacilityResultsForCsvWithCountQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetFacilityResultsForCsvWithCountQuery,
-    GetFacilityResultsForCsvWithCountQueryVariables
-  >(GetFacilityResultsForCsvWithCountDocument, options);
-}
-export type GetFacilityResultsForCsvWithCountQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsForCsvWithCountQuery
->;
-export type GetFacilityResultsForCsvWithCountLazyQueryHookResult = ReturnType<
-  typeof useGetFacilityResultsForCsvWithCountLazyQuery
->;
-export type GetFacilityResultsForCsvWithCountSuspenseQueryHookResult =
-  ReturnType<typeof useGetFacilityResultsForCsvWithCountSuspenseQuery>;
-export type GetFacilityResultsForCsvWithCountQueryResult = Apollo.QueryResult<
-  GetFacilityResultsForCsvWithCountQuery,
-  GetFacilityResultsForCsvWithCountQueryVariables
->;
-export const GetResultsMultiplexWithCountDocument = gql`
-  query GetResultsMultiplexWithCount(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $disease: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    resultsPage(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      disease: $disease
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      content {
-        id
-        dateAdded
-        dateTested
-        disease
-        testResult
-        correctionStatus
-        reasonForCorrection
-        facility {
-          name
-          isDeleted
-        }
-        deviceType {
-          internalId
-          name
-        }
-        patient {
-          internalId
-          firstName
-          middleName
-          lastName
-          birthDate
-          gender
-          role
-          email
-          phoneNumbers {
-            type
-            number
-          }
-        }
-        createdBy {
-          nameInfo {
-            firstName
-            middleName
-            lastName
-          }
-        }
-      }
-      totalElements
-    }
-  }
-`;
-
-/**
- * __useGetResultsMultiplexWithCountQuery__
- *
- * To run a query within a React component, call `useGetResultsMultiplexWithCountQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetResultsMultiplexWithCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetResultsMultiplexWithCountQuery({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      patientId: // value for 'patientId'
- *      result: // value for 'result'
- *      role: // value for 'role'
- *      disease: // value for 'disease'
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *      pageNumber: // value for 'pageNumber'
- *      pageSize: // value for 'pageSize'
- *   },
- * });
- */
-export function useGetResultsMultiplexWithCountQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetResultsMultiplexWithCountQuery,
-    GetResultsMultiplexWithCountQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetResultsMultiplexWithCountQuery,
-    GetResultsMultiplexWithCountQueryVariables
-  >(GetResultsMultiplexWithCountDocument, options);
-}
-export function useGetResultsMultiplexWithCountLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetResultsMultiplexWithCountQuery,
-    GetResultsMultiplexWithCountQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetResultsMultiplexWithCountQuery,
-    GetResultsMultiplexWithCountQueryVariables
-  >(GetResultsMultiplexWithCountDocument, options);
-}
-export function useGetResultsMultiplexWithCountSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetResultsMultiplexWithCountQuery,
-        GetResultsMultiplexWithCountQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetResultsMultiplexWithCountQuery,
-    GetResultsMultiplexWithCountQueryVariables
-  >(GetResultsMultiplexWithCountDocument, options);
-}
-export type GetResultsMultiplexWithCountQueryHookResult = ReturnType<
-  typeof useGetResultsMultiplexWithCountQuery
->;
-export type GetResultsMultiplexWithCountLazyQueryHookResult = ReturnType<
-  typeof useGetResultsMultiplexWithCountLazyQuery
->;
-export type GetResultsMultiplexWithCountSuspenseQueryHookResult = ReturnType<
-  typeof useGetResultsMultiplexWithCountSuspenseQuery
->;
-export type GetResultsMultiplexWithCountQueryResult = Apollo.QueryResult<
-  GetResultsMultiplexWithCountQuery,
-  GetResultsMultiplexWithCountQueryVariables
->;
-export const GetAllFacilitiesDocument = gql`
-  query GetAllFacilities($showArchived: Boolean) {
-    facilities(showArchived: $showArchived) {
-      id
-      name
-      isDeleted
-    }
-  }
-`;
-
-/**
- * __useGetAllFacilitiesQuery__
- *
- * To run a query within a React component, call `useGetAllFacilitiesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetAllFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetAllFacilitiesQuery({
- *   variables: {
- *      showArchived: // value for 'showArchived'
- *   },
- * });
- */
-export function useGetAllFacilitiesQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetAllFacilitiesQuery,
-    GetAllFacilitiesQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetAllFacilitiesQuery, GetAllFacilitiesQueryVariables>(
-    GetAllFacilitiesDocument,
-    options
-  );
-}
-export function useGetAllFacilitiesLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetAllFacilitiesQuery,
-    GetAllFacilitiesQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetAllFacilitiesQuery,
-    GetAllFacilitiesQueryVariables
-  >(GetAllFacilitiesDocument, options);
-}
-export function useGetAllFacilitiesSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetAllFacilitiesQuery,
-        GetAllFacilitiesQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetAllFacilitiesQuery,
-    GetAllFacilitiesQueryVariables
-  >(GetAllFacilitiesDocument, options);
-}
-export type GetAllFacilitiesQueryHookResult = ReturnType<
-  typeof useGetAllFacilitiesQuery
->;
-export type GetAllFacilitiesLazyQueryHookResult = ReturnType<
-  typeof useGetAllFacilitiesLazyQuery
->;
-export type GetAllFacilitiesSuspenseQueryHookResult = ReturnType<
-  typeof useGetAllFacilitiesSuspenseQuery
->;
-export type GetAllFacilitiesQueryResult = Apollo.QueryResult<
-  GetAllFacilitiesQuery,
-  GetAllFacilitiesQueryVariables
->;
-export const GetResultsCountByFacilityDocument = gql`
-  query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
-`;
-
-/**
- * __useGetResultsCountByFacilityQuery__
- *
- * To run a query within a React component, call `useGetResultsCountByFacilityQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetResultsCountByFacilityQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetResultsCountByFacilityQuery({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      patientId: // value for 'patientId'
- *      result: // value for 'result'
- *      role: // value for 'role'
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *   },
- * });
- */
-export function useGetResultsCountByFacilityQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >(GetResultsCountByFacilityDocument, options);
-}
-export function useGetResultsCountByFacilityLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >(GetResultsCountByFacilityDocument, options);
-}
-export function useGetResultsCountByFacilitySuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetResultsCountByFacilityQuery,
-        GetResultsCountByFacilityQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetResultsCountByFacilityQuery,
-    GetResultsCountByFacilityQueryVariables
-  >(GetResultsCountByFacilityDocument, options);
-}
-export type GetResultsCountByFacilityQueryHookResult = ReturnType<
-  typeof useGetResultsCountByFacilityQuery
->;
-export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
-  typeof useGetResultsCountByFacilityLazyQuery
->;
-export type GetResultsCountByFacilitySuspenseQueryHookResult = ReturnType<
-  typeof useGetResultsCountByFacilitySuspenseQuery
->;
-export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
-  GetResultsCountByFacilityQuery,
-  GetResultsCountByFacilityQueryVariables
->;
-export const GetTestResultForPrintDocument = gql`
-  query GetTestResultForPrint($id: ID!) {
-    testResult(id: $id) {
-      dateTested
-      results {
-        disease {
-          name
-        }
-        testResult
-      }
-      correctionStatus
-      deviceType {
-        name
-        model
-      }
-      patient {
-        firstName
-        middleName
-        lastName
-        birthDate
-      }
-      facility {
-        name
-        cliaNumber
-        phone
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          NPI
-        }
-      }
-    }
-  }
-`;
-
-/**
- * __useGetTestResultForPrintQuery__
- *
- * To run a query within a React component, call `useGetTestResultForPrintQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTestResultForPrintQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTestResultForPrintQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetTestResultForPrintQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  > &
-    (
-      | { variables: GetTestResultForPrintQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >(GetTestResultForPrintDocument, options);
-}
-export function useGetTestResultForPrintLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >(GetTestResultForPrintDocument, options);
-}
-export function useGetTestResultForPrintSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetTestResultForPrintQuery,
-        GetTestResultForPrintQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetTestResultForPrintQuery,
-    GetTestResultForPrintQueryVariables
-  >(GetTestResultForPrintDocument, options);
-}
-export type GetTestResultForPrintQueryHookResult = ReturnType<
-  typeof useGetTestResultForPrintQuery
->;
-export type GetTestResultForPrintLazyQueryHookResult = ReturnType<
-  typeof useGetTestResultForPrintLazyQuery
->;
-export type GetTestResultForPrintSuspenseQueryHookResult = ReturnType<
-  typeof useGetTestResultForPrintSuspenseQuery
->;
-export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
-  GetTestResultForPrintQuery,
-  GetTestResultForPrintQueryVariables
->;
-export const GetUploadSubmissionDocument = gql`
-  query GetUploadSubmission($id: ID!) {
-    uploadSubmission(id: $id) {
-      reportId
-      createdAt
-      status
-      recordsCount
-      warnings {
-        message
-        scope
-      }
-      errors {
-        message
-        scope
-      }
-    }
-  }
-`;
-
-/**
- * __useGetUploadSubmissionQuery__
- *
- * To run a query within a React component, call `useGetUploadSubmissionQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUploadSubmissionQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUploadSubmissionQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetUploadSubmissionQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  > &
-    (
-      | { variables: GetUploadSubmissionQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >(GetUploadSubmissionDocument, options);
-}
-export function useGetUploadSubmissionLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >(GetUploadSubmissionDocument, options);
-}
-export function useGetUploadSubmissionSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetUploadSubmissionQuery,
-        GetUploadSubmissionQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetUploadSubmissionQuery,
-    GetUploadSubmissionQueryVariables
-  >(GetUploadSubmissionDocument, options);
-}
-export type GetUploadSubmissionQueryHookResult = ReturnType<
-  typeof useGetUploadSubmissionQuery
->;
-export type GetUploadSubmissionLazyQueryHookResult = ReturnType<
-  typeof useGetUploadSubmissionLazyQuery
->;
-export type GetUploadSubmissionSuspenseQueryHookResult = ReturnType<
-  typeof useGetUploadSubmissionSuspenseQuery
->;
-export type GetUploadSubmissionQueryResult = Apollo.QueryResult<
-  GetUploadSubmissionQuery,
-  GetUploadSubmissionQueryVariables
->;
-export const GetUploadSubmissionsDocument = gql`
-  query GetUploadSubmissions(
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    uploadSubmissions(
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      content {
-        internalId
-        reportId
-        createdAt
-        status
-        recordsCount
-        errors {
-          message
-          scope
-        }
-        warnings {
-          message
-          scope
-        }
-      }
-      totalElements
-    }
-  }
-`;
-
-/**
- * __useGetUploadSubmissionsQuery__
- *
- * To run a query within a React component, call `useGetUploadSubmissionsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUploadSubmissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUploadSubmissionsQuery({
- *   variables: {
- *      startDate: // value for 'startDate'
- *      endDate: // value for 'endDate'
- *      pageNumber: // value for 'pageNumber'
- *      pageSize: // value for 'pageSize'
- *   },
- * });
- */
-export function useGetUploadSubmissionsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetUploadSubmissionsQuery,
-    GetUploadSubmissionsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetUploadSubmissionsQuery,
-    GetUploadSubmissionsQueryVariables
-  >(GetUploadSubmissionsDocument, options);
-}
-export function useGetUploadSubmissionsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetUploadSubmissionsQuery,
-    GetUploadSubmissionsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetUploadSubmissionsQuery,
-    GetUploadSubmissionsQueryVariables
-  >(GetUploadSubmissionsDocument, options);
-}
-export function useGetUploadSubmissionsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetUploadSubmissionsQuery,
-        GetUploadSubmissionsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetUploadSubmissionsQuery,
-    GetUploadSubmissionsQueryVariables
-  >(GetUploadSubmissionsDocument, options);
-}
-export type GetUploadSubmissionsQueryHookResult = ReturnType<
-  typeof useGetUploadSubmissionsQuery
->;
-export type GetUploadSubmissionsLazyQueryHookResult = ReturnType<
-  typeof useGetUploadSubmissionsLazyQuery
->;
-export type GetUploadSubmissionsSuspenseQueryHookResult = ReturnType<
-  typeof useGetUploadSubmissionsSuspenseQuery
->;
-export type GetUploadSubmissionsQueryResult = Apollo.QueryResult<
-  GetUploadSubmissionsQuery,
-  GetUploadSubmissionsQueryVariables
 >;
 export const GetTestResultForCorrectionDocument = gql`
   query getTestResultForCorrection($id: ID!) {
@@ -9215,11 +6656,7 @@ export function useGetTestResultForCorrectionQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetTestResultForCorrectionQuery,
     GetTestResultForCorrectionQueryVariables
-  > &
-    (
-      | { variables: GetTestResultForCorrectionQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
@@ -9239,31 +6676,11 @@ export function useGetTestResultForCorrectionLazyQuery(
     GetTestResultForCorrectionQueryVariables
   >(GetTestResultForCorrectionDocument, options);
 }
-export function useGetTestResultForCorrectionSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetTestResultForCorrectionQuery,
-        GetTestResultForCorrectionQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetTestResultForCorrectionQuery,
-    GetTestResultForCorrectionQueryVariables
-  >(GetTestResultForCorrectionDocument, options);
-}
 export type GetTestResultForCorrectionQueryHookResult = ReturnType<
   typeof useGetTestResultForCorrectionQuery
 >;
 export type GetTestResultForCorrectionLazyQueryHookResult = ReturnType<
   typeof useGetTestResultForCorrectionLazyQuery
->;
-export type GetTestResultForCorrectionSuspenseQueryHookResult = ReturnType<
-  typeof useGetTestResultForCorrectionSuspenseQuery
 >;
 export type GetTestResultForCorrectionQueryResult = Apollo.QueryResult<
   GetTestResultForCorrectionQuery,
@@ -9371,6 +6788,90 @@ export type MarkTestAsCorrectionMutationOptions = Apollo.BaseMutationOptions<
   MarkTestAsCorrectionMutation,
   MarkTestAsCorrectionMutationVariables
 >;
+export const GetTestResultDetailsDocument = gql`
+  query getTestResultDetails($id: ID!) {
+    testResult(id: $id) {
+      dateTested
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
+      correctionStatus
+      symptoms
+      symptomOnset
+      pregnancy
+      deviceType {
+        name
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+      }
+      createdBy {
+        name {
+          firstName
+          middleName
+          lastName
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetTestResultDetailsQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultDetailsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultDetailsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTestResultDetailsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultDetailsQuery,
+    GetTestResultDetailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultDetailsQuery,
+    GetTestResultDetailsQueryVariables
+  >(GetTestResultDetailsDocument, options);
+}
+export function useGetTestResultDetailsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultDetailsQuery,
+    GetTestResultDetailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultDetailsQuery,
+    GetTestResultDetailsQueryVariables
+  >(GetTestResultDetailsDocument, options);
+}
+export type GetTestResultDetailsQueryHookResult = ReturnType<
+  typeof useGetTestResultDetailsQuery
+>;
+export type GetTestResultDetailsLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultDetailsLazyQuery
+>;
+export type GetTestResultDetailsQueryResult = Apollo.QueryResult<
+  GetTestResultDetailsQuery,
+  GetTestResultDetailsQueryVariables
+>;
 export const GetTestResultForTextDocument = gql`
   query getTestResultForText($id: ID!) {
     testResult(id: $id) {
@@ -9409,11 +6910,7 @@ export function useGetTestResultForTextQuery(
   baseOptions: Apollo.QueryHookOptions<
     GetTestResultForTextQuery,
     GetTestResultForTextQueryVariables
-  > &
-    (
-      | { variables: GetTestResultForTextQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
+  >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
@@ -9433,31 +6930,11 @@ export function useGetTestResultForTextLazyQuery(
     GetTestResultForTextQueryVariables
   >(GetTestResultForTextDocument, options);
 }
-export function useGetTestResultForTextSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetTestResultForTextQuery,
-        GetTestResultForTextQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetTestResultForTextQuery,
-    GetTestResultForTextQueryVariables
-  >(GetTestResultForTextDocument, options);
-}
 export type GetTestResultForTextQueryHookResult = ReturnType<
   typeof useGetTestResultForTextQuery
 >;
 export type GetTestResultForTextLazyQueryHookResult = ReturnType<
   typeof useGetTestResultForTextLazyQuery
->;
-export type GetTestResultForTextSuspenseQueryHookResult = ReturnType<
-  typeof useGetTestResultForTextSuspenseQuery
 >;
 export type GetTestResultForTextQueryResult = Apollo.QueryResult<
   GetTestResultForTextQuery,
@@ -9508,8 +6985,523 @@ export type SendSmsMutationOptions = Apollo.BaseMutationOptions<
   SendSmsMutation,
   SendSmsMutationVariables
 >;
-export const GetTestResultDetailsDocument = gql`
-  query GetTestResultDetails($id: ID!) {
+export const GetTestResultForResendingEmailsDocument = gql`
+  query getTestResultForResendingEmails($id: ID!) {
+    testResult(id: $id) {
+      dateTested
+      patient {
+        firstName
+        middleName
+        lastName
+        email
+        emails
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetTestResultForResendingEmailsQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultForResendingEmailsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultForResendingEmailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultForResendingEmailsQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTestResultForResendingEmailsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultForResendingEmailsQuery,
+    GetTestResultForResendingEmailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultForResendingEmailsQuery,
+    GetTestResultForResendingEmailsQueryVariables
+  >(GetTestResultForResendingEmailsDocument, options);
+}
+export function useGetTestResultForResendingEmailsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultForResendingEmailsQuery,
+    GetTestResultForResendingEmailsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultForResendingEmailsQuery,
+    GetTestResultForResendingEmailsQueryVariables
+  >(GetTestResultForResendingEmailsDocument, options);
+}
+export type GetTestResultForResendingEmailsQueryHookResult = ReturnType<
+  typeof useGetTestResultForResendingEmailsQuery
+>;
+export type GetTestResultForResendingEmailsLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultForResendingEmailsLazyQuery
+>;
+export type GetTestResultForResendingEmailsQueryResult = Apollo.QueryResult<
+  GetTestResultForResendingEmailsQuery,
+  GetTestResultForResendingEmailsQueryVariables
+>;
+export const ResendTestResultsEmailDocument = gql`
+  mutation resendTestResultsEmail($testEventId: ID!) {
+    sendPatientLinkEmailByTestEventId(testEventId: $testEventId)
+  }
+`;
+export type ResendTestResultsEmailMutationFn = Apollo.MutationFunction<
+  ResendTestResultsEmailMutation,
+  ResendTestResultsEmailMutationVariables
+>;
+
+/**
+ * __useResendTestResultsEmailMutation__
+ *
+ * To run a mutation, you first call `useResendTestResultsEmailMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResendTestResultsEmailMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resendTestResultsEmailMutation, { data, loading, error }] = useResendTestResultsEmailMutation({
+ *   variables: {
+ *      testEventId: // value for 'testEventId'
+ *   },
+ * });
+ */
+export function useResendTestResultsEmailMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ResendTestResultsEmailMutation,
+    ResendTestResultsEmailMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ResendTestResultsEmailMutation,
+    ResendTestResultsEmailMutationVariables
+  >(ResendTestResultsEmailDocument, options);
+}
+export type ResendTestResultsEmailMutationHookResult = ReturnType<
+  typeof useResendTestResultsEmailMutation
+>;
+export type ResendTestResultsEmailMutationResult =
+  Apollo.MutationResult<ResendTestResultsEmailMutation>;
+export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
+  ResendTestResultsEmailMutation,
+  ResendTestResultsEmailMutationVariables
+>;
+export const GetFacilityResultsForCsvWithCountDocument = gql`
+  query GetFacilityResultsForCsvWithCount(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResultsPage(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      content {
+        facility {
+          name
+          isDeleted
+        }
+        dateTested
+        dateUpdated
+        results {
+          disease {
+            name
+          }
+          testResult
+        }
+        correctionStatus
+        reasonForCorrection
+        deviceType {
+          name
+          manufacturer
+          model
+          swabTypes {
+            internalId
+            name
+          }
+        }
+        patient {
+          firstName
+          middleName
+          lastName
+          birthDate
+          gender
+          race
+          ethnicity
+          tribalAffiliation
+          lookupId
+          telephone
+          email
+          street
+          streetTwo
+          city
+          county
+          state
+          zipCode
+          country
+          role
+          residentCongregateSetting
+          employedInHealthcare
+          preferredLanguage
+        }
+        createdBy {
+          nameInfo {
+            firstName
+            middleName
+            lastName
+          }
+        }
+        symptoms
+        noSymptoms
+        symptomOnset
+      }
+      totalElements
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsForCsvWithCountQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsForCsvWithCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsForCsvWithCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsForCsvWithCountQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsForCsvWithCountQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsForCsvWithCountQuery,
+    GetFacilityResultsForCsvWithCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsForCsvWithCountQuery,
+    GetFacilityResultsForCsvWithCountQueryVariables
+  >(GetFacilityResultsForCsvWithCountDocument, options);
+}
+export function useGetFacilityResultsForCsvWithCountLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsForCsvWithCountQuery,
+    GetFacilityResultsForCsvWithCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsForCsvWithCountQuery,
+    GetFacilityResultsForCsvWithCountQueryVariables
+  >(GetFacilityResultsForCsvWithCountDocument, options);
+}
+export type GetFacilityResultsForCsvWithCountQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvWithCountQuery
+>;
+export type GetFacilityResultsForCsvWithCountLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsForCsvWithCountLazyQuery
+>;
+export type GetFacilityResultsForCsvWithCountQueryResult = Apollo.QueryResult<
+  GetFacilityResultsForCsvWithCountQuery,
+  GetFacilityResultsForCsvWithCountQueryVariables
+>;
+export const GetFacilityResultsMultiplexWithCountDocument = gql`
+  query GetFacilityResultsMultiplexWithCount(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
+    testResultsPage(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      content {
+        internalId
+        dateTested
+        results {
+          disease {
+            name
+          }
+          testResult
+        }
+        correctionStatus
+        deviceType {
+          internalId
+          name
+        }
+        patient {
+          internalId
+          firstName
+          middleName
+          lastName
+          birthDate
+          gender
+          lookupId
+          email
+          phoneNumbers {
+            type
+            number
+          }
+        }
+        createdBy {
+          nameInfo {
+            firstName
+            lastName
+          }
+        }
+        patientLink {
+          internalId
+        }
+        facility {
+          name
+          isDeleted
+        }
+      }
+      totalElements
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityResultsMultiplexWithCountQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityResultsMultiplexWithCountQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityResultsMultiplexWithCountQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityResultsMultiplexWithCountQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *   },
+ * });
+ */
+export function useGetFacilityResultsMultiplexWithCountQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >(GetFacilityResultsMultiplexWithCountDocument, options);
+}
+export function useGetFacilityResultsMultiplexWithCountLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >(GetFacilityResultsMultiplexWithCountDocument, options);
+}
+export type GetFacilityResultsMultiplexWithCountQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsMultiplexWithCountQuery
+>;
+export type GetFacilityResultsMultiplexWithCountLazyQueryHookResult =
+  ReturnType<typeof useGetFacilityResultsMultiplexWithCountLazyQuery>;
+export type GetFacilityResultsMultiplexWithCountQueryResult =
+  Apollo.QueryResult<
+    GetFacilityResultsMultiplexWithCountQuery,
+    GetFacilityResultsMultiplexWithCountQueryVariables
+  >;
+export const GetAllFacilitiesDocument = gql`
+  query GetAllFacilities($showArchived: Boolean) {
+    facilities(showArchived: $showArchived) {
+      id
+      name
+      isDeleted
+    }
+  }
+`;
+
+/**
+ * __useGetAllFacilitiesQuery__
+ *
+ * To run a query within a React component, call `useGetAllFacilitiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllFacilitiesQuery({
+ *   variables: {
+ *      showArchived: // value for 'showArchived'
+ *   },
+ * });
+ */
+export function useGetAllFacilitiesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetAllFacilitiesQuery, GetAllFacilitiesQueryVariables>(
+    GetAllFacilitiesDocument,
+    options
+  );
+}
+export function useGetAllFacilitiesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetAllFacilitiesQuery,
+    GetAllFacilitiesQueryVariables
+  >(GetAllFacilitiesDocument, options);
+}
+export type GetAllFacilitiesQueryHookResult = ReturnType<
+  typeof useGetAllFacilitiesQuery
+>;
+export type GetAllFacilitiesLazyQueryHookResult = ReturnType<
+  typeof useGetAllFacilitiesLazyQuery
+>;
+export type GetAllFacilitiesQueryResult = Apollo.QueryResult<
+  GetAllFacilitiesQuery,
+  GetAllFacilitiesQueryVariables
+>;
+export const GetResultsCountByFacilityDocument = gql`
+  query GetResultsCountByFacility(
+    $facilityId: ID
+    $patientId: ID
+    $result: String
+    $role: String
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    testResultsCount(
+      facilityId: $facilityId
+      patientId: $patientId
+      result: $result
+      role: $role
+      startDate: $startDate
+      endDate: $endDate
+    )
+  }
+`;
+
+/**
+ * __useGetResultsCountByFacilityQuery__
+ *
+ * To run a query within a React component, call `useGetResultsCountByFacilityQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetResultsCountByFacilityQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetResultsCountByFacilityQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      patientId: // value for 'patientId'
+ *      result: // value for 'result'
+ *      role: // value for 'role'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *   },
+ * });
+ */
+export function useGetResultsCountByFacilityQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >(GetResultsCountByFacilityDocument, options);
+}
+export function useGetResultsCountByFacilityLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetResultsCountByFacilityQuery,
+    GetResultsCountByFacilityQueryVariables
+  >(GetResultsCountByFacilityDocument, options);
+}
+export type GetResultsCountByFacilityQueryHookResult = ReturnType<
+  typeof useGetResultsCountByFacilityQuery
+>;
+export type GetResultsCountByFacilityLazyQueryHookResult = ReturnType<
+  typeof useGetResultsCountByFacilityLazyQuery
+>;
+export type GetResultsCountByFacilityQueryResult = Apollo.QueryResult<
+  GetResultsCountByFacilityQuery,
+  GetResultsCountByFacilityQueryVariables
+>;
+export const GetTestResultForPrintDocument = gql`
+  query GetTestResultForPrint($id: ID!) {
     testResult(id: $id) {
       dateTested
       results {
@@ -9519,20 +7511,9 @@ export const GetTestResultDetailsDocument = gql`
         testResult
       }
       correctionStatus
-      symptoms
-      symptomOnset
-      pregnancy
-      genderOfSexualPartners
-      surveyData {
-        pregnancy
-        syphilisHistory
-        symptoms
-        symptomOnset
-        noSymptoms
-        genderOfSexualPartners
-      }
       deviceType {
         name
+        model
       }
       patient {
         firstName
@@ -9540,11 +7521,20 @@ export const GetTestResultDetailsDocument = gql`
         lastName
         birthDate
       }
-      createdBy {
-        name {
+      facility {
+        name
+        cliaNumber
+        phone
+        street
+        streetTwo
+        city
+        state
+        zipCode
+        orderingProvider {
           firstName
           middleName
           lastName
+          NPI
         }
       }
     }
@@ -9552,505 +7542,209 @@ export const GetTestResultDetailsDocument = gql`
 `;
 
 /**
- * __useGetTestResultDetailsQuery__
+ * __useGetTestResultForPrintQuery__
  *
- * To run a query within a React component, call `useGetTestResultDetailsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTestResultDetailsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetTestResultForPrintQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultForPrintQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetTestResultDetailsQuery({
+ * const { data, loading, error } = useGetTestResultForPrintQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetTestResultDetailsQuery(
+export function useGetTestResultForPrintQuery(
   baseOptions: Apollo.QueryHookOptions<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  > &
-    (
-      | { variables: GetTestResultDetailsQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >(GetTestResultDetailsDocument, options);
-}
-export function useGetTestResultDetailsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >(GetTestResultDetailsDocument, options);
-}
-export function useGetTestResultDetailsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetTestResultDetailsQuery,
-        GetTestResultDetailsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetTestResultDetailsQuery,
-    GetTestResultDetailsQueryVariables
-  >(GetTestResultDetailsDocument, options);
-}
-export type GetTestResultDetailsQueryHookResult = ReturnType<
-  typeof useGetTestResultDetailsQuery
->;
-export type GetTestResultDetailsLazyQueryHookResult = ReturnType<
-  typeof useGetTestResultDetailsLazyQuery
->;
-export type GetTestResultDetailsSuspenseQueryHookResult = ReturnType<
-  typeof useGetTestResultDetailsSuspenseQuery
->;
-export type GetTestResultDetailsQueryResult = Apollo.QueryResult<
-  GetTestResultDetailsQuery,
-  GetTestResultDetailsQueryVariables
->;
-export const GetConditionsDocument = gql`
-  query GetConditions {
-    conditions {
-      code
-      display
-      snomedName
-    }
-  }
-`;
-
-/**
- * __useGetConditionsQuery__
- *
- * To run a query within a React component, call `useGetConditionsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetConditionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetConditionsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetConditionsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetConditionsQuery,
-    GetConditionsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetConditionsQuery, GetConditionsQueryVariables>(
-    GetConditionsDocument,
-    options
-  );
-}
-export function useGetConditionsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetConditionsQuery,
-    GetConditionsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetConditionsQuery, GetConditionsQueryVariables>(
-    GetConditionsDocument,
-    options
-  );
-}
-export function useGetConditionsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetConditionsQuery,
-        GetConditionsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetConditionsQuery,
-    GetConditionsQueryVariables
-  >(GetConditionsDocument, options);
-}
-export type GetConditionsQueryHookResult = ReturnType<
-  typeof useGetConditionsQuery
->;
-export type GetConditionsLazyQueryHookResult = ReturnType<
-  typeof useGetConditionsLazyQuery
->;
-export type GetConditionsSuspenseQueryHookResult = ReturnType<
-  typeof useGetConditionsSuspenseQuery
->;
-export type GetConditionsQueryResult = Apollo.QueryResult<
-  GetConditionsQuery,
-  GetConditionsQueryVariables
->;
-export const GetLabsByConditionsDocument = gql`
-  query GetLabsByConditions($conditionCodes: [String!]) {
-    labs(conditionCodes: $conditionCodes) {
-      code
-      display
-      description
-      longCommonName
-      scaleCode
-      scaleDisplay
-      systemCode
-      systemDisplay
-      answerList
-      orderOrObservation
-      panel
-    }
-  }
-`;
-
-/**
- * __useGetLabsByConditionsQuery__
- *
- * To run a query within a React component, call `useGetLabsByConditionsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetLabsByConditionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetLabsByConditionsQuery({
- *   variables: {
- *      conditionCodes: // value for 'conditionCodes'
- *   },
- * });
- */
-export function useGetLabsByConditionsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
-  >(GetLabsByConditionsDocument, options);
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >(GetTestResultForPrintDocument, options);
 }
-export function useGetLabsByConditionsLazyQuery(
+export function useGetTestResultForPrintLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
-  >(GetLabsByConditionsDocument, options);
+    GetTestResultForPrintQuery,
+    GetTestResultForPrintQueryVariables
+  >(GetTestResultForPrintDocument, options);
 }
-export function useGetLabsByConditionsSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetLabsByConditionsQuery,
-        GetLabsByConditionsQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetLabsByConditionsQuery,
-    GetLabsByConditionsQueryVariables
-  >(GetLabsByConditionsDocument, options);
-}
-export type GetLabsByConditionsQueryHookResult = ReturnType<
-  typeof useGetLabsByConditionsQuery
+export type GetTestResultForPrintQueryHookResult = ReturnType<
+  typeof useGetTestResultForPrintQuery
 >;
-export type GetLabsByConditionsLazyQueryHookResult = ReturnType<
-  typeof useGetLabsByConditionsLazyQuery
+export type GetTestResultForPrintLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultForPrintLazyQuery
 >;
-export type GetLabsByConditionsSuspenseQueryHookResult = ReturnType<
-  typeof useGetLabsByConditionsSuspenseQuery
+export type GetTestResultForPrintQueryResult = Apollo.QueryResult<
+  GetTestResultForPrintQuery,
+  GetTestResultForPrintQueryVariables
 >;
-export type GetLabsByConditionsQueryResult = Apollo.QueryResult<
-  GetLabsByConditionsQuery,
-  GetLabsByConditionsQueryVariables
->;
-export const GetSpecimensByLoincDocument = gql`
-  query GetSpecimensByLoinc($loinc: String!) {
-    specimens(loinc: $loinc) {
-      loincSystemCode
-      snomedCode
-      snomedDisplay
-      bodySiteList {
-        snomedSiteCode
-        snomedSiteDisplay
+export const GetUploadSubmissionDocument = gql`
+  query GetUploadSubmission($id: ID!) {
+    uploadSubmission(id: $id) {
+      reportId
+      createdAt
+      status
+      recordsCount
+      warnings {
+        message
+        scope
+      }
+      errors {
+        message
+        scope
       }
     }
   }
 `;
 
 /**
- * __useGetSpecimensByLoincQuery__
+ * __useGetUploadSubmissionQuery__
  *
- * To run a query within a React component, call `useGetSpecimensByLoincQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetSpecimensByLoincQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetUploadSubmissionQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadSubmissionQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetSpecimensByLoincQuery({
- *   variables: {
- *      loinc: // value for 'loinc'
- *   },
- * });
- */
-export function useGetSpecimensByLoincQuery(
-  baseOptions: Apollo.QueryHookOptions<
-    GetSpecimensByLoincQuery,
-    GetSpecimensByLoincQueryVariables
-  > &
-    (
-      | { variables: GetSpecimensByLoincQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetSpecimensByLoincQuery,
-    GetSpecimensByLoincQueryVariables
-  >(GetSpecimensByLoincDocument, options);
-}
-export function useGetSpecimensByLoincLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetSpecimensByLoincQuery,
-    GetSpecimensByLoincQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetSpecimensByLoincQuery,
-    GetSpecimensByLoincQueryVariables
-  >(GetSpecimensByLoincDocument, options);
-}
-export function useGetSpecimensByLoincSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetSpecimensByLoincQuery,
-        GetSpecimensByLoincQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetSpecimensByLoincQuery,
-    GetSpecimensByLoincQueryVariables
-  >(GetSpecimensByLoincDocument, options);
-}
-export type GetSpecimensByLoincQueryHookResult = ReturnType<
-  typeof useGetSpecimensByLoincQuery
->;
-export type GetSpecimensByLoincLazyQueryHookResult = ReturnType<
-  typeof useGetSpecimensByLoincLazyQuery
->;
-export type GetSpecimensByLoincSuspenseQueryHookResult = ReturnType<
-  typeof useGetSpecimensByLoincSuspenseQuery
->;
-export type GetSpecimensByLoincQueryResult = Apollo.QueryResult<
-  GetSpecimensByLoincQuery,
-  GetSpecimensByLoincQueryVariables
->;
-export const GetFacilityDocument = gql`
-  query GetFacility($id: ID!) {
-    facility(id: $id) {
-      id
-      address {
-        streetOne
-        streetTwo
-        city
-        county
-        state
-        postalCode
-      }
-      name
-      cliaNumber
-      email
-      phone
-      orderingProvider {
-        firstName
-        middleName
-        lastName
-        suffix
-        address {
-          streetOne
-          streetTwo
-          city
-          county
-          state
-          postalCode
-        }
-        phone
-        NPI
-      }
-    }
-  }
-`;
-
-/**
- * __useGetFacilityQuery__
- *
- * To run a query within a React component, call `useGetFacilityQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetFacilityQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetFacilityQuery({
+ * const { data, loading, error } = useGetUploadSubmissionQuery({
  *   variables: {
  *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetFacilityQuery(
+export function useGetUploadSubmissionQuery(
   baseOptions: Apollo.QueryHookOptions<
-    GetFacilityQuery,
-    GetFacilityQueryVariables
-  > &
-    (
-      | { variables: GetFacilityQueryVariables; skip?: boolean }
-      | { skip: boolean }
-    )
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetFacilityQuery, GetFacilityQueryVariables>(
-    GetFacilityDocument,
-    options
-  );
-}
-export function useGetFacilityLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetFacilityQuery,
-    GetFacilityQueryVariables
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<GetFacilityQuery, GetFacilityQueryVariables>(
-    GetFacilityDocument,
-    options
-  );
+  return Apollo.useQuery<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >(GetUploadSubmissionDocument, options);
 }
-export function useGetFacilitySuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetFacilityQuery,
-        GetFacilityQueryVariables
-      >
+export function useGetUploadSubmissionLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >
 ) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<GetFacilityQuery, GetFacilityQueryVariables>(
-    GetFacilityDocument,
-    options
-  );
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUploadSubmissionQuery,
+    GetUploadSubmissionQueryVariables
+  >(GetUploadSubmissionDocument, options);
 }
-export type GetFacilityQueryHookResult = ReturnType<typeof useGetFacilityQuery>;
-export type GetFacilityLazyQueryHookResult = ReturnType<
-  typeof useGetFacilityLazyQuery
+export type GetUploadSubmissionQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionQuery
 >;
-export type GetFacilitySuspenseQueryHookResult = ReturnType<
-  typeof useGetFacilitySuspenseQuery
+export type GetUploadSubmissionLazyQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionLazyQuery
 >;
-export type GetFacilityQueryResult = Apollo.QueryResult<
-  GetFacilityQuery,
-  GetFacilityQueryVariables
+export type GetUploadSubmissionQueryResult = Apollo.QueryResult<
+  GetUploadSubmissionQuery,
+  GetUploadSubmissionQueryVariables
 >;
-export const SubmitLabReportDocument = gql`
-  mutation SubmitLabReport(
-    $patient: PatientReportInput
-    $provider: ProviderReportInput
-    $facility: FacilityReportInput
-    $specimen: SpecimenInput
-    $testDetailsList: [TestDetailsInput]
+export const GetUploadSubmissionsDocument = gql`
+  query GetUploadSubmissions(
+    $startDate: DateTime
+    $endDate: DateTime
+    $pageNumber: Int
+    $pageSize: Int
   ) {
-    submitLabReport(
-      patient: $patient
-      provider: $provider
-      facility: $facility
-      specimen: $specimen
-      testDetailsList: $testDetailsList
-    )
+    uploadSubmissions(
+      startDate: $startDate
+      endDate: $endDate
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
+      content {
+        internalId
+        reportId
+        createdAt
+        status
+        recordsCount
+        errors {
+          message
+          scope
+        }
+        warnings {
+          message
+          scope
+        }
+      }
+      totalElements
+    }
   }
 `;
-export type SubmitLabReportMutationFn = Apollo.MutationFunction<
-  SubmitLabReportMutation,
-  SubmitLabReportMutationVariables
->;
 
 /**
- * __useSubmitLabReportMutation__
+ * __useGetUploadSubmissionsQuery__
  *
- * To run a mutation, you first call `useSubmitLabReportMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSubmitLabReportMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useGetUploadSubmissionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUploadSubmissionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [submitLabReportMutation, { data, loading, error }] = useSubmitLabReportMutation({
+ * const { data, loading, error } = useGetUploadSubmissionsQuery({
  *   variables: {
- *      patient: // value for 'patient'
- *      provider: // value for 'provider'
- *      facility: // value for 'facility'
- *      specimen: // value for 'specimen'
- *      testDetailsList: // value for 'testDetailsList'
+ *      startDate: // value for 'startDate'
+ *      endDate: // value for 'endDate'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
  *   },
  * });
  */
-export function useSubmitLabReportMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    SubmitLabReportMutation,
-    SubmitLabReportMutationVariables
+export function useGetUploadSubmissionsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    SubmitLabReportMutation,
-    SubmitLabReportMutationVariables
-  >(SubmitLabReportDocument, options);
+  return Apollo.useQuery<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >(GetUploadSubmissionsDocument, options);
 }
-export type SubmitLabReportMutationHookResult = ReturnType<
-  typeof useSubmitLabReportMutation
+export function useGetUploadSubmissionsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUploadSubmissionsQuery,
+    GetUploadSubmissionsQueryVariables
+  >(GetUploadSubmissionsDocument, options);
+}
+export type GetUploadSubmissionsQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionsQuery
 >;
-export type SubmitLabReportMutationResult =
-  Apollo.MutationResult<SubmitLabReportMutation>;
-export type SubmitLabReportMutationOptions = Apollo.BaseMutationOptions<
-  SubmitLabReportMutation,
-  SubmitLabReportMutationVariables
+export type GetUploadSubmissionsLazyQueryHookResult = ReturnType<
+  typeof useGetUploadSubmissionsLazyQuery
+>;
+export type GetUploadSubmissionsQueryResult = Apollo.QueryResult<
+  GetUploadSubmissionsQuery,
+  GetUploadSubmissionsQueryVariables
 >;
 export const GetDeviceTypesForLookupDocument = gql`
   query getDeviceTypesForLookup {
@@ -10124,31 +7818,11 @@ export function useGetDeviceTypesForLookupLazyQuery(
     GetDeviceTypesForLookupQueryVariables
   >(GetDeviceTypesForLookupDocument, options);
 }
-export function useGetDeviceTypesForLookupSuspenseQuery(
-  baseOptions?:
-    | Apollo.SkipToken
-    | Apollo.SuspenseQueryHookOptions<
-        GetDeviceTypesForLookupQuery,
-        GetDeviceTypesForLookupQueryVariables
-      >
-) {
-  const options =
-    baseOptions === Apollo.skipToken
-      ? baseOptions
-      : { ...defaultOptions, ...baseOptions };
-  return Apollo.useSuspenseQuery<
-    GetDeviceTypesForLookupQuery,
-    GetDeviceTypesForLookupQueryVariables
-  >(GetDeviceTypesForLookupDocument, options);
-}
 export type GetDeviceTypesForLookupQueryHookResult = ReturnType<
   typeof useGetDeviceTypesForLookupQuery
 >;
 export type GetDeviceTypesForLookupLazyQueryHookResult = ReturnType<
   typeof useGetDeviceTypesForLookupLazyQuery
->;
-export type GetDeviceTypesForLookupSuspenseQueryHookResult = ReturnType<
-  typeof useGetDeviceTypesForLookupSuspenseQuery
 >;
 export type GetDeviceTypesForLookupQueryResult = Apollo.QueryResult<
   GetDeviceTypesForLookupQuery,

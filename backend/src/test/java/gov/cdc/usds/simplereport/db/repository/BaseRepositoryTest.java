@@ -1,8 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
 import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
-import gov.cdc.usds.simplereport.service.DbAuthorizationService;
-import gov.cdc.usds.simplereport.service.DbOrgRoleClaimsService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -16,8 +14,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 
 /**
  * A base test for Spring Data repository tests. Comes pre-wired with a standard API user to attach
@@ -25,20 +21,12 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
  */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@Import({
-  SliceTestConfiguration.class,
-  DbAuthorizationService.class,
-  DbOrgRoleClaimsService.class,
-  DbTruncator.class,
-  DataSourceConfiguration.class,
-  SpringTemplateEngine.class
-})
+@Import({SliceTestConfiguration.class, DbTruncator.class, DataSourceConfiguration.class})
 @WithSimpleReportStandardUser
 // this allows us to have a non-static @BeforeAll method, at the cost of having slightly less
 // isolation between test cases (data could be passed between tests using instance variables). Don't
 // pass data between test cases using instance variables!
 @TestInstance(Lifecycle.PER_CLASS)
-@ActiveProfiles("test")
 public abstract class BaseRepositoryTest {
 
   @Autowired private DbTruncator _truncator;

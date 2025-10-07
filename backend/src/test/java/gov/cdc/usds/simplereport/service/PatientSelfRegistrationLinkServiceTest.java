@@ -20,7 +20,9 @@ import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class PatientSelfRegistrationLinkServiceTest
     extends BaseServiceTest<PatientSelfRegistrationLinkService> {
 
@@ -106,9 +108,9 @@ class PatientSelfRegistrationLinkServiceTest
     // soft-delete links
     _psrlService.updateRegistrationLink("some-new-facility-link", true);
     assertEquals(
-        true, _psrlService.getPatientRegistrationLink("some-new-facility-link").getIsDeleted());
+        true, _psrlService.getPatientRegistrationLink("some-new-facility-link").isDeleted());
     _psrlService.updateRegistrationLink("some-new-org-link", true);
-    assertEquals(true, _psrlService.getPatientRegistrationLink("some-new-org-link").getIsDeleted());
+    assertEquals(true, _psrlService.getPatientRegistrationLink("some-new-org-link").isDeleted());
   }
 
   @Test

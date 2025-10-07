@@ -20,7 +20,7 @@ export class VersionService {
 
     const remoteSHA = await VersionService.getSHA();
 
-    if (process.env.REACT_APP_CURRENT_COMMIT !== remoteSHA) {
+    if (import.meta.env.VITE_CURRENT_COMMIT !== remoteSHA) {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(new Date()));
       reload();
     }
@@ -39,13 +39,15 @@ export class VersionService {
    */
   public static async getSHA(): Promise<string> {
     if (getNodeEnv() === "production") {
-      const result = await fetch(`${process.env.PUBLIC_URL}/static/commit.txt`);
+      const result = await fetch(
+        `${import.meta.env.VITE_PUBLIC_URL}/assets/commit.txt`
+      );
       if (!result.ok) {
         throw result;
       }
       return (await result.text()).trim();
     }
-    return process.env.REACT_APP_CURRENT_COMMIT || "";
+    return import.meta.env.VITE_CURRENT_COMMIT || "";
   }
 
   /**
@@ -57,7 +59,7 @@ export class VersionService {
       localStorage.setItem(key, key);
       localStorage.removeItem(key);
       return true;
-    } catch {
+    } catch (e: any) {
       return false;
     }
   }

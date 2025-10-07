@@ -5,21 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.util.AssertionErrors.assertNull;
 
 import gov.cdc.usds.simplereport.config.scalars.localdate.FlexibleDateCoercion;
-import graphql.GraphQLContext;
-import graphql.execution.CoercedVariables;
 import graphql.language.StringValue;
 import graphql.schema.CoercingParseValueException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
-class FlexibleDateScalarTypeTest {
+public class FlexibleDateScalarTypeTest {
   private final FlexibleDateCoercion converter = new FlexibleDateCoercion();
-  @MockBean GraphQLContext graphQLContext;
-  @MockBean Locale locale;
-  @MockBean CoercedVariables coercedVariables;
 
   @Test
   void convertImpl_succeeds() {
@@ -51,31 +44,21 @@ class FlexibleDateScalarTypeTest {
   @Test
   void parseLiteral_succeeds() {
     LocalDate y2k = LocalDate.parse("2000-01-01");
-    assertEquals(
-        y2k,
-        converter.parseLiteral(
-            new StringValue("2000-01-01"), coercedVariables, graphQLContext, locale));
-    assertEquals(
-        y2k,
-        converter.parseLiteral(
-            new StringValue("01/01/2000"), coercedVariables, graphQLContext, locale));
+    assertEquals(y2k, converter.parseLiteral(new StringValue("2000-01-01")));
+    assertEquals(y2k, converter.parseLiteral(new StringValue("01/01/2000")));
   }
 
   @Test
   void parseValue_succeeds() {
     LocalDate y2k = LocalDate.parse("2000-01-01");
-    assertEquals(y2k, converter.parseValue("2000-01-01", graphQLContext, locale));
-    assertEquals(y2k, converter.parseValue("01/01/2000", graphQLContext, locale));
-    assertEquals(null, converter.parseValue("", graphQLContext, locale));
+    assertEquals(y2k, converter.parseValue("2000-01-01"));
+    assertEquals(y2k, converter.parseValue("01/01/2000"));
+    assertEquals(null, converter.parseValue(""));
   }
 
   @Test
   void parseValue_exceptions() {
-    assertThrows(
-        CoercingParseValueException.class,
-        () -> converter.parseValue("20000101", graphQLContext, locale));
-    assertThrows(
-        DateTimeParseException.class,
-        () -> converter.parseValue("2000-0101", graphQLContext, locale));
+    assertThrows(CoercingParseValueException.class, () -> converter.parseValue("20000101"));
+    assertThrows(DateTimeParseException.class, () -> converter.parseValue("2000-0101"));
   }
 }

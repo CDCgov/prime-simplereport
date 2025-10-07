@@ -5,7 +5,7 @@
 
   .users-sidenav {
     border-right: 1px solid #dfe1e2;
-    width: 25%;
+    max-width: 25%;
 
     .users-sidenav-header {
       font-style: normal;
@@ -33,18 +33,6 @@
   .reset-button {
     display: block;
     margin: 1em auto;
-  }
-
-  .no-results-found {
-    width: 75%;
-  }
-
-  .clear-filter-button {
-    width: auto !important;
-  }
-
-  .usa-pagination ol {
-    padding-left: 0 !important;
   }
 
   .usa-sidenav__item.users-sidenav-item button {
@@ -136,6 +124,29 @@
   }
 
   .user-detail-column {
+    .user-name-header {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 32px;
+      line-height: 38px;
+      color: #1b1b1b;
+    }
+
+    .status-tagline {
+      font-style: italic;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 120%;
+      color: #3d4551;
+    }
+
+    .user-status-subheader {
+      svg {
+        transform: scale(1.27);
+        margin-left: 4px;
+      }
+    }
+
     nav {
       border-bottom: 1px solid #dcdee0;
       padding-bottom: 4px;
@@ -165,6 +176,40 @@
       }
     }
 
+    .basic-info-header {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 21px;
+      color: #1b1b1b;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .userinfo-subheader {
+      font-style: normal;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 19px;
+      color: #1b1b1b;
+      margin-bottom: 5px;
+    }
+
+    .userinfo-text {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 162%;
+      color: #1b1b1b;
+      margin-top: 0;
+    }
+
+    .userinfo-divider {
+      border-bottom: 1px solid #dcdee0;
+      margin-right: -18px;
+      margin-left: -32px;
+    }
+
     .user-controls-header {
       font-style: normal;
       font-weight: bold;
@@ -185,6 +230,15 @@
 
     .disabled-dark * {
       color: #757575 !important;
+    }
+
+    .userrole-subtext {
+      font-style: italic;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 120%;
+      color: #3d4551;
+      margin-right: 2rem;
     }
 
     .usa-checkbox__label-description.text-base-dark {

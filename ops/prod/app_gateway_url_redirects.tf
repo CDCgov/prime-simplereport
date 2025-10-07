@@ -184,7 +184,6 @@ resource "azurerm_application_gateway" "www_redirect" {
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-http"
     redirect_configuration_name = "httpsRedirect"
-    rewrite_rule_set_name       = "HSTS_ReWrite"
   }
 
   redirect_configuration {
@@ -203,21 +202,6 @@ resource "azurerm_application_gateway" "www_redirect" {
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-https"
     redirect_configuration_name = "wwwRedirect"
-    rewrite_rule_set_name       = "HSTS_ReWrite"
-  }
-
-  rewrite_rule_set {
-    name = "HSTS_ReWrite"
-
-    rewrite_rule {
-      name          = "HSTS_Rewrite"
-      rule_sequence = "100"
-
-      request_header_configuration {
-        header_name  = "Strict-Transport-Security"
-        header_value = "31536000; includeSubDomains"
-      }
-    }
   }
 
   redirect_configuration {
@@ -384,7 +368,6 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-http"
     redirect_configuration_name = "httpsRedirect"
-    rewrite_rule_set_name       = "HSTS_ReWrite"
   }
 
   redirect_configuration {
@@ -403,7 +386,6 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-https"
     redirect_configuration_name = "wwwRedirect"
-    rewrite_rule_set_name       = "HSTS_ReWrite"
   }
 
   redirect_configuration {
@@ -413,20 +395,6 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
     include_query_string = true
     redirect_type        = "Permanent"
     target_url           = "https://www.simplereport.gov"
-  }
-
-  rewrite_rule_set {
-    name = "HSTS_ReWrite"
-
-    rewrite_rule {
-      name          = "HSTS_Rewrite"
-      rule_sequence = "100"
-
-      request_header_configuration {
-        header_name  = "Strict-Transport-Security"
-        header_value = "31536000; includeSubDomains"
-      }
-    }
   }
 
   depends_on = [

@@ -40,9 +40,7 @@ export const initAnswers = (questionSet: Question[]): Nullable<Answers> =>
     return answers;
   }, {} as Nullable<Answers>);
 
-export const buildSchema = (
-  questionSet: Question[]
-): yup.ObjectSchema<Answers> =>
+export const buildSchema = (questionSet: Question[]): yup.SchemaOf<Answers> =>
   yup.object(
     questionSet.reduce((answers, _question, index) => {
       answers[getAnswerKey(index)] = yup
@@ -101,10 +99,10 @@ export const initPersonalDetailsErrors = (): Record<
 const experianStreetRegex = new RegExp("^([a-zA-Z0-9# \\-'.]{1,60})$", "m");
 
 // this is the regex experian uses for zip validation
-const experianZipRegex = new RegExp("^(\\d{5}(-?\\d{4})?){1}$", "m");
+const experianZipRegex = new RegExp("^([\\d]{5}([\\-]?[\\d]{4})?){1}$", "m");
 
-export const personalDetailsSchema: yup.ObjectSchema<IdentityVerificationRequest> =
-  yup.object({
+export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> =
+  yup.object().shape({
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),
@@ -117,13 +115,13 @@ export const personalDetailsSchema: yup.ObjectSchema<IdentityVerificationRequest
       .email("A valid email address is required")
       .required("A valid email address is required"),
     phoneNumber: yup
-      .string()
+      .mixed()
       .test(
         "phone-number",
         "A valid phone number is required",
         phoneNumberIsValid
       )
-      .required("A valid phone number is required"),
+      .required(),
     streetAddress1: yup
       .string()
       .matches(experianStreetRegex, "A valid street address is required")

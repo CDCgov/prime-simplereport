@@ -160,24 +160,4 @@ public class UserMutationResolver {
             Translators.parseString(justification));
     return new User(user);
   }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  @MutationMapping
-  public User updateUserPrivilegesAndGroupAccess(
-      @Argument String username,
-      @Argument String orgExternalId,
-      @Argument boolean accessAllFacilities,
-      @Argument List<UUID> facilities,
-      @Argument Role role) {
-    List<UUID> facilityIdsToAssign = facilities == null ? List.of() : facilities;
-    _us.updateUserPrivilegesAndGroupAccess(
-        username, orgExternalId, accessAllFacilities, facilityIdsToAssign, role);
-    return new User(_us.getUserByLoginEmail(username));
-  }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  @MutationMapping
-  public ApiUser clearUserRolesAndFacilities(@Argument String username) {
-    return _us.clearUserRolesAndFacilities(username);
-  }
 }

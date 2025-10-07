@@ -3,8 +3,10 @@ import { render, screen } from "@testing-library/react";
 import Success from "./Success";
 
 describe("Success", () => {
-  it("renders", () => {
+  beforeEach(() => {
     render(<Success email="test.user@example.com" activationToken="foo" />);
+  });
+  it("renders", () => {
     expect(
       screen.getByText(
         "Congratulations, your identity has been verified successfully",

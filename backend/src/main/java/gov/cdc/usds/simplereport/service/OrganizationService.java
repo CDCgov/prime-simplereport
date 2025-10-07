@@ -4,47 +4,34 @@ import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
-import gov.cdc.usds.simplereport.api.model.errors.NonexistentOrgException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
-import gov.cdc.usds.simplereport.db.model.FacilityLab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.FacilityLabRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
-import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
-import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.graphql.data.method.annotation.Argument;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,23 +40,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class OrganizationService {
-  private final ApiUserRepository apiUserRepository;
 
   private final OrganizationRepository organizationRepository;
   private final FacilityRepository facilityRepository;
   private final ProviderRepository providerRepository;
+  private final AuthorizationService authorizationService;
   private final PersonRepository personRepository;
   private final OktaRepository oktaRepository;
   private final CurrentOrganizationRolesContextHolder organizationRolesContext;
   private final OrderingProviderRequiredValidator orderingProviderValidator;
-  private final AuthorizationService authorizationService;
-  private final DbAuthorizationService dbAuthorizationService;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
-  private final FacilityLabRepository facilityLabRepository;
-  private final EmailService emailService;
-  private final FeatureFlagsConfig featureFlagsConfig;
-  private final SpecimenRepository specimenRepository;
 
   public void resetOrganizationRolesContext() {
     organizationRolesContext.reset();
@@ -165,10 +146,6 @@ public class OrganizationService {
 
   public List<Organization> getOrganizationsByName(String name) {
     return organizationRepository.findAllByName(name);
-  }
-
-  public List<Organization> getOrganizationsByName(String name, Boolean isDeleted) {
-    return organizationRepository.findAllByNameAndDeleted(name, isDeleted);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -355,14 +332,7 @@ public class OrganizationService {
     org.setIdentityVerified(verified);
     boolean newStatus = organizationRepository.save(org).getIdentityVerified();
     if (oldStatus == false && newStatus == true) {
-      if (featureFlagsConfig.isOktaMigrationEnabled()) {
-        List<ApiUser> orgAdmins = dbAuthorizationService.getOrgAdminUsers(org);
-        for (ApiUser orgAdmin : orgAdmins) {
-          oktaRepository.activateUser(orgAdmin.getLoginEmail());
-        }
-      } else {
-        oktaRepository.activateOrganization(org);
-      }
+      oktaRepository.activateOrganization(org);
     }
     return newStatus;
   }
@@ -380,19 +350,7 @@ public class OrganizationService {
     }
     org.setIdentityVerified(true);
     organizationRepository.save(org);
-    if (featureFlagsConfig.isOktaMigrationEnabled()) {
-      Optional<ApiUser> orgAdmin =
-          dbAuthorizationService.getOrgAdminUsers(org).stream().findFirst();
-
-      if (orgAdmin.isPresent()) {
-        String orgAdminEmail = orgAdmin.get().getLoginEmail();
-        return oktaRepository.activateUser(orgAdminEmail);
-      } else {
-        throw new IllegalStateException("Organization does not have any org admins.");
-      }
-    } else {
-      return oktaRepository.activateOrganizationWithSingleUser(org);
-    }
+    return oktaRepository.activateOrganizationWithSingleUser(org);
   }
 
   private Facility createFacilityNoPermissions(
@@ -497,15 +455,8 @@ public class OrganizationService {
         this.getFacilityById(facilityId)
             .orElseThrow(() -> new IllegalGraphqlArgumentException("Facility not found."));
 
-    Integer usersWithSingleFacilityAccess;
-    if (featureFlagsConfig.isOktaMigrationEnabled()) {
-      usersWithSingleFacilityAccess =
-          dbAuthorizationService.getUsersWithSingleFacilityAccessCount(facility);
-    } else {
-      usersWithSingleFacilityAccess = this.oktaRepository.getUsersCountInSingleFacility(facility);
-    }
     return FacilityStats.builder()
-        .usersSingleAccessCount(usersWithSingleFacilityAccess)
+        .usersSingleAccessCount(this.oktaRepository.getUsersInSingleFacility(facility))
         .patientsSingleAccessCount(
             this.personRepository.countByFacilityAndIsDeleted(facility, false))
         .build();
@@ -514,230 +465,5 @@ public class OrganizationService {
   @AuthorizationConfiguration.RequirePermissionToAccessOrg
   public UUID getPermissibleOrgId(UUID orgId) {
     return orgId != null ? orgId : getCurrentOrganization().getInternalId();
-  }
-
-  private List<ApiUser> getOrgAdminUsers(UUID orgId) {
-    Organization org = organizationRepository.findById(orgId).orElse(null);
-    if (org == null) {
-      log.warn(String.format("Organization with internal id %s not found", orgId));
-      return List.of();
-    }
-    List<ApiUser> adminUsers;
-
-    if (featureFlagsConfig.isOktaMigrationEnabled()) {
-      adminUsers = dbAuthorizationService.getOrgAdminUsers(org);
-    } else {
-      List<String> adminUserEmails = oktaRepository.fetchAdminUserEmail(org);
-      adminUsers =
-          adminUserEmails.stream()
-              .map(
-                  adminUserEmail -> {
-                    Optional<ApiUser> foundUser =
-                        apiUserRepository.findByLoginEmail(adminUserEmail);
-                    if (foundUser.isEmpty()) {
-                      log.warn(
-                          "Query for admin users in organization "
-                              + org.getInternalId()
-                              + " found a user in Okta but not in the database. Skipping...");
-                    }
-                    return foundUser.orElse(null);
-                  })
-              .filter(Objects::nonNull)
-              .collect(Collectors.toList());
-    }
-    return adminUsers;
-  }
-
-  private List<String> getOrgAdminUserEmails(UUID orgId) {
-    return getOrgAdminUsers(orgId).stream()
-        .map(ApiUser::getLoginEmail)
-        .collect(Collectors.toList());
-  }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<UUID> getOrgAdminUserIds(UUID orgId) {
-    return getOrgAdminUsers(orgId).stream()
-        .map(ApiUser::getInternalId)
-        .collect(Collectors.toList());
-  }
-
-  @Async("applicationTaskExecutor")
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public CompletableFuture<List<String>> sendOrgAdminEmailCSVAsync(
-      List<UUID> orgInternalIds, String type, String state) {
-    List<List<UUID>> partitionedOrgIds =
-        ListUtils.partition(orgInternalIds, oktaRepository.getOktaOrgsLimit());
-    ArrayList<String> allAdminEmails = new ArrayList<>();
-    return CompletableFuture.supplyAsync(
-        () -> {
-          for (List<UUID> orgIds : partitionedOrgIds) {
-            List<String> adminEmails =
-                orgIds.stream()
-                    .map(this::getOrgAdminUserEmails)
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
-            allAdminEmails.addAll(adminEmails);
-            try {
-              Thread.sleep(oktaRepository.getOktaRateLimitSleepMs());
-            } catch (InterruptedException e) {
-              Thread.currentThread().interrupt();
-            }
-          }
-          List<String> sortedEmails = allAdminEmails.stream().sorted().collect(Collectors.toList());
-          emailService.sendWithCSVAttachment(sortedEmails, state, type);
-          return sortedEmails;
-        });
-  }
-
-  private List<UUID> getOrgIdsForAdminEmailCSV(String type, String state) {
-    if ("facilities".equalsIgnoreCase(type)) {
-      List<Facility> facilitiesInState = facilityRepository.findByFacilityState(state);
-      return facilitiesInState.stream()
-          .map(f -> f.getOrganization().getInternalId())
-          .distinct()
-          .collect(Collectors.toList());
-    }
-    if ("patients".equalsIgnoreCase(type)) {
-      List<Organization> orgs = organizationRepository.findAllByPatientStateWithTestEvents(state);
-      return orgs.stream().map(o -> o.getInternalId()).distinct().collect(Collectors.toList());
-    }
-    return List.of();
-  }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public boolean sendOrgAdminEmailCSV(String type, String state) {
-    List<UUID> orgInternalIds = getOrgIdsForAdminEmailCSV(type, state);
-    sendOrgAdminEmailCSVAsync(orgInternalIds, type, state);
-    return true;
-  }
-
-  /**
-   * Method HARD DELETES an Okta group without touching any of the application organization data.
-   * SHOULD ONLY BE USED TO CLEAN UP ORGS CREATED IN OKTA FOR E2E TESTS. DON'T USE THIS METHOD FOR
-   * ANY LIVE OKTA API CALLS
-   */
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Organization deleteE2EOktaOrganization(String orgExternalId) {
-    Organization orgToDelete =
-        organizationRepository
-            .findByExternalIdIncludingDeleted(orgExternalId)
-            .orElseThrow(NonexistentOrgException::new);
-    oktaRepository.deleteOrganization(orgToDelete);
-    return orgToDelete;
-  }
-
-  @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
-  public List<FacilityLab> getFacilityLabs(@Argument UUID facilityId) {
-    return facilityLabRepository.findAllByFacilityIdAndIsDeletedFalse(facilityId);
-  }
-
-  @AuthorizationConfiguration.RequirePermissionEditFacility
-  public FacilityLab createFacilityLab(
-      @Argument UUID facilityId,
-      @Argument UUID labId,
-      @Argument String name,
-      @Argument String description) {
-    FacilityLab facilityLab;
-    Optional<FacilityLab> facilityLabOpt =
-        facilityLabRepository.findDistinctFirstByFacilityIdAndLabId(facilityId, labId);
-
-    if (facilityLabOpt.isPresent()) {
-      if (!facilityLabOpt.get().getIsDeleted()) {
-        throw new IllegalArgumentException("Facility lab already exists");
-      }
-
-      facilityLab = facilityLabOpt.get();
-      facilityLab.setName(name);
-      facilityLab.setDescription(description);
-      facilityLab.setIsDeleted(false);
-    } else {
-      facilityLab =
-          FacilityLab.builder()
-              .facilityId(facilityId)
-              .labId(labId)
-              .name(name)
-              .description(description)
-              .build();
-    }
-
-    return facilityLabRepository.save(facilityLab);
-  }
-
-  @AuthorizationConfiguration.RequirePermissionEditFacility
-  public FacilityLab updateFacilityLab(
-      @Argument UUID facilityId,
-      @Argument UUID labId,
-      @Argument Optional<String> name,
-      @Argument Optional<String> description) {
-    Optional<FacilityLab> facilityLabOpt =
-        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
-            facilityId, labId);
-
-    if (facilityLabOpt.isEmpty()) {
-      throw new IllegalArgumentException("Cannot find facility lab to update");
-    }
-
-    FacilityLab facilityLab = facilityLabOpt.get();
-    name.ifPresent(facilityLab::setName);
-    description.ifPresent(facilityLab::setDescription);
-    return facilityLabRepository.save(facilityLab);
-  }
-
-  @Transactional(readOnly = false)
-  @AuthorizationConfiguration.RequirePermissionEditFacility
-  public boolean markFacilityLabAsDeleted(@Argument UUID facilityId, @Argument UUID labId) {
-    Optional<FacilityLab> facilityLabOpt =
-        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
-            facilityId, labId);
-
-    if (facilityLabOpt.isEmpty()) {
-      throw new IllegalArgumentException("Cannot find facility lab for deletion");
-    }
-
-    facilityLabRepository.delete(facilityLabOpt.get());
-    return true;
-  }
-
-  @AuthorizationConfiguration.RequirePermissionEditFacility
-  public Set<Specimen> addFacilityLabSpecimen(
-      @Argument UUID facilityId, @Argument UUID labId, @Argument UUID specimenId) {
-    Optional<FacilityLab> facilityLabOpt =
-        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
-            facilityId, labId);
-    Optional<Specimen> specimenOpt = specimenRepository.findById(specimenId);
-
-    if (facilityLabOpt.isEmpty()) {
-      throw new IllegalArgumentException("Cannot find facility lab");
-    } else if (specimenOpt.isEmpty()) {
-      throw new IllegalArgumentException("Cannot find specimen");
-    }
-
-    FacilityLab facilityLab = facilityLabOpt.get();
-    Specimen specimen = specimenOpt.get();
-
-    facilityLab.addSpecimen(specimen);
-    return facilityLab.getSpecimens();
-  }
-
-  @AuthorizationConfiguration.RequirePermissionEditFacility
-  public boolean deleteFacilityLabSpecimen(
-      @Argument UUID facilityId, @Argument UUID labId, UUID specimenId) {
-    Optional<FacilityLab> facilityLabOpt =
-        facilityLabRepository.findDistinctFirstByFacilityIdAndLabIdAndIsDeletedFalse(
-            facilityId, labId);
-    Optional<Specimen> specimenOpt = specimenRepository.findById(specimenId);
-
-    if (facilityLabOpt.isEmpty() || specimenOpt.isEmpty()) {
-      return false;
-    }
-
-    FacilityLab facilityLab = facilityLabOpt.get();
-    Specimen specimen = specimenOpt.get();
-
-    boolean isRemoved = facilityLab.removeSpecimen(specimen);
-    if (isRemoved) {
-      facilityLabRepository.save(facilityLab);
-    }
-    return isRemoved;
   }
 }

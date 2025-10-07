@@ -28,11 +28,11 @@ Object {
           aria-modal="true"
           class="ReactModal__Content"
           role="dialog"
-          style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 0px; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 0px;"
+          style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 0px; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px;"
           tabindex="-1"
         >
           <div
-            class="modal__container unsupported-state-modal"
+            class="unsupported-state-modal modal__container"
           >
             <button
               class="modal__close-button"
@@ -44,11 +44,9 @@ Object {
                 src="close.svg"
               />
             </button>
-            <main
-              class="padding-205"
-            >
+            <main>
               <div
-                class="modal__content grid-row usa-prose"
+                class="modal__content grid-row"
               >
                 <div
                   class="grid-col"
@@ -72,39 +70,34 @@ Object {
                         class="usa-legend"
                       />
                       <div
-                        class="grid-row checkboxes"
+                        class="checkboxes"
                       >
                         <div
-                          class="tablet:grid-col"
+                          class="usa-checkbox"
                         >
-                          <div
-                            class="usa-checkbox"
+                          <input
+                            aria-label="acknowledged"
+                            class="usa-checkbox__input"
+                            id="1-val-0"
+                            name="acknowledge"
+                            type="checkbox"
+                            value="acknowledged"
+                          />
+                          <label
+                            class="usa-checkbox__label"
+                            for="1-val-0"
                           >
-                            <input
-                              aria-label="acknowledged"
-                              class="usa-checkbox__input"
-                              data-testid="acknowledge-acknowledged"
-                              id="acknowledge-acknowledged"
-                              name="acknowledge"
-                              type="checkbox"
-                              value="acknowledged"
-                            />
-                            <label
-                              class="usa-checkbox__label"
-                              for="acknowledge-acknowledged"
+                            My organization is submitting test results to a
+                             
+                            <a
+                              href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions"
+                              rel="noopener noreferrer"
+                              target="_blank"
                             >
-                              My organization is submitting test results to a
-                               
-                              <a
-                                href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions"
-                                rel="noopener noreferrer"
-                                target="_blank"
-                              >
-                                state that is connected to SimpleReport
-                              </a>
-                              .
-                            </label>
-                          </div>
+                              state that is connected to SimpleReport
+                            </a>
+                            .
+                          </label>
                         </div>
                       </div>
                     </fieldset>

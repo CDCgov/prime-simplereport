@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
+  act,
   render,
   screen,
   waitFor,
@@ -15,15 +16,14 @@ import { cloneDeep } from "lodash";
 
 import {
   GetUserDocument,
-  GetUsersAndStatusPageDocument,
+  GetUsersAndStatusDocument,
 } from "../../../generated/graphql";
+
+import ManageUsersContainer from "./ManageUsersContainer";
 import {
   ORG_ADMIN_REACTIVATE_COPY,
   SITE_ADMIN_REACTIVATE_COPY,
-} from "../../commonComponents/UserDetails/ReactivateUserModal";
-import { displayFullName } from "../../utils";
-
-import ManageUsersContainer from "./ManageUsersContainer";
+} from "./ReactivateUserModal";
 
 describe("ManageUsersContainer", () => {
   const mockStore = configureStore([]);
@@ -102,22 +102,13 @@ describe("ManageUsersContainer", () => {
   const mocks: MockedResponse[] = [
     {
       request: {
-        operationName: "GetUsersAndStatusPage",
-        query: GetUsersAndStatusPageDocument,
-        variables: {
-          pageNumber: 0,
-          searchQuery: null,
-        },
+        operationName: "GetUsersAndStatus",
+        query: GetUsersAndStatusDocument,
+        variables: {},
       },
       result: {
         data: {
-          usersWithStatusPage: {
-            pageContent: {
-              content: mockedUsersWithStatus,
-              totalElements: 6,
-            },
-            totalUsersInOrg: 6,
-          },
+          usersWithStatus: mockedUsersWithStatus,
         },
       },
     },
@@ -154,79 +145,18 @@ describe("ManageUsersContainer", () => {
         },
       },
     },
-    {
-      request: {
-        operationName: "GetUsersAndStatusPage",
-        query: GetUsersAndStatusPageDocument,
-        variables: {
-          pageNumber: 0,
-          searchQuery: "bob",
-        },
-      },
-      result: {
-        data: {
-          usersWithStatusPage: {
-            pageContent: {
-              content: [
-                {
-                  id: "1029653e-24d9-428e-83b0-468319948902",
-                  firstName: "Bob",
-                  middleName: null,
-                  lastName: "Bobberoo",
-                  email: "bob@example.com",
-                  status: "ACTIVE",
-                  __typename: "ApiUserWithStatus",
-                },
-              ],
-              totalElements: 1,
-            },
-            totalUsersInOrg: 6,
-          },
-        },
-      },
-    },
-    {
-      request: {
-        operationName: "GetUsersAndStatusPage",
-        query: GetUsersAndStatusPageDocument,
-        variables: {
-          pageNumber: 0,
-          searchQuery: "john wick",
-        },
-      },
-      result: {
-        data: {
-          usersWithStatusPage: {
-            pageContent: {
-              content: [],
-              totalElements: 0,
-            },
-            totalUsersInOrg: 6,
-          },
-        },
-      },
-    },
   ];
 
   const supendedUserMocks: MockedResponse[] = [
     {
       request: {
-        operationName: "GetUsersAndStatusPage",
-        query: GetUsersAndStatusPageDocument,
-        variables: {
-          pageNumber: 0,
-          searchQuery: null,
-        },
+        operationName: "GetUsersAndStatus",
+        query: GetUsersAndStatusDocument,
+        variables: {},
       },
       result: {
         data: {
-          usersWithStatusPage: {
-            pageContent: {
-              content: mockedUsersWithStatus,
-              totalElements: 6,
-            },
-            totalUsersInOrg: 6,
-          },
+          usersWithStatus: mockedUsersWithStatus,
         },
       },
     },
@@ -300,9 +230,8 @@ describe("ManageUsersContainer", () => {
   const renderComponentWithMocks = (
     graphqlResponses: MockedResponse[],
     store: Store<unknown, AnyAction>
-  ) => ({
-    user: userEvent.setup(),
-    ...render(
+  ) =>
+    render(
       <MemoryRouter>
         <MockedProvider mocks={graphqlResponses}>
           <Provider store={store}>
@@ -310,8 +239,8 @@ describe("ManageUsersContainer", () => {
           </Provider>
         </MockedProvider>
       </MemoryRouter>
-    ),
-  });
+    );
+
   it("loads the component and displays users successfully", async () => {
     const { container } = renderComponentWithMocks(mocks, store);
     await waitForElementToBeRemoved(screen.queryByText("Loading..."));
@@ -334,89 +263,14 @@ describe("ManageUsersContainer", () => {
     await screen.findByText(/Error: Users not found/i);
   });
 
-  it("is searchable", async () => {
-    //given
-    const { user } = renderComponentWithMocks(mocks, store);
-    await waitForElementToBeRemoved(screen.queryByText("Loading..."));
-    await waitFor(() =>
-      expect(
-        screen.queryByRole("heading", {
-          level: 2,
-          description: /barnes, ben billy/i,
-        })
-      )
-    );
-
-    //when
-    const searchBox = screen.getByRole("searchbox", {
-      name: /search by name/i,
-    });
-    await user.type(searchBox, "bob");
-
-    //then
-    await waitFor(() => {
-      expect(
-        screen.getByRole("tab", {
-          name: displayFullName("Bob", "", "Bobberoo"),
-        })
-      ).toBeInTheDocument();
-    });
-    await waitFor(() => {
-      expect(
-        screen.queryByText(displayFullName("Ben", "", "Barnes"), {
-          exact: false,
-        })
-      ).not.toBeInTheDocument();
-    });
-  });
-
-  it("displays no results message for empty filtered list", async () => {
-    //given
-    const { user } = renderComponentWithMocks(mocks, store);
-    await waitForElementToBeRemoved(screen.queryByText("Loading..."));
-    await waitFor(() =>
-      expect(
-        screen.queryByRole("heading", {
-          level: 2,
-          description: /barnes, ben billy/i,
-        })
-      )
-    );
-
-    //when
-    const searchBox = screen.getByRole("searchbox", {
-      name: /search by name/i,
-    });
-    await user.type(searchBox, "john wick");
-
-    //then
-    await waitFor(() => {
-      expect(
-        screen.queryByText(displayFullName("Jane", "", "Doe"), {
-          exact: false,
-        })
-      ).not.toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText(displayFullName("Bob", "", "Bobberoo"), {
-          exact: false,
-        })
-      ).not.toBeInTheDocument();
-    });
-
-    expect(screen.getAllByText("No results found.")).toHaveLength(2);
-  });
-
   it("when user is an org admin , modal copy reflects the reactivate only flow", async () => {
-    const { user } = renderComponentWithMocks(supendedUserMocks, store);
+    renderComponentWithMocks(supendedUserMocks, store);
 
     const suspendedUser = await screen.findByText("Carter, Nicole Suspended");
-    await user.click(suspendedUser);
+    await act(async () => await userEvent.click(suspendedUser));
 
     const reactivateButton = await screen.findByText("Activate user");
-    await user.click(reactivateButton);
+    await act(async () => await userEvent.click(reactivateButton));
     expect(await screen.findByText(ORG_ADMIN_REACTIVATE_COPY));
   });
 
@@ -425,13 +279,13 @@ describe("ManageUsersContainer", () => {
     storeWithSiteAdminUser.user.isAdmin = true;
     const testMockStore = mockStore(storeWithSiteAdminUser);
 
-    const { user } = renderComponentWithMocks(supendedUserMocks, testMockStore);
+    renderComponentWithMocks(supendedUserMocks, testMockStore);
 
     const suspendedUser = await screen.findByText("Carter, Nicole Suspended");
-    await user.click(suspendedUser);
+    await act(async () => await userEvent.click(suspendedUser));
 
     const reactivateButton = await screen.findByText("Activate user");
-    await user.click(reactivateButton);
+    await act(async () => await userEvent.click(reactivateButton));
     expect(await screen.findByText(SITE_ADMIN_REACTIVATE_COPY));
   });
 });

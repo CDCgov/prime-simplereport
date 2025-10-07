@@ -1,20 +1,15 @@
 query GetFacilityResultsWithCountMultiplex(
   $facilityId: ID!
 ) {
-  resultsPage(
-    facilityId: $facilityId
-  ) {
+  testResultsPage(facilityId: $facilityId) {
     content {
-      id
-      dateAdded
+      internalId
       dateTested
-      disease
-      testResult
-      correctionStatus
-      reasonForCorrection
-      facility {
-        name
-        isDeleted
+      results {
+        disease {
+          name
+        }
+        testResult
       }
       deviceType {
         internalId
@@ -25,34 +20,17 @@ query GetFacilityResultsWithCountMultiplex(
         firstName
         middleName
         lastName
-        birthDate
-        gender
-        role
-        email
-        phoneNumbers {
-          type
-          number
-        }
+        lookupId
       }
       patientLink {
         internalId
       }
-      surveyData {
-        pregnancy
-        syphilisHistory
-        symptoms
-        symptomOnset
-        noSymptoms
-        genderOfSexualPartners
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          middleName
-          lastName
-        }
-      }
+      symptoms
+      noSymptoms
+      pregnancy
+      symptomOnset
     }
+
     totalElements
   }
 }

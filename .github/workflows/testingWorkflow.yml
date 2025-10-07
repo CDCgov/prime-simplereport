@@ -2,14 +2,6 @@ name: Testing Workflow
 
 on:
   workflow_dispatch:
-    inputs:
-      platforms:
-        description: "Build additional architectures (linux/arm64). linux/amd64 is built by default."
-        required: false
-      force_build:
-        description: "Force build the docker images"
-        required: true
-        default: true
   pull_request:
     branches:
       - "**"
@@ -20,211 +12,27 @@ on:
     branches:
       - main
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
-# Check for changes in the backend, cypress, database, frontend, and nginx directories
-  workflow_changes:
-    with:
-      what_to_check: ./.github
-    uses: ./.github/workflows/checkForChanges.yml
 
-  backend_changes:
-    with:
-      what_to_check: ./backend
-    uses: ./.github/workflows/checkForChanges.yml
-
-  cypress_changes:
-    with:
-      what_to_check: ./cypress
-    uses: ./.github/workflows/checkForChanges.yml
-
-  database_changes:
-    with:
-      what_to_check: ./backend/db-setup
-    uses: ./.github/workflows/checkForChanges.yml
-
-  frontend_changes:
-    with:
-      what_to_check: ./frontend
-    uses: ./.github/workflows/checkForChanges.yml
-
-  nginx_changes:
-    with:
-      what_to_check: ./nginx
-    uses: ./.github/workflows/checkForChanges.yml
-
-# Build Docker Images for the backend, cypress, database, frontend, and nginx
   build_backend_image:
-    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
-    needs:
-      - backend_changes
-      - workflow_changes
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: ${{ inputs.platform }}
-    outputs:
-      version: ${{ steps.set_backend_version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Build Backend Image
-        id: set_backend_version
-        uses: ./.github/actions/docker-buildx
-        with:
-          file: ./backend/Dockerfile
-          gh_username: ${{ github.actor }}
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
-          image_name: backend
-          platform: ${{ matrix.platform }}
-  
+    uses: ./.github/workflows/buildBackendImage.yml
+
   build_cypress_image:
-    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
-    needs:
-      - cypress_changes
-      - workflow_changes
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: ${{ inputs.platform }}
-    outputs:
-      version: ${{ steps.set_cypress_version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Build Cypress Image
-        id: set_cypress_version
-        uses: ./.github/actions/docker-buildx
-        with:
-          file: ./cypress/Dockerfile
-          gh_username: ${{ github.actor }}
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
-          image_name: cypress
-          platform: ${{ matrix.platform }}
+    uses: ./.github/workflows/buildCypressImage.yml
 
   build_database_image:
-    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
-    needs:
-      - database_changes
-      - workflow_changes
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: ${{ inputs.platform }}
-    outputs:
-      version: ${{ steps.set_database_version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Build Database Image
-        id: set_database_version
-        uses: ./.github/actions/docker-buildx
-        with:
-          context: ./backend/db-setup
-          gh_username: ${{ github.actor }}
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
-          image_name: database
-          platform: ${{ matrix.platform }}
+    uses: ./.github/workflows/buildDatabaseImage.yml
 
   build_frontend_image:
-    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
-    needs:
-      - frontend_changes
-      - workflow_changes
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: ${{ inputs.platform }}
-    outputs:
-      version: ${{ steps.set_frontend_version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Build Frontend Image
-        id: set_frontend_version
-        uses: ./.github/actions/docker-buildx
-        with:
-          file: ./frontend/Dockerfile
-          gh_username: ${{ github.actor }}
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
-          image_name: frontend
-          platform: ${{ matrix.platform }}
-          build_args: |
-            "REACT_APP_OKTA_URL=http://wiremock:8088"
-            "REACT_APP_OKTA_CLIENT_ID=0oa1k0163nAwfVxNW1d7"
-            "REACT_APP_BASE_URL=https://localhost.simplereport.gov"
-            "REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api"
-            "PUBLIC_URL=/app/"
-            "REACT_APP_OKTA_ENABLED=true"
-            "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
+    uses: ./.github/workflows/buildFrontendImage.yml
 
   build_frontend_lighthouse_image:
-    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
-    needs:
-      - frontend_changes
-      - workflow_changes
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: ${{ inputs.platform }}
-    outputs:
-      version: ${{ steps.set_frontend_lighthouse_version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Build Frontend Lighthouse Image
-        id: set_frontend_lighthouse_version
-        uses: ./.github/actions/docker-buildx
-        with:
-          file: ./frontend/Dockerfile
-          gh_username: ${{ github.actor }}
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
-          image_name: frontend-lighthouse
-          platform: ${{ matrix.platform }}
-          build_args: |
-            "REACT_APP_BASE_URL=https://localhost.simplereport.gov"
-            "REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api"
-            "PUBLIC_URL=/app/"
-            "REACT_APP_OKTA_ENABLED=false"
-            "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
+    uses: ./.github/workflows/buildFrontendLighthouseImage.yml
 
   build_nginx_image:
-    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.nginx_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
-    needs:
-      - nginx_changes
-      - workflow_changes
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: ${{ inputs.platform }}
-    outputs:
-      version: ${{ steps.set_nginx_version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Build Nginx Image
-        id: set_nginx_version
-        uses: ./.github/actions/docker-buildx
-        with:
-          context: ./nginx
-          gh_username: ${{ github.actor }}
-          gh_token: ${{ secrets.GITHUB_TOKEN }}
-          image_name: nginx
-          platform: ${{ matrix.platform }}
+    uses: ./.github/workflows/buildNginxImage.yml
 
-# Automated tests
   e2e_local:
-    if: |
-      always() && !failure() && !cancelled()
     needs:
       - build_backend_image
       - build_cypress_image
@@ -245,25 +53,19 @@ jobs:
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_frontend_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
-
   lighthouse:
-    if: |
-      always() && !failure() && !cancelled()
     needs:
       - build_backend_image
       - build_database_image
-      - build_frontend_lighthouse_image
       - build_nginx_image
+      - build_frontend_lighthouse_image
     uses: ./.github/workflows/lighthouse.yml
     with:
       DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
-
   tests:
-    if: |
-      always() && !failure() && !cancelled()
     needs:
       - build_database_image
     uses: ./.github/workflows/test.yml
@@ -275,8 +77,6 @@ jobs:
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
 
   liquibase_action_checks:
-    if: |
-      always() && !failure() && !cancelled()
     needs:
       - build_database_image
     uses: ./.github/workflows/testDBActions.yml

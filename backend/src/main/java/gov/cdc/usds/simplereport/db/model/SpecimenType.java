@@ -1,36 +1,27 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import gov.cdc.usds.simplereport.api.devicetype.PublicDeviceType;
 import gov.cdc.usds.simplereport.validators.NumericCode;
 import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import org.hibernate.annotations.NaturalId;
-import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** A SNOMED-registered specimen type that can be used by one or more {@link DeviceType}s. */
 @Entity
 public class SpecimenType extends EternalAuditedEntity {
 
   @Column(nullable = false)
-  @JsonView(PublicDeviceType.class)
   private String name;
 
   @Column(nullable = false, updatable = false)
   @RequiredNumericCode
   @NaturalId
-  @JsonView(PublicDeviceType.class)
   private String typeCode;
 
-  @Column
-  @JsonView(PublicDeviceType.class)
-  private String collectionLocationName;
+  @Column private String collectionLocationName;
 
-  @Column
-  @NumericCode
-  @JsonView(PublicDeviceType.class)
-  private String collectionLocationCode;
+  @Column @NumericCode private String collectionLocationCode;
 
   protected SpecimenType() {} // for hibernate
 

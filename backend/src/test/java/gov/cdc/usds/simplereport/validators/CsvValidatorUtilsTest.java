@@ -1,20 +1,14 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getInvalidUnknownAddressErrorMessage;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePartialUnkAddress;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePatientGenderIdentity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,12 +20,8 @@ import com.fasterxml.jackson.core.io.ContentReference;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
-import gov.cdc.usds.simplereport.service.DiseaseService;
-import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import gov.cdc.usds.simplereport.utils.UnknownAddressUtils;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -128,33 +118,6 @@ class CsvValidatorUtilsTest {
   }
 
   @Test
-  void validUnknownAddress() {
-    ValueOrError state = new ValueOrError(UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, "state");
-    ValueOrError zip = new ValueOrError(UnknownAddressUtils.ADDRESS_ZIP_UNKNOWN, "zip_code");
-    ValueOrError street = new ValueOrError(UnknownAddressUtils.ADDRESS_STREET_UNKNOWN, "street");
-    assertThat(validatePartialUnkAddress(state, zip, street)).isEmpty();
-  }
-
-  @Test
-  void invalidUnknownAddress() {
-    String stateHeader = "state";
-    String streetHeader = "street";
-    ValueOrError state = new ValueOrError(UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader);
-    ValueOrError zip = new ValueOrError("07026", "zip_code");
-    ValueOrError street =
-        new ValueOrError(UnknownAddressUtils.ADDRESS_STREET_UNKNOWN, streetHeader);
-    List<FeedbackMessage> feedbackMessages = validatePartialUnkAddress(state, zip, street);
-    assertThat(feedbackMessages.get(0).getMessage())
-        .isEqualTo(
-            getInvalidUnknownAddressErrorMessage(
-                UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader));
-    assertThat(feedbackMessages.get(1).getMessage())
-        .isEqualTo(
-            getInvalidUnknownAddressErrorMessage(
-                UnknownAddressUtils.ADDRESS_STREET_UNKNOWN, streetHeader));
-  }
-
-  @Test
   void validSpecimenName() {
     var specimenType = new ValueOrError("Oral saliva sample", "specimen_type");
     assertThat(validateSpecimenType(specimenType, Map.of("oral saliva sample", "000111222")))
@@ -216,7 +179,6 @@ class CsvValidatorUtilsTest {
     validDateTimes.add(new ValueOrError("01/1/2023 00:00", "datetime"));
     validDateTimes.add(new ValueOrError("1/31/2023 05:50", "datetime"));
     validDateTimes.add(new ValueOrError("12/01/2023 1:01", "datetime"));
-    validDateTimes.add(new ValueOrError("12/01/2023", "datetime"));
     for (var datetime : validDateTimes) {
       assertThat(validateDateTime(datetime)).isEmpty();
     }
@@ -234,7 +196,6 @@ class CsvValidatorUtilsTest {
     invalidDateTimes.add(new ValueOrError("00/00/2023 07:30", "datetime"));
     invalidDateTimes.add(new ValueOrError("0/0/2023 10:23", "datetime"));
     invalidDateTimes.add(new ValueOrError("0/0/202 11:11", "datetime"));
-    invalidDateTimes.add(new ValueOrError("12/1/23", "datetime"));
     for (var datetime : invalidDateTimes) {
       assertThat(validateDateTime(datetime)).hasSize(1);
     }
@@ -279,134 +240,5 @@ class CsvValidatorUtilsTest {
     for (var datetime : invalidDateTimes) {
       assertThat(validateDateTime(datetime)).hasSize(1);
     }
-  }
-
-  @Test
-  void validGendersOfSexualPartners() {
-    ValueOrError genders = new ValueOrError("m, F, TM, tw, nb, O, R", "genders_of_sexual_partners");
-    assertThat(validateGendersOfSexualPartners(genders)).isEmpty();
-  }
-
-  @Test
-  void invalidGendersOfSexualPartners() {
-    ValueOrError genders = new ValueOrError("m, f, t, n", "genders_of_sexual_partners");
-    assertThat(validateGendersOfSexualPartners(genders)).hasSize(1);
-  }
-
-  @Test
-  void validPatientGenderIdentity() {
-    assertThat(validatePatientGenderIdentity(new ValueOrError("f", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("m", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("nb", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("tm", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("tw", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("o", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("r", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("female", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("male", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(
-            validatePatientGenderIdentity(
-                new ValueOrError("non binary", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(
-            validatePatientGenderIdentity(new ValueOrError("nonbinary", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(
-            validatePatientGenderIdentity(new ValueOrError("trans man", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(
-            validatePatientGenderIdentity(
-                new ValueOrError("trans woman", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(validatePatientGenderIdentity(new ValueOrError("other", "patient_gender_identity")))
-        .isEmpty();
-    assertThat(
-            validatePatientGenderIdentity(new ValueOrError("refused", "patient_gender_identity")))
-        .isEmpty();
-  }
-
-  @Test
-  void invalidPatientGenderIdentity() {
-    assertThat(validatePatientGenderIdentity(new ValueOrError("t", "patient_gender_identity")))
-        .hasSize(1);
-    assertThat(validatePatientGenderIdentity(new ValueOrError("n", "patient_gender_identity")))
-        .hasSize(1);
-    assertThat(validatePatientGenderIdentity(new ValueOrError("ma", "patient_gender_identity")))
-        .hasSize(1);
-    assertThat(validatePatientGenderIdentity(new ValueOrError("fe", "patient_gender_identity")))
-        .hasSize(1);
-    assertThat(validatePatientGenderIdentity(new ValueOrError(" ", "patient_gender_identity")))
-        .hasSize(1);
-  }
-
-  @Test
-  void validNegativeHIVNoRequiredAOEFields() {
-    ValueOrError testResult = new ValueOrError("negative", "test_result");
-    ValueOrError genders = new ValueOrError("", "genders_of_sexual_partners");
-    ValueOrError pregnant = new ValueOrError("", "pregnant");
-    assertThat(
-            validateRequiredFieldsForPositiveResult(
-                testResult, DiseaseService.HIV_NAME, List.of(genders, pregnant)))
-        .isEmpty();
-  }
-
-  @Test
-  void validPositiveHIVRequiredAOEFields() {
-    ValueOrError testResult = new ValueOrError("positive", "test_result");
-    ValueOrError genders = new ValueOrError("m, f, tm, tw", "genders_of_sexual_partners");
-    ValueOrError pregnant = new ValueOrError("n", "pregnant");
-    assertThat(
-            validateRequiredFieldsForPositiveResult(
-                testResult, DiseaseService.HIV_NAME, List.of(genders, pregnant)))
-        .isEmpty();
-  }
-
-  @Test
-  void invalidPositiveHIVRequiredAOEFields() {
-    ValueOrError testResult = new ValueOrError("positive", "test_result");
-    ValueOrError genders = new ValueOrError("", "genders_of_sexual_partners");
-    ValueOrError pregnant = new ValueOrError("", "pregnant");
-    assertThat(
-            validateRequiredFieldsForPositiveResult(
-                testResult, DiseaseService.HIV_NAME, List.of(genders, pregnant)))
-        .hasSize(2);
-  }
-
-  @Test
-  void validTestResult() {
-
-    ValueOrError positiveSNOMED = new ValueOrError("10828004", "test_result");
-    assertThat(validateTestResult(positiveSNOMED)).hasSize(0);
-
-    ValueOrError positiveLiteral = new ValueOrError("positive", "test_result");
-    assertThat(validateTestResult(positiveLiteral)).hasSize(0);
-
-    ValueOrError negativeSNOMED = new ValueOrError("260385009", "test_result");
-    assertThat(validateTestResult(negativeSNOMED)).hasSize(0);
-
-    ValueOrError negativeLiteral = new ValueOrError("negative", "test_result");
-    assertThat(validateTestResult(negativeLiteral)).hasSize(0);
-  }
-
-  @Test
-  void invalidTestResult() {
-
-    ValueOrError invalidSNOMED = new ValueOrError("404684003", "test_result");
-    assertThat(validateTestResult(invalidSNOMED)).hasSize(1);
-
-    ValueOrError invalidLiteral = new ValueOrError("postitv", "test_result");
-    assertThat(validateTestResult(invalidLiteral)).hasSize(1);
-
-    ValueOrError randomChar = new ValueOrError("-", "test_result");
-    assertThat(validateTestResult(randomChar)).hasSize(1);
   }
 }

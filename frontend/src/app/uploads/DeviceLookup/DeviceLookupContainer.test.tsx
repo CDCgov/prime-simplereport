@@ -37,17 +37,19 @@ jest.mock("../../../generated/graphql", () => {
 });
 
 describe("DeviceLookupContainer", () => {
-  afterAll(() => {
-    jest.clearAllMocks();
-  });
-
-  it("should render device lookup container", async () => {
+  beforeEach(() => {
     render(
       <MemoryRouter>
         <DeviceLookupContainer />
         <SRToastContainer />
       </MemoryRouter>
     );
+  });
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should render device lookup container", async () => {
     expect(screen.getByText("Device code lookup")).toBeInTheDocument();
   });
 });

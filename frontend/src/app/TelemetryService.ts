@@ -15,11 +15,11 @@ let appInsights: ApplicationInsights | null = null;
 
 const createTelemetryService = () => {
   const initialize = () => {
-    const connectionString =
-      process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING;
+    const connectionString = import.meta.env
+      .VITE_APPLICATIONINSIGHTS_CONNECTION_STRING;
 
     if (!connectionString) {
-      if (process.env.NODE_ENV !== "test") {
+      if (import.meta.env.MODE !== "test") {
         console.warn("App Insights connection string not provided");
       }
       return;
@@ -30,8 +30,8 @@ const createTelemetryService = () => {
     appInsights = new ApplicationInsights({
       config: {
         connectionString,
-        extensions: [reactPlugin],
-        loggingLevelConsole: process.env.NODE_ENV === "development" ? 2 : 0,
+        extensions: [reactPlugin as any],
+        loggingLevelConsole: import.meta.env.MODE === "development" ? 2 : 0,
         disableFetchTracking: false,
         enableAutoRouteTracking: true,
         loggingLevelTelemetry: 2,
@@ -70,7 +70,7 @@ export function isStaticFileToSkip(envelope: ITelemetryItem) {
     ) {
       return true; // file should be skipped
     }
-  } catch {
+  } catch (e) {
     /* do nothing and don't disrupt logging*/
   }
 }
@@ -118,10 +118,9 @@ export function sanitizeOktaToken(envelope: ITelemetryItem): void {
         envelope.ext.trace.name
       );
     }
-  } catch {
+  } catch (e) {
     /* do nothing and don't disrupt logging*/
   }
-  return;
 }
 
 const logSeverityMap = {

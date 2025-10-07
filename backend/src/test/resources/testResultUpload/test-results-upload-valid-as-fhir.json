@@ -7,10 +7,10 @@
   "timestamp": "2023-05-24T19:33:06.472Z",
   "entry": [
     {
-      "fullUrl": "MessageHeader/00000000-0000-0000-0000-000000000015",
+      "fullUrl": "MessageHeader/00000000-0000-0000-0000-000000000010",
       "resource": {
         "resourceType": "MessageHeader",
-        "id": "00000000-0000-0000-0000-000000000015",
+        "id": "00000000-0000-0000-0000-000000000010",
         "meta": {
           "tag": [
             {
@@ -57,7 +57,7 @@
         },
         "focus": [
           {
-            "reference": "Provenance/00000000-0000-0000-0000-000000000014"
+            "reference": "Provenance/00000000-0000-0000-0000-000000000009"
           },
           {
             "reference": "DiagnosticReport/123"
@@ -66,10 +66,10 @@
       }
     },
     {
-      "fullUrl": "Provenance/00000000-0000-0000-0000-000000000014",
+      "fullUrl": "Provenance/00000000-0000-0000-0000-000000000009",
       "resource": {
         "resourceType": "Provenance",
-        "id": "00000000-0000-0000-0000-000000000014",
+        "id": "00000000-0000-0000-0000-000000000009",
         "recorded": "2023-05-24T19:33:06.472Z",
         "activity": {
           "coding": [
@@ -101,7 +101,7 @@
         ],
         "basedOn": [
           {
-            "reference": "ServiceRequest/00000000-0000-0000-0000-000000000012"
+            "reference": "ServiceRequest/00000000-0000-0000-0000-000000000007"
           }
         ],
         "status": "final",
@@ -331,38 +331,19 @@
             "value": "00000000-0000-0000-0000-000000000005"
           }
         ],
-        "type": {
-          "coding": [
-            {
-              "system": "http://snomed.info/sct",
-              "code": "445297001"
-            }
-          ],
-          "text": "Nasal swab"
-        },
         "subject": {
           "reference": "Patient/1234"
         },
-        "receivedTime": "2021-12-22T14:00:00-06:00",
-        "collection": {
-          "collectedDateTime": "2021-12-21T14:00:00-06:00",
-          "bodySite": {
-            "coding": [
-              {
-                "system": "http://snomed.info/sct",
-                "code": "87100004"
-              }
-            ],
-            "text": "Topography unknown (body structure)"
-          }
+        "collection" : {
+          "collectedDateTime":"2021-12-21T14:00:00-06:00"
         }
       }
     },
     {
-      "fullUrl": "ServiceRequest/00000000-0000-0000-0000-000000000012",
+      "fullUrl": "ServiceRequest/00000000-0000-0000-0000-000000000007",
       "resource": {
         "resourceType": "ServiceRequest",
-        "id": "00000000-0000-0000-0000-000000000012",
+        "id": "00000000-0000-0000-0000-000000000007",
         "extension": [
           {
             "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
@@ -376,8 +357,8 @@
             }
           },
           {
-            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
-            "valueDateTime": "2021-12-20T14:00:00-06:00"
+            "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime":"2021-12-20T14:00:00-06:00"
           }
         ],
         "status": "completed",
@@ -394,7 +375,7 @@
           "reference": "Patient/1234"
         },
         "requester": {
-          "reference": "PractitionerRole/00000000-0000-0000-0000-000000000013"
+          "reference": "PractitionerRole/00000000-0000-0000-0000-000000000008"
         },
         "performer": [
           {
@@ -404,21 +385,6 @@
         "supportingInfo": [
           {
             "reference": "Observation/7e5bdd49-f9ca-3c9c-b379-19343eac04be"
-          },
-          {
-            "reference": "Observation/4bf9602f-9a3e-3d4d-bd0c-735924a43e0a"
-          },
-          {
-            "reference": "Observation/24ec623a-fc16-333b-bb8e-3c600b974e26"
-          },
-          {
-            "reference": "Observation/f3e703c2-192b-3fdf-8747-e164ab3abd7c"
-          },
-          {
-            "reference": "Observation/2fdf9fae-ad91-3fb5-bc23-7529bdf94675"
-          },
-          {
-            "reference": "Observation/68a923aa-47dc-3a08-ad7c-6e990bf4dbb2"
           }
         ]
       }
@@ -438,10 +404,10 @@
       }
     },
     {
-      "fullUrl": "PractitionerRole/00000000-0000-0000-0000-000000000013",
+      "fullUrl": "PractitionerRole/00000000-0000-0000-0000-000000000008",
       "resource": {
         "resourceType": "PractitionerRole",
-        "id": "00000000-0000-0000-0000-000000000013",
+        "id": "00000000-0000-0000-0000-000000000008",
         "practitioner": {
           "reference": "Practitioner/1013012657"
         },
@@ -476,7 +442,6 @@
         "subject": {
           "reference": "Patient/1234"
         },
-        "issued": "2021-12-23T20:00:00.000Z",
         "performer": [
           {
             "reference": "Organization/12345000-0000-0000-0000-000000000000"
@@ -509,6 +474,12 @@
               "valueCoding": {
                 "code": "BOOMX2"
               }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "543212134"
+              }
             }
           ],
           "coding": [
@@ -522,7 +493,8 @@
         },
         "device": {
           "reference": "Device/00000000-0000-0000-0000-000000000003"
-        }
+        },
+        "issued": "2021-12-23T20:00:00.000Z"
       }
     },
     {
@@ -554,226 +526,6 @@
             }
           ],
           "text": "Has symptoms related to condition of interest"
-        },
-        "subject": {
-          "reference": "Patient/1234"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
-              "code": "N",
-              "display": "No"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/4bf9602f-9a3e-3d4d-bd0c-735924a43e0a",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "4bf9602f-9a3e-3d4d-bd0c-735924a43e0a",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "82810-3",
-              "display": "Pregnancy status"
-            }
-          ],
-          "text": "Pregnancy status"
-        },
-        "subject": {
-          "reference": "Patient/1234"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://snomed.info/sct",
-              "code": "60001007",
-              "display": "Not pregnant"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/24ec623a-fc16-333b-bb8e-3c600b974e26",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "24ec623a-fc16-333b-bb8e-3c600b974e26",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "95418-0",
-              "display": "Employed in a healthcare setting"
-            }
-          ],
-          "text": "Employed in a healthcare setting"
-        },
-        "subject": {
-          "reference": "Patient/1234"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
-              "code": "N",
-              "display": "No"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/f3e703c2-192b-3fdf-8747-e164ab3abd7c",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "f3e703c2-192b-3fdf-8747-e164ab3abd7c",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "77974-4",
-              "display": "Hospitalized for condition"
-            }
-          ],
-          "text": "Hospitalized for condition"
-        },
-        "subject": {
-          "reference": "Patient/1234"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
-              "code": "N",
-              "display": "No"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/2fdf9fae-ad91-3fb5-bc23-7529bdf94675",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "2fdf9fae-ad91-3fb5-bc23-7529bdf94675",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "95420-6",
-              "display": "Admitted to ICU for condition"
-            }
-          ],
-          "text": "Admitted to ICU for condition"
-        },
-        "subject": {
-          "reference": "Patient/1234"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
-              "code": "N",
-              "display": "No"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/68a923aa-47dc-3a08-ad7c-6e990bf4dbb2",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "68a923aa-47dc-3a08-ad7c-6e990bf4dbb2",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "95421-4",
-              "display": "Resides in a congregate care setting"
-            }
-          ],
-          "text": "Resides in a congregate care setting"
         },
         "subject": {
           "reference": "Patient/1234"

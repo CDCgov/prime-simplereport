@@ -1,13 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import static gov.cdc.usds.simplereport.api.Translators.FEMALE;
-import static gov.cdc.usds.simplereport.api.Translators.MALE;
-import static gov.cdc.usds.simplereport.api.Translators.NON_BINARY;
-import static gov.cdc.usds.simplereport.api.Translators.OTHER;
-import static gov.cdc.usds.simplereport.api.Translators.REFUSED;
-import static gov.cdc.usds.simplereport.api.Translators.TRANS_MAN;
-import static gov.cdc.usds.simplereport.api.Translators.TRANS_WOMAN;
-
 import gov.cdc.usds.simplereport.api.MappingConstants;
 import java.util.HashMap;
 import java.util.List;
@@ -669,10 +661,6 @@ public class PersonUtils {
   }
 
   public static final Map<String, String> raceMap = new HashMap<>();
-
-  /** Race map limited to the values on HL7 v2.5.1 0005 Race table. */
-  public static final Map<String, List<String>> HL7_RACE_MAP = new HashMap<>();
-
   private static final String NATIVE_CODE = "1002-5";
   private static final String ASIAN_CODE = "2028-9";
   private static final String BLACK_CODE = "2054-5";
@@ -701,13 +689,6 @@ public class PersonUtils {
     raceMap.put("refused", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
     raceMap.put("ask, but unknown", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
     raceMap.put("asku", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
-
-    HL7_RACE_MAP.put("native", List.of(NATIVE_CODE, "American Indian or Alaska Native"));
-    HL7_RACE_MAP.put("asian", List.of(ASIAN_CODE, "Asian"));
-    HL7_RACE_MAP.put("black", List.of(BLACK_CODE, "Black or African American"));
-    HL7_RACE_MAP.put("pacific", List.of(PACIFIC_CODE, "Native Hawaiian or Other Pacific Islander"));
-    HL7_RACE_MAP.put("white", List.of(WHITE_CODE, "White"));
-    HL7_RACE_MAP.put("other", List.of(OTHER_CODE, "Other"));
   }
 
   private static final List<String> hispanic = List.of("H", "Hispanic or Latino");
@@ -721,159 +702,4 @@ public class PersonUtils {
           "not hispanic or latino", not_hispanic,
           "2186-5", not_hispanic,
           "refused", List.of("U", "unknown"));
-
-  public static final String HOSPITAL_LITERAL = "hospital";
-  public static final String HOSPITAL_SNOMED = "22232009";
-  public static final String HOSPITAL_SHIP_LITERAL = "hospital ship";
-  public static final String HOSPITAL_SHIP_SNOMED = "2081004";
-  public static final String LONG_TERM_HOSPITAL_LITERAL = "long term care hospital";
-  public static final String LONG_TERM_HOSPITAL_SNOMED = "32074000";
-  public static final String SECURE_HOSPITAL_LITERAL = "secure hospital";
-  public static final String SECURE_HOSPITAL_SNOMED = "224929004";
-  public static final String NURSING_HOME_LITERAL = "nursing home";
-  public static final String NURSING_HOME_SNOMED = "42665001";
-  public static final String RETIREMENT_HOME_LITERAL = "retirement home";
-  public static final String RETIREMENT_HOME_SNOMED = "30629002";
-  public static final String ORPHANAGE_LITERAL = "orphanage";
-  public static final String ORPHANAGE_SNOMED = "74056004";
-  public static final String PRISON_BASED_CARE_LITERAL = "prison-based care site";
-  public static final String PRISON_BASED_CARE_SNOMED = "722173008";
-  public static final String SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL =
-      "substance abuse treatment center";
-  public static final String SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED = "20078004";
-  public static final String BOARDING_HOUSE_LITERAL = "boarding house";
-  public static final String BOARDING_HOUSE_SNOMED = "257573002";
-  public static final String MILITARY_ACCOMMODATION_LITERAL = "military accommodation";
-  public static final String MILITARY_ACCOMMODATION_SNOMED = "224683003";
-  public static final String HOSPICE_LITERAL = "hospice";
-  public static final String HOSPICE_SNOMED = "284546000";
-  public static final String HOSTEL_LITERAL = "hostel";
-  public static final String HOSTEL_SNOMED = "257628001";
-  public static final String SHELTERED_HOUSING_LITERAL = "sheltered housing";
-  public static final String SHELTERED_HOUSING_SNOMED = "310207003";
-  public static final String PENAL_INSTITUTION_LITERAL = "penal institution";
-  public static final String PENAL_INSTITUTION_SNOMED = "57656006";
-  public static final String RELIGIOUS_RESIDENCE_LITERAL = "religious institutional residence";
-  public static final String RELIGIOUS_RESIDENCE_SNOMED = "285113009";
-  public static final String WORK_ENVIRONMENT_LITERAL = "work (environment)";
-  public static final String WORK_ENVIRONMENT_SNOMED = "285141008";
-  public static final String HOMELESS_LITERAL = "homeless";
-  public static final String HOMELESS_SNOMED = "32911000";
-
-  public static final Map<String, String> getResidenceTypeMap() {
-    Map<String, String> residenceTypeMap = new HashMap<>();
-    residenceTypeMap.put(HOSPITAL_SNOMED, HOSPITAL_LITERAL);
-    residenceTypeMap.put(HOSPITAL_LITERAL, HOSPITAL_SNOMED);
-    residenceTypeMap.put(HOSPITAL_SHIP_SNOMED, HOSPITAL_SHIP_LITERAL);
-    residenceTypeMap.put(HOSPITAL_SHIP_LITERAL, HOSPITAL_SHIP_SNOMED);
-    residenceTypeMap.put(LONG_TERM_HOSPITAL_SNOMED, LONG_TERM_HOSPITAL_LITERAL);
-    residenceTypeMap.put(LONG_TERM_HOSPITAL_LITERAL, LONG_TERM_HOSPITAL_SNOMED);
-    residenceTypeMap.put(SECURE_HOSPITAL_SNOMED, SECURE_HOSPITAL_LITERAL);
-    residenceTypeMap.put(SECURE_HOSPITAL_LITERAL, SECURE_HOSPITAL_SNOMED);
-    residenceTypeMap.put(NURSING_HOME_SNOMED, NURSING_HOME_LITERAL);
-    residenceTypeMap.put(NURSING_HOME_LITERAL, NURSING_HOME_SNOMED);
-    residenceTypeMap.put(RETIREMENT_HOME_SNOMED, RETIREMENT_HOME_LITERAL);
-    residenceTypeMap.put(RETIREMENT_HOME_LITERAL, RETIREMENT_HOME_SNOMED);
-    residenceTypeMap.put(ORPHANAGE_SNOMED, ORPHANAGE_LITERAL);
-    residenceTypeMap.put(ORPHANAGE_LITERAL, ORPHANAGE_SNOMED);
-    residenceTypeMap.put(PRISON_BASED_CARE_SNOMED, PRISON_BASED_CARE_LITERAL);
-    residenceTypeMap.put(PRISON_BASED_CARE_LITERAL, PRISON_BASED_CARE_SNOMED);
-    residenceTypeMap.put(
-        SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED, SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL);
-    residenceTypeMap.put(
-        SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL, SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED);
-    residenceTypeMap.put(BOARDING_HOUSE_SNOMED, BOARDING_HOUSE_LITERAL);
-    residenceTypeMap.put(BOARDING_HOUSE_LITERAL, BOARDING_HOUSE_SNOMED);
-    residenceTypeMap.put(MILITARY_ACCOMMODATION_SNOMED, MILITARY_ACCOMMODATION_LITERAL);
-    residenceTypeMap.put(MILITARY_ACCOMMODATION_LITERAL, MILITARY_ACCOMMODATION_SNOMED);
-    residenceTypeMap.put(HOSPICE_SNOMED, HOSPICE_LITERAL);
-    residenceTypeMap.put(HOSPICE_LITERAL, HOSPICE_SNOMED);
-    residenceTypeMap.put(HOSTEL_SNOMED, HOSTEL_LITERAL);
-    residenceTypeMap.put(HOSTEL_LITERAL, HOSTEL_SNOMED);
-    residenceTypeMap.put(SHELTERED_HOUSING_SNOMED, SHELTERED_HOUSING_LITERAL);
-    residenceTypeMap.put(SHELTERED_HOUSING_LITERAL, SHELTERED_HOUSING_SNOMED);
-    residenceTypeMap.put(PENAL_INSTITUTION_SNOMED, PENAL_INSTITUTION_LITERAL);
-    residenceTypeMap.put(PENAL_INSTITUTION_LITERAL, PENAL_INSTITUTION_SNOMED);
-    residenceTypeMap.put(RELIGIOUS_RESIDENCE_SNOMED, RELIGIOUS_RESIDENCE_LITERAL);
-    residenceTypeMap.put(RELIGIOUS_RESIDENCE_LITERAL, RELIGIOUS_RESIDENCE_SNOMED);
-    residenceTypeMap.put(WORK_ENVIRONMENT_SNOMED, WORK_ENVIRONMENT_LITERAL);
-    residenceTypeMap.put(WORK_ENVIRONMENT_LITERAL, WORK_ENVIRONMENT_SNOMED);
-    residenceTypeMap.put(HOMELESS_SNOMED, HOMELESS_LITERAL);
-    residenceTypeMap.put(HOMELESS_LITERAL, HOMELESS_SNOMED);
-    return residenceTypeMap;
-  }
-
-  public static final String PREGNANT_SNOMED = "77386006";
-  public static final String NOT_PREGNANT_SNOMED = "60001007";
-  public static final String PREGNANT_UNKNOWN_SNOMED = "102874004";
-
-  public static final String YES_SYPHILIS_HISTORY_SNOMED = "1087151000119108";
-  public static final String NO_SYPHILIS_HISTORY_SNOMED = "14732006";
-  public static final String UNKNOWN_SYPHILIS_HISTORY_SNOMED = "261665006";
-
-  public static final Map<String, String> pregnancyStatusSnomedMap =
-      Map.of(
-          "YES".toLowerCase(), PREGNANT_SNOMED,
-          "Y".toLowerCase(), PREGNANT_SNOMED,
-          "NO".toLowerCase(), NOT_PREGNANT_SNOMED,
-          "N".toLowerCase(), NOT_PREGNANT_SNOMED,
-          "UNK".toLowerCase(), PREGNANT_UNKNOWN_SNOMED,
-          "U".toLowerCase(), PREGNANT_UNKNOWN_SNOMED);
-
-  public static final Map<String, String> pregnancyStatusDisplayMap =
-      Map.of(
-          PREGNANT_SNOMED, "Pregnant",
-          NOT_PREGNANT_SNOMED, "Not pregnant",
-          PREGNANT_UNKNOWN_SNOMED, "Unknown");
-
-  public static final Map<String, String> genderIdentitySnomedSet =
-      Map.of(
-          FEMALE, "446141000124107",
-          MALE, "446151000124109",
-          NON_BINARY, "446131000124102",
-          TRANS_MAN, "446151000124109",
-          TRANS_WOMAN, "446141000124107",
-          OTHER, MappingConstants.UNK_CODE,
-          REFUSED, "asked-declined");
-
-  public static final Map<String, String> genderIdentityDisplaySet =
-      Map.of(
-          FEMALE, "Female gender identity",
-          MALE, "Male gender identity",
-          NON_BINARY, "Non-binary gender identity",
-          TRANS_MAN, "Male gender identity",
-          TRANS_WOMAN, "Female gender identity",
-          OTHER, "Non-binary gender identity",
-          REFUSED, "Asked But Declined");
-
-  public static Map<String, String> getGenderIdentityAbbreviationMap() {
-    Map<String, String> genderMap = new HashMap<>();
-
-    genderMap.put("F", FEMALE);
-    genderMap.put("FEMALE", FEMALE);
-    genderMap.put("M", MALE);
-    genderMap.put("MALE", MALE);
-    genderMap.put("NB", NON_BINARY);
-    genderMap.put("NON BINARY", NON_BINARY);
-    genderMap.put("NONBINARY", NON_BINARY);
-    genderMap.put("TM", TRANS_MAN);
-    genderMap.put("TRANS MAN", TRANS_MAN);
-    genderMap.put("TW", TRANS_WOMAN);
-    genderMap.put("TRANS WOMAN", TRANS_WOMAN);
-    genderMap.put("O", OTHER);
-    genderMap.put("OTHER", OTHER);
-    genderMap.put("R", REFUSED);
-    genderMap.put("REFUSED", REFUSED);
-
-    return genderMap;
-  }
-
-  public static final Map<String, String> syphilisHistorySnomedMap =
-      Map.of(
-          "YES".toLowerCase(), YES_SYPHILIS_HISTORY_SNOMED,
-          "Y".toLowerCase(), YES_SYPHILIS_HISTORY_SNOMED,
-          "NO".toLowerCase(), NO_SYPHILIS_HISTORY_SNOMED,
-          "N".toLowerCase(), NO_SYPHILIS_HISTORY_SNOMED,
-          "UNK".toLowerCase(), UNKNOWN_SYPHILIS_HISTORY_SNOMED,
-          "U".toLowerCase(), UNKNOWN_SYPHILIS_HISTORY_SNOMED);
 }

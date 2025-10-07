@@ -10,11 +10,11 @@ import gov.cdc.usds.simplereport.properties.ExperianProperties;
 import gov.cdc.usds.simplereport.properties.OrderingProviderProperties;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
-import gov.cdc.usds.simplereport.properties.SupportEscalationProperties;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,7 +27,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 @Slf4j
 @SpringBootApplication
@@ -41,8 +40,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
   SendGridProperties.class,
   OrderingProviderProperties.class,
   CorsProperties.class,
-  AzureStorageQueueReportingProperties.class,
-  SupportEscalationProperties.class
+  AzureStorageQueueReportingProperties.class
 })
 @EnableAsync
 @EnableScheduling
@@ -54,9 +52,9 @@ public class SimpleReportApplication {
   }
 
   @Bean
-  static SecurityContextHolderStrategy securityContextHolderStrategy() {
-    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    return SecurityContextHolder.getContextHolderStrategy();
+  public InitializingBean initializingBean() {
+    return () ->
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
   }
 
   @Bean

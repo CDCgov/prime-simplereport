@@ -16,7 +16,6 @@ export interface Option {
 interface Props {
   options: Option[];
   label?: string | React.ReactNode;
-  ariaLabel?: string;
   name?: string;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   selectedValue: string;
@@ -29,7 +28,6 @@ interface Props {
   validationStatus?: "error" | "success";
   selectClassName?: string;
   hintText?: string | React.ReactNode;
-  dataCy?: string;
   registrationProps?: UseFormRegisterReturn<any>;
 }
 
@@ -38,7 +36,6 @@ type SelectProps = JSX.IntrinsicElements["select"];
 const Dropdown: React.FC<Props & SelectProps> = ({
   options,
   label,
-  ariaLabel,
   name,
   onChange,
   disabled,
@@ -51,7 +48,6 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   errorMessage,
   selectClassName,
   hintText,
-  dataCy,
   registrationProps,
   ...inputProps
 }) => {
@@ -95,12 +91,10 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             )}
             name={name}
             id={id}
-            aria-label={ariaLabel}
             aria-required={required || "false"}
             onChange={onChange}
             value={selectedValue || defaultOption || ""}
             disabled={disabled}
-            data-cy={dataCy}
             {...inputProps}
             {...(validationStatus === "error"
               ? { "aria-describedby": `error_${id}`, "aria-invalid": true }

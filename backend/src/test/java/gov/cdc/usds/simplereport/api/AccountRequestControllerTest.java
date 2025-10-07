@@ -19,13 +19,10 @@ import com.jayway.jsonpath.JsonPath;
 import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
-import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.DbAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
@@ -44,10 +41,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class AccountRequestControllerTest extends BaseFullStackTest {
 
   @Autowired private MockMvc _mockMvc;
@@ -60,8 +59,6 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   @MockBean private DemoOktaRepository _oktaRepo;
   @MockBean private OrganizationService _orgService;
   @MockBean private OrganizationQueueService _orgQueueService;
-  @MockBean private DbAuthorizationService _dbAuthService;
-  @MockBean private FeatureFlagsConfig _featureFlagsConfig;
 
   @Captor private ArgumentCaptor<TemplateVariablesProvider> contentCaptor;
   @Captor private ArgumentCaptor<Mail> mail;
@@ -82,7 +79,7 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   @Test
   void waitlistIsOk() throws Exception {
     String requestBody =
-        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"disease-interest\":[\"Flu A\", \"RSV\"],\"additional-conditions\":\"other conditions\",\"referral\":\"Ea error voluptate v\"}";
+        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"referral\":\"Ea error voluptate v\"}";
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.WAITLIST_REQUEST)
@@ -107,53 +104,14 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             "new SimpleReport waitlist request",
             "Angela Chan",
             "qasas@mailinator.com",
-            "other conditions",
-            "[Flu A, RSV]",
             "Exercitation odit pr");
-  }
-
-  @Test
-  void waitlistIsOk_withEmptyOptionalFields() throws Exception {
-    String requestBody =
-        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"disease-interest\":[],\"additional-conditions\":\"\",\"referral\":\"\"}";
-
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.WAITLIST_REQUEST)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    this._mockMvc.perform(builder).andExpect(status().isOk());
-
-    verify(emailService)
-        .send(
-            eq(List.of("support@simplereport.gov")),
-            eq("New waitlist request"),
-            contentCaptor.capture());
-
-    verify(mockSendGrid, times(1)).send(mail.capture());
-    assertThat(mail.getValue().getContent().get(0).getValue())
-        .isEqualTo(
-            """
-                                A new SimpleReport waitlist request has been submitted with the following details:<br>
-                                <br>
-                                <b>Name: </b>Angela Chan<br>
-                                <b>Email address: </b>qasas@mailinator.com<br>
-                                <b>Phone number: </b>+1 (157) 294-1842<br>
-                                <b>State: </b>Exercitation odit pr<br>
-                                <b>Organization: </b>Lane Moss LLC<br>
-                                <b>Disease interest:</b> <br>
-                                <b>Additional conditions:</b> <br>
-                                <b>Referral: </b>
-                                """);
   }
 
   @Test
   @DisplayName("waitlist request fails without email")
   void waitlistValidatesInput() throws Exception {
     String requestBody =
-        "{\"name\":\"Angela Chan\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"referral\":\"Ea error voluptate v\",\"disease-interest\":[],\"additional-conditions\":\"\",}";
+        "{\"name\":\"Angela Chan\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"referral\":\"Ea error voluptate v\"}";
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.WAITLIST_REQUEST)
@@ -163,23 +121,6 @@ class AccountRequestControllerTest extends BaseFullStackTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
-    verifyNoInteractions(emailService);
-  }
-
-  @Test
-  @DisplayName("waitlist request early exits with form honeypot set to true")
-  void waitlistFailsWithFormHoneypot() throws Exception {
-    String requestBody =
-        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\",\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\",\"disease-interest\":[],\"additional-conditions\":\"\",\"referral\":\"\",\"form-honeypot\":\"true\"}";
-
-    MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.WAITLIST_REQUEST)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(requestBody);
-
-    this._mockMvc.perform(builder).andExpect(status().isOk());
     verifyNoInteractions(emailService);
   }
 
@@ -375,10 +316,8 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   }
 
   @Test
-  @DisplayName("OktaMigrationEnabled false - Duplicate org with admin re-signing up fails")
-  void
-      submitOrganizationAccountRequestAddToQueue_duplicateOrgWithAdmin_withOktaMigrationDisabled_failure()
-          throws Exception {
+  @DisplayName("Duplicate org with admin re-signing up fails")
+  void submitOrganizationAccountRequestAddToQueue_duplicateOrgWithAdmin_failure() throws Exception {
     // given
     mockVerifiedOrganization("Central Schools", "AZ", "mlopez@mailinator.com");
 
@@ -403,44 +342,6 @@ class AccountRequestControllerTest extends BaseFullStackTest {
 
     // then
     MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
-    verify(_dbAuthService, times(0)).getOrgAdminUsers(any());
-    assertThat(result.getResponse().getStatus()).isEqualTo(400);
-    assertThat(result.getResponse().getContentAsString())
-        .contains(
-            "Duplicate organization with admin user who has completed identity verification.");
-  }
-
-  @Test
-  @DisplayName("OktaMigrationEnabled true - Duplicate org with admin re-signing up fails")
-  void
-      submitOrganizationAccountRequestAddToQueue_duplicateOrgWithAdmin_withOktaMigrationEnabled_failure()
-          throws Exception {
-    // given
-    when(_featureFlagsConfig.isOktaMigrationEnabled()).thenReturn(true);
-    mockVerifiedOrganization("Central Schools", "AZ", "mlopez@mailinator.com");
-
-    // when
-    String duplicateRequestBody =
-        createAccountRequest(
-            "Central Schools",
-            "AZ",
-            "k12",
-            "Mary",
-            "",
-            "Lopez",
-            "mlopez@mailinator.com",
-            "+1 (969) 768-2863");
-
-    MockHttpServletRequestBuilder duplicateBuilder =
-        post(ResourceLinks.ACCOUNT_REQUEST_ORGANIZATION_ADD_TO_QUEUE)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaType.APPLICATION_JSON)
-            .characterEncoding("UTF-8")
-            .content(duplicateRequestBody);
-
-    // then
-    MvcResult result = this._mockMvc.perform(duplicateBuilder).andReturn();
-    verify(_dbAuthService, times(1)).getOrgAdminUsers(any());
     assertThat(result.getResponse().getStatus()).isEqualTo(400);
     assertThat(result.getResponse().getContentAsString())
         .contains(
@@ -504,15 +405,12 @@ class AccountRequestControllerTest extends BaseFullStackTest {
     String generatedExternalId =
         String.format("%s-%s-%s", state, orgNameNoSpaces, UUID.randomUUID());
     Organization org = mock(Organization.class);
-    ApiUser user = mock(ApiUser.class);
-    when(user.getLoginEmail()).thenReturn(email);
     when(org.getExternalId()).thenReturn(generatedExternalId);
     when(org.getIdentityVerified()).thenReturn(true);
 
     when(_orgService.getOrganizationsByName(argThat(equalToIgnoringCase(orgName))))
         .thenReturn(List.of(org));
     when(_oktaRepo.fetchAdminUserEmail(org)).thenReturn(List.of(email));
-    when(_dbAuthService.getOrgAdminUsers(org)).thenReturn(List.of(user));
   }
 
   private void mockVerifiedDefaultOrganization() throws Exception {

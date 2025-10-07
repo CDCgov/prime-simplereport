@@ -7,7 +7,7 @@ import Alert from "../../commonComponents/Alert";
 
 import { OrganizationCreateRequest } from "./OrganizationForm";
 
-export const OrganizationTypeEnum: { [_key in OrganizationType]: string } = {
+export const OrganizationTypeEnum: { [key in OrganizationType]: string } = {
   airport: "Airport/Transit station",
   assisted_living: "Assisted living facility",
   camp: "Camp",
@@ -92,15 +92,13 @@ export const initOrgErrors = (): Record<
   workPhoneNumber: "",
 });
 
-export const organizationSchema: yup.ObjectSchema<OrganizationCreateRequest> =
-  yup.object({
+export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
+  .object()
+  .shape({
     name: yup.string().required("Organization name is required"),
     type: yup
-      .string()
-      .oneOf(
-        Object.keys(OrganizationTypeEnum) as OrganizationType[],
-        "Organization type is required"
-      )
+      .mixed()
+      .oneOf(Object.keys(OrganizationTypeEnum), "Organization type is required")
       .required(),
     state: yup.string().required("State is required"),
     firstName: yup.string().required("First name is required"),
@@ -111,9 +109,9 @@ export const organizationSchema: yup.ObjectSchema<OrganizationCreateRequest> =
       .email("A valid email address is required")
       .required("A valid email address is required"),
     workPhoneNumber: yup
-      .string()
+      .mixed()
       .test("", "A valid phone number is required", phoneNumberIsValid)
-      .required("A valid phone number is required"),
+      .required(),
   });
 
 export const organizationBackendErrors = (error: string): ReactElement => {
@@ -140,10 +138,10 @@ export const organizationBackendErrors = (error: string): ReactElement => {
       return (
         <Alert type="error" title="Duplicate organization">
           Your organization is already registered with SimpleReport. To begin
-          using it, email{" "}
-          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}
-          to schedule a call to verify your identity and address any other
-          questions.
+          using it, schedule a time to complete our{" "}
+          <a href="https://calendly.com/simplereport-id-verification-sessions/simplereport-id-verification-sessions?back=1&month=2022-05">
+            online identity verification.
+          </a>{" "}
         </Alert>
       );
     // Duplicate org. Non-admin user is attempting to reregister the organization.

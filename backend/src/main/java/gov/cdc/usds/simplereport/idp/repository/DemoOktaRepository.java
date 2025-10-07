@@ -1,8 +1,5 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import static gov.cdc.usds.simplereport.api.heathcheck.OktaHealthIndicator.ACTIVE_LITERAL;
-
-import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -27,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.context.annotation.Profile;
@@ -43,8 +41,6 @@ public class DemoOktaRepository implements OktaRepository {
   @Value("${simple-report.authorization.environment-name:DEV}")
   private String environment;
 
-  private static final String NON_EXISTANT_ORG_GET_USERS_ERROR =
-      "Cannot get Okta users from nonexistent organization.";
   private final OrganizationExtractor organizationExtractor;
   private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
 
@@ -188,31 +184,6 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(newRoleClaims);
   }
 
-  @Override
-  public List<String> updateUserPrivilegesAndGroupAccess(
-      String username,
-      Organization org,
-      Set<Facility> facilities,
-      OrganizationRole roles,
-      boolean allFacilitiesAccess) {
-
-    String oldOrgId = usernameOrgRolesMap.get(username).getOrganizationExternalId();
-    orgUsernamesMap.get(oldOrgId).remove(username);
-    orgUsernamesMap.get(org.getExternalId()).add(username);
-    OrganizationRoleClaims newRoleClaims =
-        new OrganizationRoleClaims(
-            org.getExternalId(),
-            facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet()),
-            Set.of(roles, OrganizationRole.getDefault()));
-
-    usernameOrgRolesMap.replace(username, newRoleClaims);
-
-    // Live Okta repository returns list of Group names, but our demo repo didn't implement
-    // group mappings and it didn't feel worth it to add that implementation since the return is
-    // used mostly for testing. Return the list of facility ID's in the new org instead
-    return orgFacilitiesMap.get(org.getExternalId()).stream().map(UUID::toString).toList();
-  }
-
   public void resetUserPassword(String username) {
     if (!usernameOrgRolesMap.containsKey(username)) {
       throw new IllegalGraphqlArgumentException(
@@ -259,7 +230,8 @@ public class DemoOktaRepository implements OktaRepository {
   // returns ALL users including inactive ones
   public Set<String> getAllUsersForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
-      throw new IllegalGraphqlArgumentException(NON_EXISTANT_ORG_GET_USERS_ERROR);
+      throw new IllegalGraphqlArgumentException(
+          "Cannot get Okta users from nonexistent organization.");
     }
     return orgUsernamesMap.get(org.getExternalId()).stream()
         .collect(Collectors.toUnmodifiableSet());
@@ -267,24 +239,11 @@ public class DemoOktaRepository implements OktaRepository {
 
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
-      throw new IllegalGraphqlArgumentException(NON_EXISTANT_ORG_GET_USERS_ERROR);
+      throw new IllegalGraphqlArgumentException(
+          "Cannot get Okta users from nonexistent organization.");
     }
     return orgUsernamesMap.get(org.getExternalId()).stream()
         .collect(Collectors.toMap(u -> u, u -> getUserStatus(u)));
-  }
-
-  @Override
-  public Map<String, UserStatus> getPagedUsersWithStatusForOrganization(
-      Organization org, int pageNumber, int pageSize) {
-    if (!orgUsernamesMap.containsKey(org.getExternalId())) {
-      throw new IllegalGraphqlArgumentException(NON_EXISTANT_ORG_GET_USERS_ERROR);
-    }
-    List<String> allOrgUsernamesList =
-        orgUsernamesMap.get(org.getExternalId()).stream().sorted().collect(Collectors.toList());
-    int startIndex = pageNumber * pageSize;
-    int endIndex = Math.min((startIndex + pageSize), allOrgUsernamesList.size());
-    List<String> pageContent = allOrgUsernamesList.subList(startIndex, endIndex);
-    return pageContent.stream().collect(Collectors.toMap(u -> u, this::getUserStatus));
   }
 
   // this method doesn't mean much in a demo env
@@ -299,12 +258,6 @@ public class DemoOktaRepository implements OktaRepository {
     inactiveUsernames.removeAll(orgUsernamesMap.get(org.getExternalId()));
   }
 
-  @Override
-  public String activateUser(String username) {
-    inactiveUsernames.remove(username);
-    return "activationToken";
-  }
-
   // this method means nothing in a demo env
   public String activateOrganizationWithSingleUser(Organization org) {
     activateOrganization(org);
@@ -315,7 +268,6 @@ public class DemoOktaRepository implements OktaRepository {
     Set<Entry<String, OrganizationRoleClaims>> admins =
         usernameOrgRolesMap.entrySet().stream()
             .filter(e -> e.getValue().getGrantedRoles().contains(OrganizationRole.ADMIN))
-            .filter(e -> e.getValue().getOrganizationExternalId().equals(org.getExternalId()))
             .collect(Collectors.toSet());
     return admins.stream().map(Entry::getKey).collect(Collectors.toList());
   }
@@ -338,6 +290,30 @@ public class DemoOktaRepository implements OktaRepository {
         usernameOrgRolesMap.entrySet().stream()
             .filter(e -> !(e.getValue().getOrganizationExternalId().equals(externalId)))
             .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+  }
+
+  public void deleteFacility(Facility facility) {
+    String orgExternalId = facility.getOrganization().getExternalId();
+    if (!orgFacilitiesMap.containsKey(orgExternalId)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot delete Okta facility from nonexistent organization.");
+    }
+    orgFacilitiesMap.get(orgExternalId).remove(facility.getInternalId());
+    // remove this facility from every user's OrganizationRoleClaims, as necessary
+    usernameOrgRolesMap =
+        usernameOrgRolesMap.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    e -> e.getKey(),
+                    e -> {
+                      OrganizationRoleClaims oldRoleClaims = e.getValue();
+                      Set<UUID> newFacilities =
+                          oldRoleClaims.getFacilities().stream()
+                              .filter(f -> !f.equals(facility.getInternalId()))
+                              .collect(Collectors.toSet());
+                      return new OrganizationRoleClaims(
+                          orgExternalId, newFacilities, oldRoleClaims.getGrantedRoles());
+                    }));
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromTenantDataAccess(
@@ -413,8 +389,7 @@ public class DemoOktaRepository implements OktaRepository {
     allUsernames.clear();
   }
 
-  @Override
-  public Integer getUsersCountInSingleFacility(Facility facility) {
+  public Integer getUsersInSingleFacility(Facility facility) {
     Integer accessCount = 0;
 
     for (OrganizationRoleClaims existingClaims : usernameOrgRolesMap.values()) {
@@ -430,15 +405,5 @@ public class DemoOktaRepository implements OktaRepository {
     }
 
     return accessCount;
-  }
-
-  @Override
-  public Integer getUsersCountInOrganization(Organization org) {
-    return orgUsernamesMap.get(org.getExternalId()).size();
-  }
-
-  @Override
-  public String getApplicationStatusForHealthCheck() {
-    return ACTIVE_LITERAL;
   }
 }

@@ -19,9 +19,7 @@ module "metric_alerts" {
   mem_threshold = 80
 
   disabled_alerts = [
-    "mem_util",
-    "batched_uploader_single_failure_detected",
-    "batched_uploader_function_not_triggering"
+    "mem_util"
   ]
 
   action_group_ids = [

@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.commonNameZoneIdMap;
 
 import com.smartystreets.api.ClientBuilder;
 import com.smartystreets.api.exceptions.SmartyException;
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class AddressValidationService {
+  public final String FACILITY_DISPLAY_NAME = "facility";
   private Client _client;
 
   public AddressValidationService(Client client) {
@@ -67,7 +67,7 @@ public class AddressValidationService {
     return lookup.getResult();
   }
 
-  public StreetAddress getValidatedAddress(Lookup lookup) {
+  public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
     var results = getLookupResults(lookup);
 
     if (results.isEmpty()) {
@@ -95,9 +95,14 @@ public class AddressValidationService {
 
   /** Returns a StreetAddress if the address is valid and throws an exception if it is not */
   public StreetAddress getValidatedAddress(
-      String street1, String street2, String city, String state, String postalCode) {
+      String street1,
+      String street2,
+      String city,
+      String state,
+      String postalCode,
+      String fieldName) {
     Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
-    return getValidatedAddress(lookup);
+    return getValidatedAddress(lookup, fieldName);
   }
 
   public TimezoneInfo getTimezoneInfoByLookup(Lookup lookup) {
@@ -139,18 +144,12 @@ public class AddressValidationService {
     try {
       timezoneInfo = getTimezoneInfoByLookup(lookup);
     } catch (InvalidAddressException | IllegalGraphqlArgumentException exception) {
-      log.error("Unable to find timezone with provided address", exception);
+      log.error("Unable to find timezone by testing lab address", exception);
     }
     if (timezoneInfo == null) {
       return null;
     }
 
-    String timezoneCommonName = timezoneInfo.timezoneCommonName.toLowerCase();
-    if (commonNameZoneIdMap.containsKey(timezoneCommonName)) {
-      return commonNameZoneIdMap.get(timezoneCommonName);
-    } else {
-      log.error("Unsupported timezone common name: {}", timezoneCommonName);
-      return null;
-    }
+    return ZoneId.of("US/" + timezoneInfo.timezoneCommonName);
   }
 }

@@ -1,5 +1,5 @@
 import * as appInsights from "applicationinsights";
-import { app, InvocationContext, Timer } from "@azure/functions";
+import { AzureFunction, Context } from "@azure/functions";
 import { ENV } from "../config";
 import { convertToCsv, uploadResult } from "./lib";
 import {
@@ -22,12 +22,10 @@ const {
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
-export async function QueueBatchedTestEventPublisher(
-  _myTimer: Timer,
-  context: InvocationContext,
+const QueueBatchedTestEventPublisher: AzureFunction = async function (
+  context: Context,
 ): Promise<void> {
-  const operationId = context.traceContext.traceParent;
-
+  const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
   const exceptionQueue = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME);
   const publishingErrorQueue = getQueueClient(PUBLISHING_ERROR_QUEUE_NAME);
@@ -39,10 +37,8 @@ export async function QueueBatchedTestEventPublisher(
   const messages = await dequeueMessages(context, publishingQueue);
   telemetry.trackEvent({
     name: `Queue: ${TEST_EVENT_QUEUE_NAME}. Messages Dequeued`,
-    properties: {
-      messagesDequeued: messages.length,
-      operationId,
-    },
+    properties: { messagesDequeued: messages.length },
+    tagOverrides,
   });
 
   const { csvPayload, parseFailure, parseFailureCount, parseSuccessCount } =
@@ -54,8 +50,8 @@ export async function QueueBatchedTestEventPublisher(
       properties: {
         count: parseFailureCount,
         parseFailures: Object.keys(parseFailure),
-        operationId,
       },
+      tagOverrides,
     });
   }
 
@@ -80,11 +76,11 @@ export async function QueueBatchedTestEventPublisher(
     properties: {
       recordCount: parseSuccessCount,
       queue: TEST_EVENT_QUEUE_NAME,
-      operationId,
     },
     duration: new Date().getTime() - uploadStart,
     resultCode: postResult.status,
     success: postResult.ok,
+    tagOverrides,
   });
 
   if (postResult.ok) {
@@ -115,7 +111,7 @@ export async function QueueBatchedTestEventPublisher(
   } else {
     const responseBody = await postResult.text();
     const errorText = `Queue: ${TEST_EVENT_QUEUE_NAME}. Failed to upload to ReportStream with response code ${postResult.status}`;
-    context.error(
+    context.log.error(
       `${errorText}. Response body (${responseBody.length} bytes): `,
       responseBody,
     );
@@ -124,8 +120,8 @@ export async function QueueBatchedTestEventPublisher(
       properties: {
         status: postResult.status,
         responseBody,
-        operationId,
       },
+      tagOverrides,
     });
 
     if (postResult.status === 400) {
@@ -142,9 +138,6 @@ export async function QueueBatchedTestEventPublisher(
 
     throw new Error(errorText);
   }
-}
+};
 
-app.timer("QueueBatchedReportStreamUploader", {
-  schedule: "0 */2 * * * *",
-  handler: QueueBatchedTestEventPublisher,
-});
+export default QueueBatchedTestEventPublisher;

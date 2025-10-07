@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
-import static gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException.PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR;
 import static java.util.Collections.emptyMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -40,7 +39,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserManagementTest extends BaseGraphqlTest {
 
   private static final String NO_USER_ERROR =
@@ -81,7 +82,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  void whoami_standardUser_okUserInfoAndPermissions() {
+  void whoami_standardUser_okResponses() {
     ObjectNode who =
         (ObjectNode) runQuery("current-user-query", "whoDat", null, null).get("whoami");
     assertEquals("Bobbity", who.get("firstName").asText());
@@ -121,12 +122,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.SUBMIT_TEST,
             UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         null);
-  }
 
-  @Test
-  void whoami_standardUser_okOrganizationInfo() {
-    ObjectNode who =
-        (ObjectNode) runQuery("current-user-query", "whoDat", null, null).get("whoami");
     JsonNode orgNode = who.path("organization");
     assertTrue(orgNode.has("id"), "'id' field present on organization");
     assertTrue(orgNode.has("internalId"), "'internalId' field present on organization");
@@ -222,16 +218,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals(Set.of(), extractRolesFromUser(who));
     assertEquals(Collections.emptySet(), extractPermissionsFromUser(who));
     assertUserHasNoOrg(who);
-  }
-
-  @Test
-  void whoami_invalidFacilityAccess_okRolesFacilities() {
-    useInvalidFacilitiesUser();
-
-    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
-    assertFalse(who.get("isAdmin").asBoolean());
-    assertEquals(who.get("role").asText(), Role.USER.name());
-    assertTrue(extractFacilitiesFromUser(who).isEmpty());
   }
 
   @ParameterizedTest
@@ -365,7 +351,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         extractPermissionsFromUser(user));
     assertLastAuditEntry(
         TestUserIdentities.ORG_ADMIN_USER, operation, ADMIN_PERMISSIONS, List.of());
-    assertUserCanAccessExactFacilities(user, Set.of(TestUserIdentities.TEST_FACILITY_1));
+    assertUserCanAccessExactFacilities(user, Set.of());
 
     verify(_oktaRepo)
         .createUser(
@@ -454,9 +440,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals("A-Different-FirstName", enabledUser.get("firstName").asText());
     assertEquals("A-Different-LastName", enabledUser.get("lastName").asText());
     assertEquals(Set.of(Role.USER), extractRolesFromUser(enabledUser));
-    assertEquals(
-        Set.of(TestUserIdentities.TEST_FACILITY_1),
-        extractFacilitiesFromUser(enabledUser).keySet());
+    assertEquals(Map.of(), extractFacilitiesFromUser(enabledUser));
     assertEquals(
         EnumSet.of(
             UserPermission.ARCHIVE_PATIENT,
@@ -514,7 +498,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.SUBMIT_TEST,
             UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         extractPermissionsFromUser(updateUser));
-    assertUserCanAccessExactFacilities(updateUser, Set.of(TestUserIdentities.TEST_FACILITY_1));
+    assertUserCanAccessExactFacilities(updateUser, Set.of());
   }
 
   @Test
@@ -829,22 +813,31 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertUserCanAccessExactFacilities(
         updateUser, Set.of(TestUserIdentities.TEST_FACILITY_1, TestUserIdentities.TEST_FACILITY_2));
     assertUserCanAccessAllFacilities(updateUser);
-  }
 
-  @Test
-  void updateUserPrivilegesNoFacilities_orgAdmin_failure() {
-    useOrgAdmin();
+    // Update 4: USER, access to no facilities
+    updatePrivilegesVariables =
+        getUpdateUserPrivilegesVariables(
+            id, Role.USER, false, extractFacilityUuidsFromUser(updateUser, Set.of()));
 
-    ObjectNode addUser = runBoilerplateAddUserToCurrentOrg(Role.USER);
-    String id = addUser.get("id").asText();
+    updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
+    updateUser = (ObjectNode) updateResp.get("updateUserPrivileges");
 
-    Map<String, Object> updatePrivilegesVariables =
-        getUpdateUserPrivilegesVariables(id, Role.USER, false, Collections.emptySet());
-
-    runQuery(
-        "update-user-privileges",
-        updatePrivilegesVariables,
-        PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR);
+    assertEquals("Standard user", updateUser.get("roleDescription").asText());
+    assertEquals(updateUser.get("role").asText(), Role.USER.name());
+    assertEquals(Set.of(Role.USER), extractRolesFromUser(updateUser));
+    assertEquals(
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
+        extractPermissionsFromUser(updateUser));
+    assertUserCanAccessExactFacilities(updateUser, Set.of());
   }
 
   private ObjectNode runBoilerplateAddUserToCurrentOrg(Role newUserRole) {
@@ -875,10 +868,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   private Map<String, Object> makeBoilerplateArgs(Role role, boolean useNestedName) {
-    List<UUID> facilities =
-        (role == Role.ADMIN)
-            ? Collections.emptyList()
-            : List.of(extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_1));
     return getAddUserVariables(
         "Rhonda",
         "Janet",
@@ -887,8 +876,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         USERNAMES.get(0),
         TestUserIdentities.DEFAULT_ORGANIZATION,
         role.name(),
-        useNestedName,
-        facilities);
+        useNestedName);
   }
 
   @Test
@@ -1096,8 +1084,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                 null,
                 USERNAMES.get(2),
                 TestUserIdentities.DEFAULT_ORGANIZATION,
-                Role.ADMIN.name(),
-                Collections.emptyList()),
+                Role.ADMIN.name()),
             getAddUserVariables(
                 "Janice",
                 null,
@@ -1105,8 +1092,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                 "Jr",
                 USERNAMES.get(3),
                 TestUserIdentities.DEFAULT_ORGANIZATION,
-                Role.ADMIN.name(),
-                Collections.emptyList()));
+                Role.ADMIN.name()));
     for (Map<String, Object> userVariables : usersAdded) {
       runQuery("add-user-to-current-org", "addUserToCurrentOrgOp", userVariables, null);
     }
@@ -1306,13 +1292,11 @@ class ApiUserManagementTest extends BaseGraphqlTest {
       String email,
       String orgExternalId,
       String role,
-      boolean nestedName,
-      List<UUID> facilities) {
+      boolean nestedName) {
     Map<String, Object> variables = new HashMap<>();
     variables.put("email", email);
     variables.put("organizationExternalId", orgExternalId);
     variables.put("role", role);
-    variables.put("facilities", facilities);
 
     HashMap<String, Object> nameInfo = new HashMap<>();
     nameInfo.put("firstName", firstName);
@@ -1335,10 +1319,9 @@ class ApiUserManagementTest extends BaseGraphqlTest {
       String suffix,
       String email,
       String orgExternalId,
-      String role,
-      List<UUID> facilities) {
+      String role) {
     return getAddUserVariables(
-        firstName, middleName, lastName, suffix, email, orgExternalId, role, false, facilities);
+        firstName, middleName, lastName, suffix, email, orgExternalId, role, false);
   }
 
   private Map<String, Object> getUpdateUserVariables(

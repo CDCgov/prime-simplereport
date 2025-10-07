@@ -12,13 +12,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -30,7 +29,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Profile("!" + BeanProfiles.NO_SECURITY + " & " + BeanProfiles.CREATE_SAMPLE_DEVICES)
 @ConditionalOnWebApplication
 @Slf4j
-public class OktaLocalSecurityConfiguration {
+public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   public interface OktaAttributes {
     String EMAIL = "email";
@@ -38,61 +37,72 @@ public class OktaLocalSecurityConfiguration {
     String LAST_NAME = "family_name";
   }
 
-  @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.authorizeHttpRequests(
-            authorizeRequest ->
-                authorizeRequest
-                    .requestMatchers(HttpMethod.OPTIONS, "/**")
-                    .permitAll()
-                    .requestMatchers("/echo/**", "/authTest/**")
-                    .permitAll()
-                    .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
-                    .permitAll()
-                    .requestMatchers(EndpointRequest.to(InfoEndpoint.class))
-                    .permitAll()
-                    // Patient experience authorization is handled in PatientExperienceController
-                    // If this configuration changes, please update the documentation on both sides
-                    .requestMatchers(HttpMethod.POST, WebConfiguration.PATIENT_EXPERIENCE)
-                    .permitAll()
-                    .requestMatchers(HttpMethod.GET, WebConfiguration.PATIENT_EXPERIENCE)
-                    .permitAll()
-                    // Twilio callback authorization is handled in the controller
-                    .requestMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
-                    .permitAll()
-                    // Feature Flags that apply at app level
-                    .requestMatchers(HttpMethod.GET, WebConfiguration.FEATURE_FLAGS)
-                    .permitAll()
-                    // ReportStreamResponse callback authorization is handled in the controller
-                    .requestMatchers(HttpMethod.POST, WebConfiguration.RS_QUEUE_CALLBACK)
-                    .permitAll()
-                    // Account requests are unauthorized
-                    .requestMatchers(
-                        HttpMethod.POST,
-                        WebConfiguration.ACCOUNT_REQUEST + "/**",
-                        WebConfiguration.IDENTITY_VERIFICATION + "/**")
-                    .permitAll()
-                    // User account creation request authorization is handled in
-                    // UserAccountCreationController
-                    .requestMatchers(HttpMethod.POST, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
-                    .permitAll()
-                    .requestMatchers(HttpMethod.GET, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
-                    .permitAll()
-                    // Anything else goes through Okta
-                    .anyRequest()
-                    .authenticated())
-        .oauth2ResourceServer(
-            oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()))
-        // Most of the app doesn't use sessions, so can't have CSRF. Spring's automatic CSRF
-        // breaks the REST controller, so we disable it for most paths.
-        // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
-        .csrf(
-            csrf ->
-                csrf.requireCsrfProtectionMatcher(
-                    new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST)))
-        .cors(Customizer.withDefaults());
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.cors()
+        .and()
+        .authorizeRequests()
+        .antMatchers("/")
+        .permitAll()
+        .antMatchers(HttpMethod.OPTIONS, "/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
+        .permitAll()
+        .antMatchers("/echo/**", "/authTest/**")
+        .permitAll()
+        .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
+        .permitAll()
+        .requestMatchers(EndpointRequest.to(InfoEndpoint.class))
+        .permitAll()
+
+        // Patient experience authorization is handled in PatientExperienceController
+        // If this configuration changes, please update the documentation on both sides
+        .antMatchers(HttpMethod.POST, WebConfiguration.PATIENT_EXPERIENCE)
+        .permitAll()
+        .antMatchers(HttpMethod.GET, WebConfiguration.PATIENT_EXPERIENCE)
+        .permitAll()
+
+        // Twilio callback authorization is handled in the controller
+        .antMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
+        .permitAll()
+
+        // Feature Flags that apply at app level
+        .antMatchers(HttpMethod.GET, WebConfiguration.FEATURE_FLAGS)
+        .permitAll()
+
+        // ReportStreamResponse callback authorization is handled in the controller
+        .antMatchers(HttpMethod.POST, WebConfiguration.RS_QUEUE_CALLBACK)
+        .permitAll()
+
+        // Account requests are unauthorized
+        .antMatchers(
+            HttpMethod.POST,
+            WebConfiguration.ACCOUNT_REQUEST + "/**",
+            WebConfiguration.IDENTITY_VERIFICATION + "/**")
+        .permitAll()
+
+        // User account creation request authorization is handled in UserAccountCreationController
+        .antMatchers(HttpMethod.POST, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
+        .permitAll()
+
+        // Anything else goes through Okta
+        .anyRequest()
+        .authenticated()
+        .and()
+        .oauth2ResourceServer()
+        .jwt();
+
+    // Most of the app doesn't use sessions, so can't have CSRF. Spring's automatic CSRF
+    // breaks the REST controller, so we disable it for most paths.
+    // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
+
+    http.csrf()
+        .requireCsrfProtectionMatcher(
+            new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST));
+
     Okta.configureResourceServer401ResponseBody(http);
-    return http.build();
   }
 
   @Bean

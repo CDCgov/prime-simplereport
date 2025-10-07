@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 
 import {
@@ -8,7 +14,9 @@ import {
   SEARCH_DEBOUNCE_TIME,
 } from "../constants";
 import { showAlertNotification } from "../../utils/srToast";
+import { useOutsideClick } from "../../utils/hooks";
 import { Patient } from "../../patients/ManagePatients";
+import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getAppInsights } from "../../TelemetryService";
 import { PATIENT_TERM } from "../../../config/constants";
 import {
@@ -17,12 +25,10 @@ import {
   GetPatientsByFacilityForQueueDocument,
   UpdateAoeDocument,
 } from "../../../generated/graphql";
-import useComponentVisible from "../../commonComponents/ComponentVisible";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
 import { useDebounce } from "./useDebounce";
-import { AoEAnswersDelivery } from "./types";
 
 interface AoEAnswersForPatient extends AoEAnswersDelivery {
   patientId: string;
@@ -48,7 +54,6 @@ interface Props {
   startTestPatientId: string | null;
   setStartTestPatientId: any;
   canAddPatient: boolean;
-  addPatientToQueue?: (patient: Patient) => Promise<void>;
 }
 
 const AddToQueueSearchBox = ({
@@ -58,7 +63,6 @@ const AddToQueueSearchBox = ({
   startTestPatientId,
   setStartTestPatientId,
   canAddPatient,
-  addPatientToQueue,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -76,34 +80,34 @@ const AddToQueueSearchBox = ({
   );
 
   const [mutationError, updateMutationError] = useState(null);
+  const [showSuggestion, setShowSuggestion] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<Patient>();
 
-  const [addPatientToQueueMutation] = useMutation(ADD_PATIENT_TO_QUEUE);
+  const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
-  const {
-    ref: dropDownRef,
-    isComponentVisible: showSuggestion,
-    setIsComponentVisible: setShowSuggestion,
-  } = useComponentVisible(true);
+
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
   const showDropdown = useMemo(
     () => allowQuery && showSuggestion,
     [allowQuery, showSuggestion]
   );
 
+  const dropDownRef = useRef(null);
+  const hideOnOutsideClick = useCallback(() => {
+    setShowSuggestion(false);
+  }, []);
+
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
+    //variables: { internalId: patientIdParam },
     variables: { internalId: startTestPatientId },
-    onCompleted: async (response) => {
+    onCompleted: (response) => {
       setSelectedPatient(response.patient);
-      if (addPatientToQueue) {
-        await addPatientToQueue(response.patient);
-        setSelectedPatient(undefined);
-      }
     },
     skip: !startTestPatientId || patientsInQueue.includes(startTestPatientId),
   });
 
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
   useEffect(() => {
     if (queryString.trim() !== "") {
       queryPatients();
@@ -148,7 +152,7 @@ const AddToQueueSearchBox = ({
       testResultDelivery,
     };
     if (createOrUpdate === "create") {
-      callback = addPatientToQueueMutation;
+      callback = addPatientToQueue;
       variables.facilityId = facilityId;
     } else {
       callback = updateAoe;
@@ -164,7 +168,7 @@ const AddToQueueSearchBox = ({
         refetchQueue();
         setStartTestPatientId(null);
         if (createOrUpdate === "create") {
-          return res.data.addPatientToQueueMutation;
+          return res.data.addPatientToQueue;
         }
       })
       .catch((err) => {
@@ -175,7 +179,6 @@ const AddToQueueSearchBox = ({
   return (
     <React.Fragment>
       <SearchInput
-        onSearchClick={(e) => e.preventDefault()}
         onInputChange={onInputChange}
         queryString={debounced}
         disabled={!allowQuery}
@@ -187,7 +190,6 @@ const AddToQueueSearchBox = ({
         patients={data?.patients || []}
         selectedPatient={selectedPatient}
         onAddToQueue={onAddToQueue}
-        addPatientToQueue={addPatientToQueue}
         patientsInQueue={patientsInQueue}
         shouldShowSuggestions={showDropdown}
         loading={debounced !== queryString || loading}

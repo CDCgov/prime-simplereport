@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Navigate, useLocation } from "react-router-dom";
-import { useFeature } from "flagged";
 
 import Button from "../../commonComponents/Button/Button";
+import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
+import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getFacilityIdFromUrl } from "../../utils/url";
 import { PATIENT_TERM } from "../../../config/constants";
-
-import { AoEAnswersDelivery } from "./types";
 
 interface SearchResultsProps {
   patients: Patient[];
@@ -18,7 +17,6 @@ interface SearchResultsProps {
   dropDownRef?: React.RefObject<HTMLDivElement>;
   selectedPatient?: Patient;
   canAddPatient: boolean;
-  addPatientToQueue?: (patient: Patient) => Promise<void>;
 }
 
 export interface QueueProps extends SearchResultsProps {
@@ -42,23 +40,37 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     shouldShowSuggestions,
     loading,
     dropDownRef,
-    addPatientToQueue,
+    selectedPatient,
   } = props;
 
+  const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
+  const [canAddToQueue, setCanAddToQueue] = useState(false);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   const activeFacilityId = getFacilityIdFromUrl(useLocation());
-  const dataRetentionLimitsEnabled = useFeature("dataRetentionLimitsEnabled");
+
+  useEffect(() => {
+    if (selectedPatient) {
+      setDialogPatient(selectedPatient);
+      setCanAddToQueue(true);
+    }
+  }, [selectedPatient]);
+
+  function handleSaveCallback(a: any) {
+    if (props.page === "queue" && dialogPatient !== null) {
+      return props.onAddToQueue(
+        dialogPatient,
+        a,
+        canAddToQueue ? "create" : "update"
+      );
+    }
+
+    return Promise.resolve();
+  }
 
   if (redirect) {
     return <Navigate to={redirect} />;
   }
-
-  const handleBeginTestClick = (patient: Patient) => {
-    if (addPatientToQueue) {
-      return addPatientToQueue(patient);
-    }
-  };
 
   const actionByPage = (patient: Patient, idx: Number) => {
     if (props.page === "queue") {
@@ -68,9 +80,11 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
         <Button
           variant="unstyled"
           label="Begin test"
-          dataCy={`name${idx}-birthdate${idx}`}
           ariaDescribedBy={`name${idx} birthdate${idx}`}
-          onClick={() => handleBeginTestClick(patient)}
+          onClick={() => {
+            setDialogPatient(patient);
+            setCanAddToQueue(canAddToTestQueue);
+          }}
         />
       ) : (
         "Test in progress"
@@ -99,11 +113,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           "display-flex flex-column flex-align-center margin-x-7 margin-y-2"
         }
       >
-        <div className="margin-bottom-105">
-          {dataRetentionLimitsEnabled
-            ? "No results found in the last 30 days."
-            : "No results found."}
-        </div>
+        <div className="margin-bottom-105">No results found.</div>
         <div>
           Check for spelling errors
           {props.canAddPatient ? (
@@ -170,7 +180,19 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     </div>
   );
 
-  return <>{shouldShowSuggestions && results}</>;
+  return (
+    <>
+      <AoEModalForm
+        isOpen={props.page === "queue" && dialogPatient !== null}
+        patient={dialogPatient}
+        onClose={() => {
+          setDialogPatient(null);
+        }}
+        saveCallback={handleSaveCallback}
+      />
+      {shouldShowSuggestions && results}
+    </>
+  );
 };
 
 export default SearchResults;

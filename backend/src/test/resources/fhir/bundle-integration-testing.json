@@ -116,7 +116,7 @@
         "subject": {
           "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         },
-        "effectiveDateTime": "2021-09-01T10:16:30+00:00",
+        "effectiveDateTime": "2021-09-01T10:31:30+00:00",
         "issued": "2023-05-24T19:33:06+00:00",
         "specimen": [
           {
@@ -305,9 +305,7 @@
         "subject": {
           "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         },
-        "receivedTime": "2021-09-01T10:16:30+00:00",
         "collection": {
-          "collectedDateTime": "2021-09-01T10:16:30+00:00",
           "bodySite": {
             "coding": [
               {
@@ -369,47 +367,6 @@
           },
           {
             "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          },
-          {
-            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          },
-          {
-            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          },
-          {
-            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          },
-          {
-            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          },
-          {
-            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          }
-        ],
-        "note": [
-          {
-            "extension": [
-              {
-                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
-                "valueCodeableConcept": {
-                  "coding": [
-                    {
-                      "extension": [
-                        {
-                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
-                          "valueString": "identifier"
-                        }
-                      ],
-                      "system": "HL70364",
-                      "version": "2.5.1",
-                      "code": "RE",
-                      "display": "Remark"
-                    }
-                  ]
-                }
-              }
-            ],
-            "text": "Outlandish mobile communicator"
           }
         ]
       }
@@ -419,11 +376,6 @@
       "resource": {
         "resourceType": "Device",
         "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "identifier": [
-          {
-            "value": "LumiraDx Platform_LumiraDx"
-          }
-        ],
         "manufacturer": "LumiraDx UK Ltd.",
         "deviceName": [
           {
@@ -452,6 +404,79 @@
         "resourceType": "Organization",
         "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         "name": "SimpleReport"
+      }
+    },
+    {
+      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95209-3"
+            }
+          ],
+          "text": "COVID-19"
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "issued": "2021-09-01T10:31:30.001Z",
+        "performer": [
+          {
+            "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260415000",
+              "display": "Not detected"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "method": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding": {
+                "code": "LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd."
+              }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "LumiraDx Platform_LumiraDx"
+              }
+            }
+          ],
+          "coding": [
+            {
+              "display": "LumiraDx SARS-CoV-2 Ag Test*"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "device": {
+          "reference": "Device/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        }
       }
     },
     {
@@ -575,73 +600,6 @@
       "resource": {
         "resourceType": "Observation",
         "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "95209-3"
-            }
-          ],
-          "text": "COVID-19"
-        },
-        "subject": {
-          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        },
-        "issued": "2021-09-01T10:31:30.001Z",
-        "performer": [
-          {
-            "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          }
-        ],
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://snomed.info/sct",
-              "code": "260415000",
-              "display": "Not detected"
-            }
-          ]
-        },
-        "interpretation": [
-          {
-            "coding": [
-              {
-                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
-                "code": "N",
-                "display": "Normal"
-              }
-            ]
-          }
-        ],
-        "method": {
-          "extension": [
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
-              "valueCoding": {
-                "code": "LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd."
-              }
-            }
-          ],
-          "coding": [
-            {
-              "display": "LumiraDx SARS-CoV-2 Ag Test*"
-            }
-          ]
-        },
-        "specimen": {
-          "reference": "Specimen/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        },
-        "device": {
-          "reference": "Device/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         "identifier": [
           {
             "use": "official",
@@ -705,236 +663,16 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "65222-2",
-              "display": "Date and time of symptom onset"
+              "code": "11368-8",
+              "display": "Illness or injury onset date and time"
             }
           ],
-          "text": "Date and time of symptom onset"
+          "text": "Illness or injury onset date and time"
         },
         "subject": {
           "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         },
         "valueDateTime": "2023-07-05"
-      }
-    },
-    {
-      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "82810-3",
-              "display": "Pregnancy status"
-            }
-          ],
-          "text": "Pregnancy status"
-        },
-        "subject": {
-          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://snomed.info/sct",
-              "code": "77386006",
-              "display": "Pregnant"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "95418-0",
-              "display": "Employed in a healthcare setting"
-            }
-          ],
-          "text": "Employed in a healthcare setting"
-        },
-        "subject": {
-          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
-              "code": "N",
-              "display": "No"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "95421-4",
-              "display": "Resides in a congregate care setting"
-            }
-          ],
-          "text": "Resides in a congregate care setting"
-        },
-        "subject": {
-          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
-              "code": "N",
-              "display": "No"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "81959-9",
-                  "display": "Public health laboratory ask at order entry panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "76691-5",
-              "display": "Gender identity"
-            }
-          ],
-          "text": "Gender identity"
-        },
-        "subject": {
-          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://snomed.info/sct",
-              "code": "446151000124109",
-              "display": "Male gender identity"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "resource": {
-        "resourceType": "Observation",
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "identifier": [
-          {
-            "use": "official",
-            "type": {
-              "coding": [
-                {
-                  "system": "http://loinc.org",
-                  "code": "99582-9",
-                  "display": "Symptom and timing panel"
-                }
-              ]
-            }
-          }
-        ],
-        "status": "final",
-        "code": {
-          "coding": [
-            {
-              "system": "http://loinc.org",
-              "code": "75325-1",
-              "display": "Symptom"
-            }
-          ],
-          "text": "Symptom"
-        },
-        "subject": {
-          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        },
-        "valueCodeableConcept": {
-          "coding": [
-            {
-              "system": "http://snomed.info/sct",
-              "code": "84229001",
-              "display": "Fatigue"
-            }
-          ]
-        }
       }
     }
   ]

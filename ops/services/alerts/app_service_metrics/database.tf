@@ -22,13 +22,7 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
+    action_group = var.action_group_ids
   }
 }
 
@@ -39,8 +33,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "db_connection_exhaustion
   resource_group_name = var.rg_name
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
+    action_group = var.action_group_ids
   }
 
   data_source_id = var.database_id
@@ -58,10 +51,5 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "db_connection_exhaustion
   trigger {
     operator  = "GreaterThan"
     threshold = 5
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
   }
 }

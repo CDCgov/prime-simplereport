@@ -222,7 +222,6 @@ export const AddressConfirmationModal = <T extends string>({
             disabled={addressSuggestionConfig.some(
               ({ key }) => !selectedAddress[key]
             )}
-            dataCy="save-address-confirmation-button"
           >
             {t("address.save")}
           </Button>

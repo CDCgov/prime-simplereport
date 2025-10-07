@@ -7,7 +7,6 @@ const mockSupportedDiseaseTestPerformedCovid = [
     },
     testPerformedLoincCode: "1234-1",
     equipmentUid: "equipmentUid123",
-    equipmentUidType: "equipmentUidType123",
     testkitNameId: "testkitNameId123",
     testOrderedLoincCode: "1432-1",
   },

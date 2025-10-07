@@ -1,4 +1,4 @@
-import React, { Dispatch, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ApolloQueryResult } from "@apollo/client";
 
 import Button from "../../commonComponents/Button/Button";
@@ -7,15 +7,13 @@ import { showSuccess } from "../../utils/srToast";
 import reload from "../../utils/reload";
 import {
   GetUsersAndStatusQuery,
-  useGetUserQuery,
+  useGetUserLazyQuery,
   UserPermission,
 } from "../../../generated/graphql";
-import UserHeading from "../../commonComponents/UserDetails/UserHeading";
-import Pagination from "../../commonComponents/Pagination";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
-import { isUserActive, isUserSelf } from "./UserDetailUtils";
+import { isUserActive, isUserSelf, UserHeading } from "./UserDetailUtils";
 import {
   LimitedUser,
   SettingsUser,
@@ -40,13 +38,6 @@ interface Props {
   reactivateUser: (variables: any) => Promise<any>;
   resendUserActivationEmail: (variables: any) => Promise<any>;
   getUsers: () => Promise<ApolloQueryResult<GetUsersAndStatusQuery>>;
-  currentPage: number;
-  totalEntries: number;
-  entriesPerPage: number;
-  queryString: string;
-  setQueryString: Dispatch<string>;
-  queryLoadingStatus: boolean;
-  totalUsersInOrg: number;
 }
 
 export type LimitedUsers = { [id: string]: LimitedUser };
@@ -100,13 +91,6 @@ const ManageUsers: React.FC<Props> = ({
   reactivateUser,
   resendUserActivationEmail,
   getUsers,
-  currentPage,
-  totalEntries,
-  entriesPerPage,
-  queryString,
-  setQueryString,
-  queryLoadingStatus,
-  totalUsersInOrg,
 }) => {
   const [userWithPermissions, updateUserWithPermissions] =
     useState<SettingsUser | null>();
@@ -137,13 +121,15 @@ const ManageUsers: React.FC<Props> = ({
     sortedUsers?.[0]
   );
 
-  const { refetch: refetchUser } = useGetUserQuery({
-    variables: { id: activeUser?.id },
+  const [queryUserWithPermissions] = useGetUserLazyQuery({
+    variables: { id: activeUser ? activeUser.id : loggedInUser.id },
     fetchPolicy: "no-cache",
-    skip: !activeUser?.id,
-    notifyOnNetworkStatusChange: true,
     onCompleted: (data) => updateUserWithPermissions(data.user),
   });
+
+  useEffect(() => {
+    queryUserWithPermissions();
+  }, [activeUser, queryUserWithPermissions]);
 
   // only updates the local state
   const updateLocalUserState: UpdateUser = (key, value) => {
@@ -196,6 +182,7 @@ const ManageUsers: React.FC<Props> = ({
       },
     })
       .then(async () => {
+        await getUsers();
         updateIsUserEdited(false);
         const fullName = displayFullName(
           userWithPermissions?.firstName,
@@ -250,7 +237,7 @@ const ManageUsers: React.FC<Props> = ({
       updateShowAddUserModal(false);
 
       setIsUpdating(false);
-    } catch {
+    } catch (e: any) {
       setIsUpdating(false);
     }
   };
@@ -274,8 +261,7 @@ const ManageUsers: React.FC<Props> = ({
       });
       const fullName = displayFullName(firstName, "", lastName);
       showSuccess("", `User name changed to ${fullName}`);
-      refetchUser();
-      await getUsers();
+      await queryUserWithPermissions();
     } catch (e: any) {
       setError(e);
     }
@@ -290,8 +276,9 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
       showSuccess("", `User email address changed to ${emailAddress}`);
-      await refetchUser();
-    } catch {}
+      await queryUserWithPermissions();
+      await getUsers();
+    } catch (e: any) {}
   };
 
   const handleResetUserPassword = async (userId: string) => {
@@ -345,7 +332,9 @@ const ManageUsers: React.FC<Props> = ({
       );
 
       const nextUser: LimitedUser =
-        sortedUsers[0].id === userId ? sortedUsers[1] : sortedUsers[0];
+        sortedUsers[0].id === userId && sortedUsers.length > 1
+          ? sortedUsers[1]
+          : sortedUsers[0];
 
       await getUsers();
       updateActiveUser(nextUser);
@@ -413,132 +402,109 @@ const ManageUsers: React.FC<Props> = ({
           isUpdating={isUpdating}
         />
       ) : null}
-      {queryLoadingStatus ? (
+      {!activeUser || !localUsers.length ? (
         <div className="usa-card__body">
-          <p>Loading user data</p>
-        </div>
-      ) : totalUsersInOrg === 0 ? (
-        <div className="usa-card__body">
-          <p>There are no users in this organization.</p>
+          {!localUsers.length ? (
+            <p>There are no users in this organization</p>
+          ) : (
+            <p>Loading user data</p>
+          )}
         </div>
       ) : (
         <div className="usa-card__body">
           <div className="grid-row">
             <UsersSideNav
-              activeUserId={activeUser?.id || ""}
+              activeUserId={activeUser.id || ""}
               users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
-              queryString={queryString}
-              setQueryString={setQueryString}
             />
-            {localUsers.length <= 0 ? (
-              <div
-                className={
-                  "display-flex flex-column flex-align-center margin-top-8 no-results-found"
+            <div
+              role="tabpanel"
+              aria-labelledby={"user-tab-" + user?.id}
+              className="tablet:grid-col padding-left-3 user-detail-column"
+            >
+              <UserHeading
+                user={user}
+                isUserSelf={isUserSelf(user, loggedInUser)}
+                isUpdating={isUpdating}
+                handleResendUserActivationEmail={
+                  handleResendUserActivationEmail
                 }
+                handleReactivateUser={handleReactivateUser}
+              />
+              <nav
+                className="prime-secondary-nav margin-top-4 padding-bottom-0"
+                aria-label="User action navigation"
               >
-                <div className="margin-bottom-105">No results found.</div>
-              </div>
-            ) : null}
-            {activeUser ? (
-              <div
-                role="tabpanel"
-                aria-labelledby={"user-tab-" + user?.id}
-                className="tablet:grid-col padding-left-3 user-detail-column"
-              >
-                <UserHeading
-                  user={user}
-                  isUserSelf={isUserSelf(user, loggedInUser)}
-                  isUpdating={isUpdating}
-                  onResendUserActivationEmail={handleResendUserActivationEmail}
-                  onReactivateUser={handleReactivateUser}
-                  onUndeleteUser={() => {}}
-                />
-                <nav
-                  className="prime-secondary-nav margin-top-4 padding-bottom-0"
-                  aria-label="User action navigation"
+                <div
+                  role="tablist"
+                  aria-owns={`user-information-tab-id facility-access-tab-id`}
+                  className="usa-nav__secondary-links prime-nav usa-list"
                 >
                   <div
-                    role="tablist"
-                    aria-owns={`userinformation-tab facility-access-tab-id`}
-                    className="usa-nav__secondary-links prime-nav usa-list"
+                    className={`usa-nav__secondary-item ${
+                      navItemSelected === "User information"
+                        ? "usa-current"
+                        : ""
+                    }`}
                   >
-                    <div
-                      className={`usa-nav__secondary-item ${
-                        navItemSelected === "User information"
-                          ? "usa-current"
-                          : ""
-                      }`}
+                    <button
+                      id={`user-information-tab-id`}
+                      role="tab"
+                      className="usa-button--unstyled text-ink text-no-underline"
+                      onClick={() => setNavItemSelected("User information")}
+                      aria-selected={navItemSelected === "User information"}
                     >
-                      <button
-                        id={`userinformation-tab`}
-                        role="tab"
-                        className="usa-button--unstyled text-ink text-no-underline"
-                        onClick={() => setNavItemSelected("User information")}
-                        aria-selected={navItemSelected === "User information"}
-                      >
-                        User information
-                      </button>
-                    </div>
-                    <div
-                      className={`usa-nav__secondary-item ${
-                        navItemSelected === "Facility access"
-                          ? "usa-current"
-                          : ""
-                      }`}
-                    >
-                      <button
-                        id={`facility-access-tab-id`}
-                        role="tab"
-                        className="usa-button--unstyled text-ink text-no-underline"
-                        onClick={() => setNavItemSelected("Facility access")}
-                        aria-selected={navItemSelected === "Facility access"}
-                      >
-                        Facility access
-                      </button>
-                    </div>
+                      User information
+                    </button>
                   </div>
-                </nav>
-                {navItemSelected === "User information" ? (
-                  <UserInfoTab
-                    user={user}
-                    isUserActive={isUserActive(user)}
-                    isUserSelf={isUserSelf(user, loggedInUser)}
-                    isUpdating={isUpdating}
-                    onEditUserName={handleEditUserName}
-                    onEditUserEmail={handleEditUserEmail}
-                    onResetUserPassword={handleResetUserPassword}
-                    onResetUserMfa={handleResetUserMfa}
-                    onDeleteUser={handleDeleteUser}
-                  />
-                ) : (
-                  <FacilityAccessTab
-                    user={user}
-                    isUpdating={isUpdating}
-                    isUserEdited={isUserEdited}
-                    onUpdateUser={handleUpdateUser}
-                    updateLocalUserState={updateLocalUserState}
-                    loggedInUser={loggedInUser}
-                    allFacilities={allFacilities}
-                  />
-                )}
-              </div>
-            ) : null}
+                  <div
+                    className={`usa-nav__secondary-item ${
+                      navItemSelected === "Facility access" ? "usa-current" : ""
+                    }`}
+                  >
+                    <button
+                      id={`facility-access-tab-id`}
+                      role="tab"
+                      className="usa-button--unstyled text-ink text-no-underline"
+                      onClick={() => setNavItemSelected("Facility access")}
+                      aria-selected={navItemSelected === "Facility access"}
+                    >
+                      Facility access
+                    </button>
+                  </div>
+                </div>
+              </nav>
+              {navItemSelected === "User information" ? (
+                <UserInfoTab
+                  user={user}
+                  isUserActive={isUserActive(user)}
+                  isUserSelf={isUserSelf(user, loggedInUser)}
+                  isUpdating={isUpdating}
+                  onEditUserName={handleEditUserName}
+                  onEditUserEmail={handleEditUserEmail}
+                  onResetUserPassword={handleResetUserPassword}
+                  onResetUserMfa={handleResetUserMfa}
+                  onDeleteUser={handleDeleteUser}
+                />
+              ) : (
+                <FacilityAccessTab
+                  user={user}
+                  isUpdating={isUpdating}
+                  isUserEdited={isUserEdited}
+                  onUpdateUser={handleUpdateUser}
+                  updateLocalUserState={updateLocalUserState}
+                  loggedInUser={loggedInUser}
+                  allFacilities={allFacilities}
+                />
+              )}
+            </div>
             {showInProgressModal && (
               <InProgressModal
                 onClose={() => updateShowInProgressModal(false)}
                 onContinue={() => handleContinueChangeActiveUser()}
               />
             )}
-          </div>
-          <div className="grid-row">
-            <Pagination
-              baseRoute={"/settings/users"}
-              totalEntries={totalEntries}
-              entriesPerPage={entriesPerPage}
-              currentPage={currentPage}
-              pageGroupSize={5}
-            ></Pagination>
           </div>
         </div>
       )}

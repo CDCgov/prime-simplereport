@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
+  act,
   render,
   screen,
   waitFor,
@@ -12,7 +13,6 @@ import userEvent from "@testing-library/user-event";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
 import MockDate from "mockdate";
-import { FetchMock } from "jest-fetch-mock";
 
 import {
   GetFacilityQueueDocument,
@@ -30,7 +30,6 @@ import {
 import { getAppInsights } from "./TelemetryService";
 import mockSupportedDiseaseMultiplex from "./testQueue/mocks/mockSupportedDiseaseMultiplex";
 import mockSupportedDiseaseCovid from "./testQueue/mocks/mockSupportedDiseaseCovid";
-import { WhoAmIQueryMock } from "./OperationMocks";
 
 const mockDispatch = jest.fn();
 
@@ -40,10 +39,10 @@ jest.mock("./VersionService", () => ({
     enforce: jest.fn(),
   },
 }));
-jest.mock("./testResults/viewResults/CleanTestResultsList", () => {
+jest.mock("./testResults/CleanTestResultsList", () => {
   return () => <p>CleanTestResultsList</p>;
 });
-jest.mock("./testResults/viewResults/TestResultsList", () => {
+jest.mock("./testResults/TestResultsList", () => {
   return () => <p>TestResultsList</p>;
 });
 jest.mock("./TelemetryService", () => ({
@@ -53,7 +52,6 @@ jest.mock("./TelemetryService", () => ({
 jest.mock("jwt-decode", () => jest.fn());
 
 const mockStore = createMockStore([]);
-const fetchMock = fetch as FetchMock;
 
 const store = {
   dispatch: mockDispatch,
@@ -99,6 +97,50 @@ const store = {
 
 store.dispatch = mockDispatch;
 
+export const WhoAmIQueryMock = {
+  request: {
+    query: WHOAMI_QUERY,
+    fetchPolicy: "no-cache",
+  },
+  result: {
+    data: {
+      whoami: {
+        id: "05b2f71a-9392-442b-aab5-4eb550a864c0",
+        firstName: "Bob",
+        middleName: null,
+        lastName: "Bobberoo",
+        suffix: null,
+        email: "bob@example.com",
+        isAdmin: false,
+        permissions: [
+          "EDIT_PATIENT",
+          "ARCHIVE_PATIENT",
+          "READ_PATIENT_LIST",
+          "EDIT_ORGANIZATION",
+          "START_TEST",
+          "EDIT_FACILITY",
+          "ACCESS_ALL_FACILITIES",
+          "READ_RESULT_LIST",
+          "READ_ARCHIVED_PATIENT_LIST",
+          "SUBMIT_TEST",
+          "MANAGE_USERS",
+          "SEARCH_PATIENTS",
+          "UPDATE_TEST",
+        ],
+        roleDescription: "Admin user",
+        organization: {
+          name: "Dis Organization",
+          testingFacility: [
+            {
+              id: "fec4de56-f4cc-4c61-b3d5-76869ca71296",
+              name: "Testing Site",
+            },
+          ],
+        },
+      },
+    },
+  },
+};
 const facilityQueryMock = {
   request: {
     query: GetFacilityQueueDocument,
@@ -147,7 +189,6 @@ const getAnalyticsQueryMock = () => ({
       facilityId: "",
       startDate: getStartDateFromDaysAgo(7),
       endDate: getEndDateFromDaysAgo(0),
-      disease: "COVID-19",
     },
   },
   result: {
@@ -164,22 +205,19 @@ const renderApp = (
   newStore: MockStoreEnhanced<unknown, {}>,
   queryMocks: MockedResponse[]
 ) => {
-  return {
-    user: userEvent.setup(),
-    ...render(
-      <PrimeErrorBoundary>
-        <Provider store={newStore}>
-          <MockedProvider mocks={queryMocks} addTypename={false}>
-            <MemoryRouter>
-              <Routes>
-                <Route path="/*" element={<ReportingApp />} />
-              </Routes>
-            </MemoryRouter>
-          </MockedProvider>
-        </Provider>
-      </PrimeErrorBoundary>
-    ),
-  };
+  return render(
+    <PrimeErrorBoundary>
+      <Provider store={newStore}>
+        <MockedProvider mocks={queryMocks} addTypename={false}>
+          <MemoryRouter>
+            <Routes>
+              <Route path="/*" element={<ReportingApp />} />
+            </Routes>
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
+    </PrimeErrorBoundary>
+  );
 };
 
 const MODAL_TEXT = "Welcome to the SimpleReport";
@@ -187,44 +225,42 @@ const MODAL_TEXT = "Welcome to the SimpleReport";
 describe("App", () => {
   beforeEach(() => {
     MockDate.set("2021-08-01");
-
-    // handle fetch from WithFacility Provider
-    fetchMock.enableMocks();
-    fetchMock.doMock();
-    fetchMock.mockResponseOnce(
-      JSON.stringify({
-        ok: true,
-      })
-    );
   });
 
   afterEach(() => {
     MockDate.reset();
-    fetchMock.resetMocks();
   });
 
-  it("Renders loading masks (account and facility)", async () => {
+  it("Render first loading screen", async () => {
+    const mockedStore = mockStore({});
+    renderApp(mockedStore, [WhoAmIQueryMock]);
+    await screen.findByText("Loading account information...");
+  });
+
+  it("Render facility loading", async () => {
     const mockedStore = mockStore({ ...store });
     renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
-    await screen.findByText("Loading account information...");
     expect(await screen.findByText("Loading facility information..."));
   });
 
   it("Render main screen", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
-    const { user } = renderApp(mockedStore, [
+    renderApp(mockedStore, [
       WhoAmIQueryMock,
       facilityQueryMock,
       getAnalyticsQueryMock(),
     ]);
-
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading account information...")
     );
-
-    await user.click(screen.getAllByText("Testing Site", { exact: false })[0]);
+    await act(
+      async () =>
+        await userEvent.click(
+          screen.getAllByText("Testing Site", { exact: false })[0]
+        )
+    );
     expect(
-      await screen.findByText("COVID-19 testing data", { exact: false })
+      await screen.findByText("COVID-19 testing data")
     ).toBeInTheDocument();
   });
 
@@ -236,9 +272,9 @@ describe("App", () => {
   });
 
   it("displays the training header and modal and dismisses the modal", async () => {
-    process.env.REACT_APP_IS_TRAINING_SITE = "true";
+    import.meta.env.VITE_IS_TRAINING_SITE = "true";
     const mockedStore = mockStore({ ...store, dataLoaded: true });
-    const { user } = renderApp(mockedStore, [
+    renderApp(mockedStore, [
       WhoAmIQueryMock,
       facilityQueryMock,
       getAnalyticsQueryMock(),
@@ -248,15 +284,15 @@ describe("App", () => {
       exact: false,
     });
     expect(trainingWelcome).toBeInTheDocument();
-
-    await user.click(
-      screen.getByText(/got it,? thanks/i, { selector: "button" })
+    await act(
+      async () =>
+        await userEvent.click(screen.getByText("Got it", { exact: false }))
     );
     expect(trainingWelcome).not.toBeInTheDocument();
   });
 
   it("does not display training notifications outside the training environment", () => {
-    process.env.REACT_APP_IS_TRAINING_SITE = "false";
+    import.meta.env.VITE_IS_TRAINING_SITE = "false";
     const mockedStore = mockStore({ ...store, dataLoaded: true });
     renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
     expect(screen.queryByText(TRAINING_PURPOSES_ONLY)).not.toBeInTheDocument();
@@ -264,11 +300,11 @@ describe("App", () => {
   });
 
   describe("logs to App Insights on WhoAmI error", () => {
-    const oldTokenClaim = process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM;
+    const oldTokenClaim = import.meta.env.VITE_OKTA_TOKEN_ROLE_CLAIM;
     const trackExceptionMock = jest.fn();
 
     beforeEach(() => {
-      process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM = "test_roles";
+      import.meta.env.VITE_OKTA_TOKEN_ROLE_CLAIM = "test_roles";
       trackExceptionMock.mockReset();
       (getAppInsights as jest.Mock).mockImplementation(() => {
         const ai = Object.create(ApplicationInsights.prototype);
@@ -276,12 +312,14 @@ describe("App", () => {
       });
     });
     afterEach(() => {
-      process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM = oldTokenClaim;
+      import.meta.env.VITE_OKTA_TOKEN_ROLE_CLAIM = oldTokenClaim;
+      //@ts-ignore jest.spyOn should not be used with ts
       jest.spyOn(Storage.prototype, "getItem").mockRestore();
     });
     it("logs with access token info", async () => {
       jest
         .spyOn(Storage.prototype, "getItem")
+        //@ts-ignore jest.spyOn should not be used with ts
         .mockImplementation(() => "definitely a valid token");
       (jwtDecode as jest.Mock).mockReturnValue({
         sub: "subject@fakeorg.net",
@@ -310,7 +348,10 @@ describe("App", () => {
     });
     it("still logs if missing token", async () => {
       const mockedStore = mockStore({ ...store, dataLoaded: true });
-      jest.spyOn(Storage.prototype, "getItem").mockImplementation(() => null);
+      jest
+        .spyOn(Storage.prototype, "getItem")
+        //@ts-ignore jest.spyOn should not be used with ts
+        .mockImplementation(() => null);
 
       renderApp(mockedStore, [WhoAmIErrorQueryMock]);
       await screen.findByText("error", { exact: false });
@@ -328,6 +369,7 @@ describe("App", () => {
     it("still logs if invalid token", async () => {
       jest
         .spyOn(Storage.prototype, "getItem")
+        //@ts-ignore jest.spyOn should not be used with ts
         .mockImplementation(() => "definitely NOT a valid token");
       jest.spyOn(console, "error").mockImplementation(() => {});
       (jwtDecode as jest.Mock).mockImplementation(() => {

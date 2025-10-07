@@ -46,7 +46,6 @@ export const GET_PATIENT = gql`
       ethnicity
       tribalAffiliation
       gender
-      genderIdentity
       residentCongregateSetting
       employedInHealthcare
       preferredLanguage
@@ -54,7 +53,6 @@ export const GET_PATIENT = gql`
         id
       }
       testResultDelivery
-      notes
     }
   }
 `;
@@ -85,7 +83,6 @@ interface GetPatientResponse {
     ethnicity: Ethnicity | null;
     tribalAffiliation: (TribalAffiliation | null)[] | null;
     gender: Gender | null;
-    genderIdentity: GenderIdentity | null;
     residentCongregateSetting: boolean | null;
     employedInHealthcare: boolean | null;
     preferredLanguage: Language | null;
@@ -93,7 +90,6 @@ interface GetPatientResponse {
       id: string;
     } | null;
     testResultDelivery: TestResultDeliveryPreference | null;
-    notes: string | null;
   };
 }
 
@@ -121,12 +117,10 @@ export const UPDATE_PATIENT = gql`
     $ethnicity: String
     $tribalAffiliation: String
     $gender: String
-    $genderIdentity: String
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
-    $notes: String
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -151,12 +145,10 @@ export const UPDATE_PATIENT = gql`
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
       gender: $gender
-      genderIdentity: $genderIdentity
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
-      notes: $notes
     ) {
       internalId
     }
@@ -230,7 +222,10 @@ const EditPatient = (props: Props) => {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
-  const savePerson = async (person: Nullable<PersonFormData>) => {
+  const savePerson = async (
+    person: Nullable<PersonFormData>,
+    startTest: boolean = false
+  ) => {
     await updatePatient({
       variables: {
         patientId: props.patientId,
@@ -255,9 +250,7 @@ const EditPatient = (props: Props) => {
       "Information record has been updated.",
       `${PATIENT_TERM_CAP} record saved`
     );
-  };
 
-  const beginTest = (startTest: boolean) => {
     if (startTest) {
       const facility = data?.patient.facility?.id || activeFacilityId;
       setRedirect({
@@ -271,117 +264,9 @@ const EditPatient = (props: Props) => {
       setRedirect(personPath);
     }
   };
-  const saveAndStartTest = async (
-    person: Nullable<PersonFormData>,
-    startTest: boolean,
-    formChanged: boolean
-  ) => {
-    if (formChanged) {
-      await savePerson(person);
-    }
-    beginTest(startTest);
-  };
 
-  const saveButtonLabel = (formChanged: boolean): string =>
-    formChanged ? "Save and start test" : "Start test";
-  const getHeader = (
-    person: Nullable<PersonFormData>,
-    onSave: (startTest?: boolean) => void,
-    formChanged: boolean
-  ) => (
-    <div className="display-flex flex-justify">
-      <div>
-        <div className="display-flex flex-align-center">
-          <svg
-            className="usa-icon text-base margin-left-neg-2px"
-            aria-hidden="true"
-            focusable="false"
-            role="img"
-          >
-            <use xlinkHref={iconSprite + "#arrow_back"}></use>
-          </svg>
-          {props.fromQueue ? (
-            <NavLink
-              to={`/queue?facility=${props.facilityId}`}
-              className="margin-left-05"
-            >
-              Report tests
-            </NavLink>
-          ) : (
-            <LinkWithQuery to={`/patients`} className="margin-left-05">
-              {PATIENT_TERM_PLURAL_CAP}
-            </LinkWithQuery>
-          )}
-        </div>
-        <div className="prime-edit-patient-heading margin-y-0">
-          <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-            {displayFullName(
-              person.firstName,
-              person.middleName,
-              person.lastName
-            )}
-          </h1>
-        </div>
-      </div>
-      <div className="display-flex flex-align-center">
-        {!props.fromQueue && (
-          <Button
-            id="edit-patient-save-upper"
-            className="prime-save-patient-changes-start-test"
-            disabled={loading}
-            onClick={() => {
-              onSave(true);
-            }}
-            variant="outline"
-            label={
-              loading
-                ? `${t("common.button.saving")}...`
-                : saveButtonLabel(formChanged)
-            }
-          />
-        )}
-        <button
-          className="prime-save-patient-changes usa-button margin-right-0"
-          disabled={editPersonLoading || !formChanged}
-          onClick={() => onSave(props.fromQueue)}
-        >
-          {editPersonLoading
-            ? `${t("common.button.saving")}...`
-            : t("common.button.save")}
-        </button>
-      </div>
-    </div>
-  );
-  const getFooter = (
-    onSave: (startTest?: boolean) => void,
-    formChanged: boolean
-  ) => (
-    <div className="prime-edit-patient-heading">
-      <Button
-        id="edit-patient-save-lower"
-        className="prime-save-patient-changes"
-        disabled={editPersonLoading || !formChanged}
-        onClick={() => onSave(false)}
-        label={
-          editPersonLoading
-            ? `${t("common.button.saving")}...`
-            : t("common.button.save")
-        }
-      />
-    </div>
-  );
-
-  const phoneNumberComparator = (x: PhoneNumber, y: PhoneNumber) => {
-    // A patient's primary phone number is returned in the
-    // query as `telephone` and should be the first element
-    // of the array of phone numbers
-    if (x.number === data.patient.telephone) {
-      return -1;
-    } else if (y.number === data.patient.telephone) {
-      return 1;
-    }
-    return 0;
-  };
+  const getTitle = (person: Nullable<PersonFormData>) =>
+    displayFullName(person.firstName, person.middleName, person.lastName);
 
   return (
     <div className="prime-home bg-base-lightest">
@@ -393,22 +278,105 @@ const EditPatient = (props: Props) => {
                 ...data.patient,
                 tribalAffiliation:
                   data.patient.tribalAffiliation?.[0] || undefined,
-                phoneNumbers: data.patient.phoneNumbers.sort(
-                  phoneNumberComparator
-                ),
+                phoneNumbers: data.patient.phoneNumbers.sort(function (
+                  x: PhoneNumber,
+                  y: PhoneNumber
+                ) {
+                  // A patient's primary phone number is returned in the
+                  // query as `telephone` and should be the first element
+                  // of the array of phone numbers
+                  return x.number === data.patient.telephone
+                    ? -1
+                    : y.number === data.patient.telephone
+                    ? 1
+                    : 0;
+                }),
                 facilityId:
                   data.patient.facility === null
                     ? null
                     : data.patient.facility?.id,
                 city: data.patient.city === null ? "" : data.patient.city,
-                unknownPhoneNumber: data.patient.phoneNumbers.length === 0,
-                unknownAddress:
-                  data.patient.street === "** Unknown / Not Given **",
               }}
               patientId={props.patientId}
-              savePerson={saveAndStartTest}
-              getHeader={getHeader}
-              getFooter={getFooter}
+              savePerson={savePerson}
+              getHeader={(person, onSave, formChanged) => (
+                <div className="display-flex flex-justify">
+                  <div>
+                    <div className="display-flex flex-align-center">
+                      <svg
+                        className="usa-icon text-base margin-left-neg-2px"
+                        aria-hidden="true"
+                        focusable="false"
+                        role="img"
+                      >
+                        <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                      </svg>
+                      {props.fromQueue ? (
+                        <NavLink
+                          to={`/queue?facility=${props.facilityId}`}
+                          className="margin-left-05"
+                        >
+                          Conduct tests
+                        </NavLink>
+                      ) : (
+                        <LinkWithQuery
+                          to={`/patients`}
+                          className="margin-left-05"
+                        >
+                          {PATIENT_TERM_PLURAL_CAP}
+                        </LinkWithQuery>
+                      )}
+                    </div>
+                    <div className="prime-edit-patient-heading margin-y-0">
+                      <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+                        {getTitle(person)}
+                      </h1>
+                    </div>
+                  </div>
+                  <div className="display-flex flex-align-center">
+                    {!props.fromQueue && (
+                      <Button
+                        id="edit-patient-save-upper"
+                        className="prime-save-patient-changes-start-test"
+                        disabled={loading || !formChanged}
+                        onClick={() => {
+                          onSave(true);
+                        }}
+                        variant="outline"
+                        label={
+                          loading
+                            ? `${t("common.button.saving")}...`
+                            : "Save and start test"
+                        }
+                      />
+                    )}
+                    <button
+                      className="prime-save-patient-changes usa-button margin-right-0"
+                      disabled={editPersonLoading || !formChanged}
+                      onClick={() => onSave(props.fromQueue)}
+                    >
+                      {editPersonLoading
+                        ? `${t("common.button.saving")}...`
+                        : t("common.button.save")}
+                    </button>
+                  </div>
+                </div>
+              )}
+              getFooter={(onSave, formChanged) => (
+                <div className="prime-edit-patient-heading">
+                  <Button
+                    id="edit-patient-save-lower"
+                    className="prime-save-patient-changes"
+                    disabled={editPersonLoading || !formChanged}
+                    onClick={() => onSave(false)}
+                    label={
+                      editPersonLoading
+                        ? `${t("common.button.saving")}...`
+                        : t("common.button.save")
+                    }
+                  />
+                </div>
+              )}
             />
           </div>
         </div>

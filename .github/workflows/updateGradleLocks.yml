@@ -1,8 +1,8 @@
-name: Dependabot Gradle Helper
+name : Dependabot Gradle Helper
 on:
-  pull_request_target:
-    paths: 
-      - backend/build.gradle
+  workflow_dispatch:
+  pull_request:
+    branches: 'dependabot/gradle/**'
 
 env:
   JAVA_VERSION: 17
@@ -12,42 +12,39 @@ defaults:
   run:
     working-directory: backend
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-dependabot-gradle-helper
-  cancel-in-progress: true
-
 jobs:
-
-  update_locks:
+  # in case we once again need to figure out why this thing is not running, some day...
+  # debug-message:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: echo "Actor for this run is ${{github.actor}} and event name is ${{github.event_name}}"
+  #       working-directory: /
+  update-locks:
     # Run when manually requested or when dependabot creates/updates a PR
-    if: github.event.pull_request.user.login  == 'dependabot[bot]'
+    # DO NOT run if somebody else updates a PR (a probably unnecessarily strict guard against infinite 
+    # workflow loops, in case we ever enable this workflow to trigger other workflows)
+    if: ${{ github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          ref: ${{ github.head_ref }}
           fetch-depth: 0 # Disable shallow clones: we need to be able to push
-
       - name: Set up JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
-
-      - name: Get last commit message
-        id: last-commit-message
-        run: echo "msg=$(git log -1 --pretty=%s)" >> $GITHUB_OUTPUT
-          
+      - name: Configure git commit information
+        run: |
+          git config user.name simplereport-dependabot-helper
+          git config user.email no-reply@simplereport.gov
       - name: Update dependency locks
         run: ./gradlew dependencies --write-locks
- 
-      - uses: stefanzweifel/git-auto-commit-action@v6
-        with:
-          commit_message: ${{ steps.last-commit-message.outputs.msg }}
-          commit_options: '--amend --no-edit'
-          push_options: '--force'
-          skip_fetch: true
+      - name: Commit and push changes
+        run: |
+          if ! git diff --quiet --exit-code gradle/dependency-locks; then
+            git commit -m'Updated dependency locks for dependabot.' gradle/dependency-locks
+            git push
+          else
+            echo No dependency changes found: nothing to do.
+          fi

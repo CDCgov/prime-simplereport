@@ -30,7 +30,7 @@ public class ApiFacility extends WrappedEntity<Facility> implements LocatedWrapp
   }
 
   public boolean getIsDeleted() {
-    return getWrapped().getIsDeleted();
+    return getWrapped().isDeleted();
   }
 
   public List<DeviceType> getDeviceTypes() {

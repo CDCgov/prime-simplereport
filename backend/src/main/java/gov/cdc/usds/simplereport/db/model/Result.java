@@ -3,20 +3,19 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SupportedDiseaseTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Type;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,8 +41,8 @@ public class Result extends EternalAuditedEntity {
   @Column(name = "result", nullable = false)
   private String resultSNOMED;
 
-  @Column(name = "test_result", nullable = false, columnDefinition = "TEST_RESULT")
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(name = "test_result", nullable = false)
+  @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private TestResult testResult;
 

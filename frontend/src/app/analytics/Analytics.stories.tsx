@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from "@storybook/react-webpack5";
+import { StoryFn, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
@@ -8,7 +8,7 @@ import { Analytics } from "./Analytics";
 
 const mockStore = createMockStore([]);
 export default {
-  title: "App/Dashboard/COVID-19 testing data",
+  title: "App/Analytics/COVID-19 testing data",
   component: Analytics,
   argTypes: {},
   parameters: {

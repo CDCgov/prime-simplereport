@@ -1,10 +1,8 @@
 const data = [
   {
-    id: "0969da96-b211-41cd-ba61-002181f0918d",
-    dateAdded: "2021-03-17T19:27:23.806Z",
+    internalId: "0969da96-b211-41cd-ba61-002181f0918d",
     dateTested: "2021-03-17T19:27:23.806Z",
-    disease: "COVID-19",
-    testResult: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -29,20 +27,20 @@ const data = [
         lastName: "Admin",
       },
     },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
     facility: {
       name: "Facility 1",
-      isDeleted: false,
     },
     noSymptoms: true,
     symptoms: "{}",
-    __typename: "Result",
+    __typename: "TestResult",
   },
   {
-    id: "7c768a5d-ef90-44cd-8050-b96dd77f51d5",
-    dateAdded: "2021-03-18T19:27:21.052Z",
+    internalId: "7c768a5d-ef90-44cd-8050-b96dd77f51d5",
     dateTested: "2021-03-18T19:27:21.052Z",
-    disease: "COVID-19",
-    testResult: "NEGATIVE",
+    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -67,13 +65,15 @@ const data = [
         lastName: "User",
       },
     },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
     facility: {
       name: "Facility 1",
-      isDeleted: false,
     },
     noSymptoms: false,
     symptoms: "{}",
-    __typename: "Result",
+    __typename: "TestResult",
   },
 ];
 const TEST_RESULTS_BY_RESULT_VALUE = {

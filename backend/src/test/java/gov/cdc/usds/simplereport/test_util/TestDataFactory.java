@@ -3,15 +3,11 @@ package gov.cdc.usds.simplereport.test_util;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 
 import gov.cdc.usds.simplereport.api.model.Role;
-import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
-import gov.cdc.usds.simplereport.db.model.Condition;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
-import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
-import gov.cdc.usds.simplereport.db.model.Lab;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -22,7 +18,6 @@ import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.Specimen;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -39,12 +34,10 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
-import gov.cdc.usds.simplereport.db.repository.ConditionRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
-import gov.cdc.usds.simplereport.db.repository.LabRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
@@ -53,9 +46,7 @@ import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
-import gov.cdc.usds.simplereport.db.repository.SpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -71,9 +62,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -108,14 +97,10 @@ public class TestDataFactory {
   @Autowired private PatientLinkRepository patientLinkRepository;
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
-  @Autowired private SupportedDiseaseRepository supportedDiseaseRepository;
   @Autowired private DemoOktaRepository oktaRepository;
   @Autowired private TestResultUploadRepository testResultUploadRepository;
   @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
-  @Autowired private ConditionRepository conditionRepository;
-  @Autowired private LabRepository labRepository;
-  @Autowired private SpecimenRepository specimenRepository;
 
   @Autowired private ResultService resultService;
   @Autowired private ApiUserService apiUserService;
@@ -142,21 +127,6 @@ public class TestDataFactory {
     deviceSpecimenTypeNewRepository.save(
         new DeviceTypeSpecimenTypeMapping(
             genericDeviceType.getInternalId(), genericSpecimenType.getInternalId()));
-
-    SupportedDisease covid = supportedDiseaseRepository.findByName("COVID-19").get();
-
-    DeviceTypeDisease genericDeviceTypeDisease =
-        new DeviceTypeDisease(
-            genericDeviceType.getInternalId(),
-            covid,
-            "94500-6",
-            "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-            "Rotor-Gene Q 5plex HRM_QIAGEN GmbH",
-            "MNI",
-            "1copy COVID-19 qPCR Multi Kit_1drop Inc.",
-            "94531-1",
-            "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
-    deviceTypeDiseaseRepository.save(genericDeviceTypeDisease);
   }
 
   public Organization saveOrganization(Organization org) {
@@ -178,35 +148,10 @@ public class TestDataFactory {
     return saveOrganization(TestDataBuilder.createUnverifiedOrganization());
   }
 
-  public Organization saveUnverifiedOrganizationWithUser(String adminUsername) {
-    Organization org = saveOrganization(TestDataBuilder.createUnverifiedOrganization());
-    createValidFacility(org);
-    createValidApiUser(adminUsername, org, Role.ADMIN);
-    return org;
-  }
-
   public UserInfo createValidApiUser(String username, Organization org) {
-    return createValidApiUser(username, org, Role.USER);
-  }
-
-  public UserInfo createValidApiUser(String username, Organization org, Role role) {
-    boolean facilitiesNotRequired =
-        PermissionHolder.grantsAllFacilityAccess(Set.of(role.toOrganizationRole()));
-    Set<Facility> facilities =
-        facilitiesNotRequired ? Collections.emptySet() : Set.of(createValidFacility(org));
-    return createValidApiUser(username, org, role, facilities);
-  }
-
-  public UserInfo createValidApiUser(
-      String username, Organization org, Role role, Set<Facility> facilities) {
     PersonName name = new PersonName("John", null, "June", null);
     return apiUserService.createUser(
-        username,
-        name,
-        org.getExternalId(),
-        role,
-        false,
-        facilities.stream().map(IdentifiedEntity::getInternalId).collect(Collectors.toSet()));
+        username, name, org.getExternalId(), Role.USER, false, Collections.emptySet());
   }
 
   public OrganizationQueueItem saveOrganizationQueueItem(
@@ -232,13 +177,8 @@ public class TestDataFactory {
   }
 
   public Facility createValidFacility(Organization org, String facilityName) {
-    return createValidFacility(org, facilityName, getAddress());
-  }
-
-  public Facility createValidFacility(
-      Organization org, String facilityName, StreetAddress facilityStreetAddress) {
     DeviceType defaultDevice = getGenericDevice();
-    SpecimenType defaultSpecimen = genericSpecimenType;
+    SpecimenType defaultSpecimen = getGenericSpecimen();
 
     List<DeviceType> configuredDevices = new ArrayList<>();
     configuredDevices.add(defaultDevice);
@@ -251,7 +191,7 @@ public class TestDataFactory {
                 .org(org)
                 .facilityName(facilityName)
                 .cliaNumber("123456")
-                .facilityAddress(facilityStreetAddress)
+                .facilityAddress(getAddress())
                 .phone("555-867-5309")
                 .email("facility@test.com")
                 .orderingProvider(doc)
@@ -316,35 +256,6 @@ public class TestDataFactory {
   }
 
   @Transactional
-  public Person createFullPersonWithUnknownAddressAndPhone(Organization org) {
-
-    Person p =
-        new Person(
-            org,
-            "HELLOTHERE",
-            "FRED",
-            "M",
-            "ASTAIRE",
-            null,
-            DEFAULT_BDAY,
-            getUnknownAddress(),
-            "USA",
-            PersonRole.UNKNOWN,
-            List.of("test@testerson.com"),
-            "white",
-            "not_hispanic",
-            null,
-            "male",
-            "male",
-            false,
-            false,
-            "English",
-            TestResultDeliveryPreference.NONE,
-            "NOTES AND STUFF AND THINGS");
-    return personRepository.save(p);
-  }
-
-  @Transactional
   public Person createFullPersonWithPreferredLanguage(Organization org, String language) {
     // consts are to keep style check happy othewise it complains about
     // "magic numbers"
@@ -365,12 +276,10 @@ public class TestDataFactory {
             "not_hispanic",
             null,
             "male",
-            "male",
             false,
             false,
             language,
-            TestResultDeliveryPreference.SMS,
-            "Galactic wordsmith");
+            TestResultDeliveryPreference.SMS);
     personRepository.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "216-555-1234");
     phoneNumberRepository.save(pn);
@@ -399,12 +308,10 @@ public class TestDataFactory {
             "not_hispanic",
             null,
             "male",
-            "male",
             false,
             false,
             "English",
-            TestResultDeliveryPreference.SMS,
-            "Outlandish mobile communicator");
+            TestResultDeliveryPreference.SMS);
     personRepository.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     phoneNumberRepository.save(pn);
@@ -433,41 +340,10 @@ public class TestDataFactory {
             "not_hispanic",
             null,
             "male",
-            "male",
             false,
             false,
             "English",
-            TestResultDeliveryPreference.SMS,
-            "Nashville-born spacefarer");
-    return personRepository.save(p);
-  }
-
-  @Transactional
-  public Person createFullPersonWithAddress(
-      Organization org, StreetAddress address, String firstName, String lastName) {
-    Person p =
-        new Person(
-            org,
-            "123",
-            firstName,
-            "",
-            lastName,
-            null,
-            DEFAULT_BDAY,
-            address,
-            "USA",
-            PersonRole.RESIDENT,
-            null,
-            "white",
-            "not_hispanic",
-            null,
-            "male",
-            "male",
-            false,
-            false,
-            "English",
-            TestResultDeliveryPreference.SMS,
-            "");
+            TestResultDeliveryPreference.SMS);
     return personRepository.save(p);
   }
 
@@ -501,7 +377,7 @@ public class TestDataFactory {
     var errors = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
     var upload =
         new TestResultUpload(
-            reportId, UUID.randomUUID(), status, 0, organization, warnings, errors, null, null);
+            reportId, UUID.randomUUID(), status, 0, organization, warnings, errors);
     var saved = testResultUploadRepository.save(upload);
     return saved;
   }
@@ -569,16 +445,9 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
-    SupportedDisease defaultDisease = diseaseService.covid();
-    return createTestEvent(p, f, s, r, d, defaultDisease);
-  }
-
-  public TestEvent createTestEvent(
-      Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d, SupportedDisease disease) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-
-    Result orderResult = new Result(disease, r);
+    Result orderResult = new Result(diseaseService.covid(), r);
     resultService.addResultsToTestOrder(o, List.of(orderResult));
 
     TestEvent e = new TestEvent(o, false);
@@ -595,11 +464,6 @@ public class TestDataFactory {
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r) {
     return createTestEvent(p, f, r, false);
-  }
-
-  public TestEvent createTestEventWithDate(Person p, Facility f, TestResult r, Date d) {
-    var a = createEmptySurvey();
-    return createTestEvent(p, f, a, r, d);
   }
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
@@ -619,16 +483,14 @@ public class TestDataFactory {
     return e;
   }
 
-  public TestEvent createMultiplexTestEventWithDate(
+  public TestEvent createMultiplexTestEvent(
       Person person,
       Facility facility,
       TestResult covidResult,
       TestResult fluAResult,
       TestResult fluBResult,
-      Boolean hasPriorTests,
-      Date date) {
+      Boolean hasPriorTests) {
     TestOrder order = createTestOrder(person, facility);
-    order.setDateTestedBackdate(date);
 
     var results =
         List.of(
@@ -650,17 +512,6 @@ public class TestDataFactory {
     testOrderRepository.save(order);
 
     return event;
-  }
-
-  public TestEvent createMultiplexTestEvent(
-      Person person,
-      Facility facility,
-      TestResult covidResult,
-      TestResult fluAResult,
-      TestResult fluBResult,
-      Boolean hasPriorTests) {
-    return createMultiplexTestEventWithDate(
-        person, facility, covidResult, fluAResult, fluBResult, hasPriorTests, new Date());
   }
 
   public TestEvent createTestEventCorrection(
@@ -759,95 +610,11 @@ public class TestDataFactory {
         "736 Jackson PI NW", "APT. 123", "Washington", "DC", "20503", "Washington");
   }
 
-  public StreetAddress getUnknownAddress() {
-    return new StreetAddress("** Unknown / Not Given **", null, null, "NA", "00000", null);
-  }
-
   public static List<PhoneNumber> getListOfOnePhoneNumber() {
     return List.of(new PhoneNumber(PhoneType.MOBILE, "(503) 867-5309"));
   }
 
   public static List<PhoneNumberInput> getListOfOnePhoneNumberInput() {
     return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
-  }
-
-  public Condition createCondition(String code, String display, String snomedName) {
-    return conditionRepository.save(new Condition(code, display, snomedName));
-  }
-
-  public Condition createCondition(String code) {
-    return createCondition(code, "Lorem ipsumosis", "the snomed name");
-  }
-
-  public List<Condition> createConditions(List<String> codes) {
-    List<Condition> conditionList = new ArrayList<>();
-    for (var code : codes) {
-      conditionList.add(createCondition(code));
-    }
-    return conditionList;
-  }
-
-  public Lab createLab(
-      String code,
-      String display,
-      String description,
-      String longCommonName,
-      String scaleCode,
-      String scaleDisplay,
-      String systemCode,
-      String systemDisplay,
-      String answerList,
-      String orderOrObservation,
-      Boolean panel,
-      List<String> conditionCodes) {
-    Lab lab =
-        new Lab(
-            code,
-            display,
-            description,
-            longCommonName,
-            scaleCode,
-            scaleDisplay,
-            systemCode,
-            systemDisplay,
-            answerList,
-            orderOrObservation,
-            panel);
-    List<Condition> conditionList = conditionRepository.findAllByCodeIn(conditionCodes);
-    for (Condition condition : conditionList) {
-      lab.addCondition(condition);
-    }
-    return labRepository.save(lab);
-  }
-
-  public Lab createLab(
-      String code,
-      String scale_display,
-      String system_code,
-      String orderOrObservation,
-      List<String> conditionCodes) {
-    return createLab(
-        code,
-        "Lab display " + code,
-        "",
-        "Long common name",
-        "",
-        scale_display,
-        system_code,
-        "",
-        "",
-        orderOrObservation,
-        false,
-        conditionCodes);
-  }
-
-  public Specimen createSpecimen(
-      String loincSystemCode, String loincSystemDisplay, String snomedCode, String snomedDisplay) {
-    return specimenRepository.save(
-        new Specimen(loincSystemCode, loincSystemDisplay, snomedCode, snomedDisplay));
-  }
-
-  public Specimen createSpecimen(String loincSystemCode, String snomedCode) {
-    return createSpecimen(loincSystemCode, "system_display", snomedCode, "snomed_display");
   }
 }

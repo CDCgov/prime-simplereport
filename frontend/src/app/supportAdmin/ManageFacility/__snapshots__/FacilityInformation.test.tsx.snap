@@ -133,7 +133,7 @@ exports[`Facility Information Confirmation modal and go back 1`] = `
         aria-modal="true"
         class="ReactModal__Content"
         role="dialog"
-        style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 0px; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 0px;"
+        style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 0px; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px;"
         tabindex="-1"
       >
         <div
@@ -149,11 +149,9 @@ exports[`Facility Information Confirmation modal and go back 1`] = `
               src="close.svg"
             />
           </button>
-          <main
-            class="padding-205"
-          >
+          <main>
             <div
-              class="modal__content grid-row usa-prose"
+              class="modal__content grid-row"
             >
               <div
                 class="grid-col"

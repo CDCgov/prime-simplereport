@@ -1,4 +1,4 @@
-import { InvocationContext } from "@azure/functions";
+import { Context } from "@azure/functions";
 import { DequeuedMessageItem } from "@azure/storage-queue";
 import { uploadResult, convertToCsv } from "./lib";
 
@@ -25,10 +25,10 @@ jest.mock("../config", () => ({
 jest.mock("@azure/storage-queue");
 
 const context = {
-  error: jest.fn(),
-  traceContext: { traceParent: "asdf" },
-} as jest.MockedObject<InvocationContext>;
-context.error = jest.fn();
+  log: jest.fn(),
+  traceContext: { traceparent: "asdf" },
+} as jest.MockedObject<Context>;
+context.log.error = jest.fn();
 
 describe("lib", () => {
   describe("CSV conversion", () => {

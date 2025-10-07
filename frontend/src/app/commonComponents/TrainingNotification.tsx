@@ -39,7 +39,7 @@ export const TrainingNotification: React.FC = () => {
         }}
         overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
         contentLabel="SimpleReport training site"
-        ariaHideApp={process.env.NODE_ENV !== "test"}
+        ariaHideApp={import.meta.env.MODE !== "test"}
       >
         <div className="sr-training-modal margin-1">
           <div className="display-flex flex-align-start">

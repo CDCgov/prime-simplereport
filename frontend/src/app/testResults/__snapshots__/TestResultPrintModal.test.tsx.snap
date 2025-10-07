@@ -1,0 +1,2456 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TestResultPrintModal with multiplex results in Pxp App matches screenshot 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body
+    aria-hidden="true"
+    class="ReactModal__Body--open"
+  >
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div>
+      <div
+        class="ReactModal__Overlay sr-test-results-modal-overlay"
+      >
+        <div
+          aria-label="Printable test result"
+          aria-modal="true"
+          class="ReactModal__Content sr-test-results-modal-content"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print"
+          >
+            <div
+              lang="es"
+            >
+              <button
+                class="usa-button usa-button--unstyled"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-globe margin-right-1"
+                  data-icon="globe"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.2 20.4 3.3 41.8 3.3 64zm28.8-64H503.9c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64zm112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6c78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7c10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5c11.6 26 20.9 58.2 27 94.7zm-209 0H18.6C48.6 85.9 112.2 29.1 190.6 8.4C165.1 42.6 145.3 96.1 135.3 160zM8.1 192H131.2c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64zM194.7 446.6c-11.6-26-20.9-58.2-27-94.6H344.3c-6.1 36.4-15.5 68.6-27 94.6c-10.5 23.6-22.2 40.7-33.5 51.5C272.6 508.8 263.3 512 256 512s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6C112.2 482.9 48.6 426.1 18.6 352H135.3zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6c25.5-34.2 45.2-87.7 55.3-151.6H493.4z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Español
+              </button>
+            </div>
+            <div
+              class="sr-result-print-buttons dont-print"
+            >
+              <button
+                class="usa-button usa-button--unstyled"
+                type="button"
+              >
+                Close
+              </button>
+              <button
+                class="usa-button"
+                type="button"
+              >
+                Print
+              </button>
+            </div>
+          </div>
+          <div
+            class="sr-test-result-report"
+          >
+            <header
+              class="display-flex flex-align-end flex-justify margin-bottom-1"
+            >
+              <h1>
+                Test results: COVID-19 and flu
+              </h1>
+              <img
+                alt="SimpleReport logo"
+                class="sr-print-logo dont-print"
+                src="simplereport-logo-black.svg"
+              />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
+            </header>
+            <main>
+              <section
+                class="sr-result-section sr-result-patient-details"
+              >
+                <h2>
+                  Patient details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Name
+                    </b>
+                    <div>
+                      First Middle Last
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Date of birth
+                    </b>
+                    <div>
+                      08/07/1990
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-facility-details"
+              >
+                <h2>
+                  Testing facility details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Facility name
+                    </b>
+                    <div>
+                      Facility Name
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Facility phone
+                    </b>
+                    <div>
+                      6318675309
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Facility address
+                    </b>
+                    <div
+                      class="sr-result-facility-details-address"
+                    >
+                      <span>
+                        555 Fake St
+                      </span>
+                      <span>
+                        Raleigh
+                        , 
+                        NC
+                         
+                        27601
+                      </span>
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      CLIA number
+                    </b>
+                    <div>
+                      12D4567890
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Ordering provider
+                    </b>
+                    <div>
+                      Ordering Provider
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      NPI
+                    </b>
+                    <div>
+                      fake npi for pxp
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-test-details"
+              >
+                <h2>
+                  Test details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Test ID
+                    </b>
+                    <div>
+                      id
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Test name
+                    </b>
+                    <div>
+                      Fake device
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Test device
+                    </b>
+                    <div />
+                  </li>
+                  <li
+                    class="sr-margin-bottom-28px"
+                  >
+                    <b>
+                      Test date
+                    </b>
+                    <div>
+                      01/28/2022 5:56pm
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      COVID-19
+                    </b>
+                    <div>
+                      <strong>
+                        <span
+                          class="text-uppercase"
+                        >
+                          Negative
+                        </span>
+                        <span>
+                           
+                          (-)
+                        </span>
+                      </strong>
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Flu A
+                    </b>
+                    <div>
+                      <strong>
+                        <span
+                          class="text-uppercase"
+                        >
+                          Negative
+                        </span>
+                        <span>
+                           
+                          (-)
+                        </span>
+                      </strong>
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Flu B
+                    </b>
+                    <div>
+                      <strong>
+                        <span
+                          class="text-uppercase"
+                        >
+                          Negative
+                        </span>
+                        <span>
+                           
+                          (-)
+                        </span>
+                      </strong>
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-next-steps"
+              >
+                <h2>
+                  More information
+                </h2>
+                <div
+                  class="sr-margin-bottom-28px"
+                >
+                  <p
+                    class="text-bold sr-guidance-heading"
+                  >
+                    For COVID-19:
+                  </p>
+                  <p>
+                    Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
+                  </p>
+                  <ul
+                    class="sr-multi-column"
+                  >
+                    <li>
+                      Fever or chills
+                    </li>
+                    <li>
+                      Cough
+                    </li>
+                    <li>
+                      Shortness of breath or difficulty breathing
+                    </li>
+                    <li>
+                      Fatigue
+                    </li>
+                    <li>
+                      Muscle or body aches
+                    </li>
+                    <li>
+                      Headache
+                    </li>
+                    <li>
+                      Loss of taste or smell
+                    </li>
+                    <li>
+                      Sore throat
+                    </li>
+                    <li>
+                      Congestion or runny nose
+                    </li>
+                    <li>
+                      Nausea or vomiting
+                    </li>
+                    <li>
+                      Diarrhea
+                    </li>
+                  </ul>
+                  <p>
+                    For more information, please visit the 
+                    <a
+                      href="https://www.cdc.gov/"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Centers for Disease Control and Prevention (CDC)
+                    </a>
+                     website or contact
+your local health department.
+                  </p>
+                </div>
+              </section>
+            </main>
+            <footer>
+              <p>
+                Test result printed
+                 
+                1/1/2021, 12:00:00 AM
+              </p>
+            </footer>
+          </div>
+          <div
+            class="sr-result-print-buttons dont-print"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              Close
+            </button>
+            <button
+              class="usa-button"
+              type="button"
+            >
+              Print
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div
+      class="ReactModalPortal"
+    />
+  </body>,
+  "container": <div>
+    <div
+      class="ReactModal__Overlay sr-test-results-modal-overlay"
+    >
+      <div
+        aria-label="Printable test result"
+        aria-modal="true"
+        class="ReactModal__Content sr-test-results-modal-content"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print"
+        >
+          <div
+            lang="es"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-globe margin-right-1"
+                data-icon="globe"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.2 20.4 3.3 41.8 3.3 64zm28.8-64H503.9c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64zm112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6c78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7c10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5c11.6 26 20.9 58.2 27 94.7zm-209 0H18.6C48.6 85.9 112.2 29.1 190.6 8.4C165.1 42.6 145.3 96.1 135.3 160zM8.1 192H131.2c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64zM194.7 446.6c-11.6-26-20.9-58.2-27-94.6H344.3c-6.1 36.4-15.5 68.6-27 94.6c-10.5 23.6-22.2 40.7-33.5 51.5C272.6 508.8 263.3 512 256 512s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6C112.2 482.9 48.6 426.1 18.6 352H135.3zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6c25.5-34.2 45.2-87.7 55.3-151.6H493.4z"
+                  fill="currentColor"
+                />
+              </svg>
+              Español
+            </button>
+          </div>
+          <div
+            class="sr-result-print-buttons dont-print"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              Close
+            </button>
+            <button
+              class="usa-button"
+              type="button"
+            >
+              Print
+            </button>
+          </div>
+        </div>
+        <div
+          class="sr-test-result-report"
+        >
+          <header
+            class="display-flex flex-align-end flex-justify margin-bottom-1"
+          >
+            <h1>
+              Test results: COVID-19 and flu
+            </h1>
+            <img
+              alt="SimpleReport logo"
+              class="sr-print-logo dont-print"
+              src="simplereport-logo-black.svg"
+            />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
+          </header>
+          <main>
+            <section
+              class="sr-result-section sr-result-patient-details"
+            >
+              <h2>
+                Patient details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Name
+                  </b>
+                  <div>
+                    First Middle Last
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Date of birth
+                  </b>
+                  <div>
+                    08/07/1990
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-facility-details"
+            >
+              <h2>
+                Testing facility details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Facility name
+                  </b>
+                  <div>
+                    Facility Name
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Facility phone
+                  </b>
+                  <div>
+                    6318675309
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Facility address
+                  </b>
+                  <div
+                    class="sr-result-facility-details-address"
+                  >
+                    <span>
+                      555 Fake St
+                    </span>
+                    <span>
+                      Raleigh
+                      , 
+                      NC
+                       
+                      27601
+                    </span>
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    CLIA number
+                  </b>
+                  <div>
+                    12D4567890
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Ordering provider
+                  </b>
+                  <div>
+                    Ordering Provider
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    NPI
+                  </b>
+                  <div>
+                    fake npi for pxp
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-test-details"
+            >
+              <h2>
+                Test details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Test ID
+                  </b>
+                  <div>
+                    id
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Test name
+                  </b>
+                  <div>
+                    Fake device
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Test device
+                  </b>
+                  <div />
+                </li>
+                <li
+                  class="sr-margin-bottom-28px"
+                >
+                  <b>
+                    Test date
+                  </b>
+                  <div>
+                    01/28/2022 5:56pm
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    COVID-19
+                  </b>
+                  <div>
+                    <strong>
+                      <span
+                        class="text-uppercase"
+                      >
+                        Negative
+                      </span>
+                      <span>
+                         
+                        (-)
+                      </span>
+                    </strong>
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Flu A
+                  </b>
+                  <div>
+                    <strong>
+                      <span
+                        class="text-uppercase"
+                      >
+                        Negative
+                      </span>
+                      <span>
+                         
+                        (-)
+                      </span>
+                    </strong>
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Flu B
+                  </b>
+                  <div>
+                    <strong>
+                      <span
+                        class="text-uppercase"
+                      >
+                        Negative
+                      </span>
+                      <span>
+                         
+                        (-)
+                      </span>
+                    </strong>
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-next-steps"
+            >
+              <h2>
+                More information
+              </h2>
+              <div
+                class="sr-margin-bottom-28px"
+              >
+                <p
+                  class="text-bold sr-guidance-heading"
+                >
+                  For COVID-19:
+                </p>
+                <p>
+                  Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
+                </p>
+                <ul
+                  class="sr-multi-column"
+                >
+                  <li>
+                    Fever or chills
+                  </li>
+                  <li>
+                    Cough
+                  </li>
+                  <li>
+                    Shortness of breath or difficulty breathing
+                  </li>
+                  <li>
+                    Fatigue
+                  </li>
+                  <li>
+                    Muscle or body aches
+                  </li>
+                  <li>
+                    Headache
+                  </li>
+                  <li>
+                    Loss of taste or smell
+                  </li>
+                  <li>
+                    Sore throat
+                  </li>
+                  <li>
+                    Congestion or runny nose
+                  </li>
+                  <li>
+                    Nausea or vomiting
+                  </li>
+                  <li>
+                    Diarrhea
+                  </li>
+                </ul>
+                <p>
+                  For more information, please visit the 
+                  <a
+                    href="https://www.cdc.gov/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Centers for Disease Control and Prevention (CDC)
+                  </a>
+                   website or contact
+your local health department.
+                </p>
+              </div>
+            </section>
+          </main>
+          <footer>
+            <p>
+              Test result printed
+               
+              1/1/2021, 12:00:00 AM
+            </p>
+          </footer>
+        </div>
+        <div
+          class="sr-result-print-buttons dont-print"
+        >
+          <button
+            class="usa-button usa-button--unstyled"
+            type="button"
+          >
+            Close
+          </button>
+          <button
+            class="usa-button"
+            type="button"
+          >
+            Print
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`TestResultPrintModal with multiplex results in SimpleReport App matches screenshot 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body
+    aria-hidden="true"
+    class="ReactModal__Body--open"
+  >
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div>
+      <div
+        class="ReactModal__Overlay sr-test-results-modal-overlay"
+      >
+        <div
+          aria-label="Printable test result"
+          aria-modal="true"
+          class="ReactModal__Content sr-test-results-modal-content"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print"
+          >
+            <div
+              lang="es"
+            >
+              <button
+                class="usa-button usa-button--unstyled"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-globe margin-right-1"
+                  data-icon="globe"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.2 20.4 3.3 41.8 3.3 64zm28.8-64H503.9c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64zm112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6c78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7c10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5c11.6 26 20.9 58.2 27 94.7zm-209 0H18.6C48.6 85.9 112.2 29.1 190.6 8.4C165.1 42.6 145.3 96.1 135.3 160zM8.1 192H131.2c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64zM194.7 446.6c-11.6-26-20.9-58.2-27-94.6H344.3c-6.1 36.4-15.5 68.6-27 94.6c-10.5 23.6-22.2 40.7-33.5 51.5C272.6 508.8 263.3 512 256 512s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6C112.2 482.9 48.6 426.1 18.6 352H135.3zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6c25.5-34.2 45.2-87.7 55.3-151.6H493.4z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Español
+              </button>
+            </div>
+            <div
+              class="sr-result-print-buttons dont-print"
+            >
+              <button
+                class="usa-button usa-button--unstyled"
+                type="button"
+              >
+                Close
+              </button>
+              <button
+                class="usa-button"
+                type="button"
+              >
+                Print
+              </button>
+            </div>
+          </div>
+          <div
+            class="sr-test-result-report"
+          >
+            <header
+              class="display-flex flex-align-end flex-justify margin-bottom-1"
+            >
+              <h1>
+                Test results: COVID-19 and flu
+              </h1>
+              <img
+                alt="SimpleReport logo"
+                class="sr-print-logo dont-print"
+                src="simplereport-logo-black.svg"
+              />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
+            </header>
+            <main>
+              <section
+                class="sr-result-section sr-result-patient-details"
+              >
+                <h2>
+                  Patient details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Name
+                    </b>
+                    <div>
+                      First Middle Last
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Date of birth
+                    </b>
+                    <div>
+                      08/07/1990
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-facility-details"
+              >
+                <h2>
+                  Testing facility details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Facility name
+                    </b>
+                    <div>
+                      Facility Name
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Facility phone
+                    </b>
+                    <div>
+                      6318675309
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Facility address
+                    </b>
+                    <div
+                      class="sr-result-facility-details-address"
+                    >
+                      <span>
+                        555 Fake St
+                      </span>
+                      <span>
+                        Raleigh
+                        , 
+                        NC
+                         
+                        27601
+                      </span>
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      CLIA number
+                    </b>
+                    <div>
+                      12D4567890
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Ordering provider
+                    </b>
+                    <div>
+                      Ordering Provider
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      NPI
+                    </b>
+                    <div>
+                      fake-npi
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-test-details"
+              >
+                <h2>
+                  Test details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Test ID
+                    </b>
+                    <div>
+                      id
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Test name
+                    </b>
+                    <div>
+                      Fake device
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Test device
+                    </b>
+                    <div />
+                  </li>
+                  <li
+                    class="sr-margin-bottom-28px"
+                  >
+                    <b>
+                      Test date
+                    </b>
+                    <div>
+                      01/28/2022 5:56pm
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      COVID-19
+                    </b>
+                    <div>
+                      <strong>
+                        <span
+                          class="text-uppercase"
+                        >
+                          Positive
+                        </span>
+                        <span>
+                           
+                          (+)
+                        </span>
+                      </strong>
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Flu A
+                    </b>
+                    <div>
+                      <strong>
+                        <span
+                          class="text-uppercase"
+                        >
+                          Positive
+                        </span>
+                        <span>
+                           
+                          (+)
+                        </span>
+                      </strong>
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Flu B
+                    </b>
+                    <div>
+                      <strong>
+                        <span
+                          class="text-uppercase"
+                        >
+                          Positive
+                        </span>
+                        <span>
+                           
+                          (+)
+                        </span>
+                      </strong>
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-next-steps"
+              >
+                <h2>
+                  More information
+                </h2>
+                <div
+                  class="sr-margin-bottom-28px"
+                >
+                  <p
+                    class="text-bold sr-guidance-heading"
+                  >
+                    For COVID-19:
+                  </p>
+                  <p>
+                    Most people who get COVID-19 are able to recover at home. Make sure to follow CDC guidelines and local laws for people who are recovering at home and their caregivers, including:
+                  </p>
+                  <ul>
+                    <li>
+                      Stay home when you are sick, except to get medical care.
+                    </li>
+                    <li>
+                      Stay home for 5 days. If you have no symptoms or your symptoms are resolving after 5 days, you can leave your house. Continue to wear a mask around others for 5 additional days.
+                    </li>
+                    <li>
+                      If you are self isolating at home where others live, use a separate room and bathroom for sick household members (if possible). Clean any shared rooms as needed, to avoid transmitting the virus.
+                    </li>
+                    <li>
+                      Wash your hands often with soap and water for at least 20 seconds, especially after blowing your nose, coughing, or sneezing; going to the bathroom; and before eating or preparing food.
+                    </li>
+                    <li>
+                      If soap and water are not available, use an alcohol-based hand sanitizer with at least 60% alcohol.
+                    </li>
+                    <li>
+                      Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.
+                    </li>
+                  </ul>
+                  <p>
+                    Watch for symptoms and learn when to seek emergency medical attention: 
+                    <a
+                      href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Symptoms of COVID-19
+                    </a>
+                     (cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). If someone is showing any of these signs, seek emergency medical care immediately:
+                  </p>
+                  <ul>
+                    <li>
+                      Trouble breathing
+                    </li>
+                    <li>
+                      Persistent chest pain/pressure
+                    </li>
+                    <li>
+                      Confusion
+                    </li>
+                    <li>
+                      Inability to wake or stay awake
+                    </li>
+                    <li>
+                      Bluish lips or face
+                    </li>
+                  </ul>
+                  <p>
+                    Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.
+                  </p>
+                  <p>
+                    For more information go to 
+                    <a
+                      href="https://www.cdc.gov/"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      CDC.gov
+                    </a>
+                     or call 1-800-CDC-INFO (1-800-232-4636). Use the 
+                    <a
+                      href="https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      County Check Tool
+                    </a>
+                     (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
+                  </p>
+                </div>
+                <p
+                  class="text-bold sr-guidance-heading"
+                >
+                  For flu A and B:
+                </p>
+                <p>
+                  Most people with flu have mild illness and can recover at home. Stay at home and avoid contact with others until at least 24 hours after your fever is gone, except to get medical care or other necessities. Wear a face mask if you leave home, or cover coughs and sneezes with a tissue. Wash your hands often.
+                </p>
+                <p>
+                  <a
+                    href="https://www.cdc.gov/flu/highrisk"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    People at Higher Risk of Developing Flu–Related Complications
+                  </a>
+                   (cdc.gov/flu/highrisk) should contact a doctor as soon as possible to see if antiviral treatment is recommended.
+                </p>
+                <p>
+                  For more information, visit 
+                  <a
+                    href="https://www.cdc.gov/flu/treatment/takingcare.htm"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                     Flu: What To Do If You Get Sick
+                  </a>
+                   (cdc.gov/flu/treatment/takingcare.htm).
+                </p>
+              </section>
+            </main>
+            <footer>
+              <p>
+                Test result printed
+                 
+                1/1/2021, 12:00:00 AM
+              </p>
+            </footer>
+          </div>
+          <div
+            class="sr-result-print-buttons dont-print"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              Close
+            </button>
+            <button
+              class="usa-button"
+              type="button"
+            >
+              Print
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div
+      class="ReactModalPortal"
+    />
+  </body>,
+  "container": <div>
+    <div
+      class="ReactModal__Overlay sr-test-results-modal-overlay"
+    >
+      <div
+        aria-label="Printable test result"
+        aria-modal="true"
+        class="ReactModal__Content sr-test-results-modal-content"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print"
+        >
+          <div
+            lang="es"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-globe margin-right-1"
+                data-icon="globe"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.2 20.4 3.3 41.8 3.3 64zm28.8-64H503.9c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64zm112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6c78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7c10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5c11.6 26 20.9 58.2 27 94.7zm-209 0H18.6C48.6 85.9 112.2 29.1 190.6 8.4C165.1 42.6 145.3 96.1 135.3 160zM8.1 192H131.2c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64zM194.7 446.6c-11.6-26-20.9-58.2-27-94.6H344.3c-6.1 36.4-15.5 68.6-27 94.6c-10.5 23.6-22.2 40.7-33.5 51.5C272.6 508.8 263.3 512 256 512s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6C112.2 482.9 48.6 426.1 18.6 352H135.3zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6c25.5-34.2 45.2-87.7 55.3-151.6H493.4z"
+                  fill="currentColor"
+                />
+              </svg>
+              Español
+            </button>
+          </div>
+          <div
+            class="sr-result-print-buttons dont-print"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              Close
+            </button>
+            <button
+              class="usa-button"
+              type="button"
+            >
+              Print
+            </button>
+          </div>
+        </div>
+        <div
+          class="sr-test-result-report"
+        >
+          <header
+            class="display-flex flex-align-end flex-justify margin-bottom-1"
+          >
+            <h1>
+              Test results: COVID-19 and flu
+            </h1>
+            <img
+              alt="SimpleReport logo"
+              class="sr-print-logo dont-print"
+              src="simplereport-logo-black.svg"
+            />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
+          </header>
+          <main>
+            <section
+              class="sr-result-section sr-result-patient-details"
+            >
+              <h2>
+                Patient details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Name
+                  </b>
+                  <div>
+                    First Middle Last
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Date of birth
+                  </b>
+                  <div>
+                    08/07/1990
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-facility-details"
+            >
+              <h2>
+                Testing facility details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Facility name
+                  </b>
+                  <div>
+                    Facility Name
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Facility phone
+                  </b>
+                  <div>
+                    6318675309
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Facility address
+                  </b>
+                  <div
+                    class="sr-result-facility-details-address"
+                  >
+                    <span>
+                      555 Fake St
+                    </span>
+                    <span>
+                      Raleigh
+                      , 
+                      NC
+                       
+                      27601
+                    </span>
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    CLIA number
+                  </b>
+                  <div>
+                    12D4567890
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Ordering provider
+                  </b>
+                  <div>
+                    Ordering Provider
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    NPI
+                  </b>
+                  <div>
+                    fake-npi
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-test-details"
+            >
+              <h2>
+                Test details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Test ID
+                  </b>
+                  <div>
+                    id
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Test name
+                  </b>
+                  <div>
+                    Fake device
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Test device
+                  </b>
+                  <div />
+                </li>
+                <li
+                  class="sr-margin-bottom-28px"
+                >
+                  <b>
+                    Test date
+                  </b>
+                  <div>
+                    01/28/2022 5:56pm
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    COVID-19
+                  </b>
+                  <div>
+                    <strong>
+                      <span
+                        class="text-uppercase"
+                      >
+                        Positive
+                      </span>
+                      <span>
+                         
+                        (+)
+                      </span>
+                    </strong>
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Flu A
+                  </b>
+                  <div>
+                    <strong>
+                      <span
+                        class="text-uppercase"
+                      >
+                        Positive
+                      </span>
+                      <span>
+                         
+                        (+)
+                      </span>
+                    </strong>
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Flu B
+                  </b>
+                  <div>
+                    <strong>
+                      <span
+                        class="text-uppercase"
+                      >
+                        Positive
+                      </span>
+                      <span>
+                         
+                        (+)
+                      </span>
+                    </strong>
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-next-steps"
+            >
+              <h2>
+                More information
+              </h2>
+              <div
+                class="sr-margin-bottom-28px"
+              >
+                <p
+                  class="text-bold sr-guidance-heading"
+                >
+                  For COVID-19:
+                </p>
+                <p>
+                  Most people who get COVID-19 are able to recover at home. Make sure to follow CDC guidelines and local laws for people who are recovering at home and their caregivers, including:
+                </p>
+                <ul>
+                  <li>
+                    Stay home when you are sick, except to get medical care.
+                  </li>
+                  <li>
+                    Stay home for 5 days. If you have no symptoms or your symptoms are resolving after 5 days, you can leave your house. Continue to wear a mask around others for 5 additional days.
+                  </li>
+                  <li>
+                    If you are self isolating at home where others live, use a separate room and bathroom for sick household members (if possible). Clean any shared rooms as needed, to avoid transmitting the virus.
+                  </li>
+                  <li>
+                    Wash your hands often with soap and water for at least 20 seconds, especially after blowing your nose, coughing, or sneezing; going to the bathroom; and before eating or preparing food.
+                  </li>
+                  <li>
+                    If soap and water are not available, use an alcohol-based hand sanitizer with at least 60% alcohol.
+                  </li>
+                  <li>
+                    Have a supply of clean, disposable face masks. Everyone, no matter their COVID-19 diagnosis, should wear face masks while in the home.
+                  </li>
+                </ul>
+                <p>
+                  Watch for symptoms and learn when to seek emergency medical attention: 
+                  <a
+                    href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Symptoms of COVID-19
+                  </a>
+                   (cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html). If someone is showing any of these signs, seek emergency medical care immediately:
+                </p>
+                <ul>
+                  <li>
+                    Trouble breathing
+                  </li>
+                  <li>
+                    Persistent chest pain/pressure
+                  </li>
+                  <li>
+                    Confusion
+                  </li>
+                  <li>
+                    Inability to wake or stay awake
+                  </li>
+                  <li>
+                    Bluish lips or face
+                  </li>
+                </ul>
+                <p>
+                  Call 911 or call ahead to your local emergency room: Notify the operator that you are seeking care for someone who has or may have COVID-19.
+                </p>
+                <p>
+                  For more information go to 
+                  <a
+                    href="https://www.cdc.gov/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    CDC.gov
+                  </a>
+                   or call 1-800-CDC-INFO (1-800-232-4636). Use the 
+                  <a
+                    href="https://www.cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    County Check Tool
+                  </a>
+                   (cdc.gov/coronavirus/2019-ncov/your-health/covid-by-county.html) to understand your Community Level (COVID-19 risk and hospital capacity in your area), tips for prevention, and how to find vaccine, testing, and treatment resources.
+                </p>
+              </div>
+              <p
+                class="text-bold sr-guidance-heading"
+              >
+                For flu A and B:
+              </p>
+              <p>
+                Most people with flu have mild illness and can recover at home. Stay at home and avoid contact with others until at least 24 hours after your fever is gone, except to get medical care or other necessities. Wear a face mask if you leave home, or cover coughs and sneezes with a tissue. Wash your hands often.
+              </p>
+              <p>
+                <a
+                  href="https://www.cdc.gov/flu/highrisk"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  People at Higher Risk of Developing Flu–Related Complications
+                </a>
+                 (cdc.gov/flu/highrisk) should contact a doctor as soon as possible to see if antiviral treatment is recommended.
+              </p>
+              <p>
+                For more information, visit 
+                <a
+                  href="https://www.cdc.gov/flu/treatment/takingcare.htm"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                   Flu: What To Do If You Get Sick
+                </a>
+                 (cdc.gov/flu/treatment/takingcare.htm).
+              </p>
+            </section>
+          </main>
+          <footer>
+            <p>
+              Test result printed
+               
+              1/1/2021, 12:00:00 AM
+            </p>
+          </footer>
+        </div>
+        <div
+          class="sr-result-print-buttons dont-print"
+        >
+          <button
+            class="usa-button usa-button--unstyled"
+            type="button"
+          >
+            Close
+          </button>
+          <button
+            class="usa-button"
+            type="button"
+          >
+            Print
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`TestResultPrintModal with only COVID results matches screenshot 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body
+    aria-hidden="true"
+    class="ReactModal__Body--open"
+  >
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div>
+      <div
+        class="ReactModal__Overlay sr-test-results-modal-overlay"
+      >
+        <div
+          aria-label="Printable test result"
+          aria-modal="true"
+          class="ReactModal__Content sr-test-results-modal-content"
+          role="dialog"
+          tabindex="-1"
+        >
+          <div
+            class="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print"
+          >
+            <div
+              lang="es"
+            >
+              <button
+                class="usa-button usa-button--unstyled"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-globe margin-right-1"
+                  data-icon="globe"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.2 20.4 3.3 41.8 3.3 64zm28.8-64H503.9c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64zm112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6c78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7c10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5c11.6 26 20.9 58.2 27 94.7zm-209 0H18.6C48.6 85.9 112.2 29.1 190.6 8.4C165.1 42.6 145.3 96.1 135.3 160zM8.1 192H131.2c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64zM194.7 446.6c-11.6-26-20.9-58.2-27-94.6H344.3c-6.1 36.4-15.5 68.6-27 94.6c-10.5 23.6-22.2 40.7-33.5 51.5C272.6 508.8 263.3 512 256 512s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6C112.2 482.9 48.6 426.1 18.6 352H135.3zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6c25.5-34.2 45.2-87.7 55.3-151.6H493.4z"
+                    fill="currentColor"
+                  />
+                </svg>
+                Español
+              </button>
+            </div>
+            <div
+              class="sr-result-print-buttons dont-print"
+            >
+              <button
+                class="usa-button usa-button--unstyled"
+                type="button"
+              >
+                Close
+              </button>
+              <button
+                class="usa-button"
+                type="button"
+              >
+                Print
+              </button>
+            </div>
+          </div>
+          <div
+            class="sr-test-result-report"
+          >
+            <header
+              class="display-flex flex-align-end flex-justify margin-bottom-1"
+            >
+              <h1>
+                Test result: COVID-19
+              </h1>
+              <img
+                alt="SimpleReport logo"
+                class="sr-print-logo dont-print"
+                src="simplereport-logo-black.svg"
+              />
+              <h2
+                class="display-none sr-show-on-print"
+              >
+                SimpleReport
+              </h2>
+            </header>
+            <main>
+              <section
+                class="sr-result-section sr-result-patient-details"
+              >
+                <h2>
+                  Patient details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Name
+                    </b>
+                    <div>
+                      First Middle Last
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Date of birth
+                    </b>
+                    <div>
+                      08/07/1990
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-facility-details"
+              >
+                <h2>
+                  Testing facility details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Facility name
+                    </b>
+                    <div>
+                      Facility Name
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Facility phone
+                    </b>
+                    <div>
+                      6318675309
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Facility address
+                    </b>
+                    <div
+                      class="sr-result-facility-details-address"
+                    >
+                      <span>
+                        555 Fake St
+                      </span>
+                      <span>
+                        Raleigh
+                        , 
+                        NC
+                         
+                        27601
+                      </span>
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      CLIA number
+                    </b>
+                    <div>
+                      12D4567890
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Ordering provider
+                    </b>
+                    <div>
+                      Ordering Provider
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      NPI
+                    </b>
+                    <div>
+                      fake-npi
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-test-details"
+              >
+                <h2>
+                  Test details
+                </h2>
+                <ul
+                  class="sr-details-list"
+                >
+                  <li>
+                    <b>
+                      Test ID
+                    </b>
+                    <div>
+                      id
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Test name
+                    </b>
+                    <div>
+                      Fake device
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      Test device
+                    </b>
+                    <div />
+                  </li>
+                  <li
+                    class="sr-margin-bottom-28px"
+                  >
+                    <b>
+                      Test date
+                    </b>
+                    <div>
+                      01/28/2022 5:56pm
+                    </div>
+                  </li>
+                  <li>
+                    <b>
+                      COVID-19
+                    </b>
+                    <div>
+                      <strong>
+                        <span
+                          class="text-uppercase"
+                        >
+                          Negative
+                        </span>
+                        <span>
+                           
+                          (-)
+                        </span>
+                      </strong>
+                    </div>
+                  </li>
+                </ul>
+              </section>
+              <section
+                class="sr-result-section sr-result-next-steps"
+              >
+                <h2>
+                  More information
+                </h2>
+                <div
+                  class="sr-margin-bottom-28px"
+                >
+                  <p
+                    class="text-bold sr-guidance-heading"
+                  >
+                    For COVID-19:
+                  </p>
+                  <p>
+                    Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
+                  </p>
+                  <ul
+                    class="sr-multi-column"
+                  >
+                    <li>
+                      Fever or chills
+                    </li>
+                    <li>
+                      Cough
+                    </li>
+                    <li>
+                      Shortness of breath or difficulty breathing
+                    </li>
+                    <li>
+                      Fatigue
+                    </li>
+                    <li>
+                      Muscle or body aches
+                    </li>
+                    <li>
+                      Headache
+                    </li>
+                    <li>
+                      Loss of taste or smell
+                    </li>
+                    <li>
+                      Sore throat
+                    </li>
+                    <li>
+                      Congestion or runny nose
+                    </li>
+                    <li>
+                      Nausea or vomiting
+                    </li>
+                    <li>
+                      Diarrhea
+                    </li>
+                  </ul>
+                  <p>
+                    For more information, please visit the 
+                    <a
+                      href="https://www.cdc.gov/"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Centers for Disease Control and Prevention (CDC)
+                    </a>
+                     website or contact
+your local health department.
+                  </p>
+                </div>
+              </section>
+            </main>
+            <footer>
+              <p>
+                Test result printed
+                 
+                1/1/2021, 12:00:00 AM
+              </p>
+            </footer>
+          </div>
+          <div
+            class="sr-result-print-buttons dont-print"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              Close
+            </button>
+            <button
+              class="usa-button"
+              type="button"
+            >
+              Print
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      data-react-modal-body-trap=""
+      style="position: absolute; opacity: 0;"
+      tabindex="0"
+    />
+    <div
+      class="ReactModalPortal"
+    />
+  </body>,
+  "container": <div>
+    <div
+      class="ReactModal__Overlay sr-test-results-modal-overlay"
+    >
+      <div
+        aria-label="Printable test result"
+        aria-modal="true"
+        class="ReactModal__Content sr-test-results-modal-content"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print"
+        >
+          <div
+            lang="es"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-globe margin-right-1"
+                data-icon="globe"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 512 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.2-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.2 20.4 3.3 41.8 3.3 64zm28.8-64H503.9c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64zm112.6-32H376.7c-10-63.9-29.8-117.4-55.3-151.6c78.3 20.7 142 77.5 171.9 151.6zm-149.1 0H167.7c6.1-36.4 15.5-68.6 27-94.7c10.5-23.6 22.2-40.7 33.5-51.5C239.4 3.2 248.7 0 256 0s16.6 3.2 27.8 13.8c11.3 10.8 23 27.9 33.5 51.5c11.6 26 20.9 58.2 27 94.7zm-209 0H18.6C48.6 85.9 112.2 29.1 190.6 8.4C165.1 42.6 145.3 96.1 135.3 160zM8.1 192H131.2c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H8.1C2.8 299.5 0 278.1 0 256s2.8-43.5 8.1-64zM194.7 446.6c-11.6-26-20.9-58.2-27-94.6H344.3c-6.1 36.4-15.5 68.6-27 94.6c-10.5 23.6-22.2 40.7-33.5 51.5C272.6 508.8 263.3 512 256 512s-16.6-3.2-27.8-13.8c-11.3-10.8-23-27.9-33.5-51.5zM135.3 352c10 63.9 29.8 117.4 55.3 151.6C112.2 482.9 48.6 426.1 18.6 352H135.3zm358.1 0c-30 74.1-93.6 130.9-171.9 151.6c25.5-34.2 45.2-87.7 55.3-151.6H493.4z"
+                  fill="currentColor"
+                />
+              </svg>
+              Español
+            </button>
+          </div>
+          <div
+            class="sr-result-print-buttons dont-print"
+          >
+            <button
+              class="usa-button usa-button--unstyled"
+              type="button"
+            >
+              Close
+            </button>
+            <button
+              class="usa-button"
+              type="button"
+            >
+              Print
+            </button>
+          </div>
+        </div>
+        <div
+          class="sr-test-result-report"
+        >
+          <header
+            class="display-flex flex-align-end flex-justify margin-bottom-1"
+          >
+            <h1>
+              Test result: COVID-19
+            </h1>
+            <img
+              alt="SimpleReport logo"
+              class="sr-print-logo dont-print"
+              src="simplereport-logo-black.svg"
+            />
+            <h2
+              class="display-none sr-show-on-print"
+            >
+              SimpleReport
+            </h2>
+          </header>
+          <main>
+            <section
+              class="sr-result-section sr-result-patient-details"
+            >
+              <h2>
+                Patient details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Name
+                  </b>
+                  <div>
+                    First Middle Last
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Date of birth
+                  </b>
+                  <div>
+                    08/07/1990
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-facility-details"
+            >
+              <h2>
+                Testing facility details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Facility name
+                  </b>
+                  <div>
+                    Facility Name
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Facility phone
+                  </b>
+                  <div>
+                    6318675309
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Facility address
+                  </b>
+                  <div
+                    class="sr-result-facility-details-address"
+                  >
+                    <span>
+                      555 Fake St
+                    </span>
+                    <span>
+                      Raleigh
+                      , 
+                      NC
+                       
+                      27601
+                    </span>
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    CLIA number
+                  </b>
+                  <div>
+                    12D4567890
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Ordering provider
+                  </b>
+                  <div>
+                    Ordering Provider
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    NPI
+                  </b>
+                  <div>
+                    fake-npi
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-test-details"
+            >
+              <h2>
+                Test details
+              </h2>
+              <ul
+                class="sr-details-list"
+              >
+                <li>
+                  <b>
+                    Test ID
+                  </b>
+                  <div>
+                    id
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Test name
+                  </b>
+                  <div>
+                    Fake device
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    Test device
+                  </b>
+                  <div />
+                </li>
+                <li
+                  class="sr-margin-bottom-28px"
+                >
+                  <b>
+                    Test date
+                  </b>
+                  <div>
+                    01/28/2022 5:56pm
+                  </div>
+                </li>
+                <li>
+                  <b>
+                    COVID-19
+                  </b>
+                  <div>
+                    <strong>
+                      <span
+                        class="text-uppercase"
+                      >
+                        Negative
+                      </span>
+                      <span>
+                         
+                        (-)
+                      </span>
+                    </strong>
+                  </div>
+                </li>
+              </ul>
+            </section>
+            <section
+              class="sr-result-section sr-result-next-steps"
+            >
+              <h2>
+                More information
+              </h2>
+              <div
+                class="sr-margin-bottom-28px"
+              >
+                <p
+                  class="text-bold sr-guidance-heading"
+                >
+                  For COVID-19:
+                </p>
+                <p>
+                  Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
+                </p>
+                <ul
+                  class="sr-multi-column"
+                >
+                  <li>
+                    Fever or chills
+                  </li>
+                  <li>
+                    Cough
+                  </li>
+                  <li>
+                    Shortness of breath or difficulty breathing
+                  </li>
+                  <li>
+                    Fatigue
+                  </li>
+                  <li>
+                    Muscle or body aches
+                  </li>
+                  <li>
+                    Headache
+                  </li>
+                  <li>
+                    Loss of taste or smell
+                  </li>
+                  <li>
+                    Sore throat
+                  </li>
+                  <li>
+                    Congestion or runny nose
+                  </li>
+                  <li>
+                    Nausea or vomiting
+                  </li>
+                  <li>
+                    Diarrhea
+                  </li>
+                </ul>
+                <p>
+                  For more information, please visit the 
+                  <a
+                    href="https://www.cdc.gov/"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Centers for Disease Control and Prevention (CDC)
+                  </a>
+                   website or contact
+your local health department.
+                </p>
+              </div>
+            </section>
+          </main>
+          <footer>
+            <p>
+              Test result printed
+               
+              1/1/2021, 12:00:00 AM
+            </p>
+          </footer>
+        </div>
+        <div
+          class="sr-result-print-buttons dont-print"
+        >
+          <button
+            class="usa-button usa-button--unstyled"
+            type="button"
+          >
+            Close
+          </button>
+          <button
+            class="usa-button"
+            type="button"
+          >
+            Print
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;

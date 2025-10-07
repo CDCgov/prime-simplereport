@@ -1,16 +1,13 @@
-import { GenderIdentityDisplay, UNKNOWN } from "../app/utils/gender";
-
 const YES = "Yes";
 const NO = "No";
 const OTHER = "Other";
 const REFUSED = "Prefer not to answer";
+const UNKNOWN = "Unknown";
 const NOT_SURE = "Not sure";
 
-const FEMALE = GenderIdentityDisplay.female;
-const MALE = GenderIdentityDisplay.male;
 export const en = {
   translation: {
-    header: "SimpleReport test result portal",
+    header: "COVID-19 testing portal",
     banner: {
       dotGov: "The .gov means it’s official.",
       dotGovHelper:
@@ -36,25 +33,6 @@ export const en = {
         COVID19: "COVID-19",
         FLUA: "Flu A",
         FLUB: "Flu B",
-        FLUAB: "Flu A and B",
-        RSV: "RSV",
-        HIV: "HIV",
-        SYPHILIS: "Syphilis",
-        HEPATITIS_C: "Hepatitis C",
-        GONORRHEA: "Gonorrhea",
-        CHLAMYDIA: "Chlamydia",
-      },
-      diseaseResultTitle: {
-        COVID19: "COVID-19 result",
-        FLUA: "Flu A result",
-        FLUB: "Flu B result",
-        FLUAB: "Flu A and B result",
-        RSV: "RSV result",
-        HIV: "HIV result",
-        SYPHILIS: "Syphilis result",
-        HEPATITIS_C: "Hepatitis C result",
-        GONORRHEA: "Gonorrhea result",
-        CHLAMYDIA: "Chlamydia result",
       },
       role: {
         STAFF: "Staff",
@@ -72,8 +50,10 @@ export const en = {
         refused: REFUSED,
       },
       gender: {
-        female: FEMALE,
-        male: MALE,
+        female: "Female",
+        male: "Male",
+        other: "Other",
+        refused: REFUSED,
       },
       ethnicity: {
         hispanic: YES,
@@ -155,11 +135,6 @@ export const en = {
         },
         contact: {
           heading: "Contact information",
-          phoneHeading: "Phone",
-          unknownPhoneNumber: "Phone number unknown",
-          emailHeading: "Email",
-          addressHeading: "Address",
-          unknownAddress: "Address unknown or patient unhoused",
           helpText:
             "You're responsible for entering correct contact information, following applicable federal and state laws.",
           primaryPhoneNumber: "Primary phone number",
@@ -191,7 +166,9 @@ export const en = {
           race: "Race",
           tribalAffiliation: "Tribal affiliation",
           ethnicity: "Are you Hispanic or Latino?",
-          gender: "Sex",
+          gender: "Sex assigned at birth",
+          genderHelpText:
+            "This is usually the gender that is written on your original birth certificate.",
         },
         housingAndWork: {
           heading: "Housing and work",
@@ -202,11 +179,6 @@ export const en = {
               "For example: nursing home, group home, prison, jail, or military",
           },
           healthcareWorker: "Are you a health care worker?",
-        },
-        notes: {
-          heading: "Notes",
-          helpText:
-            "Add details about the patient's location or alternative contact information.",
         },
         errors: {
           unsaved:
@@ -277,8 +249,10 @@ export const en = {
     },
     testResult: {
       title: "Test result",
-      singleResultHeader: "Test result",
-      multipleResultHeader: "Test results",
+      resultLiteral: "result",
+      result: "SARS-CoV-2 result",
+      covidResultHeader: "Test result: COVID-19",
+      multiplexResultHeader: "Test results: COVID-19 and flu",
       downloadResult: "Download result",
       patient: "Patient",
       patientDetails: "Patient details",
@@ -385,62 +359,10 @@ export const en = {
           treatmentLink: "https://www.cdc.gov/flu/treatment/takingcare.htm",
         },
       },
-      rsvNotes: {
-        h1: "For RSV:",
-        positive: {
-          p0: "RSV usually causes mild, cold-like symptoms. Most people can recover at home, but RSV can cause serious illness and hospitalization for infants and older adults. You can help prevent the spread of RSV by staying at home when sick, avoiding close contact with others, and washing your hands frequently.",
-          p1: "You can take steps to relieve symptoms, including managing fever and pain with over-the-counter fever reducers, and drinking enough fluids. If your child has RSV, talk to their healthcare provider before giving them non-prescription cold medicine.",
-          p2: "Contact your healthcare professional if your symptoms worsen, you are having trouble breathing, or are dehydrated. <0>Learn more about RSV symptoms and care on the CDC website.</0> (cdc.gov/rsv/about/symptoms.html)",
-          rsvSymptomsLink: "https://www.cdc.gov/rsv/about/symptoms.html",
-        },
-      },
-      hivNotes: {
-        h1: "For HIV:",
-        all: {
-          p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
-          p1: "<0>Visit the CDC website to learn more about a positive HIV result</0> (cdc.gov/hiv/basics/hiv-testing/positive-hiv-results.html)",
-          positiveHivLink:
-            "https://www.cdc.gov/hiv/basics/hiv-testing/positive-hiv-results.html",
-        },
-      },
-      syphilisNotes: {
-        h1: "For syphilis:",
-        positive: {
-          p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
-          p1: "<0>Visit the CDC website to learn more about a positive Syphilis result</0> (cdc.gov/std/treatment-guidelines/syphilis.htm).",
-          treatmentLink:
-            "https://www.cdc.gov/std/treatment-guidelines/syphilis.htm",
-        },
-      },
-      hepatitisCNotes: {
-        h1: "For Hepatitis C:",
-        positive: {
-          p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
-          p1: "<0>Visit the CDC website to learn more about a positive Hepatitis C result</0> (cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results).",
-          treatmentLink:
-            "https://www.cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results",
-        },
-      },
-      gonorrheaNotes: {
-        h1: "For Gonorrhea:",
-        positive: {
-          p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
-          p1: "<0>Visit the CDC website to learn more about a positive Gonorrhea result.</0> (cdc.gov/gonorrhea/about).",
-          treatmentLink: "https://www.cdc.gov/gonorrhea/about/index.html",
-        },
-      },
-      chlamydiaNotes: {
-        h1: "For Chlamydia:",
-        positive: {
-          p0: "If you have a positive result, you will need a follow-up test to confirm your results. The organization that provided your test should be able to answer questions and provide referrals for follow-up testing.",
-          p1: "<0>Visit the CDC website to learn more about a positive Chlamydia result.</0> (cdc.gov/chlamydia/about).",
-          treatmentLink: "https://www.cdc.gov/chlamydia/about/index.html",
-        },
-      },
       tos: {
         header: "Terms of service",
         title: "Terms of service",
-        introText: `This testing site uses <0>SimpleReport</0> to manage rapid point-of-care testing and reporting. The terms below explain SimpleReport’s policies and terms of service.`,
+        introText: `This testing site uses <0>SimpleReport</0> to manage COVID-19 testing and reporting. The terms below explain SimpleReport’s policies and terms of service.`,
         consent: "By agreeing, you consent to our terms of service.",
         submit: "I agree",
         document: {

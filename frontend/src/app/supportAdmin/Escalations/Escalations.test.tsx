@@ -1,11 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
+import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
 
+import PrimeErrorBoundary from "../../PrimeErrorBoundary";
+import { store } from "../../store";
+import { WhoAmIQueryMock } from "../../ReportingApp.test";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 import { SendSupportEscalationDocument } from "../../../generated/graphql";
-import { WhoAmIQueryMock } from "../../OperationMocks";
 
 import { Escalations } from "./Escalations";
 
@@ -14,36 +16,41 @@ const SendSupportEscalationMock = {
     query: SendSupportEscalationDocument,
   },
   result: {
-    data: { sendSupportEscalation: {} },
+    data: {},
   },
 };
 
 describe("Escalations", () => {
-  it("Renders the page", () => {
+  it("Renders the page", async () => {
     const { container } = render(
-      <MockedProvider mocks={[WhoAmIQueryMock, SendSupportEscalationMock]}>
-        <MemoryRouter>
-          <Escalations />
-        </MemoryRouter>
-      </MockedProvider>
+      <PrimeErrorBoundary>
+        <Provider store={store}>
+          <MockedProvider mocks={[WhoAmIQueryMock]}>
+            <MemoryRouter>
+              <Escalations />
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
+      </PrimeErrorBoundary>
     );
     expect(container).toMatchSnapshot();
   });
 
   it("Loads a success toast when submission works correctly", async () => {
     render(
-      <>
-        <MockedProvider mocks={[WhoAmIQueryMock, SendSupportEscalationMock]}>
-          <MemoryRouter>
-            <Escalations />
-          </MemoryRouter>
-        </MockedProvider>
+      <div>
+        <Provider store={store}>
+          <MockedProvider mocks={[WhoAmIQueryMock, SendSupportEscalationMock]}>
+            <MemoryRouter>
+              <Escalations />
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
         <SRToastContainer />
-      </>
+      </div>
     );
-    const user = userEvent.setup();
     const submitButton = await screen.findByText("Submit escalation");
-    await user.click(submitButton);
+    submitButton.click();
     await screen.findByText("Escalation successfully sent");
   });
 });

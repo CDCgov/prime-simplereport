@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from "@storybook/react-webpack5";
+import { StoryFn, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
@@ -9,7 +9,7 @@ import DOB from "./DOB";
 
 const mockStore = createMockStore([]);
 export default {
-  title: "App/PXP/Step 2: DOB",
+  title: "App/Test Results/Step 2: DOB",
   component: DOB,
   argTypes: {},
 } as Meta;

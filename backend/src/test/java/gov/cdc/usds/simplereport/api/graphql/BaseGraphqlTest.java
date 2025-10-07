@@ -7,11 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.api.BaseAuthenticatedFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
-import gov.cdc.usds.simplereport.service.datasource.DatasourceProxyBeanPostProcessor;
-import gov.cdc.usds.simplereport.service.datasource.QueryCountService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester;
-import org.springframework.context.annotation.Import;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.WebGraphQlTester;
 import org.springframework.http.HttpHeaders;
@@ -38,8 +36,9 @@ import org.springframework.util.MultiValueMap;
 /** Base class for GraphQL API full-stack tests. */
 @Slf4j
 @AutoConfigureHttpGraphQlTester
-@Import({DatasourceProxyBeanPostProcessor.class})
 public abstract class BaseGraphqlTest extends BaseAuthenticatedFullStackTest {
+
+  @Autowired protected HibernateQueryInterceptor hibernateQueryInterceptor;
 
   private MultiValueMap<String, String> customHeaders;
 
@@ -59,14 +58,14 @@ public abstract class BaseGraphqlTest extends BaseAuthenticatedFullStackTest {
   @BeforeEach
   public void setup() {
     customHeaders = new LinkedMultiValueMap<>();
-    QueryCountService.clear();
+    hibernateQueryInterceptor.startQueryCount(); // also resets count
   }
 
   @AfterEach
   public void cleanup() {
     // see output saved to backend/build/test-results/test
     LoggerFactory.getLogger(BaseGraphqlTest.class)
-        .info("Hibernate Total queries: {}", QueryCountService.get().getTotal());
+        .info("Hibernate Total queries: {}", hibernateQueryInterceptor.getQueryCount());
   }
 
   /** See {@link #runQuery(String, String, Map, String)}. */

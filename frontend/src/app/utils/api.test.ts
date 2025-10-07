@@ -7,27 +7,27 @@ describe("FetchClient", () => {
 
   beforeEach(() => {
     sut = new FetchClient("/");
-    process.env.REACT_APP_BACKEND_URL = "http://localhost:";
+    process.env.VITE_BACKEND_URL = "http://localhost:";
     (fetch as FetchMock).resetMocks();
   });
 
   it("getURL fails w/o an API URL in the env", () => {
-    const existing = process.env.REACT_APP_BACKEND_URL;
-    process.env.REACT_APP_BACKEND_URL = undefined;
+    const existing = process.env.VITE_BACKEND_URL;
+    process.env.VITE_BACKEND_URL = undefined;
     expect(() => {
       sut.getURL("some-path");
     }).toThrow();
-    process.env.REACT_APP_BACKEND_URL = existing;
+    process.env.VITE_BACKEND_URL = existing;
   });
 
   it("getURL works as expected", () => {
-    const existing = process.env.REACT_APP_BACKEND_URL;
-    process.env.REACT_APP_BACKEND_URL = "https://simplereport.gov/api";
+    const existing = process.env.VITE_BACKEND_URL;
+    process.env.VITE_BACKEND_URL = "https://simplereport.gov/api";
     sut = new FetchClient("pxp");
     expect(sut.getURL("some-path")).toEqual(
       "https://simplereport.gov/api/pxp/some-path"
     );
-    process.env.REACT_APP_BACKEND_URL = existing;
+    process.env.VITE_BACKEND_URL = existing;
   });
 
   describe("POST", () => {

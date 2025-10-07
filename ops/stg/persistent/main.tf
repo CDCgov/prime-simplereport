@@ -11,7 +11,7 @@ locals {
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
-    resource_group = data.azurerm_resource_group.stg.name
+    resource_group = "${local.project}-${local.name}-${local.env}"
   }
 }
 

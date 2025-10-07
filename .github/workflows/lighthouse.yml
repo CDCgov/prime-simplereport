@@ -26,7 +26,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v5
+      uses: actions/checkout@v3
 
     - name: Set Swap Space
       uses: ./.github/actions/set-swap-space
@@ -47,7 +47,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Log in to the Container registry
-      uses: docker/login-action@v3
+      uses: docker/login-action@v2
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -78,7 +78,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Archive Lighthouse results
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       if: always()
       with:
         name: lighthouse-results

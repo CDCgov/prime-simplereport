@@ -10,7 +10,7 @@ export function useSelectedFacility() {
   const facilityId = getFacilityIdFromUrl(location);
 
   const selectedFacility = useSelector<RootState, Facility | undefined>(
-    (state) => state.facilities.find((f: Facility) => f.id === facilityId)
+    (state) => state.facilities.find((f) => f.id === facilityId)
   );
 
   const setSelectedFacility = (selected: Facility) => {

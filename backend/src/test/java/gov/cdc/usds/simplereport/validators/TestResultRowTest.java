@@ -15,9 +15,7 @@ import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +24,42 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 class TestResultRowTest {
   Map<String, String> validRowMap;
-  final List<String> validatedFields =
+  final List<String> requiredFields =
+      List.of(
+          "patient_last_name",
+          "patient_first_name",
+          "patient_street",
+          "patient_city",
+          "patient_state",
+          "patient_zip_code",
+          "patient_county",
+          "patient_phone_number",
+          "patient_dob",
+          "patient_gender",
+          "patient_race",
+          "patient_ethnicity",
+          "accession_number",
+          "equipment_model_name",
+          "test_performed_code",
+          "test_result",
+          "order_test_date",
+          "test_result_date",
+          "specimen_type",
+          "ordering_provider_id",
+          "ordering_provider_last_name",
+          "ordering_provider_first_name",
+          "ordering_provider_street",
+          "ordering_provider_city",
+          "ordering_provider_state",
+          "ordering_provider_zip_code",
+          "ordering_provider_phone_number",
+          "testing_lab_clia",
+          "testing_lab_name",
+          "testing_lab_street",
+          "testing_lab_city",
+          "testing_lab_state",
+          "testing_lab_zip_code");
+  final List<String> individualFields =
       List.of(
           "patient_state",
           "ordering_provider_state",
@@ -61,10 +94,7 @@ class TestResultRowTest {
           "test_result",
           "test_result_status",
           "specimen_type",
-          "testing_lab_clia",
-          "genders_of_sexual_partners",
-          "syphilis_history",
-          "patient_gender_identity");
+          "testing_lab_clia");
 
   @BeforeEach
   public void init() {
@@ -131,8 +161,6 @@ class TestResultRowTest {
     validRowMap.put("ordering_facility_phone_number", "205-888-2000");
     validRowMap.put("comment", "Test Comment");
     validRowMap.put("test_result_status", "");
-    validRowMap.put("genders_of_sexual_partners", "M, F, TM, TW");
-    validRowMap.put("patient_gender_identity", "F");
   }
 
   @Test
@@ -324,19 +352,7 @@ class TestResultRowTest {
             from(TestResultRow::getComment).andThen(ValueOrError::getValue))
         .returns(
             validRowMap.get("test_result_status"),
-            from(TestResultRow::getTestResultStatus).andThen(ValueOrError::getValue))
-        .returns(
-            validRowMap.get("test_ordered_code"),
-            from(TestResultRow::getTestOrderedCode).andThen(ValueOrError::getValue))
-        .returns(
-            validRowMap.get("genders_of_sexual_partners"),
-            from(TestResultRow::getGendersOfSexualPartners).andThen(ValueOrError::getValue))
-        .returns(
-            validRowMap.get("syphilis_history"),
-            from(TestResultRow::getSyphilisHistory).andThen(ValueOrError::getValue))
-        .returns(
-            validRowMap.get("patient_gender_identity"),
-            from(TestResultRow::getPatientGenderIdentity).andThen(ValueOrError::getValue));
+            from(TestResultRow::getTestResultStatus).andThen(ValueOrError::getValue));
   }
 
   @Test
@@ -346,7 +362,6 @@ class TestResultRowTest {
     var actual = testResultRow.validateRequiredFields();
 
     var messages = actual.stream().map(FeedbackMessage::getMessage).collect(Collectors.toSet());
-    List<String> requiredFields = TestResultRow.getStaticRequiredFields();
     assertThat(actual).hasSize(requiredFields.size());
     requiredFields.forEach(
         fieldName ->
@@ -390,9 +405,6 @@ class TestResultRowTest {
     invalidIndividualFields.put("test_result_status", "complete");
     invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
-    invalidIndividualFields.put("genders_of_sexual_partners", "ma, f");
-    invalidIndividualFields.put("syphilis_history", "na");
-    invalidIndividualFields.put("patient_gender_identity", "fe");
     var testResultRow =
         new TestResultRow(
             invalidIndividualFields,
@@ -407,171 +419,8 @@ class TestResultRowTest {
                 message ->
                     TestErrorMessageUtil.getColumnNameFromInvalidErrorMessage(message.getMessage()))
             .collect(Collectors.toSet());
-    assertThat(actual).hasSize(validatedFields.size());
-    validatedFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
-  }
-
-  @Test
-  void validatePositiveHivRequiredAoeFields() {
-    Map<String, String> missingHivRequiredAoeFields =
-        getPositiveResultRowMap("HIV model", "80387-4");
-    missingHivRequiredAoeFields.put("pregnant", "");
-    missingHivRequiredAoeFields.put("genders_of_sexual_partners", "");
-
-    var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("hiv model|80387-4", TestDataBuilder.createDeviceType()));
-    when(resultsUploaderCachingService.getHivEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of("hiv model|80387-4"));
-
-    var testResultRow =
-        new TestResultRow(
-            missingHivRequiredAoeFields,
-            resultsUploaderCachingService,
-            mock(FeatureFlagsConfig.class));
-
-    var actual = testResultRow.validateIndividualValues();
-
-    assertThat(actual).hasSize(2);
-    actual.forEach(
-        message ->
-            assertThat(message.getMessage())
-                .contains("This is required because the row contains a positive HIV test result."));
-  }
-
-  @Test
-  void validatePositiveSyphilisRequiredAoeFields() {
-    Map<String, String> missingSyphilisRequiredAoeFields =
-        getPositiveResultRowMap("Syphilis model", "80387-4");
-    missingSyphilisRequiredAoeFields.put("pregnant", "");
-    missingSyphilisRequiredAoeFields.put("genders_of_sexual_partners", "");
-    missingSyphilisRequiredAoeFields.put("previous_syphilis_diagnosis", "");
-    missingSyphilisRequiredAoeFields.put("symptomatic_for_disease", "");
-
-    var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("syphilis model|80387-4", TestDataBuilder.createDeviceType()));
-    when(resultsUploaderCachingService.getSyphilisEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of("syphilis model|80387-4"));
-
-    var testResultRow =
-        new TestResultRow(
-            missingSyphilisRequiredAoeFields,
-            resultsUploaderCachingService,
-            mock(FeatureFlagsConfig.class));
-
-    var actual = testResultRow.validateIndividualValues();
-
-    assertThat(actual).hasSize(4);
-    actual.forEach(
-        message ->
-            assertThat(message.getMessage())
-                .contains(
-                    "This is required because the row contains a positive Syphilis test result."));
-  }
-
-  @Test
-  void validatePositiveHepatitisCRequiredAoeFields() {
-    Map<String, String> missingHepCRequiredAoeFields =
-        getPositiveResultRowMap("Hepatitis C Model", "40726-2");
-    missingHepCRequiredAoeFields.put("pregnant", "");
-    missingHepCRequiredAoeFields.put("genders_of_sexual_partners", "");
-    missingHepCRequiredAoeFields.put("symptomatic_for_disease", "");
-
-    ResultsUploaderCachingService resultsUploaderCachingService =
-        mock(ResultsUploaderCachingService.class);
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("hepatitis c model|40726-2", TestDataBuilder.createDeviceType()));
-    when(resultsUploaderCachingService.getHepatitisCEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of("hepatitis c model|40726-2"));
-
-    TestResultRow testResultRow =
-        new TestResultRow(
-            missingHepCRequiredAoeFields,
-            resultsUploaderCachingService,
-            mock(FeatureFlagsConfig.class));
-
-    List<FeedbackMessage> actual = testResultRow.validateIndividualValues();
-
-    assertThat(actual).hasSize(3);
-    actual.forEach(
-        message ->
-            assertThat(message.getMessage())
-                .contains(
-                    "This is required because the row contains a positive Hepatitis C test result."));
-  }
-
-  @Test
-  void validatePositiveGonorrheaRequiredAoeFields() {
-    Map<String, String> missingGonorrheaRequiredAoeFields =
-        getPositiveResultRowMap("Gonorrhea Model", "5028-6");
-    missingGonorrheaRequiredAoeFields.put("pregnant", "");
-    missingGonorrheaRequiredAoeFields.put("genders_of_sexual_partners", "");
-    missingGonorrheaRequiredAoeFields.put("symptomatic_for_disease", "");
-
-    ResultsUploaderCachingService resultsUploaderCachingService =
-        mock(ResultsUploaderCachingService.class);
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("gonorrhea model|5028-6", TestDataBuilder.createDeviceType()));
-    when(resultsUploaderCachingService.getGonorrheaEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of("gonorrhea model|5028-6"));
-
-    TestResultRow testResultRow =
-        new TestResultRow(
-            missingGonorrheaRequiredAoeFields,
-            resultsUploaderCachingService,
-            mock(FeatureFlagsConfig.class));
-
-    List<FeedbackMessage> actual = testResultRow.validateIndividualValues();
-
-    assertThat(actual).hasSize(3);
-    actual.forEach(
-        message ->
-            assertThat(message.getMessage())
-                .contains(
-                    "This is required because the row contains a positive Gonorrhea test result."));
-  }
-
-  @Test
-  void validatePositiveChlamydiaRequiredAoeFields() {
-    Map<String, String> missingChlamydiaRequiredAoeFields =
-        getPositiveResultRowMap("Chlamydia Model", "14298-1");
-    missingChlamydiaRequiredAoeFields.put("pregnant", "");
-    missingChlamydiaRequiredAoeFields.put("genders_of_sexual_partners", "");
-    missingChlamydiaRequiredAoeFields.put("symptomatic_for_disease", "");
-
-    ResultsUploaderCachingService resultsUploaderCachingService =
-        mock(ResultsUploaderCachingService.class);
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("chlamydia model|14298-1", TestDataBuilder.createDeviceType()));
-    when(resultsUploaderCachingService.getChlamydiaEquipmentModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of("chlamydia model|14298-1"));
-
-    TestResultRow testResultRow =
-        new TestResultRow(
-            missingChlamydiaRequiredAoeFields,
-            resultsUploaderCachingService,
-            mock(FeatureFlagsConfig.class));
-
-    List<FeedbackMessage> actual = testResultRow.validateIndividualValues();
-
-    assertThat(actual).hasSize(3);
-    actual.forEach(
-        message ->
-            assertThat(message.getMessage())
-                .contains(
-                    "This is required because the row contains a positive Chlamydia test result."));
-  }
-
-  @NotNull
-  private Map<String, String> getPositiveResultRowMap(
-      String deviceModelName, String testPerformedCode) {
-    Map<String, String> positiveResultRowMap = validRowMap;
-    positiveResultRowMap.put("equipment_model_name", deviceModelName);
-    positiveResultRowMap.put("test_performed_code", testPerformedCode);
-    positiveResultRowMap.put("specimen_type", "123456789");
-    positiveResultRowMap.put("test_result", "Detected");
-    return positiveResultRowMap;
+    assertThat(actual).hasSize(individualFields.size());
+    individualFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
   }
 
   private ResultsUploaderCachingService mockResultsUploaderCachingService() {

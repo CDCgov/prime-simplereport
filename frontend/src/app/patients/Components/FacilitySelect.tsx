@@ -11,7 +11,6 @@ interface Props {
   validationStatus: (name: keyof PersonFormData) => "error" | undefined;
   errors: { [key: string]: string | undefined };
   hidden?: boolean;
-  dataCy?: string;
 }
 
 const ALL_FACILITIES = "~~ALL-FACILITIES~~";
@@ -48,7 +47,6 @@ const FacilitySelect: React.FC<Props> = (props) => {
       options={facilityList}
       defaultSelect={true}
       required
-      dataCy={props.dataCy}
     />
   );
 };

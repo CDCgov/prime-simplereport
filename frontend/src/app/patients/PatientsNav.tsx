@@ -15,7 +15,7 @@ const PatientsNav = () => {
     >
       <ul className="usa-nav__secondary-links prime-nav">
         <li className="usa-nav__secondary-item padding-left-0">
-          <LinkWithQuery to={`/add-patient`} className={classNameByActive}>
+          <LinkWithQuery to={`/add-patient`} end className={classNameByActive}>
             Add individual {PATIENT_TERM}
           </LinkWithQuery>
         </li>

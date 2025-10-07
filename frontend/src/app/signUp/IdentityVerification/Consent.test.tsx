@@ -11,27 +11,26 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-const renderContainer = () =>
-  render(
-    <MemoryRouter
-      initialEntries={[
-        {
-          pathname: "/identity-verification",
-          state: {
-            firstName: "Harry",
-            lastName: "Potter",
-            orgExternalId: "Hogwarts",
-          },
-        },
-      ]}
-    >
-      <Consent />
-    </MemoryRouter>
-  );
-
 describe("Consent", () => {
+  beforeEach(() => {
+    render(
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: "/identity-verification",
+            state: {
+              firstName: "Harry",
+              lastName: "Potter",
+              orgExternalId: "Hogwarts",
+            },
+          },
+        ]}
+      >
+        <Consent />
+      </MemoryRouter>
+    );
+  });
   it("initializes with the submit button enabled", () => {
-    renderContainer();
     expect(screen.getByText("I agree")).toBeEnabled();
   });
 
@@ -46,7 +45,6 @@ describe("Consent", () => {
   });
 
   it("shows Identity verification consent when agreed", () => {
-    renderContainer();
     fireEvent.click(screen.getByText("I agree"));
     expect(screen.getByText("Why we verify your identity")).toBeInTheDocument();
   });

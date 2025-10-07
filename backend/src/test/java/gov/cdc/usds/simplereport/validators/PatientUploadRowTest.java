@@ -1,12 +1,10 @@
 package gov.cdc.usds.simplereport.validators;
 
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getInvalidUnknownAddressErrorMessage;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.test_util.TestErrorMessageUtil;
-import gov.cdc.usds.simplereport.utils.UnknownAddressUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +44,7 @@ class PatientUploadRowTest {
           "country",
           "phone_number",
           "phone_number_type",
-          "email",
-          "gender_identity");
+          "email");
 
   @BeforeEach
   public void init() {
@@ -72,8 +69,6 @@ class PatientUploadRowTest {
     validRowMap.put("resident_congregate_setting", "No");
     validRowMap.put("role", "Staff");
     validRowMap.put("email", "jane@testingorg.com");
-    validRowMap.put("gender_identity", "female");
-    validRowMap.put("address_notes", "test address notes");
   }
 
   @Test
@@ -108,9 +103,6 @@ class PatientUploadRowTest {
         .isEqualTo(validRowMap.get("resident_congregate_setting"));
     assertThat(patientUploadRow.getRole().getValue()).isEqualTo(validRowMap.get("role"));
     assertThat(patientUploadRow.getEmail().getValue()).isEqualTo(validRowMap.get("email"));
-    assertThat(patientUploadRow.getGenderIdentity().getValue())
-        .isEqualTo(validRowMap.get("gender_identity"));
-    assertThat(patientUploadRow.getNotes().getValue()).isEqualTo(validRowMap.get("address_notes"));
   }
 
   @Test
@@ -124,23 +116,6 @@ class PatientUploadRowTest {
     requiredFields.forEach(
         fieldName ->
             assertThat(messages).contains("File is missing data in the " + fieldName + " column."));
-  }
-
-  @Test
-  void validateIndividualFields_returnsErrorsForPartialUnknownAddress() {
-    Map<String, String> withPartialUnknownAddressField = validRowMap;
-    String stateHeader = "state";
-    withPartialUnknownAddressField.replace(stateHeader, UnknownAddressUtils.ADDRESS_STATE_UNKNOWN);
-
-    PatientUploadRow patientUploadRow = new PatientUploadRow(withPartialUnknownAddressField);
-
-    List<FeedbackMessage> actual = patientUploadRow.validateIndividualValues();
-
-    assertThat(actual).hasSize(1);
-    assertThat(actual.get(0).getMessage())
-        .isEqualTo(
-            getInvalidUnknownAddressErrorMessage(
-                UnknownAddressUtils.ADDRESS_STATE_UNKNOWN, stateHeader));
   }
 
   @Test
@@ -159,7 +134,6 @@ class PatientUploadRowTest {
     invalidIndividualValues.put("phone_number", "1");
     invalidIndividualValues.put("phone_number_type", "cell");
     invalidIndividualValues.put("email", "email");
-    invalidIndividualValues.put("gender_identity", "not a gender identity");
 
     var patientUploadRow = new PatientUploadRow(invalidIndividualValues);
 

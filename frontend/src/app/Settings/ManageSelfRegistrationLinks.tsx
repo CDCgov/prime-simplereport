@@ -2,7 +2,6 @@ import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useEffect, useMemo, useState } from "react";
-
 import "./ManageSelfRegistrationLinks.scss";
 
 type FacilitySlug = { name: string; slug: string };

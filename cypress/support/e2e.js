@@ -15,9 +15,9 @@
 
 // Import commands.js using ES2015 syntax:
 import "./commands";
-import "cypress-axe";
+import 'cypress-axe';
 
-const { faker } = require("@faker-js/faker");
+const { faker } = require('@faker-js/faker');
 const dayjs = require("dayjs");
 
 export const testNumber = () => {
@@ -31,12 +31,10 @@ const getDobFormat = () => {
 // Generate a random patient
 export const generatePatient = () => {
   const patient = {};
-  patient.firstName = faker.person.firstName();
-  patient.lastName = faker.person.lastName();
+  patient.firstName = faker.name.firstName();
+  patient.lastName = faker.name.lastName();
   patient.fullName = `${patient.lastName}, ${patient.firstName}`;
-  patient.dob = dayjs(
-    faker.date.between({ from: "1920-01-01", to: "2002-12-31" }),
-  );
+  patient.dob = dayjs(faker.date.between({ from: "1920-01-01", to: "2002-12-31" }));
   patient.dobForInput = patient.dob.format(getDobFormat());
   patient.dobForPatientLink = patient.dob.format("MM/DD/YYYY");
   patient.phone = "(800) 232-4636";
@@ -44,7 +42,7 @@ export const generatePatient = () => {
   patient.city = "Definitely not Washington";
   patient.state = "DC";
   patient.zip = "20503";
-  patient.studentId = faker.string.uuid();
+  patient.studentId = faker.datatype.uuid();
   return patient;
 };
 
@@ -67,16 +65,16 @@ export const generateMultiplexDevice = () => {
   multiplexDevice.manufacturer = `${testNumber()}-${faker.company.name()}`;
   multiplexDevice.isMultiplex = true;
   return multiplexDevice;
-};
+}
 
 export const generateCovidOnlyDevice = () => {
   const covidOnlyDevice = {};
   covidOnlyDevice.name = `covid-${testNumber()}-${faker.company.name()}-device`;
   covidOnlyDevice.model = `covid-${testNumber()}-${faker.company.name()}-model`;
   covidOnlyDevice.manufacturer = `${testNumber()}-${faker.company.name()}`;
-  covidOnlyDevice.isMultiplex = false;
+  covidOnlyDevice.isMultiplex = false
   return covidOnlyDevice;
-};
+}
 
 export const generateUser = () => {
   const user = {};
@@ -92,5 +90,22 @@ Cypress.on("uncaught:exception", (err, _runnable) => {
 });
 
 export const loginHooks = () => {
-  cy.session("SESSION", cy.login, { cacheAcrossSpecs: true });
+  // Global before for logging in to Okta
+  before(() => {
+    // Clear any leftover data from previous tests
+    cy.clearCookies();
+    cy.clearLocalStorageSnapshot();
+    // Login to Okta to get an access token
+    !Cypress.env("SKIP_OKTA") && cy.login();
+  });
+  beforeEach(() => {
+    // Cypress clears cookies by default, but for these tests
+    // we want to preserve the Spring session cookie
+    Cypress.Cookies.preserveOnce("SESSION");
+    // It also clears local storage, so restore before each test
+    cy.restoreLocalStorage();
+  });
+  afterEach(() => {
+    cy.saveLocalStorage();
+  });
 };

@@ -2,13 +2,12 @@
   "resourceType": "DiagnosticReport",
   "id": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29",
   "status": "final",
-  "effectiveDateTime": "$EFFECTIVE_DATETIME_ZONE",
+  "effectiveDateTime": "$CURRENT_DATE_TIMEZONE",
   "code": {
     "coding": [
       {
         "system": "http://loinc.org",
-        "code": "95422-2",
-        "display": "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"
+        "code": "95422-2"
       }
     ]
   },

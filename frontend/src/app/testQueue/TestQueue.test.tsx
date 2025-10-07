@@ -1,8 +1,10 @@
 import {
+  act,
   render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
@@ -15,10 +17,7 @@ import {
   RemovePatientFromQueueDocument,
 } from "../../generated/graphql";
 import { appPermissions } from "../permissions";
-import {
-  BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT,
-  PATIENT_TERM,
-} from "../../config/constants";
+import { PATIENT_TERM } from "../../config/constants";
 
 import TestQueue from "./TestQueue";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
@@ -36,23 +35,8 @@ describe("TestQueue", () => {
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
 
-  const today = new Date("2023-10-17").getTime();
-  const renderWithUser = (mocks: any[]) => ({
-    user: userEvent.setup(),
-    ...render(
-      <MemoryRouter>
-        <MockedProvider mocks={mocks}>
-          <Provider store={store}>
-            <TestQueue activeFacilityId="a1" />
-          </Provider>
-        </MockedProvider>
-      </MemoryRouter>
-    ),
-  });
-
   beforeEach(() => {
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
-    jest.spyOn(Date, "now").mockImplementation(() => today);
 
     store = mockStore({
       organization: {
@@ -72,7 +56,6 @@ describe("TestQueue", () => {
 
   afterEach(() => {
     jest.spyOn(global.Math, "random").mockRestore();
-    jest.spyOn(Date, "now").mockRestore();
   });
 
   it("should render the test queue", async () => {
@@ -100,16 +83,22 @@ describe("TestQueue", () => {
   });
 
   it("should remove items queue using the transition group", async () => {
-    const { user } = renderWithUser(mocks);
+    render(
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <Provider store={store}>
+            <TestQueue activeFacilityId="a1" />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
+    );
     expect(await screen.findByText("Doe, John A"));
     const removeButton = await screen.findByLabelText(
       "Close test for Doe, John A"
     );
-    await user.click(removeButton);
-    const confirmButton = screen.getAllByText("Yes, I'm sure", {
-      exact: false,
-    })[0];
-    await user.click(confirmButton);
+    await act(async () => await userEvent.click(removeButton));
+    const confirmButton = await screen.findByText("Yes", { exact: false });
+    await act(async () => await userEvent.click(confirmButton));
     expect(
       screen.getByText("Submitting test data for Doe, John A...")
     ).toBeInTheDocument();
@@ -154,7 +143,7 @@ describe("TestQueue", () => {
     expect(
       screen.getByText("To add results in bulk", { exact: false })
     ).toHaveTextContent(
-      `To add results in bulk for ${BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT} using a CSV file, go to Upload spreadsheet.`
+      "To add results in bulk using a CSV file, go to Upload spreadsheet."
     );
 
     expect(
@@ -196,6 +185,51 @@ describe("TestQueue", () => {
     expect(
       screen.queryByText("To add results in bulk", { exact: false })
     ).not.toBeInTheDocument();
+  });
+
+  describe("clicking on test questionnaire", () => {
+    beforeEach(async () => {
+      render(
+        <MemoryRouter>
+          <MockedProvider mocks={mocks}>
+            <Provider store={store}>
+              <TestQueue activeFacilityId="a1" />
+            </Provider>
+          </MockedProvider>
+        </MemoryRouter>
+      );
+
+      await screen.findByLabelText(
+        `Search for a ${PATIENT_TERM} to start their test`
+      );
+      expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
+      expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
+
+      await act(
+        async () =>
+          await userEvent.click(screen.getAllByText("Test questionnaire")[0])
+      );
+    });
+
+    it("should open test questionnaire and display emails and phone numbers correctly", () => {
+      const modal = screen.getByRole("dialog");
+
+      expect(within(modal).getByText("Test questionnaire")).toBeInTheDocument();
+      expect(
+        within(modal).getByText(
+          "Would you like to receive a copy of your results via text message?"
+        )
+      ).toBeInTheDocument();
+      expect(
+        within(modal).getByText(
+          "Would you like to receive a copy of your results via email?"
+        )
+      ).toBeInTheDocument();
+      expect(within(modal).getByText("Doe@legacy.com")).toBeInTheDocument();
+      expect(within(modal).getByText("John@legacy.com")).toBeInTheDocument();
+      expect(within(modal).getByText("8178675309")).toBeInTheDocument();
+      expect(within(modal).getByText("8178675911")).toBeInTheDocument();
+    });
   });
 });
 

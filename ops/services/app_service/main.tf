@@ -49,26 +49,22 @@ resource "azurerm_linux_web_app" "service" {
 
   # Configure Docker Image to load on start
   site_config {
-    always_on                         = "true"
-    health_check_path                 = "/actuator/health"
-    health_check_eviction_time_in_min = 5
-    scm_minimum_tls_version           = "1.2"
-    use_32_bit_worker                 = false
-    ftps_state                        = "Disabled"
-    vnet_route_all_enabled            = false
-    ip_restriction_default_action     = "Deny" # Should use behavior set in the ip_restriction
-    scm_ip_restriction_default_action = "Deny" # We don't use Kudu or the SCM site tools
+    always_on               = "true"
+    scm_minimum_tls_version = "1.2"
+    use_32_bit_worker       = false
+    ftps_state              = "Disabled"
+    vnet_route_all_enabled  = false
+
+    cors {
+      allowed_origins     = []
+      support_credentials = false
+    }
 
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
       action                    = "Allow"
     }
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
   }
 }
 
@@ -96,15 +92,16 @@ resource "azurerm_linux_web_app_slot" "staging" {
 
   # Configure Docker Image to load on start
   site_config {
-    always_on                         = "true"
-    health_check_path                 = "/actuator/health"
-    health_check_eviction_time_in_min = 5
-    scm_minimum_tls_version           = "1.2"
-    use_32_bit_worker                 = false
-    ftps_state                        = "Disabled"
-    vnet_route_all_enabled            = false
-    ip_restriction_default_action     = "Deny" # Should use behavior set in the ip_restriction
-    scm_ip_restriction_default_action = "Deny" # We don't use Kudu or the SCM site tools
+    always_on               = "true"
+    scm_minimum_tls_version = "1.2"
+    use_32_bit_worker       = false
+    ftps_state              = "Disabled"
+    vnet_route_all_enabled  = false
+
+    cors {
+      allowed_origins     = []
+      support_credentials = false
+    }
 
     # This application stack is what we use to deploy the docker image to the staging slot
     # After it becomes healthy, we swap the staging slot with the production slot to complete the deployment
@@ -118,11 +115,6 @@ resource "azurerm_linux_web_app_slot" "staging" {
       virtual_network_subnet_id = var.lb_subnet_id
       action                    = "Allow"
     }
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
   }
 }
 
@@ -204,7 +196,7 @@ resource "azurerm_app_service_certificate" "app" {
   name                = "new-sr-wildcard"
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
-  key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.secret_id
+  key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
 }
 
 resource "azurerm_app_service_certificate_binding" "app" {

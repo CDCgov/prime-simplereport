@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
-import { User } from "../../../generated/graphql";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
@@ -12,7 +11,7 @@ import "./ManageUsers.scss";
 interface Props {
   onClose: () => void;
   onResetPassword: (userId: string) => void;
-  user: SettingsUser | User;
+  user: SettingsUser;
 }
 
 const ResetUserPasswordModal: React.FC<Props> = ({
@@ -32,7 +31,7 @@ const ResetUserPasswordModal: React.FC<Props> = ({
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
-      ariaHideApp={process.env.NODE_ENV !== "test"}
+      ariaHideApp={import.meta.env.MODE !== "test"}
       onRequestClose={onClose}
     >
       <div className="border-0 card-container">

@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -42,7 +41,6 @@ public class DeviceTypeService {
   private final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
-  private final DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -91,7 +89,7 @@ public class DeviceTypeService {
 
       updatedSpecimenTypes.forEach(
           specimenType -> {
-            if (specimenType.getIsDeleted()) {
+            if (specimenType.isDeleted()) {
               throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
             }
           });
@@ -121,7 +119,7 @@ public class DeviceTypeService {
     }
 
     if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
-      List<DeviceTypeDisease> deviceTypeDiseaseList =
+      var deviceTypeDiseaseList =
           createDeviceTypeDiseaseList(updateDevice.getSupportedDiseaseTestPerformed(), device);
       device.getSupportedDiseaseTestPerformed().clear();
       device.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
@@ -141,7 +139,7 @@ public class DeviceTypeService {
 
     specimenTypes.forEach(
         specimenType -> {
-          if (specimenType.getIsDeleted()) {
+          if (specimenType.isDeleted()) {
             throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
           }
         });
@@ -190,12 +188,10 @@ public class DeviceTypeService {
                           .deviceTypeId(device.getInternalId())
                           .supportedDisease(disease)
                           .testPerformedLoincCode(input.getTestPerformedLoincCode())
-                          .testPerformedLoincLongName(input.getTestPerformedLoincLongName())
                           .testOrderedLoincCode(input.getTestOrderedLoincCode())
-                          .testOrderedLoincLongName(input.getTestOrderedLoincLongName())
                           .equipmentUid(input.getEquipmentUid())
-                          .equipmentUidType(input.getEquipmentUidType())
                           .testkitNameId(input.getTestkitNameId())
+                          .testOrderedLoincCode(input.getTestOrderedLoincCode())
                           .build()));
         });
     return deviceTypeDiseaseList;

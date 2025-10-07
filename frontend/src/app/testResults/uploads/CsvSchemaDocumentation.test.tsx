@@ -10,10 +10,6 @@ import CsvSchemaDocumentation, {
   CsvSchemaItem,
   getPageTitle,
 } from "./CsvSchemaDocumentation";
-import {
-  RequiredStatusTag,
-  specificSchemaBuilder,
-} from "./specificSchemaBuilder";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -24,7 +20,8 @@ window.scrollTo = jest.fn();
 const baseItem: CsvSchemaItem = {
   name: "Sample Item",
   colHeader: "sample_item",
-  requiredStatusTag: RequiredStatusTag.OPTIONAL,
+  required: false,
+  requested: false,
   acceptedValues: [],
   description: [],
   subHeader: [],
@@ -52,7 +49,7 @@ describe("CsvSchemaDocumentation tests", () => {
     it("renders a required schema item", () => {
       const item = {
         ...baseItem,
-        requiredStatusTag: RequiredStatusTag.REQUIRED,
+        required: true,
       };
       render(<CsvSchemaDocumentationItem item={item} />);
       expect(screen.getByText("Required")).toBeInTheDocument();
@@ -61,22 +58,22 @@ describe("CsvSchemaDocumentation tests", () => {
     it("renders a optional schema item", () => {
       const item = {
         ...baseItem,
+        required: false,
       };
       render(<CsvSchemaDocumentationItem item={item} />);
       expect(screen.getByText("Optional")).toBeInTheDocument();
     });
 
-    it("renders a required when positive schema item", () => {
+    it("renders a requested schema item", () => {
       const item = {
         ...baseItem,
-        requiredStatusTag: RequiredStatusTag.REQUIRED_FOR_POSITIVES,
+        requested: true,
       };
       render(<CsvSchemaDocumentationItem item={item} />);
+      expect(screen.queryByText("Required")).not.toBeInTheDocument();
       expect(screen.queryByText("Optional")).not.toBeInTheDocument();
       const header = screen.getByTestId("header");
-      expect(
-        within(header).getByText("Required for Positives")
-      ).toBeInTheDocument();
+      expect(within(header).getByText("Requested")).toBeInTheDocument();
     });
 
     it("renders a schema item with description", () => {
@@ -151,45 +148,13 @@ describe("CsvSchemaDocumentation tests", () => {
           <Routes>
             <Route
               path={"/results/upload/submit/guide"}
-              element={
-                <CsvSchemaDocumentation
-                  schemaBuilder={specificSchemaBuilder}
-                  returnUrl={"/results/upload/submit"}
-                />
-              }
+              element={<CsvSchemaDocumentation />}
             />
           </Routes>
         </MemoryRouter>
       );
+
       expect(container).toMatchSnapshot();
-    });
-    it("has working tabs for navigation", async () => {
-      render(
-        <MemoryRouter initialEntries={["/results/upload/submit/guide"]}>
-          <Routes>
-            <Route
-              path={"/results/upload/submit/guide"}
-              element={
-                <CsvSchemaDocumentation
-                  schemaBuilder={specificSchemaBuilder}
-                  returnUrl={"/results/upload/submit"}
-                />
-              }
-            />
-          </Routes>
-        </MemoryRouter>
-      );
-      const user = userEvent.setup();
-
-      expect(screen.getAllByText("Required for Positives")).toHaveLength(1);
-
-      const hivAoeTab = screen.getByRole("tab", {
-        name: "HIV",
-      });
-
-      await user.click(hivAoeTab);
-
-      expect(screen.getAllByText("Required for Positives")).toHaveLength(2);
     });
     it("logs to App Insights on template download", async () => {
       const mockTrackEvent = jest.fn();
@@ -202,17 +167,11 @@ describe("CsvSchemaDocumentation tests", () => {
           <Routes>
             <Route
               path={"/results/upload/submit/guide"}
-              element={
-                <CsvSchemaDocumentation
-                  schemaBuilder={specificSchemaBuilder}
-                  returnUrl={"/results/upload/submit"}
-                />
-              }
+              element={<CsvSchemaDocumentation />}
             />
           </Routes>
         </MemoryRouter>
       );
-      const user = userEvent.setup();
 
       const templateLink1 = screen.getByRole("link", {
         name: "SimpleReport spreadsheet template with example data [CSV download]",
@@ -220,8 +179,8 @@ describe("CsvSchemaDocumentation tests", () => {
       const templateLink2 = screen.getByRole("link", {
         name: "spreadsheet template",
       });
-      await user.click(templateLink1);
-      await user.click(templateLink2);
+      await userEvent.click(templateLink1);
+      await userEvent.click(templateLink2);
 
       expect(mockTrackEvent).toHaveBeenCalledTimes(2);
       expect(mockTrackEvent).toHaveBeenNthCalledWith(1, {

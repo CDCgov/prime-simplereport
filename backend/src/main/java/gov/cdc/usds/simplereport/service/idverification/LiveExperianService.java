@@ -21,7 +21,6 @@ import gov.cdc.usds.simplereport.service.errors.ExperianPersonMatchException;
 import gov.cdc.usds.simplereport.service.errors.ExperianSubmitAnswersException;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
@@ -90,14 +89,10 @@ public class LiveExperianService
 
     final JsonNodeFactory factory = JsonNodeFactory.instance;
     ObjectNode requestBody = factory.objectNode();
-    String crosscoreUsername = _experianProperties.getCrosscoreUsername();
-    String crosscorePassword = _experianProperties.getCrosscorePassword();
-    String clientId = _experianProperties.getClientId();
-    String clientSecret = _experianProperties.getClientSecret();
-    requestBody.put("username", crosscoreUsername);
-    requestBody.put("password", crosscorePassword);
-    requestBody.put("client_id", clientId);
-    requestBody.put("client_secret", clientSecret);
+    requestBody.put("username", _experianProperties.getCrosscoreUsername());
+    requestBody.put("password", _experianProperties.getCrosscorePassword());
+    requestBody.put("client_id", _experianProperties.getClientId());
+    requestBody.put("client_secret", _experianProperties.getClientSecret());
 
     HttpEntity<ObjectNode> entity = new HttpEntity<>(requestBody, headers);
     int retryOn500AuthCounter = 0;
@@ -118,7 +113,7 @@ public class LiveExperianService
         // retry.
         // For more details:
         // https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response#prod-alert-when-an-experianauthexception-is-seen
-        if (e.getStatusCode().value() == RETRY_SERVER_ERROR_CODE) {
+        if (e.getRawStatusCode() == RETRY_SERVER_ERROR_CODE) {
           log.error("EXPERIAN TOKEN FETCH RETURNED 500 ERROR", e);
 
           if (retryOn500AuthCounter >= MAX_REFETCH_TRIES) {
@@ -188,33 +183,28 @@ public class LiveExperianService
         handleKbaResultCodeFailure(kbaResultCode, responseEntity);
       }
 
-      boolean passed = hasPassed(responseEntity);
+      boolean passed;
+      try {
+        // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
+        String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
+        // if experian responds with ACCEPT, we will consider the id verification successful
+        passed = SUCCESS_DECISION.equals(decision);
+      } catch (ExperianNullNodeException e) {
+        // Experian does not always return the overall decision. If this happens, check for the
+        // value of "final decision".
+        String finalDecision =
+            findNodeInResponse(responseEntity, PID_FINAL_DECISION_PATH).textValue();
+        passed = SUCCESS_DECISION_SHORT.equals(finalDecision);
+      }
 
       // Generate a searchable log message so we can monitor decisions from Experian
-      String requestData = Encode.forJava(_objectMapper.writeValueAsString(answersRequest));
+      String requestData = _objectMapper.writeValueAsString(answersRequest);
       log.info("EXPERIAN_DECISION ({}): {}", passed, requestData);
 
       return new IdentityVerificationAnswersResponse(passed);
     } catch (RestClientException | JsonProcessingException e) {
       throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
     }
-  }
-
-  private boolean hasPassed(ObjectNode responseEntity) {
-    boolean passed;
-    try {
-      // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
-      String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
-      // if experian responds with ACCEPT, we will consider the id verification successful
-      passed = SUCCESS_DECISION.equals(decision);
-    } catch (ExperianNullNodeException e) {
-      // Experian does not always return the overall decision. If this happens, check for the
-      // value of "final decision".
-      String finalDecision =
-          findNodeInResponse(responseEntity, PID_FINAL_DECISION_PATH).textValue();
-      passed = SUCCESS_DECISION_SHORT.equals(finalDecision);
-    }
-    return passed;
   }
 
   private ObjectNode submitExperianRequest(ObjectNode requestBody) {

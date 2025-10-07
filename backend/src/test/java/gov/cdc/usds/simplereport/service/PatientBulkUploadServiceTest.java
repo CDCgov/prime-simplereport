@@ -15,7 +15,9 @@ import java.io.InputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
 class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadService> {
 
@@ -26,7 +28,7 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
   @BeforeEach
   void setupData() {
     initSampleData();
-    when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any()))
+    when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
         .thenReturn(new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null));
   }
 

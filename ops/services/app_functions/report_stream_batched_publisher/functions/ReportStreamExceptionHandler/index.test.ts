@@ -1,16 +1,8 @@
-import { queueTrigger } from "./index";
-import { InvocationContext } from "@azure/functions";
+import queueTrigger from "./index";
+import { Context } from "@azure/functions";
 
 import fetch from "node-fetch";
 import fetchMock from "jest-fetch-mock";
-import { ReportStreamCallbackRequest } from "../common/types";
-
-jest.mock("@azure/functions", () => ({
-  ...jest.requireActual("@azure/functions"),
-  app: {
-    storageQueue: jest.fn(),
-  },
-}));
 
 jest.mock(
   "node-fetch",
@@ -26,18 +18,18 @@ jest.mock("../config", () => ({
 
 describe("main function export", () => {
   const context = {
-    error: jest.fn(),
     log: jest.fn(),
-    traceContext: { traceParent: "asdf" },
-  } as jest.MockedObject<InvocationContext>;
+    traceContext: { traceparent: "asdf" },
+  } as jest.MockedObject<Context>;
+  context.log.error = jest.fn();
 
   it("calls the SimpleReport webhook API", async () => {
     // GIVEN
-    const queueItem = {} as jest.MockedObject<ReportStreamCallbackRequest>;
+    const queueItem = "irrelevant";
     fetchMock.mockResponseOnce("asdf");
 
     // WHEN
-    queueTrigger(queueItem, context);
+    queueTrigger(context, queueItem);
 
     // THEN
     expect(fetch).toHaveBeenCalled();
@@ -45,11 +37,11 @@ describe("main function export", () => {
 
   it("throws if SimpleReport webhook API does not return 2xx", async () => {
     // GIVEN
-    const queueItem = {} as jest.MockedObject<ReportStreamCallbackRequest>;
+    const queueItem = "irrelephant";
     fetchMock.mockResponseOnce("", { status: 500 });
 
     // WHEN
-    const promise = queueTrigger(queueItem, context);
+    const promise = queueTrigger(context, queueItem);
 
     // THEN
     await expect(promise).rejects.toThrowError();

@@ -20,7 +20,6 @@ query GetFacilityResultsForCsvWithCount(
   $patientId: ID
   $result: String
   $role: String
-  $disease: String
   $startDate: DateTime
   $endDate: DateTime
   $pageNumber: Int
@@ -31,7 +30,6 @@ query GetFacilityResultsForCsvWithCount(
     patientId: $patientId
     result: $result
     role: $role
-    disease: $disease
     startDate: $startDate
     endDate: $endDate
     pageNumber: $pageNumber
@@ -100,40 +98,36 @@ query GetFacilityResultsForCsvWithCount(
   }
 }
 
-query GetResultsMultiplexWithCount(
+query GetFacilityResultsMultiplexWithCount(
   $facilityId: ID
   $patientId: ID
   $result: String
   $role: String
-  $disease: String
   $startDate: DateTime
   $endDate: DateTime
   $pageNumber: Int
   $pageSize: Int
 ) {
-  resultsPage(
+  testResultsPage(
     facilityId: $facilityId
     patientId: $patientId
     result: $result
     role: $role
-    disease: $disease
     startDate: $startDate
     endDate: $endDate
     pageNumber: $pageNumber
     pageSize: $pageSize
   ) {
     content {
-      id
-      dateAdded
+      internalId
       dateTested
-      disease
-      testResult
-      correctionStatus
-      reasonForCorrection
-      facility {
-        name
-        isDeleted
+      results {
+        disease {
+          name
+        }
+        testResult
       }
+      correctionStatus
       deviceType {
         internalId
         name
@@ -145,7 +139,7 @@ query GetResultsMultiplexWithCount(
         lastName
         birthDate
         gender
-        role
+        lookupId
         email
         phoneNumbers {
           type
@@ -155,15 +149,20 @@ query GetResultsMultiplexWithCount(
       createdBy {
         nameInfo {
           firstName
-          middleName
           lastName
         }
+      }
+      patientLink {
+        internalId
+      }
+      facility {
+        name
+        isDeleted
       }
     }
     totalElements
   }
 }
-
 
 query GetAllFacilities($showArchived: Boolean) {
   facilities(showArchived: $showArchived) {

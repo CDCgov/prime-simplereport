@@ -17,20 +17,12 @@ pre-commit:
       root: "frontend/"
       glob: "*.scss"
       run: ./node_modules/.bin/stylelint  --fix {staged_files} && git add {staged_files}
-    prettier-rs-func:
+    prettier-func:
       root: "ops/services/app_functions/report_stream_batched_publisher/functions/"
       glob: "*.{js,ts,jsx,tsx}"
       run: ./node_modules/.bin/prettier  --write {staged_files} && git add {staged_files}
-    eslint-rs-func:
+    eslint-func:
       root: "ops/services/app_functions/report_stream_batched_publisher/functions/"
-      glob: "*.{js,ts,jsx,tsx}"
-      run: ./node_modules/.bin/eslint  --fix {staged_files} && git add {staged_files}
-    prettier-test-data-func:
-      root: "ops/services/app_functions/test_data_publisher/functions/"
-      glob: "*.{js,ts,jsx,tsx}"
-      run: ./node_modules/.bin/prettier  --write {staged_files} && git add {staged_files}
-    eslint-test-data-func:
-      root: "ops/services/app_functions/test_data_publisher/functions/"
       glob: "*.{js,ts,jsx,tsx}"
       run: ./node_modules/.bin/eslint  --fix {staged_files} && git add {staged_files}
 in-docker:
@@ -51,19 +43,11 @@ in-docker:
       root: "frontend/"
       glob: "*.scss"
       run: docker compose -f ../docker-compose.yml run --rm frontend sh -c "/app/frontend/node_modules/.bin/stylelint --config /app/frontend/.stylelintrc.json --config-basedir /app/frontend --fix {staged_files}" && git add {staged_files}
-    prettier-rs-func:
+    prettier-func:
       root: "ops/services/app_functions/report_stream_batched_publisher/functions"
       glob: "*.{js,ts,jsx,tsx}"
       run: docker compose -f ../docker-compose.yml run --rm ops/services/app_functions/report_stream_batched_publisher/functions sh -c "/app/ops/services/app_functions/report_stream_batched_publisher/functions/node_modules/.bin/prettier --config /app/ops/services/app_functions/report_stream_batched_publisher/functions/package.json --write {staged_files}" && git add {staged_files}
-    eslint-rs-func:
+    eslint-func:
       root: "ops/services/app_functions/report_stream_batched_publisher/functions"
       glob: "*.{js,ts,jsx,tsx}"
       run: docker compose -f ../docker-compose.yml run --rm ops/services/app_functions/report_stream_batched_publisher/functions sh -c "/app/ops/services/app_functions/report_stream_batched_publisher/functions/node_modules/.bin/eslint --config /app/ops/services/app_functions/report_stream_batched_publisher/functions/package.json --resolve-plugins-relative-to /app/ops/services/app_functions/report_stream_batched_publisher/functions --fix {staged_files}" && git add {staged_files}
-    prettier-test-data-func:
-      root: "ops/services/app_functions/test_data_publisher/functions/"
-      glob: "*.{js,ts,jsx,tsx}"
-      run: ./node_modules/.bin/prettier  --write {staged_files} && git add {staged_files}
-    eslint-test-data-func:
-      root: "ops/services/app_functions/test_data_publisher/functions/"
-      glob: "*.{js,ts,jsx,tsx}"
-      run: ./node_modules/.bin/eslint  --fix {staged_files} && git add {staged_files}

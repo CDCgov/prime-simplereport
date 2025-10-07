@@ -1,9 +1,15 @@
 const resultForViewing = {
-  id: "0969da96-b211-41cd-ba61-002181f0123a",
-  dateAdded: "2022-09-30T13:09:07.274Z",
   dateTested: "2022-09-30T13:09:07.274Z",
-  disease: "COVID-19",
-  testResult: "NEGATIVE",
+  results: [
+    {
+      disease: {
+        name: "COVID-19",
+        __typename: "SupportedDisease",
+      },
+      testResult: "NEGATIVE",
+      __typename: "MultiplexResult",
+    },
+  ],
   correctionStatus: "REMOVED",
   symptoms:
     '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
@@ -29,7 +35,7 @@ const resultForViewing = {
     },
     __typename: "ApiUser",
   },
-  __typename: "Result",
+  __typename: "TestResult",
 };
 
 export default resultForViewing;

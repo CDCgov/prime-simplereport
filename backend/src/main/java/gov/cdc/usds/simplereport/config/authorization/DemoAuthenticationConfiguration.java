@@ -1,24 +1,22 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
 import gov.cdc.usds.simplereport.config.BeanProfiles;
-import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
-import gov.cdc.usds.simplereport.service.DbOrgRoleClaimsService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -88,11 +86,8 @@ public class DemoAuthenticationConfiguration {
   public AuthorizationService getDemoAuthorizationService(
       OktaRepository oktaRepo,
       IdentitySupplier supplier,
-      DemoUserConfiguration demoUserConfiguration,
-      DbOrgRoleClaimsService dbOrgRoleClaimsService,
-      FeatureFlagsConfig featureFlagsConfig) {
-    return new DemoAuthorizationService(
-        oktaRepo, supplier, demoUserConfiguration, dbOrgRoleClaimsService, featureFlagsConfig);
+      DemoUserConfiguration demoUserConfiguration) {
+    return new DemoAuthorizationService(oktaRepo, supplier, demoUserConfiguration);
   }
 
   @Bean
@@ -154,20 +149,14 @@ public class DemoAuthenticationConfiguration {
     private final IdentitySupplier _getCurrentUser;
     private final OktaRepository _oktaRepo;
     private final Set<String> _adminGroupMemberSet;
-    private final DbOrgRoleClaimsService _dbOrgRoleClaimsService;
-    private final FeatureFlagsConfig _featureFlagsConfig;
 
     public DemoAuthorizationService(
         OktaRepository oktaRepo,
         IdentitySupplier getCurrent,
-        DemoUserConfiguration demoUserConfiguration,
-        DbOrgRoleClaimsService dbOrgRoleClaimsService,
-        FeatureFlagsConfig featureFlagsConfig) {
+        DemoUserConfiguration demoUserConfiguration) {
       super();
       this._getCurrentUser = getCurrent;
       this._oktaRepo = oktaRepo;
-      this._dbOrgRoleClaimsService = dbOrgRoleClaimsService;
-      this._featureFlagsConfig = featureFlagsConfig;
 
       _adminGroupMemberSet =
           demoUserConfiguration.getSiteAdminEmails().stream()
@@ -179,14 +168,7 @@ public class DemoAuthenticationConfiguration {
       String username = Optional.ofNullable(_getCurrentUser.get()).orElseThrow().getUsername();
       Optional<OrganizationRoleClaims> claims =
           _oktaRepo.getOrganizationRoleClaimsForUser(username);
-      List<OrganizationRoleClaims> oktaOrgRoleClaims =
-          claims.isEmpty() ? List.of() : List.of(claims.get());
-      if (!isSiteAdmin() && _featureFlagsConfig.isOktaMigrationEnabled()) {
-        List<OrganizationRoleClaims> dbOrgRoleClaims =
-            _dbOrgRoleClaimsService.getOrganizationRoleClaims(username);
-        return dbOrgRoleClaims;
-      }
-      return oktaOrgRoleClaims;
+      return claims.isEmpty() ? List.of() : List.of(claims.get());
     }
 
     @Override

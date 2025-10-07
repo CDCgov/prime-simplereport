@@ -3,6 +3,9 @@ import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
 import siteLogo from "../img/simplereport-logomark-color.svg";
+// ToDo check why we are importing icons as global here but
+//  in other components we decide to import per component.
+//  Discrepancies on how we are using this library!
 import "../styles/fontAwesome";
 import { RootState } from "../app/store";
 import { Patient } from "../app/patients/ManagePatients";
@@ -30,7 +33,7 @@ const PatientHeader = () => {
             <img
               className="width-4"
               src={siteLogo}
-              alt={process.env.REACT_APP_TITLE}
+              alt={import.meta.env.VITE_TITLE}
             />
             <div className="logo-text margin-left-1 display-flex flex-column">
               <span

@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import { displayFullName } from "../../utils";
 import { emailRegex } from "../../utils/email";
 import { TextInput } from "../../commonComponents/TextInput";
-import { User } from "../../../generated/graphql";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import BaseEditModal from "./BaseEditModal";
+
 import "./ManageUsers.scss";
 
 type EmailFormData = {
@@ -16,7 +16,7 @@ type EmailFormData = {
 interface EditUserEmailModalProps {
   onClose: () => void;
   onEditUserEmail: (userId: string, emailAddress: string) => void;
-  user: SettingsUser | User;
+  user: SettingsUser;
 }
 
 const EditUserEmailModal: React.FC<EditUserEmailModalProps> = ({

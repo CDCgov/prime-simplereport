@@ -134,7 +134,7 @@ const ManageEmails: React.FC<Props> = ({
             <TextInput
               name={`email-${idx}`}
               idString={`email-${idx}`}
-              className="flex-fill emailFormElement margin-top-0"
+              className="flex-fill emailFormElement"
               value={emailsOrDefault[idx] || ""}
               errorMessage={errors[idx]}
               label={
@@ -153,7 +153,6 @@ const ManageEmails: React.FC<Props> = ({
             {idx > 0 ? (
               <div className="flex-align-self-end">
                 <button
-                  type={"button"}
                   className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   data-testid={`delete-email-${idx}`}
                   onClick={() => onEmailRemove(idx)}
@@ -169,7 +168,7 @@ const ManageEmails: React.FC<Props> = ({
         </div>
       ))}
       <Button
-        className="margin-top-2 sr-add-another-button"
+        className="margin-top-2"
         onClick={onAddEmail}
         variant="unstyled"
         label={t("patient.form.contact.addEmail")}

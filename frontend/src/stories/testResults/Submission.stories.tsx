@@ -1,9 +1,9 @@
-import { Meta, StoryFn } from "@storybook/react-webpack5";
+import { Meta, StoryFn } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
-import { getMocks, StoryGraphQLProvider } from "../storyMocks";
+import { getMocks, StoryGraphQLProvider } from "../../stories/storyMocks";
 import Submission from "../../app/testResults/submissions/Submission";
 
 const mockStore = createMockStore([]);
@@ -15,7 +15,7 @@ const store = mockStore({
 });
 
 export default {
-  title: "App/Results/Upload history submission",
+  title: "Submission",
   component: Submission,
   argTypes: {},
   args: {},

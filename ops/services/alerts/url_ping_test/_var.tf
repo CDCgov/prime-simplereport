@@ -24,9 +24,3 @@ variable "rg_location" {
 variable "tags" {
   default = {}
 }
-
-variable "wiki_docs_text" {
-  description = "Custom properties text to include the alert response docs"
-  type        = string
-  default     = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
-}

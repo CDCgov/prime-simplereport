@@ -1,137 +1,123 @@
 mutation RemovePatientFromQueue($patientId: ID!) {
     removePatientFromQueue(patientId: $patientId)
-}
+  }
 
 mutation EditQueueItem(
-    $id: ID!
-    $deviceTypeId: ID
-    $specimenTypeId: ID
-    $results: [MultiplexResultInput]
-    $dateTested: DateTime
+  $id: ID!
+  $deviceTypeId: ID
+  $specimenTypeId: ID
+  $results: [MultiplexResultInput]
+  $dateTested: DateTime
 ) {
-    editQueueItem(
-        id: $id
-        deviceTypeId: $deviceTypeId
-        specimenTypeId: $specimenTypeId
-        results: $results
-        dateTested: $dateTested
-    ) {
-        results {
-            disease {
-                name
-            }
-            testResult
-        }
-        dateTested
-        deviceType {
-            internalId
-            testLength
-        }
+  editQueueItem(
+    id: $id
+    deviceTypeId: $deviceTypeId
+    specimenTypeId: $specimenTypeId
+    results: $results
+    dateTested: $dateTested
+  ) {
+    results {
+      disease {
+        name
+      }
+      testResult
     }
+    dateTested
+    deviceType {
+      internalId
+      testLength
+    }
+  }
 }
 
 mutation SubmitQueueItem(
-    $patientId: ID!
-    $deviceTypeId: ID!
-    $specimenTypeId: ID!
-    $results: [MultiplexResultInput]!
-    $dateTested: DateTime
+  $patientId: ID!
+  $deviceTypeId: ID!
+  $specimenTypeId: ID!
+  $results: [MultiplexResultInput]!
+  $dateTested: DateTime
 ) {
-    submitQueueItem(
-        patientId: $patientId
-        deviceTypeId: $deviceTypeId
-        specimenTypeId: $specimenTypeId
-        results: $results
-        dateTested: $dateTested
-    ) {
-        testResult {
-            internalId
-        }
-        deliverySuccess
-        testEventId
+  submitQueueItem(
+    patientId: $patientId
+    deviceTypeId: $deviceTypeId
+    specimenTypeId: $specimenTypeId
+    results: $results
+    dateTested: $dateTested
+  ) {
+    testResult {
+      internalId
     }
+    deliverySuccess
+  }
 }
 
 query GetFacilityQueue($facilityId: ID!) {
-    queue(facilityId: $facilityId) {
-        internalId
-        pregnancy
-        syphilisHistory
-        dateAdded
-        symptoms
-        symptomOnset
-        noSymptoms
-        genderOfSexualPartners
-        deviceType {
-            internalId
-            name
-            model
-            testLength
-        }
-        specimenType {
-            internalId
-            name
-            typeCode
-        }
-        patient {
-            internalId
-            telephone
-            birthDate
-            firstName
-            middleName
-            lastName
-            gender
-            testResultDelivery
-            preferredLanguage
-            email
-            emails
-            phoneNumbers {
-                type
-                number
-            }
-        }
-        results {
-            disease {
-                name
-            }
-            testResult
-        }
-        dateTested
-        correctionStatus
-        reasonForCorrection
-        timerStartedAt
+  queue(facilityId: $facilityId) {
+    internalId
+    pregnancy
+    dateAdded
+    symptoms
+    symptomOnset
+    noSymptoms
+    deviceType {
+      internalId
+      name
+      model
+      testLength
     }
-    facility(id: $facilityId) {
+    specimenType {
+      internalId
+      name
+      typeCode
+    }
+    patient {
+      internalId
+      telephone
+      birthDate
+      firstName
+      middleName
+      lastName
+      gender
+      testResultDelivery
+      preferredLanguage
+      email
+      emails
+      phoneNumbers {
+        type
+        number
+      }
+    }
+    results {
+      disease {
         name
-        id
-        deviceTypes {
-            internalId
-            name
-            testLength
-            supportedDiseaseTestPerformed {
-                testPerformedLoincCode
-                testOrderedLoincCode
-                supportedDisease {
-                    internalId
-                    name
-                    loinc
-                }
-            }
-            swabTypes {
-                internalId
-                name
-                typeCode
-            }
-        }
+      }
+      testResult
     }
-}
-
-mutation UpdateTestOrderTimerStartedAt(
-    $testOrderId: ID!
-    $startedAt: String
-) {
-    updateTestOrderTimerStartedAt(
-        testOrderId: $testOrderId
-        startedAt: $startedAt
-    )
+    dateTested
+    correctionStatus
+    reasonForCorrection
+  }
+  facility(id: $facilityId) {
+    name
+    id
+    deviceTypes {
+      internalId
+      name
+      testLength
+      supportedDiseaseTestPerformed {
+        testPerformedLoincCode
+        testOrderedLoincCode
+        supportedDisease {
+          internalId
+          name
+          loinc
+        }
+      }
+      swabTypes {
+        internalId
+        name
+        typeCode
+      }
+    }
+  }
 }

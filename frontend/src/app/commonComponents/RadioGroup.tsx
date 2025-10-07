@@ -6,7 +6,7 @@ import { UseFormRegisterReturn } from "react-hook-form";
 import Required from "./Required";
 import Optional from "./Optional";
 
-export type RadioGroupOptions<T> = {
+type Options<T> = {
   label: React.ReactNode;
   value: T;
   labelDescription?: string;
@@ -19,7 +19,7 @@ interface Props<T> {
   name?: string;
   legend?: React.ReactNode;
   legendSrOnly?: boolean;
-  buttons: RadioGroupOptions<T>;
+  buttons: Options<T>;
   className?: string;
   wrapperClassName?: string;
   required?: boolean;
@@ -72,7 +72,6 @@ const RadioGroup = <T extends string>({
     <fieldset
       className={classnames("usa-fieldset prime-radios", className)}
       id={name}
-      data-testid={name}
     >
       {legend && (
         <legend
@@ -109,7 +108,7 @@ const RadioGroup = <T extends string>({
               );
               const className = classnames(groupClass, c.className);
               return (
-                <div className={className} key={c.value}>
+                <div className={className} key={uid(c.value)}>
                   <input
                     type="radio"
                     id={uid(c.value)}
@@ -127,7 +126,7 @@ const RadioGroup = <T extends string>({
                   <label
                     className={labelClasses}
                     htmlFor={uid(c.value)}
-                    data-cy={`radio-group-option-${name}-${c.value}`}
+                    data-cy={`radio-group-option-${c.value}`}
                   >
                     {c.label}
                     {c.labelDescription && (

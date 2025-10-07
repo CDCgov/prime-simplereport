@@ -1,16 +1,9 @@
-FROM nginx:1.29.1-alpine as build
+FROM nginx:1.25-alpine as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
-RUN /bin/ash -c 'set -ex && \
-    ARCH=`uname -m` && \
-    if [ $ARCH = "x86_64" ]; then \
-        curl -JLo mkcert-v1.4.4 "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64"; \
-    elif [ $ARCH = "aarch64" ]; then \
-        curl -JLo mkcert-v1.4.4 "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-arm64"; \
-    fi'
-
-RUN chmod +x mkcert-v1.4.4
-RUN cp mkcert-v1.4.4 /usr/local/bin/mkcert
+RUN curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64"
+RUN chmod +x mkcert-v1.4.4-linux-amd64
+RUN cp mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert
 
 WORKDIR certs
 RUN mkcert -install
@@ -19,7 +12,7 @@ RUN mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
 RUN mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
 
 
-FROM nginx:1.29.1-alpine
+FROM nginx:1.25-alpine
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 COPY  ./default.conf /etc/nginx/conf.d/default.conf

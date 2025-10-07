@@ -32,7 +32,7 @@ export const BaseEditModal: React.FC<BaseEditModalProps> = ({
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
-      ariaHideApp={process.env.NODE_ENV !== "test"}
+      ariaHideApp={import.meta.env.MODE !== "test"}
       onRequestClose={onClose}
     >
       <div className="border-0 card-container">

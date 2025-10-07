@@ -1,4 +1,4 @@
-import { InvocationContext } from "@azure/functions";
+import { Context } from "@azure/functions";
 import fetchMock from "jest-fetch-mock";
 import {
   DequeuedMessageItem,
@@ -44,10 +44,10 @@ jest.mock(
 
 describe("reportingHandlers", () => {
   const context = {
-    error: jest.fn(),
     log: jest.fn(),
-    traceContext: { traceParent: "asdf" },
-  } as jest.MockedObject<InvocationContext>;
+    traceContext: { traceparent: "asdf" },
+  } as jest.MockedObject<Context>;
+  context.log.error = jest.fn();
 
   const telemetry = {
     trackEvent: jest.fn(),
@@ -172,7 +172,7 @@ describe("reportingHandlers", () => {
       ).rejects.toThrow();
 
       expect(responseMock.json).not.toHaveBeenCalled();
-      expect(context.error).toHaveBeenCalled();
+      expect(context.log.error).toHaveBeenCalled();
       expect(publishToQueueSpy).not.toHaveBeenCalled();
       expect(deleteSuccessfullyParsedMessagesSpy).not.toHaveBeenCalled();
       expect(responseMock.text).toHaveBeenCalled();
@@ -202,7 +202,7 @@ describe("reportingHandlers", () => {
       ).rejects.toThrow();
 
       expect(responseMock.json).not.toHaveBeenCalled();
-      expect(context.error).toHaveBeenCalled();
+      expect(context.log.error).toHaveBeenCalled();
       expect(publishToQueueSpy).toHaveBeenCalled();
       expect(deleteSuccessfullyParsedMessagesSpy).toHaveBeenCalledWith(
         context,
@@ -295,7 +295,7 @@ describe("reportingHandlers", () => {
         getReportStreamAuthToken(context),
       ).rejects.toThrow();
 
-      expect(context.error).toHaveBeenCalledWith(
+      expect(context.log.error).toHaveBeenCalledWith(
         "Error while trying to get the ReportStream auth token.",
         new Error(`ReportStream Error Response: error`),
       );

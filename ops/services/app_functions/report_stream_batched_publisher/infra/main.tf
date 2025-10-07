@@ -59,16 +59,13 @@ resource "azurerm_linux_function_app" "functions" {
   site_config {
     use_32_bit_worker        = false
     application_insights_key = data.azurerm_application_insights.app.instrumentation_key
-
-    ip_restriction_default_action     = "Deny" # Should use behavior set in the ip_restriction
-    scm_ip_restriction_default_action = "Deny" # We don't use Kudu or the SCM site tools
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
       action                    = "Allow"
     }
     application_stack {
-      node_version = "20"
+      node_version = "18"
     }
   }
 
@@ -77,36 +74,32 @@ resource "azurerm_linux_function_app" "functions" {
   }
 
   app_settings = {
-    https_only                            = true
-    FUNCTIONS_WORKER_RUNTIME              = "node"
-    WEBSITE_NODE_DEFAULT_VERSION          = "~20"
-    FUNCTION_APP_EDIT_MODE                = "readonly"
-    HASH                                  = azurerm_storage_blob.appcode.content_md5
-    WEBSITE_RUN_FROM_PACKAGE              = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
-    APPLICATIONINSIGHTS_CONNECTION_STRING = data.azurerm_application_insights.app.connection_string
-    APPINSIGHTS_INSTRUMENTATIONKEY        = data.azurerm_application_insights.app.instrumentation_key
-    AZ_STORAGE_QUEUE_SVC_URL              = "https://${data.azurerm_storage_account.app.name}.queue.core.windows.net/"
-    AZ_STORAGE_ACCOUNT_NAME               = data.azurerm_storage_account.app.name
-    AZ_STORAGE_ACCOUNT_KEY                = data.azurerm_storage_account.app.primary_access_key
-    AZ_STORAGE_QUEUE_CXN_STRING           = data.azurerm_storage_account.app.primary_connection_string
-    TEST_EVENT_QUEUE_NAME                 = var.test_event_queue_name
-    PUBLISHING_ERROR_QUEUE_NAME           = var.publishing_error_queue_name
-    REPORTING_EXCEPTION_QUEUE_NAME        = var.reporting_exception_queue_name
-    FHIR_TEST_EVENT_QUEUE_NAME            = var.fhir_test_event_queue_name
-    FHIR_PUBLISHING_ERROR_QUEUE_NAME      = var.fhir_publishing_error_queue_name
-    REPORT_STREAM_URL                     = local.report_stream_url
-    REPORT_STREAM_BASE_URL                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_url.id})"
-    REPORT_STREAM_TOKEN                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
-    FHIR_REPORT_STREAM_KEY                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
-    REPORT_STREAM_BATCH_MINIMUM           = var.report_stream_batch_minimum
-    REPORT_STREAM_BATCH_MAXIMUM           = var.report_stream_batch_maximum
-    SIMPLE_REPORT_CB_URL                  = local.simple_report_callback_url
-    SIMPLE_REPORT_CB_TOKEN                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
+    https_only                       = true
+    FUNCTIONS_WORKER_RUNTIME         = "node"
+    WEBSITE_NODE_DEFAULT_VERSION     = "~18"
+    FUNCTION_APP_EDIT_MODE           = "readonly"
+    HASH                             = azurerm_storage_blob.appcode.content_md5
+    WEBSITE_RUN_FROM_PACKAGE         = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
+    APPINSIGHTS_INSTRUMENTATIONKEY   = data.azurerm_application_insights.app.instrumentation_key
+    AZ_STORAGE_QUEUE_SVC_URL         = "https://${data.azurerm_storage_account.app.name}.queue.core.windows.net/"
+    AZ_STORAGE_ACCOUNT_NAME          = data.azurerm_storage_account.app.name
+    AZ_STORAGE_ACCOUNT_KEY           = data.azurerm_storage_account.app.primary_access_key
+    AZ_STORAGE_QUEUE_CXN_STRING      = data.azurerm_storage_account.app.primary_connection_string
+    TEST_EVENT_QUEUE_NAME            = var.test_event_queue_name
+    PUBLISHING_ERROR_QUEUE_NAME      = var.publishing_error_queue_name
+    REPORTING_EXCEPTION_QUEUE_NAME   = var.reporting_exception_queue_name
+    FHIR_TEST_EVENT_QUEUE_NAME       = var.fhir_test_event_queue_name
+    FHIR_PUBLISHING_ERROR_QUEUE_NAME = var.fhir_publishing_error_queue_name
+    REPORT_STREAM_URL                = local.report_stream_url
+    REPORT_STREAM_BASE_URL           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_url.id})"
+    REPORT_STREAM_TOKEN              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
+    FHIR_REPORT_STREAM_KEY           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
+    REPORT_STREAM_BATCH_MINIMUM      = var.report_stream_batch_minimum
+    REPORT_STREAM_BATCH_MAXIMUM      = var.report_stream_batch_maximum
+    SIMPLE_REPORT_CB_URL             = local.simple_report_callback_url
+    SIMPLE_REPORT_CB_TOKEN           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
   }
   lifecycle {
-    ignore_changes = [
-      tags
-    ]
     replace_triggered_by = [
       azurerm_service_plan.asp
     ]

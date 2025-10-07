@@ -1,6 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
-
-import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
+import { Route, Routes } from "react-router-dom";
 
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
@@ -12,11 +10,6 @@ import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLi
 import "./Settings.scss";
 
 const Settings = () => {
-  const [facility] = useSelectedFacility();
-  const activeFacilityId = facility?.id || "";
-  const settingsIndexRedirect =
-    "/settings/users/1?facility=" + activeFacilityId;
-
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -36,8 +29,7 @@ const Settings = () => {
             path={"self-registration"}
             element={<ManageSelfRegistrationLinksContainer />}
           />
-          <Route path="users/:pageNumber" element={<ManageUsersContainer />} />
-          <Route index element={<Navigate to={settingsIndexRedirect} />} />
+          <Route path="/" element={<ManageUsersContainer />} />
         </Routes>
       </div>
     </div>

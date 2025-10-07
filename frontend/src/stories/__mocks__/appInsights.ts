@@ -1,3 +1,3 @@
 export const useAppInsightsContext = () => {};
 export const useTrackEvent = () => () => {};
-export class ReactPlugin {}
+export const ReactPlugin = () => () => {};

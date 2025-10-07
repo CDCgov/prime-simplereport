@@ -7,7 +7,6 @@ import Prompt from "../../utils/Prompt";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
-import "./FacilityAccessTab.scss";
 
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 

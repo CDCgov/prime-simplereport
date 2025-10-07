@@ -3,13 +3,13 @@ resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
   name                       = "${local.env_title} API App Service console logs"
   target_resource_id         = var.app_service_id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.global.id
+
   enabled_log {
     category = "AppServiceConsoleLogs"
     retention_policy {
       days    = 7
       enabled = true
     }
-
   }
   metric {
     category = "AllMetrics"
@@ -29,8 +29,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "graphql_query_validation
   resource_group_name = var.rg_name
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
+    action_group = var.action_group_ids
   }
 
   data_source_id = var.app_service_id
@@ -48,11 +47,6 @@ AppServiceConsoleLogs
     operator  = "GreaterThan"
     threshold = 2
   }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
@@ -62,8 +56,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
   resource_group_name = var.rg_name
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
+    action_group = var.action_group_ids
   }
 
   data_source_id = var.app_insights_id
@@ -103,11 +96,6 @@ requests
     operator  = "GreaterThan"
     threshold = 0
   }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "account_request_failures" {
@@ -117,8 +105,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "account_request_failures
   resource_group_name = var.rg_name
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
+    action_group = var.action_group_ids
   }
 
   data_source_id = var.app_insights_id
@@ -144,11 +131,6 @@ ${local.skip_on_weekends}
     operator  = "GreaterThan"
     threshold = 4
   }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "experian_auth_failures" {
@@ -158,8 +140,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "experian_auth_failures" 
   resource_group_name = var.rg_name
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
+    action_group = var.action_group_ids
   }
 
   data_source_id = var.app_insights_id
@@ -185,11 +166,6 @@ ${local.skip_on_weekends}
     operator  = "GreaterThan"
     threshold = 0
   }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "all_experian_auth_failures" {
@@ -199,8 +175,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "all_experian_auth_failur
   resource_group_name = var.rg_name
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
+    action_group = var.action_group_ids
   }
 
   data_source_id = var.app_insights_id
@@ -226,11 +201,6 @@ ${local.skip_on_weekends}
     operator  = "GreaterThan"
     threshold = 2
   }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary" {
@@ -240,8 +210,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary"
   resource_group_name = var.rg_name
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
+    action_group = var.action_group_ids
   }
 
   data_source_id = var.app_insights_id
@@ -259,45 +228,5 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary"
   trigger {
     operator  = "GreaterThan"
     threshold = 0
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
-}
-
-
-resource "azurerm_monitor_scheduled_query_rules_alert" "send_to_aims_error_alert" {
-  name                = "${var.env}-send-to-aims-error"
-  description         = "${local.env_title} uncaught exceptions in SendToAIMS Job"
-  location            = data.azurerm_resource_group.app.location
-  resource_group_name = var.rg_name
-
-  action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
-  }
-
-  data_source_id = var.app_insights_id
-  enabled        = contains(var.disabled_alerts, "send_to_aims_error_alert") ? false : true
-
-  query = <<-QUERY
- exceptions
- ${local.skip_on_weekends}
- | where type startswith "SendToAimsError"
-  QUERY
-
-  severity    = 1
-  frequency   = 120
-  time_window = 1440
-  trigger {
-    operator  = "GreaterThan"
-    threshold = 0
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
   }
 }

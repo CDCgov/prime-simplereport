@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class PatientEmailsHolderTest {
+public class PatientEmailsHolderTest {
   @Test
   void default_returnsDefault() {
     var defaultEmail = "test@fake.com";

@@ -2,8 +2,8 @@ package gov.cdc.usds.simplereport.integration;
 
 import static org.mockito.Mockito.when;
 
+import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
-import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
@@ -40,6 +40,6 @@ public class SubmitTestResultTestConfig {
     FhirConverter fhirConverter = new FhirConverter(uuidGenerator, dateGenerator);
 
     return new AzureStorageQueueFhirReportingService(
-        FhirContextProvider.get(), queueAsyncClient, new GitProperties(properties), fhirConverter);
+        FhirContext.forR4(), queueAsyncClient, new GitProperties(properties), fhirConverter);
   }
 }

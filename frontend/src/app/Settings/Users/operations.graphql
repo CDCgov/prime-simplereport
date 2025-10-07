@@ -29,23 +29,6 @@ query GetUsersAndStatus {
   }
 }
 
-query GetUsersAndStatusPage($pageNumber: Int, $searchQuery: String) {
-  usersWithStatusPage(pageNumber: $pageNumber, searchQuery: $searchQuery) {
-    pageContent {
-      content {
-        id
-        firstName
-        middleName
-        lastName
-        email
-        status
-      }
-      totalElements
-    }
-    totalUsersInOrg
-  }
-}
-
 mutation ResendActivationEmail($id: ID!) {
   resendActivationEmail(id: $id) {
     id

@@ -1,8 +1,14 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import userEvent from "@testing-library/user-event";
 
 import CreateUserForm from "./CreateUserForm";
 
@@ -16,9 +22,8 @@ const store = mockStore({
 let mockOnClose = jest.fn();
 let mockOnSubmit = jest.fn();
 describe("CreateUserForm", () => {
-  const renderWithUser = () => ({
-    user: userEvent.setup(),
-    ...render(
+  beforeEach(() => {
+    render(
       <Provider store={store}>
         <MockedProvider>
           <CreateUserForm
@@ -28,18 +33,14 @@ describe("CreateUserForm", () => {
           />
         </MockedProvider>
       </Provider>
-    ),
+    );
   });
-
   describe("Validation", () => {
     it("All fields are validated", async () => {
-      const { user } = renderWithUser();
-
-      await user.selectOptions(
-        screen.getByLabelText("Access level *"),
-        "ENTRY_ONLY"
-      );
-      await user.click(screen.getByText("Send invite"));
+      fireEvent.change(screen.getByLabelText("Access level *"), {
+        target: { value: "ENTRY_ONLY" },
+      });
+      fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => screen.findByText("First name is required"));
       expect(screen.getByText("Last name is required")).toBeInTheDocument();
@@ -49,9 +50,10 @@ describe("CreateUserForm", () => {
       ).toBeInTheDocument();
     });
     it("Email is validated for format", async () => {
-      const { user } = renderWithUser();
-      await user.type(screen.getByLabelText("Email address *"), "JonDoe");
-      await user.click(screen.getByText("Send invite"));
+      fireEvent.change(screen.getByLabelText("Email address *"), {
+        target: { value: "JonDoe" },
+      });
+      fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => {
         expect(
@@ -60,56 +62,54 @@ describe("CreateUserForm", () => {
       });
     });
     it("Testing facility access errors get cleared when access level is selected", async () => {
-      const { user } = renderWithUser();
-      await user.selectOptions(
-        screen.getByLabelText("Access level *"),
-        "ENTRY_ONLY"
-      );
-      await user.click(screen.getByText("Send invite"));
+      fireEvent.change(screen.getByLabelText("Access level *"), {
+        target: { value: "ENTRY_ONLY" },
+      });
+      fireEvent.click(screen.getByText("Send invite"));
       await waitFor(() =>
         screen.findByText("At least one facility must be selected")
       );
 
-      await user.selectOptions(
-        screen.getByLabelText("Access level *"),
-        "ADMIN"
-      );
+      fireEvent.change(screen.getByLabelText("Access level *"), {
+        target: { value: "ADMIN" },
+      });
       expect(
         screen.queryByText("At least one facility must be selected")
       ).not.toBeInTheDocument();
     });
   });
   describe("Close", () => {
-    it("Clicking `Go back` runs the onClose", async () => {
-      const { user } = renderWithUser();
-      await user.click(screen.getByText("Go back"));
+    it("Clicking `Go back` runs the onClose", () => {
+      fireEvent.click(screen.getByText("Go back"));
       expect(mockOnClose).toBeCalledTimes(1);
     });
     it("Clicking `X` runs the onClose", async () => {
-      const { user } = renderWithUser();
-      await user.click(screen.getByLabelText("Close"));
+      await act(
+        async () => await userEvent.click(screen.getByLabelText("Close"))
+      );
       expect(mockOnClose).toBeCalledTimes(1);
     });
   });
   describe("On submit", () => {
-    const fillForm = async (user: UserEvent) => {
-      await user.type(screen.getByLabelText("First name *"), "Billy");
-      await user.type(screen.getByLabelText("Last name *"), "Thorton");
-      await user.click(screen.getByLabelText("Gabagool facility"));
-      await user.type(
-        screen.getByLabelText("Email address *"),
-        "BillyBob@example.com"
-      );
+    const fillForm = () => {
+      fireEvent.change(screen.getByLabelText("First name *"), {
+        target: { value: "Billy" },
+      });
+      fireEvent.change(screen.getByLabelText("Last name *"), {
+        target: { value: "Thorton" },
+      });
+      fireEvent.click(screen.getByLabelText("Gabagool facility"));
+      fireEvent.change(screen.getByLabelText("Email address *"), {
+        target: { value: "BillyBob@example.com" },
+      });
     };
 
     it("Admin user role", async () => {
-      const { user } = renderWithUser();
-      await fillForm(user);
-      await user.selectOptions(
-        screen.getByLabelText("Access level *"),
-        "ADMIN"
-      );
-      await user.click(screen.getByText("Send invite"));
+      fillForm();
+      fireEvent.change(screen.getByLabelText("Access level *"), {
+        target: { value: "ADMIN" },
+      });
+      fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => expect(mockOnSubmit).toBeCalledTimes(1));
       expect(mockOnSubmit).toBeCalledWith(
@@ -132,10 +132,9 @@ describe("CreateUserForm", () => {
       );
     });
     it("Standard user with access to all facilities", async () => {
-      const { user } = renderWithUser();
-      await fillForm(user);
-      await user.click(screen.getByLabelText("Access all facilities (2)"));
-      await user.click(screen.getByText("Send invite"));
+      fillForm();
+      fireEvent.click(screen.getByLabelText("Access all facilities (2)"));
+      fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => expect(mockOnSubmit).toBeCalledTimes(1));
       expect(mockOnSubmit).toBeCalledWith(
@@ -158,9 +157,8 @@ describe("CreateUserForm", () => {
     });
 
     it("Standard user with one facility", async () => {
-      const { user } = renderWithUser();
-      await fillForm(user);
-      await user.click(screen.getByText("Send invite"));
+      fillForm();
+      fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => expect(mockOnSubmit).toBeCalledTimes(1));
       expect(mockOnSubmit).toBeCalledWith({

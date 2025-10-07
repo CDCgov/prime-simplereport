@@ -1,11 +1,11 @@
-import { StoryFn, Meta } from "@storybook/react-webpack5";
+import { StoryFn, Meta } from "@storybook/react";
 import React from "react";
 
 import { MultiSelectDropdownOption } from "./MultiSelectDropdown/MultiSelectDropdown";
 import MultiSelect, { MultiSelectProps } from "./MultiSelect";
 
 export default {
-  title: "Components/Form controls/MultiSelect",
+  title: "MultiSelect",
   component: MultiSelect,
   argTypes: {},
   args: {

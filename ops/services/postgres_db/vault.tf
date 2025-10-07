@@ -7,7 +7,7 @@ resource "azurerm_key_vault_secret" "db_username" {
 
 //TODO: Change this to use a TF-generated password, like db-password-no-phi. See #3673 for the additional work.
 data "azurerm_key_vault_secret" "db_password" {
-  name         = "simple-report-${var.env}-db-password"
+  name         = "simple-report-${var.env_level}-db-password"
   key_vault_id = var.global_vault_id
 }
 

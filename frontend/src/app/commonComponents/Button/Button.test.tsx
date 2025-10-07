@@ -71,7 +71,7 @@ describe("button", () => {
   describe("children", () => {
     it("should be added", () => {
       const child = <span id={"id1"} />;
-      render(<Button children={child} />);
+      render(<Button>{child}</Button>);
       expect(screen.getByRole("button").children[0].id).toEqual("id1");
     });
   });
@@ -79,7 +79,7 @@ describe("button", () => {
     it("should only show the label", () => {
       const expected = "hello";
       const child = <span id={"id1"} />;
-      render(<Button label={expected} children={child} />);
+      render(<Button label={expected}>{child}</Button>);
       expect(screen.getByRole("button")).toHaveTextContent(expected);
       expect(screen.getByRole("button").children.length).toEqual(0);
     });

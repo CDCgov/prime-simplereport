@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from "@storybook/react-webpack5";
+import { StoryFn, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
@@ -9,7 +9,7 @@ import TermsOfService from "./TermsOfService";
 
 const mockStore = createMockStore([]);
 export default {
-  title: "App/PXP/Step 1: Terms of Service",
+  title: "App/Test Results/Step 1: Terms of Service",
   component: TermsOfService,
   argTypes: {},
 } as Meta;

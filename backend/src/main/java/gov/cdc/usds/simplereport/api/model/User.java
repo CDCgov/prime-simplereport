@@ -1,12 +1,12 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.model.facets.PersonWrapper;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 import java.util.List;
 import java.util.Optional;
+import org.openapitools.client.model.UserStatus;
 
 public class User extends WrappedEntity<UserInfo> implements PersonWrapper<UserInfo> {
 

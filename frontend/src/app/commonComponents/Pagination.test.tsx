@@ -1,6 +1,5 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
 
 import Pagination from "./Pagination";
 
@@ -48,7 +47,6 @@ describe("Pagination", () => {
   });
 
   it("should handle onClick event", async () => {
-    const user = userEvent.setup();
     let onPaginationClick: jest.Mock = jest.fn();
     let mockProp = {
       ...defaults,
@@ -60,8 +58,7 @@ describe("Pagination", () => {
         <Pagination {...props} />
       </MemoryRouter>
     );
-    const closesPageLink = screen.getAllByText("1")[0].closest("a");
-    await user.click(closesPageLink as HTMLAnchorElement);
+    await act(async () => screen.getAllByText("1")[0].closest("a")?.click());
     expect(onPaginationClick).toHaveBeenCalledWith(1);
   });
 });

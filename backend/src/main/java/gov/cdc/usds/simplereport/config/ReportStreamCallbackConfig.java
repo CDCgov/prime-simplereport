@@ -5,7 +5,7 @@ import gov.cdc.usds.simplereport.db.repository.ReportStreamResponseRepository;
 import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties;
 import gov.cdc.usds.simplereport.service.ConfiguredReportStreamCallbackService;
 import gov.cdc.usds.simplereport.service.ReportStreamCallbackService;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -27,7 +27,7 @@ public class ReportStreamCallbackConfig {
   }
 
   @Bean(name = "reportStreamCallbackService")
-  @ConditionalOnMissingBean(ReportStreamCallbackService.class)
+  @ConditionalOnMissingBean
   ReportStreamCallbackService noopService() {
     return new ReportStreamCallbackService() {
       @Override

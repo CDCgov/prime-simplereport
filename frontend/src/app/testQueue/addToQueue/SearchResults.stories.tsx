@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { Meta, StoryFn } from "@storybook/react-webpack5";
+import { Meta, StoryFn } from "@storybook/react";
 
 import SearchResults, { QueueProps, TestResultsProps } from "./SearchResults";
 
@@ -27,7 +27,7 @@ const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
 }) => <MemoryRouter>{children}</MemoryRouter>;
 
 export default {
-  title: "App/Queue/Patient Search Results",
+  title: "Search Results",
   component: SearchResults,
   argTypes: {},
 } as Meta;

@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
-import { useForm, FieldError } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import Button from "../../commonComponents/Button/Button";
 import Dropdown from "../../commonComponents/Dropdown";
@@ -84,10 +84,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
   });
   const formCurrentValues = watch();
   return (
-    <form
-      className="border-0 card-container create-user-form__org-admin"
-      onSubmit={handleSubmit(onSave)}
-    >
+    <form className="border-0 card-container" onSubmit={handleSubmit(onSave)}>
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
           Invite new user
@@ -112,6 +109,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
           validationStatus={errors?.firstName?.type ? "error" : undefined}
           errorMessage={errors?.firstName?.message}
         />
+        <div></div>
         <TextInput
           label="Last name"
           name="lastName"
@@ -163,10 +161,10 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
         />
       </div>
       <UserFacilitiesSettings
-        roleSelected={formCurrentValues.role}
-        facilityList={facilities}
+        formValues={formCurrentValues}
+        allFacilities={facilities}
         register={register}
-        error={errors.facilityIds as FieldError}
+        errors={errors}
         setValue={setValue}
       />
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">

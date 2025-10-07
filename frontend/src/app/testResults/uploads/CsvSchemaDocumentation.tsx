@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
@@ -7,19 +7,19 @@ import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { getFacilityIdFromUrl } from "../../utils/url";
-import { BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT } from "../../../config/constants";
 
-import { CsvSchema, RequiredStatusTag, Section } from "./specificSchemaBuilder";
+import { schemaBuilder } from "./schemaBuilder";
 
 export type CsvSchemaItem = {
   name: string;
   colHeader: string;
+  required: boolean;
+  requested: boolean;
   acceptedValues?: string[];
   description?: string[];
   subHeader?: string[];
   format?: string;
   examples?: string[];
-  requiredStatusTag?: RequiredStatusTag;
 };
 
 type CsvSchemaItemProps = {
@@ -39,20 +39,19 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         data-testid="header"
       >
         {item.name}
-        {item.requiredStatusTag === RequiredStatusTag.REQUIRED && (
+        {item.required && (
           <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-bottom">
             Required
           </span>
         )}
 
-        {item.requiredStatusTag ===
-          RequiredStatusTag.REQUIRED_FOR_POSITIVES && (
-          <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-bottom">
-            Required for Positives
+        {!item.required && item.requested && (
+          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
+            Requested
           </span>
         )}
 
-        {item.requiredStatusTag === RequiredStatusTag.OPTIONAL && (
+        {!item.required && !item.requested && (
           <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
             Optional
           </span>
@@ -81,6 +80,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           <div className="grid-col-8">
             {item.description?.map((line) => (
               <div
+                className="margin-bottom-1"
                 key={`${item.colHeader}-description-${line}`}
                 dangerouslySetInnerHTML={{ __html: `${line}` }}
               />
@@ -152,74 +152,8 @@ export const getPageTitle = (hash: string) => {
   }
 };
 
-interface CsvSchemaDocumentationProps {
-  schemaBuilder: (facilityId: string | null) => CsvSchema;
-  returnUrl: string;
-}
-
-const buildDefaultTabSectionState = (schema: CsvSchema) => {
-  let tabSectionState: Record<string, string> = {};
-  schema.fields.forEach((field) =>
-    field.sections.forEach((section) => {
-      // only set a default if there isn't a value for this key
-      if (section.tabs && !tabSectionState[section.slug]) {
-        tabSectionState[section.slug] = section.tabs[0].title;
-      }
-    })
-  );
-  return tabSectionState;
-};
-
-interface SectionTabButtonProps {
-  selected: boolean;
-  parentSection: Section;
-  tabSection: Section;
-  setTabSectionState: React.Dispatch<
-    React.SetStateAction<Record<string, string>>
-  >;
-  index: number;
-}
-
-const SectionTabButton = ({
-  selected,
-  parentSection,
-  tabSection,
-  setTabSectionState,
-  index,
-}: SectionTabButtonProps) => {
-  return (
-    <div
-      className={`usa-nav__secondary-item padding-right-1 ${
-        selected ? "usa-current" : ""
-      } ${index === 0 ? "padding-left-0" : ""}`}
-      key={`${parentSection.slug}-${tabSection.slug}-tabpanel-item`}
-    >
-      <button
-        id={`${parentSection.slug}-${tabSection.slug}-tab`}
-        role="tab"
-        className={`usa-button--unstyled text-ink text-no-underline tab-button ${
-          selected ? "tab-selected" : ""
-        }`}
-        onClick={() =>
-          setTabSectionState((prevState) => {
-            return {
-              ...prevState,
-              [parentSection.slug]: tabSection.title,
-            };
-          })
-        }
-        aria-selected={selected}
-      >
-        {tabSection.title}
-      </button>
-    </div>
-  );
-};
-
-const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
-  schemaBuilder,
-  returnUrl,
-}) => {
+/* eslint-disable jsx-a11y/anchor-has-content */
+const CsvSchemaDocumentation = () => {
   let location = useLocation();
   let locationHash = location.hash;
   let pageTitle = getPageTitle(locationHash);
@@ -231,9 +165,6 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
   const appInsights = getAppInsights();
   const activeFacilityId = getFacilityIdFromUrl(location);
   const schema = schemaBuilder(activeFacilityId);
-  const [tabSectionState, setTabSectionState] = useState(
-    buildDefaultTabSectionState(schema)
-  );
 
   return (
     <div className="prime-container card-container csv-guide-container">
@@ -249,7 +180,10 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
             >
               <use xlinkHref={iconSprite + "#arrow_back"}></use>
             </svg>
-            <LinkWithQuery to={returnUrl} className="margin-left-05">
+            <LinkWithQuery
+              to={`/results/upload/submit`}
+              className="margin-left-05"
+            >
               Upload spreadsheet
             </LinkWithQuery>
           </div>
@@ -262,7 +196,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
         <section id="anchor-top">
           <p className="text-base sub-header">
             How to format and upload a CSV file to report test results in bulk
-            for {BULK_UPLOAD_SUPPORTED_DISEASES_COPY_TEXT} through SimpleReport.
+            through SimpleReport.
           </p>
           <p>
             SimpleReport’s bulk results uploader lets you report multiple test
@@ -308,7 +242,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
           <ul>
             <li>
               <a
-                href="/assets/resources/test_results_example_01-31-2025.csv"
+                href="/assets/resources/test_results_example_10-3-2022.csv"
                 className="usa-link"
                 onClick={() => {
                   appInsights?.trackEvent({
@@ -374,44 +308,23 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
           </p>
           <h4>Include data for all required fields</h4>
           <p>
-            The data template has three field types: Required, Required for
-            Positives, and Optional. SimpleReport won’t accept files with
-            missing or incorrect headers and values in required fields. You'll
-            find these tags throughout the template to guide you through data
-            requirements:
+            The data template has three field types: required, requested, and
+            optional. SimpleReport won’t accept files with missing or incorrect
+            headers and values in required fields. Requested fields are not
+            required by HHS, but the data is helpful to jurisdictions. The tags
+            next to data element names listed below show field type:
           </p>
-          <div className="grid-row margin-bottom-1">
-            <div className="grid-col-4 text-base">
-              <span className="text-normal bg-white border-1px border-secondary font-body-1xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
-                Required
-              </span>
-            </div>
-            <div className="grid-col-auto">
-              "Required" fields are legally required by HHS.
-            </div>
-          </div>
-          <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
-            <div className="grid-col-4 text-base">
-              <span className="text-normal bg-white border-1px border-secondary font-body-1xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
-                Required for Positives
-              </span>
-            </div>
-            <div className="grid-col-8">
-              "Required for Positives" fields are legally required by HHS for
-              positive test results.
-            </div>
-          </div>
-          <div className="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1">
-            <div className="grid-col-4 text-base">
-              <span className="text-normal bg-white border-1px border-base font-body-1xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
-                Optional
-              </span>
-            </div>
-            <div className="grid-col-8">
-              "Optional" fields are not legally required by HHS, but the data is
-              helpful to jurisdictions.
-            </div>
-          </div>
+          <p>
+            <span className="text-normal bg-white border-1px border-secondary font-body-1xs padding-x-1 padding-y-05 text-secondary margin-right-1 text-middle">
+              Required
+            </span>
+            <span className="text-normal bg-white border-1px border-base font-body-1xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
+              Requested
+            </span>
+            <span className="text-normal bg-white border-1px border-base font-body-1xs padding-x-1 padding-y-05 text-base margin-right-1 text-middle">
+              Optional
+            </span>
+          </p>
         </section>
 
         <section className="margin-top-5">
@@ -447,45 +360,6 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
               className="margin-bottom-5"
             >
               {field.sections?.map((section) => {
-                let sectionToRender = section;
-                let tabHeading;
-                if (section.tabs && section.tabs.length > 0) {
-                  let tabIds = "";
-                  section.tabs.forEach((tabSection) => {
-                    tabIds = tabIds + `${section.slug}-${tabSection.slug}-tab `;
-                  });
-                  tabHeading = (
-                    <nav
-                      className="prime-secondary-nav"
-                      aria-label={`Tab navigation for ${section.title}`}
-                    >
-                      <div
-                        role="tablist"
-                        aria-owns={tabIds}
-                        className="usa-nav__secondary-links prime-nav csv-section-tablist"
-                      >
-                        {section.tabs.map((tabSection, index) => {
-                          return (
-                            <SectionTabButton
-                              selected={
-                                tabSectionState[section.slug] ===
-                                tabSection.title
-                              }
-                              parentSection={section}
-                              tabSection={tabSection}
-                              setTabSectionState={setTabSectionState}
-                              index={index}
-                            />
-                          );
-                        })}
-                      </div>
-                    </nav>
-                  );
-                  sectionToRender = section.tabs.filter(
-                    (tabSection) =>
-                      tabSectionState[section.slug] === tabSection.title
-                  )[0];
-                }
                 return (
                   <div
                     key={`sectionTiles-section-${section.title}`}
@@ -493,9 +367,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                   >
                     <h4 id={`${section.slug}`}>{section.title}</h4>
 
-                    {tabHeading}
-
-                    {sectionToRender.items?.map((item) => {
+                    {section.items?.map((item) => {
                       return (
                         <CsvSchemaDocumentationItem
                           item={item}
@@ -522,7 +394,7 @@ const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
                 results, you need to adjust it to match the SimpleReport
                 template. If you don’t have one, use the{" "}
                 <a
-                  href="/assets/resources/test_results_example_10-31-2023.csv"
+                  href="/assets/resources/test_results_example_10-3-2022.csv"
                   className="usa-link"
                   onClick={() => {
                     appInsights?.trackEvent({

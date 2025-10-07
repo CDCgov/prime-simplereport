@@ -13,45 +13,6 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import "../HeaderSizeFix.scss";
 
-const getSubmissionsTableRows = (
-  submissionsResult: GetUploadSubmissionsQuery | undefined,
-  loading: boolean
-) => {
-  if (loading) {
-    return (
-      <tr>
-        <td>Loading ...</td>
-      </tr>
-    );
-  } else if (
-    !submissionsResult ||
-    submissionsResult.uploadSubmissions.totalElements === 0
-  ) {
-    return (
-      <tr className="border-bottom">
-        <td>No results</td>
-      </tr>
-    );
-  }
-
-  return submissionsResult.uploadSubmissions.content.map((submission) => {
-    return (
-      <tr key={submission.internalId}>
-        <td>
-          <LinkWithQuery
-            to={`/results/upload/submissions/submission/${submission.internalId}`}
-            className="sr-link__primary"
-          >
-            {submission.reportId}
-          </LinkWithQuery>
-        </td>
-        <td>{formatDateWithTimeOption(submission.createdAt, true)}</td>
-        <td>{submission.recordsCount}</td>
-      </tr>
-    );
-  });
-};
-
 const Submissions = () => {
   useDocumentTitle("View upload history");
 
@@ -80,6 +41,44 @@ const Submissions = () => {
   if (error) {
     throw error;
   }
+
+  const SubmissionsTableRows = (
+    submissionsResult: GetUploadSubmissionsQuery | undefined
+  ) => {
+    if (loading) {
+      return (
+        <tr>
+          <td>Loading ...</td>
+        </tr>
+      );
+    } else if (
+      !submissionsResult ||
+      submissionsResult.uploadSubmissions.totalElements === 0
+    ) {
+      return (
+        <tr className="border-bottom">
+          <td>No results</td>
+        </tr>
+      );
+    }
+
+    return submissionsResult.uploadSubmissions.content.map((submission) => {
+      return (
+        <tr key={submission.internalId}>
+          <td>
+            <LinkWithQuery
+              to={`/results/upload/submissions/submission/${submission.internalId}`}
+              className="sr-link__primary"
+            >
+              {submission.reportId}
+            </LinkWithQuery>
+          </td>
+          <td>{formatDateWithTimeOption(submission.createdAt, true)}</td>
+          <td>{submission.recordsCount}</td>
+        </tr>
+      );
+    });
+  };
 
   return (
     <div className="grid-row header-size-fix">
@@ -159,7 +158,7 @@ const Submissions = () => {
                 <th scope="col">Records</th>
               </tr>
             </thead>
-            <tbody>{getSubmissionsTableRows(submissions, loading)}</tbody>
+            <tbody>{SubmissionsTableRows(submissions)}</tbody>
           </table>
         </div>
 

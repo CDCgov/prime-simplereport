@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "./DeviceLookup.scss";
 import { uniq } from "lodash";
 
@@ -9,15 +15,11 @@ import {
   SEARCH_DEBOUNCE_TIME,
 } from "../../testQueue/constants";
 import { DeviceType } from "../../../generated/graphql";
+import { useOutsideClick } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { SearchableDevice, searchFields } from "../../utils/device";
-import useComponentVisible from "../../commonComponents/ComponentVisible";
-import {
-  mapStringToDiseaseEnum,
-  useDisabledFeatureDiseaseList,
-} from "../../utils/disease";
 
 import DeviceSearchResults from "./DeviceSearchResults";
 import DeviceDetails from "./DeviceDetails";
@@ -49,40 +51,24 @@ export const searchDevices = (
 };
 
 const DeviceLookup = (props: Props) => {
-  const disabledDiseases = useDisabledFeatureDiseaseList();
-
-  const deviceDisplayOptions = props.deviceOptions.filter((device) => {
-    const hasDisabledDisease = device.supportedDiseaseTestPerformed.some(
-      (test) => {
-        const mappedDisease = mapStringToDiseaseEnum(
-          test.supportedDisease.name
-        );
-        return (
-          mappedDisease !== null && disabledDiseases.includes(mappedDisease)
-        );
-      }
-    );
-
-    // Keep the device if it doesn't have any disabled diseases
-    return !hasDisabledDisease;
-  });
-
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
   const [selectedDevice, setSelectedDevice] = useState<DeviceType | null>(null);
-  const {
-    ref: dropDownRef,
-    isComponentVisible: showSuggestion,
-    setIsComponentVisible: setShowSuggestion,
-  } = useComponentVisible(true);
+  const [showSuggestion, setShowSuggestion] = useState(true);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
   const showDropdown = useMemo(
     () => allowQuery && showSuggestion,
     [allowQuery, showSuggestion]
   );
+  const dropDownRef = useRef(null);
+  const hideOnOutsideClick = useCallback(() => {
+    setShowSuggestion(false);
+  }, []);
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Search field is cleared out via cancel icon
@@ -102,7 +88,7 @@ const DeviceLookup = (props: Props) => {
   // Close dropdown menu when a device is selected
   useEffect(() => {
     setShowSuggestion(false);
-  }, [selectedDevice, setShowSuggestion]);
+  }, [selectedDevice]);
 
   return (
     <div className="device-lookup-container prime-container card-container">
@@ -144,7 +130,7 @@ const DeviceLookup = (props: Props) => {
             showSubmitButton={false}
           />
           <DeviceSearchResults
-            items={searchDevices(deviceDisplayOptions, queryString)}
+            items={searchDevices(props.deviceOptions, queryString)}
             setSelectedItem={setSelectedDevice}
             shouldShowSuggestions={showDropdown}
             loading={debounced !== queryString}

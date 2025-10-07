@@ -21,7 +21,7 @@ on:
         default: "prod"
 
 env:
-  NODE_VERSION: 23
+  NODE_VERSION: 18
 
 jobs:
   pushMaintenanceBlob:
@@ -30,11 +30,11 @@ jobs:
       run:
         working-directory: ./frontend
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3.7.0
         with:
           node-version: ${{env.NODE_VERSION}}
-      - uses: azure/login@v2
+      - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Maintenance banner deploy

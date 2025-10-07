@@ -7,7 +7,6 @@ import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
@@ -57,7 +56,7 @@ class AzureTestEventReportingQueueConfiguration {
 
   @Bean
   FhirContext fhirContext() {
-    return FhirContextProvider.get();
+    return FhirContext.forR4();
   }
 
   @Profile(PROD)

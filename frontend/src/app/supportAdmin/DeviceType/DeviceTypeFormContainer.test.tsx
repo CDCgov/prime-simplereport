@@ -1,5 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import { SpecimenType } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
@@ -8,8 +8,11 @@ import DeviceTypeFormContainer from "./DeviceTypeFormContainer";
 
 const mockCreateDeviceType = jest.fn();
 
-const addValue = async (user: UserEvent, name: string, value: string) => {
-  await user.type(screen.getByLabelText(name, { exact: false }), value);
+const addValue = async (name: string, value: string) => {
+  await act(
+    async () =>
+      await userEvent.type(screen.getByLabelText(name, { exact: false }), value)
+  );
 };
 
 jest.mock("../../../generated/graphql", () => {
@@ -69,41 +72,67 @@ jest.mock("../../facilitySelect/useSelectedFacility", () => {
   };
 });
 
+let container: any;
+
 describe("DeviceTypeFormContainer", () => {
-  const renderWithUser = () => ({
-    user: userEvent.setup(),
-    ...render(
+  beforeEach(() => {
+    container = render(
       <>
         <DeviceTypeFormContainer />
         <SRToastContainer />
       </>
-    ),
+    );
   });
-
   it("should render the device type form", async () => {
-    const { container } = renderWithUser();
     expect(container).toMatchSnapshot();
   });
 
   it("should save the new device", async () => {
-    const { user } = renderWithUser();
-    await addValue(user, "Device name", "Accula");
-    await addValue(user, "Manufacturer", "Mesa Biotech");
-    await addValue(user, "Model", "Accula SARS-Cov-2 Test*");
-    await addValue(user, "Test length (minutes) ", "15");
+    await addValue("Device name", "Accula");
+    await addValue("Manufacturer", "Mesa Biotech");
+    await addValue("Model", "Accula SARS-Cov-2 Test*");
+    await addValue("Test length (minutes) ", "15");
 
-    await user.click(screen.getAllByTestId("multi-select-input")[0]);
-    await user.click(screen.getByText("Cotton (5309)"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getAllByTestId("multi-select-input")[0])
+    );
+    await act(
+      async () => await userEvent.click(screen.getByText("Cotton (5309)"))
+    );
 
-    await user.click(screen.getAllByTestId("multi-select-input")[1]);
-    await user.click(screen.getAllByText("COVID-19")[0]);
+    await act(
+      async () =>
+        await userEvent.click(screen.getAllByTestId("multi-select-input")[1])
+    );
+    await act(
+      async () => await userEvent.click(screen.getAllByText("COVID-19")[0])
+    );
 
-    await user.selectOptions(screen.getByLabelText("Disease *"), "COVID-19");
-
-    await user.type(screen.getByLabelText("Test performed *"), "1920-12");
-
-    await user.type(screen.getByLabelText("Test ordered *"), "2102-91");
-    await user.click(screen.getByText("Save changes"));
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Supported disease *"),
+          "COVID-19"
+        )
+    );
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Test performed code *"),
+          "1920-12"
+        )
+    );
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Test ordered code *"),
+          "2102-91"
+        )
+    );
+    await act(
+      async () => await userEvent.click(screen.getByText("Save changes"))
+    );
 
     await waitFor(() =>
       expect(mockCreateDeviceType).toHaveBeenCalledWith({

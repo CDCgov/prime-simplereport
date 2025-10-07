@@ -8,36 +8,6 @@ import "./Pagination.scss";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { getNumberFromUrlPath } from "../utils/number";
 
-type PageNumberLinkProps = {
-  baseRoute: string;
-  to: string | number;
-  active?: boolean;
-  label?: string;
-  children: React.ReactNode;
-  onPaginationClick?: (pageNumber: number) => void;
-};
-const PageNumberLink: React.FC<PageNumberLinkProps> = ({
-  baseRoute,
-  to,
-  active,
-  label,
-  children,
-  onPaginationClick,
-}) => {
-  let pageNumber = getNumberFromUrlPath(to);
-  return (
-    <LinkWithQuery
-      to={`${baseRoute}/${to}`}
-      className={classnames(active && "is-active")}
-      aria-label={label}
-      onClick={() =>
-        onPaginationClick && pageNumber ? onPaginationClick(pageNumber) : null
-      }
-    >
-      {children}
-    </LinkWithQuery>
-  );
-};
 interface Props {
   baseRoute: string;
   totalEntries: number;
@@ -83,6 +53,27 @@ const Pagination = ({
     maxGroupPage = totalPages;
   }
 
+  const Link = (props: {
+    to: string | number;
+    active?: boolean;
+    label?: string;
+    children: React.ReactNode;
+  }) => {
+    let pageNumber = getNumberFromUrlPath(props.to);
+    return (
+      <LinkWithQuery
+        to={`${baseRoute}/${props.to}`}
+        className={classnames(props.active && "is-active")}
+        aria-label={props.label}
+        onClick={() =>
+          onPaginationClick && pageNumber ? onPaginationClick(pageNumber) : null
+        }
+      >
+        {props.children}
+      </LinkWithQuery>
+    );
+  };
+
   // Build list of pages, with 0 representing the ellipsis
   if (minGroupPage !== 1) {
     pageList.push(1);
@@ -111,28 +102,21 @@ const Pagination = ({
           <ol>
             {currentPage > 1 && (
               <li key="prevpage">
-                <PageNumberLink
-                  baseRoute={baseRoute}
-                  to={`${currentPage - 1}`}
-                  label="Previous Page"
-                  onPaginationClick={onPaginationClick}
-                >
+                <Link to={`${currentPage - 1}`} label="Previous Page">
                   <FontAwesomeIcon icon={faAngleLeft as IconProp} /> Prev
-                </PageNumberLink>
+                </Link>
               </li>
             )}
             {pageList.map((pn) =>
               typeof pn === "number" ? (
                 <li key={pn}>
-                  <PageNumberLink
-                    baseRoute={baseRoute}
+                  <Link
                     to={pn}
                     label={`Page ${pn}`}
                     active={pn === currentPage}
-                    onPaginationClick={onPaginationClick}
                   >
                     <span>{pn}</span>
-                  </PageNumberLink>
+                  </Link>
                 </li>
               ) : (
                 <li key={pn} aria-hidden="true">
@@ -142,14 +126,9 @@ const Pagination = ({
             )}
             {currentPage < totalPages && (
               <li key="nextpage">
-                <PageNumberLink
-                  baseRoute={baseRoute}
-                  to={`${currentPage + 1}`}
-                  label="Next Page"
-                  onPaginationClick={onPaginationClick}
-                >
+                <Link to={`${currentPage + 1}`} label="Next Page">
                   Next <FontAwesomeIcon icon={faAngleRight as IconProp} />
-                </PageNumberLink>
+                </Link>
               </li>
             )}
           </ol>

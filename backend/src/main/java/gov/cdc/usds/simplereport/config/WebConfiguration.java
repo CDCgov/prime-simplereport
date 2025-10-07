@@ -6,14 +6,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @ConditionalOnWebApplication
 public class WebConfiguration implements WebMvcConfigurer {
 
+  public static final String HEALTH_CHECK = "/health";
   public static final String PATIENT_EXPERIENCE = "/pxp/**";
   public static final String TWILIO_CALLBACK = "/pxp/callback";
   public static final String RS_QUEUE_CALLBACK = "/reportstream/callback";
@@ -23,12 +26,15 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String FEATURE_FLAGS = "/feature-flags";
   public static final String PATIENT_UPLOAD = "/upload/patients";
   public static final String RESULT_UPLOAD = "/upload/results";
-  public static final String CONDITION_AGNOSTIC_RESULT_UPLOAD = "/upload/condition-agnostic";
-
-  public static final String DEVICES = "/devices";
+  public static final String HIV_RESULT_UPLOAD = "/upload/hiv-results";
   public static final String GRAPH_QL = "/graphql";
 
   @Autowired private RestLoggingInterceptor _loggingInterceptor;
+
+  @Override
+  public void addViewControllers(ViewControllerRegistry registry) {
+    registry.addStatusController(HEALTH_CHECK, HttpStatus.OK);
+  }
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {

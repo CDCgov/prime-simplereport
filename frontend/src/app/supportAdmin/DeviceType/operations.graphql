@@ -63,10 +63,7 @@ query getDeviceTypeList{
       testPerformedLoincCode
       testkitNameId
       equipmentUid
-      equipmentUidType
       testOrderedLoincCode
-      testOrderedLoincLongName
-      testPerformedLoincLongName
     }
     testLength
   }

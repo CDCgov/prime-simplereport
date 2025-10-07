@@ -14,7 +14,7 @@ interface Props {
 export const AddPatientHeader = (props: Props) => {
   return (
     <>
-      <div className="display-flex flex-justify" data-cy="add-patient-header">
+      <div className="display-flex flex-justify">
         <div>
           <div className="display-flex flex-align-center">
             <svg

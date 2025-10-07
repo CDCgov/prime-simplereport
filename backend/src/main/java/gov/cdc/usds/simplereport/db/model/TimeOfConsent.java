@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity

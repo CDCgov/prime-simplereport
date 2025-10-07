@@ -60,7 +60,7 @@ describe("Header.tsx", () => {
   );
 
   it("displays the support link correctly", async () => {
-    process.env.REACT_APP_IS_TRAINING_SITE = "false";
+    import.meta.env.VITE_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
     await act(
       async () =>
@@ -74,7 +74,7 @@ describe("Header.tsx", () => {
     expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
   });
   it("displays new feature link correctly", async () => {
-    process.env.REACT_APP_IS_TRAINING_SITE = "false";
+    import.meta.env.VITE_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
     await act(
       async () =>

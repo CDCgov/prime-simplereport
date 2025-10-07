@@ -6,8 +6,7 @@
     "coding": [
       {
         "system": "http://loinc.org",
-        "code": "94500-6",
-        "display": "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection"
+        "code": "94500-6"
       }
     ],
     "text": "COVID-19"
@@ -43,6 +42,12 @@
         "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
         "valueCoding": {
           "code": "covidTestkitNameId"
+        }
+      },
+      {
+        "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+        "valueCoding": {
+          "code": "covidEquipmentUID"
         }
       }
     ]

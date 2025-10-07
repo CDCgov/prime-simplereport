@@ -1,5 +1,5 @@
 import * as appInsights from "applicationinsights";
-import { app, InvocationContext, Timer } from "@azure/functions";
+import { AzureFunction, Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import { Response } from "node-fetch";
 import { ENV } from "../config";
@@ -14,7 +14,6 @@ import {
   handleReportStreamResponse,
   reportToUniversalPipelineTokenBased,
 } from "../common/reportingHandlers";
-import { trackFailures } from "../common/errorHandlers";
 
 const {
   REPORT_STREAM_URL,
@@ -28,12 +27,10 @@ const FHIR_BATCH_SIZE_LIMIT = 99050000; // HTTP request size limit is 100MB so b
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
-export async function FHIRTestEventReporter(
-  _myTimer: Timer,
-  context: InvocationContext,
+const FHIRTestEventReporter: AzureFunction = async function (
+  context: Context,
 ): Promise<void> {
-  const operationId = context.traceContext.traceParent;
-
+  const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const publishingQueue: QueueClient = getQueueClient(
     FHIR_TEST_EVENT_QUEUE_NAME,
   );
@@ -55,10 +52,8 @@ export async function FHIRTestEventReporter(
 
   telemetry.trackEvent({
     name: `Queue:${publishingQueue.name}. Messages Dequeued`,
-    properties: {
-      messagesDequeued: messages.length,
-      operationId,
-    },
+    properties: { messagesDequeued: messages.length },
+    tagOverrides,
   });
 
   if (messages.length === 0) {
@@ -88,10 +83,10 @@ export async function FHIRTestEventReporter(
             const failureObj = {
               testEventBatch,
               publishingQueueName: publishingQueue.name,
-              operationId,
+              tagOverrides,
             };
 
-            trackFailures(telemetry, failureObj);
+            trackFailures(failureObj);
 
             if (testEventBatch.parseSuccessCount < 1) {
               context.log(
@@ -125,11 +120,11 @@ export async function FHIRTestEventReporter(
               properties: {
                 recordCount: testEventBatch.parseSuccessCount,
                 queue: publishingQueue.name,
-                operationId,
               },
               duration: new Date().getTime() - uploadStart,
               resultCode: postResult.status,
               success: postResult.ok,
+              tagOverrides,
             });
 
             await handleReportStreamResponse(
@@ -143,7 +138,7 @@ export async function FHIRTestEventReporter(
             );
             return resolve();
           } catch (e) {
-            context.error(
+            context.log.error(
               `Queue: ${publishingQueue.name}. Publishing tasks for batch ${
                 idx + 1
               } failed unexpectedly; ${e}`,
@@ -176,7 +171,7 @@ export async function FHIRTestEventReporter(
   }
 
   if (rejectedPublishing.length > 0) {
-    context.error(
+    context.log.error(
       `Queue: ${publishingQueue.name}. ${rejectedPublishing.length} batch(es) out of ${fhirPublishingTasks.length} were not published;`,
     );
 
@@ -188,9 +183,23 @@ export async function FHIRTestEventReporter(
         .join(", ")}]`,
     );
   }
-}
+};
 
-app.timer("FHIRTestEventReporter", {
-  schedule: "0 */2 * * * *",
-  handler: FHIRTestEventReporter,
-});
+const trackFailures = ({
+  testEventBatch,
+  tagOverrides,
+  publishingQueueName,
+}) => {
+  if (testEventBatch.parseFailureCount > 0) {
+    telemetry.trackEvent({
+      name: `Queue:${publishingQueueName}. Test Event Parse Failure`,
+      properties: {
+        count: testEventBatch.parseFailureCount,
+        parseFailures: Object.keys(testEventBatch.parseFailure),
+      },
+      tagOverrides,
+    });
+  }
+};
+
+export default FHIRTestEventReporter;

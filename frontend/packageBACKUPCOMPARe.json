@@ -1,0 +1,392 @@
+{
+  "name": "simple-report-client",
+  "private": true,
+  "version": "0.1.0",
+  "engines": {
+    "node": "18"
+  },
+  "scripts": {
+    "dev": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite --host",
+    "prebuild": "tsc",
+    "build": "VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build",
+    "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/assets/commit.txt",
+    "build:preview": "VITE_BACKEND_URL='http://localhost:3000/api' VITE_PUBLIC_URL='' VITE_BASE_URL='http://localhost:3000' VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite build && yarn postbuild",
+    "preview": "yarn build:preview && VITE_CURRENT_COMMIT=$(git rev-parse HEAD) vite preview",
+    "test": "jest",
+    "test:ci": "CI=true yarn test --coverage",
+    "codegen": "graphql-codegen --config codegen.yml && prettier --write 'src/generated/graphql.tsx'",
+    "codegen:watch": "yarn codegen --watch",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "VITE_BACKEND_URL=http://localhost:8080 build-storybook -s public",
+    "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
+    "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write lint:stylelint:write",
+    "lint:eslint": "eslint --quiet 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:eslint:write": "eslint --fix 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:prettier": "prettier -c 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:prettier:write": "prettier --write 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:stylelint": "stylelint '**/*.scss'",
+    "lint:stylelint:write": "stylelint '**/*.scss' --fix",
+    "maintenance:start": "[ -z \"$MAINTENANCE_MESSAGE\" ] && echo \"MAINTENANCE_MESSAGE must be set!\" || (echo $MAINTENANCE_MESSAGE > maintenance.json && yarn maintenance:deploy && rm maintenance.json)",
+    "maintenance:deploy": "[ -z \"$MAINTENANCE_ENV\" ] && echo \"MAINTENANCE_ENV must be set!\" || az storage blob upload -f maintenance.json -n maintenance.json -c '$web' --account-name simplereport${MAINTENANCE_ENV}app --overwrite"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.13",
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@microsoft/applicationinsights-react-js": "^3.4.3",
+    "@microsoft/applicationinsights-web": "^2.5.10",
+    "@szhsin/react-menu": "^1.5.0",
+<<<<<<< HEAD
+    "@trussworks/react-uswds": "3.2.0",
+=======
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "14.1.1",
+    "@trussworks/react-uswds": "5.0.0",
+    "@types/google-libphonenumber": "^7.4.23",
+    "@types/history": "^4.7.10",
+    "@types/react-router-dom": "5.3.3",
+    "@types/react-transition-group": "^4.4.5",
+    "@types/testing-library__jest-dom": "^5.14.5",
+    "@uswds/uswds": "3.1.0",
+>>>>>>> origin/main
+    "apollo-upload-client": "^17.0.0",
+    "browserslist": "4.21.9",
+    "classnames": "^2.2.6",
+    "flagged": "^2.0.8",
+    "google-libphonenumber": "^3.2.33",
+    "graphql": "^16.6.0",
+    "i18next": "22.4.15",
+    "jwt-decode": "^3.1.2",
+    "loader-utils": "^3.2.1",
+    "lodash": "^4.17.21",
+    "minimist": "1.2.6",
+    "moment": "^2.29.4",
+    "prop-types": "^15.7.2",
+    "react": "^18.0.0",
+    "react-csv": "^2.2.1",
+    "react-dom": "^18.0.0",
+    "react-hook-form": "^7.45.2",
+    "react-i18next": "^11.18.6",
+    "react-modal": "^3.16.1",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "6.2.1",
+    "react-scripts": "^5.0.0",
+    "react-select-event": "^5.5.1",
+    "react-toastify": "^9.1.3",
+    "react-transition-group": "^4.4.5",
+    "react-uid": "^2.3.3",
+    "redux": "^4.2.1",
+<<<<<<< HEAD
+    "smartystreets-javascript-sdk": "^2.1.0",
+    "uswds": "2.13.3",
+    "uuid": "^8.3.1",
+    "yup": "^0.32.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.2",
+    "@babel/plugin-syntax-import-meta": "^7.10.4",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/preset-typescript": "^7.18.6",
+    "@graphql-codegen/cli": "3.2.2",
+    "@graphql-codegen/typescript": "2.4.2",
+    "@graphql-codegen/typescript-operations": "2.2.2",
+    "@graphql-codegen/typescript-react-apollo": "3.3.7",
+    "@storybook/addon-a11y": "^6.5.16",
+    "@storybook/addon-actions": "^6.5.13",
+    "@storybook/addon-essentials": "^6.5.13",
+    "@storybook/addon-interactions": "^6.5.13",
+    "@storybook/addon-links": "^6.5.13",
+    "@storybook/builder-vite": "^0.2.5",
+    "@storybook/builder-webpack5": "^6.5.13",
+    "@storybook/manager-webpack5": "^6.5.13",
+    "@storybook/node-logger": "^6.5.13",
+    "@storybook/preset-create-react-app": "^4.1.2",
+    "@storybook/react": "^6.5.16",
+    "@storybook/testing-library": "^0.0.13",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/apollo-upload-client": "^17.0.0",
+    "@types/classnames": "^2.2.11",
+    "@types/faker": "^5.5.9",
+    "@types/google-libphonenumber": "^7.4.23",
+    "@types/history": "^4.7.10",
+    "@types/jest": "^29.2.3",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.27",
+    "@types/react-csv": "^1.1.2",
+    "@types/react-dom": "^18.0.0",
+    "@types/react-modal": "^3.13.1",
+    "@types/react-redux": "^7.1.22",
+    "@types/react-router-dom": "5.3.3",
+    "@types/react-transition-group": "^4.4.5",
+    "@types/redux-mock-store": "^1.0.3",
+    "@types/smartystreets-javascript-sdk": "^1.6.4",
+    "@types/testing-library__jest-dom": "^5.14.2",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.49.0",
+    "@vitejs/plugin-react": "^2.2.0",
+    "autoprefixer": "^10.4.13",
+    "babel-plugin-inline-react-svg": "^2.0.1",
+    "babel-plugin-transform-vite-meta-env": "^1.0.3",
+    "chromatic": "^6.10.2",
+    "dayjs": "^1.10.7",
+    "depcheck": "^1.4.3",
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-graphql": "^4.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest-dom": "^4.0.3",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-testing-library": "^5.10.2",
+    "eslint-plugin-unused-imports": "2.0.0",
+    "faker": "^5.5.3",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "29.2.X",
+    "jest-environment-jsdom": "^29.3.1",
+    "jest-fetch-mock": "^3.0.3",
+    "jest-location-mock": "^1.0.9",
+    "mockdate": "^3.0.5",
+    "msw": "0.36.4",
+    "msw-storybook-addon": "1.5.0",
+    "npm-run-all": "^4.1.5",
+    "otplib": "^12.0.1",
+    "postcss": "^8.4.19",
+    "prettier": "^2.8.4",
+    "redux-mock-store": "^1.5.4",
+    "sass": "^1.56.0",
+    "stylelint": "^15.4.0",
+    "stylelint-config-standard-scss": "^7.0.1",
+    "typescript": "^5.0.3",
+    "vite": "^3.2.3",
+    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-svgr": "^2.2.2",
+    "webpack": "^5.75.0"
+  },
+  "msw": {
+    "workerDirectory": "/storybook-static"
+  },
+  "resolutions": {
+    "nth-check": "2.1.1",
+    "@storybook/react-docgen-typescript-plugin": "1.0.6--canary.9.cd77847.0"
+=======
+    "smartystreets-javascript-sdk": "^2.1.2",
+    "uuid": "^9.0.0",
+    "yup": "^0.32.9"
+  },
+  "scripts": {
+    "prestart": "rm -rf .eslintcache && yarn",
+    "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) SASS_PATH=$(cd ./node_modules && pwd):$(cd ./node_modules/@uswds && pwd):$(cd ./node_modules/@uswds/uswds/packages && pwd):$(cd ./src/scss && pwd) npm-run-all -p start-js",
+    "start-js": "react-scripts start",
+    "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) SASS_PATH=$(cd ./node_modules && pwd):$(cd ./node_modules/@uswds && pwd):$(cd ./node_modules/@uswds/uswds/packages && pwd):$(cd ./src/scss && pwd) react-scripts build",
+    "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt && cd build && mv *touchpoints*.* static/",
+    "codegen": "graphql-codegen --config codegen.yml && prettier --write 'src/generated/graphql.tsx'",
+    "codegen:watch": "yarn codegen --watch",
+    "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
+    "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write lint:stylelint:write",
+    "lint:eslint": "eslint --quiet 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:eslint:write": "eslint --fix 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:prettier": "prettier -c 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:prettier:write": "prettier --write 'src/**/*.{js,ts,jsx,tsx}'",
+    "lint:stylelint": "stylelint '**/*.scss'",
+    "lint:stylelint:write": "stylelint '**/*.scss' --fix",
+    "test": "react-scripts test",
+    "test:ci": "CI=true yarn test --coverage",
+    "eject": "react-scripts eject",
+    "create-storybook-public": "rm -rf ./storybook_public && cp -R ./public ./storybook_public && cp mockServiceWorker.js ./storybook_public",
+    "storybook": "yarn create-storybook-public && SASS_PATH=$(cd ./node_modules && pwd):$(cd ./node_modules/@uswds && pwd):$(cd ./node_modules/@uswds/uswds/packages && pwd):$(cd ./src/scss && pwd) storybook dev -p 6006 -s ../storybook_public",
+    "build-storybook": "yarn create-storybook-public && REACT_APP_BACKEND_URL=http://localhost:8080 SASS_PATH=$(cd ./node_modules && pwd):$(cd ./node_modules/@uswds && pwd):$(cd ./node_modules/@uswds/uswds/packages && pwd):$(cd ./src/scss && pwd) storybook build -s storybook_public",
+    "maintenance:start": "[ -z \"$MAINTENANCE_MESSAGE\" ] && echo \"MAINTENANCE_MESSAGE must be set!\" || (echo $MAINTENANCE_MESSAGE > maintenance.json && yarn maintenance:deploy && rm maintenance.json)",
+    "maintenance:deploy": "[ -z \"$MAINTENANCE_ENV\" ] && echo \"MAINTENANCE_ENV must be set!\" || az storage blob upload -f maintenance.json -n maintenance.json -c '$web' --account-name simplereport${MAINTENANCE_ENV}app --overwrite"
+>>>>>>> origin/main
+  },
+  "prettier": {
+    "singleQuote": false
+  },
+<<<<<<< HEAD
+=======
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "extends": [
+      "react-app",
+      "prettier",
+      "plugin:import/typescript",
+      "plugin:storybook/recommended"
+    ],
+    "plugins": [
+      "graphql",
+      "testing-library",
+      "unused-imports",
+      "jest-dom"
+    ],
+    "rules": {
+      "import/no-unresolved": 0,
+      "import/first": 1,
+      "import/order": [
+        1,
+        {
+          "newlines-between": "always"
+        }
+      ],
+      "import/newline-after-import": 1,
+      "import/no-commonjs": 0,
+      "import/no-named-as-default": 0,
+      "no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      },
+      {
+        "files": [
+          "**/__tests__/**/*.[jt]s?(x)",
+          "**/?(*.)+(spec|test).[jt]s?(x)"
+        ],
+        "extends": [
+          "plugin:testing-library/react",
+          "plugin:jest-dom/recommended"
+        ],
+        "rules": {
+          "testing-library/no-render-in-setup": [
+            "error",
+            {
+              "allowTestingFrameworkSetupHook": "beforeEach"
+            }
+          ],
+          "testing-library/no-node-access": "off"
+        }
+      },
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      }
+    ]
+  },
+>>>>>>> origin/main
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+<<<<<<< HEAD
+=======
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "3.2.2",
+    "@graphql-codegen/typescript": "3.0.3",
+    "@graphql-codegen/typescript-operations": "3.0.4",
+    "@graphql-codegen/typescript-react-apollo": "3.3.7",
+    "@storybook/addon-a11y": "^7.1.1",
+    "@storybook/addon-actions": "^7.1.1",
+    "@storybook/addon-essentials": "^7.1.1",
+    "@storybook/addon-interactions": "^7.1.1",
+    "@storybook/addon-links": "^7.1.1",
+    "@storybook/addon-mdx-gfm": "^7.1.1",
+    "@storybook/blocks": "^7.1.1",
+    "@storybook/cli": "^7.1.1",
+    "@storybook/node-logger": "^7.3.2",
+    "@storybook/preset-create-react-app": "^7.1.1",
+    "@storybook/react": "^7.2.3",
+    "@storybook/react-webpack5": "^7.1.1",
+    "@storybook/testing-library": "^0.1.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@types/apollo-upload-client": "^17.0.0",
+    "@types/classnames": "^2.2.11",
+    "@types/faker": "^5.5.9",
+    "@types/jest": "^29.5.1",
+    "@types/jest-axe": "^3.5.5",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.27",
+    "@types/react-csv": "^1.1.2",
+    "@types/react-dom": "^18.0.0",
+    "@types/react-modal": "^3.16.0",
+    "@types/redux-mock-store": "^1.0.3",
+    "@types/smartystreets-javascript-sdk": "^1.6.4",
+    "@types/uuid": "^9.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.9.1",
+    "@typescript-eslint/parser": "^5.49.0",
+    "chromatic": "^6.10.2",
+    "dayjs": "^1.10.7",
+    "depcheck": "^1.4.3",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-graphql": "^4.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jest-dom": "^4.0.3",
+    "eslint-plugin-storybook": "^0.6.13",
+    "eslint-plugin-testing-library": "^5.11.0",
+    "eslint-plugin-unused-imports": "3.0.0",
+    "faker": "^5.5.3",
+    "jest": "29.5.0",
+    "jest-axe": "^8.0.0",
+    "jest-fetch-mock": "^3.0.3",
+    "jest-location-mock": "^1.0.10",
+    "mockdate": "^3.0.5",
+    "msw": "^0.36.4",
+    "msw-storybook-addon": "^1.8.0",
+    "npm-run-all": "^4.1.5",
+    "otplib": "^12.0.1",
+    "prettier": "^2.8.4",
+    "redux-mock-store": "^1.5.4",
+    "sass": "^1.63.6",
+    "storybook": "^7.1.1",
+    "stylelint": "^13.13.1",
+    "stylelint-config-standard": "^22.0.0",
+    "typescript": "^5.0.3",
+    "webpack": "^5.76.0"
+  },
+  "resolutions": {
+    "http-cache-semantics": "4.1.1",
+    "eslint-plugin-graphql/**/minimatch": "^3.0.5",
+    "node-fetch": "^2.6.12",
+    "react-scripts/**/nth-check": "^2.1.1",
+    "undici": "5.22.1",
+    "webpack@>5.0.0": "5.76.0"
+  },
+  "msw": {
+    "workerDirectory": "/storybook_public"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
+    },
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/src/index.tsx",
+      "<rootDir>/src/serviceWorker.ts",
+      ".stories.tsx"
+    ]
+>>>>>>> origin/main
+  }
+}

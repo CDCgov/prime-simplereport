@@ -4,25 +4,25 @@ import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import "./TestTimer.scss";
-import { getAppInsights } from "../TelemetryService";
+import { getAppInsights } from "../../app/TelemetryService";
 
-const alarmModule = require("./test-timer.mp3");
+import alarmModule from "./test-timer.mp3";
 
-const alarmSound = new Audio(alarmModule.default || alarmModule);
+//const alarmModule = require("./test-timer.mp3");
+
+const alarmSound = new Audio(alarmModule || alarmModule);
 
 type DateTimeStamp = ReturnType<typeof Date.now>;
 
 function toMillis(minutes: number) {
   return minutes * 60 * 1000;
 }
-
 export interface TimerTrackEventMetadata {
   facilityName: string | undefined;
   organizationName: string;
   patientId: string;
   testOrderId: string;
 }
-
 export class Timer {
   id: string;
   startedAt: DateTimeStamp;
@@ -33,9 +33,9 @@ export class Timer {
   alarmed: boolean;
   notify?: (value: number) => any;
 
-  constructor(id: string, testLength: number, startedAt: number = 0) {
+  constructor(id: string, testLength: number) {
     this.id = id;
-    this.startedAt = startedAt;
+    this.startedAt = 0;
     this.alarmAt = 0;
     this.testLength = testLength;
     this.countdown = toMillis(testLength);
@@ -57,12 +57,6 @@ export class Timer {
   start(now: number) {
     this.startedAt = now;
     this.alarmAt = this.startedAt + toMillis(this.testLength);
-  }
-
-  setStartedAt(startedAt: number) {
-    this.startedAt = startedAt;
-    this.alarmAt = this.startedAt + toMillis(this.testLength);
-    this.elapsed = Date.now() - this.startedAt;
   }
 
   reset() {
@@ -139,7 +133,7 @@ const saveTimers = () => {
     const storage = localStorage.getItem("timers") || "[]";
     const cutoff = Date.now() - toMillis(60);
     oldTimers = JSON.parse(storage).filter((t: any) => t.alarmAt > cutoff);
-  } catch {}
+  } catch (e: any) {}
   oldTimers.forEach((t) => {
     timers.push(timerFromJSON(t));
   });
@@ -172,23 +166,9 @@ export const removeTimer = (id: string) => {
   }
 };
 
-export const useTestTimer = (
-  id: string,
-  testLength: number,
-  startedAt?: number
-) => {
+export const useTestTimer = (id: string, testLength: number) => {
   const [, setCount] = useState(0);
-  const existingTimer = findTimer(id);
-  if (existingTimer && (startedAt === null || startedAt === undefined)) {
-    // if timer already exists and startedAt is null or undefined,
-    // then reset the timer
-    existingTimer.reset();
-    saveTimers();
-  }
   const timer: Timer = findTimer(id) || addTimer(id, testLength);
-  if (startedAt) {
-    timer.setStartedAt(startedAt);
-  }
   useEffect(() => {
     timer.notify = setCount;
     return () => {
@@ -201,7 +181,6 @@ export const useTestTimer = (
       (timer.startedAt ? timer.countdown : toMillis(timer.testLength)) / 1000
     ),
     elapsed: Math.round(timer.elapsed / 1000),
-    startedAt: timer.startedAt,
     start: (trackClickEvent: Function) => {
       const timerToStart: Timer = findTimer(id) || addTimer(id, testLength);
       timerToStart.start(Date.now());
@@ -231,14 +210,9 @@ export const mmss = (t: number) => {
 type Props = {
   timer: ReturnType<typeof useTestTimer>;
   context: TimerTrackEventMetadata;
-  saveStartedAtCallback: (startedAt: number | undefined) => void;
 };
 
-export const TestTimerWidget = ({
-  timer,
-  context,
-  saveStartedAtCallback,
-}: Props) => {
+export const TestTimerWidget = ({ timer, context }: Props) => {
   const { running, countdown, elapsed, start, reset } = timer;
   const [timerFinished, setTimerFinished] = useState(false);
 
@@ -264,18 +238,12 @@ export const TestTimerWidget = ({
     return (
       <button
         className="timer-button timer-reset"
-        onClick={() => {
-          start(trackTimerStart);
-          const timerToReset = findTimer(context.testOrderId);
-          saveStartedAtCallback(timerToReset?.startedAt);
-        }}
+        onClick={() => start(trackTimerStart)}
         data-testid="timer"
         aria-label="Start timer"
       >
+        <span role="timer">{mmss(countdown)}</span>{" "}
         <FontAwesomeIcon alt-text="stopwatch" icon={faStopwatch as IconProp} />
-        <span className={"margin-left-1"} role="timer">
-          Start timer
-        </span>{" "}
       </button>
     );
   }
@@ -283,15 +251,12 @@ export const TestTimerWidget = ({
     return (
       <button
         className="timer-button timer-running"
-        onClick={() => {
-          reset(trackTimerReset);
-          saveStartedAtCallback(undefined);
-        }}
+        onClick={() => reset(trackTimerReset)}
         data-testid="timer"
         aria-label="Reset timer"
       >
-        <FontAwesomeIcon alt-text="reset" icon={faRedo as IconProp} />
         <span role="timer">{mmss(countdown)}</span>{" "}
+        <FontAwesomeIcon alt-text="reset" icon={faRedo as IconProp} />
       </button>
     );
   }
@@ -306,17 +271,12 @@ export const TestTimerWidget = ({
     <div>
       <button
         className="timer-button timer-ready"
-        onClick={() => {
-          reset(trackTimerReset);
-          saveStartedAtCallback(undefined);
-        }}
+        onClick={() => reset(trackTimerReset)}
         data-testid="timer"
         aria-label="Reset timer"
       >
-        <span className="result-ready">
-          <strong>RESULT READY</strong>
-        </span>{" "}
-        <span className="timer-overtime margin-x-1" role="timer">
+        <span className="result-ready">RESULT READY</span>{" "}
+        <span className="timer-overtime" role="timer">
           {mmss(elapsed)} elapsed{" "}
         </span>{" "}
         <FontAwesomeIcon icon={faRedo as IconProp} />

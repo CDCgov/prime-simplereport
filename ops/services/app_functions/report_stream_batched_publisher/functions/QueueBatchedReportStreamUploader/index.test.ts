@@ -1,17 +1,10 @@
-import { QueueBatchedTestEventPublisher as fn } from "./index";
+import fn from "./index";
 import * as lib from "./lib";
 import * as queueHandlers from "../common/queueHandlers";
 import * as appInsights from "applicationinsights";
-import { InvocationContext, Timer } from "@azure/functions";
+import { Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import { Response } from "node-fetch";
-
-jest.mock("@azure/functions", () => ({
-  ...jest.requireActual("@azure/functions"),
-  app: {
-    timer: jest.fn(),
-  },
-}));
 
 jest.mock(
   "applicationinsights",
@@ -39,12 +32,10 @@ jest.mock("../config", () => ({
 
 describe("main function export", () => {
   const context = {
-    error: jest.fn(),
     log: jest.fn(),
-    traceContext: { traceParent: "asdf" },
-  } as jest.MockedObject<InvocationContext>;
-
-  const timer = {} as jest.MockedObject<Timer>;
+    traceContext: { traceparent: "asdf" },
+  } as jest.MockedObject<Context>;
+  context.log.error = jest.fn();
 
   let getQueueClientMock;
   let dequeueMessagesMock;
@@ -81,6 +72,7 @@ describe("main function export", () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    context.log.mockReset();
   });
 
   describe("minimum messages", () => {
@@ -89,7 +81,7 @@ describe("main function export", () => {
       prepareQueue([]);
 
       // WHEN
-      await fn(timer, context);
+      await fn(context);
 
       // THEN
       expect(getQueueClientMock).toHaveBeenCalledTimes(3);
@@ -106,7 +98,7 @@ describe("main function export", () => {
     ]);
 
     // WHEN
-    await fn(timer, context);
+    await fn(context);
 
     // THEN
     expect(getQueueClientMock).toHaveBeenCalledTimes(3);
@@ -130,7 +122,7 @@ describe("main function export", () => {
 
     // WHEN
     try {
-      await fn(timer, context);
+      await fn(context);
       expect(0).toBe(1);
     } catch (e) {
       expect(e).toBeDefined();
@@ -151,7 +143,7 @@ describe("main function export", () => {
     ]);
 
     // WHEN
-    await fn(timer, context);
+    await fn(context);
 
     // THEN
     expect(getQueueClientMock).toHaveBeenCalledTimes(3);
@@ -168,7 +160,7 @@ describe("main function export", () => {
     prepareQueue([{ messageText: "this is not json at all" }]);
 
     // WHEN
-    await fn(timer, context);
+    await fn(context);
 
     // THEN
     expect(dequeueMessagesMock).toHaveBeenCalled();
@@ -198,7 +190,7 @@ describe("main function export", () => {
 
     // WHEN
     try {
-      await fn(timer, context);
+      await fn(context);
     } catch (e) {
       expect(e).toBeDefined();
     }

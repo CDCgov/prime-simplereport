@@ -53,7 +53,6 @@ mutation AddPatientToQueue(
   $symptoms: String
   $symptomOnset: LocalDate
   $pregnancy: String
-  $syphilisHistory: String
   $noSymptoms: Boolean
   $testResultDelivery: TestResultDeliveryPreference
 ) {
@@ -61,7 +60,6 @@ mutation AddPatientToQueue(
     facilityId: $facilityId
     patientId: $patientId
     pregnancy: $pregnancy
-    syphilisHistory: $syphilisHistory
     noSymptoms: $noSymptoms
     symptoms: $symptoms
     symptomOnset: $symptomOnset
@@ -74,19 +72,15 @@ mutation UpdateAOE(
   $symptoms: String
   $symptomOnset: LocalDate
   $pregnancy: String
-  $syphilisHistory: String
   $noSymptoms: Boolean
   $testResultDelivery: TestResultDeliveryPreference
-  $genderOfSexualPartners: [String]
 ) {
-  updateAoeQuestions(
+  updateTimeOfTestQuestions(
     patientId: $patientId
     pregnancy: $pregnancy
-    syphilisHistory: $syphilisHistory
     symptoms: $symptoms
     noSymptoms: $noSymptoms
     symptomOnset: $symptomOnset
     testResultDelivery: $testResultDelivery
-    genderOfSexualPartners: $genderOfSexualPartners
   )
 }

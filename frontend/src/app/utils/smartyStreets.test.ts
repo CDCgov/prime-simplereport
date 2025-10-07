@@ -37,8 +37,8 @@ const validZipCodeResult: ZipCodeResult = {
 describe("smartStreets", () => {
   describe("buildClient", () => {
     it("throws an error if SmartyStreets API key is not in environment", () => {
-      const smartyStreetsAPIKey = process.env.REACT_APP_SMARTY_STREETS_KEY;
-      delete process.env.REACT_APP_SMARTY_STREETS_KEY;
+      const smartyStreetsAPIKey = import.meta.env.VITE_SMARTY_STREETS_KEY;
+      delete import.meta.env.VITE_SMARTY_STREETS_KEY;
 
       try {
         smartyStreetsClients.buildClient(() => {});
@@ -48,7 +48,7 @@ describe("smartStreets", () => {
         expect(error).toBeInstanceOf(smartyStreetsClients.SmartyStreetsError);
       }
 
-      process.env.REACT_APP_SMARTY_STREETS_KEY = smartyStreetsAPIKey;
+      import.meta.env.VITE_SMARTY_STREETS_KEY = smartyStreetsAPIKey;
     });
   });
 

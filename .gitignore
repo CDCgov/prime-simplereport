@@ -18,4 +18,3 @@ frontend/src/.env.local
 .run/Backend.run.xml
 .run/Frontend.run.xml
 .tool-versions
-**/application-local*

@@ -2,7 +2,7 @@ import { FetchMock, MockResponseInit } from "jest-fetch-mock";
 
 import { FeatureFlagsApiService } from "./FeatureFlagsApiService";
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const appInsightsHeaders = {
   "x-ms-session-id": "",
 };

@@ -9,20 +9,18 @@ locals {
 
   url_prefix = var.env == "prod" ? "www" : var.env
 
-  base_url_map = {
-    "${var.env}-simplereport-gov"     = "https://${local.url_prefix}.simplereport.gov/",
-    "${var.env}-simplereport-gov-api" = "https://${local.url_prefix}.simplereport.gov/api/actuator/health",
-    "${var.env}-simplereport-gov-app" = "https://${local.url_prefix}.simplereport.gov/app/health/ping"
-  }
-
-  full_url_map = merge(
-    local.base_url_map,
+  url_map = merge(
+    {
+      "${var.env}-simplereport-gov"     = "https://${local.url_prefix}.simplereport.gov/",
+      "${var.env}-simplereport-gov-api" = "https://${local.url_prefix}.simplereport.gov/api/actuator/health",
+      "${var.env}-simplereport-gov-app" = "https://${local.url_prefix}.simplereport.gov/app/health/ping"
+    },
     var.additional_uptime_test_urls
   )
 }
 
 resource "azurerm_application_insights_web_test" "uptime" {
-  for_each = local.full_url_map
+  for_each = local.url_map
 
   name                    = each.key
   description             = "Verify the URL is publicly available"
@@ -53,7 +51,7 @@ XML
 }
 
 resource "azurerm_monitor_metric_alert" "uptime" {
-  for_each = local.base_url_map
+  for_each = local.url_map
 
   name                = "uptime-${each.key}"
   description         = "${each.key} is not responding"
@@ -73,45 +71,7 @@ resource "azurerm_monitor_metric_alert" "uptime" {
   dynamic "action" {
     for_each = var.action_group_ids
     content {
-      action_group_id    = action.value
-      webhook_properties = var.wiki_docs_json
+      action_group_id = action.value
     }
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
-}
-
-resource "azurerm_monitor_metric_alert" "uptime_redirects" {
-  for_each = var.additional_uptime_test_urls
-
-  name                = "uptime_redirects-${each.key}"
-  description         = "${each.key} is not responding"
-  resource_group_name = var.rg_name
-  scopes              = [azurerm_application_insights_web_test.uptime[each.key].id, var.app_insights_id]
-  frequency           = "PT1M"
-  window_size         = "PT15M"
-  severity            = var.severity
-  enabled             = contains(var.disabled_alerts, "uptime_redirects") ? false : true
-
-  application_insights_web_test_location_availability_criteria {
-    web_test_id           = azurerm_application_insights_web_test.uptime[each.key].id
-    component_id          = var.app_insights_id
-    failed_location_count = 3
-  }
-
-  dynamic "action" {
-    for_each = var.action_group_ids
-    content {
-      action_group_id    = action.value
-      webhook_properties = var.wiki_docs_json
-    }
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
   }
 }

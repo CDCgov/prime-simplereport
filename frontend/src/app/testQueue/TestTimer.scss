@@ -1,35 +1,31 @@
-@use "../../scss/settings" as settings;
-@use "@uswds/uswds/packages/uswds-core" as uswds;
-
 .timer-button {
+  border: none;
   border-radius: 3px;
   min-width: 80px;
   cursor: pointer;
   padding: 0.25rem;
+  padding-bottom: 0.25rem !important;
   display: flex;
   align-items: center;
   justify-content: space-around;
 }
 
 .timer-reset {
-  color: #005ea2;
-  background-color: white;
-  border: 1px solid settings.$theme-color-prime-blue;
+  color: white;
+  background-color: #005ea2;
 }
 
 .timer-running {
-  background-color: #162e51;
   color: white;
+  background-color: #162e51;
 }
 
 .timer-ready {
-  color: white;
-  background-color: uswds.color(settings.$theme-color-success-dark);
-  border: none;
+  color: green;
+  background-color: white;
 }
 
 .timer-overtime {
-  color: settings.$color-white-transparent-80;
+  color: gray;
   font-style: italic;
-  min-width: 6rem;
 }

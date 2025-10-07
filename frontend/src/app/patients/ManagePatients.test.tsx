@@ -1,6 +1,7 @@
 import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
-import * as router from "react-router";
 import {
+  act,
+  fireEvent,
   render,
   screen,
   waitFor,
@@ -8,7 +9,13 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
-import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
+import {
+  MemoryRouter,
+  Route,
+  Routes,
+  useLocation,
+  useParams,
+} from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
@@ -20,24 +27,34 @@ import ManagePatients, {
 } from "./ManagePatients";
 import ManagePatientsContainer from "./ManagePatientsContainer";
 
+interface LocationOptions {
+  search: string;
+  pathname: string;
+  state: {
+    patientId: string;
+  };
+}
 const PageNumberContainer = () => {
   const { pageNumber } = useParams();
   return (
     <ManagePatients
       currentPage={pageNumber ? +pageNumber : 1}
       activeFacilityId="a1"
-      facilityName="Some Facility Name"
       canEditUser={true}
       canDeleteUser={true}
-      isOrgAdmin={true}
     />
   );
 };
 
-const renderWithUser = () => ({
-  user: userEvent.setup(),
-  ...render(<TestContainer />),
-});
+const Queue = () => {
+  const location = useLocation() as LocationOptions;
+
+  return (
+    <p>
+      Testing Queue! {location.search} {location.state.patientId}
+    </p>
+  );
+};
 
 const TestContainer = () => (
   <MockedProvider mocks={mocks}>
@@ -46,80 +63,74 @@ const TestContainer = () => (
         <Route path="/patients">
           <Route path=":pageNumber" element={<PageNumberContainer />} />
         </Route>
+        <Route path={"/queue"} element={<Queue />} />
       </Routes>
     </MemoryRouter>
   </MockedProvider>
 );
 
 describe("ManagePatients", () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("renders a list of patients", async () => {
-    renderWithUser();
+    render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     expect(await screen.findByText(patients[1].lastName, { exact: false }));
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
   });
-
   it("filters a list of patients", async () => {
-    const { user } = renderWithUser();
+    render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     const input = await screen.findByLabelText(PATIENT_TERM_CAP);
-    await user.type(input, "Al");
+    await act(async () => await userEvent.type(input, "Al"));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Abramcik", { exact: false })
     );
     expect(await screen.findByText(patients[1].lastName, { exact: false }));
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
   });
-
   it("can go to page 2", async () => {
-    const { user } = renderWithUser();
+    render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     const page2 = screen.getByRole("link", { name: "Page 2" });
-    await user.click(page2);
+    await act(async () => await userEvent.click(page2));
     expect(await screen.findByText(patients[20].lastName, { exact: false }));
-  });
-
-  it("standard users can see bulk upload option", async () => {
-    const { user } = renderWithUser();
-    const addPatientsButton = await screen.findByText("Add patients");
-    expect(addPatientsButton).toBeInTheDocument();
-
-    await user.click(addPatientsButton);
-    expect(
-      await screen.findByText("Import from spreadsheet")
-    ).toBeInTheDocument();
   });
 
   describe("using actions", () => {
     it("archive modal appears on click", async () => {
-      const { user } = renderWithUser();
+      render(<TestContainer />);
       expect(await screen.findByText(patients[0].lastName, { exact: false }));
 
       const menu = (await screen.findAllByText("More actions"))[0];
-      await user.click(menu);
-
-      await user.click(await screen.findByText(`Archive ${PATIENT_TERM}`));
+      await act(async () => await userEvent.click(menu));
+      await act(
+        async () =>
+          await userEvent.click(
+            await screen.findByText(`Archive ${PATIENT_TERM}`)
+          )
+      );
 
       expect(await screen.findByText("Yes, I'm sure", { exact: false }));
-
-      await user.click(screen.getByText("No, go back", { exact: false }));
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByText("No, go back", { exact: false })
+          )
+      );
       expect(
         await screen.findByText(patients[0].lastName, { exact: false })
       ).toBeInTheDocument();
     });
 
     it("when exiting archive modal, the action button is refocused", async () => {
-      const { user } = renderWithUser();
+      render(<TestContainer />);
       const menu = (await screen.findAllByText("More actions"))[0];
-      await user.click(menu);
+      await act(async () => await userEvent.click(menu));
       await screen.findByText(`Archive ${PATIENT_TERM}`);
-      await user.click(screen.getByText(`Archive ${PATIENT_TERM}`));
+      fireEvent.click(screen.getByText(`Archive ${PATIENT_TERM}`));
       await screen.findByText("No, go back");
-      await user.click(screen.getByText("No, go back"));
+      await act(
+        async () => await userEvent.click(screen.getByText("No, go back"))
+      );
 
       await waitFor(() =>
         expect(screen.queryByText("No, go back")).not.toBeInTheDocument()
@@ -131,44 +142,48 @@ describe("ManagePatients", () => {
     });
 
     it("can start test", async () => {
-      const mockNavigate = jest.fn();
-      jest.spyOn(router, "useNavigate").mockImplementation(() => mockNavigate);
-
-      const { user } = renderWithUser();
+      render(<TestContainer />);
       expect(await screen.findByText(patients[0].lastName, { exact: false }));
       const menu = (await screen.findAllByText("More actions"))[0];
-      await user.click(menu);
+      await act(async () => await userEvent.click(menu));
 
       const startTestButton = await screen.findByText("Start test");
       expect(startTestButton).toBeInTheDocument();
-      await user.click(startTestButton);
 
-      await waitFor(() =>
-        expect(mockNavigate).toHaveBeenCalledWith({ search: "?facility=a1" })
-      );
+      await act(async () => await userEvent.click(startTestButton));
+      expect(await screen.findByText("Testing Queue!", { exact: false }));
     });
   });
 
   describe("ManagePatientsContainer", () => {
     it("Doesn't render if no facility is selected", async () => {
       render(
-        <MockedProvider mocks={mocks}>
-          <MemoryRouter>
-            <Provider
-              store={createMockStore()({
-                facilities: [],
-                user: { isAdmin: false },
-              })}
-            >
-              <ManagePatientsContainer />
-            </Provider>
-          </MemoryRouter>
-        </MockedProvider>
+        <MemoryRouter>
+          <Provider
+            store={createMockStore()({
+              facilities: [],
+              user: { isAdmin: false },
+            })}
+          >
+            <ManagePatientsContainer />
+          </Provider>
+        </MemoryRouter>
       );
       expect(
         await screen.findByText("No facility selected", { exact: false })
       ).toBeInTheDocument();
     });
+  });
+
+  it("standard users can see bulk upload option", async () => {
+    render(<TestContainer />);
+    const addPatientsButton = await screen.findByText("Add patients");
+    expect(addPatientsButton).toBeInTheDocument();
+
+    await act(async () => await userEvent.click(addPatientsButton));
+    expect(
+      await screen.findByText("Import from spreadsheet")
+    ).toBeInTheDocument();
   });
 });
 

@@ -1,15 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
-import static gov.cdc.usds.simplereport.config.CachingConfig.CHLAMYDIA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
-import static gov.cdc.usds.simplereport.config.CachingConfig.GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
-import static gov.cdc.usds.simplereport.config.CachingConfig.HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
-import static gov.cdc.usds.simplereport.config.CachingConfig.HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SNOMED_TO_SPECIMEN_NAME_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_TO_SNOMED_MAP;
-import static gov.cdc.usds.simplereport.config.CachingConfig.SYPHILIS_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -122,7 +117,10 @@ public class ResultsUploaderCachingService {
     getModelAndTestPerformedCodeToDeviceMap();
   }
 
-  private Set<String> getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(String diseaseName) {
+  @Cacheable(COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  public Set<String> getCovidEquipmentModelAndTestPerformedCodeSet() {
+    log.info("generating covidEquipmentModelAndTestPerformedCodeSet cache");
+
     Set<String> resultSet = new HashSet<>();
 
     deviceTypeRepository
@@ -136,7 +134,7 @@ public class ResultsUploaderCachingService {
                           if (deviceTypeDisease
                               .getSupportedDisease()
                               .getName()
-                              .equals(diseaseName)) {
+                              .equals("COVID-19")) {
                             String model = deviceType.getModel();
                             String testPerformedCode =
                                 deviceTypeDisease.getTestPerformedLoincCode();
@@ -145,43 +143,8 @@ public class ResultsUploaderCachingService {
                             }
                           }
                         }));
+
     return resultSet;
-  }
-
-  @Cacheable(HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
-  public Set<String> getHivEquipmentModelAndTestPerformedCodeSet() {
-    log.info("generating hivEquipmentModelAndTestPerformedCodeSet cache");
-    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.HIV_NAME);
-  }
-
-  @Cacheable(SYPHILIS_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
-  public Set<String> getSyphilisEquipmentModelAndTestPerformedCodeSet() {
-    log.info("generating syphilisEquipmentModelAndTestPerformedCodeSet cache");
-    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.SYPHILIS_NAME);
-  }
-
-  @Cacheable(COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
-  public Set<String> getCovidEquipmentModelAndTestPerformedCodeSet() {
-    log.info("generating covidEquipmentModelAndTestPerformedCodeSet cache");
-    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.COVID19_NAME);
-  }
-
-  @Cacheable(HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
-  public Set<String> getHepatitisCEquipmentModelAndTestPerformedCodeSet() {
-    log.info("generating hepatitisCEquipmentModelAndTestPerformedCodeSet cache");
-    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.HEPATITIS_C_NAME);
-  }
-
-  @Cacheable(GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
-  public Set<String> getGonorrheaEquipmentModelAndTestPerformedCodeSet() {
-    log.info("generating gonorrheaEquipmentModelAndTestPerformedCodeSet cache");
-    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.GONORRHEA_NAME);
-  }
-
-  @Cacheable(CHLAMYDIA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
-  public Set<String> getChlamydiaEquipmentModelAndTestPerformedCodeSet() {
-    log.info("generating chlamydiaEquipmentModelAndTestPerformedCodeSet cache");
-    return getDiseaseSpecificEquipmentModelAndTestPerformedCodeSet(DiseaseService.CHLAMYDIA_NAME);
   }
 
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
@@ -192,52 +155,6 @@ public class ResultsUploaderCachingService {
   public void cacheCovidEquipmentModelAndTestPerformedCodeSet() {
     log.info("clear and generate covidEquipmentModelAndTestPerformedCodeSet cache");
     getCovidEquipmentModelAndTestPerformedCodeSet();
-  }
-
-  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
-  @Caching(
-      evict = {
-        @CacheEvict(value = HIV_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET, allEntries = true)
-      })
-  public void cacheHivEquipmentModelAndTestPerformedCodeSet() {
-    log.info("clear and generate hivEquipmentModelAndTestPerformedCodeSet cache");
-    getHivEquipmentModelAndTestPerformedCodeSet();
-  }
-
-  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
-  @Caching(
-      evict = {
-        @CacheEvict(
-            value = HEPATITIS_C_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
-            allEntries = true)
-      })
-  public void cacheHepatitisCEquipmentModelAndTestPerformedCodeSet() {
-    log.info("clear and generate hepatitisCEquipmentModelAndTestPerformedCodeSet cache");
-    getHepatitisCEquipmentModelAndTestPerformedCodeSet();
-  }
-
-  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
-  @Caching(
-      evict = {
-        @CacheEvict(
-            value = GONORRHEA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
-            allEntries = true)
-      })
-  public void cacheGonorrheaEquipmentModelAndTestPerformedCodeSet() {
-    log.info("clear and generate gonorrheaEquipmentModelAndTestPerformedCodeSet cache");
-    getGonorrheaEquipmentModelAndTestPerformedCodeSet();
-  }
-
-  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
-  @Caching(
-      evict = {
-        @CacheEvict(
-            value = CHLAMYDIA_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
-            allEntries = true)
-      })
-  public void cacheChlamydiaEquipmentModelAndTestPerformedCodeSet() {
-    log.info("clear and generate chlamydiaEquipmentModelAndTestPerformedCodeSet cache");
-    getChlamydiaEquipmentModelAndTestPerformedCodeSet();
   }
 
   @Cacheable(SNOMED_TO_SPECIMEN_NAME_MAP)

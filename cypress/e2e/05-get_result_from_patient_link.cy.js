@@ -1,99 +1,33 @@
 const dayjs = require("dayjs");
-const { getPatientLinkByTestEventId } = require("../utils/testing-data-utils");
-const {
-  loginHooks,
-  testNumber,
-  generatePatient,
-  generateCovidOnlyDevice,
-} = require("../support/e2e");
-const { frontendURL } = require("../utils/request-utils");
-const {
-  cleanUpPreviousRunSetupData,
-  setupRunData,
-  setupPatient,
-  setupCovidOnlyDevice,
-  cleanUpRunOktaOrgs,
-  setupTestOrder,
-} = require("../utils/setup-utils");
-
-const specRunName = "spec05";
-const currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
 
 describe("Getting a test result from a patient link", () => {
-  const patient = generatePatient();
-  const covidOnlyDevice = generateCovidOnlyDevice();
-  const patientDOB = patient.dobForPatientLink;
-  const patientObfuscatedName =
-    patient.firstName + " " + patient.lastName[0] + ".";
-  let patientLink;
-
-  before("setup spec data", () => {
-    loginHooks();
-
-    cy.task("getSpecRunVersionName", specRunName).then(
-      (prevSpecRunVersionName) => {
-        if (prevSpecRunVersionName) {
-          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
-          cleanUpRunOktaOrgs(prevSpecRunVersionName);
-        }
-        let data = {
-          specRunName: specRunName,
-          versionName: currentSpecRunVersionName,
-        };
-        cy.task("setSpecRunVersionName", data);
-        let patientId, createdDeviceId, specimenTypeId, testEventId;
-        setupRunData(currentSpecRunVersionName)
-          .then(() => setupPatient(currentSpecRunVersionName, patient))
-          .then((result) => {
-            patientId = result.internalId;
-          })
-          .then(() =>
-            setupCovidOnlyDevice(currentSpecRunVersionName, covidOnlyDevice),
-          )
-          .then((result) => {
-            createdDeviceId = result.createdDeviceId;
-            specimenTypeId = result.specimenTypeId;
-          })
-          .then(() =>
-            setupTestOrder(
-              currentSpecRunVersionName,
-              patientId,
-              createdDeviceId,
-              specimenTypeId,
-            ),
-          )
-          .then((result) => {
-            testEventId = result.body.data.submitQueueItem.testEventId;
-          })
-          .then(() => getPatientLinkByTestEventId(testEventId))
-          .then((result) => {
-            const patientLinkId =
-              result.body.data.testResult.patientLink.internalId;
-
-            patientLink = `${frontendURL}pxp?plid=${patientLinkId}`;
-          });
-      },
-    );
+  let patientLink, patientDOB, patientObfuscatedName;
+  before("retrieve the patient link and dob", () => {
+    cy.task("getPatientLink").then((link) => {
+      patientLink = link;
+    });
+    cy.task("getPatientDOB").then((dob) => {
+      patientDOB = dob;
+    });
+    cy.task("getPatientName").then((name) => {
+      const [lastName, firstName] = name.split(",");
+      patientObfuscatedName = firstName + " " + lastName[0] + ".";
+    });
   });
-
-  after("clean up spec data", () => {
-    cleanUpRunOktaOrgs(currentSpecRunVersionName);
-    cleanUpPreviousRunSetupData(currentSpecRunVersionName);
-  });
-
   it("successfully navigates to the patient link", () => {
     cy.visit(patientLink);
-    // contains no accessibility issues
+  });
+  it("contains no accessibility issues", () => {
     cy.injectSRAxe();
     cy.checkAccessibility(); // PXP page
-
-    // accepts the terms of service
+  });
+  it("accepts the terms of service", () => {
     cy.contains("Terms of service");
     cy.contains("I agree").click();
-
+  });
+  it("enters the date of birth and submits", () => {
     cy.contains("Access your COVID-19 test result");
 
-    // enters the date of birth and submits
     // This sentence is broken into multiple lines due to how the i18n
     // library interpolates the patient name variable
     cy.contains("Enter ");
@@ -111,8 +45,9 @@ describe("Getting a test result from a patient link", () => {
     cy.get('input[name="day"]').type(birthDay);
     cy.get('input[name="year"]').type(birthYear);
     cy.get("#dob-submit-button").click();
-
-    // shows the test result
+  });
+  it("shows the test result", () => {
+    cy.contains("Test result: COVID-19");
     cy.contains("Test result");
     cy.contains("Test date");
     cy.contains("Test device");

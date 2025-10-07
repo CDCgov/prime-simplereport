@@ -1,23 +1,8 @@
 package gov.cdc.usds.simplereport.utils;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.INVALID_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_HOSPITALIZED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ICU;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NEGATIVE_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.getGenderIdentityAbbreviationMap;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
-import static gov.cdc.usds.simplereport.db.model.PersonUtils.syphilisHistorySnomedMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
-import static gov.cdc.usds.simplereport.utils.ResultUtils.mapTestResultStatusToSRValue;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.extractSubstringsGenderOfSexualPartners;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
@@ -30,7 +15,6 @@ import gov.cdc.usds.simplereport.api.converter.ConvertToObservationProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToPatientProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToSpecimenProps;
 import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
-import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
@@ -38,10 +22,8 @@ import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
-import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
-import gov.cdc.usds.simplereport.db.model.auxiliary.SnomedConceptRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
@@ -51,25 +33,19 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DiagnosticReport;
-import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.ServiceRequest;
-import org.owasp.encoder.Encode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
@@ -90,48 +66,43 @@ public class BulkUploadResultsToFhir {
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
 
-  final FhirContext ctx = FhirContextProvider.get();
+  final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
 
   private final Map<String, String> testResultToSnomedMap =
       Map.of(
-          "Positive".toLowerCase(), POSITIVE_SNOMED,
-          "Negative".toLowerCase(), NEGATIVE_SNOMED,
-          "Detected".toLowerCase(), DETECTED_SNOMED,
-          "Not Detected".toLowerCase(), NOT_DETECTED_SNOMED,
-          "Invalid Result".toLowerCase(), INVALID_SNOMED);
+          "Positive".toLowerCase(), "260373001",
+          "Negative".toLowerCase(), "260415000",
+          "Detected".toLowerCase(), "260373001",
+          "Not Detected".toLowerCase(), "260415000",
+          "Invalid Result".toLowerCase(), "455371000124106");
 
-  private static final Map<String, Boolean> yesNoUnknownToBooleanMap = new HashMap<>();
+  private static final Map<String, Boolean> yesNoToBooleanMap = new HashMap<>();
 
   static {
-    yesNoUnknownToBooleanMap.put("Y".toLowerCase(), Boolean.TRUE);
-    yesNoUnknownToBooleanMap.put("YES".toLowerCase(), Boolean.TRUE);
-    yesNoUnknownToBooleanMap.put("N".toLowerCase(), Boolean.FALSE);
-    yesNoUnknownToBooleanMap.put("NO".toLowerCase(), Boolean.FALSE);
-    yesNoUnknownToBooleanMap.put("U".toLowerCase(), null);
-    yesNoUnknownToBooleanMap.put("UNK".toLowerCase(), null);
-    yesNoUnknownToBooleanMap.put(null, null);
-    yesNoUnknownToBooleanMap.put("", null);
+    yesNoToBooleanMap.put("Y".toLowerCase(), Boolean.TRUE);
+    yesNoToBooleanMap.put("YES".toLowerCase(), Boolean.TRUE);
+    yesNoToBooleanMap.put("N".toLowerCase(), Boolean.FALSE);
+    yesNoToBooleanMap.put("NO".toLowerCase(), Boolean.FALSE);
+    yesNoToBooleanMap.put("U".toLowerCase(), null);
+    yesNoToBooleanMap.put("UNK".toLowerCase(), null);
+    yesNoToBooleanMap.put(null, null);
+    yesNoToBooleanMap.put("", null);
   }
 
-  public FHIRBundleRecord convertToFhirBundles(InputStream csvStream, UUID orgId) {
-    // create bundle meta
-    HashMap<String, Integer> diseasesReported = new HashMap<>();
+  public List<String> convertToFhirBundles(InputStream csvStream, UUID orgId) {
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
-      row = getNextRow(valueIterator);
-
-      TestResultRow fileRow = new TestResultRow(row);
-
-      Optional<String> disease =
-          getDiseaseFromDeviceSpecs(
-              fileRow.getEquipmentModelName().getValue(),
-              fileRow.getTestPerformedCode().getValue());
-      if (disease.isPresent()) {
-        diseasesReported.put(disease.get(), diseasesReported.getOrDefault(disease.get(), 0) + 1);
+      try {
+        row = getNextRow(valueIterator);
+      } catch (CsvProcessingException ex) {
+        // anything that would land here should have been caught and handled by the file validator
+        log.error("Unable to parse csv.", ex);
+        continue;
       }
+      var fileRow = new TestResultRow(row);
 
       var future =
           CompletableFuture.supplyAsync(() -> convertRowToFhirBundle(fileRow, orgId))
@@ -151,12 +122,12 @@ public class BulkUploadResultsToFhir {
                     throw new CsvProcessingException("Unable to process file.");
                   }
                 })
-            .map(line -> line.replace(System.getProperty("line.separator"), " "))
             .toList();
 
     // Clear cache to free memory
     resultsUploaderCachingService.clearAddressTimezoneLookupCache();
-    return new FHIRBundleRecord(bundles, diseasesReported);
+
+    return bundles;
   }
 
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
@@ -194,7 +165,7 @@ public class BulkUploadResultsToFhir {
     // which is a different moment of time and potentially even a different day
     var testResultDate =
         convertToZonedDateTime(
-            row.getTestResultDate().getValue(), resultsUploaderCachingService, providerAddr);
+            row.getTestResultDate().getValue(), resultsUploaderCachingService, testingLabAddr);
 
     var orderTestDate =
         convertToZonedDateTime(
@@ -209,17 +180,19 @@ public class BulkUploadResultsToFhir {
             : orderTestDate;
 
     var testingLabSpecimenReceivedDate =
-        StringUtils.isNotBlank(row.getTestingLabSpecimenReceivedDate().getValue())
+        StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
             ? convertToZonedDateTime(
                 row.getTestingLabSpecimenReceivedDate().getValue(),
                 resultsUploaderCachingService,
-                providerAddr)
+                testingLabAddr)
             : orderTestDate;
 
     var dateResultReleased =
         StringUtils.isNotBlank(row.getDateResultReleased().getValue())
             ? convertToZonedDateTime(
-                row.getDateResultReleased().getValue(), resultsUploaderCachingService, providerAddr)
+                row.getDateResultReleased().getValue(),
+                resultsUploaderCachingService,
+                testingLabAddr)
             : testResultDate;
 
     List<PhoneNumber> patientPhoneNumbers =
@@ -230,10 +203,6 @@ public class BulkUploadResultsToFhir {
         StringUtils.isNotBlank(row.getPatientEmail().getValue())
             ? List.of(row.getPatientEmail().getValue())
             : emptyList();
-
-    TestCorrectionStatus correctionStatus =
-        mapTestResultStatusToSRValue(row.getTestResultStatus().getValue());
-    String correctionReason = null;
 
     var patient =
         fhirConverter.convertToPatient(
@@ -266,7 +235,36 @@ public class BulkUploadResultsToFhir {
             testingLabAddr,
             DEFAULT_COUNTRY);
 
-    Organization orderingFacility = getOrderingFacilityOrgResource(row);
+    Organization orderingFacility = null;
+    if (StringUtils.isNotEmpty(row.getOrderingFacilityStreet().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityStreet2().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityCity().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityState().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityZipCode().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityName().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityPhoneNumber().getValue())) {
+      var orderingFacilityAddr =
+          new StreetAddress(
+              row.getOrderingFacilityStreet().getValue(),
+              row.getOrderingFacilityStreet2().getValue(),
+              row.getOrderingFacilityCity().getValue(),
+              row.getOrderingFacilityState().getValue(),
+              row.getOrderingFacilityZipCode().getValue(),
+              null);
+      orderingFacility =
+          fhirConverter.convertToOrganization(
+              uuidGenerator.randomUUID().toString(),
+              row.getOrderingFacilityName().getValue(),
+              row.getTestingLabClia().getValue(),
+              row.getOrderingFacilityPhoneNumber().getValue(),
+              null,
+              orderingFacilityAddr,
+              DEFAULT_COUNTRY);
+    }
+
+    if (orderingFacility == null) {
+      orderingFacility = testingLabOrg;
+    }
 
     var practitioner =
         fhirConverter.convertToPractitioner(
@@ -282,12 +280,9 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderId().getValue());
 
     String equipmentUid = null;
-    String equipmentUidType = null;
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
-    String testPerformedLoincLongName = null;
-    String testOrderedLoincLongName = null;
     String testOrderedCode = row.getTestOrderedCode().getValue();
 
     UUID deviceId = uuidGenerator.randomUUID();
@@ -308,9 +303,6 @@ public class BulkUploadResultsToFhir {
       equipmentUid =
           fhirConverter.getCommonDiseaseValue(
               deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
-      equipmentUidType =
-          fhirConverter.getCommonDiseaseValue(
-              deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUidType);
       testKitNameId =
           fhirConverter.getCommonDiseaseValue(
               deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
@@ -319,11 +311,6 @@ public class BulkUploadResultsToFhir {
               .findFirst()
               .map(DeviceTypeDisease::getInternalId)
               .orElse(deviceId);
-      testPerformedLoincLongName =
-          deviceTypeDiseaseEntries.stream()
-              .findFirst()
-              .map(DeviceTypeDisease::getTestPerformedLoincLongName)
-              .orElse(null);
       diseaseName =
           deviceTypeDiseaseEntries.stream()
               .findFirst()
@@ -335,23 +322,12 @@ public class BulkUploadResultsToFhir {
           StringUtils.isEmpty(testOrderedCode)
               ? MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries)
               : testOrderedCode;
-
-      String finalTestOrderedCode = testOrderedCode;
-      testOrderedLoincLongName =
-          deviceTypeDiseaseEntries.stream()
-              .filter(
-                  deviceTypeDisease ->
-                      Objects.equals(
-                          deviceTypeDisease.getTestOrderedLoincCode(), finalTestOrderedCode))
-              .findFirst()
-              .map(DeviceTypeDisease::getTestOrderedLoincLongName)
-              .orElse(null);
     } else {
       log.info(
           "No device found for model ("
-              + Encode.forJava(modelName)
+              + modelName
               + ") and test performed code ("
-              + Encode.forJava(testPerformedCode)
+              + testPerformedCode
               + ")");
     }
 
@@ -362,9 +338,7 @@ public class BulkUploadResultsToFhir {
     // code was not passed via api or inferred above: defaulting to the test performed code.
     testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
 
-    var device =
-        fhirConverter.convertToDevice(
-            manufacturer, modelName, deviceId.toString(), equipmentUid, equipmentUidType);
+    var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
     String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
     String specimenName = getSpecimenTypeName(specimenCode);
@@ -381,155 +355,57 @@ public class BulkUploadResultsToFhir {
                 .receivedTime(testingLabSpecimenReceivedDate)
                 .build());
 
-    String testResultSnomed = getTestResultSnomed(row.getTestResult().getValue());
-    SnomedConceptRecord resultConceptRecord = Translators.getSnomedConceptByCode(testResultSnomed);
-
-    var resultObservation =
+    var observation =
         List.of(
             fhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
-                    .testPerformedLoinc(row.getTestPerformedCode().getValue())
+                    .diseaseCode(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
-                    .resultCode(testResultSnomed)
-                    .correctionStatus(correctionStatus)
-                    .correctionReason(correctionReason)
+                    .resultCode(getTestResultSnomed(row.getTestResult().getValue()))
+                    .correctionStatus(
+                        mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
+                    .correctionReason(null)
                     .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
-                        resultConceptRecord == null ? null : resultConceptRecord.name())
+                        Translators.convertConceptCodeToConceptName(
+                            getTestResultSnomed(row.getTestResult().getValue())))
                     .testkitNameId(testKitNameId)
+                    .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
                     .issued(Date.from(testResultDate.toInstant()))
-                    .testPerformedLOINCLongName(testPerformedLoincLongName)
                     .build()));
 
-    var aoeObservations = new LinkedHashSet<Observation>();
-
     LocalDate symptomOnsetDate = null;
-    if (StringUtils.isNotBlank(row.getIllnessOnsetDate().getValue())) {
+    if (row.getIllnessOnsetDate().getValue() != null
+        && !row.getIllnessOnsetDate().getValue().trim().isBlank()) {
       try {
         symptomOnsetDate =
             LocalDate.parse(row.getIllnessOnsetDate().getValue(), DATE_TIME_FORMATTER);
       } catch (DateTimeParseException e) {
         // empty values for optional fields come through as empty strings, not null
         log.error("Unable to parse date from CSV.");
-        throw e;
       }
     }
 
-    String symptomaticValue = row.getSymptomaticForDisease().getValue();
-    if (valueIsYesNoOrUnknown(symptomaticValue)) {
-      // symptomaticValue should be yes, no, or unknown, which correspond to true, false, or null
-      Boolean symptomatic = yesNoUnknownToBooleanMap.get(symptomaticValue.toLowerCase());
-      aoeObservations.addAll(
-          fhirConverter.convertToAOESymptomaticObservation(
-              testEventId, symptomatic, symptomOnsetDate, correctionStatus, correctionReason));
+    Boolean symptomatic = null;
+    if (row.getSymptomaticForDisease().getValue() != null) {
+      symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().getValue().toLowerCase());
     }
 
-    String pregnancyValue = row.getPregnant().getValue();
-    if (StringUtils.isNotBlank(pregnancyValue)) {
-      String pregnancySnomed = getPregnancyStatusSnomed(pregnancyValue);
-      aoeObservations.add(
-          fhirConverter.convertToAOEPregnancyObservation(
-              pregnancySnomed, correctionStatus, correctionReason));
-    }
-
-    String employedInHealthcareValue = row.getEmployedInHealthcare().getValue();
-    if (valueIsYesNoOrUnknown(employedInHealthcareValue)) {
-      Boolean employedInHealthcare =
-          yesNoUnknownToBooleanMap.get(employedInHealthcareValue.toLowerCase());
-      aoeObservations.add(
-          fhirConverter.convertToAOEYesNoUnkObservation(
-              employedInHealthcare,
-              LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
-              AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY,
-              correctionStatus,
-              correctionReason));
-    }
-
-    String syphilisHistory = row.getSyphilisHistory().getValue();
-    if (StringUtils.isNotBlank(syphilisHistory)) {
-      String syphilisHistorySnomed = getSyphilisHistorySnomed(syphilisHistory);
-      aoeObservations.add(
-          fhirConverter.convertToAOESyphilisHistoryObservation(
-              syphilisHistorySnomed, correctionStatus, correctionReason));
-    }
-
-    String hospitalizedValue = row.getHospitalized().getValue();
-    if (valueIsYesNoOrUnknown(hospitalizedValue)) {
-      Boolean hospitalized = yesNoUnknownToBooleanMap.get(hospitalizedValue.toLowerCase());
-      aoeObservations.add(
-          fhirConverter.convertToAOEYesNoUnkObservation(
-              hospitalized,
-              LOINC_AOE_HOSPITALIZED,
-              "Hospitalized for condition",
-              correctionStatus,
-              correctionReason));
-    }
-
-    String icuValue = row.getIcu().getValue();
-    if (valueIsYesNoOrUnknown(icuValue)) {
-      Boolean hospitalized = yesNoUnknownToBooleanMap.get(icuValue.toLowerCase());
-      aoeObservations.add(
-          fhirConverter.convertToAOEYesNoUnkObservation(
-              hospitalized,
-              LOINC_AOE_ICU,
-              "Admitted to ICU for condition",
-              correctionStatus,
-              correctionReason));
-    }
-
-    String residentCongregateSettingValue = row.getResidentCongregateSetting().getValue();
-    if (valueIsYesNoOrUnknown(residentCongregateSettingValue)) {
-      Boolean residesInCongregateSetting =
-          yesNoUnknownToBooleanMap.get(residentCongregateSettingValue.toLowerCase());
-      String residenceTypeValue = row.getResidenceType().getValue();
-      String residenceTypeSnomed = null;
-      if (StringUtils.isNotBlank(residenceTypeValue)) {
-        residenceTypeSnomed = getResidenceTypeSnomed(residenceTypeValue);
-      }
-      aoeObservations.addAll(
-          fhirConverter.convertToAOEResidenceObservation(
-              residesInCongregateSetting, residenceTypeSnomed, correctionStatus, correctionReason));
-    }
-
-    String gendersOfSexualPartnersValue = row.getGendersOfSexualPartners().getValue();
-    if (StringUtils.isNotBlank(gendersOfSexualPartnersValue)) {
-      Set<String> gendersOfSexualPartnersSet =
-          extractSubstringsGenderOfSexualPartners(gendersOfSexualPartnersValue);
-      Map<String, String> genderAbbreviationMap = getGenderIdentityAbbreviationMap();
-      Set<String> abbrConvertedGenders =
-          gendersOfSexualPartnersSet.stream()
-              .distinct()
-              .map(genderAbbreviationMap::get)
-              .collect(Collectors.toSet());
-      aoeObservations.addAll(
-          fhirConverter.convertToAOEGenderOfSexualPartnersObservation(
-              abbrConvertedGenders, correctionStatus, correctionReason));
-    }
-
-    String patientGenderIdentity = row.getPatientGenderIdentity().getValue();
-    if (StringUtils.isNotBlank(patientGenderIdentity)) {
-      Map<String, String> genderAbbreviationMap = getGenderIdentityAbbreviationMap();
-      String abbrConvertedGenderIdentity =
-          genderAbbreviationMap.get(patientGenderIdentity.toUpperCase());
-      aoeObservations.addAll(
-          fhirConverter.convertToAOEGenderIdentityObservation(
-              testEventId, abbrConvertedGenderIdentity, correctionStatus, correctionReason));
-    }
+    var aoeObservations =
+        fhirConverter.convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
 
     var serviceRequest =
         fhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderedCode,
             uuidGenerator.randomUUID().toString(),
-            orderTestDate,
-            row.getComment().getValue());
+            orderTestDate);
 
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
-            testOrderedCode,
-            testOrderedLoincLongName,
+            testPerformedCode,
             testEventId,
             testResultDate,
             dateResultReleased);
@@ -542,7 +418,7 @@ public class BulkUploadResultsToFhir {
             .practitioner(practitioner)
             .device(device)
             .specimen(specimen)
-            .resultObservations(resultObservation)
+            .resultObservations(observation)
             .aoeObservations(aoeObservations)
             .serviceRequest(serviceRequest)
             .diagnosticReport(diagnosticReport)
@@ -552,29 +428,8 @@ public class BulkUploadResultsToFhir {
             .build());
   }
 
-  private String getPregnancyStatusSnomed(String input) {
-    if (input != null && input.matches(ALPHABET_REGEX)) {
-      return PersonUtils.pregnancyStatusSnomedMap.get(input.toLowerCase());
-    }
-    return null;
-  }
-
-  private String getSyphilisHistorySnomed(String input) {
-    if (input != null && input.matches(ALPHABET_REGEX)) {
-      return syphilisHistorySnomedMap.get(input.toLowerCase());
-    }
-    return null;
-  }
-
-  private String getResidenceTypeSnomed(String input) {
-    if (input != null && input.matches(ALPHABET_REGEX)) {
-      return getResidenceTypeMap().get(input.toLowerCase());
-    }
-    return input;
-  }
-
   private String getEthnicityLiteral(String input) {
-    if (input != null && !input.matches(ALPHABET_REGEX)) {
+    if (!input.matches(ALPHABET_REGEX)) {
       List<String> ethnicityList = PersonUtils.ETHNICITY_MAP.get(input);
       return ethnicityList != null ? ethnicityList.get(1) : input;
     }
@@ -582,25 +437,25 @@ public class BulkUploadResultsToFhir {
   }
 
   private String getRaceLiteral(String input) {
-    if (input != null && !input.matches(ALPHABET_REGEX)) {
+    if (!input.matches(ALPHABET_REGEX)) {
       return PersonUtils.raceMap.get(input);
     }
     return input;
   }
 
   private String getTestResultSnomed(String input) {
-    if (input != null && input.matches(ALPHABET_REGEX)) {
+    if (input.matches(ALPHABET_REGEX)) {
       return testResultToSnomedMap.get(input.toLowerCase());
     }
     return input;
   }
 
   private String getSpecimenTypeSnomed(String input) {
-    if (input != null && input.matches(ALPHABET_REGEX)) {
+    if (input.matches(ALPHABET_REGEX)) {
       return resultsUploaderCachingService
           .getSpecimenTypeNameToSNOMEDMap()
           .get(input.toLowerCase());
-    } else if (input != null && input.matches(SNOMED_REGEX)) {
+    } else if (input.matches(SNOMED_REGEX)) {
       return input;
     }
     return null;
@@ -614,9 +469,6 @@ public class BulkUploadResultsToFhir {
   }
 
   private DiagnosticReport.DiagnosticReportStatus mapTestResultStatusToFhirValue(String input) {
-    if (input == null) {
-      return DiagnosticReport.DiagnosticReportStatus.FINAL;
-    }
     switch (input) {
       case "C":
         return DiagnosticReport.DiagnosticReportStatus.CORRECTED;
@@ -626,83 +478,13 @@ public class BulkUploadResultsToFhir {
     }
   }
 
-  public Optional<String> getDiseaseFromDeviceSpecs(
-      String equipmentModelName, String testPerformedCode) {
-
-    var matchingDevice =
-        resultsUploaderCachingService
-            .getModelAndTestPerformedCodeToDeviceMap()
-            .get(ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
-
-    if (matchingDevice != null) {
-      List<DeviceTypeDisease> deviceTypeDiseaseEntries =
-          matchingDevice.getSupportedDiseaseTestPerformed().stream()
-              .filter(
-                  disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
-              .toList();
-
-      if (!deviceTypeDiseaseEntries.isEmpty()) {
-        return deviceTypeDiseaseEntries.stream()
-            .findFirst()
-            .map(DeviceTypeDisease::getSupportedDisease)
-            .map(SupportedDisease::getName);
-      }
+  private TestCorrectionStatus mapTestResultStatusToSRValue(String input) {
+    switch (input) {
+      case "C":
+        return TestCorrectionStatus.CORRECTED;
+      case "F":
+      default:
+        return TestCorrectionStatus.ORIGINAL;
     }
-
-    return Optional.ofNullable(diseaseSpecificLoincMap.get(testPerformedCode));
-  }
-
-  private String getOrderingFacilityValOrDefault(
-      String orderingFacilityVal, String testingLabDefaultVal) {
-    return StringUtils.isNotEmpty(orderingFacilityVal) ? orderingFacilityVal : testingLabDefaultVal;
-  }
-
-  private Organization getOrderingFacilityOrgResource(TestResultRow row) {
-    String orderingFacilityStreet =
-        getOrderingFacilityValOrDefault(
-            row.getOrderingFacilityStreet().getValue(), row.getTestingLabStreet().getValue());
-    String orderingFacilityStreet2 =
-        getOrderingFacilityValOrDefault(
-            row.getOrderingFacilityStreet2().getValue(), row.getTestingLabStreet2().getValue());
-    String orderingFacilityCity =
-        getOrderingFacilityValOrDefault(
-            row.getOrderingFacilityCity().getValue(), row.getTestingLabCity().getValue());
-    String orderingFacilityState =
-        getOrderingFacilityValOrDefault(
-            row.getOrderingFacilityState().getValue(), row.getTestingLabState().getValue());
-    String orderingFacilityZipCode =
-        getOrderingFacilityValOrDefault(
-            row.getOrderingFacilityZipCode().getValue(), row.getTestingLabZipCode().getValue());
-
-    StreetAddress orderingFacilityAddr =
-        new StreetAddress(
-            orderingFacilityStreet,
-            orderingFacilityStreet2,
-            orderingFacilityCity,
-            orderingFacilityState,
-            orderingFacilityZipCode,
-            null);
-
-    String orderingFacilityName =
-        getOrderingFacilityValOrDefault(
-            row.getOrderingFacilityName().getValue(), row.getTestingLabName().getValue());
-    String orderingFacilityPhoneNumber =
-        getOrderingFacilityValOrDefault(
-            row.getOrderingFacilityPhoneNumber().getValue(),
-            row.getTestingLabPhoneNumber().getValue());
-
-    return fhirConverter.convertToOrganization(
-        uuidGenerator.randomUUID().toString(),
-        orderingFacilityName,
-        row.getTestingLabClia().getValue(),
-        orderingFacilityPhoneNumber,
-        null,
-        orderingFacilityAddr,
-        DEFAULT_COUNTRY);
-  }
-
-  private Boolean valueIsYesNoOrUnknown(String value) {
-    return StringUtils.isNotBlank(value)
-        && yesNoUnknownToBooleanMap.containsKey(value.toLowerCase());
   }
 }

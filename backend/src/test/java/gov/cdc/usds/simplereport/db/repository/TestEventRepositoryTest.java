@@ -26,8 +26,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -38,6 +36,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -51,16 +51,11 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   @Autowired private OrganizationService _orgService;
   @Autowired private DiseaseService _diseaseService;
 
-  private String COVID_DISEASE_LOINC = "96741-4";
-
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
-      order.on(
-          cb.equal(
-              root.get(TestEvent_.internalId),
-              order.get(TestOrder_.testEvent).get(TestEvent_.internalId)));
+      order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
 
       Predicate p = cb.conjunction();
@@ -166,8 +161,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = createTestEventsForMetricsTests(org);
 
     List<TestResultWithCount> results =
-        _repo.countByResultForFacility(
-            place.getInternalId(), d1, DATE_1MIN_FUTURE, COVID_DISEASE_LOINC);
+        _repo.countByResultForFacility(place.getInternalId(), d1, DATE_1MIN_FUTURE);
 
     assertEquals(2, results.size());
 
@@ -189,8 +183,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = createTestEventsForMetricsTests(org);
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(
-            Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE, COVID_DISEASE_LOINC);
+        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
 
     assertEquals(2, results.size());
 
@@ -215,8 +208,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         p, place, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.UNDETERMINED, false);
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(
-            Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE, COVID_DISEASE_LOINC);
+        _repo.countByResultByFacility(Set.of(place.getInternalId()), d1, DATE_1MIN_FUTURE);
 
     assertEquals(2, results.size());
 
@@ -244,7 +236,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
             .collect(Collectors.toSet());
 
     List<TestResultWithCount> results =
-        _repo.countByResultByFacility(facilityIds, d1, DATE_1MIN_FUTURE, COVID_DISEASE_LOINC);
+        _repo.countByResultByFacility(facilityIds, d1, DATE_1MIN_FUTURE);
 
     assertEquals(3, results.size());
 

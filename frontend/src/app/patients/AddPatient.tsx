@@ -52,9 +52,6 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   country: "USA",
   preferredLanguage: null,
   testResultDelivery: null,
-  unknownPhoneNumber: false,
-  unknownAddress: false,
-  notes: null,
 };
 
 export const PATIENT_EXISTS = gql`
@@ -100,7 +97,6 @@ export const ADD_PATIENT = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
-    $notes: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -128,7 +124,6 @@ export const ADD_PATIENT = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
-      notes: $notes
     ) {
       internalId
       facility {
@@ -137,6 +132,7 @@ export const ADD_PATIENT = gql`
     }
   }
 `;
+
 type AddPatientParams = Nullable<Omit<PersonFormData, "lookupId">>;
 
 interface AddPatientResponse {
@@ -314,18 +310,8 @@ const AddPatient = () => {
         label={
           loading ? `${t("common.button.saving")}...` : t("common.button.save")
         }
-        dataCy={"add-patient-save-button"}
       />
     </>
-  );
-
-  const getFooter: (
-    onSave: (startTest?: boolean) => void,
-    formChanged: boolean
-  ) => React.ReactNode = (onSave, formChanged) => (
-    <div className="prime-edit-patient-heading">
-      {getSaveButtons(formChanged, onSave, "lower")}
-    </div>
   );
 
   function getHeader() {
@@ -344,7 +330,7 @@ const AddPatient = () => {
   }
 
   return (
-    <div className={"prime-edit-patient prime-home"} data-cy="add-patient-page">
+    <div className={"prime-edit-patient prime-home"}>
       <div className={"grid-container margin-bottom-4 maxw-desktop-lg"}>
         <DuplicatePatientModal
           showModal={
@@ -367,7 +353,11 @@ const AddPatient = () => {
           onBlur={onBlur}
           getHeader={getHeader()}
           headerClassName={"padding-bottom-0"}
-          getFooter={getFooter}
+          getFooter={(onSave, formChanged) => (
+            <div className="prime-edit-patient-heading">
+              {getSaveButtons(formChanged, onSave, "lower")}
+            </div>
+          )}
         />
       </div>
     </div>

@@ -3,13 +3,14 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import SignUpGoals from "./SignUpGoals";
 
 describe("SignUpGoals", () => {
-  it("renders with the submit button disabled", () => {
+  beforeEach(() => {
     render(<SignUpGoals />);
+  });
+  it("renders with the submit button disabled", () => {
     expect(screen.getByText("Continue")).toBeDisabled();
   });
 
   it("requires a selection", async () => {
-    render(<SignUpGoals />);
     expect(screen.getByText("Continue")).toBeDisabled();
     fireEvent.click(
       screen.getByText("My organization is already using SimpleReport")
@@ -18,7 +19,6 @@ describe("SignUpGoals", () => {
   });
 
   it("redirects to request access page when first option is selected", async () => {
-    render(<SignUpGoals />);
     fireEvent.click(
       screen.getByText("My organization is already using SimpleReport")
     );
@@ -27,7 +27,6 @@ describe("SignUpGoals", () => {
   });
 
   it("redirects to org sign-up page when second option is selected", async () => {
-    render(<SignUpGoals />);
     fireEvent.click(screen.getByText("My organization is new to SimpleReport"));
     fireEvent.click(screen.getByText("Continue"));
     expect(
@@ -38,8 +37,9 @@ describe("SignUpGoals", () => {
   });
 
   it("redirects to request test result page when third option is selected", async () => {
-    render(<SignUpGoals />);
-    fireEvent.click(screen.getByText("I’m trying to get my test results"));
+    fireEvent.click(
+      screen.getByText("I’m trying to get my COVID-19 test results")
+    );
     fireEvent.click(screen.getByText("Continue"));
     expect(
       await screen.findByText(

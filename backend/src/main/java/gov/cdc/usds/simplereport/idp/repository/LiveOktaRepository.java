@@ -1,22 +1,7 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
 import com.okta.sdk.helper.ApiExceptionHelper;
-import com.okta.sdk.resource.api.ApplicationApi;
-import com.okta.sdk.resource.api.ApplicationGroupsApi;
-import com.okta.sdk.resource.api.GroupApi;
-import com.okta.sdk.resource.api.UserApi;
-import com.okta.sdk.resource.client.ApiException;
-import com.okta.sdk.resource.common.PagedList;
 import com.okta.sdk.resource.group.GroupBuilder;
-import com.okta.sdk.resource.model.Application;
-import com.okta.sdk.resource.model.Error;
-import com.okta.sdk.resource.model.ErrorErrorCausesInner;
-import com.okta.sdk.resource.model.Group;
-import com.okta.sdk.resource.model.GroupType;
-import com.okta.sdk.resource.model.UpdateUserRequest;
-import com.okta.sdk.resource.model.User;
-import com.okta.sdk.resource.model.UserProfile;
-import com.okta.sdk.resource.model.UserStatus;
 import com.okta.sdk.resource.user.UserBuilder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
@@ -39,7 +24,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -48,6 +32,20 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.api.ApplicationApi;
+import org.openapitools.client.api.ApplicationGroupsApi;
+import org.openapitools.client.api.GroupApi;
+import org.openapitools.client.api.UserApi;
+import org.openapitools.client.model.Application;
+import org.openapitools.client.model.Error;
+import org.openapitools.client.model.ErrorErrorCausesInner;
+import org.openapitools.client.model.Group;
+import org.openapitools.client.model.GroupType;
+import org.openapitools.client.model.UpdateUserRequest;
+import org.openapitools.client.model.User;
+import org.openapitools.client.model.UserProfile;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -72,9 +70,6 @@ public class LiveOktaRepository implements OktaRepository {
   private final UserApi userApi;
   private final ApplicationGroupsApi applicationGroupsApi;
   private final String adminGroupName;
-
-  private static final String OKTA_ORG_PROFILE_MATCHER = "profile.name sw \"";
-  private static final int OKTA_PAGE_SIZE = 500;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
@@ -129,7 +124,7 @@ public class LiveOktaRepository implements OktaRepository {
             .collect(Collectors.toSet()));
 
     // Search and q results need to be combined because search results have a delay of the newest
-    // added groups.
+    // added groups. There is an open ticket for the okta sdk to investigate this issue
     // https://github.com/okta/okta-sdk-java/issues/750
     var searchResults =
         groupApi
@@ -139,7 +134,7 @@ public class LiveOktaRepository implements OktaRepository {
                 null,
                 null,
                 null,
-                OKTA_ORG_PROFILE_MATCHER + generateGroupOrgPrefix(organizationExternalId) + "\"",
+                "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
                 null,
                 null)
             .stream();
@@ -176,17 +171,16 @@ public class LiveOktaRepository implements OktaRepository {
             .collect(Collectors.toSet());
     validateRequiredFields(userIdentity);
     try {
-      var user =
-          UserBuilder.instance()
-              .setFirstName(userIdentity.getFirstName())
-              .setMiddleName(userIdentity.getMiddleName())
-              .setLastName(userIdentity.getLastName())
-              .setHonorificSuffix(userIdentity.getSuffix())
-              .setEmail(userIdentity.getUsername())
-              .setLogin(userIdentity.getUsername())
-              .setActive(active)
-              .buildAndCreate(userApi);
-      groupIdsToAdd.forEach(groupId -> groupApi.assignUserToGroup(groupId, user.getId()));
+      UserBuilder.instance()
+          .setFirstName(userIdentity.getFirstName())
+          .setMiddleName(userIdentity.getMiddleName())
+          .setLastName(userIdentity.getLastName())
+          .setHonorificSuffix(userIdentity.getSuffix())
+          .setEmail(userIdentity.getUsername())
+          .setLogin(userIdentity.getUsername())
+          .setGroups(new ArrayList<>(groupIdsToAdd))
+          .setActive(active)
+          .buildAndCreate(userApi);
     } catch (ApiException e) {
       if (e.getMessage()
           .contains("An object with this field already exists in the current organization")) {
@@ -215,42 +209,19 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public Set<String> getAllUsersForOrganization(Organization org) {
-    return getAllUsersForOrg(org).stream()
+    Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
+    var groupUsers = groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), null, null);
+    return groupUsers.stream()
         .map(u -> u.getProfile().getLogin())
         .collect(Collectors.toUnmodifiableSet());
   }
 
   @Override
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
-    return getAllUsersForOrg(org).stream()
-        .collect(Collectors.toMap(u -> u.getProfile().getLogin(), User::getStatus));
-  }
-
-  @Override
-  public Map<String, UserStatus> getPagedUsersWithStatusForOrganization(
-      Organization org, int pageNumber, int pageSize) {
-    List<User> allUsers = getAllUsersForOrg(org);
-    int startIndex = pageNumber * pageSize;
-    int endIndex = Math.min((startIndex + pageSize), allUsers.size());
-    List<User> userSublist = allUsers.subList(startIndex, endIndex);
-    return userSublist.stream()
-        .collect(
-            Collectors.toMap(
-                u -> Objects.requireNonNull(u.getProfile()).getLogin(), User::getStatus));
-  }
-
-  private List<User> getAllUsersForOrg(Organization org) {
-    PagedList<User> pagedUserList = new PagedList<>();
-    List<User> allUsers = new ArrayList<>();
     Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
-    do {
-      pagedUserList =
-          (PagedList<User>)
-              groupApi.listGroupUsers(
-                  orgDefaultOktaGroup.getId(), pagedUserList.getAfter(), OKTA_PAGE_SIZE);
-      allUsers.addAll(pagedUserList);
-    } while (pagedUserList.hasMoreItems());
-    return allUsers;
+    var groupUsers = groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), null, null);
+    return groupUsers.stream()
+        .collect(Collectors.toMap(u -> u.getProfile().getLogin(), User::getStatus));
   }
 
   private Group getDefaultOktaGroup(Organization org) {
@@ -267,9 +238,17 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
-    var user =
-        getUserOrThrowError(
-            userIdentity.getUsername(), "Cannot update Okta user with unrecognized username");
+    var users =
+        userApi.listUsers(
+            null,
+            null,
+            null,
+            null,
+            generateLoginSearchTerm(userIdentity.getUsername()),
+            null,
+            null);
+    throwErrorIfEmpty(users.stream(), "Cannot update Okta user with unrecognized username");
+    User user = users.get(0);
     updateUser(user, userIdentity);
 
     return getOrganizationRoleClaimsForUser(user);
@@ -290,10 +269,18 @@ public class LiveOktaRepository implements OktaRepository {
   @Override
   public Optional<OrganizationRoleClaims> updateUserEmail(
       IdentityAttributes userIdentity, String email) {
-    var user =
-        getUserOrThrowError(
-            userIdentity.getUsername(),
-            "Cannot update email of Okta user with unrecognized username");
+    var users =
+        userApi.listUsers(
+            null,
+            null,
+            null,
+            null,
+            generateLoginSearchTerm(userIdentity.getUsername()),
+            null,
+            null);
+    throwErrorIfEmpty(
+        users.stream(), "Cannot update email of Okta user with unrecognized username");
+    User user = users.get(0);
     UserProfile profile = user.getProfile();
     profile.setLogin(email);
     profile.setEmail(email);
@@ -316,9 +303,17 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public void reprovisionUser(IdentityAttributes userIdentity) {
-    var user =
-        getUserOrThrowError(
-            userIdentity.getUsername(), "Cannot reprovision Okta user with unrecognized username");
+    var users =
+        userApi.listUsers(
+            null,
+            null,
+            null,
+            null,
+            generateLoginSearchTerm(userIdentity.getUsername()),
+            null,
+            null);
+    throwErrorIfEmpty(users.stream(), "Cannot reprovision Okta user with unrecognized username");
+    User user = users.get(0);
     UserStatus userStatus = user.getStatus();
 
     // any org user "deleted" through our api will be in SUSPENDED state
@@ -334,63 +329,6 @@ public class LiveOktaRepository implements OktaRepository {
     // user to be in PROVISIONED state
     userApi.deactivateUser(user.getId(), false);
     userApi.activateUser(user.getId(), true);
-  }
-
-  @Override
-  public List<String> updateUserPrivilegesAndGroupAccess(
-      String username,
-      Organization org,
-      Set<Facility> facilities,
-      OrganizationRole role,
-      boolean assignedToAllFacilities) {
-
-    // unassign user from current groups
-
-    User oktaUserToMove = getUserOrThrowError(username, "Couldn't find user");
-    List<Group> groupsToUnassign = userApi.listUserGroups(oktaUserToMove.getId());
-
-    groupsToUnassign.stream()
-        // only match on the org-related group ids and not the Okta-wide orgs like "Everyone"
-        .filter(g -> g.getProfile().getName().contains("TENANT"))
-        .forEach(g -> groupApi.unassignUserFromGroup(g.getId(), oktaUserToMove.getId()));
-
-    // add them to the new groups
-    String organizationExternalId = org.getExternalId();
-    EnumSet<OrganizationRole> rolesToCreate =
-        assignedToAllFacilities
-            ? EnumSet.of(OrganizationRole.getDefault(), role, OrganizationRole.ALL_FACILITIES)
-            : EnumSet.of(OrganizationRole.getDefault(), role);
-
-    Set<String> groupNamesToAdd = new HashSet<>();
-    groupNamesToAdd.addAll(
-        rolesToCreate.stream()
-            .map(r -> generateRoleGroupName(organizationExternalId, r))
-            .collect(Collectors.toSet()));
-
-    groupNamesToAdd.addAll(
-        facilities.stream()
-            .map(f -> generateFacilityGroupName(organizationExternalId, f.getInternalId()))
-            .collect(Collectors.toSet()));
-
-    String groupOrgPrefix = generateGroupOrgPrefix(org.getExternalId());
-    Map<String, Group> orgsToAddUserToMap =
-        groupApi
-            .listGroups(
-                null,
-                null,
-                null,
-                null,
-                null,
-                OKTA_ORG_PROFILE_MATCHER + groupOrgPrefix + "\"",
-                null,
-                null)
-            .stream()
-            .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
-            .collect(Collectors.toMap(g -> g.getProfile().getName(), Function.identity()));
-
-    orgsToAddUserToMap.forEach(
-        (name, group) -> groupApi.assignUserToGroup(group.getId(), oktaUserToMove.getId()));
-    return orgsToAddUserToMap.keySet().stream().toList();
   }
 
   @Override
@@ -452,7 +390,7 @@ public class LiveOktaRepository implements OktaRepository {
                   null,
                   null,
                   null,
-                  OKTA_ORG_PROFILE_MATCHER + groupOrgPrefix + "\"",
+                  "profile.name sw \"" + groupOrgPrefix + "\"",
                   null,
                   null)
               .stream()
@@ -485,24 +423,30 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public void resetUserPassword(String username) {
-    var user =
-        getUserOrThrowError(
-            username, "Cannot reset password for Okta user with unrecognized username");
+    var users =
+        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
+    throwErrorIfEmpty(
+        users.stream(), "Cannot reset password for Okta user with unrecognized username");
+    User user = users.get(0);
     userApi.generateResetPasswordToken(user.getId(), true, false);
   }
 
   @Override
   public void resetUserMfa(String username) {
-    var user =
-        getUserOrThrowError(username, "Cannot reset MFA for Okta user with unrecognized username");
+    var users =
+        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
+    throwErrorIfEmpty(users.stream(), "Cannot reset MFA for Okta user with unrecognized username");
+    User user = users.get(0);
     userApi.resetFactors(user.getId());
   }
 
   @Override
   public void setUserIsActive(String username, boolean active) {
-    var user =
-        getUserOrThrowError(
-            username, "Cannot update active status of Okta user with unrecognized username");
+    var users =
+        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
+    throwErrorIfEmpty(
+        users.stream(), "Cannot update active status of Okta user with unrecognized username");
+    User user = users.get(0);
 
     if (active && user.getStatus() == UserStatus.SUSPENDED) {
       userApi.unsuspendUser(user.getId());
@@ -520,15 +464,19 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public void reactivateUser(String username) {
-    var user =
-        getUserOrThrowError(username, "Cannot reactivate Okta user with unrecognized username");
+    var users =
+        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
+    throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
+    User user = users.get(0);
     userApi.unsuspendUser(user.getId());
   }
 
   @Override
   public void resendActivationEmail(String username) {
-    var user =
-        getUserOrThrowError(username, "Cannot reactivate Okta user with unrecognized username");
+    var users =
+        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
+    throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
+    User user = users.get(0);
     if (user.getStatus() == UserStatus.PROVISIONED) {
       userApi.reactivateUser(user.getId(), true);
     } else if (user.getStatus() == UserStatus.STAGED) {
@@ -589,13 +537,6 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   @Override
-  public String activateUser(String username) {
-    User oktaUser =
-        getUserOrThrowError(username, "Cannot activate Okta user with unrecognized username");
-    return activateUser(oktaUser);
-  }
-
-  @Override
   public void activateOrganization(Organization org) {
     var users = getOrgAdminUsers(org);
     for (User u : users) {
@@ -611,13 +552,8 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public List<String> fetchAdminUserEmail(Organization org) {
-    try {
-      List<User> admins = getOrgAdminUsers(org);
-      return admins.stream().map(u -> u.getProfile().getLogin()).toList();
-    } catch (IllegalGraphqlArgumentException e) {
-      log.error("error fetching admin by email from Okta API");
-      return List.of();
-    }
+    var admins = getOrgAdminUsers(org);
+    return admins.stream().map(u -> u.getProfile().getLogin()).toList();
   }
 
   @Override
@@ -643,6 +579,15 @@ public class LiveOktaRepository implements OktaRepository {
     applicationGroupsApi.assignGroupToApplication(app.getId(), g.getId(), null);
 
     log.info("Created Okta group={}", facilityGroupName);
+  }
+
+  public void deleteFacility(Facility facility) {
+    String orgExternalId = facility.getOrganization().getExternalId();
+    String groupName = generateFacilityGroupName(orgExternalId, facility.getInternalId());
+    var groups = groupApi.listGroups(groupName, null, null, null, null, null, null, null);
+    for (Group group : groups) {
+      groupApi.deleteGroup(group.getId());
+    }
   }
 
   @Override
@@ -671,37 +616,25 @@ public class LiveOktaRepository implements OktaRepository {
         getUserOrThrowError(username, "Cannot get org external ID for nonexistent user"));
   }
 
-  private Integer getUsersCountInOktaGroup(String groupName) {
-    List<Group> groupList =
-        groupApi.listGroups(groupName, null, null, 1, "stats", null, null, null);
+  public Integer getUsersInSingleFacility(Facility facility) {
+    String facilityAccessGroupName =
+        generateFacilityGroupName(
+            facility.getOrganization().getExternalId(), facility.getInternalId());
 
-    if (groupList.isEmpty()) {
+    List<Group> facilityAccessGroup =
+        groupApi.listGroups(facilityAccessGroupName, null, null, 1, "stats", null, null, null);
+
+    if (facilityAccessGroup.isEmpty()) {
       return 0;
     }
 
     try {
       LinkedHashMap<String, Object> stats =
-          (LinkedHashMap) groupList.get(0).getEmbedded().get("stats");
+          (LinkedHashMap) facilityAccessGroup.get(0).getEmbedded().get("stats");
       return ((Integer) stats.get("usersCount"));
     } catch (NullPointerException e) {
       throw new BadRequestException("Unable to retrieve okta group stats", e);
     }
-  }
-
-  @Override
-  public Integer getUsersCountInSingleFacility(Facility facility) {
-    String facilityAccessGroupName =
-        generateFacilityGroupName(
-            facility.getOrganization().getExternalId(), facility.getInternalId());
-
-    return getUsersCountInOktaGroup(facilityAccessGroupName);
-  }
-
-  @Override
-  public Integer getUsersCountInOrganization(Organization org) {
-    String orgDefaultGroupName =
-        generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
-    return getUsersCountInOktaGroup(orgDefaultGroupName);
   }
 
   public PartialOktaUser findUser(String username) {
@@ -719,11 +652,6 @@ public class LiveOktaRepository implements OktaRepository {
         .status(user.getStatus())
         .organizationRoleClaims(orgClaims)
         .build();
-  }
-
-  @Override
-  public String getApplicationStatusForHealthCheck() {
-    return Objects.requireNonNull(app.getStatus()).toString();
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
@@ -792,18 +720,27 @@ public class LiveOktaRepository implements OktaRepository {
     return ":" + OrganizationExtractor.FACILITY_ACCESS_MARKER + ":" + facilityId;
   }
 
-  private User getUserOrThrowError(String email, String errorMessage) {
-    try {
-      return userApi.getUser(email);
-    } catch (ApiException e) {
-      throw new IllegalGraphqlArgumentException(errorMessage);
-    }
+  private String generateLoginSearchTerm(String username) {
+    return "profile.login eq \"" + username + "\"";
   }
 
   private void throwErrorIfEmpty(Stream<?> stream, String errorMessage) {
     if (stream.findAny().isEmpty()) {
       throw new IllegalGraphqlArgumentException(errorMessage);
     }
+  }
+
+  private User getUserOrThrowError(String username, String errorMessage) {
+    var searchUsersStream =
+        userApi
+            .listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null)
+            .stream();
+    var user = searchUsersStream.findFirst();
+    if (user.isEmpty()) {
+      var qUsersStream = userApi.listUsers(username, null, null, null, null, null, null).stream();
+      user = qUsersStream.filter(u -> u.getProfile().getLogin().equals(username)).findFirst();
+    }
+    return user.orElseThrow(() -> new IllegalGraphqlArgumentException(errorMessage));
   }
 
   private String prettifyOktaError(ApiException e) {

@@ -16,8 +16,6 @@ import org.springframework.stereotype.Controller;
 /** Resolver for the graphql User type */
 @Controller
 public class UserResolver {
-  public static final int DEFAULT_OKTA_USER_PAGE_SIZE = 12;
-  public static final int DEFAULT_OKTA_USER_PAGE_OFFSET = 0;
 
   private ApiUserService _userService;
 
@@ -27,7 +25,7 @@ public class UserResolver {
 
   @QueryMapping
   public User whoami() {
-    return new User(_userService.getCurrentUserInfoForWhoAmI());
+    return new User(_userService.getCurrentUserInfo());
   }
 
   @QueryMapping
@@ -38,21 +36,6 @@ public class UserResolver {
   @QueryMapping
   public List<ApiUserWithStatus> usersWithStatus() {
     return _userService.getUsersAndStatusInCurrentOrg();
-  }
-
-  @QueryMapping
-  public ManageUsersPageWrapper usersWithStatusPage(
-      @Argument int pageNumber, @Argument String searchQuery) {
-    if (pageNumber < 0) {
-      pageNumber = DEFAULT_OKTA_USER_PAGE_OFFSET;
-    }
-
-    if (searchQuery == null) {
-      searchQuery = "";
-    }
-
-    return _userService.getPagedUsersAndStatusInCurrentOrg(
-        pageNumber, DEFAULT_OKTA_USER_PAGE_SIZE, searchQuery);
   }
 
   @QueryMapping

@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -42,10 +42,10 @@ describe("PatientHeader", () => {
           </Provider>
         </MemoryRouter>
       );
-      const user = userEvent.setup();
+
       expect(screen.getByText("Español")).toBeInTheDocument();
 
-      await user.click(screen.getByRole("button"));
+      await act(async () => await userEvent.click(screen.getByRole("button")));
 
       expect(screen.queryByText("Español")).not.toBeInTheDocument();
       expect(screen.getByText("English")).toBeInTheDocument();

@@ -13,17 +13,14 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDat
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGendersOfSexualPartners;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePatientGenderIdentity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateResidence;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResultStatus;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoUnknownAnswer;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoAnswer;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static java.util.Collections.emptyList;
 
@@ -31,9 +28,7 @@ import com.google.common.collect.ImmutableMap;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
-import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
-import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.ArrayList;
@@ -55,17 +50,7 @@ public class TestResultRow implements FileRow {
   final ValueOrError patientCounty;
   final ValueOrError patientPhoneNumber;
   final ValueOrError patientDob;
-
-  /**
-   * This field "patient_gender" refers to the patient's sex assigned at birth. <br>
-   *
-   * <p>When "patient_gender_identity" was added as a field in 2024, the team decided to keep this
-   * current column name of "patient_gender" instead of changing the header to something like
-   * "patient_sex_assigned_at_birth". This decision was made to maintain compatibility for existing
-   * bulk upload users.
-   */
   final ValueOrError patientGender;
-
   final ValueOrError patientRace;
   final ValueOrError patientEthnicity;
   final ValueOrError patientPreferredLanguage;
@@ -116,9 +101,6 @@ public class TestResultRow implements FileRow {
   final ValueOrError comment;
   final ValueOrError testResultStatus;
   final ValueOrError testOrderedCode;
-  final ValueOrError gendersOfSexualPartners;
-  final ValueOrError syphilisHistory;
-  final ValueOrError patientGenderIdentity;
 
   static final String PATIENT_LAST_NAME = "patient_last_name";
   static final String PATIENT_FIRST_NAME = "patient_first_name";
@@ -148,23 +130,11 @@ public class TestResultRow implements FileRow {
   static final String ORDERING_PROVIDER_ZIP_CODE = "ordering_provider_zip_code";
   static final String ORDERING_PROVIDER_PHONE_NUMBER = "ordering_provider_phone_number";
   static final String TESTING_LAB_CLIA = "testing_lab_clia";
-  public static final String TESTING_LAB_NAME = "testing_lab_name";
-  public static final String TESTING_LAB_STREET = "testing_lab_street";
-  public static final String TESTING_LAB_STREET2 = "testing_lab_street2";
-  public static final String TESTING_LAB_CITY = "testing_lab_city";
-  public static final String TESTING_LAB_STATE = "testing_lab_state";
-  public static final String TESTING_LAB_ZIP_CODE = "testing_lab_zip_code";
-  public static final String TESTING_LAB_PHONE_NUMBER = "testing_lab_phone_number";
-  public static final String ORDERING_FACILITY_NAME = "ordering_facility_name";
-  public static final String ORDERING_FACILITY_STREET = "ordering_facility_street";
-  public static final String ORDERING_FACILITY_STREET2 = "ordering_facility_street2";
-  public static final String ORDERING_FACILITY_CITY = "ordering_facility_city";
-  public static final String ORDERING_FACILITY_STATE = "ordering_facility_state";
-  public static final String ORDERING_FACILITY_ZIP_CODE = "ordering_facility_zip_code";
-  public static final String ORDERING_FACILITY_PHONE_NUMBER = "ordering_facility_phone_number";
-  public static final String GENDERS_OF_SEXUAL_PARTNERS = "genders_of_sexual_partners";
-  public static final String SYPHILIS_HISTORY = "syphilis_history";
-  public static final String PATIENT_GENDER_IDENTITY = "patient_gender_identity";
+  static final String TESTING_LAB_NAME = "testing_lab_name";
+  static final String TESTING_LAB_STREET = "testing_lab_street";
+  static final String TESTING_LAB_CITY = "testing_lab_city";
+  static final String TESTING_LAB_STATE = "testing_lab_state";
+  static final String TESTING_LAB_ZIP_CODE_FIELD = "testing_lab_zip_code";
 
   public static final ImmutableMap<String, String> diseaseSpecificLoincMap =
       new ImmutableMap.Builder<String, String>()
@@ -322,7 +292,6 @@ public class TestResultRow implements FileRow {
           .build();
 
   private ResultsUploaderCachingService resultsUploaderCachingService;
-  private ResultsUploaderDeviceService resultsUploaderDeviceService;
   private FeatureFlagsConfig featureFlagsConfig;
 
   private static final List<String> requiredFields =
@@ -359,7 +328,7 @@ public class TestResultRow implements FileRow {
           TESTING_LAB_STREET,
           TESTING_LAB_CITY,
           TESTING_LAB_STATE,
-          TESTING_LAB_ZIP_CODE);
+          TESTING_LAB_ZIP_CODE_FIELD);
 
   public TestResultRow(
       Map<String, String> rawRow,
@@ -367,8 +336,6 @@ public class TestResultRow implements FileRow {
       FeatureFlagsConfig featureFlagsConfig) {
     this(rawRow);
     this.resultsUploaderCachingService = resultsUploaderCachingService;
-    this.resultsUploaderDeviceService =
-        new ResultsUploaderDeviceService(resultsUploaderCachingService, featureFlagsConfig);
     this.featureFlagsConfig = featureFlagsConfig;
   }
 
@@ -431,12 +398,13 @@ public class TestResultRow implements FileRow {
     testingLabClia = getValue(rawRow, TESTING_LAB_CLIA, isRequired(TESTING_LAB_CLIA));
     testingLabName = getValue(rawRow, TESTING_LAB_NAME, isRequired(TESTING_LAB_NAME));
     testingLabStreet = getValue(rawRow, TESTING_LAB_STREET, isRequired(TESTING_LAB_STREET));
-    testingLabStreet2 = getValue(rawRow, TESTING_LAB_STREET2, isRequired(TESTING_LAB_STREET2));
+    testingLabStreet2 = getValue(rawRow, "testing_lab_street2", isRequired("testing_lab_street2"));
     testingLabCity = getValue(rawRow, TESTING_LAB_CITY, isRequired(TESTING_LAB_CITY));
     testingLabState = getValue(rawRow, TESTING_LAB_STATE, isRequired(TESTING_LAB_STATE));
-    testingLabZipCode = getValue(rawRow, TESTING_LAB_ZIP_CODE, isRequired(TESTING_LAB_ZIP_CODE));
+    testingLabZipCode =
+        getValue(rawRow, TESTING_LAB_ZIP_CODE_FIELD, isRequired(TESTING_LAB_ZIP_CODE_FIELD));
     testingLabPhoneNumber =
-        getValue(rawRow, TESTING_LAB_PHONE_NUMBER, isRequired(TESTING_LAB_PHONE_NUMBER));
+        getValue(rawRow, "testing_lab_phone_number", isRequired("testing_lab_phone_number"));
     pregnant = getValue(rawRow, "pregnant", isRequired("pregnant"));
     employedInHealthcare =
         getValue(rawRow, "employed_in_healthcare", isRequired("employed_in_healthcare"));
@@ -449,111 +417,33 @@ public class TestResultRow implements FileRow {
     hospitalized = getValue(rawRow, "hospitalized", isRequired("hospitalized"));
     icu = getValue(rawRow, "icu", isRequired("icu"));
     orderingFacilityName =
-        getValue(rawRow, ORDERING_FACILITY_NAME, isRequired(ORDERING_FACILITY_NAME));
+        getValue(rawRow, "ordering_facility_name", isRequired("ordering_facility_name"));
     orderingFacilityStreet =
-        getValue(rawRow, ORDERING_FACILITY_STREET, isRequired(ORDERING_FACILITY_STREET));
+        getValue(rawRow, "ordering_facility_street", isRequired("ordering_facility_street"));
     orderingFacilityStreet2 =
-        getValue(rawRow, ORDERING_FACILITY_STREET2, isRequired(ORDERING_FACILITY_STREET2));
+        getValue(rawRow, "ordering_facility_street2", isRequired("ordering_facility_street2"));
     orderingFacilityCity =
-        getValue(rawRow, ORDERING_FACILITY_CITY, isRequired(ORDERING_FACILITY_CITY));
+        getValue(rawRow, "ordering_facility_city", isRequired("ordering_facility_city"));
     orderingFacilityState =
-        getValue(rawRow, ORDERING_FACILITY_STATE, isRequired(ORDERING_FACILITY_STATE));
+        getValue(rawRow, "ordering_facility_state", isRequired("ordering_facility_state"));
     orderingFacilityZipCode =
-        getValue(rawRow, ORDERING_FACILITY_ZIP_CODE, isRequired(ORDERING_FACILITY_ZIP_CODE));
+        getValue(rawRow, "ordering_facility_zip_code", isRequired("ordering_facility_zip_code"));
     orderingFacilityPhoneNumber =
         getValue(
-            rawRow, ORDERING_FACILITY_PHONE_NUMBER, isRequired(ORDERING_FACILITY_PHONE_NUMBER));
+            rawRow, "ordering_facility_phone_number", isRequired("ordering_facility_phone_number"));
     comment = getValue(rawRow, "comment", isRequired("comment"));
     testResultStatus = getValue(rawRow, "test_result_status", isRequired("test_result_status"));
     testOrderedCode = getValue(rawRow, "test_ordered_code", isRequired("test_ordered_code"));
-    gendersOfSexualPartners =
-        getValue(rawRow, GENDERS_OF_SEXUAL_PARTNERS, isRequired(GENDERS_OF_SEXUAL_PARTNERS));
-    syphilisHistory = getValue(rawRow, SYPHILIS_HISTORY, isRequired(SYPHILIS_HISTORY));
-    patientGenderIdentity =
-        getValue(rawRow, PATIENT_GENDER_IDENTITY, isRequired(PATIENT_GENDER_IDENTITY));
   }
 
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
       String equipmentModelName, String testPerformedCode) {
 
-    if (equipmentModelName == null || testPerformedCode == null) {
-      return generateInvalidDataErrorMessages();
+    if (validModelTestPerformedCombination(equipmentModelName, testPerformedCode)
+        || validDiseaseTestPerformedLoinc(testPerformedCode)) {
+      return emptyList();
     }
 
-    if (!validDeviceInDb(equipmentModelName, testPerformedCode)
-        && !validDeviceInAllowList(testPerformedCode)) {
-      return generateInvalidDataErrorMessages();
-    }
-
-    boolean hasOnlyActiveDiseases =
-        resultsUploaderDeviceService.validateResultsOnlyIncludeActiveDiseases(
-            equipmentModelName, testPerformedCode);
-
-    if (!hasOnlyActiveDiseases) {
-      return generateInactiveDiseaseErrorMessages();
-    }
-    return emptyList();
-  }
-
-  private boolean isHivResult() {
-    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
-      return false;
-    }
-    return resultsUploaderCachingService
-        .getHivEquipmentModelAndTestPerformedCodeSet()
-        .contains(
-            ResultsUploaderCachingService.getKey(
-                equipmentModelName.getValue(), testPerformedCode.getValue()));
-  }
-
-  private boolean isSyphilisResult() {
-    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
-      return false;
-    }
-    return resultsUploaderCachingService
-        .getSyphilisEquipmentModelAndTestPerformedCodeSet()
-        .contains(
-            ResultsUploaderCachingService.getKey(
-                equipmentModelName.getValue(), testPerformedCode.getValue()));
-  }
-
-  private boolean isHepatitisCResult() {
-    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
-      return false;
-    }
-
-    return resultsUploaderCachingService
-        .getHepatitisCEquipmentModelAndTestPerformedCodeSet()
-        .contains(
-            ResultsUploaderCachingService.getKey(
-                equipmentModelName.getValue(), testPerformedCode.getValue()));
-  }
-
-  private boolean isGonorrheaResult() {
-    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
-      return false;
-    }
-
-    return resultsUploaderCachingService
-        .getGonorrheaEquipmentModelAndTestPerformedCodeSet()
-        .contains(
-            ResultsUploaderCachingService.getKey(
-                equipmentModelName.getValue(), testPerformedCode.getValue()));
-  }
-
-  private boolean isChlamydiaResult() {
-    if (equipmentModelName.getValue() == null || testPerformedCode.getValue() == null) {
-      return false;
-    }
-
-    return resultsUploaderCachingService
-        .getChlamydiaEquipmentModelAndTestPerformedCodeSet()
-        .contains(
-            ResultsUploaderCachingService.getKey(
-                equipmentModelName.getValue(), testPerformedCode.getValue()));
-  }
-
-  private List<FeedbackMessage> generateInvalidDataErrorMessages() {
     String errorMessage =
         "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
     return List.of(
@@ -567,39 +457,34 @@ public class TestResultRow implements FileRow {
             .build());
   }
 
-  private List<FeedbackMessage> generateInactiveDiseaseErrorMessages() {
-    String errorMessage =
-        EQUIPMENT_MODEL_NAME
-            + " and "
-            + TEST_PERFORMED_CODE
-            + " combination map to a non-active disease in this jurisdiction";
-    return List.of(
-        FeedbackMessage.builder()
-            .scope(ITEM_SCOPE)
-            .message(errorMessage)
-            .fieldRequired(true)
-            .fieldHeader(TEST_PERFORMED_CODE)
-            .errorType(ResultUploadErrorType.UNAVAILABLE_DISEASE)
-            .source(ResultUploadErrorSource.SIMPLE_REPORT)
-            .build());
-  }
-
-  private boolean validDeviceInDb(String equipmentModelName, String testPerformedCode) {
-    return resultsUploaderDeviceService.validateModelAndTestPerformedCombination(
-        equipmentModelName, testPerformedCode);
-  }
-
-  private boolean validDeviceInAllowList(String testPerformedCode) {
+  private boolean validDiseaseTestPerformedLoinc(String testPerformedCode) {
+    if (testPerformedCode == null) {
+      return false;
+    }
     String disease = diseaseSpecificLoincMap.get(testPerformedCode);
-    return disease != null;
+    return disease != null && (!RSV_NAME.equals(disease) || featureFlagsConfig.isRsvEnabled());
+  }
+
+  private boolean validModelTestPerformedCombination(
+      String equipmentModelName, String testPerformedCode) {
+    return equipmentModelName != null
+        && testPerformedCode != null
+        && resultsUploaderCachingService
+            .getModelAndTestPerformedCodeToDeviceMap()
+            .containsKey(
+                ResultsUploaderCachingService.getKey(
+                    removeTrailingAsterisk(equipmentModelName), testPerformedCode));
+  }
+
+  private String removeTrailingAsterisk(String value) {
+    if (value != null && value.length() > 0 && value.charAt(value.length() - 1) == '*') {
+      return value.substring(0, value.length() - 1);
+    }
+    return value;
   }
 
   @Override
   public List<String> getRequiredFields() {
-    return getStaticRequiredFields();
-  }
-
-  public static List<String> getStaticRequiredFields() {
     return requiredFields;
   }
 
@@ -645,12 +530,12 @@ public class TestResultRow implements FileRow {
     errors.addAll(validateBiologicalSex(patientGender));
     errors.addAll(validateEthnicity(patientEthnicity));
 
-    errors.addAll(validateYesNoUnknownAnswer(pregnant));
-    errors.addAll(validateYesNoUnknownAnswer(employedInHealthcare));
-    errors.addAll(validateYesNoUnknownAnswer(symptomaticForDisease));
-    errors.addAll(validateYesNoUnknownAnswer(residentCongregateSetting));
-    errors.addAll(validateYesNoUnknownAnswer(hospitalized));
-    errors.addAll(validateYesNoUnknownAnswer(icu));
+    errors.addAll(validateYesNoAnswer(pregnant));
+    errors.addAll(validateYesNoAnswer(employedInHealthcare));
+    errors.addAll(validateYesNoAnswer(symptomaticForDisease));
+    errors.addAll(validateYesNoAnswer(residentCongregateSetting));
+    errors.addAll(validateYesNoAnswer(hospitalized));
+    errors.addAll(validateYesNoAnswer(icu));
     errors.addAll(validateResidence(residenceType));
 
     errors.addAll(validateTestResult(testResult));
@@ -664,49 +549,6 @@ public class TestResultRow implements FileRow {
     errors.addAll(
         validateDeviceModelAndTestPerformedCode(
             equipmentModelName.getValue(), testPerformedCode.getValue()));
-
-    errors.addAll(validateGendersOfSexualPartners(gendersOfSexualPartners));
-
-    errors.addAll(validatePatientGenderIdentity(patientGenderIdentity));
-
-    if (isHivResult()) {
-      errors.addAll(
-          validateRequiredFieldsForPositiveResult(
-              testResult, DiseaseService.HIV_NAME, List.of(gendersOfSexualPartners, pregnant)));
-    }
-
-    errors.addAll(validateYesNoUnknownAnswer(syphilisHistory));
-    if (isSyphilisResult()) {
-      errors.addAll(
-          validateRequiredFieldsForPositiveResult(
-              testResult,
-              DiseaseService.SYPHILIS_NAME,
-              List.of(gendersOfSexualPartners, pregnant, syphilisHistory, symptomaticForDisease)));
-    }
-
-    if (isHepatitisCResult()) {
-      errors.addAll(
-          validateRequiredFieldsForPositiveResult(
-              testResult,
-              DiseaseService.HEPATITIS_C_NAME,
-              List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
-    }
-
-    if (isGonorrheaResult()) {
-      errors.addAll(
-          validateRequiredFieldsForPositiveResult(
-              testResult,
-              DiseaseService.GONORRHEA_NAME,
-              List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
-    }
-
-    if (isChlamydiaResult()) {
-      errors.addAll(
-          validateRequiredFieldsForPositiveResult(
-              testResult,
-              DiseaseService.CHLAMYDIA_NAME,
-              List.of(gendersOfSexualPartners, pregnant, symptomaticForDisease)));
-    }
 
     return errors;
   }

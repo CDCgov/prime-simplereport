@@ -15,7 +15,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.validation.constraints.Size;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -216,7 +216,6 @@ public class PersonService {
    * @return A list of matching patients.
    */
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
-  @Transactional(readOnly = true)
   public List<Person> getPatients(
       UUID facilityId,
       int pageOffset,
@@ -287,14 +286,6 @@ public class PersonService {
             facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities, orgToSearch));
   }
 
-  @AuthorizationConfiguration.RequirePermissionManageUsers
-  @Transactional(readOnly = true)
-  public long getPatientsCountByOrganization(UUID organizationId) {
-    Organization orgToSearch = _os.getOrganizationById(organizationId);
-
-    return _repo.countByOrganizationAndIsDeleted(orgToSearch, false);
-  }
-
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
     return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), false);
@@ -348,12 +339,10 @@ public class PersonService {
       String ethnicity,
       String tribalAffiliation,
       String gender,
-      String genderIdentity,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery,
-      String notes) {
+      TestResultDeliveryPreference testResultDelivery) {
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -371,12 +360,10 @@ public class PersonService {
             ethnicity,
             Arrays.asList(tribalAffiliation),
             gender,
-            genderIdentity,
             residentCongregateSetting,
             employedInHealthcare,
             preferredLanguage,
-            testResultDelivery,
-            notes);
+            testResultDelivery);
     updatePersonFacility(newPatient, facilityId);
     Person savedPerson = _repo.save(newPatient);
     updatePhoneNumbers(newPatient, phoneNumbers);
@@ -401,12 +388,10 @@ public class PersonService {
       String ethnicity,
       String tribalAffiliation,
       String gender,
-      String genderIdentity,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery,
-      String notes) {
+      TestResultDeliveryPreference testResultDelivery) {
     Person newPatient =
         new Person(
             link.getOrganization(),
@@ -424,12 +409,10 @@ public class PersonService {
             ethnicity,
             Arrays.asList(tribalAffiliation),
             gender,
-            genderIdentity,
             residentCongregateSetting,
             employedInHealthcare,
             preferredLanguage,
-            testResultDelivery,
-            notes);
+            testResultDelivery);
     newPatient.setFacility(link.getFacility());
     Person savedPerson = _repo.save(newPatient);
     updatePhoneNumbers(newPatient, phoneNumbers);
@@ -469,8 +452,6 @@ public class PersonService {
 
     if (!deduplicatedPhoneNumbers.isEmpty()) {
       person.setPrimaryPhone(deduplicatedPhoneNumbers.get(0));
-    } else {
-      person.setPrimaryPhone(null);
     }
   }
 
@@ -523,12 +504,10 @@ public class PersonService {
       String ethnicity,
       String tribalAffiliation,
       String gender,
-      String genderIdentity,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery,
-      String notes) {
+      TestResultDeliveryPreference testResultDelivery) {
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -545,12 +524,10 @@ public class PersonService {
         ethnicity,
         Arrays.asList(tribalAffiliation),
         gender,
-        genderIdentity,
         residentCongregateSetting,
         employedInHealthcare,
         preferredLanguage,
-        testResultDelivery,
-        notes);
+        testResultDelivery);
 
     if (!emails.isEmpty()) {
       patientToUpdate.setPrimaryEmail(emails.get(0));

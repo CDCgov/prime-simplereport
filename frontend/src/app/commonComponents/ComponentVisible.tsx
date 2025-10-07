@@ -1,6 +1,4 @@
-import { useState, useRef, LegacyRef } from "react";
-
-import { useOutsideClick } from "../utils/hooks";
+import { useState, useEffect, useRef, LegacyRef } from "react";
 
 /**
  * Dismiss div when click happens outside of it.
@@ -18,7 +16,18 @@ const useComponentVisible = (initialIsVisible: boolean) => {
     useState(initialIsVisible);
   const ref: LegacyRef<HTMLDivElement> | null = useRef(null);
 
-  useOutsideClick(ref, () => setIsComponentVisible(false));
+  const handleClickOutside = (event: any) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setIsComponentVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
+  });
   return { ref, isComponentVisible, setIsComponentVisible };
 };
 

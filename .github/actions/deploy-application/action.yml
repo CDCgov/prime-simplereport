@@ -1,39 +1,28 @@
 name: Deploy SimpleReport Application
 description: Promote API from secondary slot, and deploy client from tarball
 inputs:
-  deploy_env:
+  deploy-env:
     description: The environment being deployed (e.g. "prod" or "test")
     required: true
-  client_tarball:
+  client-tarball:
     description: The path to the tar file containing the client code to deploy
     required: true
-  azure_creds:
-    description: The Azure credentials for this environment.
-    required: true
-
 runs:
   using: composite
   steps:
-    - uses: azure/login@v2
-      with:
-        creds: ${{ inputs.azure_creds }}
-    - name: Retrieve frontend build
-      uses: actions/download-artifact@v4
-      with:
-        name: frontend-tarball
     - name: Unpack client
       shell: bash
       run: |
         echo "::group::Unpack client"
         mkdir client-build;
-        tar -C client-build -zxvf ${{ inputs.client_tarball }}
+        tar -C client-build -zxvf ${{inputs.client-tarball}}
         echo "::endgroup::"
     - name: Promote API to production and verify that it is ready
       shell: bash
       working-directory: ./ops
       run: |
         echo "::group::Promote API and verify readiness"
-        make promote-${{ inputs.deploy_env }} check-${{ inputs.deploy_env }}-readiness
+        make promote-${{ env.DEPLOY_ENV }} check-${{ env.DEPLOY_ENV }}-readiness
         echo "::endgroup::"
     - name: Check for production app readiness
       shell: bash
@@ -44,7 +33,7 @@ runs:
       run: |
         echo "::group::Deploy frontend app"
         az storage blob upload-batch -s client-build/ -d '$web' \
-        --account-name simplereport${{ inputs.deploy_env }}app \
+        --account-name simplereport${{ inputs.deploy-env }}app \
         --destination-path '/app' \
         --overwrite
         echo "::endgroup::"

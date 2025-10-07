@@ -1,6 +1,5 @@
 import { DequeuedMessageItem } from "@azure/storage-queue";
-import { stringify } from "csv-stringify/sync";
-
+import csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 
@@ -21,7 +20,7 @@ export function convertToCsv(messages: DequeuedMessageItem[]) {
     })
     .filter((m) => m !== undefined);
   return {
-    csvPayload: stringify(messageTexts, { header: true }),
+    csvPayload: csvStringify(messageTexts, { header: true }),
     parseFailure,
     parseFailureCount,
     parseSuccessCount: messageTexts.length,

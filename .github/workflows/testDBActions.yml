@@ -20,7 +20,7 @@ jobs:
   test-db-liquibase-action:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v3
       - name: Start DB
         env:
           DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
@@ -34,4 +34,4 @@ jobs:
       - name: Run liquibase clear checksums
         run: docker compose -f docker-compose.db-liquibase-action.yml run --env "LIQUIBASE_ACTION=clear-checksums" db_liquibase_action
       - name: Test rolling back on last 20 migrations
-        run: docker compose -f docker-compose.db-liquibase-action.yml run --entrypoint "gradle liquibaseRollbackCount -PliquibaseCount=20" db_liquibase_action
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --entrypoint "gradle liquibaseRollbackCount -PliquibaseCommandValue=20" db_liquibase_action

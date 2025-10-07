@@ -27,19 +27,15 @@ public class TestResultMutationResolver {
   @MutationMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public boolean resendToReportStream(
-      @Argument List<UUID> testEventIds, @Argument boolean fhirOnly, @Argument boolean covidOnly) {
+      @Argument List<UUID> testEventIds, @Argument boolean fhirOnly) {
     testEventRepository
         .findAllByInternalIdIn(testEventIds)
         .forEach(
             testEvent -> {
-              if (fhirOnly) {
-                fhirReportingService.report(testEvent);
-              } else if (covidOnly) {
+              if (!fhirOnly) {
                 testEventReportingService.report(testEvent);
-              } else {
-                testEventReportingService.report(testEvent);
-                fhirReportingService.report(testEvent);
               }
+              fhirReportingService.report(testEvent);
             });
 
     return true;

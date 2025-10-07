@@ -130,7 +130,6 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
       aria-live="polite"
       role="region"
       aria-atomic="true"
-      data-testid="device-results-dropdown"
     >
       <div className="usa-sr-only" id={"device-result-table-desc"}>
         device search results

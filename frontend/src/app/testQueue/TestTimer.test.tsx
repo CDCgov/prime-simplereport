@@ -1,4 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
@@ -69,15 +75,6 @@ describe("TestTimer", () => {
     timer.update(10);
     testCountdown(timer.countdown, 9, 58);
   });
-  it("adjusts values when a custom start time is provided", () => {
-    let twoMinutesAgo = now - 120000;
-    let timer: Timer = new Timer(internalId, 15, twoMinutesAgo);
-    timer.setStartedAt(twoMinutesAgo);
-
-    // two seconds passed
-    timer.tick(now + 2000);
-    testCountdown(timer.countdown, 12, 58);
-  });
 });
 
 describe("TestTimerWidget", () => {
@@ -101,23 +98,12 @@ describe("TestTimerWidget", () => {
       removeTimer("internal-id");
     });
 
-    const renderWithUser = (testLength: number, startedAt: number = 0) => ({
-      user: userEvent.setup(),
-      ...render(
-        <DummyTestTimer
-          testLength={testLength}
-          context={context}
-          startedAt={startedAt}
-        />
-      ),
-    });
-
     it("tracks a custom event when the timer is started", async () => {
-      const { user } = renderWithUser(15);
+      render(<DummyTestTimer testLength={15} context={context} />);
 
       const startTimer = await screen.findByRole("button");
 
-      await user.click(startTimer);
+      await act(async () => await userEvent.click(startTimer));
       expect(trackEventMock).toHaveBeenCalled();
       expect(trackEventMock).toHaveBeenCalledTimes(1);
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -127,12 +113,13 @@ describe("TestTimerWidget", () => {
     });
 
     it("tracks a custom event when the timer reset", async () => {
-      const { user } = renderWithUser(15);
+      render(<DummyTestTimer testLength={15} context={context} />);
+
       const timerButton = await screen.findByRole("button");
 
       // Start timer
-      await user.click(timerButton);
-      await screen.findByText("Start timer");
+      await act(async () => await userEvent.click(timerButton));
+      await screen.findByText("15:00");
 
       // The timer does not enter the countdown state instantly, so clicking the
       // button in rapid succession will register as two "start timer" events.
@@ -140,8 +127,8 @@ describe("TestTimerWidget", () => {
       await waitFor(() => findTimer("internal-id")?.tick(Date.now()));
 
       // Reset timer
-      await user.click(timerButton);
-      await screen.findByText("Start timer");
+      await act(async () => await userEvent.click(timerButton));
+      await screen.findByText("15:00");
 
       expect(trackEventMock).toHaveBeenCalledWith(
         { name: "Test timer reset" },
@@ -150,34 +137,16 @@ describe("TestTimerWidget", () => {
     });
 
     it("tracks a custom event when the timer reaches zero", async () => {
-      const { user } = renderWithUser(0);
+      render(<DummyTestTimer testLength={0} context={context} />);
+
       const timerButton = await screen.findByRole("button");
-      await user.click(timerButton);
+
+      fireEvent.click(timerButton);
+      await screen.findByText("0:00");
       await screen.findByText("RESULT READY");
 
-      await waitFor(() =>
-        expect(trackEventMock).toHaveBeenCalledWith(
-          { name: "Test timer finished" },
-          context
-        )
-      );
-    });
-
-    it("displays the correct value when a custom start time is provided", async () => {
-      const twoMinutesAgo = Date.now() - 2 * 60 * 1000;
-      const { user } = renderWithUser(3, twoMinutesAgo);
-      expect(screen.queryByText("Start timer")).not.toBeInTheDocument();
-
-      // some machines may run this test faster than others so just check that there is less than 1 minute remaining rather than checking for specific time
-      expect(
-        await screen.findByText("0:", { exact: false })
-      ).toBeInTheDocument();
-
-      const timerButton = await screen.findByRole("timer");
-      await user.click(timerButton);
-
       expect(trackEventMock).toHaveBeenCalledWith(
-        { name: "Test timer reset" },
+        { name: "Test timer finished" },
         context
       );
     });
@@ -187,17 +156,10 @@ describe("TestTimerWidget", () => {
 function DummyTestTimer(props: {
   testLength: number;
   context: TimerTrackEventMetadata;
-  startedAt: number;
 }) {
-  const timer = useTestTimer("internal-id", props.testLength, props.startedAt);
-  const saveStartedAtCallback = () => {};
-  return (
-    <TestTimerWidget
-      timer={timer}
-      context={props.context}
-      saveStartedAtCallback={saveStartedAtCallback}
-    />
-  );
+  const timer = useTestTimer("internal-id", props.testLength);
+
+  return <TestTimerWidget timer={timer} context={props.context} />;
 }
 
 function testCountdown(actualMillis: number, mins: number, secs: number) {

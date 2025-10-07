@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import { appPermissions } from "../permissions";
 import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
 import { RootState } from "../store";
-import DataRetentionModal, {
-  shouldShowDataRetentionModal,
-} from "../commonComponents/DataRetentionModal";
 
+import FacilityPopup from "./FacilityPopup";
 import FacilitySelect from "./FacilitySelect";
-import { useRedirectToPilot } from "./useRedirectToPilot";
-import NoFacilityPopup from "./NoFacilityPopup";
-import "../commonComponents/DataRetentionModal.scss";
+import { useSelectedFacility } from "./useSelectedFacility";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
 
@@ -36,14 +32,7 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     (state) => state.facilities
   );
 
-  const {
-    facilityFlagsLoading,
-    onFacilitySelect,
-    selectedFacility,
-    setSelectedFacility,
-  } = useRedirectToPilot(facilities);
-
-  const [showDataRetentionModal, setShowDataRetentionModal] = useState(false);
+  const [selectedFacility, setSelectedFacility] = useSelectedFacility();
 
   useEffect(() => {
     if (selectedFacility || !dataLoaded) {
@@ -55,26 +44,15 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     }
   }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
 
-  // Show modal only after facility is selected
-  useEffect(() => {
-    if (selectedFacility && shouldShowDataRetentionModal()) {
-      setShowDataRetentionModal(true);
-    }
-  }, [selectedFacility]);
-
-  if (!dataLoaded || facilityFlagsLoading) {
+  if (!dataLoaded) {
     return <Loading />;
-  } else if (selectedFacility || (isAdmin && facilities.length === 0)) {
-    return (
-      <>
-        <DataRetentionModal
-          isOpen={showDataRetentionModal}
-          onClose={() => setShowDataRetentionModal(false)}
-        />
-        {children}
-      </>
-    );
-  } else if (canViewSettings && facilities.length === 0) {
+  }
+
+  if (selectedFacility || (isAdmin && facilities.length === 0)) {
+    return <>{children}</>;
+  }
+
+  if (canViewSettings && facilities.length === 0) {
     // new org needs to create a facility
     return (
       <main className="prime-home">
@@ -83,16 +61,25 @@ const WithFacility: React.FC<Props> = ({ children }) => {
         </div>
       </main>
     );
-  } else if (facilities.length === 0) {
-    return <NoFacilityPopup />;
-  } else {
+  }
+
+  if (facilities.length === 0) {
     return (
-      <FacilitySelect
-        facilities={facilities}
-        onFacilitySelect={onFacilitySelect}
-      />
+      <FacilityPopup>
+        <p>You do not have access to any facilities at this time.</p>
+        <p>
+          Ask an administrator to assign you access, then try logging in again.
+        </p>
+      </FacilityPopup>
     );
   }
+
+  return (
+    <FacilitySelect
+      facilities={facilities}
+      setActiveFacility={setSelectedFacility}
+    />
+  );
 };
 
 export default WithFacility;

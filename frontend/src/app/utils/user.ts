@@ -1,9 +1,9 @@
 type OptionalString = string | undefined | null;
 
 type RequiredUserFields = {
-  firstName?: OptionalString;
-  middleName?: OptionalString;
-  lastName?: OptionalString;
+  firstName: OptionalString;
+  middleName: OptionalString;
+  lastName: OptionalString;
   suffix?: OptionalString;
 };
 

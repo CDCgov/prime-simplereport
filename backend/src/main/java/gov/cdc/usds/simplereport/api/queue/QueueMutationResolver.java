@@ -56,7 +56,6 @@ public class QueueMutationResolver {
       @Argument UUID facilityId,
       @Argument UUID patientId,
       @Argument String pregnancy,
-      @Argument String syphilisHistory,
       @Argument String symptoms,
       @Argument LocalDate symptomOnset,
       @Argument Boolean noSymptoms,
@@ -70,14 +69,11 @@ public class QueueMutationResolver {
             facilityId,
             personService.getPatientNoPermissionsCheck(patientId),
             pregnancy,
-            syphilisHistory,
             symptomsMap,
             symptomOnset,
             noSymptoms);
 
-    if (testResultDelivery != null) {
-      personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
-    }
+    personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
 
     return to.getInternalId()
         .toString(); // this return is unused in the UI. it used to be PatientLinkInternalId
@@ -89,35 +85,19 @@ public class QueueMutationResolver {
   }
 
   @MutationMapping
-  public void updateAoeQuestions(
+  public void updateTimeOfTestQuestions(
       @Argument UUID patientId,
       @Argument String pregnancy,
-      @Argument String syphilisHistory,
       @Argument String symptoms,
       @Argument LocalDate symptomOnset,
       @Argument Boolean noSymptoms,
-      @Argument List<String> genderOfSexualPartners,
       @Argument TestResultDeliveryPreference testResultDelivery) {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
-    testOrderService.updateAoeQuestions(
-        patientId,
-        pregnancy,
-        syphilisHistory,
-        symptomsMap,
-        symptomOnset,
-        noSymptoms,
-        genderOfSexualPartners);
+    testOrderService.updateTimeOfTestQuestions(
+        patientId, pregnancy, symptomsMap, symptomOnset, noSymptoms);
 
-    if (testResultDelivery != null) {
-      personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
-    }
-  }
-
-  @MutationMapping
-  public void updateTestOrderTimerStartedAt(
-      @Argument UUID testOrderId, @Argument String startedAt) {
-    testOrderService.updateTimerStartedAt(testOrderId, startedAt);
+    personService.updateTestResultDeliveryPreference(patientId, testResultDelivery);
   }
 }

@@ -4,5 +4,4 @@ public enum ResultUploadErrorType {
   MISSING_HEADER,
   INVALID_DATA,
   MISSING_DATA,
-  UNAVAILABLE_DISEASE
 }

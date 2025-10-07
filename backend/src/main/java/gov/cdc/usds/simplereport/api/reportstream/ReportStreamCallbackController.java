@@ -5,7 +5,7 @@ import gov.cdc.usds.simplereport.api.model.ReportStreamCallbackRequest;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.db.model.ReportStreamResponse;
 import gov.cdc.usds.simplereport.service.ReportStreamCallbackService;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -1,13 +1,11 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import gov.cdc.usds.simplereport.api.devicetype.PublicDeviceType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import java.util.Objects;
 import java.util.UUID;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,36 +23,12 @@ public class DeviceTypeDisease extends IdentifiedEntity {
 
   @ManyToOne
   @JoinColumn(name = "supported_disease_id")
-  @JsonView(PublicDeviceType.class)
   private SupportedDisease supportedDisease;
 
-  @Column
-  @JsonView(PublicDeviceType.class)
-  private String testPerformedLoincCode;
-
-  @Column
-  @JsonView(PublicDeviceType.class)
-  private String testPerformedLoincLongName;
-
-  @Column
-  @JsonView(PublicDeviceType.class)
-  private String equipmentUid;
-
-  @Column
-  @JsonView(PublicDeviceType.class)
-  private String equipmentUidType;
-
-  @Column
-  @JsonView(PublicDeviceType.class)
-  private String testkitNameId;
-
-  @Column
-  @JsonView(PublicDeviceType.class)
-  private String testOrderedLoincCode;
-
-  @Column
-  @JsonView(PublicDeviceType.class)
-  private String testOrderedLoincLongName;
+  @Column private String testPerformedLoincCode;
+  @Column private String equipmentUid;
+  @Column private String testkitNameId;
+  @Column private String testOrderedLoincCode;
 
   @Override
   public boolean equals(Object o) {
@@ -71,10 +45,7 @@ public class DeviceTypeDisease extends IdentifiedEntity {
         && Objects.equals(testPerformedLoincCode, that.testPerformedLoincCode)
         && Objects.equals(testOrderedLoincCode, that.testOrderedLoincCode)
         && Objects.equals(equipmentUid, that.equipmentUid)
-        && Objects.equals(equipmentUidType, that.equipmentUidType)
-        && Objects.equals(testkitNameId, that.testkitNameId)
-        && Objects.equals(testPerformedLoincLongName, that.testPerformedLoincLongName)
-        && Objects.equals(testOrderedLoincLongName, that.testOrderedLoincLongName);
+        && Objects.equals(testkitNameId, that.testkitNameId);
   }
 
   @Override
@@ -85,9 +56,6 @@ public class DeviceTypeDisease extends IdentifiedEntity {
         testPerformedLoincCode,
         testOrderedLoincCode,
         equipmentUid,
-        equipmentUidType,
-        testkitNameId,
-        testPerformedLoincLongName,
-        testOrderedLoincLongName);
+        testkitNameId);
   }
 }

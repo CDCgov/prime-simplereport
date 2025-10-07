@@ -6,25 +6,8 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.EntityGraph;
 
 public interface ResultRepository extends EternalAuditedEntityRepository<Result> {
-
-  @EntityGraph(
-      attributePaths = {
-        "testEvent",
-        "testEvent.patient",
-        "testEvent.facility",
-        "testEvent.deviceType",
-        "testEvent.surveyData",
-        "testEvent.order",
-        "createdBy",
-        "disease"
-      })
-  Page<Result> findAll(Specification<Result> searchSpec, Pageable p);
 
   List<Result> findAllByTestEvent(TestEvent testEvent);
 

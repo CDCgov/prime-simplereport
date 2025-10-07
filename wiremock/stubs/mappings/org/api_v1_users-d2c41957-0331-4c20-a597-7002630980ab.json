@@ -5,7 +5,7 @@
     "url" : "/api/v1/users?activate=false&provider=false",
     "method" : "POST",
     "bodyPatterns" : [ {
-      "equalToJson" : "{\"profile\":{\"firstName\":\"Greg\",\"lastName\":\"McTester\",\"login\":\"${json-unit.any-string}\",\"email\":\"${json-unit.any-string}\"}}",
+      "equalToJson" : "{\"profile\":{\"firstName\":\"Greg\",\"lastName\":\"McTester\",\"login\":\"${json-unit.any-string}\",\"email\":\"${json-unit.any-string}\"},\"groupIds\":[\"00g228nyd7uuGaG1L1d7\",\"00g228nrj9QDJ10y61d7\"]}",
       "ignoreArrayOrder" : true,
       "ignoreExtraElements" : true
     } ]

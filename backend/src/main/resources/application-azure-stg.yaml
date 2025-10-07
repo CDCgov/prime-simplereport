@@ -1,3 +1,5 @@
+spring:
+  profiles.include: okta-stg
 simple-report:
   azure-reporting-queue:
     enabled: true

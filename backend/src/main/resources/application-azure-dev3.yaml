@@ -1,3 +1,5 @@
+spring:
+  profiles.include: okta-dev3, server-debug
 simple-report:
   azure-reporting-queue:
     enabled: true

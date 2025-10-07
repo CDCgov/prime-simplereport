@@ -35,13 +35,13 @@ describe("VersionService", () => {
       it("returns the SHA from env in pre-prod", async () => {
         // GIVEN
         const sha = "haha this is a sha for testing";
-        process.env.REACT_APP_CURRENT_COMMIT = sha;
+        import.meta.env.VITE_CURRENT_COMMIT = sha;
 
         // WHEN
         const result = await VersionService.getSHA();
 
         // THEN
-        expect(result).toEqual(process.env.REACT_APP_CURRENT_COMMIT);
+        expect(result).toEqual(import.meta.env.VITE_CURRENT_COMMIT);
         expect(fetch).not.toHaveBeenCalled();
       });
     });
@@ -51,7 +51,7 @@ describe("VersionService", () => {
         // GIVEN
         const localSHA = "apples";
         const remoteSHA = "bananas";
-        process.env.REACT_APP_CURRENT_COMMIT = localSHA;
+        import.meta.env.VITE_CURRENT_COMMIT = localSHA;
         (env as jest.Mock).mockReturnValue("production");
         (fetch as FetchMock).mockResponseOnce(remoteSHA);
 
@@ -71,7 +71,7 @@ describe("VersionService", () => {
         );
         const localSHA = "apples";
         const remoteSHA = "bananas";
-        process.env.REACT_APP_CURRENT_COMMIT = localSHA;
+        import.meta.env.VITE_CURRENT_COMMIT = localSHA;
         (env as jest.Mock).mockReturnValue("production");
         (fetch as FetchMock).mockResponseOnce(remoteSHA);
 
@@ -102,7 +102,7 @@ describe("VersionService", () => {
     it("doesn't do anything", async () => {
       // GIVEN
       const localSHA = "apples";
-      process.env.REACT_APP_CURRENT_COMMIT = localSHA;
+      import.meta.env.VITE_CURRENT_COMMIT = localSHA;
       (env as jest.Mock).mockReturnValue("production");
 
       // WHEN

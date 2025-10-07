@@ -3,18 +3,15 @@
 # which is enforced in the API not in the schema validator.
 extend type Query {
   organizations(identityVerified: Boolean): [Organization!]!
-  organizationsByName(name: String!, isDeleted: Boolean = false): [Organization]
   pendingOrganizations: [PendingOrganization!]!
   organization(id: ID!): Organization
   facilityStats(facilityId: ID!): FacilityStats
-  getOrgAdminUserIds(orgId: ID!): [ID]
 }
 extend type Mutation {
-  resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean = false, covidOnly: Boolean = false): Boolean
+  resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean!): Boolean
   createDeviceType(input: CreateDeviceType!): DeviceType
   updateDeviceType(input: UpdateDeviceType!): DeviceType
   createSpecimenType(input: CreateSpecimenType!): SpecimenType
-  updateSpecimenType(input: UpdateSpecimenType!): SpecimenType
   addUser( # used in AddOrganizationAdminFormContainer
     user: UserInput!
   ): User
@@ -58,17 +55,4 @@ extend type Mutation {
   markOrganizationAsDeleted(organizationId: ID!, deleted: Boolean!): String
   markDeviceTypeAsDeleted(deviceId: ID, deviceName: String):DeviceType
   sendSupportEscalation: String
-  updateUserPrivilegesAndGroupAccess(
-    username: String!,
-    orgExternalId: String!,
-    accessAllFacilities: Boolean = false,
-    facilities: [ID] = [],
-    role: Role!): User!
-  clearUserRolesAndFacilities(
-    username: String!
-  ): ApiUser
-  updateFeatureFlag(name: String!, value: Boolean!):FeatureFlag
-  updateFacilityFeatureFlag(facilityId: ID!, name: String!, value: Boolean!):FeatureFlag
-  deleteE2EOktaOrganizations(orgExternalId: String!): Organization
-  sendOrgAdminEmailCSV(type: String!, state: String!): Boolean
 }

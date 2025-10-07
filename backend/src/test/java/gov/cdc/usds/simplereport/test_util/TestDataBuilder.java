@@ -3,15 +3,7 @@ package gov.cdc.usds.simplereport.test_util;
 import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_DEVICE_TYPE;
 import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_SPECIMEN_TYPE;
 
-import ca.uhn.hl7v2.model.v251.message.ORU_R01;
-import ca.uhn.hl7v2.model.v251.segment.PID;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
-import gov.cdc.usds.simplereport.api.model.universalreporting.FacilityReportInput;
-import gov.cdc.usds.simplereport.api.model.universalreporting.PatientReportInput;
-import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInput;
-import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
-import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
-import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -29,11 +21,9 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.utils.DateGenerator;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -118,12 +108,10 @@ public class TestDataBuilder {
         "ethnicity",
         List.of(),
         "female",
-        "female",
         false,
         false,
         "eng",
-        null,
-        "Nebula-navigating outlaw");
+        null);
   }
 
   public static DeviceTypeDisease createDeviceTypeDisease(SupportedDisease supportedDisease) {
@@ -131,26 +119,9 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
-        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
-        "MNI",
         "BOOMX2",
-        "95422-2",
-        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
-  }
-
-  public static DeviceTypeDisease createDeviceTypeDiseaseWithTestOrderLoinc(
-      SupportedDisease supportedDisease, String testOrderLoinc, String testOrderLoincLongName) {
-    return new DeviceTypeDisease(
-        UUID.randomUUID(),
-        supportedDisease,
-        supportedDisease.getLoinc(),
-        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
-        "543212134",
-        "MNI",
-        "BOOMX2",
-        testOrderLoinc,
-        testOrderLoincLongName);
+        "95422-2");
   }
 
   public static DeviceTypeDisease createDeviceTypeDiseaseForBulkUpload(
@@ -159,12 +130,9 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
-        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
-        "MNI",
         "BOOMX2",
-        "94534-5",
-        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
+        "94534-5");
   }
 
   public static DeviceTypeDisease createDeviceTypeDisease() {
@@ -173,12 +141,9 @@ public class TestDataBuilder {
         UUID.randomUUID(),
         supportedDisease,
         supportedDisease.getLoinc(),
-        "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
         "543212134",
-        "MNI",
         "BOOMX2",
-        "98670-3",
-        "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection");
+        "98670-3");
   }
 
   public static DeviceType createDeviceType() {
@@ -212,74 +177,6 @@ public class TestDataBuilder {
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
-  public static DeviceType createDeviceWithNoCommonTestOrderLoinc() {
-    List<SpecimenType> swabTypes = new ArrayList<>();
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
-    supportedDiseaseTestPerformed.add(
-        createDeviceTypeDiseaseWithTestOrderLoinc(
-            createFluASupportedDisease(), "2345-6", "Flu A order loinc"));
-    supportedDiseaseTestPerformed.add(
-        createDeviceTypeDiseaseWithTestOrderLoinc(
-            createFluBSupportedDisease(), "3456-7", "Flu B test order loinc"));
-
-    return new DeviceType(
-        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
-  }
-
-  public static DeviceType createDeviceTypeForHIV() {
-    List<SpecimenType> swabTypes = new ArrayList<>();
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
-    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createHIVSupportedDisease()));
-
-    return new DeviceType(
-        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
-  }
-
-  public static DeviceType createDeviceTypeForGonorrhea() {
-    List<SpecimenType> swabTypes = new ArrayList<>();
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
-    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createGonorrheaSupportedDisease()));
-
-    return new DeviceType(
-        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
-  }
-
-  public static DeviceType createDeviceTypeForSyphilis() {
-    List<SpecimenType> swabTypes = new ArrayList<>();
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
-    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createSyphilisSupportedDisease()));
-
-    return new DeviceType(
-        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
-  }
-
-  public static DeviceType createDeviceTypeForChlamydia() {
-    List<SpecimenType> swabTypes = new ArrayList<>();
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
-    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createChlamydiaSupportedDisease()));
-
-    return new DeviceType(
-        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
-  }
-
-  public static DeviceType createDeviceTypeForHepatitisC() {
-    List<SpecimenType> swabTypes = new ArrayList<>();
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
-    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createHepatitisCSSupportedDisease()));
-
-    return new DeviceType(
-        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
-  }
-
-  public static DeviceType createDeviceTypeForRSV() {
-    List<SpecimenType> swabTypes = new ArrayList<>();
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
-    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createRSVSupportedDisease()));
-
-    return new DeviceType(
-        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
-  }
-
   public static SpecimenType createSpecimenType() {
     return new SpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321");
   }
@@ -293,7 +190,7 @@ public class TestDataBuilder {
         FacilityBuilder.builder()
             .org(createValidOrganization())
             .facilityName("Testing Paradise")
-            .cliaNumber("12D1234567")
+            .cliaNumber("123456")
             .facilityAddress(getAddress())
             .phone("555-867-5309")
             .email("facility@test.com")
@@ -326,31 +223,6 @@ public class TestDataBuilder {
     var testOrder = new TestOrder(createPerson(), createFacility());
     DeviceType multiplexDevice = createDeviceTypeForMultiplex();
     testOrder.setDeviceTypeAndSpecimenType(multiplexDevice, createSpecimenType());
-    testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
-    return testOrder;
-  }
-
-  public static TestOrder createTestOrderWithDeviceWithNoCommonTestOrderedLoinc() {
-    var testOrder = new TestOrder(createPerson(), createFacility());
-    DeviceType device = createDeviceWithNoCommonTestOrderLoinc();
-    testOrder.setDeviceTypeAndSpecimenType(device, createSpecimenType());
-    testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
-    return testOrder;
-  }
-
-  public static TestOrder createTestOrderWithMultipleTestOrderDevice() {
-    var testOrder = new TestOrder(createPerson(), createFacility());
-    DeviceType multiplexDevice = createDeviceTypeForMultiplex();
-
-    List<DeviceTypeDisease> supportedDiseaseTestPerformed =
-        multiplexDevice.getSupportedDiseaseTestPerformed();
-    supportedDiseaseTestPerformed.add(
-        createDeviceTypeDiseaseWithTestOrderLoinc(
-            createCovidSupportedDisease(), "94534-5", "Single Covid only test order"));
-    multiplexDevice.setSupportedDiseaseTestPerformed(supportedDiseaseTestPerformed);
-
-    testOrder.setDeviceTypeAndSpecimenType(multiplexDevice, createSpecimenType());
-    testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
     return testOrder;
   }
 
@@ -376,30 +248,6 @@ public class TestDataBuilder {
     return new SupportedDisease("Flu B", "LP14240-3");
   }
 
-  public static SupportedDisease createHIVSupportedDisease() {
-    return new SupportedDisease("HIV", "16249-0");
-  }
-
-  public static SupportedDisease createGonorrheaSupportedDisease() {
-    return new SupportedDisease("Gonorrhea", "12345-0");
-  }
-
-  public static SupportedDisease createSyphilisSupportedDisease() {
-    return new SupportedDisease("Syphilis", "2343-1");
-  }
-
-  public static SupportedDisease createChlamydiaSupportedDisease() {
-    return new SupportedDisease("Chlamydia", "24334-5");
-  }
-
-  public static SupportedDisease createHepatitisCSSupportedDisease() {
-    return new SupportedDisease("Hepatitis C", "2424-9");
-  }
-
-  public static SupportedDisease createRSVSupportedDisease() {
-    return new SupportedDisease("RSV", "LP14129-1");
-  }
-
   public static Result createTestResult(
       TestOrder testOrder, SupportedDisease supportedDisease, TestResult testResult) {
     Result result = new Result(supportedDisease, testResult);
@@ -414,46 +262,6 @@ public class TestDataBuilder {
     result.setTestEvent(testEvent);
     testEvent.getResults().add(result);
     return result;
-  }
-
-  public static TestEvent createMultiplexTestEventWithDate(Date dateTested) {
-    TestOrder testOrder = createTestOrderWithMultiplexDevice();
-    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
-    createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
-    createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
-    testOrder.setDateTestedBackdate(dateTested);
-
-    TestEvent testEvent = new TestEvent(testOrder, false);
-    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
-    createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
-    createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
-
-    return testEvent;
-  }
-
-  public static TestEvent createMultiplexTestEventWithNoCommonTestOrderedLoincDevice(
-      Date dateTested) {
-    TestOrder testOrder = createTestOrderWithDeviceWithNoCommonTestOrderedLoinc();
-    createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
-    createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
-    testOrder.setDateTestedBackdate(dateTested);
-
-    TestEvent testEvent = new TestEvent(testOrder, false);
-    createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
-    createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
-
-    return testEvent;
-  }
-
-  public static TestEvent createSingleCovidTestEventOnMultiplexDevice(Date dateTested) {
-    TestOrder testOrder = createTestOrderWithMultipleTestOrderDevice();
-    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
-    testOrder.setDateTestedBackdate(dateTested);
-
-    TestEvent testEvent = new TestEvent(testOrder, false);
-    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
-
-    return testEvent;
   }
 
   public static TestEvent createMultiplexTestEvent() {
@@ -477,99 +285,5 @@ public class TestDataBuilder {
     TestEvent testEvent = new TestEvent(testOrder, false);
     createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
     return testEvent;
-  }
-
-  public static PID createPatientIdentificationSegment() {
-    return new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
-  }
-
-  public static PatientReportInput createPatientReportInput() {
-    return new PatientReportInput(
-        "John",
-        "Jacob",
-        "Smith",
-        "Jr",
-        "john@example.com",
-        "716-555-1234",
-        "123 Main St",
-        "Apartment A",
-        "Buffalo",
-        "Erie",
-        "NY",
-        "14220",
-        "USA",
-        "male",
-        LocalDate.of(1990, 1, 1),
-        "native",
-        "not_hispanic",
-        "266",
-        null,
-        null,
-        null);
-  }
-
-  public static FacilityReportInput createFacilityReportInput() {
-    return new FacilityReportInput(
-        "Dracula Medical",
-        "12D1234567",
-        "123 Main St",
-        "Suite 100",
-        "Buffalo",
-        "Erie",
-        "NY",
-        "14220",
-        "7165551234",
-        "dracula@example.com");
-  }
-
-  public static ProviderReportInput createProviderReportInput() {
-    return new ProviderReportInput(
-        "Fred",
-        "Fitzgerald",
-        "Flintstone",
-        "",
-        "12345678",
-        "123 Main St",
-        "Apartment A",
-        "Buffalo",
-        "Erie",
-        "NY",
-        "14220",
-        "716-555-5555",
-        "flintstonemedical@example.com");
-  }
-
-  public static SpecimenInput createSpecimenInput(DateGenerator dateGenerator) {
-    return new SpecimenInput(
-        "258479004",
-        "Interstitial fluid specimen",
-        dateGenerator.newDate(),
-        dateGenerator.newDate(),
-        "Body tissue structure",
-        "85756007");
-  }
-
-  public static List<TestDetailsInput> createTestDetailsInputList(DateGenerator dateGenerator) {
-    return List.of(
-        new TestDetailsInput(
-            "105629000",
-            "87949-4",
-            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
-            "87949-4",
-            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
-            ResultScaleType.ORDINAL,
-            "260373001",
-            dateGenerator.newDate(),
-            ""),
-        new TestDetailsInput(
-            "186747009",
-            "14451-9",
-            "Virus identified in Eye by Culture",
-            "14451-9",
-            "Virus identified in Eye by Culture",
-            ResultScaleType.ORDINAL,
-            "260373001",
-            dateGenerator.newDate(),
-            ""));
   }
 }

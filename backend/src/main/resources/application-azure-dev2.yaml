@@ -1,3 +1,5 @@
+spring:
+  profiles.include: okta-dev2, server-debug
 simple-report:
   azure-reporting-queue:
     enabled: true
@@ -15,6 +17,3 @@ simple-report:
       - https://dev2.simplereport.gov
 twilio:
   enabled: true
-features:
-  oktaMigrationEnabled: true
-  syphilisEnabled: true

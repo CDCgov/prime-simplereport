@@ -1,20 +1,17 @@
 package gov.cdc.usds.simplereport.api.model.filerow;
 
-import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.isAddressUnknown;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGenderIdentity;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePartialUnkAddress;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumberType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRole;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoUnknownAnswer;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoAnswer;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -47,8 +44,6 @@ public class PatientUploadRow implements FileRow {
   final ValueOrError residentCongregateSetting;
   final ValueOrError role;
   final ValueOrError email;
-  final ValueOrError genderIdentity;
-  final ValueOrError notes;
 
   static final String FIRST_NAME = "first_name";
   static final String LAST_NAME = "last_name";
@@ -63,8 +58,6 @@ public class PatientUploadRow implements FileRow {
   static final String PHONE_NUMBER_TYPE = "phone_number_type";
   static final String EMPLOYED_IN_HEALTHCARE = "employed_in_healthcare";
   static final String RESIDENT_CONGREGATE_SETTING = "resident_congregate_setting";
-  static final String GENDER_IDENTITY = "gender_identity";
-  static final String ADDRESS_NOTES = "address_notes";
 
   private static final List<String> requiredFields =
       List.of(
@@ -106,8 +99,6 @@ public class PatientUploadRow implements FileRow {
         getValue(rawRow, RESIDENT_CONGREGATE_SETTING, isRequired(RESIDENT_CONGREGATE_SETTING));
     role = getValue(rawRow, "role", isRequired("role"));
     email = getValue(rawRow, "email", isRequired("email"));
-    genderIdentity = getValue(rawRow, GENDER_IDENTITY, isRequired("genderIdentity"));
-    notes = getValue(rawRow, ADDRESS_NOTES, isRequired("notes"));
   }
 
   @Override
@@ -133,21 +124,16 @@ public class PatientUploadRow implements FileRow {
     errors.addAll(validateRace(race));
     errors.addAll(validateBiologicalSex(biologicalSex));
     errors.addAll(validateEthnicity(ethnicity));
-    errors.addAll(validateGenderIdentity(genderIdentity));
 
     // housing, work, and role
-    errors.addAll(validateYesNoUnknownAnswer(residentCongregateSetting));
-    errors.addAll(validateYesNoUnknownAnswer(employedInHealthcare));
+    errors.addAll(validateYesNoAnswer(residentCongregateSetting));
+    errors.addAll(validateYesNoAnswer(employedInHealthcare));
     errors.addAll(validateRole(role));
 
-    if (!isAddressUnknown(state.getValue(), zipCode.getValue(), street.getValue())) {
-      // address
-      errors.addAll(validateState(state));
-      errors.addAll(validateZipCode(zipCode));
-      errors.addAll(validateCountry(country));
-      // check if partial unknown address values
-      errors.addAll(validatePartialUnkAddress(state, zipCode, street));
-    }
+    // address
+    errors.addAll(validateState(state));
+    errors.addAll(validateZipCode(zipCode));
+    errors.addAll(validateCountry(country));
 
     // contact info
     errors.addAll(validatePhoneNumber(phoneNumber));

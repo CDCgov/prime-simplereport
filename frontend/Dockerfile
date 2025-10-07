@@ -1,4 +1,4 @@
-FROM node:23-alpine as build
+FROM node:18-alpine as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 # Add bash and git
@@ -40,7 +40,7 @@ RUN yarn install --non-interactive
 # copy over the backend graphql schema files
 ADD ./backend/ /app/backend
 ADD ./frontend /app/frontend
-ADD .git /app/.git
+ADD ./.git /app/.git
 
 #e2e specific, disable content security
 RUN echo "REACT_APP_CONTENT_SECURITY_POLICY_DEFAULT_SRC=''" >> .env.production.local
@@ -49,7 +49,7 @@ RUN echo "REACT_APP_CONTENT_SECURITY_POLICY_SCRIPT_SRC=''" >> .env.production.lo
 RUN yarn run build
 
 # production environment
-FROM node:23-alpine
+FROM node:18-alpine
 RUN npm install -g serve
 WORKDIR /app/frontend
 COPY --from=build /app/frontend/build /app/frontend/build

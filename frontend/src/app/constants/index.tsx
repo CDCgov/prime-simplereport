@@ -19,7 +19,7 @@ export const COVID_RESULTS: { [key: string]: TestResult } = {
   UNKNOWN: TEST_RESULTS.UNKNOWN,
 };
 
-const testResultDescriptions = (_t: TFunction): Record<TestResult, string> => {
+const testResultDescriptions = (t: TFunction): Record<TestResult, string> => {
   return {
     NEGATIVE: i18n.t("constants.testResults.NEGATIVE"),
     POSITIVE: i18n.t("constants.testResults.POSITIVE"),
@@ -28,7 +28,7 @@ const testResultDescriptions = (_t: TFunction): Record<TestResult, string> => {
   };
 };
 
-const raceValues = (_t: TFunction): { value: Race; label: string }[] => {
+const raceValues = (t: TFunction): { value: Race; label: string }[] => {
   return [
     { value: "native", label: i18n.t("constants.race.native") },
     { value: "asian", label: i18n.t("constants.race.asian") },
@@ -40,7 +40,7 @@ const raceValues = (_t: TFunction): { value: Race; label: string }[] => {
   ];
 };
 
-const roleValues = (_t: TFunction): { value: Role; label: string }[] => {
+const roleValues = (t: TFunction): { value: Role; label: string }[] => {
   return [
     { label: i18n.t("constants.role.STAFF"), value: "STAFF" },
     { label: i18n.t("constants.role.RESIDENT"), value: "RESIDENT" },
@@ -50,7 +50,7 @@ const roleValues = (_t: TFunction): { value: Role; label: string }[] => {
 };
 
 const ethnicityValues = (
-  _t: TFunction
+  t: TFunction
 ): { value: Ethnicity; label: string }[] => {
   return [
     { label: i18n.t("constants.ethnicity.hispanic"), value: "hispanic" },
@@ -62,14 +62,16 @@ const ethnicityValues = (
   ];
 };
 
-const genderValues = (_t: TFunction): { value: Gender; label: string }[] => {
+const genderValues = (t: TFunction): { value: Gender; label: string }[] => {
   return [
     { label: i18n.t("constants.gender.female"), value: "female" },
     { label: i18n.t("constants.gender.male"), value: "male" },
+    { label: i18n.t("constants.gender.other"), value: "other" },
+    { label: i18n.t("constants.gender.refused"), value: "refused" },
   ];
 };
 
-const yesNoValues = (_t: TFunction): { value: YesNo; label: string }[] => {
+const yesNoValues = (t: TFunction): { value: YesNo; label: string }[] => {
   return [
     { label: i18n.t("constants.yesNoUnk.YES"), value: "YES" },
     { label: i18n.t("constants.yesNoUnk.NO"), value: "NO" },
@@ -77,7 +79,7 @@ const yesNoValues = (_t: TFunction): { value: YesNo; label: string }[] => {
 };
 
 const phoneTypeValues = (
-  _t: TFunction
+  t: TFunction
 ): { value: PhoneType; label: string }[] => {
   return [
     { label: i18n.t("constants.phoneType.MOBILE"), value: "MOBILE" },
@@ -86,7 +88,7 @@ const phoneTypeValues = (
 };
 
 const testResultDeliveryPreferenceValuesSms = (
-  _t: TFunction
+  t: TFunction
 ): {
   value: TestResultDeliveryPreference;
   label: string;
@@ -106,7 +108,7 @@ const testResultDeliveryPreferenceValuesSms = (
 };
 
 const testResultDeliveryPreferenceValuesEmail = (
-  _t: TFunction
+  t: TFunction
 ): {
   value: TestResultDeliveryPreference;
   label: string;
@@ -123,7 +125,7 @@ const testResultDeliveryPreferenceValuesEmail = (
   ];
 };
 const yesNoUnkownValues = (
-  _t: TFunction
+  t: TFunction
 ): {
   value: YesNoUnknown;
   label: string;
@@ -135,7 +137,7 @@ const yesNoUnkownValues = (
 };
 
 const yesNoNotSureValues = (
-  _t: TFunction
+  t: TFunction
 ): {
   value: YesNoNotSure;
   label: string;
@@ -724,7 +726,7 @@ const fullTribalAffiliationValueSet: {
 export const TRIBAL_AFFILIATION_VALUES: {
   value: TribalAffiliation;
   label: string;
-}[] = process.env.REACT_APP_TEST_TRIBAL_AFFILIATION_BYPASS
+}[] = import.meta.env.VITE_TEST_TRIBAL_AFFILIATION_BYPASS
   ? fullTribalAffiliationValueSet.slice(0, 10)
   : fullTribalAffiliationValueSet;
 

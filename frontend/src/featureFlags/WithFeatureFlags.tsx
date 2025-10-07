@@ -16,7 +16,7 @@ const WithFeatureFlags = ({ children }: WithFeatureFlagsProps): JSX.Element => {
    */
   useEffect(() => {
     FeatureFlagsApiService.featureFlags()
-      .then((flags) => {
+      .then((flags: Record<string, boolean>) => {
         setFeatureFlags(flags);
       })
       .catch(() => {

@@ -2,8 +2,6 @@ import classnames from "classnames";
 import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
-import { User } from "../../../generated/graphql";
-import SeparatorLine from "../../supportAdmin/Components/SeparatorLine";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import DeleteUserModal from "./DeleteUserModal";
@@ -11,10 +9,9 @@ import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import ResetUserMfaModal from "./ResetUserMfaModal";
 import EditUserNameModal from "./EditUserNameModal";
 import EditUserEmailModal from "./EditUserEmailModal";
-import "./UserInfoTab.scss";
 
 interface UserInfoTabProps {
-  user: SettingsUser | User;
+  user: SettingsUser;
   isUserActive: boolean;
   isUserSelf?: boolean;
   isUpdating: boolean;
@@ -52,7 +49,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
     <>
       <div
         role="tabpanel"
-        aria-labelledby={"userinformation-tab"}
+        aria-labelledby={"user-information-tab-id"}
         className="padding-left-1"
       >
         <h3 className="basic-info-header">Basic information</h3>
@@ -96,7 +93,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
             disabled={isUpdating || !isUserActive}
           />
         </div>
-        <SeparatorLine classNames={"margin-left-neg-4 margin-right-neg-2"} />
+        <div className="userinfo-divider"></div>
         <h3 className="user-controls-header">User controls</h3>
         <div
           className={classnames(
@@ -145,9 +142,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
           <div
             className={classnames(
               "user-header grid-row flex-row flex-align-center",
-              {
-                "disabled-dark": isUserSelf,
-              }
+              { "disabled-dark": isUserSelf }
             )}
           >
             <div>

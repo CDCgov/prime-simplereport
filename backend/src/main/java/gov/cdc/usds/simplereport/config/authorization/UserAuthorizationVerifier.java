@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -58,7 +57,6 @@ public class UserAuthorizationVerifier {
   private final OktaRepository _oktaRepo;
   private final AuthorizationService _authService;
   private final CurrentAccountRequestContextHolder _contextHolder;
-  private final FeatureFlagsConfig _featureFlagsConfig;
 
   public boolean userHasSiteAdminRole() {
     return _authService.isSiteAdmin();
@@ -101,16 +99,11 @@ public class UserAuthorizationVerifier {
 
   public boolean userIsInSameOrg(UUID userId) {
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    ApiUser otherUser = getUser(userId);
-    String otherUserEmail = otherUser.getLoginEmail();
+    String otherUserEmail = getUser(userId).getLoginEmail();
     Optional<Organization> otherOrg =
         _oktaRepo
             .getOrganizationRoleClaimsForUser(otherUserEmail)
             .map(r -> _orgService.getOrganization(r.getOrganizationExternalId()));
-    if (_featureFlagsConfig.isOktaMigrationEnabled()) {
-      otherOrg = otherUser.getOrganizations().stream().findFirst();
-    }
-
     return currentOrgRoles.isPresent()
         && otherOrg.isPresent()
         && currentOrgRoles
@@ -182,7 +175,7 @@ public class UserAuthorizationVerifier {
         Optional<Facility> fac =
             _facilityRepo.findByOrganizationAndInternalIdAllowDeleted(
                 orgRoles.getOrganization(), facilityId);
-        return fac.isPresent() && fac.get().getIsDeleted();
+        return fac.isPresent() && fac.get().isDeleted();
       }
     }
     return false;

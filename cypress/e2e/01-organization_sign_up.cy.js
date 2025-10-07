@@ -2,14 +2,15 @@ const {
   loginHooks,
   generateFacility,
   generateOrganization,
-  generateUser,
-} = require("../support/e2e");
+  generateUser
+} = require("../support/e2e")
 
 const facility = generateFacility();
 const organization = generateOrganization();
 const user = generateUser();
 
-describe("Organization sign up", () => {
+describe("Organization sign up",() => {
+  loginHooks();
   it("navigates to the sign up form", () => {
     cy.visit("/sign-up");
     cy.injectSRAxe();
@@ -18,11 +19,11 @@ describe("Organization sign up", () => {
     cy.contains("Sign up for SimpleReport");
     cy.contains("My organization is new to SimpleReport").click();
     cy.contains("Continue").click();
-
+  });
+  it("fills out the org info form", () => {
     cy.contains("Sign up for SimpleReport in three steps");
     cy.checkAccessibility(); // Sign up form
 
-    // fills out the org info form
     cy.get('input[name="name"]').type(organization.name);
     cy.get('select[name="state"]').select("CA");
     cy.get('select[name="type"]').select("Camp");
@@ -30,15 +31,13 @@ describe("Organization sign up", () => {
     cy.get('input[name="lastName"]').type("McTester");
     cy.get('input[name="email"]').type(user.email);
     cy.get('input[name="workPhoneNumber"]').type("5308675309");
-
-    // submits successfully
+  });
+  it("submits successfully", () => {
     cy.get("button.submit-button").click();
     cy.contains("Identity verification consent");
     cy.checkAccessibility(); // Identity verification page
   });
-
   it("navigates to the support pending org table and verifies the org", () => {
-    loginHooks();
     cy.removeOrganizationAccess();
     cy.visit("/admin");
 
@@ -64,13 +63,12 @@ describe("Organization sign up", () => {
     });
   });
   it("spoofs into the org", () => {
-    loginHooks();
     cy.visit("/admin");
 
     cy.contains("Access organization account").click();
     cy.get("[data-testid='combo-box-input']").clear();
     cy.get("[data-testid='combo-box-input']").type(
-      `${organization.name}{enter}`,
+      `${organization.name}{enter}`
     );
     cy.get('input[name="justification"]').type("I am a test user");
     cy.get('input[name="justification"]').blur();
@@ -80,8 +78,10 @@ describe("Organization sign up", () => {
 
     cy.contains("Access data").click();
     cy.contains("Support admin");
-
-    // navigates to the manage facilities page
+  });
+  it("navigates to the manage facilities page", () => {
+    cy.visit("/admin");
+    cy.contains("Support admin");
     cy.get("#desktop-settings-button").click();
     cy.contains("Manage facilities").click();
     cy.contains("CLIA number");
@@ -95,8 +95,8 @@ describe("Organization sign up", () => {
 
     // Test a11y on New Facility page
     cy.checkAccessibility();
-
-    // fills out the form for a new facility
+  });
+  it("fills out the form for a new facility", () => {
     cy.get('input[name="facility.name"]').type(facility.name);
     cy.get('input[name="facility.phone"]').first().type("5308675309");
     cy.get('input[name="facility.street"]').first().type("123 Beach Way");
@@ -109,15 +109,16 @@ describe("Organization sign up", () => {
     cy.get('input[name="orderingProvider.phone"]').last().type("5308675309");
     cy.contains("Save changes").last().click();
     cy.get(
-      '.modal__container input[name="addressSelect-facility"][value="userAddress"]+label',
+      '.modal__container input[name="addressSelect-facility"][value="userAddress"]+label'
     ).click();
 
     cy.checkAccessibility();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.contains("+ New facility");
-
-    // enables adding patients
+  });
+  it("enables adding patients", () => {
+    cy.visit("/");
     cy.get("#desktop-patient-nav-link").click();
     cy.contains("No results");
 

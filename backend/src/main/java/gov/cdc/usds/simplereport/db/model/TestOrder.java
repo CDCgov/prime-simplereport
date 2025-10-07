@@ -3,25 +3,24 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.Type;
 
 @Entity
 public class TestOrder extends BaseTestInfo {
@@ -40,8 +39,8 @@ public class TestOrder extends BaseTestInfo {
 
   @Column private LocalDate dateTested; // REMOVE THIS COLUMN
 
-  @Column(nullable = false, columnDefinition = "TEST_ORDER_STATUS")
-  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+  @Column(nullable = false)
+  @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
 
@@ -55,14 +54,8 @@ public class TestOrder extends BaseTestInfo {
   @Setter
   private Set<Result> results = new HashSet<>();
 
-  @Column(name = "timer_started_at")
-  @Getter
-  @Setter
-  private String timerStartedAt;
-
   protected TestOrder() {
-    /* for hibernate */
-  }
+    /* for hibernate */ }
 
   public TestOrder(Person patient, Facility facility) {
     super(patient, facility, facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());

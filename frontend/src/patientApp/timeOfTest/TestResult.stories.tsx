@@ -1,4 +1,4 @@
-import { Meta } from "@storybook/react-webpack5";
+import { Meta } from "@storybook/react";
 import { cloneDeep } from "lodash";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
@@ -12,7 +12,7 @@ import TestResult from "./TestResult";
 const mockStore = createMockStore([]);
 
 export default {
-  title: "App/PXP/Step 3: Test Result",
+  title: "Pxp Test Results",
   component: TestResult,
   parameters: {
     layout: "fullscreen",
@@ -183,58 +183,6 @@ export const UndeterminedAllMultiplex = () => {
     { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
     { disease: { name: "Flu A" }, testResult: "UNDETERMINED" },
     { disease: { name: "COVID-19" }, testResult: "UNDETERMINED" },
-  ];
-  let store = mockStore(editedData);
-  return (
-    <Provider store={store}>
-      <Page>
-        <PatientHeader />
-        <TestResult />
-      </Page>
-    </Provider>
-  );
-};
-
-export const AllPositiveFluRSV = () => {
-  let editedData = cloneDeep(data);
-  editedData.testResult.results = [
-    { disease: { name: "Flu B" }, testResult: "POSITIVE" },
-    { disease: { name: "Flu A" }, testResult: "POSITIVE" },
-    { disease: { name: "RSV" }, testResult: "POSITIVE" },
-  ];
-  let store = mockStore(editedData);
-  return (
-    <Provider store={store}>
-      <Page>
-        <PatientHeader />
-        <TestResult />
-      </Page>
-    </Provider>
-  );
-};
-
-export const NonPositiveFluRSV = () => {
-  let editedData = cloneDeep(data);
-  editedData.testResult.results = [
-    { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
-    { disease: { name: "Flu A" }, testResult: "UNKNOWN" },
-    { disease: { name: "RSV" }, testResult: "NEGATIVE" },
-  ];
-  let store = mockStore(editedData);
-  return (
-    <Provider store={store}>
-      <Page>
-        <PatientHeader />
-        <TestResult />
-      </Page>
-    </Provider>
-  );
-};
-
-export const AllHIV = () => {
-  let editedData = cloneDeep(data);
-  editedData.testResult.results = [
-    { disease: { name: "HIV" }, testResult: "UNDETERMINED" },
   ];
   let store = mockStore(editedData);
   return (

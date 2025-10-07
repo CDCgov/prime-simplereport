@@ -6,7 +6,7 @@ const appInsightsHeaders = {
   "x-ms-session-id": "",
 };
 
-const backendUrl = process.env.REACT_APP_BACKEND_URL;
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 describe("AccountCreationApi", () => {
   beforeEach(() => {

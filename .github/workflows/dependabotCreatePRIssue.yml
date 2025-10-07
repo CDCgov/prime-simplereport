@@ -12,7 +12,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v3
         if: github.event.pull_request.user.login  == 'dependabot[bot]'
       - name: Open issue if Dependabot PR
         if: github.event.pull_request.user.login  == 'dependabot[bot]'
@@ -21,7 +21,7 @@ jobs:
           number: ${{github.event.pull_request.number}}
           url: ${{github.event.pull_request.url}}
         run: |
-          title="Dependabot PR #$number $title opened"
+          title="Dependabot PR $title opened"
           labels="dependencies,Dependabot"
           body="Dependabot has opened PR #$number
           Link: $url"

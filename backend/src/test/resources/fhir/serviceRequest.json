@@ -27,31 +27,5 @@
         "code": "95422-2"
       }
     ]
-  },
-  "note": [
-    {
-      "extension": [
-        {
-          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
-          "valueCodeableConcept": {
-            "coding": [
-              {
-                "extension": [
-                  {
-                    "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
-                    "valueString": "identifier"
-                  }
-                ],
-                "system": "HL70364",
-                "version": "2.5.1",
-                "code": "RE",
-                "display": "Remark"
-              }
-            ]
-          }
-        }
-      ],
-      "text": "Nebula-navigating outlaw"
-    }
-  ]
+  }
 }

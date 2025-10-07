@@ -5,7 +5,6 @@
 ### Requirements:
 
 #### This file is required in the root of the prime-simplereport repo to run integration tests. Please reach out to an engineering team member if you're missing credentials.
-
 - `.env`
 
 #### If you're using the docker-compose e2e setup, you'll need to fill out all of these variables in the `.env` file.
@@ -52,6 +51,7 @@ GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 
 #### If you're running e2e tests against a set of local apps with Okta enabled, you only need the following.
 
+
 ```
 # .env
 
@@ -88,8 +88,7 @@ The `.env` file has a template at `.env.cypress.sample` for running cypress agai
 1. Install docker and docker-compose.
 1. Stop any local instances of your apps to prevent port conflicts.
 1. Run Cypress.
-
-- `yarn e2e`
+  - `yarn e2e`
 
 #### Running Cypress against your local apps!
 
@@ -97,7 +96,6 @@ The `.env` file has a template at `.env.cypress.sample` for running cypress agai
 1. Move to the `cypress/` directory.
 1. Run `yarn install` in the cypress directory.
 1. Run the yarn command that matches your setup.
-
 - Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with Okta disabled.
   - `yarn e2e:local`
 - Run Cypress locally and open interactive mode. Do this if you're running the apps locally on bare metal with Okta enabled.
@@ -110,28 +108,22 @@ The `.env` file has a template at `.env.cypress.sample` for running cypress agai
 ### Potential issues:
 
 #### My port is already allocated!
-
-- Check that you have brought down all instances of your apps; you may need to kill a hanging process, and try again.
+  - Check that you have brought down all instances of your apps; you may need to kill a hanging process, and try again.
 
 #### I'm missing certs!
-
-- Try installing [`mkcert`](https://github.com/FiloSottile/mkcert#installation) and run `yarn start`. This will create the certs you need.
+  - Try installing [`mkcert`](https://github.com/FiloSottile/mkcert#installation) and run `yarn start`. This will create the certs you need.
 
 #### I'm using the using the localhost.simplereport.gov domain but I can't see it in the browser!
-
-- If you want to visit the app in your browser while Cypress runs in docker, you'll need to edit your local /etc/hosts and add the following line.
-  - `127.0.0.1 localhost.simplereport.gov`
+  - If you want to visit the app in your browser while Cypress runs in docker, you'll need to edit your local /etc/hosts and add the following line.
+    - `127.0.0.1 localhost.simplereport.gov`
 
 #### Connection refused errors!
-
-- Connection refused errors coming out of Nginx logs are normal until your apps have started successfully. When they start, Cypress will begin running tests. If they fail to start, Cypress will time out and bring down all the containers.
+  - Connection refused errors coming out of Nginx logs are normal until your apps have started successfully. When they start, Cypress will begin running tests. If they fail to start, Cypress will time out and bring down all the containers.
 
 #### Invalid template errors from docker!
-
-- Check that you have escaped special characters in your `.env` file.
+  - Check that you have escaped special characters in your `.env` file.
 
 #### Cypress user is unable to see certain pages!
-
-- Check that you have added the correct user roles to your `application-local.yaml` as documented [here](https://github.com/CDCgov/prime-simplereport/wiki/User-roles#updating-user-roles)
+  - Check that you have added the correct user roles to your `application-local.yaml` as documented [here](https://github.com/CDCgov/prime-simplereport/wiki/User-roles#updating-user-roles)
 
 #### See the [Cypress documentation](https://docs.cypress.io/api/table-of-contents) for writing new tests. If you need to generate new Wiremock mappings for external services, see [this wiki page](https://github.com/CDCgov/prime-simplereport/wiki/WireMock).

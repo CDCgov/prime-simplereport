@@ -25,9 +25,11 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class AuditLoggingTest extends BaseGraphqlTest {
 
   @Autowired private MockMvc _mockMvc;

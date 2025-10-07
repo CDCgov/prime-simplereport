@@ -17,9 +17,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ReportStreamCallbackControllerTest extends BaseFullStackTest {
   @Autowired private MockMvc mockMvc;
 
@@ -68,7 +70,7 @@ class ReportStreamCallbackControllerTest extends BaseFullStackTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
-            .header("x-functions-key", "WATERMELON") // configured in application-test.yaml
+            .header("x-functions-key", "WATERMELON") // configured in application-default.yaml
             .content(requestBody);
 
     String requestId = runBuilderReturningRequestId(mockMvc, builder, status().isOk());

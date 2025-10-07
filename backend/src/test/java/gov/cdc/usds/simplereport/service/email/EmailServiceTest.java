@@ -7,14 +7,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Personalization;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 @ExtendWith(MockitoExtension.class)
 class EmailServiceTest extends BaseServiceTest<EmailService> {
@@ -36,16 +33,8 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
   SpringTemplateEngine _templateEngine;
 
   private static final SendGridProperties FAKE_PROPERTIES =
-      SendGridProperties.builder()
-          .enabled(true)
-          .apiKey(null)
-          .fromEmail("me@example.com")
-          .fromDisplayName("My Display Name")
-          .accountRequestRecipient(List.of())
-          .waitlistRecipient(List.of())
-          .outreachMailingListRecipient(List.of("support-test@simplereport.gov"))
-          .dynamicTemplates(Map.of())
-          .build();
+      new SendGridProperties(
+          true, null, "me@example.com", "My Display Name", List.of(), List.of(), Map.of());
 
   @Mock EmailProvider mockSendGrid;
   @Captor ArgumentCaptor<Mail> mail;
@@ -176,14 +165,14 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
 
     assertThat(sentMail.get(0).getFrom().getEmail()).isEqualTo("me@example.com");
     assertThat(sentMail.get(0).getFrom().getName()).isEqualTo("My Display Name");
-    assertEquals("test@foo.com", personalization0.getTos().get(0).getEmail());
+    assertEquals(personalization0.getTos().get(0).getEmail(), "test@foo.com");
 
     // Second email
     Personalization personalization1 = sentMail.get(1).getPersonalization().get(0);
 
     assertThat(sentMail.get(1).getFrom().getEmail()).isEqualTo("me@example.com");
     assertThat(sentMail.get(1).getFrom().getName()).isEqualTo("My Display Name");
-    assertEquals("foo@bar.org", personalization1.getTos().get(0).getEmail());
+    assertEquals(personalization1.getTos().get(0).getEmail(), "foo@bar.org");
   }
 
   @Test
@@ -250,34 +239,5 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
     assertThat(sentMail.getFrom().getEmail()).isEqualTo("me@example.com");
     assertEquals(personalization.getTos().get(0).getEmail(), toEmail);
     assertThat(personalization.getDynamicTemplateData()).isEqualTo(dynamicTemplateData);
-  }
-
-  @Test
-  void sendWithCSVAttachment_success() throws IOException {
-    // GIVEN
-    List<String> emails = List.of("test-1@example.com", "test-2@example.com");
-
-    // WHEN
-    _service.sendWithCSVAttachment(emails, "NJ", "facilities");
-
-    // THEN
-    verify(mockSendGrid, times(1)).send(mail.capture());
-    Mail sentMail = mail.getValue();
-    String emailSubject = sentMail.getSubject();
-    String emailBody = sentMail.getContent().get(0).getValue();
-    Attachments attachment = sentMail.getAttachments().get(0);
-    String filename = attachment.getFilename();
-    String type = attachment.getType();
-    byte[] bytes = Base64.getDecoder().decode(attachment.getContent());
-    String attachmentString = new String(bytes, StandardCharsets.UTF_8);
-    Personalization personalization = sentMail.getPersonalization().get(0);
-
-    assertThat(sentMail.getFrom().getEmail()).isEqualTo("me@example.com");
-    assertEquals("support-test@simplereport.gov", personalization.getTos().get(0).getEmail());
-    assertThat(emailSubject).isEqualTo("Org admin email CSVs for outreach - facilities in NJ");
-    assertThat(emailBody).isEqualTo("Org admin email CSVs for outreach - facilities in NJ");
-    assertThat(filename).contains("-facilities_NJ-org_admin_emails.csv");
-    assertThat(type).isEqualTo("text/csv");
-    assertThat(attachmentString).isEqualTo("email\ntest-1@example.com\ntest-2@example.com\n");
   }
 }

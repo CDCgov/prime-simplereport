@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Intermediate base class for entities that should be tagged as "deleted" in the database rather
@@ -17,7 +17,7 @@ public abstract class EternalSystemManagedEntity extends SystemManagedEntity imp
   @JsonIgnore // this is an artifact of serializing the data at test time, but also seems...
   // correct?
   @Override
-  public boolean getIsDeleted() {
+  public boolean isDeleted() {
     return isDeleted;
   }
 

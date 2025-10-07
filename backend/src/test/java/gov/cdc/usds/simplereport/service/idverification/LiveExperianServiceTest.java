@@ -207,31 +207,6 @@ class LiveExperianServiceTest {
   }
 
   @Test
-  void getQuestions_authFailureNon500_failure() {
-
-    // Throw a 400 response
-    RestClientResponseException mock400AuthException =
-        new RestClientResponseException("mock error", 400, "mock status text", null, null, null);
-
-    Mockito.when(
-            _mockRestTemplate.postForObject(
-                eq(FAKE_PROPERTIES.getTokenEndpoint()), any(), eq(ObjectNode.class)))
-        .thenThrow(mock400AuthException)
-        .thenThrow(mock400AuthException);
-
-    // somehow failed to get an access token from experian
-    IdentityVerificationQuestionsRequest request = createValidQuestionsRequest();
-
-    ExperianAuthException e =
-        assertThrows(
-            ExperianAuthException.class,
-            () -> {
-              _service.getQuestions(request);
-            });
-    assertEquals("The activation token could not be retrieved.", e.getMessage());
-  }
-
-  @Test
   void getQuestions_authFailureRetry_success() throws JsonProcessingException {
 
     // Throw a 500 response on the first try, mocking intermittent Experian behavior,

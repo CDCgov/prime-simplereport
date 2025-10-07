@@ -2,13 +2,11 @@ query GetTopLevelDashboardMetricsNew(
   $facilityId: ID
   $startDate: DateTime
   $endDate: DateTime
-  $disease: String
 ) {
   topLevelDashboardMetrics(
     facilityId: $facilityId
     startDate: $startDate
     endDate: $endDate
-    disease: $disease
   ) {
     positiveTestCount
     totalTestCount

@@ -7,18 +7,17 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import graphql.ExecutionResult;
 import graphql.execution.instrumentation.InstrumentationContext;
-import graphql.execution.instrumentation.InstrumentationState;
-import graphql.execution.instrumentation.SimplePerformantInstrumentation;
+import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationValidationParameters;
 import graphql.language.Field;
 import graphql.language.OperationDefinition;
 import graphql.validation.ValidationError;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -26,7 +25,7 @@ import org.springframework.stereotype.Component;
 /** Created by nickrobison on 11/27/20 */
 @Component
 @Slf4j
-public class QueryLoggingInstrumentation extends SimplePerformantInstrumentation {
+public class QueryLoggingInstrumentation extends SimpleInstrumentation {
 
   private final TelemetryClient client;
   private final boolean isDebugEnabled;
@@ -38,7 +37,7 @@ public class QueryLoggingInstrumentation extends SimplePerformantInstrumentation
 
   @Override
   public InstrumentationContext<List<ValidationError>> beginValidation(
-      InstrumentationValidationParameters parameters, InstrumentationState state) {
+      InstrumentationValidationParameters parameters) {
     if (isDebugEnabled) {
       // Descend through the GraphQL query and pull out the field names and variables from the
       // operation definitions
@@ -53,12 +52,12 @@ public class QueryLoggingInstrumentation extends SimplePerformantInstrumentation
               .collect(Collectors.toSet());
       log.debug("Selecting fields: {}", fieldSet);
     }
-    return super.beginValidation(parameters, state);
+    return super.beginValidation(parameters);
   }
 
   @Override
   public InstrumentationContext<ExecutionResult> beginExecution(
-      InstrumentationExecutionParameters parameters, InstrumentationState state) {
+      InstrumentationExecutionParameters parameters) {
     final long queryStart = System.currentTimeMillis();
     final String executionId = parameters.getExecutionInput().getExecutionId().toString();
     // Add the execution ID to the sfl4j MDC and the response headers

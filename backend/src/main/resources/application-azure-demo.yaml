@@ -1,3 +1,5 @@
+spring:
+  profiles.include: no-security, no-okta-mgmt, create-sample-data, no-okta-auth
 simple-report:
   patient-link-url: https://demo.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://demo.simplereport.gov/api/pxp/callback

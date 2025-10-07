@@ -1,5 +1,5 @@
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import React, { MouseEventHandler } from "react";
+import React from "react";
 
 import SupportHomeLink from "../SupportHomeLink";
 import Button from "../../commonComponents/Button/Button";
@@ -7,7 +7,7 @@ import SearchInput from "../../testQueue/addToQueue/SearchInput";
 
 interface UserSearchProps {
   onClearFilter: () => void;
-  onSearchClick: MouseEventHandler<HTMLButtonElement>;
+  onSearchClick: (e: any) => void;
   onInputChange: (e: any) => void;
   searchEmail: string;
   disableClearFilters: boolean;
@@ -53,7 +53,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
               queryString={searchEmail}
               placeholder={"email@example.com"}
               label={"Search by email address of user"}
-              disabled={!searchEmail || searchEmail.trim() === ""}
+              disabled={!searchEmail}
             />
           </div>
         </div>

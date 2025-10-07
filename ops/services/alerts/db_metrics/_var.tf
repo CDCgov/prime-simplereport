@@ -16,9 +16,3 @@ variable "action_group_ids" {
   description = "The IDs of the monitor action group resources to send events to"
   type        = list(string)
 }
-
-variable "wiki_docs_json" {
-  description = "Custom properties json to include the alert response docs"
-  type        = map(string)
-  default     = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
-}

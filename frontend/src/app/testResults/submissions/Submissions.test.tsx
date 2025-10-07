@@ -1,4 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import createMockStore from "redux-mock-store";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -132,19 +138,6 @@ const getMocks = () => [
 ];
 
 describe("Submissions", () => {
-  const renderWithUser = () => ({
-    user: userEvent.setup(),
-    ...render(
-      <Provider store={store}>
-        <MockedProvider mocks={getMocks()}>
-          <MemoryRouter>
-            <Submissions />
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
-    ),
-  });
-
   it("should render no results and no pagination", async () => {
     render(
       <MockedProvider mocks={getNoResultsMocks()}>
@@ -181,16 +174,24 @@ describe("Submissions", () => {
   });
 
   it("should filter results when start date specified", async () => {
-    const { user } = renderWithUser();
+    render(
+      <Provider store={store}>
+        <MockedProvider mocks={getMocks()}>
+          <MemoryRouter>
+            <Submissions />
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
+    );
 
     expect(await screen.findByText("reportId_1"));
     expect(await screen.findByText("reportId_2"));
     expect(await screen.findByText("reportId_3"));
 
     const startDateInput = screen.getByTestId("start-date");
-    await user.type(startDateInput, "2021-01-01");
+    fireEvent.change(startDateInput, { target: { value: "2021-01-01" } });
     await waitFor(() => expect(startDateInput).toHaveValue("2021-01-01"));
-    await user.tab();
+    await act(async () => await userEvent.tab());
 
     expect(await screen.findByText("reportId_2"));
     expect(await screen.findByText("reportId_3"));
@@ -198,7 +199,15 @@ describe("Submissions", () => {
   });
 
   it("should filter results when end date specified", async () => {
-    const { user } = renderWithUser();
+    render(
+      <Provider store={store}>
+        <MockedProvider mocks={getMocks()}>
+          <MemoryRouter>
+            <Submissions />
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
+    );
 
     expect(await screen.findByText("reportId_1"));
     expect(await screen.findByText("reportId_2"));
@@ -206,7 +215,7 @@ describe("Submissions", () => {
 
     const endDateInput = screen.getByTestId("end-date");
 
-    await user.type(endDateInput, "2022-01-01");
+    fireEvent.change(endDateInput, { target: { value: "2022-01-01" } });
 
     await waitFor(() =>
       expect(screen.queryByText("reportId_1")).not.toBeInTheDocument()

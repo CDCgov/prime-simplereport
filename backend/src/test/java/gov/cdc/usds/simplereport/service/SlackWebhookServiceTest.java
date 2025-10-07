@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,19 +8,15 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.service.supportescalation.SlackConfigService;
 import gov.cdc.usds.simplereport.service.supportescalation.SlackWebhookService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-class SlackWebhookServiceTest {
+class SlackWebhookServiceTest extends BaseServiceTest<SlackWebhookService> {
 
-  private SlackWebhookService service;
-  private static SlackConfigService config;
+  @Autowired private SlackWebhookService service;
 
-  @BeforeEach
-  void setup() {
-    config = mock(SlackConfigService.class);
-    service = new SlackWebhookService(config);
-  }
+  @Autowired @MockBean private SlackConfigService config;
 
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
@@ -30,7 +25,7 @@ class SlackWebhookServiceTest {
     when(config.makeEscalationRequest()).thenReturn(true);
 
     // WHEN
-    boolean escalationWasOk = service.sendEscalationMessage();
+    boolean escalationWasOk = service.sendSlackEscalationMessage();
 
     // THEN
     verify(config, times(1)).makeEscalationRequest();

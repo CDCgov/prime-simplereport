@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -20,13 +19,13 @@ import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
+import org.openapitools.client.model.UserStatus;
 
 class DemoOktaRepositoryTest {
 
@@ -383,14 +382,6 @@ class DemoOktaRepositoryTest {
   }
 
   @Test
-  void activateUser() {
-    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), false);
-    String activatedUserResponse = _repo.activateUser(AMOS.getUsername());
-    assertEquals(UserStatus.ACTIVE, _repo.getUserStatus(AMOS.getUsername()));
-    assertEquals("activationToken", activatedUserResponse);
-  }
-
-  @Test
   void deactivateUser() {
     _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
     _repo.createUser(
@@ -408,7 +399,7 @@ class DemoOktaRepositoryTest {
   }
 
   @Test
-  void deleteOrg() {
+  void deleteOrgAndFacilities() {
     _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
     _repo.createUser(
         BRAD,
@@ -416,14 +407,22 @@ class DemoOktaRepositoryTest {
         Set.of(ABC_2),
         Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
         true);
+    _repo.deleteFacility(ABC_1);
 
+    OrganizationRoleClaims amos_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(),
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
+
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(amos_expected)
+            .matches(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get()));
     assertTrue(_repo.getAllUsersForOrganization(ABC).contains(AMOS.getUsername()));
     assertTrue(_repo.getAllUsersForOrganization(ABC).contains(BRAD.getUsername()));
 
     _repo.deleteOrganization(ABC);
 
-    Facility fakeFacility = getFacility(UUID.randomUUID(), ABC);
-    assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.createFacility(fakeFacility));
     assertThrows(
         IllegalGraphqlArgumentException.class, () -> _repo.getAllUsersForOrganization(ABC));
   }
@@ -470,22 +469,6 @@ class DemoOktaRepositoryTest {
         true);
 
     assertThat(_repo.fetchAdminUserEmail(ABC)).contains("dianek@gmail.com");
-  }
-
-  @Test
-  void fetchAdminUserEmail_differentOrgs_successful() {
-    Set<OrganizationRole> adminRoles = Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN);
-    Organization orgA = new Organization("Org A", "k12", "Org A", true);
-    _repo.createOrganization(orgA);
-    Facility orgAFacility = getFacility(UUID.randomUUID(), orgA);
-    _repo.createFacility(orgAFacility);
-    _repo.createUser(AMOS, ABC, Set.of(ABC_1), adminRoles, true);
-    _repo.createUser(BRAD, orgA, Set.of(orgAFacility), adminRoles, true);
-
-    List<String> actualABCAdminEmails = _repo.fetchAdminUserEmail(ABC);
-    assertThat(actualABCAdminEmails).hasSize(1).contains(AMOS.getUsername());
-    List<String> actualOrgAAdminEmails = _repo.fetchAdminUserEmail(orgA);
-    assertThat(actualOrgAAdminEmails).hasSize(1).contains(BRAD.getUsername());
   }
 
   @Test

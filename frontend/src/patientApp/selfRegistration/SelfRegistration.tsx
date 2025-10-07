@@ -80,7 +80,7 @@ export const SelfRegistration = () => {
       await PxpApi.selfRegister(data);
       setPersonName(formatFullName(person) || "");
       setStep(RegistrationStep.FINISHED);
-    } catch {
+    } catch (e: any) {
       showError(
         t("selfRegistration.form.error.heading"),
         t("selfRegistration.form.error.text")
@@ -109,51 +109,47 @@ export const SelfRegistration = () => {
             <PatientHeader />
           </div>
         }
-        children={
-          <div>
-            <RegistrationContainer
-              registrationLink={registrationLink}
-              setEntityName={setEntityName}
-            >
-              <div className="bg-white padding-y-105">
-                <div className="grid-container maxw-tablet">
-                  <h1 className="margin-top-0 margin-bottom-1">
-                    {step === RegistrationStep.FINISHED
-                      ? t("selfRegistration.form.complete")
-                      : t("selfRegistration.form.inProgress")}
-                  </h1>
-                  <h2 className="margin-y-0 text-normal">{entityName}</h2>
-                </div>
-              </div>
-              <div className="bg-base-lightest">
-                {step === RegistrationStep.TERMS && (
-                  <TermsOfService
-                    className="padding-top-05"
-                    onAgree={() => {
-                      setStep(RegistrationStep.FORM);
-                    }}
-                  />
-                )}
-                {step === RegistrationStep.FORM && (
-                  <SelfRegistrationForm
-                    savePerson={savePerson}
-                    onDuplicate={onDuplicate}
-                    entityName={entityName}
-                    registrationLink={registrationLink}
-                  />
-                )}
-                {step === RegistrationStep.FINISHED && (
-                  <Confirmation
-                    personName={personName}
-                    entityName={entityName}
-                  />
-                )}
-              </div>
-            </RegistrationContainer>
-          </div>
-        }
         isPatientApp={true}
-      />
+      >
+        <div>
+          <RegistrationContainer
+            registrationLink={registrationLink}
+            setEntityName={setEntityName}
+          >
+            <div className="bg-white padding-y-105">
+              <div className="grid-container maxw-tablet">
+                <h1 className="margin-top-0 margin-bottom-1">
+                  {step === RegistrationStep.FINISHED
+                    ? t("selfRegistration.form.complete")
+                    : t("selfRegistration.form.inProgress")}
+                </h1>
+                <h2 className="margin-y-0 text-normal">{entityName}</h2>
+              </div>
+            </div>
+            <div className="bg-base-lightest">
+              {step === RegistrationStep.TERMS && (
+                <TermsOfService
+                  className="padding-top-05"
+                  onAgree={() => {
+                    setStep(RegistrationStep.FORM);
+                  }}
+                />
+              )}
+              {step === RegistrationStep.FORM && (
+                <SelfRegistrationForm
+                  savePerson={savePerson}
+                  onDuplicate={onDuplicate}
+                  entityName={entityName}
+                  registrationLink={registrationLink}
+                />
+              )}
+              {step === RegistrationStep.FINISHED && (
+                <Confirmation personName={personName} entityName={entityName} />
+              )}
+            </div>
+          </RegistrationContainer>
+        </div>
+      </Page>
     </div>
   );
 };

@@ -5,7 +5,7 @@
 
 // Form components are namespaced under 'fba' = 'Feedback Analytics'
 
-function FBAform(d) {
+function FBAform (d) {
   return {
     formId: "5b1efe87",
     formComponent: function () {
@@ -20,10 +20,10 @@ function FBAform(d) {
 
     // enable Javascript experience
     javscriptIsEnabled: function () {
-      var javascriptDisabledMessage = document.getElementsByClassName(
+      let javascriptDisabledMessage = document.getElementsByClassName(
         "javascript-disabled-message"
       )[0];
-      var touchpointForm =
+      let touchpointForm =
         document.getElementsByClassName("touchpoint-form")[0];
       if (javascriptDisabledMessage) {
         javascriptDisabledMessage.classList.add("hide");
@@ -44,9 +44,9 @@ function FBAform(d) {
       return this;
     },
     bindEventListeners: function () {
-      var self = this;
+      let self = this;
       d.addEventListener("keyup", function (event) {
-        var x = event.keyCode;
+        let x = event.keyCode;
         if (x === 27 && self.dialogOpen === true) {
           self.closeDialog();
         }
@@ -80,7 +80,7 @@ function FBAform(d) {
         this.handleDialogClose.bind(this),
         false
       );
-      var otherElements = d.querySelectorAll(".usa-input.other-option");
+      let otherElements = d.querySelectorAll(".usa-input.other-option");
       for (let i = 0; i < otherElements.length; i++) {
         otherElements[i].addEventListener(
           "keyup",
@@ -88,7 +88,7 @@ function FBAform(d) {
           false
         );
       }
-      var phoneElements = d.querySelectorAll("input[type='tel']");
+      let phoneElements = d.querySelectorAll("input[type='tel']");
       for (let i = 0; i < phoneElements.length; i++) {
         phoneElements[i].addEventListener(
           "keyup",
@@ -110,12 +110,12 @@ function FBAform(d) {
         });
       }
 
-      var formElement = this.formElement();
+      let formElement = this.formElement();
       // returns 1 or more submit buttons within the Touchpoints form
-      var submitButtons = formElement.querySelectorAll("[type='submit']");
-      var that = this;
+      let submitButtons = formElement.querySelectorAll("[type='submit']");
+      let that = this;
 
-      var yesNoForm = formElement.querySelector(".touchpoints-yes-no-buttons");
+      let yesNoForm = formElement.querySelector(".touchpoints-yes-no-buttons");
 
       if (yesNoForm) {
         // only for yes/no questions
@@ -140,14 +140,14 @@ function FBAform(d) {
       }
     },
     resetErrors: function () {
-      var formComponent = this.formComponent();
-      var alertElement = formComponent.querySelector(".fba-alert");
-      var alertElementHeading =
+      let formComponent = this.formComponent();
+      let alertElement = formComponent.querySelector(".fba-alert");
+      let alertElementHeading =
         formComponent.getElementsByClassName("usa-alert__heading")[0];
-      var alertElementBody =
+      let alertElementBody =
         formComponent.getElementsByClassName("usa-alert__text")[0];
-      var alertErrorElement = formComponent.querySelector(".fba-alert-error");
-      var alertErrorElementBody =
+      let alertErrorElement = formComponent.querySelector(".fba-alert-error");
+      let alertErrorElementBody =
         alertErrorElement.getElementsByClassName("usa-alert__text")[0];
       alertElement.setAttribute("hidden", true);
       alertElementHeading.innerHTML = "";
@@ -174,15 +174,15 @@ function FBAform(d) {
       this.closeDialog();
     },
     handleOtherOption: function (e) {
-      var selectorId = "#" + e.srcElement.getAttribute("data-option-id");
-      var other_val = e.target.value.replace(/,/g, "");
+      let selectorId = "#" + e.srcElement.getAttribute("data-option-id");
+      let other_val = e.target.value.replace(/,/g, "");
       if (other_val === "") other_val = "other";
-      var option = this.formElement().querySelector(selectorId);
+      let option = this.formElement().querySelector(selectorId);
       option.checked = true;
       option.value = other_val;
     },
     handlePhoneInput: function (e) {
-      var number = e.srcElement.value.replace(/[^\d]/g, "");
+      let number = e.srcElement.value.replace(/[^\d]/g, "");
       if (number.length === 7) {
         number = number.replace(/(\d{3})(\d{4})/, "$1-$2");
       } else if (number.length === 10) {
@@ -191,13 +191,13 @@ function FBAform(d) {
       e.srcElement.value = number;
     },
     handleEmailInput: function (e) {
-      var EmailRegex =
+      let EmailRegex =
         /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-      var email = e.srcElement.value.trim();
+      let email = e.srcElement.value.trim();
       if (email.length === 0) {
         return;
       }
-      var result = EmailRegex.test(email);
+      let result = EmailRegex.test(email);
       if (!result) {
         showWarning($(this), "Please enter a valid email address");
       } else {
@@ -208,11 +208,11 @@ function FBAform(d) {
     handleSubmitClick: function (e) {
       e.preventDefault();
       this.resetErrors();
-      var formElement = this.formElement();
-      var self = this;
+      let formElement = this.formElement();
+      let self = this;
       if (self.validateForm(formElement)) {
         // disable submit button and show sending feedback message
-        var submitButton = formElement.querySelector("[type='submit']");
+        let submitButton = formElement.querySelector("[type='submit']");
         submitButton.disabled = true;
         submitButton.classList.add("aria-disabled");
         self.sendFeedback();
@@ -221,15 +221,15 @@ function FBAform(d) {
     handleYesNoSubmitClick: function (e) {
       e.preventDefault();
 
-      var input = this.formComponent().querySelector(
+      let input = this.formComponent().querySelector(
         ".fba-touchpoints-page-form"
       );
       input.value = e.target.value;
       this.resetErrors();
-      var self = this;
-      var formElement = this.formElement();
+      let self = this;
+      let formElement = this.formElement();
       if (self.validateForm(formElement)) {
-        var submitButtons = formElement.querySelectorAll("[type='submit']");
+        let submitButtons = formElement.querySelectorAll("[type='submit']");
         Array.prototype.forEach.call(submitButtons, function (submitButton) {
           submitButton.disabled = true;
         });
@@ -238,7 +238,7 @@ function FBAform(d) {
     },
     validateForm: function (form) {
       this.hideValidationError(form);
-      var valid =
+      let valid =
         this.checkRequired(form) &&
         this.checkEmail(form) &&
         this.checkPhone(form) &&
@@ -246,8 +246,8 @@ function FBAform(d) {
       return valid;
     },
     checkRequired: function (form) {
-      var requiredItems = form.querySelectorAll("[required]");
-      var questions = {};
+      let requiredItems = form.querySelectorAll("[required]");
+      let questions = {};
       // Build a dictionary of questions which require an answer
       Array.prototype.forEach.call(requiredItems, function (item) {
         questions[item.name] = item;
@@ -268,7 +268,7 @@ function FBAform(d) {
             if (item.value.length > 0) delete questions[item.name];
         }
       });
-      for (var key in questions) {
+      for (let key in questions) {
         this.showValidationError(
           questions[key],
           "You must respond to question: "
@@ -278,8 +278,8 @@ function FBAform(d) {
       return true;
     },
     checkDate: function (form) {
-      var dateItems = form.querySelectorAll(".date-select");
-      var questions = {};
+      let dateItems = form.querySelectorAll(".date-select");
+      let questions = {};
       // Build a dictionary of questions which require an answer
       Array.prototype.forEach.call(dateItems, function (item) {
         questions[item.name] = item;
@@ -288,11 +288,11 @@ function FBAform(d) {
         if (item.value.length === 0) {
           delete questions[item.name];
         } else {
-          var isValidDate = Date.parse(item.value);
+          let isValidDate = Date.parse(item.value);
           if (!isNaN(isValidDate)) delete questions[item.name];
         }
       });
-      for (var key in questions) {
+      for (let key in questions) {
         this.showValidationError(
           questions[key],
           "Please enter a valid value: "
@@ -302,8 +302,8 @@ function FBAform(d) {
       return true;
     },
     checkEmail: function (form) {
-      var emailItems = form.querySelectorAll('input[type="email"]');
-      var questions = {};
+      let emailItems = form.querySelectorAll('input[type="email"]');
+      let questions = {};
       // Build a dictionary of questions which require an answer
       Array.prototype.forEach.call(emailItems, function (item) {
         questions[item.name] = item;
@@ -312,12 +312,12 @@ function FBAform(d) {
         if (item.value.length === 0) {
           delete questions[item.name];
         } else {
-          var EmailRegex =
+          let EmailRegex =
             /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
           if (EmailRegex.test(item.value)) delete questions[item.name];
         }
       });
-      for (var key in questions) {
+      for (let key in questions) {
         this.showValidationError(
           questions[key],
           "Please enter a valid value: "
@@ -327,8 +327,8 @@ function FBAform(d) {
       return true;
     },
     checkPhone: function (form) {
-      var phoneItems = form.querySelectorAll('input[type="tel"]');
-      var questions = {};
+      let phoneItems = form.querySelectorAll('input[type="tel"]');
+      let questions = {};
       // Build a dictionary of questions which require an answer
       Array.prototype.forEach.call(phoneItems, function (item) {
         questions[item.name] = item;
@@ -337,11 +337,11 @@ function FBAform(d) {
         if (item.value.length === 0) {
           delete questions[item.name];
         } else {
-          var PhoneRegex = /^[0-9]{10}$/;
+          let PhoneRegex = /^[0-9]{10}$/;
           if (PhoneRegex.test(item.value)) delete questions[item.name];
         }
       });
-      for (var key in questions) {
+      for (let key in questions) {
         this.showValidationError(
           questions[key],
           "Please enter a valid value: "
@@ -351,26 +351,26 @@ function FBAform(d) {
       return true;
     },
     showValidationError: function (question, error) {
-      var questionDiv = question.closest(".question");
-      var label = questionDiv.querySelector(".usa-label");
-      var questionNum = label.innerText;
+      let questionDiv = question.closest(".question");
+      let label = questionDiv.querySelector(".usa-label");
+      let questionNum = label.innerText;
 
       // show page with validation error
-      var errorPage = question.closest(".section");
+      let errorPage = question.closest(".section");
       if (!errorPage.classList.contains("visible")) {
-        var visiblePage = document.getElementsByClassName("section visible")[0];
+        let visiblePage = document.getElementsByClassName("section visible")[0];
         visiblePage.classList.remove("visible");
         errorPage.classList.add("visible");
       }
 
       questionDiv.setAttribute("class", "usa-form-group usa-form-group--error");
-      var span = document.createElement("span");
+      let span = document.createElement("span");
       span.setAttribute("id", "input-error-message");
       span.setAttribute("role", "alert");
       span.setAttribute("class", "usa-error-message");
       span.innerText = error + questionNum;
       label.parentNode.insertBefore(span, label.nextSibling);
-      var input = document.createElement("input");
+      let input = document.createElement("input");
       input.setAttribute("hidden", "true");
       input.setAttribute("id", "input-error");
       input.setAttribute("type", "text");
@@ -381,12 +381,12 @@ function FBAform(d) {
       questionDiv.focus();
 
       // enable submit button ( so user can fix error and resubmit )
-      var submitButton = document.querySelector("[type='submit']");
+      let submitButton = document.querySelector("[type='submit']");
       submitButton.disabled = false;
       submitButton.classList.remove("aria-disabled");
     },
     hideValidationError: function (form) {
-      var elem = form.querySelector(".usa-form-group--error");
+      let elem = form.querySelector(".usa-form-group--error");
       if (elem == null) return;
       elem.setAttribute("class", "question");
       elem = form.querySelector("#input-error-message");
@@ -395,7 +395,7 @@ function FBAform(d) {
       if (elem != null) elem.parentNode.removeChild(elem);
     },
     textCounter: function (field, maxlimit) {
-      var countfield = field.parentNode.querySelector(".counter-msg");
+      let countfield = field.parentNode.querySelector(".counter-msg");
       if (field.value.length > maxlimit) {
         field.value = field.value.substring(0, maxlimit);
         countfield.innerText = "0 characters left";
@@ -432,7 +432,7 @@ function FBAform(d) {
       });
       this.skipLink.innerHTML = "Skip to feedback";
 
-      var existingSkipLinks = document.querySelector(".usa-skipnav");
+      let existingSkipLinks = document.querySelector(".usa-skipnav");
       if (existingSkipLinks) {
         existingSkipLinks.insertAdjacentElement("afterend", this.skipLink);
       } else {
@@ -452,7 +452,7 @@ function FBAform(d) {
       this.dialogOpen = false;
     },
     sendFeedback: function () {
-      var form = this.formElement();
+      let form = this.formElement();
       this.ajaxPost(form, this.formSuccess);
     },
     successHeadingText: function () {
@@ -462,13 +462,13 @@ function FBAform(d) {
       return "Thanks for your feedback!";
     },
     showFormSuccess: function () {
-      var formComponent = this.formComponent();
-      var formElement = this.formElement();
-      var alertElement = formComponent.querySelector(".fba-alert");
-      var alertElementHeading = formComponent.querySelector(
+      let formComponent = this.formComponent();
+      let formElement = this.formElement();
+      let alertElement = formComponent.querySelector(".fba-alert");
+      let alertElementHeading = formComponent.querySelector(
         ".usa-alert__heading"
       );
-      var alertElementBody = formComponent.querySelector(".usa-alert__text");
+      let alertElementBody = formComponent.querySelector(".usa-alert__text");
 
       // Display success Message
       alertElementHeading.innerHTML += this.successHeadingText();
@@ -480,13 +480,13 @@ function FBAform(d) {
         // And clear the Form's Fields
         formElement.reset();
         if (formElement.querySelector(".touchpoints-form-body")) {
-          var formBody = formElement.querySelector(".touchpoints-form-body");
+          let formBody = formElement.querySelector(".touchpoints-form-body");
           if (formBody) {
             formBody.setAttribute("hidden", true);
           }
         }
         if (formComponent.querySelector(".touchpoints-form-disclaimer")) {
-          var formDisclaimer = formComponent.querySelector(
+          let formDisclaimer = formComponent.querySelector(
             ".touchpoints-form-disclaimer"
           );
           if (formDisclaimer) {
@@ -504,14 +504,14 @@ function FBAform(d) {
       this.resetErrors();
 
       // Re-enable Submit Button
-      var formElement = this.formElement();
-      var submitButton = formElement.querySelector("[type='submit']");
+      let formElement = this.formElement();
+      let submitButton = formElement.querySelector("[type='submit']");
       submitButton.disabled = false;
 
       // Show Form Elements
       if (formElement) {
         if (formElement.querySelector(".touchpoints-form-body")) {
-          var formBody = formElement.querySelector(".touchpoints-form-body");
+          let formBody = formElement.querySelector(".touchpoints-form-body");
           if (formBody) {
             formBody.removeAttribute("hidden");
           }
@@ -520,17 +520,17 @@ function FBAform(d) {
     },
     formSuccess: function (e) {
       // Clear the alert box
-      var formComponent = this.formComponent();
-      var alertElementBody =
+      let formComponent = this.formComponent();
+      let alertElementBody =
         formComponent.getElementsByClassName("usa-alert__text")[0];
-      var alertErrorElement = formComponent.querySelector(".fba-alert-error");
-      var alertErrorElementBody =
+      let alertErrorElement = formComponent.querySelector(".fba-alert-error");
+      let alertErrorElementBody =
         alertErrorElement.getElementsByClassName("usa-alert__text")[0];
       alertElementBody.innerHTML = "";
       alertErrorElementBody.innerHTML = "";
 
-      var formElement = this.formElement();
-      var submitButton = formElement.querySelector("[type='submit']");
+      let formElement = this.formElement();
+      let submitButton = formElement.querySelector("[type='submit']");
 
       if (e.target.readyState === 4) {
         if (e.target.status === 201) {
@@ -546,10 +546,10 @@ function FBAform(d) {
           if (submitButton) {
             submitButton.disabled = false;
           }
-          var jsonResponse = JSON.parse(e.target.response);
-          var errors = jsonResponse.messages;
+          let jsonResponse = JSON.parse(e.target.response);
+          let errors = jsonResponse.messages;
 
-          for (var err in errors) {
+          for (let err in errors) {
             if (errors.hasOwnProperty(err)) {
               alertErrorElementBody.innerHTML += err;
               alertErrorElementBody.innerHTML += " ";
@@ -567,11 +567,11 @@ function FBAform(d) {
       }
     },
     ajaxPost: function (form, callback) {
-      var url = form.action;
-      var xhr = new XMLHttpRequest();
+      let url = form.action;
+      let xhr = new XMLHttpRequest();
 
       // for each form question
-      var params = {
+      let params = {
         answer_01:
           form.querySelector("#answer_01") &&
           form.querySelector("#answer_01").value,
@@ -591,15 +591,15 @@ function FBAform(d) {
       };
 
       // Combine Referrer and Pathname with Form-specific params
-      params["referer"] = d.referrer;
-      params["page"] = window.location.pathname;
-      params["location_code"] = form.querySelector("#fba_location_code")
+      params.referer = d.referrer;
+      params.page = window.location.pathname;
+      params.location_code = form.querySelector("#fba_location_code")
         ? form.querySelector("#fba_location_code").value
         : null;
-      params["fba_directive"] = form.querySelector("#fba_directive")
+      params.fba_directive = form.querySelector("#fba_directive")
         ? form.querySelector("#fba_directive").value
         : null;
-      params["language"] = "en";
+      params.language = "en";
 
       // Submit Feedback with a POST
       xhr.open("POST", url);
@@ -612,16 +612,16 @@ function FBAform(d) {
       );
     },
     pagination: function () {
-      var previousButtons = document.getElementsByClassName("previous-section");
-      var nextButtons = document.getElementsByClassName("next-section");
+      let previousButtons = document.getElementsByClassName("previous-section");
+      let nextButtons = document.getElementsByClassName("next-section");
 
-      var self = this;
-      for (var i = 0; i < previousButtons.length; i++) {
+      let self = this;
+      for (let i = 0; i < previousButtons.length; i++) {
         previousButtons[i].addEventListener(
           "click",
           function (e) {
             e.preventDefault();
-            var currentPage = e.target.closest(".section");
+            let currentPage = e.target.closest(".section");
             if (!this.validateForm(currentPage)) return false;
             currentPage.classList.remove("visible");
             currentPage.previousElementSibling.classList.add("visible");
@@ -635,7 +635,7 @@ function FBAform(d) {
           "click",
           function (e) {
             e.preventDefault();
-            var currentPage = e.target.closest(".section");
+            let currentPage = e.target.closest(".section");
             if (!this.validateForm(currentPage)) return false;
             currentPage.classList.remove("visible");
             currentPage.nextElementSibling.classList.add("visible");
@@ -648,13 +648,13 @@ function FBAform(d) {
 }
 
 // Form Settings
-var formOptions = {
+let formOptions = {
   modalButtonText: "How can we improve this site?",
 };
 
 // Note: When updating Touchpoints you need to update this HTML
 // To whoever has to maintain this, I'm sorry this is so gross.
-var touchpointsFormHtmlString = `
+const touchpointsFormHtmlString = `
   <div class="fba-modal">
     <div id="fba-modal-dialog" class="fba-modal-dialog" role="dialog" aria-modal="true">
       <div class="touchpoints-form-wrapper" id="touchpoints-form-5b1efe87" data-touchpoints-form-id="5b1efe87" tabindex="-1">

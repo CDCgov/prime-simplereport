@@ -61,9 +61,8 @@ describe("areValidPhoneNumbers", () => {
     phoneNumbers = [];
   });
 
-  it("returns true on empty input", () => {
-    //phone numbers are conditionally required, based on a field outside the phone number array.
-    expect(areValidPhoneNumbers(phoneNumbers)).toBe(true);
+  it("returns false on empty input", () => {
+    expect(areValidPhoneNumbers(phoneNumbers)).toBe(false);
   });
 
   it("returns false if primary phone number is not provided", () => {

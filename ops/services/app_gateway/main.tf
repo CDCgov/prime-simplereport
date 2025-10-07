@@ -124,7 +124,6 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Http"
     request_timeout                     = 60
     pick_host_name_from_backend_address = true
-    probe_name                          = "be-http"
   }
 
   backend_http_settings {
@@ -134,37 +133,6 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Https"
     request_timeout                     = 60
     pick_host_name_from_backend_address = true
-    probe_name                          = "be-https"
-  }
-
-  probe {
-    name                                      = "be-http"
-    interval                                  = 10
-    path                                      = "/actuator/health"
-    pick_host_name_from_backend_http_settings = true
-    protocol                                  = "Http"
-    timeout                                   = 10
-    unhealthy_threshold                       = 3
-
-    match {
-      body        = "UP"
-      status_code = [200]
-    }
-  }
-
-  probe {
-    name                                      = "be-https"
-    interval                                  = 10
-    path                                      = "/actuator/health"
-    pick_host_name_from_backend_http_settings = true
-    protocol                                  = "Https"
-    timeout                                   = 10
-    unhealthy_threshold                       = 3
-
-    match {
-      body        = "UP"
-      status_code = [200]
-    }
   }
 
   # ------- Backend Metabase App -------------------------
@@ -206,7 +174,6 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Http"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
-    probe_name                          = "be-http"
   }
 
   backend_http_settings {
@@ -216,7 +183,6 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Https"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
-    probe_name                          = "be-https"
   }
 
   # ------- Listeners -------------------------
@@ -464,12 +430,6 @@ resource "azurerm_application_gateway" "load_balancer" {
   firewall_policy_id = var.firewall_policy_id
 
   tags = var.tags
-
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
 }
 
 
@@ -487,6 +447,7 @@ resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
     ]
     content {
       category = enabled_log.value
+
       retention_policy {
         enabled = false
       }
@@ -499,6 +460,7 @@ resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
     ]
     content {
       category = metric.value
+
       retention_policy {
         enabled = false
       }

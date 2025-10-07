@@ -7,11 +7,9 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.auxiliary.ResolvedSurveyData;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -86,11 +84,6 @@ public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
     return getSurvey(testEvent).getSymptomOnsetDate();
   }
 
-  @SchemaMapping(typeName = "TestResult", field = "genderOfSexualPartners")
-  public List<String> getGenderOfSexualPartners(TestEvent testEvent) {
-    return getSurvey(testEvent).getGenderOfSexualPartners();
-  }
-
   @SchemaMapping(typeName = "TestResult", field = "facility")
   public ApiFacility getFacility(TestEvent testEvent) {
     return new ApiFacility(testEvent.getFacility());
@@ -105,11 +98,6 @@ public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
   @SchemaMapping(typeName = "TestResult", field = "results")
   public Set<Result> getResults(TestEvent testEvent) {
     return testEvent.getResults();
-  }
-
-  @SchemaMapping(typeName = "TestResult", field = "surveyData")
-  public ResolvedSurveyData getSurveyData(TestEvent testEvent) {
-    return new ResolvedSurveyData(getSurvey(testEvent));
   }
 
   @Override

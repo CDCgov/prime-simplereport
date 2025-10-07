@@ -1,9 +1,6 @@
 package gov.cdc.usds.simplereport.config.scalars.datetime;
 
-import graphql.GraphQLContext;
-import graphql.execution.CoercedVariables;
 import graphql.language.StringValue;
-import graphql.language.Value;
 import graphql.schema.Coercing;
 import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;
@@ -16,13 +13,11 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 @Slf4j
-public class DateTimeScalarCoercion implements Coercing<Date, Object> {
+class DateTimeScalarCoercion implements Coercing<Date, Object> {
 
   public static final DateTimeFormatter ISO_LOCAL_DATE =
       DateTimeFormatter.ISO_LOCAL_DATE.withZone(ZoneOffset.UTC);
@@ -31,7 +26,7 @@ public class DateTimeScalarCoercion implements Coercing<Date, Object> {
           DateTimeFormatter.ISO_INSTANT.withZone(ZoneOffset.UTC),
           DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneOffset.UTC));
 
-  public Date convertImpl(Object input) {
+  private Date convertImpl(Object input) {
     if (input == null) return null;
     else if (input instanceof String) {
       if (StringUtils.isBlank((String) input)) {
@@ -70,12 +65,10 @@ public class DateTimeScalarCoercion implements Coercing<Date, Object> {
   }
 
   @Override
-  public Object serialize(
-      @NotNull Object dataFetcherResult,
-      @NotNull GraphQLContext graphQLContext,
-      @NotNull Locale locale)
-      throws CoercingSerializeException {
-    if (dataFetcherResult instanceof Date) {
+  public Object serialize(Object dataFetcherResult) throws CoercingSerializeException {
+    if (dataFetcherResult == null) {
+      throw new CoercingSerializeException("Unable to serialize null value");
+    } else if (dataFetcherResult instanceof Date) {
       return getISOString(getLocalDateTime((Date) dataFetcherResult));
     } else if (dataFetcherResult instanceof String) {
       LocalDateTime localDateTime = getLocalDateTime((String) dataFetcherResult);
@@ -90,10 +83,8 @@ public class DateTimeScalarCoercion implements Coercing<Date, Object> {
   }
 
   @Override
-  public Date parseValue(
-      @NotNull Object input, @NotNull GraphQLContext graphQLContext, @NotNull Locale locale)
-      throws CoercingParseValueException {
-    if (((String) input).isEmpty()) {
+  public Date parseValue(Object input) throws CoercingParseValueException {
+    if (((String) input).length() == 0) {
       return null;
     }
     Date result = convertImpl(input);
@@ -104,12 +95,7 @@ public class DateTimeScalarCoercion implements Coercing<Date, Object> {
   }
 
   @Override
-  public Date parseLiteral(
-      @NotNull Value<?> input,
-      @NotNull CoercedVariables coercedVariables,
-      @NotNull GraphQLContext graphQLContext,
-      @NotNull Locale locale)
-      throws CoercingParseLiteralException {
+  public Date parseLiteral(Object input) throws CoercingParseLiteralException {
     String value = ((StringValue) input).getValue();
     Date result = convertImpl(value);
     if (result == null) {

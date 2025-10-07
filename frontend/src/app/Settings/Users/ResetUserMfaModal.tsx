@@ -3,7 +3,6 @@ import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button/Button";
-import { User } from "../../../generated/graphql";
 import { displayFullName } from "../../utils";
 
 import { SettingsUser } from "./ManageUsersContainer";
@@ -12,7 +11,7 @@ import "./ManageUsers.scss";
 interface Props {
   onClose: () => void;
   onResetMfa: (userId: string) => void;
-  user: SettingsUser | User;
+  user: SettingsUser;
 }
 
 const ResetUserMfaModal: React.FC<Props> = ({ onClose, onResetMfa, user }) => {
@@ -28,7 +27,7 @@ const ResetUserMfaModal: React.FC<Props> = ({ onClose, onResetMfa, user }) => {
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
-      ariaHideApp={process.env.NODE_ENV !== "test"}
+      ariaHideApp={import.meta.env.MODE !== "test"}
       onRequestClose={onClose}
     >
       <div className="border-0 card-container">

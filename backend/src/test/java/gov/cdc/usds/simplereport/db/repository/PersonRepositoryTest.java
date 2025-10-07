@@ -50,13 +50,11 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             null,
             "",
             null,
-            "male",
-            "nonbinary",
+            "",
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE,
-            "Infinite-horizon explorer"));
+            TestResultDeliveryPreference.NONE));
 
     List<Person> found =
         _repo.findAll(
@@ -66,10 +64,6 @@ class PersonRepositoryTest extends BaseRepositoryTest {
                 PersonService.DEFAULT_PAGINATION_PAGESIZE));
     assertEquals(1, found.size());
     assertEquals("Joe", found.get(0).getFirstName());
-    assertEquals("male", found.get(0).getGender());
-    assertEquals("nonbinary", found.get(0).getGenderIdentity());
-    assertEquals("nonbinary", found.get(0).getGenderIdentity());
-    assertEquals("Infinite-horizon explorer", found.get(0).getNotes());
     Person createdPerson = found.get(0);
     UUID personId = createdPerson.getInternalId();
 
@@ -80,7 +74,7 @@ class PersonRepositoryTest extends BaseRepositoryTest {
     createdPerson.setIsDeleted(true);
     Optional<Person> deletedPerson = _repo.findByIdAndOrganization(personId, org, true);
     assertTrue(deletedPerson.isPresent());
-    assertTrue(deletedPerson.get().getIsDeleted());
+    assertTrue(deletedPerson.get().isDeleted());
 
     found =
         _repo.findAll(

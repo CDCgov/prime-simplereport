@@ -30,19 +30,9 @@ query GetPatientsByFacilityWithOrg($facilityId: ID!, $pageNumber: Int!, $pageSiz
   }
 }
 
-query GetPatientsCountByFacilityWithOrg($facilityId: ID!, $archivedStatus: ArchivedStatus = UNARCHIVED, $orgExternalId: String!) {
+query GetPatientsCountByFacilityWithOrg($facilityId: ID!, $archivedStatus: ArchivedStatus = UNARCHIVED $orgExternalId: String!) {
   patientsCount(
     facilityId: $facilityId,
     archivedStatus: $archivedStatus,
     orgExternalId: $orgExternalId)
-}
-
-mutation UnarchivePatient($id: ID!, $orgExternalId: String!) {
-  setPatientIsDeleted(
-    id: $id,
-    deleted: false,
-    orgExternalId: $orgExternalId
-  ) {
-    internalId
-  }
 }

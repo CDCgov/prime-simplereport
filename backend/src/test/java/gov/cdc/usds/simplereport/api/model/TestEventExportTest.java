@@ -272,22 +272,16 @@ class TestEventExportTest extends BaseRepositoryTest {
                 deviceType1.getInternalId(),
                 dataFactory.getCovidDisease(),
                 "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "covidEquipmentUID",
-                "covidEquipmentUIDType",
                 "covidTestkitNameId1",
-                "94500-0",
-                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
+                "94500-0"),
             new DeviceTypeDisease(
                 deviceType1.getInternalId(),
                 dataFactory.getCovidDisease(),
                 "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "covidEquipmentUID",
-                "covidEquipmentUIDType",
                 "covidTestkitNameId2",
-                "94500-0",
-                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")));
+                "94500-0")));
     dataFactory.addDiseasesToDevice(
         deviceType2,
         List.of(
@@ -295,22 +289,16 @@ class TestEventExportTest extends BaseRepositoryTest {
                 deviceType2.getInternalId(),
                 dataFactory.getCovidDisease(),
                 "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "covidEquipmentUID1",
-                "covidEquipmentUIDType",
                 "covidTestkitNameId",
-                "94500-0",
-                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection"),
+                "94500-0"),
             new DeviceTypeDisease(
                 deviceType2.getInternalId(),
                 dataFactory.getCovidDisease(),
                 "94500-6",
-                "SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection",
                 "covidEquipmentUID2",
-                "covidEquipmentUIDType",
                 "covidTestkitNameId",
-                "94500-0",
-                "SARS-CoV-2 (COVID-19) RNA panel - Respiratory specimen by NAA with probe detection")));
+                "94500-0")));
 
     Person person = dataFactory.createFullPerson(org);
     TestOrder testOrder1 = dataFactory.createTestOrder(person, facility);
@@ -333,28 +321,5 @@ class TestEventExportTest extends BaseRepositoryTest {
     assertNull(exportedEvent2.getEquipmentModelId());
     assertEquals("covidTestkitNameId", exportedEvent2.getTestKitNameId());
     assertEquals("94500-6", exportedEvent2.getOrderedTestCode());
-  }
-
-  @Test
-  void sendPatientInfoWithUnknownFields() {
-    // GIVEN
-    // unknown address & phone number
-    Organization org = dataFactory.saveValidOrganization();
-    Facility facility = dataFactory.createValidFacility(org);
-    Person person = dataFactory.createFullPersonWithUnknownAddressAndPhone(org);
-    TestEvent testEvent = dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
-
-    // WHEN
-    TestEventExport exportedEvent = new TestEventExport(testEvent);
-
-    // THEN
-    // City, State, Zip, County & Phone number information should default to the facility.
-    assertEquals("USA", exportedEvent.getPatientCountry());
-    assertEquals(person.getStreet(), exportedEvent.getPatientStreet());
-    assertEquals(facility.getAddress().getCity(), exportedEvent.getPatientCity());
-    assertEquals(facility.getAddress().getState(), exportedEvent.getPatientState());
-    assertEquals(facility.getAddress().getPostalCode(), exportedEvent.getPatientZipCode());
-    assertEquals(facility.getAddress().getCounty(), exportedEvent.getPatientCounty());
-    assertEquals(facility.getTelephone(), exportedEvent.getPatientPhoneNumber());
   }
 }

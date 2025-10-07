@@ -18,9 +18,7 @@
     "anon:detect": "./backend/db-setup/anonymize-detect.sh",
     "anon:restore": "docker cp backend/db-setup/anon_dump.sql db:/usr/local/lib/ && docker exec db /usr/local/lib/nuke-db.sh && docker exec -e SNAPSHOT=/usr/local/lib/anon_dump.sql -e SR_DB_USER=simple_report_migrations db /usr/local/lib/restore-db.sh",
     "anon:remove": "./backend/db-setup/remove-anon.sh",
-    "test:frontend": "docker compose run --rm -e REACT_APP_BASE_URL=https://simplereport.gov -e REACT_APP_BACKEND_URL=https://simplereport.gov/api -e REACT_APP_OKTA_ENABLED=false frontend yarn test",
+    "test:frontend": "docker compose run --rm -e VITE_BASE_URL=https://simplereport.gov -e VITE_BACKEND_URL=https://simplereport.gov/api -e VITE_OKTA_ENABLED=false frontend yarn test",
     "test:backend": "docker compose --env-file .env.test -p simple-report-tests up -d db; docker compose --env-file .env.test -p simple-report-tests run --rm backend gradle test -PskipDbSetup=true -PtestDbHost=db; docker compose -p simple-report-tests down -v"
-  },
-  "dependencies": {},
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  }
 }

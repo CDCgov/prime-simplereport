@@ -1,16 +1,6 @@
 import { isValidCLIANumber } from "./clia";
 
 describe("isValidCLIANumber::string -> boolean", () => {
-  test("valid OTC number returns `true` if state is CA", () => {
-    const otcCliaNumber = "00Z0000014";
-    const state = "CA";
-    expect(isValidCLIANumber(otcCliaNumber, state)).toBe(true);
-  });
-  test("OTC number returns `false` if state is not CA", () => {
-    const otcCliaNumber = "00Z0000014";
-    const state = "NY";
-    expect(isValidCLIANumber(otcCliaNumber, state)).toBe(false);
-  });
   test("valid number returns `true`", () => {
     const cliaNumber = "12D4567890";
     const state = "VA";

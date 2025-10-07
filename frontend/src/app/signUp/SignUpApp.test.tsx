@@ -16,6 +16,12 @@ describe("SignUpApp", () => {
     getAppInsightsSpy.mockImplementation(
       () => ({ trackMetric: trackMetricMock } as jest.MockedObject<any>)
     );
+
+    render(
+      <MemoryRouter>
+        <SignUpApp />
+      </MemoryRouter>
+    );
   });
 
   afterEach(() => {
@@ -23,11 +29,6 @@ describe("SignUpApp", () => {
   });
 
   it("renders and logs metrics", async () => {
-    render(
-      <MemoryRouter>
-        <SignUpApp />
-      </MemoryRouter>
-    );
     expect(screen.getByText("Sign up for SimpleReport")).toBeInTheDocument();
     await waitFor(() =>
       expect(trackMetricMock).toHaveBeenCalledWith(

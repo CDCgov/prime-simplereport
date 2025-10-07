@@ -3,16 +3,16 @@
 echo "Starting docker containers"
 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --quiet-pull
 
-echo "Waiting for backend to start at https://localhost.simplereport.gov/api/actuator/health"
+echo "Waiting for backend to start at https://localhost.simplereport.gov/api/health"
 http_response=0
 polls=0
-while [[ $http_response != *"UP"* && $polls -lt 180 ]]; do
+while [[ $http_response != "200" && $polls -lt 180 ]]; do
   ((polls++))
   sleep 2
-  echo "Waiting for backend to start at https://localhost.simplereport.gov/api/actuator/health"
-  http_response=$(curl -skL -w "%{http_code}" "https://localhost.simplereport.gov/api/actuator/health")
+  echo "Waiting for backend to start at https://localhost.simplereport.gov/api/health"
+  http_response=$(curl -skL -w "%{http_code}" "https://localhost.simplereport.gov/api/health")
 done
-if [[ $http_response != *"UP"* ]]; then
+if [[ $http_response -ne 200 ]]; then
   echo 'Backend never started. Exiting...'
   exit 1
 fi

@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 
 import { displayFullName } from "../../utils";
 import { TextInput } from "../../commonComponents/TextInput";
-import { User } from "../../../generated/graphql";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import { BaseEditModal } from "./BaseEditModal";
+
 import "./ManageUsers.scss";
 
 type UserNameFormData = {
@@ -22,7 +22,7 @@ interface EditUserNameModalProps {
     lastName: string,
     suffix: string
   ) => void;
-  user: SettingsUser | User;
+  user: SettingsUser;
 }
 
 const EditUserNameModal: React.FC<EditUserNameModalProps> = ({

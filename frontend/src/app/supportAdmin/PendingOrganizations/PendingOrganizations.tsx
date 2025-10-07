@@ -1,5 +1,5 @@
 import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button/Button";
@@ -16,9 +16,8 @@ import {
   EditOrgMutationResponse,
 } from "./utils";
 import "./PendingOrganizationsList.scss";
-import PendingOrganizationDetailsModal from "./modals/PendingOrganizationDetailsModal";
+import ConfirmOrgVerificationModal from "./modals/ConfirmOrgVerificationModal";
 import ConfirmDeleteOrgModal from "./modals/ConfirmDeleteOrgModal";
-import VerifyPendingOrganizationConfirmationModal from "./modals/VerifyPendingOrganizationConfirmationModal";
 
 interface Props {
   organizations: PendingOrganization[];
@@ -28,109 +27,42 @@ interface Props {
     deleted: boolean,
     name: string
   ) => Promise<void>;
-  refetch: () => void;
   loading: boolean;
-  deletePendingOrgLoading: boolean;
-  verifyIdentityLoading: boolean;
+  refetch: () => void;
 }
-
-interface PendingOrganizationState {
-  orgToVerify: PendingOrganization | null;
-  orgToDelete: PendingOrganization | null;
-  verifyOrgFormData: PendingOrganization | null;
-  needsUpdate: boolean;
-  openEditModal: boolean;
-  openDeleteModal: boolean;
-  openVerifyConfirmModal: boolean;
-}
-
-const initialState: PendingOrganizationState = {
-  orgToVerify: null,
-  orgToDelete: null,
-  verifyOrgFormData: null,
-  needsUpdate: false,
-  openEditModal: false,
-  openDeleteModal: false,
-  openVerifyConfirmModal: false,
-};
 
 const phoneUtil = PhoneNumberUtil.getInstance();
-
-const parsePhoneNumber = (phoneNumber: string) => {
-  try {
-    return phoneUtil.format(
-      phoneUtil.parseAndKeepRawInput(phoneNumber, "US"),
-      PhoneNumberFormat.NATIONAL
-    );
-  } catch {
-    return "";
-  }
-};
-
 const PendingOrganizations = ({
   organizations,
   submitIdentityVerified,
   submitDeletion,
   loading,
   refetch,
-  deletePendingOrgLoading,
-  verifyIdentityLoading,
 }: Props) => {
   useDocumentTitle(identityVerificationPageTitle);
-  const [localState, updateLocalState] =
-    useState<PendingOrganizationState>(initialState);
-  const [editOrg, { loading: editOrgLoading }] =
-    useEditPendingOrganizationMutation();
 
-  const handleDeleteOrgClick = (selectedPendingOrg: PendingOrganization) => {
-    updateLocalState(() => ({
-      ...initialState,
-      orgToDelete: selectedPendingOrg,
-      openDeleteModal: true,
-    }));
-  };
+  const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
+    null
+  );
 
-  const handleVerifyEditOrgClick = (
-    selectedPendingOrg: PendingOrganization
-  ) => {
-    updateLocalState(() => ({
-      ...initialState,
-      orgToVerify: selectedPendingOrg,
-      openEditModal: true,
-    }));
-  };
-
-  const handleVerifyOrgClick = (
-    needsUpdate: boolean,
-    org: PendingOrganizationFormValues
-  ) => {
-    const pendingOrg = {
-      ...localState.orgToVerify,
-      name: org.name ?? localState.orgToVerify?.name,
-      adminFirstName:
-        org.adminFirstName ?? localState.orgToVerify?.adminFirstName,
-      adminLastName: org.adminLastName ?? localState.orgToVerify?.adminLastName,
-      adminEmail: org.adminEmail ?? localState.orgToVerify?.adminEmail,
-      adminPhone: org.adminPhone ?? localState.orgToVerify?.adminPhone,
-    };
-    // @ts-ignore
-    updateLocalState((prevState) => {
-      return {
-        ...prevState,
-        orgToVerify: pendingOrg,
-        needsUpdate: needsUpdate,
-        openEditModal: false,
-        openVerifyConfirmModal: true,
-      };
-    });
-  };
+  const [orgToDelete, setOrgToDelete] = useState<PendingOrganization | null>(
+    null
+  );
+  const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [editOrg] = useEditPendingOrganizationMutation();
 
   const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
+    // Return nothing if no verification is set
+    if (orgToVerify === null) {
+      return Promise.reject();
+    }
     let updatedOrg;
     try {
+      setIsUpdating(true);
       const mutationResponse = await editOrg({
         variables: {
-          externalId: localState.orgToVerify?.externalId ?? "",
+          externalId: orgToVerify.externalId,
           name: org.name,
           adminFirstName: org.adminFirstName,
           adminLastName: org.adminLastName,
@@ -139,25 +71,43 @@ const PendingOrganizations = ({
         },
       });
       updatedOrg = mutationResponse as EditOrgMutationResponse;
-    } catch {
+    } catch (e: any) {
+      console.error(e);
       return Promise.reject();
     }
     refetch();
-    handleCloseAll();
+    setIsUpdating(false);
+    setOrgToVerify(null);
     const updateMessage = `${org.name} details updated`;
     showSuccess("", updateMessage);
     return Promise.resolve(updatedOrg);
   };
 
-  const handleConfirmOrg = async () => {
+  const handleConfirmOrg = async (org: PendingOrganizationFormValues) => {
+    if (orgToVerify === null) {
+      return Promise.reject();
+    }
     try {
-      let externalIdToVerify = localState.orgToVerify?.externalId ?? "";
-      let externalNameToVerify = localState.orgToVerify?.name ?? "";
+      setVerifyInProgress(true);
+      // check to see if there are changes, verifying different type of
+      // empty states
+      let externalIdToVerify = orgToVerify.externalId;
+      let externalNameToVerify = orgToVerify.name;
 
-      // saves if form is dirty
-      if (localState.needsUpdate && localState.orgToVerify) {
+      let k: keyof typeof org;
+      let anyValueDifferent = false;
+      for (k in org) {
+        const orgField = org[k] === "" ? null : org[k];
+        const verifyField = orgToVerify[k];
+        if (orgField !== verifyField) {
+          anyValueDifferent = true;
+          break;
+        }
+      }
+
+      if (anyValueDifferent) {
         // submit changed values and generate new externalId
-        const newOrgData = await handleUpdateOrg(localState.orgToVerify);
+        const newOrgData = await handleUpdateOrg(org);
         const updatedOrgExternalId = newOrgData?.data?.editPendingOrganization;
         if (
           updatedOrgExternalId === undefined ||
@@ -167,39 +117,38 @@ const PendingOrganizations = ({
           external ID. Check for errors and try again`);
         }
         externalIdToVerify = updatedOrgExternalId;
+        externalNameToVerify = org.name;
       }
       await submitIdentityVerified(externalIdToVerify, externalNameToVerify);
-    } catch {
+    } catch (e: any) {
+      console.error(e);
       return Promise.reject();
     }
+    setVerifyInProgress(false);
+    setOrgToVerify(null);
     refetch();
-    handleCloseAll();
+
     return Promise.resolve();
   };
 
-  const handleCloseAll = () => {
-    updateLocalState(() => initialState);
-  };
-
-  const handleCloseVerifyConfirmModal = () => {
-    updateLocalState((prevState) => {
-      return {
-        ...prevState,
-        needsUpdate: false,
-        openEditModal: true,
-        openVerifyConfirmModal: false,
-      };
-    });
+  const handleClose = () => {
+    setOrgToVerify(null);
+    setOrgToDelete(null);
+    setVerifyInProgress(false);
   };
 
   const handleDeletionOrg = async (o: PendingOrganization) => {
     try {
+      setIsUpdating(true);
       await submitDeletion(o.externalId, true, o.name);
-    } catch {
-      updateLocalState(() => initialState);
+      setIsUpdating(false);
+      setOrgToDelete(null);
+    } catch (e) {
+      console.log(e);
+      setIsUpdating(false);
+      setOrgToDelete(null);
       return Promise.reject();
     }
-    updateLocalState(() => initialState);
     return Promise.resolve();
   };
 
@@ -207,7 +156,7 @@ const PendingOrganizations = ({
     if (loading) {
       return (
         <tr>
-          <td colSpan={7}>Loading Organizations...</td>
+          <td>Loading Organizations...</td>
         </tr>
       );
     }
@@ -224,26 +173,28 @@ const PendingOrganizations = ({
     );
     return orgsSortedByNewest.map((o) => (
       <tr key={o.externalId} className="sr-org-row">
-        <td className="word-break-break-word">{o.name}</td>
-        <td className="word-break-break-word">{`${o.adminFirstName} ${o.adminLastName}`}</td>
-        <td className="word-break-break-word">
+        <td>{o.name}</td>
+        <td>{`${o.adminFirstName} ${o.adminLastName}`}</td>
+        <td>
           <a href={`mailto:${o.adminEmail}}`}>{o.adminEmail}</a>
           <br />
-          {parsePhoneNumber(o.adminPhone)}
+          {o.adminPhone
+            ? phoneUtil.format(
+                phoneUtil.parseAndKeepRawInput(o.adminPhone, "US"),
+                PhoneNumberFormat.NATIONAL
+              )
+            : ""}
         </td>
-        <td
-          data-testid="org-created-at-table-cell"
-          className="word-break-break-word"
-        >
+        <td data-testid="org-created-at-table-cell">
           {new Date(o.createdAt).toLocaleString()}
         </td>
-        <td className="word-break-break-word">{o.externalId}</td>
-        <td>
+        <td>{o.externalId}</td>
+        <td className="verify-button-container">
           <Button
             className="sr-pending-org-edit-verify"
             ariaLabel={`Edit or verify ${o.name}`}
             onClick={() => {
-              handleVerifyEditOrgClick(o);
+              setOrgToVerify(o);
             }}
           >
             Edit/Verify
@@ -254,7 +205,9 @@ const PendingOrganizations = ({
             className="sr-pending-org-delete-button"
             aria-label={`Delete ${o.name}`}
             data-testid="delete-org-button"
-            onClick={() => handleDeleteOrgClick(o)}
+            onClick={() => {
+              setOrgToDelete(o);
+            }}
           >
             <FontAwesomeIcon icon={"trash"} size="2x" />
           </button>
@@ -267,36 +220,24 @@ const PendingOrganizations = ({
       <div className="grid-container pending-orgs-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
-            <PendingOrganizationDetailsModal
-              organization={localState.orgToVerify}
-              onVerifyOrgClick={(
-                needsUpdate: boolean,
-                org: PendingOrganization
-              ) => handleVerifyOrgClick(needsUpdate, org)}
-              onUpdate={handleUpdateOrg}
-              onClose={handleCloseAll}
-              isUpdating={editOrgLoading}
-              isLoading={loading}
-              isOpen={localState.openEditModal}
-            />
-            <VerifyPendingOrganizationConfirmationModal
-              onGoBackClick={handleCloseVerifyConfirmModal}
-              onVerifyConfirm={handleConfirmOrg}
-              onClose={handleCloseAll}
-              organization={localState.orgToVerify}
-              isLoading={loading}
-              isUpdating={editOrgLoading}
-              isVerifying={verifyIdentityLoading}
-              isOpen={localState.openVerifyConfirmModal}
-            />
-            <ConfirmDeleteOrgModal
-              organization={localState.orgToDelete}
-              onClose={handleCloseAll}
-              handleDelete={handleDeletionOrg}
-              isDeleting={deletePendingOrgLoading}
-              isLoading={loading}
-              isOpen={localState.openDeleteModal}
-            />
+            {orgToVerify ? (
+              <ConfirmOrgVerificationModal
+                organization={orgToVerify}
+                handleVerify={handleConfirmOrg}
+                handleUpdate={handleUpdateOrg}
+                handleClose={handleClose}
+                isUpdating={isUpdating}
+                isVerifying={verifyInProgress}
+              />
+            ) : null}
+            {orgToDelete ? (
+              <ConfirmDeleteOrgModal
+                organization={orgToDelete}
+                handleClose={handleClose}
+                handleDelete={handleDeletionOrg}
+                isUpdating={isUpdating}
+              />
+            ) : null}
             <div className="usa-card__header">
               <h1
                 data-cy="pending-orgs-title"

@@ -80,15 +80,15 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     }
   }, [hasAllFacilityAccess, activeUser, onUpdateUser, allFacilities]);
 
-  const userFacilities = useMemo(() => {
-    if (hasAllFacilityAccess) {
-      return [...allFacilities];
-    } else if (activeUser.organization) {
-      return [...activeUser.organization.testingFacility];
-    } else {
-      return [];
-    }
-  }, [activeUser, allFacilities, hasAllFacilityAccess]);
+  const userFacilities = useMemo(
+    () =>
+      hasAllFacilityAccess
+        ? [...allFacilities]
+        : activeUser.organization
+        ? [...activeUser.organization.testingFacility]
+        : [],
+    [activeUser, allFacilities, hasAllFacilityAccess]
+  );
 
   userFacilities.sort(alphabeticalFacilitySort);
 
@@ -125,7 +125,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         boxes={boxes}
         legend="Facilities"
         legendSrOnly
-        name="facilities-settings-form"
+        name="facilities"
         onChange={(e) => {
           const { value, checked } = e.target;
           if (value === "ALL_FACILITIES") {

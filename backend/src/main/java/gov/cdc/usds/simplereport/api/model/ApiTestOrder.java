@@ -30,8 +30,4 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
   public String getReasonForCorrection() {
     return wrapped.getReasonForCorrection();
   }
-
-  public String getTimerStartedAt() {
-    return wrapped.getTimerStartedAt();
-  }
 }

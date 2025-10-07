@@ -1,3 +1,5 @@
+spring:
+  profiles.include: server-debug, create-sample-devices
 logging:
   level:
     # NOTE: look in application-dev.yaml for other things that might be worth turning on
@@ -17,7 +19,6 @@ simple-report-initialization:
     - name: Swab of internal nose
       type-code: "445297001"
       collection-location-name: Internal nose structure
-      collection-location-code: "53342003"
     - name: Nasopharyngeal swab
       type-code: "258500001"
       collection-location-name: Nasopharyngeal structure

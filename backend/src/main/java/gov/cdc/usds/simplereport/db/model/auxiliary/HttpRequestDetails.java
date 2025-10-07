@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * The information that we capture about the HTTP request for an audit event. Must be stable (no

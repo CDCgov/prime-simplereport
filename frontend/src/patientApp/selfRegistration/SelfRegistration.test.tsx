@@ -4,14 +4,14 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
-  within,
 } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import createMockStore from "redux-mock-store";
-import { faker } from "@faker-js/faker";
+import faker from "faker";
 
 import * as AppInsightsMock from "../../app/TelemetryService";
 import "../../i18n";
-import { createGQLWrappedMemoryRouterWithDataApis } from "../../app/utils/reactRouter";
 
 import { SelfRegistration } from "./SelfRegistration";
 
@@ -45,15 +45,19 @@ const store = mockStore({});
 const originalConsoleError = console.error;
 
 describe("SelfRegistration", () => {
-  const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
-    <SelfRegistration />,
-    store,
-    [],
-    true,
-    "/register/:registrationLink",
-    [`/register/${VALID_LINK}`]
-  );
-  const renderWithValidLink = () => render(elementToRender);
+  const renderWithValidLink = () =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
+          <Routes>
+            <Route
+              path="/register/:registrationLink"
+              element={<SelfRegistration />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
+    );
 
   beforeEach(() => {
     // For smartystreets failures
@@ -64,15 +68,18 @@ describe("SelfRegistration", () => {
   });
 
   it("Renders a 404 page for a bad link", async () => {
-    const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
-      <SelfRegistration />,
-      store,
-      [],
-      true,
-      "/register/:registrationLink",
-      ["/register/some-bad-link"]
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={["/register/some-bad-link"]}>
+          <Routes>
+            <Route
+              path="/register/:registrationLink"
+              element={<SelfRegistration />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
     );
-    render(elementToRender);
 
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
 
@@ -93,9 +100,7 @@ describe("SelfRegistration", () => {
     });
     screen.getAllByLabelText("No").forEach(fireEvent.click);
     fireEvent.click(screen.getByLabelText("Mobile"));
-    fireEvent.click(
-      within(screen.getByTestId("gender")).getByLabelText("Female")
-    );
+    fireEvent.click(screen.getByLabelText("Female"));
     fireEvent.click(screen.getByText("Native Hawaiian/other Pacific Islander"));
     fireEvent.click(screen.getByText("Submit"));
     await screen.findByText("Address validation");
@@ -165,12 +170,12 @@ describe("SelfRegistration", () => {
 });
 
 const filledForm = {
-  "First name": faker.person.firstName(),
-  "Middle name": faker.person.middleName(),
-  "Last name": faker.person.lastName(),
+  "First name": faker.name.firstName(),
+  "Middle name": faker.name.middleName(),
+  "Last name": faker.name.lastName(),
   "Date of birth": "1970-09-22",
   "Primary phone number": "7038675309",
-  "Street address 1": faker.location.streetAddress(),
+  "Street address 1": faker.address.streetAddress(),
   City: "Rockville",
   State: "MD",
   "ZIP code": "12345",

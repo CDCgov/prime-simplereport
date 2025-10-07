@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestPropertySource;
 
+@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueService> {
 
   @Autowired private TestDataFactory _dataFactory;
@@ -74,7 +76,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
     Optional<OrganizationQueueItem> optFetchedQueueItem =
         _service.getUnverifiedQueuedOrganizationByExternalId(editedItem.getExternalId());
-    assertEquals("Edited Org Queue Name", optFetchedQueueItem.get().getOrganizationName());
+    assertEquals(optFetchedQueueItem.get().getOrganizationName(), "Edited Org Queue Name");
   }
 
   @Test
@@ -92,8 +94,8 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     // re-fetch queue item and see changes reflected
     Optional<OrganizationQueueItem> optFetchedQueueItem =
         _service.getUnverifiedQueuedOrganizationByExternalId(createdQueueItem.getExternalId());
-    assertEquals("Sarah", optFetchedQueueItem.get().getRequestData().getFirstName());
-    assertEquals("Samuels", optFetchedQueueItem.get().getRequestData().getLastName());
+    assertEquals(optFetchedQueueItem.get().getRequestData().getFirstName(), "Sarah");
+    assertEquals(optFetchedQueueItem.get().getRequestData().getLastName(), "Samuels");
   }
 
   @Test
@@ -111,8 +113,8 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     // re-fetch queue item and see changes reflected
     Optional<OrganizationQueueItem> optFetchedQueueItem =
         _service.getUnverifiedQueuedOrganizationByExternalId(createdQueueItem.getExternalId());
-    assertEquals("foo@bar.com", optFetchedQueueItem.get().getRequestData().getEmail());
-    assertEquals("123-456-7890", optFetchedQueueItem.get().getRequestData().getWorkPhoneNumber());
+    assertEquals(optFetchedQueueItem.get().getRequestData().getEmail(), "foo@bar.com");
+    assertEquals(optFetchedQueueItem.get().getRequestData().getWorkPhoneNumber(), "123-456-7890");
   }
 
   @Test
@@ -137,7 +139,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
                   editedOrgAdminPhone);
             });
     assertEquals(
-        "Requesting edits on an organization that does not exist.", exception.getMessage());
+        exception.getMessage(), "Requesting edits on an organization that does not exist.");
   }
 
   @Test
@@ -176,17 +178,17 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     OrganizationQueueItem deletedQueueItem =
         _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), true);
 
-    assertThat(deletedQueueItem.getIsDeleted()).isTrue();
+    assertThat(deletedQueueItem.isDeleted()).isTrue();
   }
 
   @Test
   void undeletionQueuedOrg_sucessful() {
     OrganizationQueueItem createdQueueItem = _dataFactory.saveOrganizationQueueItem();
     createdQueueItem.setIsDeleted(true);
-    assertThat(createdQueueItem.getIsDeleted()).isTrue();
+    assertThat(createdQueueItem.isDeleted()).isTrue();
     OrganizationQueueItem undeletedItem =
         _service.markPendingOrganizationAsDeleted(createdQueueItem.getExternalId(), false);
-    assertThat(undeletedItem.getIsDeleted()).isFalse();
+    assertThat(undeletedItem.isDeleted()).isFalse();
   }
 
   @Test

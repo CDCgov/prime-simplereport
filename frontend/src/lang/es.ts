@@ -39,25 +39,6 @@ export const es: LanguageConfig = {
         COVID19: "COVID-19",
         FLUA: "Flu A",
         FLUB: "Flu B",
-        FLUAB: "Flu A y B",
-        RSV: "VRS",
-        HIV: "VIH",
-        SYPHILIS: "Sífilis",
-        HEPATITIS_C: "Hepatitis C",
-        GONORRHEA: "Gonorrea",
-        CHLAMYDIA: "Clamdia",
-      },
-      diseaseResultTitle: {
-        COVID19: "COVID-19 resultado",
-        FLUA: "Flu A resultado",
-        FLUB: "Flu B resultado",
-        FLUAB: "Flu A y B resultado",
-        RSV: "RSV resultado",
-        HIV: "Resultado de la prueba del VIH",
-        SYPHILIS: "Sífilis resultado",
-        HEPATITIS_C: "Hepatitis C resultado",
-        GONORRHEA: "Gonorrea resultado",
-        CHLAMYDIA: "Clamdia resultado",
       },
       role: {
         STAFF: "Personal",
@@ -77,6 +58,8 @@ export const es: LanguageConfig = {
       gender: {
         female: "Femenino",
         male: "Masculino",
+        other: "Persona no binaria",
+        refused: REFUSED,
       },
       ethnicity: {
         hispanic: YES,
@@ -159,12 +142,6 @@ export const es: LanguageConfig = {
         },
         contact: {
           heading: "Información de contacto",
-          phoneHeading: "Teléfono",
-          unknownPhoneNumber: "Se desconoce el número de teléfono",
-          emailHeading: "Correo electrónico",
-          addressHeading: "Dirección",
-          unknownAddress:
-            "Se desconoce la dirección o el/la paciente no tiene hogar",
           helpText:
             "Usted es responsable de ingresar la información de contacto correcta, siguiendo las leyes federales y estatales aplicables.",
           primaryPhoneNumber: "Número de teléfono principal",
@@ -200,6 +177,8 @@ export const es: LanguageConfig = {
           tribalAffiliation: "Afiliación tribal",
           ethnicity: "¿Es usted hispano o latino?",
           gender: "Sexo asignado al nacer",
+          genderHelpText:
+            "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },
         housingAndWork: {
           heading: "Vivienda y trabajo",
@@ -210,11 +189,6 @@ export const es: LanguageConfig = {
               "Por ejemplo: hogar de ancianos, hogar comunitario, prisión, cárcel o recinto militar",
           },
           healthcareWorker: "¿Es usted un trabajador de la salud?",
-        },
-        notes: {
-          heading: "Notas",
-          helpText:
-            "Agregar detalles sobre la ubicación de el/la paciente o información de contacto alternativa.",
         },
         errors: {
           unsaved:
@@ -285,8 +259,11 @@ export const es: LanguageConfig = {
     },
     testResult: {
       title: "Resultado de la prueba",
-      singleResultHeader: "Resultado de la prueba",
-      multipleResultHeader: "Resultados de las pruebas",
+      resultLiteral: "resultado",
+      result: "Resultado de SARS-CoV-2",
+      covidResultHeader: "Resultado de la prueba: COVID-19",
+      multiplexResultHeader:
+        "Resultados de las pruebas: COVID-19 y la influenza",
       downloadResult: "Descargar resultado",
       patient: "Paciente",
       patientDetails: "Detalles del paciente",
@@ -406,60 +383,6 @@ export const es: LanguageConfig = {
           p2: "Para obtener más información, visita <0>Influenza: qué hacer en caso de enfermarse</0> (https://espanol.cdc.gov/flu/treatment/takingcare.htm).",
           highRiskLink: "https://espanol.cdc.gov/flu/highrisk/index.htm",
           treatmentLink: "https://espanol.cdc.gov/flu/treatment/takingcare.htm",
-        },
-      },
-      rsvNotes: {
-        h1: "Para VRS:",
-        positive: {
-          p0: "Por lo general, el virus respiratorio sincitial (VRS o RSV, por sus siglas en inglés) causa síntomas leves similares a los de un resfriado. La mayoría de las personas pueden recuperarse en casa, pero el VRS puede causar enfermedad grave y hospitalización en bebés y personas mayores. Usted puede ayudar a prevenir la propagación del VRS si se queda en casa cuando esté enfermo, evita el contacto cercano con otras personas y se lava las manos con frecuencia.",
-          p1: "Puede tomar medidas para aliviar los síntomas, como beber suficientes líquidos y tomar medicamentos de venta sin receta para controlar el dolor y la fiebre. Si su hijo/a tiene el VRS, hable con su proveedor de atención médica antes de darle medicamentos para el resfriado sin receta.",
-          p2: "Comuníquese con un profesional de atención médica si sus síntomas empeoran, tiene problemas para respirar o está deshidratado. <0>Obtenga más información sobre los síntomas y cuidados de la infección por el VRS en el sitio web de los CDC</0> (espanol.cdc.gov/rsv/about/symptoms.html)",
-          rsvSymptomsLink: "https://espanol.cdc.gov/rsv/about/symptoms.html",
-        },
-      },
-      hivNotes: {
-        h1: "Para el VIH:",
-        all: {
-          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
-          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del VIH.</0> (cdc.gov/hiv/spanish/basics/hiv-testing/positive-hiv-results.html)",
-          positiveHivLink:
-            "https://www.cdc.gov/hiv/spanish/basics/hiv-testing/positive-hiv-results.html",
-        },
-      },
-      syphilisNotes: {
-        h1: "Para sífilis:",
-        positive: {
-          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
-          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del sífilis</0> (cdc.gov/std/treatment-guidelines/syphilis.htm).",
-          treatmentLink:
-            "https://www.cdc.gov/std/treatment-guidelines/syphilis.htm",
-        },
-      },
-      hepatitisCNotes: {
-        h1: "Para Hepatitis C:",
-        positive: {
-          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
-          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo en la prueba del hepatitis C.</0> (cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results).",
-          treatmentLink:
-            "https://www.cdc.gov/hepatitis-c/testing/index.html#cdc_testing_results-testing-results",
-        },
-      },
-      gonorrheaNotes: {
-        h1: "Para Gonorrea:",
-        positive: {
-          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
-          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo de gonorrea.</0> (cdc.gov/gonorrhea/es/about/acerca-de-la-gonorrea.html).",
-          treatmentLink:
-            "https://www.cdc.gov/gonorrhea/es/about/acerca-de-la-gonorrea.html",
-        },
-      },
-      chlamydiaNotes: {
-        h1: "Para Clamidia:",
-        positive: {
-          p0: "Si obtiene un resultado positivo, deberá hacerse una prueba de seguimiento para confirmarlo. La organización que realizó su prueba debería poder contestar las preguntas que tenga y proporcionarle remisiones para una prueba de seguimiento.",
-          p1: "<0>Visite el sitio web de los CDC para obtener más información sobre un resultado positivo de clamidia.</0> (cdc.gov/chlamydia/es/about/acerca-de-las-infecciones-por-clamidia.html).",
-          treatmentLink:
-            "https://www.cdc.gov/chlamydia/es/about/acerca-de-las-infecciones-por-clamidia.html",
         },
       },
       tos: {

@@ -1,10 +1,10 @@
-import { Meta, StoryFn } from "@storybook/react-webpack5";
+import { Meta, StoryFn } from "@storybook/react";
 import { ComponentProps } from "react";
 
 import { ManageSelfRegistrationLinks } from "./ManageSelfRegistrationLinks";
 
 export default {
-  title: "App/Settings/Self-registration",
+  title: "Org Admin/Settings/Self-registration",
   component: ManageSelfRegistrationLinks,
   argTypes: {
     isNewFeature: { control: "boolean" },

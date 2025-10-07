@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +27,6 @@ public class ReminderService {
 
   private final OrganizationQueueRepository _orgQueueRepo;
   private final EmailService _emailService;
-
-  @Value("${simple-report.id-verification-reminders.enabled}")
-  private boolean remindersEnabled;
 
   public ReminderService(OrganizationQueueRepository orgQueueRepo, EmailService emailService) {
     _orgQueueRepo = orgQueueRepo;
@@ -45,12 +42,9 @@ public class ReminderService {
       name = "ReminderService_sendAccountReminderEmails",
       lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT30M")
+  @ConditionalOnProperty("simple-report.id-verification-reminders.enabled")
   public void scheduledSendAccountReminderEmails() {
-    if (remindersEnabled) {
-      sendAccountReminderEmails();
-    } else {
-      log.info("Skipping sending ID verification reminder emails");
-    }
+    sendAccountReminderEmails();
   }
 
   /*

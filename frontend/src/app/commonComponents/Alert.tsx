@@ -34,7 +34,6 @@ interface Props {
   children?: React.ReactNode;
   slim?: boolean;
   className?: string;
-  bodyClassName?: string;
 }
 const Alert = ({
   type,
@@ -44,7 +43,6 @@ const Alert = ({
   children,
   slim,
   className,
-  bodyClassName,
 }: Props) => {
   const classes = classnames(
     "usa-alert",
@@ -52,8 +50,6 @@ const Alert = ({
     slim && "usa-alert--slim",
     className
   );
-
-  const bodyClasses = classnames("usa-alert__body", bodyClassName);
 
   // Decides element's role base on passed props
   const getIdentifiedRole = () => {
@@ -77,7 +73,7 @@ const Alert = ({
       role={getIdentifiedRole()}
       aria-label={title ? `Alert: ${title}` : undefined}
     >
-      <div className={bodyClasses}>
+      <div className="usa-alert__body">
         {title && <div className="usa-alert__heading text-bold">{title}</div>}
         <div id={bodyId} className="usa-alert__text">
           {body || children}

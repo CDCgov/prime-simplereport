@@ -1,13 +1,13 @@
 {
   "id": "9c655bc5-e1a8-4e97-a47d-33e0362c0dc0",
-  "name": "api_v1_users_00ugnh0inq8miBNYg4h6_factors_uftgnld798amf0yk34h6",
+  "name": "api_v1_users_00ugnjag7ekhoymoa4h6_factors_uftgnld798amf0yk34h6",
   "request": {
-    "url": "/api/v1/users/00ugnh0inq8miBNYg4h6/factors/uftgnld798AmF0YK34h6",
+    "url": "/api/v1/users/00ugnjag7EKhOyMoA4h6/factors/uftgnld798AmF0YK34h6",
     "method": "GET"
   },
   "response": {
     "status": 200,
-    "body": "{\"id\":\"uftgnld798AmF0YK34h6\",\"factorType\":\"token:software:totp\",\"provider\":\"GOOGLE\",\"vendorName\":\"GOOGLE\",\"status\":\"PENDING_ACTIVATION\",\"created\":\"2021-07-30T19:23:12.000Z\",\"lastUpdated\":\"2021-07-30T19:23:12.000Z\",\"profile\":{\"credentialId\":\"tester@test.com\"},\"_links\":{\"activate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/uftgnld798AmF0YK34h6/lifecycle/activate\",\"hints\":{\"allow\":[\"POST\"]}},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/factors/uftgnld798AmF0YK34h6\",\"hints\":{\"allow\":[\"GET\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6\",\"hints\":{\"allow\":[\"GET\"]}}}}",
+    "body": "{\"id\":\"uftgnld798AmF0YK34h6\",\"factorType\":\"token:software:totp\",\"provider\":\"GOOGLE\",\"vendorName\":\"GOOGLE\",\"status\":\"PENDING_ACTIVATION\",\"created\":\"2021-07-30T19:23:12.000Z\",\"lastUpdated\":\"2021-07-30T19:23:12.000Z\",\"profile\":{\"credentialId\":\"tester@test.com\"},\"_links\":{\"activate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnjag7EKhOyMoA4h6/factors/uftgnld798AmF0YK34h6/lifecycle/activate\",\"hints\":{\"allow\":[\"POST\"]}},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnjag7EKhOyMoA4h6/factors/uftgnld798AmF0YK34h6\",\"hints\":{\"allow\":[\"GET\"]}},\"user\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnjag7EKhOyMoA4h6\",\"hints\":{\"allow\":[\"GET\"]}}}}",
     "headers": {
       "Date": "Fri, 30 Jul 2021 19:23:45 GMT",
       "Content-Type": "application/json",

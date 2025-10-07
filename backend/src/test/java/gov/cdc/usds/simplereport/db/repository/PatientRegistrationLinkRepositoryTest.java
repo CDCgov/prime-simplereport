@@ -7,10 +7,10 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import jakarta.persistence.PersistenceException;
 import java.util.Optional;
+import javax.persistence.PersistenceException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
@@ -73,6 +73,6 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
               flush();
             });
 
-    assertEquals(PSQLException.class, caught.getCause().getClass());
+    assertEquals(ConstraintViolationException.class, caught.getCause().getClass());
   }
 }

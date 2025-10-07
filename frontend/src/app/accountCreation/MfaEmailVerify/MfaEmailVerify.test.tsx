@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -37,32 +38,32 @@ jest.mock("../AccountCreationApiService", () => ({
 }));
 
 describe("Verify Email MFA", () => {
-  const renderWithUser = () => ({
-    user: userEvent.setup(),
-    ...render(
+  beforeEach(() => {
+    render(
       <MemoryRouter initialEntries={["/mfa-email/verify"]}>
         <Routes>
           <Route path="/mfa-email/verify" element={<MfaEmailVerify />} />
           <Route path="/success" element={<MfaComplete />} />
         </Routes>
       </MemoryRouter>
-    ),
+    );
   });
 
   it("can submit a valid security code", async () => {
-    const { user } = renderWithUser();
     expect(
       screen.getByText(
         "We’ve sent you an email with a one-time security code.",
         { exact: false }
       )
     ).toBeInTheDocument();
-
-    await user.type(
-      screen.getByLabelText("One-time security code", { exact: false }),
-      "123456"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("One-time security code", { exact: false }),
+          "123456"
+        )
     );
-    await user.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Verifying security code …")
     );
@@ -77,19 +78,20 @@ describe("Verify Email MFA", () => {
   });
 
   it("shows an error for an invalid security code", async () => {
-    const { user } = renderWithUser();
     expect(
       screen.getByText(
         "We’ve sent you an email with a one-time security code.",
         { exact: false }
       )
     ).toBeInTheDocument();
-
-    await user.type(
-      screen.getByLabelText("One-time security code", { exact: false }),
-      "999999"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("One-time security code", { exact: false }),
+          "999999"
+        )
     );
-    await user.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Verifying security code …")
     );
@@ -102,8 +104,7 @@ describe("Verify Email MFA", () => {
   });
 
   it("requires a security code to be entered", async () => {
-    const { user } = renderWithUser();
-    await user.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText(

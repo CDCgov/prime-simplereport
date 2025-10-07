@@ -1,5 +1,13 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
-import userEvent, { UserEvent } from "@testing-library/user-event";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 
 import * as clia from "../../utils/clia";
 import * as state from "../../utils/state";
@@ -8,7 +16,6 @@ import SRToastContainer from "../../commonComponents/SRToastContainer";
 import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 import "../../../i18n";
 import { DeviceType } from "../../../generated/graphql";
-import { createMemoryRouterWithDataApis } from "../../utils/reactRouter";
 
 import FacilityForm from "./FacilityForm";
 
@@ -107,19 +114,6 @@ describe("FacilityForm", () => {
   let getBestSuggestionSpy: jest.SpyInstance;
   let suggestionIsCloseEnoughSpy: jest.SpyInstance;
 
-  const renderWithUser = (facility = validFacility) => ({
-    user: userEvent.setup(),
-    ...render(
-      createMemoryRouterWithDataApis(
-        <FacilityForm
-          facility={facility}
-          deviceTypes={devices}
-          saveFacility={saveFacility}
-        />
-      )
-    ),
-  });
-
   beforeEach(() => {
     saveFacility = jest.fn();
     getIsValidZipForStateSpy = jest
@@ -151,7 +145,15 @@ describe("FacilityForm", () => {
 
   describe("form submission", () => {
     it("has a link to return to all facilities page", () => {
-      renderWithUser();
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
       expect(screen.getByText("Back to all facilities")).toBeInTheDocument();
       expect(screen.getByText("Back to all facilities")).toHaveAttribute(
         "href",
@@ -160,25 +162,46 @@ describe("FacilityForm", () => {
     });
 
     it("submits a valid form", async () => {
-      const { user } = renderWithUser();
-      await user.type(
-        screen.getByLabelText("Testing facility name", { exact: false }),
-        "Bar Facility"
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
       );
-      await clickSaveButton(user);
-      await validateAddress(user, saveFacility);
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByLabelText("Testing facility name", { exact: false }),
+            "Bar Facility"
+          )
+      );
+      await clickSaveButton();
+      await validateAddress(saveFacility);
     });
 
     it("provides validation feedback during form completion", async () => {
-      const { user } = renderWithUser();
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
       const facilityNameInput = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
-      await user.clear(facilityNameInput);
-      await clickSaveButton(user);
+      await act(async () => await userEvent.clear(facilityNameInput));
+      await clickSaveButton();
       const nameWarning = await screen.findByText("Facility name is required");
       expect(nameWarning).toBeInTheDocument();
-      await user.type(facilityNameInput, "Test facility A");
+      await act(
+        async () => await userEvent.type(facilityNameInput, "Test facility A")
+      );
 
       const facilityStreetAddressInput = screen.getAllByLabelText(
         "Street address 1",
@@ -186,20 +209,22 @@ describe("FacilityForm", () => {
           exact: false,
         }
       )[0];
-      await user.clear(facilityStreetAddressInput);
-      await clickSaveButton(user);
+      await act(async () => await userEvent.clear(facilityStreetAddressInput));
+      await clickSaveButton();
       const streetAddressWarning = await screen.findByText(
         "Facility street is required"
       );
       expect(streetAddressWarning).toBeInTheDocument();
-
-      await user.type(facilityStreetAddressInput, "123 Main Street");
+      await act(
+        async () =>
+          await userEvent.type(facilityStreetAddressInput, "123 Main Street")
+      );
 
       const facilityZipCodeInput = screen.getAllByLabelText("ZIP code", {
         exact: false,
       })[0];
-      await user.clear(facilityZipCodeInput);
-      await clickSaveButton(user);
+      await act(async () => await userEvent.clear(facilityZipCodeInput));
+      await clickSaveButton();
       const facilityZipCodeWarning = await screen.findByText(
         "Facility ZIP code is required"
       );
@@ -207,24 +232,40 @@ describe("FacilityForm", () => {
     });
 
     it("prevents submit for invalid form", async () => {
-      const { user } = renderWithUser();
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
       const saveButton = await screen.getAllByText("Save changes")[0];
       const facilityNameInput = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
-      await user.clear(facilityNameInput);
-      await user.click(saveButton);
+      await act(async () => await userEvent.clear(facilityNameInput));
+      await act(async () => await userEvent.click(saveButton));
       await waitFor(async () => expect(saveButton).toBeEnabled());
       expect(saveFacility).toBeCalledTimes(0);
     });
 
     it("validates optional email field", async () => {
-      const { user } = renderWithUser();
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
       const emailInput = screen.getByLabelText("Email", {
         exact: false,
       });
-      await user.type(emailInput, "123-456-7890");
-      await clickSaveButton(user);
+      await act(async () => await userEvent.type(emailInput, "123-456-7890"));
+      await clickSaveButton();
 
       expect(
         await screen.findByText("Email is incorrectly formatted", {
@@ -232,21 +273,33 @@ describe("FacilityForm", () => {
         })
       ).toBeInTheDocument();
 
-      await clickSaveButton(user);
+      await clickSaveButton();
       expect(saveFacility).toBeCalledTimes(0);
 
-      await user.type(emailInput, "foofacility@example.com");
-      await clickSaveButton(user);
-      await validateAddress(user, saveFacility);
+      await act(
+        async () => await userEvent.type(emailInput, "foofacility@example.com")
+      );
+      await clickSaveButton();
+      await validateAddress(saveFacility);
     });
 
     it("only accepts live jurisdictions", async () => {
-      const { user } = renderWithUser();
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
       const stateDropdownElement = screen.getByTestId(
         "facility-state-dropdown"
       );
-      await user.selectOptions(stateDropdownElement, "PW");
-      await clickSaveButton(user);
+      await act(
+        async () => await userEvent.selectOptions(stateDropdownElement, "PW")
+      );
+      await clickSaveButton();
       // There's a line break between these two statements, so they have to be separated
       const warning = await screen.findByText(
         "SimpleReport isn’t currently supported in",
@@ -258,13 +311,23 @@ describe("FacilityForm", () => {
     });
 
     it("focuses on error with facility name", async () => {
-      const { user } = renderWithUser();
-      const saveButton = screen.getAllByText("Save changes")[0];
-
-      await user.clear(
-        screen.getByLabelText("Testing facility name", { exact: false })
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
       );
-      await user.click(saveButton);
+      const saveButton = screen.getAllByText("Save changes")[0];
+      await act(
+        async () =>
+          await userEvent.clear(
+            screen.getByLabelText("Testing facility name", { exact: false })
+          )
+      );
+      await act(async () => await userEvent.click(saveButton));
       await waitFor(() =>
         expect(
           screen.getByLabelText("Testing facility name", { exact: false })
@@ -289,14 +352,22 @@ describe("FacilityForm", () => {
       });
 
       it("displays an error if CLIA number is invalid and prevents form submission", async () => {
-        const { user } = renderWithUser();
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
 
-        await user.type(cliaInput, "12F3456789");
-        await clickSaveButton(user);
+        await act(async () => await userEvent.type(cliaInput, "12F3456789"));
+        await clickSaveButton();
 
         expect(
           await screen.findByText(expectedError, {
@@ -320,17 +391,27 @@ describe("FacilityForm", () => {
       });
 
       it("does not validate CLIA numbers in states that do not require it", async () => {
-        const { user } = renderWithUser();
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
-        await user.type(cliaInput, "invalid-clia-number");
-        await user.tab();
+        await act(
+          async () => await userEvent.type(cliaInput, "invalid-clia-number")
+        );
+        await act(async () => await userEvent.tab());
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        await user.click(saveButton);
-        await validateAddress(user, saveFacility);
+        await act(async () => await userEvent.click(saveButton));
+        await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
     });
@@ -350,34 +431,50 @@ describe("FacilityForm", () => {
         const washingtonFacility: Facility = validFacility;
         washingtonFacility.state = "WA";
 
-        const { user } = renderWithUser(washingtonFacility);
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={washingtonFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
 
-        await user.clear(cliaInput);
-        await user.type(cliaInput, "12Z3456789");
-        await user.tab();
+        await act(async () => await userEvent.clear(cliaInput));
+        await act(async () => await userEvent.type(cliaInput, "12Z3456789"));
+        await act(async () => await userEvent.tab());
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        await user.click(saveButton);
-        await validateAddress(user, saveFacility);
+        await act(async () => await userEvent.click(saveButton));
+        await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
 
       it("doesn't allow a Z-CLIA for a non (WA, NM, VT, IL, WY) state", async () => {
         const marylandFacility: Facility = validFacility;
         marylandFacility.state = "MD";
-        const { user } = renderWithUser(marylandFacility);
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={marylandFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
 
-        await user.clear(cliaInput);
-        await user.type(cliaInput, "12Z3456789");
-        await clickSaveButton(user);
+        await act(async () => await userEvent.clear(cliaInput));
+        await act(async () => await userEvent.type(cliaInput, "12Z3456789"));
+        await clickSaveButton();
 
         expect(
           await screen.findByText(expectedError, {
@@ -392,19 +489,27 @@ describe("FacilityForm", () => {
         const californiaFacility: Facility = validFacility;
         californiaFacility.state = "CA";
 
-        const { user } = renderWithUser(californiaFacility);
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={californiaFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
 
-        await user.clear(cliaInput);
-        await user.type(cliaInput, "CPDH000006");
-        await user.tab();
+        await act(async () => await userEvent.clear(cliaInput));
+        await act(async () => await userEvent.type(cliaInput, "CPDH000006"));
+        await act(async () => await userEvent.tab());
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        await user.click(saveButton);
-        await validateAddress(user, saveFacility);
+        await act(async () => await userEvent.click(saveButton));
+        await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
 
@@ -412,19 +517,27 @@ describe("FacilityForm", () => {
         const vermontFacility: Facility = validFacility;
         vermontFacility.state = "VT";
 
-        const { user } = renderWithUser(vermontFacility);
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={vermontFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
 
-        await user.clear(cliaInput);
-        await user.type(cliaInput, "47Z1234567");
-        await user.tab();
+        await act(async () => await userEvent.clear(cliaInput));
+        await act(async () => await userEvent.type(cliaInput, "47Z1234567"));
+        await act(async () => await userEvent.tab());
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        await user.click(saveButton);
-        await validateAddress(user, saveFacility);
+        await act(async () => await userEvent.click(saveButton));
+        await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
 
@@ -432,19 +545,27 @@ describe("FacilityForm", () => {
         const newMexicoFacility: Facility = validFacility;
         newMexicoFacility.state = "NM";
 
-        const { user } = renderWithUser(newMexicoFacility);
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={newMexicoFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
 
-        await user.clear(cliaInput);
-        await user.type(cliaInput, "32Z1234567");
-        await user.tab();
+        await act(async () => await userEvent.clear(cliaInput));
+        await act(async () => await userEvent.type(cliaInput, "32Z1234567"));
+        await act(async () => await userEvent.tab());
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        await user.click(saveButton);
-        await validateAddress(user, saveFacility);
+        await act(async () => await userEvent.click(saveButton));
+        await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
     });
@@ -463,14 +584,22 @@ describe("FacilityForm", () => {
       });
 
       it("displays error message and prevents form submission if required order provider fields not populated", async () => {
-        const { user } = renderWithUser();
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const npiInput = screen.getByLabelText("NPI", {
           exact: false,
         });
 
-        await user.clear(npiInput);
-        await clickSaveButton(user);
+        await act(async () => await userEvent.clear(npiInput));
+        await clickSaveButton();
 
         const expectedError =
           "NPI should be a 10-digit numerical value (##########)";
@@ -483,20 +612,28 @@ describe("FacilityForm", () => {
           })
         ).toBeInTheDocument();
 
-        await clickSaveButton(user);
+        await clickSaveButton();
         expect(saveFacility).toBeCalledTimes(0);
       });
 
       it("requires a valid NPI (digits only)", async () => {
-        const { user } = renderWithUser();
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const npiInput = screen.getByLabelText("NPI", {
           exact: false,
         });
 
-        await user.clear(npiInput);
-        await user.type(npiInput, "Facility name");
-        await clickSaveButton(user);
+        await act(async () => await userEvent.clear(npiInput));
+        await act(async () => await userEvent.type(npiInput, "Facility name"));
+        await clickSaveButton();
 
         const expectedError =
           "NPI should be a 10-digit numerical value (##########)";
@@ -512,23 +649,33 @@ describe("FacilityForm", () => {
       });
 
       it("suggests address validation for ordering provider when address provided", async () => {
-        const { user } = renderWithUser();
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const opStreetInput = screen.getAllByLabelText("Street address 1", {
           exact: false,
         })[1];
-        await user.type(opStreetInput, "432 Green Street");
+        await act(
+          async () => await userEvent.type(opStreetInput, "432 Green Street")
+        );
         const opCityInput = screen.getAllByLabelText("City", {
           exact: false,
         })[1];
-        await user.type(opCityInput, "Englewood");
+        await act(async () => await userEvent.type(opCityInput, "Englewood"));
         const stateDropdownElement = screen.getByTestId("op-state-dropdown");
-        await user.selectOptions(stateDropdownElement, "NJ");
+        fireEvent.change(stateDropdownElement, { target: { value: "NJ" } });
         const opZIPInput = screen.getAllByLabelText("ZIP code", {
           exact: false,
         })[1];
-        await user.type(opZIPInput, "07026");
-        await clickSaveButton(user);
+        await act(async () => await userEvent.type(opZIPInput, "07026"));
+        await clickSaveButton();
         await screen.findByText("Address validation");
         expect(
           screen.getByText(
@@ -554,34 +701,53 @@ describe("FacilityForm", () => {
       });
 
       it("does not validate ordering provider fields", async () => {
-        const { user } = renderWithUser();
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
 
         const npiInput = screen.getByLabelText("NPI", {
           exact: false,
         });
-        await user.clear(npiInput);
-        await user.tab();
+        await act(async () => await userEvent.clear(npiInput));
+        await act(async () => await userEvent.tab());
 
         // The spy function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
 
-        await clickSaveButton(user);
-        await validateAddress(user, saveFacility);
+        await clickSaveButton();
+        await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
     });
   });
 
   describe("Device validation", () => {
+    beforeEach(() => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+    });
+
     it("warns about missing device selection", async () => {
-      const { user } = renderWithUser();
-      await deleteAllDevices(user);
+      await deleteAllDevices();
 
       await screen.findByText("There are currently no devices", {
         exact: false,
       });
 
-      await clickSaveButton(user);
+      await clickSaveButton();
 
       await screen.findByText("There must be at least one device", {
         exact: false,
@@ -589,14 +755,13 @@ describe("FacilityForm", () => {
     });
 
     it("resolves the error when a device is selected", async () => {
-      const { user } = renderWithUser();
-      await deleteAllDevices(user);
+      await deleteAllDevices();
 
       await screen.findByText("There are currently no devices", {
         exact: false,
       });
 
-      await clickSaveButton(user);
+      await clickSaveButton();
 
       await screen.findByText("There must be at least one device", {
         exact: false,
@@ -606,9 +771,13 @@ describe("FacilityForm", () => {
       const deviceInput = screen.getByLabelText(
         "Search for a device to add it"
       );
-      await user.click(deviceInput);
-
-      await user.click(screen.getByLabelText("Select Manufacturer 1 Device 1"));
+      await act(async () => await userEvent.click(deviceInput));
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByLabelText("Select Manufacturer 1 Device 1")
+          )
+      );
 
       // Expect no errors
       expect(
@@ -634,14 +803,24 @@ describe("FacilityForm", () => {
           ...addresses[1].bad,
         },
       };
-      const { user } = renderWithUser(facility);
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={facility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
       const facilityName = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
-      await user.clear(facilityName);
-      await user.type(facilityName, "La Croix Facility");
-      await clickSaveButton(user);
-      await validateAddress(user, saveFacility, "suggested address");
+      await act(async () => await userEvent.clear(facilityName));
+      await act(
+        async () => await userEvent.type(facilityName, "La Croix Facility")
+      );
+      await clickSaveButton();
+      await validateAddress(saveFacility, "suggested address");
       expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
       expect(saveFacility).toBeCalledWith({
         facility: {
@@ -668,25 +847,26 @@ describe("FacilityForm", () => {
       getIsValidZipForStateSpy.mockReturnValueOnce(false);
 
       render(
-        createMemoryRouterWithDataApis(
-          <>
+        <>
+          <MemoryRouter>
             <FacilityForm
               facility={validFacility}
               deviceTypes={devices}
               saveFacility={saveFacility}
             />
-            <SRToastContainer />
-          </>
-        )
+          </MemoryRouter>
+          <SRToastContainer />
+        </>
       );
-      const user = userEvent.setup();
 
       const facilityName = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
-      await user.clear(facilityName);
-      await user.type(facilityName, "La Croix Facility");
-      await clickSaveButton(user);
+      await act(async () => await userEvent.clear(facilityName));
+      await act(
+        async () => await userEvent.type(facilityName, "La Croix Facility")
+      );
+      await clickSaveButton();
 
       await waitFor(() => expect(getIsValidZipForStateSpy).toBeCalledTimes(1));
       // Does not perform further address validation on invalid ZIP code for state
@@ -698,27 +878,26 @@ describe("FacilityForm", () => {
   });
 });
 
-async function deleteAllDevices(user: UserEvent) {
+async function deleteAllDevices() {
   const pillContainer = screen.getByTestId("pill-container");
   const deleteButtons = within(pillContainer).getAllByRole("button");
-  deleteButtons.forEach((button) => user.click(button));
+  deleteButtons.forEach((button) => fireEvent.click(button));
 }
 
-const clickSaveButton = async (user: UserEvent) => {
+const clickSaveButton = async () => {
   const saveButton = await screen.getAllByText("Save changes")[0];
-  await user.click(saveButton);
+  await act(async () => await userEvent.click(saveButton));
 };
 
 async function validateAddress(
-  user: UserEvent,
   saveFacility: (facility: Facility) => void,
   selection: "as entered" | "suggested address" = "as entered"
 ) {
   await screen.findByText("Address validation");
   const radios = screen.getAllByLabelText(selection, { exact: false });
-  await Promise.all(radios.map((r) => user.click(r)));
+  await Promise.all(radios.map((r) => fireEvent.click(r)));
   const button = screen.getAllByText("Save changes")[2];
   expect(button).toBeEnabled();
-  await user.click(button);
+  fireEvent.click(button);
   expect(saveFacility).toBeCalledTimes(1);
 }

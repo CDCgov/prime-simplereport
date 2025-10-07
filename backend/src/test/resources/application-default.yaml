@@ -1,0 +1,279 @@
+spring:
+  profiles.include: no-security,no-okta-mgmt, no-okta-auth, no-experian
+  datasource:
+    simplereport:
+      hikari:
+        jdbc-url: jdbc:postgresql://${test-db-host:localhost}:${test-db-port:5444}/simple_report
+        minimum-idle: 2
+        idle-timeout: 10000
+    metabase:
+      hikari:
+        jdbc-url: jdbc:postgresql://${test-db-host:localhost}:${test-db-port:5444}/metabase
+        idle-timeout: 10000
+        maximum-pool-size: 2
+  liquibase:
+    simplereport:
+      user: simple_report_migrations
+      password: migrations456
+    metabase:
+      user: simple_report_migrations
+      password: migrations456
+      default-schema: public
+  jpa:
+    properties:
+      hibernate:
+        default_schema: simple_report
+okta:
+  client:
+    org-url: http://localhost:8088
+    token: foo
+slack:
+  hook:
+    token: foo
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: liquibase # this causes the liquibase connection pool to keep 10 connections active forever
+        # Excluding it here will probably not work, so let's be clear (and grep-friendly): if you get
+        # "org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserved for non-replication superuser connections"
+        # there is a decent chance that this actuator has been activated and is making liquibase eat your database connections.
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  level:
+    # Always have our own debug logging turned on in tests:
+    gov.cdc.usds: DEBUG
+    # Hibernate SQL query logging: basically the same as hibernate.show_sql but through slf4j
+    org.hibernate.SQL: DEBUG
+    # NOTE: un-comment any of the below to turn on something potentially interesting
+    # Hibernate input and output value logging: SUPER VERBOSE
+    # org.hibernate.type: TRACE
+    # Other possibilities:
+    # com.okta: DEBUG
+    # org.springframework.security: DEBUG
+    # com.zaxxer.hikari: TRACE
+    # com.zaxxer.hikari.HikariConfig: DEBUG
+    org.springframework.web.client.RestTemplate: DEBUG
+simple-report:
+  authorization:
+    environment-name: "UNITTEST"
+  sendgrid:
+    enabled: false
+    from-email: support@simplereport.gov
+    account-request-recipient:
+      - support@simplereport.gov
+    waitlist-recipient:
+      - support@simplereport.gov
+  azure-reporting-queue:
+    exception-webhook-enabled: true
+    exception-webhook-token: WATERMELON
+  batch-size: 10
+  demo-users:
+    site-admin-emails:
+      - ruby@example.com
+      - notruby@example.com
+    # These users are mapped to constants in TestUserIdentities. Do not modify casually!
+    alternate-users:
+      - identity: # STANDARD_USER
+          username: bobbity@example.com
+          first-name: Bobbity
+          middle-name: Bob
+          last-name: Bobberoo
+        authorization: # USER_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, USER
+          facilities:
+            - Injection Site
+      - identity: # org admin
+          username: admin@example.com
+          first-name: Alice
+          last-name: Andrews
+        authorization: # ADMIN_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, ADMIN
+      - identity: # entry-only
+          username: nobody@example.com
+          first-name: Nemo
+          last-name: Nixon
+        authorization: # ENTRY_ONLY_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, ENTRY_ONLY
+          facilities:
+            - Testing Site
+      - identity: # standard user with all-facility access
+          username: allfacilities@example.com
+          first-name: Wendy
+          middle-name: Wanda
+          last-name: Williams
+        authorization: # USER_ALL_FACILITIES_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, USER, ALL_FACILITIES
+      - identity: #SITE_ADMIN_USER
+          username: ruby@example.com
+          first-name: Ruby
+          middle-name: Raven
+          last-name: Reynolds
+      - identity: #SITE_ADMIN_USER_WITH_ORG
+          username: notruby@example.com
+          first-name: Ruby
+          middle-name: Raven
+          last-name: Reynolds
+        authorization: # USER_ALL_FACILITIES_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, ADMIN
+      - identity: # OUTSIDE_ORG_USER
+          username: intruder@pirate.com
+          first-name: Bootstrap
+          middle-name: Bill
+          last-name: Turner
+        authorization:
+          organization-external-id: DAT_ORG
+          granted-roles: NO_ACCESS, USER
+      - identity: # OUTSIDE_ORG_ADMIN
+          username: captain@pirate.com
+          first-name: Jack
+          last-name: Sparrow
+        authorization:
+          organization-external-id: DAT_ORG
+          granted-roles: NO_ACCESS, ADMIN
+      - identity: # BROKEN
+          username: castaway@pirate.com
+          first-name: Candida
+          last-name: Cannotlogin
+simple-report-initialization:
+  organizations:
+    - org-name: Dis Organization
+      org-type: university
+      external-id: DIS_ORG
+      identity-verified: true
+    - org-name: Dat Organization
+      org-type: urgent_care
+      external-id: DAT_ORG
+      identity-verified: true
+  facilities:
+    - name: Injection Site
+      clia-number: "000111222-3"
+      address:
+        street-1: 2797 N Cerrada de Beto
+      organization-external-id: DIS_ORG
+    - name: Testing Site
+      clia-number: "999888777-6"
+      address:
+        street-1: 1001 Rodeo Dr
+        city: Los Angeles
+        state: CA
+        postal-code: 90000
+      email: testingsite@disorg.com
+      organization-external-id: DIS_ORG
+    - name: Uptown Clinic
+      clia-number: "123456789-0"
+      address:
+        street-1: 1400 Lexington Ave
+        city: New York
+        state: NY
+        postal-code: 10128
+      organization-external-id: DAT_ORG
+    - name: Downtown Clinic
+      clia-number: "987654321-0"
+      address:
+        street-1: 5 Bleecker St
+        city: New York
+        state: NY
+        postal-code: 10010
+      email: downtownclinic@dat.org
+      organization-external-id: DAT_ORG
+  provider:
+    first-name: Fred
+    last-name: Flintstone
+    provider-id: PEBBLES
+    telephone: (202) 555-1212
+    address:
+      street-1: 123 Main Street
+      city: Oz
+      state: KS
+      postal-code: "12345"
+  configured-device-types:
+    - LumiraDX
+    - Quidel Sofia 2
+  specimen-types:
+    - name: Swab of the Nose
+      type-code: "445297001"
+      collection-location-name: "NOSE"
+      collection-location-code: "71836000"
+    - name: Whole blood
+      type-code: "258580003"
+    - name: Venous blood specimen
+      type-code: "122555007"
+    - name: Anterior nares swab
+      type-code: "697989009"
+    - name: Swab of the Ear
+      type-code: "445297999"
+      collection-location-name: "EAR"
+      collection-location-code: "71836099"
+  device-types:
+    - name: Abbott IDNow
+      manufacturer: Abbott
+      model: ID Now
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94534-5"
+          supported-disease: "COVID-19"
+          equipment-uid: 00811877010616
+          testkit-name-id: 10811877011269
+          test-ordered-loinc-code: "94534-5"
+    - name: Abbott BinaxNow
+      manufacturer: Abbott
+      model: BinaxNOW COVID-19 Ag Card
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94558-4"
+          supported-disease: "COVID-19"
+          equipment-uid: "No Equipment"
+          testkit-name-id: 10811877011290
+          test-ordered-loinc-code: "94558-4"
+    - name: Quidel Sofia 2
+      manufacturer: Quidel
+      model: Sofia 2 SARS Antigen FIA
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "95209-3"
+          supported-disease: "COVID-19"
+          equipment-uid: "Sofia Instrument_Quidel"
+          testkit-name-id: "Sofia SARS Antigen FIA_Quidel Corporation"
+          test-ordered-loinc-code: "95209-3"
+    - name: BD Veritor
+      manufacturer: Becton, Dickinson and Company (BD)
+      model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94558-4"
+          supported-disease: "COVID-19"
+          equipment-uid: "BD Veritor Plus System_Becton Dickinson"
+          testkit-name-id: "BD Veritor System for Rapid Detection of SARS-CoV-2_Becton, Dickinson and Company (BD)"
+          test-ordered-loinc-code: "94558-4"
+    - name: LumiraDX
+      manufacturer: LumiraDx UK Ltd.
+      model: LumiraDx SARS-CoV-2 Ag Test*
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "95209-3"
+          supported-disease: "COVID-19"
+          equipment-uid: "LumiraDx Platform_LumiraDx"
+          testkit-name-id: "LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd."
+          test-ordered-loinc-code: "95209-3"
+  patient-registration-links:
+    - link: dis-org
+      organization-external-id: DIS_ORG
+    - link: inj3ct
+      facility-name: Injection Site
+datahub:
+  url: http://localhost:9561
+  api-key: "super-secret-api-key"
+  jwt-scope: "simple_report.*.report"
+  fhir-enabled: false

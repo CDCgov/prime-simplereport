@@ -41,7 +41,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
     () => sortOrganizationOptions(props.organizationOptions),
     [props.organizationOptions]
   );
-  let mappedIdFromCurAccessedName = undefined;
+  let mappedIdFromCurAccessedName;
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );

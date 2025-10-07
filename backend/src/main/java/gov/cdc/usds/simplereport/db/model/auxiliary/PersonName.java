@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 
 @Embeddable
 public class PersonName {

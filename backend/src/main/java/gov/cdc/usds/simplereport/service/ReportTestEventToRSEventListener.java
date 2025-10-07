@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -17,9 +18,14 @@ record ReportTestEventToRSEvent(TestEvent testEvent) {}
 @Component
 @RequiredArgsConstructor
 public class ReportTestEventToRSEventListener {
+  @Qualifier("csvQueueReportingService")
+  private final TestEventReportingService testEventReportingService;
 
   @Qualifier("fhirQueueReportingService")
   private final TestEventReportingService fhirQueueReportingService;
+
+  @Value("${simple-report.fhir-reporting-enabled:false}")
+  private boolean fhirReportingEnabled;
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
   public void handleEvent(ReportTestEventToRSEvent event) {
@@ -27,6 +33,12 @@ public class ReportTestEventToRSEventListener {
   }
 
   private void reportTestEventToRS(TestEvent savedEvent) {
-    fhirQueueReportingService.report(savedEvent);
+    if (savedEvent.hasCovidResult()) {
+      testEventReportingService.report(savedEvent);
+    }
+
+    if (savedEvent.hasFluResult() && fhirReportingEnabled) {
+      fhirQueueReportingService.report(savedEvent);
+    }
   }
 }

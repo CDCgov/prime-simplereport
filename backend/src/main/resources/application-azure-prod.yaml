@@ -1,3 +1,5 @@
+spring:
+  profiles.include: okta-prod
 simple-report:
   azure-reporting-queue:
     enabled: true
@@ -17,20 +19,9 @@ simple-report:
       - https://simplereport.gov
   experian:
     enabled: true
-  support-escalation:
-    enabled: true
-  production:
-    device-sync-enabled: false
-  aims-processing-mode-code: P
 twilio:
   enabled: true
   from-number: "+14045312484"
 features:
-  oktaMigrationEnabled: false
-  chlamydiaEnabled: false
-  gonorrheaEnabled: false
-  hepatitisCEnabled: false
-  syphilisEnabled: false
   hivEnabled: false
-  universalReportingEnabled: false
-  aimsReportingEnabled: false
+  rsvEnabled: false

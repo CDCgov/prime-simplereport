@@ -1,11 +1,5 @@
 package gov.cdc.usds.simplereport.api;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.INVALID_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NEGATIVE_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
-
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -31,7 +25,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
@@ -182,8 +175,8 @@ public class Translators {
     return emails.stream().map(Translators::parseEmail).collect(Collectors.toList());
   }
 
-  public static final String REFUSED = "refused";
-  public static final String OTHER = "other";
+  private static final String REFUSED = "refused";
+  private static final String OTHER = "other";
   private static final Map<String, String> RACES =
       Map.of(
           "american indian or alaskan native",
@@ -266,9 +259,7 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(ta, TRIBAL_AFFILIATIONS);
   }
 
-  public static final String MALE = "male";
-  public static final String FEMALE = "female";
-  private static final Set<String> GENDERS = Set.of(MALE, FEMALE, OTHER, REFUSED);
+  private static final Set<String> GENDERS = Set.of("male", "female", OTHER, REFUSED);
 
   public static String parseGender(String g) {
     String gender = parseString(g);
@@ -281,29 +272,6 @@ public class Translators {
     }
     throw new IllegalGraphqlArgumentException(
         "\"" + g + "\" must be one of [" + String.join(", ", GENDERS) + "].");
-  }
-
-  public static final String NON_BINARY = "nonbinary";
-  public static final String TRANS_MAN = "transman";
-  public static final String TRANS_WOMAN = "transwoman";
-  public static final Set<String> GENDER_IDENTITIES =
-      Set.of(FEMALE, MALE, TRANS_WOMAN, TRANS_MAN, NON_BINARY, OTHER, REFUSED);
-
-  public static String parseGenderIdentity(String genderIdentityInput) {
-    String genderIdentity = parseString(genderIdentityInput);
-    if (genderIdentity == null) {
-      return null;
-    }
-    genderIdentity = genderIdentity.toLowerCase();
-    if (GENDER_IDENTITIES.contains(genderIdentity)) {
-      return genderIdentity;
-    }
-    throw new IllegalGraphqlArgumentException(
-        "\""
-            + genderIdentityInput
-            + "\" must be one of ["
-            + String.join(", ", GENDER_IDENTITIES)
-            + "].");
   }
 
   public static TestResult parseTestResult(String r) {
@@ -385,55 +353,7 @@ public class Translators {
     throw IllegalGraphqlArgumentException.invalidInput(s, "state");
   }
 
-  private static final Map<String, String> RESPIRATORY_SYMPTOMS =
-      Map.ofEntries(
-          Map.entry("426000000", "Fever over 100.4F"),
-          Map.entry("103001002", "Feeling feverish"),
-          Map.entry("43724002", "Chills"),
-          Map.entry("49727002", "Cough"),
-          Map.entry("267036007", "Shortness of breath"),
-          Map.entry("230145002", "Difficulty breathing"),
-          Map.entry("84229001", "Fatigue"),
-          Map.entry("68962001", "Muscle or body aches"),
-          Map.entry("25064002", "Headache"),
-          Map.entry("36955009", "New loss of taste"),
-          Map.entry("44169009", "New loss of smell"),
-          Map.entry("162397003", "Sore throat"),
-          Map.entry("68235000", "Nasal congestion"),
-          Map.entry("64531003", "Runny nose"),
-          Map.entry("422587007", "Nausea"),
-          Map.entry("422400008", "Vomiting"),
-          Map.entry("62315008", "Diarrhea"),
-          Map.entry("261665006", "Other symptom not listed"));
-
-  private static final Map<String, String> SYPHILIS_SYMPTOMS =
-      Map.ofEntries(
-          Map.entry("724386005", "Genital sore/lesion"),
-          Map.entry("195469007", "Anal sore/lesion"),
-          Map.entry("26284000", "Sore(s) in mouth/lips"),
-          Map.entry("266128007", "Body Rash"),
-          Map.entry("56940005", "Palmar (hand)/plantar (foot) rash"),
-          Map.entry("91554004", "Flat white warts"),
-          Map.entry("15188001", "Hearing loss"),
-          Map.entry("246636008", "Blurred vision"),
-          Map.entry("56317004", "Alopecia"));
-
-  private static Map<String, String> getSupportedSymptoms() {
-    Map<String, String> supportedSymptoms = new HashMap<>();
-    supportedSymptoms.putAll(RESPIRATORY_SYMPTOMS);
-    supportedSymptoms.putAll(SYPHILIS_SYMPTOMS);
-    return supportedSymptoms;
-  }
-
-  public static String getSymptomName(String snomedCode) {
-    Map<String, String> supportedSymptoms = getSupportedSymptoms();
-    return supportedSymptoms.get(snomedCode);
-  }
-
   public static Map<String, Boolean> parseSymptoms(String symptoms) {
-    if (symptoms == null) {
-      return Collections.emptyMap();
-    }
     Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
     JSONObject symptomsJSONObject = new JSONObject(symptoms);
     Iterator<?> keys = symptomsJSONObject.keys();
@@ -493,66 +413,12 @@ public class Translators {
           Map.entry(OTHER, "Other"));
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
 
-  public static final Map<String, SnomedConceptRecord> ABNORMAL_SNOMEDS =
-      Map.ofEntries(
-          Map.entry(
-              DETECTED_SNOMED,
-              new SnomedConceptRecord("Detected", DETECTED_SNOMED, TestResult.POSITIVE)),
-          Map.entry(
-              "720735008",
-              new SnomedConceptRecord("Presumptive positive", "720735008", TestResult.POSITIVE)),
-          Map.entry(
-              POSITIVE_SNOMED,
-              new SnomedConceptRecord("Positive", POSITIVE_SNOMED, TestResult.POSITIVE)),
-          Map.entry(
-              "11214006", new SnomedConceptRecord("Reactive", "11214006", TestResult.POSITIVE)));
-
-  public static final Map<String, SnomedConceptRecord> NORMAL_SNOMEDS =
-      Map.ofEntries(
-          Map.entry(
-              NOT_DETECTED_SNOMED,
-              new SnomedConceptRecord("Not detected", NOT_DETECTED_SNOMED, TestResult.NEGATIVE)),
-          Map.entry(
-              NEGATIVE_SNOMED,
-              new SnomedConceptRecord("Negative", NEGATIVE_SNOMED, TestResult.NEGATIVE)),
-          Map.entry(
-              "895231008",
-              new SnomedConceptRecord(
-                  "Not detected in pooled specimen", "895231008", TestResult.NEGATIVE)),
-          Map.entry(
-              "131194007",
-              new SnomedConceptRecord("Non-Reactive", "131194007", TestResult.NEGATIVE)),
-          // certain UNDETERMINED codes are also flagged as normal
-          // https://github.com/CDCgov/prime-reportstream/blob/1ffae4ca0b04cd0aa9f169e26813ecd86df71bb5/prime-router/src/main/kotlin/metadata/Mappers.kt#L768
-          Map.entry(
-              "419984006",
-              new SnomedConceptRecord("Inconclusive", "419984006", TestResult.UNDETERMINED)),
-          Map.entry(
-              "42425007",
-              new SnomedConceptRecord("Equivocal", "42425007", TestResult.UNDETERMINED)),
-          Map.entry(
-              "82334004",
-              new SnomedConceptRecord("Indeterminate", "82334004", TestResult.UNDETERMINED)),
-          Map.entry(
-              "373121007",
-              new SnomedConceptRecord("Test not done", "373121007", TestResult.UNDETERMINED)),
-          Map.entry(
-              INVALID_SNOMED,
-              new SnomedConceptRecord("Invalid result", INVALID_SNOMED, TestResult.UNDETERMINED)),
-          Map.entry(
-              "125154007",
-              new SnomedConceptRecord(
-                  "Specimen unsatisfactory for evaluation", "125154007", TestResult.UNDETERMINED)));
-  public static final Map<String, SnomedConceptRecord> ALL_ACCEPTED_RESULT_SNOMED_RECORDS =
-      Stream.concat(ABNORMAL_SNOMEDS.entrySet().stream(), NORMAL_SNOMEDS.entrySet().stream())
-          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
   public static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =
-      ABNORMAL_SNOMEDS.get(DETECTED_SNOMED);
+      new SnomedConceptRecord("Detected", "260373001", TestResult.POSITIVE);
   private static final SnomedConceptRecord NOT_DETECTED_SNOMED_CONCEPT =
-      NORMAL_SNOMEDS.get(NOT_DETECTED_SNOMED);
+      new SnomedConceptRecord("Not detected", "260415000", TestResult.NEGATIVE);
   private static final SnomedConceptRecord INVALID_SNOMED_CONCEPT =
-      NORMAL_SNOMEDS.get(INVALID_SNOMED);
+      new SnomedConceptRecord("Invalid result", "455371000124106", TestResult.UNDETERMINED);
   private static final List<SnomedConceptRecord> RESULTS_SNOMED_CONCEPTS =
       List.of(DETECTED_SNOMED_CONCEPT, NOT_DETECTED_SNOMED_CONCEPT, INVALID_SNOMED_CONCEPT);
 
@@ -575,6 +441,15 @@ public class Translators {
     }
   }
 
+  public static TestResult convertSnomedToResult(String snomed) {
+    SnomedConceptRecord concept =
+        RESULTS_SNOMED_CONCEPTS.stream()
+            .filter(snomedConcept -> snomed.equals(snomedConcept.code()))
+            .findFirst()
+            .orElse(INVALID_SNOMED_CONCEPT);
+    return concept.displayName();
+  }
+
   public static String convertTestResultToSnomed(TestResult result) {
     SnomedConceptRecord concept =
         RESULTS_SNOMED_CONCEPTS.stream()
@@ -584,10 +459,12 @@ public class Translators {
     return concept.code();
   }
 
-  public static SnomedConceptRecord getSnomedConceptByCode(String snomedCode) {
-    return ALL_ACCEPTED_RESULT_SNOMED_RECORDS.values().stream()
-        .filter(snomedConcept -> snomedCode.equals(snomedConcept.code()))
-        .findFirst()
-        .orElse(null);
+  public static String convertConceptCodeToConceptName(String snomedCode) {
+    SnomedConceptRecord concept =
+        RESULTS_SNOMED_CONCEPTS.stream()
+            .filter(snomedConcept -> snomedCode.equals(snomedConcept.code()))
+            .findFirst()
+            .orElse(INVALID_SNOMED_CONCEPT);
+    return concept.name();
   }
 }

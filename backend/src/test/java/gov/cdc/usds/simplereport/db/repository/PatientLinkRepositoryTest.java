@@ -62,10 +62,9 @@ class PatientLinkRepositoryTest extends BaseRepositoryTest {
                 testOrderNoPatientLink.getInternalId()));
 
     // THEN
-    assertThat(found)
-        .hasSize(2)
-        .contains(testOrder1MostRecentPatientLink, testOrder2MostRecentPatientLink)
-        .doesNotContain(testOrder1OlderPatientLink, testOrder2OlderPatientLink);
+    assertThat(found).hasSize(2);
+    assertThat(found).contains(testOrder1MostRecentPatientLink, testOrder2MostRecentPatientLink);
+    assertThat(found).doesNotContain(testOrder1OlderPatientLink, testOrder2OlderPatientLink);
   }
 
   private void mockCreationTime(String date) {

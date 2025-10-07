@@ -23,6 +23,7 @@ export const headers = { ...baseHeaders, ...instrumentationHeaders };
 function joinAbsoluteUrlPath(...args: string[]) {
   return args.map((pathPart) => pathPart.replace(/(^\/|\/$)/g, "")).join("/");
 }
+
 class FetchClient {
   basePath: string | undefined;
   defaultOptions: RequestInit | undefined;
@@ -33,17 +34,17 @@ class FetchClient {
   }
 
   getURL = (path: string) => {
-    if (!process.env.REACT_APP_BACKEND_URL) {
-      throw Error("process.env.REACT_APP_BACKEND_URL is falsy");
+    if (!import.meta.env.VITE_BACKEND_URL) {
+      throw "VITE_BACKEND_URL variable has not been set.";
     }
     return new URL(
       this.basePath
         ? joinAbsoluteUrlPath(
-            process.env.REACT_APP_BACKEND_URL,
+            import.meta.env.VITE_BACKEND_URL,
             this.basePath,
             path
           )
-        : joinAbsoluteUrlPath(process.env.REACT_APP_BACKEND_URL, path)
+        : joinAbsoluteUrlPath(import.meta.env.VITE_BACKEND_URL, path)
     ).href;
   };
 

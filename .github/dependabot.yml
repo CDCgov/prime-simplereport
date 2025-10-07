@@ -1,12 +1,7 @@
+# Issue to track batching updates feature: https://github.com/github/roadmap/issues/148
+
 version: 2
 updates:
-
-  - package-ecosystem: "docker"
-    directory: "/"
-    open-pull-requests-limit: 2
-    schedule:
-      interval: "weekly"
-      day: "sunday"
 
   - package-ecosystem: "docker"
     directory: "/backend"
@@ -14,6 +9,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
 
   - package-ecosystem: "docker"
     directory: "/backend/db-setup"
@@ -21,6 +20,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
 
   - package-ecosystem: "docker"
     directory: "/cypress"
@@ -28,6 +31,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
 
   - package-ecosystem: "docker"
     directory: "/frontend"
@@ -35,6 +42,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
 
   - package-ecosystem: "docker"
     directory: "/nginx"
@@ -42,6 +53,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
 
   - package-ecosystem: "docker"
     directory: "/ops/services/container_instances/db_client/image"
@@ -49,13 +64,22 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
 
   - package-ecosystem: "github-actions"
+    # this checks the .github/workflows directory by default
+    # any other directory for github-actions seems broken at the moment
     directory: "/"
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
 
   - package-ecosystem: "gradle"
     directory: "/backend"
@@ -63,6 +87,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -70,41 +98,32 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
+      
   - package-ecosystem: "npm"
     directory: "/frontend"
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
       day: "sunday"
-    groups:
-      eslint:
-        patterns:
-        - "eslint*"
-      graphql:
-        patterns:
-        - "@graphql*"
-      jest:
-        patterns:
-        - "jest*"
-      storybook:
-        patterns:
-        - "@storybook*"
-        - "storybook*"
-        - "msw-storybook-addon"
-      types:
-        patterns:
-        - "@types/*"
-      typescript-eslint:
-        patterns:
-        - "@typescript-eslint*"
-
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
+      
   - package-ecosystem: "npm"
     directory: "/cypress"
     open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
 
   - package-ecosystem: "npm"
     directory: "/ops/services/app_functions/report_stream_batched_publisher/functions"
@@ -112,13 +131,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
-
-  - package-ecosystem: "npm"
-    directory: "/ops/services/app_functions/test_data_publisher/functions"
-    open-pull-requests-limit: 2
-    schedule:
-      interval: "weekly"
-      day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
 
   - package-ecosystem: "terraform"
     directory: "/ops/global"
@@ -126,6 +142,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
 
   - package-ecosystem: "terraform"
     directory: "/ops/services/okta-global"
@@ -133,6 +152,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
 
   - package-ecosystem: "terraform"
     directory: "/ops/test"
@@ -140,6 +162,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
 
   - package-ecosystem: "terraform"
     directory: "/ops/test/persistent"
@@ -147,3 +172,6 @@ updates:
     schedule:
       interval: "weekly"
       day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"

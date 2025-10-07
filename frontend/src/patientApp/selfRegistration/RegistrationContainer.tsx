@@ -9,11 +9,11 @@ type Props = {
   children: React.ReactNode;
 };
 
-export const RegistrationContainer: React.FC<Props> = ({
+export const RegistrationContainer = ({
   children,
   registrationLink,
   setEntityName,
-}) => {
+}: Props): JSX.Element => {
   const [isLinkValid, setIsLinkValid] = useState<boolean>();
 
   useEffect(() => {

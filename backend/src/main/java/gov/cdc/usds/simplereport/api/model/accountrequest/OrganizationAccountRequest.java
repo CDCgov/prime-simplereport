@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.api.model.accountrequest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
-import jakarta.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -15,16 +15,15 @@ import graphql.ExecutionResult;
 import graphql.GraphQLContext;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
+import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
-import graphql.execution.instrumentation.SimplePerformantInstrumentation;
-import graphql.execution.instrumentation.parameters.InstrumentationCreateStateParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -32,11 +31,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class AuditLoggingInstrumentation extends SimplePerformantInstrumentation {
+public class AuditLoggingInstrumentation extends SimpleInstrumentation {
   private final AuditService _auditService;
 
   @Override
-  public InstrumentationState createState(InstrumentationCreateStateParameters parameters) {
+  public InstrumentationState createState() {
     GraphqlQueryState state = new GraphqlQueryState();
     log.trace("Creating state={} for audit", state);
     return state;
@@ -45,13 +44,13 @@ public class AuditLoggingInstrumentation extends SimplePerformantInstrumentation
   @Override
   @SuppressWarnings("checkstyle:IllegalCatch")
   public InstrumentationContext<ExecutionResult> beginExecution(
-      InstrumentationExecutionParameters parameters, InstrumentationState instrumentationState) {
+      InstrumentationExecutionParameters parameters) {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
     log.trace("Instrumenting query executionId={} for audit", executionId);
     try {
       GraphQLContext graphQLContext = parameters.getGraphQLContext();
       Subject subject = graphQLContext.get(SUBJECT_KEY);
-      GraphqlQueryState state = (GraphqlQueryState) instrumentationState;
+      GraphqlQueryState state = parameters.getInstrumentationState();
       state.setRequestId(executionId);
 
       HttpServletRequest httpServletRequest = graphQLContext.get(HTTP_SERVLET_REQUEST_KEY);

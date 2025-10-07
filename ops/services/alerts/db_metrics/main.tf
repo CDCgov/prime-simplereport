@@ -19,13 +19,7 @@ resource "azurerm_monitor_metric_alert" "db_storage" {
   dynamic "action" {
     for_each = var.action_group_ids
     content {
-      action_group_id    = action.value
-      webhook_properties = var.wiki_docs_json
+      action_group_id = action.value
     }
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
   }
 }

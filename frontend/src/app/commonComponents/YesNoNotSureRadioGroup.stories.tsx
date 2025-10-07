@@ -1,9 +1,9 @@
-import { StoryFn, Meta } from "@storybook/react-webpack5";
+import { StoryFn, Meta } from "@storybook/react";
 
 import YesNoNotSureRadioGroup from "./YesNoNotSureRadioGroup";
 
 export default {
-  title: "Components/Form controls/Yes, No, Not Sure Radio Group",
+  title: "Components/Yes, No, Not Sure Radio Group",
   component: YesNoNotSureRadioGroup,
   argTypes: {},
   args: {

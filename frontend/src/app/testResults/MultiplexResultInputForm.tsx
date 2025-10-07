@@ -4,10 +4,10 @@ import classNames from "classnames";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
+import { findResultByDiseaseName } from "../testQueue/QueueItem";
 import { TextWithTooltip } from "../commonComponents/TextWithTooltip";
 import Checkboxes from "../commonComponents/Checkboxes";
 import { MultiplexResultInput } from "../../generated/graphql";
-import { getResultByDiseaseName } from "../utils/testResults";
 
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
 
@@ -33,18 +33,21 @@ const convertFromMultiplexResultInputs = (
   diseaseResults: MultiplexResultInput[]
 ): MultiplexResultState => {
   const multiplexResult: MultiplexResultState = {
-    covid: getResultByDiseaseName(
-      diseaseResults ?? [],
-      MULTIPLEX_DISEASES.COVID_19
-    ) as TestResult,
-    fluA: getResultByDiseaseName(
-      diseaseResults ?? [],
-      MULTIPLEX_DISEASES.FLU_A
-    ) as TestResult,
-    fluB: getResultByDiseaseName(
-      diseaseResults ?? [],
-      MULTIPLEX_DISEASES.FLU_B
-    ) as TestResult,
+    covid:
+      (findResultByDiseaseName(
+        diseaseResults ?? [],
+        MULTIPLEX_DISEASES.COVID_19
+      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
+    fluA:
+      (findResultByDiseaseName(
+        diseaseResults ?? [],
+        MULTIPLEX_DISEASES.FLU_A
+      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
+    fluB:
+      (findResultByDiseaseName(
+        diseaseResults ?? [],
+        MULTIPLEX_DISEASES.FLU_B
+      ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
   };
 
   return multiplexResult;
@@ -218,7 +221,10 @@ const MultiplexResultInputForm: React.FC<Props> = ({
     <form className="usa-form maxw-none multiplex-result-form">
       <div className="grid-row grid-gap-2">
         {!isFluOnly && (
-          <div className="grid-col-4">
+          <div
+            className="grid-col-4"
+            data-testid={`covid-test-result-${queueItemId}`}
+          >
             <h2 className="prime-radio__title">COVID-19</h2>
             <RadioGroup
               legend="COVID-19 result"

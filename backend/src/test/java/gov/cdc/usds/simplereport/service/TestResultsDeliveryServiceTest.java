@@ -173,7 +173,7 @@ class TestResultsDeliveryServiceTest {
     // THEN
     assertThat(success).isTrue();
     String message =
-        "Your test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
+        "Your COVID-19 test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
             + patientLinkId;
     verify(smsService).sendToPatientLink(patientLink, message);
   }
@@ -193,7 +193,7 @@ class TestResultsDeliveryServiceTest {
     // THEN
     assertThat(success).isTrue();
     String message =
-        "Your test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
+        "Your COVID-19 test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
             + uuid;
     verify(smsService).sendToPatientLink(patientLink, message);
   }
@@ -216,7 +216,7 @@ class TestResultsDeliveryServiceTest {
     // THEN
     assertThat(success).isFalse();
     String message =
-        "Your test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
+        "Your COVID-19 test result is ready to view. This link will expire after 2 days: https://simplereport.gov/pxp?plid="
             + uuid;
     verify(smsService).sendToPatientLink(patientLink, message);
   }

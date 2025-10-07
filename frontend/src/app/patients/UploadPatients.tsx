@@ -21,7 +21,7 @@ import { getFacilityIdFromUrl } from "../utils/url";
 import { maskPatientUploadValidationError } from "../utils/dataMasking";
 import {
   MAX_CSV_UPLOAD_BYTES,
-  MAX_CSV_PATIENT_UPLOAD_ROW_COUNT,
+  MAX_CSV_UPLOAD_ROW_COUNT,
 } from "../../config/constants";
 
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
@@ -190,7 +190,6 @@ const UploadPatients = () => {
     return async (event: React.ChangeEvent<HTMLInputElement>) => {
       try {
         if (!event?.currentTarget?.files?.length) {
-          setButtonIsDisabled(true);
           return; //no files
         }
         const currentFile = event.currentTarget.files.item(0);
@@ -253,7 +252,7 @@ const UploadPatients = () => {
       }
 
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
-      if (lineCount > MAX_CSV_PATIENT_UPLOAD_ROW_COUNT) {
+      if (lineCount > MAX_CSV_UPLOAD_ROW_COUNT) {
         setStatus("fail");
         setErrorMessage({
           header: "Error: File too large",
@@ -261,7 +260,7 @@ const UploadPatients = () => {
             <>
               {file.name} has too many rows for SimpleReport to process. Please
               limit each upload to less than{" "}
-              {MAX_CSV_PATIENT_UPLOAD_ROW_COUNT.toLocaleString()} rows.
+              {MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.
             </>
           ),
           includeGuide: false,

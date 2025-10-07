@@ -56,13 +56,7 @@ requests
   }
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
+    action_group = var.action_group_ids
   }
 }
 
@@ -92,49 +86,7 @@ requests
   }
 
   action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
-  }
-}
-
-resource "azurerm_monitor_scheduled_query_rules_alert" "send_to_aims_function_not_triggering" {
-  name                = "${var.env}-send-to-aims-function-not-triggering"
-  description         = "AIMS Uploader is not triggering on schedule"
-  location            = data.azurerm_resource_group.app.location
-  resource_group_name = var.rg_name
-  severity            = 4
-  frequency           = 60
-  time_window         = 1440
-  enabled             = contains(var.disabled_alerts, "send_to_aims_function_not_triggering") ? false : true
-
-  data_source_id = var.app_insights_id
-
-  auto_mitigation_enabled = true
-
-  query = <<-QUERY
-requests
-| where timestamp >= ago(1d)
-    and operation_Name =~ 'SendToAIMS'
-  QUERY
-
-  trigger {
-    operator  = "Equal"
-    threshold = 0
-  }
-
-  action {
-    action_group           = var.action_group_ids
-    custom_webhook_payload = var.wiki_docs_text
-  }
-  lifecycle {
-    ignore_changes = [
-      tags
-    ]
+    action_group = var.action_group_ids
   }
 }
 

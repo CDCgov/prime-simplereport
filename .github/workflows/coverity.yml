@@ -17,7 +17,7 @@ on:
 env:
   JAVA_VERSION: 17
   JAVA_DISTRIBUTION: 'zulu'
-  NODE_VERSION: 23
+  NODE_VERSION: 18
 
 defaults:
   run:
@@ -28,12 +28,12 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3.7.0
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
-        uses: actions/cache@v4
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./frontend/node_modules
@@ -42,12 +42,12 @@ jobs:
         run: yarn install
         working-directory: ./frontend
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ~/.gradle/caches

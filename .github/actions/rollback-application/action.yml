@@ -1,0 +1,17 @@
+name: Roll Back SimpleReport Application
+description: Roll back API to secondary slot version (i.e. the previous deploy)
+inputs:
+  deploy-env:
+    description: The environment being deployed (e.g. "prod" or "test")
+    required: true
+runs:
+  using: composite
+  steps:
+      - name: Roll back to previous release
+        shell: bash
+        working-directory: ./ops
+        run: |
+          echo "::group::Roll back API to previous release and verify readiness"
+          make promote-${{ env.DEPLOY_ENV }}
+          make check-${{ env.DEPLOY_ENV }}-readiness
+          echo "::endgroup::"

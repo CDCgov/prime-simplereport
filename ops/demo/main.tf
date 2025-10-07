@@ -1,13 +1,12 @@
 locals {
-  project          = "prime"
-  name             = "simple-report"
-  env              = "demo"
-  env_level        = "demo"
-  token_env_suffix = "test"
+  project   = "prime"
+  name      = "simple-report"
+  env       = "demo"
+  env_level = "demo"
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
-    resource_group = data.azurerm_resource_group.rg.name
+    resource_group = "${local.project}-${local.name}-${local.env}"
   }
 }
 

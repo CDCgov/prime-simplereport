@@ -32,48 +32,9 @@ exports[`ManageUsersContainer loads the component and displays users successfull
           >
             Users
           </h2>
-          <div
-            class="prime-search-container padding-right-2"
-          >
-            <form
-              class="usa-search usa-search--small prime-search-input display-inline-block"
-              role="search"
-            >
-              <label
-                class="usa-sr-only"
-                for="search-field-small"
-              >
-                Search by name
-              </label>
-              <div>
-                <input
-                  autocomplete="off"
-                  class="usa-input"
-                  id="search-field-small"
-                  name="search"
-                  placeholder="Search by name"
-                  style="border-right: 1px solid;"
-                  type="search"
-                  value=""
-                />
-                <button
-                  class="usa-button"
-                  disabled=""
-                  style="display: none;"
-                  type="submit"
-                >
-                  <img
-                    alt="Search"
-                    class="usa-search__submit-icon"
-                    src="search--white.svg"
-                  />
-                </button>
-              </div>
-            </form>
-          </div>
           <nav
             aria-label="Tertiary navigation"
-            class="prime-secondary-nav maxh-tablet-lg"
+            class="prime-secondary-nav"
           >
             <div
               aria-owns="user-tab-3a4a221d-a8ca-42b3-aa03-37b93266025b user-tab-1029653e-24d9-428e-83b0-468319948902 user-tab-17656bad-08b6-4fd4-bb9a-ccac54e5ea0a user-tab-60bb9e3a-fe8a-4b81-b894-b01649c95e70 user-tab-0d3fa224-3d56-4382-b89c-9d8e415e59b3 user-tab-17656bad-07b6-4fd4-bb9a-ccbc54e5ea0a"
@@ -233,12 +194,15 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               />
             </div>
           </div>
+          <div
+            class="user-header grid-row flex-row flex-align-center"
+          />
           <nav
             aria-label="User action navigation"
             class="prime-secondary-nav margin-top-4 padding-bottom-0"
           >
             <div
-              aria-owns="userinformation-tab facility-access-tab-id"
+              aria-owns="user-information-tab-id facility-access-tab-id"
               class="usa-nav__secondary-links prime-nav usa-list"
               role="tablist"
             >
@@ -248,7 +212,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
                 <button
                   aria-selected="true"
                   class="usa-button--unstyled text-ink text-no-underline"
-                  id="userinformation-tab"
+                  id="user-information-tab-id"
                   role="tab"
                 >
                   User information
@@ -269,7 +233,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
             </div>
           </nav>
           <div
-            aria-labelledby="userinformation-tab"
+            aria-labelledby="user-information-tab-id"
             class="padding-left-1"
             role="tabpanel"
           >
@@ -325,7 +289,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               </button>
             </div>
             <div
-              class="sr-separator-line margin-left-neg-4 margin-right-neg-2"
+              class="userinfo-divider"
             />
             <h3
               class="user-controls-header"
@@ -407,29 +371,6 @@ exports[`ManageUsersContainer loads the component and displays users successfull
             </div>
           </div>
         </div>
-      </div>
-      <div
-        class="grid-row"
-      >
-        <nav
-          aria-label="Pagination"
-          class="usa-pagination"
-          role="navigation"
-        >
-          <ol>
-            <li>
-              <a
-                aria-label="Page 1"
-                class="is-active"
-                href="/settings/users/1"
-              >
-                <span>
-                  1
-                </span>
-              </a>
-            </li>
-          </ol>
-        </nav>
       </div>
     </div>
   </div>

@@ -16,7 +16,6 @@ public class ConvertToPatientProps {
   private List<PhoneNumber> phoneNumbers;
   private List<String> emails;
   private String gender;
-  private String genderIdentity;
   private LocalDate dob;
   private StreetAddress address;
   private String country;

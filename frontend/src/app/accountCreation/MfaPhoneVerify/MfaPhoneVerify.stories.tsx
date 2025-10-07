@@ -1,4 +1,4 @@
-import { StoryFn, Meta } from "@storybook/react-webpack5";
+import { StoryFn, Meta } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { MfaPhoneVerify } from "./MfaPhoneVerify";

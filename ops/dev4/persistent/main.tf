@@ -12,7 +12,7 @@ locals {
     environment = local.env
     # Resource groups can support multiple environments at the same level. Any resources that are shared between
     # environments should use the "local.env_level" convention where possible.
-    resource_group = data.azurerm_resource_group.dev4.name
+    resource_group = "${local.project}-${local.name}-${local.env_level}"
   }
 }
 

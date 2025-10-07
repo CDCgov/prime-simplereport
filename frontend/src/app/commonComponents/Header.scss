@@ -25,11 +25,9 @@
   }
 
   .role-tag {
-    border-bottom: 1px #dfe1e2 solid;
     // $theme-color-prime-gray:
     color: #71767a;
     margin-top: 0.5rem;
-    padding-bottom: 1rem;
   }
 
   .header-link-icon {
@@ -102,7 +100,7 @@
   .navlink__support {
     display: flex;
     align-items: center;
-    margin-top: 0.75rem;
+    margin-top: 0.75rem !important;
 
     button {
       color: #005ea2;

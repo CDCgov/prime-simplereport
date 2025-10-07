@@ -76,15 +76,6 @@ export const SelfRegistrationForm = ({
     }
   }, [identifyingData, registrationLink]);
 
-  const getFooter = (onSave: (startTest?: boolean) => void) => (
-    <Button
-      className="self-registration-button margin-top-3"
-      onClick={() => onSave()}
-    >
-      {t("common.button.submit")}
-    </Button>
-  );
-
   return (
     <div
       id="registration-container"
@@ -98,15 +89,20 @@ export const SelfRegistrationForm = ({
         }}
         entityName={entityName}
       />
-      <div className="prime-edit-patient">
-        <PersonForm
-          patient={EMPTY_PERSON}
-          savePerson={savePerson}
-          getFooter={getFooter}
-          view={PersonFormView.SELF_REGISTRATION}
-          onBlur={onBlur}
-        />
-      </div>
+      <PersonForm
+        patient={EMPTY_PERSON}
+        savePerson={savePerson}
+        getFooter={(onSave) => (
+          <Button
+            className="self-registration-button margin-top-3"
+            onClick={() => onSave()}
+          >
+            {t("common.button.submit")}
+          </Button>
+        )}
+        view={PersonFormView.SELF_REGISTRATION}
+        onBlur={onBlur}
+      />
     </div>
   );
 };

@@ -32,15 +32,11 @@ resource "azurerm_linux_web_app" "metabase" {
   virtual_network_subnet_id = var.webapp_subnet_id
 
   site_config {
-    always_on                         = true
-    health_check_path                 = "/api/health"
-    health_check_eviction_time_in_min = 5
-    ftps_state                        = "Disabled"
-    scm_minimum_tls_version           = "1.2"
-    use_32_bit_worker                 = false
-    vnet_route_all_enabled            = false
-    ip_restriction_default_action     = "Deny" # Should use behavior set in the ip_restriction
-    scm_ip_restriction_default_action = "Deny" # We don't use Kudu or the SCM site tools
+    always_on               = true
+    ftps_state              = "Disabled"
+    scm_minimum_tls_version = "1.2"
+    use_32_bit_worker       = false
+    vnet_route_all_enabled  = false
 
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
@@ -49,7 +45,7 @@ resource "azurerm_linux_web_app" "metabase" {
 
     application_stack {
       docker_image     = "metabase/metabase"
-      docker_image_tag = "v0.50.10"
+      docker_image_tag = "v0.44.7.1"
     }
   }
 
@@ -67,10 +63,8 @@ resource "azurerm_linux_web_app" "metabase" {
       }
     }
   }
+
   lifecycle {
-    ignore_changes = [
-      tags
-    ]
     replace_triggered_by = [
       null_resource.service_plan_id
     ]

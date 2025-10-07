@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-import com.okta.sdk.resource.model.FactorStatus;
-import com.okta.sdk.resource.model.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
@@ -16,6 +14,8 @@ import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.openapitools.client.model.FactorStatus;
+import org.openapitools.client.model.FactorType;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 

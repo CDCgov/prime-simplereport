@@ -14,13 +14,10 @@ import DiseaseInformation from "./DiseaseInformation";
 
 export type SupportedDiseasesFormData = {
   equipmentUid?: string;
-  equipmentUidType?: string;
   supportedDisease: string;
   testPerformedLoincCode: string;
   testOrderedLoincCode?: string;
   testkitNameId?: string;
-  testOrderedLoincLongName?: string;
-  testPerformedLoincLongName?: string;
 };
 
 export type DeviceFormData = {
@@ -60,7 +57,6 @@ const DeviceForm = (props: Props) => {
           supportedDisease: "",
           testPerformedLoincCode: "",
           equipmentUid: "",
-          equipmentUidType: "",
           testkitNameId: "",
           testOrderedLoincCode: "",
         },
@@ -83,33 +79,24 @@ const DeviceForm = (props: Props) => {
       name: deviceData.name,
       supportedDiseaseTestPerformed: deviceData.supportedDiseases.map(
         (supportedDisease: SupportedDiseasesFormData) => {
-          const convertedSupportedDisease: SupportedDiseasesFormData = {
+          const convertedSupportedDisease = {
             supportedDisease: supportedDisease.supportedDisease,
             testPerformedLoincCode: supportedDisease.testPerformedLoincCode,
           };
           if (supportedDisease.equipmentUid) {
+            // @ts-ignore
             convertedSupportedDisease["equipmentUid"] =
               supportedDisease.equipmentUid;
           }
-          if (supportedDisease.equipmentUidType) {
-            convertedSupportedDisease["equipmentUidType"] =
-              supportedDisease.equipmentUidType;
-          }
           if (supportedDisease.testkitNameId) {
+            // @ts-ignore
             convertedSupportedDisease["testkitNameId"] =
               supportedDisease.testkitNameId;
           }
           if (supportedDisease.testOrderedLoincCode) {
+            // @ts-ignore
             convertedSupportedDisease["testOrderedLoincCode"] =
               supportedDisease.testOrderedLoincCode;
-          }
-          if (supportedDisease.testOrderedLoincLongName) {
-            convertedSupportedDisease["testOrderedLoincLongName"] =
-              supportedDisease.testOrderedLoincLongName;
-          }
-          if (supportedDisease.testPerformedLoincLongName) {
-            convertedSupportedDisease["testPerformedLoincLongName"] =
-              supportedDisease.testPerformedLoincLongName;
           }
           return convertedSupportedDisease;
         }
@@ -174,12 +161,7 @@ const DeviceForm = (props: Props) => {
                   diseaseTestPerformed.testPerformedLoincCode,
                 testkitNameId: diseaseTestPerformed.testkitNameId,
                 equipmentUid: diseaseTestPerformed.equipmentUid,
-                equipmentUidType: diseaseTestPerformed.equipmentUidType,
                 testOrderedLoincCode: diseaseTestPerformed.testOrderedLoincCode,
-                testPerformedLoincLongName:
-                  diseaseTestPerformed.testPerformedLoincLongName,
-                testOrderedLoincLongName:
-                  diseaseTestPerformed.testOrderedLoincLongName,
               })
             ),
         }
@@ -224,7 +206,6 @@ const DeviceForm = (props: Props) => {
                       <Required label={"Select device"} />
                     </label>
                     <ComboBox
-                      inputProps={{ "aria-required": "true" }}
                       className="usa-combo-box__full-width"
                       id="selectDevice"
                       name="selectDevice"

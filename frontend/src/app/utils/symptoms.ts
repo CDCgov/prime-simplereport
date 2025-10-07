@@ -1,20 +1,18 @@
 import {
-  AllSymptomsCode,
-  allSymptomsMap,
-  AllSymptomsName,
+  symptomsMap,
+  SymptomCode,
+  SymptomName,
 } from "../../patientApp/timeOfTest/constants";
 
-export const symptomsStringToArray = (
-  symptomString: string
-): AllSymptomsName[] => {
-  const parsed: { [_k in AllSymptomsCode]: "true" | "false" } =
+export const symptomsStringToArray = (symptomString: string): SymptomName[] => {
+  const parsed: { [k in SymptomCode]: "true" | "false" } =
     JSON.parse(symptomString);
   return Object.entries(parsed).reduce((acc, [code, symptomatic]) => {
     if (symptomatic === "true") {
-      acc.push(allSymptomsMap[code as AllSymptomsCode]);
+      acc.push(symptomsMap[code as SymptomCode]);
     }
     return acc;
-  }, [] as AllSymptomsCode[]);
+  }, [] as SymptomName[]);
 };
 
 // symptoms should be a JSON string

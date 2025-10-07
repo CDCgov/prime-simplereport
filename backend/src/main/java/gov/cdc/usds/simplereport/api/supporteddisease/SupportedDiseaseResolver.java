@@ -13,6 +13,6 @@ public class SupportedDiseaseResolver {
 
   @QueryMapping
   public List<SupportedDisease> supportedDiseases() {
-    return ds.getSupportedDiseaseList();
+    return ds.fetchSupportedDiseases();
   }
 }

@@ -1,2 +1,2 @@
-last_name,first_name,middle_name,suffix,race,date_of_birth,biological_sex,ethnicity,street,street_2,city,county,state,zip_code,phone_number,phone_number_type,employed_in_healthcare,resident_congregate_setting,role,email,gender_identity,address_notes
-Doe,Jane,Amanda,,black or african american,11/3/80,Female,not hispanic or latino,1234 Main Street,Apt 2,Anchorage,,AK,99501,410-867-5309,mobile,No,No,Staff,jane@testingorg.com,FEMALE,some address note
+last_name,first_name,middle_name,suffix,race,date_of_birth,biological_sex,ethnicity,street,street_2,city,county,state,zip_code,phone_number,phone_number_type,employed_in_healthcare,resident_congregate_setting,role,email
+Doe,Jane,Amanda,,black or african american,11/3/80,Female,not hispanic or latino,1234 Main Street,Apt 2,Anchorage,,AK,99501,410-867-5309,mobile,No,No,Staff,jane@testingorg.com
