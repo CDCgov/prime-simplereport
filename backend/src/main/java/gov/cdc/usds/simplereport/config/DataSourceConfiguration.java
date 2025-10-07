@@ -99,11 +99,11 @@ public class DataSourceConfiguration {
     SpringLiquibase liquibase = new SpringLiquibase();
     liquibase.setChangeLog(properties.getChangeLog());
     liquibase.setChangeLogParameters(properties.getParameters());
-    liquibase.setContexts(properties.getContexts());
+    liquibase.setContexts(String.join(",", properties.getContexts()));
     liquibase.setDataSource(dataSource);
     liquibase.setDefaultSchema(properties.getDefaultSchema());
     liquibase.setDropFirst(properties.isDropFirst());
-    liquibase.setLabelFilter(properties.getLabelFilter());
+    liquibase.setLabelFilter(String.join(",", properties.getLabelFilter()));
     liquibase.setRollbackFile(properties.getRollbackFile());
     liquibase.setShouldRun(properties.isEnabled());
     liquibase.setDatabaseChangeLogTable(properties.getDatabaseChangeLogTable());
