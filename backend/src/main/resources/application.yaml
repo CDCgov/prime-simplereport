@@ -196,7 +196,7 @@ aims:
   access-key-id: ${AIMS_ACCESS_KEY_ID:super-secret-access-key-id}
   secret-access-key: ${AIMS_SECRET_ACCESS_KEY:super-secret-access-key}
   encryption-key: ${AIMS_KMS_ENCRYPTION_KEY:super-secret-encryption-key}
-  s3-bucket-name: ${AIMS_S3_BUCKET_NAME:super-secret-bucket-name}
+  bucket-name: ${AIMS_BUCKET_NAME:super-secret-bucket-name}
   user-id: ${AIMS_USER_ID:super-secret-user-id}
   message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT:super-secret-message-queue-endpoint}
   sending-environment: ${AIMS_ENVIRONMENT:Test}

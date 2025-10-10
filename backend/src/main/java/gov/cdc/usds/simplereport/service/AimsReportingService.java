@@ -42,7 +42,7 @@ public class AimsReportingService {
       return s3Client.putObject(
           PutObjectRequest.builder()
               .serverSideEncryption(ServerSideEncryption.AWS_KMS)
-              .bucket(aimsProperties.getS3BucketName())
+              .bucket(aimsProperties.getBucketName())
               .ssekmsKeyId(aimsProperties.getEncryptionKey())
               .key(objectKey)
               .contentType("text/plain")

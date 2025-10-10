@@ -22,7 +22,7 @@ public class AimsProperties {
   private String accessKeyId;
   private String secretAccessKey;
   private String encryptionKey;
-  private String s3BucketName;
+  private String bucketName;
   private String userId;
   private String messageQueueEndpoint;
   private String sendingEnvironment;

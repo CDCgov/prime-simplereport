@@ -39,7 +39,7 @@ class AimsReportingServiceTest {
         .thenReturn(Date.from(LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC)));
     when(aimsProperties.getSendingEnvironment()).thenReturn("Test");
     when(aimsProperties.getReceivingEnvironment()).thenReturn("Test");
-    when(aimsProperties.getS3BucketName()).thenReturn("BucketName");
+    when(aimsProperties.getBucketName()).thenReturn("BucketName");
     when(aimsProperties.getEncryptionKey()).thenReturn("EncryptionKey");
     when(aimsProperties.getUserId()).thenReturn("UserId");
     aimsReportingService = new AimsReportingService(aimsProperties, dateGenerator, s3Client);
