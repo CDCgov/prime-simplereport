@@ -204,6 +204,10 @@ jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
 }
 
+gitProperties {
+    dotGitDirectory = layout.projectDirectory.dir("../.git")
+}
+
 // Prefer SPRING_DATASOURCE_URL if provided, otherwise assume localhost
 def dbConnectionString = System.getenv("SPRING_DATASOURCE_URL") ?: "jdbc:postgresql://127.0.0.1:${System.getenv("SR_DB_PORT") ?: 5432}/simple_report"
 def isLocalDB = dbConnectionString.contains("postgresql://db") || dbConnectionString.contains("postgresql://127")
