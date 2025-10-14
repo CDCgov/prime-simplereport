@@ -99,7 +99,7 @@ class AimsReportingServiceTest {
     // THEN
     String expectedFilename =
         String.format(
-            "InterPartner~ExpandedELR~Simple-Report~AIMSPlatform~TEST~TEST~20250601000000000~STOP~%s.hl7",
+            "InterPartner~ExpandedELR~Simple-Report~AIMSPlatform~Test~Test~20250601000000000~STOP~%s.hl7",
             submissionId);
     assertThat(actualFilename).isEqualTo(expectedFilename);
   }
