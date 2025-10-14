@@ -18,26 +18,78 @@ import org.springframework.data.repository.query.Param;
 /** Interface specification for fetching and manipulating {@link Person} entities */
 public interface PersonRepository extends EternalAuditedEntityRepository<Person> {
 
+  @Query(
+      """
+    SELECT person FROM Person person
+    WHERE person.internalId = :internalId
+      AND (person.piiDeleted IS NULL OR person.piiDeleted = false)
+  """)
+  Optional<Person> findById(@Param("internalId") UUID internalId);
+
   List<Person> findAll(Specification<Person> searchSpec, Pageable p);
 
-  List<Person> findAllByInternalIdIn(Collection<UUID> ids);
+  @Query(
+      """
+  SELECT p
+  FROM Person p
+  WHERE p.internalId IN :ids
+    AND (p.piiDeleted IS NULL OR p.piiDeleted = FALSE)
+  """)
+  List<Person> findAllByInternalIdIn(@Param("ids") Collection<UUID> ids);
 
   @EntityGraph(attributePaths = {"facility", "phoneNumbers"})
-  List<Person> findByInternalIdIn(Collection<UUID> ids);
+  @Query(
+      """
+  SELECT p
+  FROM Person p
+  WHERE p.internalId IN :ids
+    AND (p.piiDeleted IS NULL OR p.piiDeleted = FALSE)
+  """)
+  List<Person> findByInternalIdIn(@Param("ids") Collection<UUID> ids);
 
+  @Query(
+      """
+  SELECT p
+  FROM Person p
+  WHERE p.organization = :organization
+    AND p.isDeleted = :isDeleted
+    AND (p.piiDeleted IS NULL OR p.piiDeleted = FALSE)
+""")
   List<Person> findAllByOrganizationAndIsDeleted(
-      Organization organizationId, boolean isDeleted, Pageable p);
+      @Param("organization") Organization organization,
+      @Param("isDeleted") boolean isDeleted,
+      Pageable p);
 
   int count(Specification<Person> searchSpec);
 
-  int countByFacilityAndIsDeleted(Facility facility, boolean isDeleted);
+  @Query(
+      """
+  SELECT COUNT(p)
+  FROM Person p
+  WHERE p.facility = :facility
+    AND p.isDeleted = :isDeleted
+    AND (p.piiDeleted IS NULL OR p.piiDeleted = FALSE)
+  """)
+  int countByFacilityAndIsDeleted(
+      @Param("facility") Facility facility, @Param("isDeleted") boolean isDeleted);
 
-  int countByOrganizationAndIsDeleted(Organization organization, boolean isDeleted);
+  @Query(
+      """
+  SELECT COUNT(p)
+  FROM Person p
+  WHERE p.organization = :organization
+    AND p.isDeleted = :isDeleted
+    AND (p.piiDeleted IS NULL OR p.piiDeleted = FALSE)
+  """)
+  int countByOrganizationAndIsDeleted(
+      @Param("organization") Organization organization, @Param("isDeleted") boolean isDeleted);
 
   @Query(
       BASE_ALLOW_DELETED_QUERY
-          + " e.isDeleted = :isDeleted AND e.internalId = :id and e.organization = :org")
-  Optional<Person> findByIdAndOrganization(UUID id, Organization org, boolean isDeleted);
+          + " e.isDeleted = :isDeleted AND e.internalId = :id AND e.organization = :org"
+          + " AND (e.piiDeleted IS NULL OR e.piiDeleted = FALSE)")
+  Optional<Person> findByIdAndOrganization(
+      @Param("id") UUID id, @Param("org") Organization org, @Param("isDeleted") boolean isDeleted);
 
   @Modifying
   @Query(

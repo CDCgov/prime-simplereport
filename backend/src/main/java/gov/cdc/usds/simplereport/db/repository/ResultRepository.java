@@ -30,15 +30,49 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
       })
   Page<Result> findAll(Specification<Result> searchSpec, Pageable p);
 
-  List<Result> findAllByTestEvent(TestEvent testEvent);
+  @Query(
+      """
+    SELECT r FROM Result r
+    WHERE r.testEvent = :testEvent
+      AND (r.piiDeleted IS NULL OR r.piiDeleted = FALSE)
+  """)
+  List<Result> findAllByTestEvent(@Param("testEvent") TestEvent testEvent);
 
-  List<Result> findAllByTestOrder(TestOrder testOrder);
+  @Query(
+      """
+    SELECT r FROM Result r
+    WHERE r.testOrder = :testOrder
+      AND (r.piiDeleted IS NULL OR r.piiDeleted = FALSE)
+  """)
+  List<Result> findAllByTestOrder(@Param("testOrder") TestOrder testOrder);
 
-  List<Result> findAllByDisease(SupportedDisease disease);
+  @Query(
+      """
+    SELECT r FROM Result r
+    WHERE r.disease = :disease
+      AND (r.piiDeleted IS NULL OR r.piiDeleted = FALSE)
+  """)
+  List<Result> findAllByDisease(@Param("disease") SupportedDisease disease);
 
-  Optional<Result> findResultByTestEventAndDisease(TestEvent testEvent, SupportedDisease disease);
+  @Query(
+      """
+    SELECT r FROM Result r
+    WHERE r.testEvent = :testEvent
+      AND r.disease = :disease
+      AND (r.piiDeleted IS NULL OR r.piiDeleted = FALSE)
+  """)
+  Optional<Result> findResultByTestEventAndDisease(
+      @Param("testEvent") TestEvent testEvent, @Param("disease") SupportedDisease disease);
 
-  Result findResultByTestOrderAndDisease(TestOrder testOrder, SupportedDisease disease);
+  @Query(
+      """
+    SELECT r FROM Result r
+    WHERE r.testOrder = :testOrder
+      AND r.disease = :disease
+      AND (r.piiDeleted IS NULL OR r.piiDeleted = FALSE)
+  """)
+  Result findResultByTestOrderAndDisease(
+      @Param("testOrder") TestOrder testOrder, @Param("disease") SupportedDisease disease);
 
   @Modifying
   @Query(
@@ -49,20 +83,34 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
         result.piiDeleted = true,
         result.isDeleted = true
     WHERE result.updatedAt <= :cutoffDate
-      AND
-           (result.testEvent IS NOT NULL AND NOT EXISTS (
-                SELECT 1
-                FROM TestEvent testEvent
-                WHERE testEvent.order = result.testEvent.order
-                  AND testEvent.updatedAt > :cutoffDate
-           ))
-        OR (result.testEvent IS NULL AND result.testOrder IS NOT NULL AND NOT EXISTS (
-                SELECT 1
-                FROM TestEvent testEvent
-                WHERE testEvent.order = result.testOrder
-                  AND testEvent.updatedAt > :cutoffDate
-           ))
-""")
-  void deletePiiForResultIfTestOrderHasNoTestEventsUpdatedAfter(
+      AND result.testEvent IS NOT NULL
+      AND NOT EXISTS (
+        SELECT 1
+        FROM TestEvent testEvent
+        WHERE testEvent.order = result.testEvent.order
+          AND testEvent.updatedAt > :cutoffDate
+     )
+  """)
+  void deletePiiForResultTiedToTestEventIfTestOrderHasNoTestEventsUpdatedAfter(
+      @Param("cutoffDate") Date cutoffDate);
+
+  @Modifying
+  @Query(
+      """
+        UPDATE Result result
+        SET result.resultSNOMED = '',
+            result.testResult = null,
+            result.piiDeleted = true,
+            result.isDeleted = true
+        WHERE result.updatedAt <= :cutoffDate
+          AND result.testOrder IS NOT NULL
+          AND NOT EXISTS (
+            SELECT 1
+            FROM TestEvent testEvent
+            WHERE testEvent.order = result.testOrder
+              AND testEvent.updatedAt > :cutoffDate
+          )
+  """)
+  void deletePiiForResultTiedToTestOrderIfTestOrderHasNoTestEventsUpdatedAfter(
       @Param("cutoffDate") Date cutoffDate);
 }

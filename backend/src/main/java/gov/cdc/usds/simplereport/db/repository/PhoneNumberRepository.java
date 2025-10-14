@@ -11,19 +11,51 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PhoneNumberRepository extends AuditedEntityRepository<PhoneNumber> {
-  List<PhoneNumber> findAllByNumberAndType(String number, PhoneType type);
 
-  List<PhoneNumber> findAllByPersonInternalId(UUID personId);
+  @Query(
+      """
+  SELECT pn
+  FROM PhoneNumber pn
+  WHERE pn.number = :number
+    AND pn.type = :type
+    AND (pn.piiDeleted IS NULL OR pn.piiDeleted = FALSE)
+  """)
+  List<PhoneNumber> findAllByNumberAndType(
+      @Param("number") String number, @Param("type") PhoneType type);
 
-  List<List<PhoneNumber>> findAllByPersonInternalIdIn(Collection<UUID> personIds);
+  @Query(
+      """
+  SELECT pn
+  FROM PhoneNumber pn
+  WHERE pn.person.internalId = :personId
+    AND (pn.piiDeleted IS NULL OR pn.piiDeleted = FALSE)
+  """)
+  List<PhoneNumber> findAllByPersonInternalId(@Param("personId") UUID personId);
 
-  List<PhoneNumber> findAllByInternalIdIn(Collection<UUID> phoneIds);
+  @Query(
+      """
+  SELECT pn
+  FROM PhoneNumber pn
+  WHERE pn.person.internalId IN :personIds
+    AND (pn.piiDeleted IS NULL OR pn.piiDeleted = FALSE)
+  """)
+  List<PhoneNumber> findAllByPersonInternalIdIn(@Param("personIds") Collection<UUID> personIds);
 
   @Query(
       value =
-          "select * from {h-schema}phone_number where internal_id in (select p.primary_phone_internal_id from {h-schema}person p where p.internal_id in :personIds)",
+          """
+  SELECT *
+  FROM {h-schema}phone_number pn
+  WHERE pn.internal_id IN (
+    SELECT p.primary_phone_internal_id
+    FROM {h-schema}person p
+    WHERE p.internal_id IN :personIds
+  )
+  AND (pn.pii_deleted IS NULL OR pn.pii_deleted = false)
+  """,
       nativeQuery = true)
-  List<PhoneNumber> findPrimaryPhoneNumberByPersonInternalIdIn(Collection<UUID> personIds);
+  List<PhoneNumber> findPrimaryPhoneNumberByPersonInternalIdIn(
+      @Param("personIds") Collection<UUID> personIds);
 
   @Modifying
   @Query(

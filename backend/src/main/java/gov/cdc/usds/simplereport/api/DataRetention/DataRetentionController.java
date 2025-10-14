@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class DataRetentionController {
   private final DataRetentionService dataRetentionService;
 
-  @GetMapping("/delete")
-  public void deleteOldData(@RequestParam boolean dryRun) {
-    //  public void deleteOldData() {
+  @GetMapping("/deletePii")
+  public void deleteOldPii(@RequestParam boolean dryRun) {
     try {
-      dataRetentionService.deleteOldData(dryRun);
+      dataRetentionService.deleteOldPii(dryRun);
     } catch (DryRunException e) {
       log.info("Dry run");
     }

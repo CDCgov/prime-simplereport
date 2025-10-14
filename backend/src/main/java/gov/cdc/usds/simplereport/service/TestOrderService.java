@@ -172,6 +172,14 @@ public class TestOrderService {
                         cb.isNull(root.get(BaseTestInfo_.dateTestedBackdate)),
                         cb.lessThanOrEqualTo(root.get(AuditedEntity_.createdAt), endDate))));
       }
+
+      p =
+          cb.and(
+              p,
+              cb.or(
+                  cb.isFalse(root.get(TestEvent_.piiDeleted)),
+                  cb.isNull(root.get(TestEvent_.piiDeleted))));
+
       return p;
     };
   }

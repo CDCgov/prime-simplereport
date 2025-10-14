@@ -13,13 +13,27 @@ import org.springframework.data.repository.query.Param;
 
 public interface TestResultUploadRepository extends AuditedEntityRepository<TestResultUpload> {
 
-  Optional<TestResultUpload> findByInternalIdAndOrganization(UUID id, Organization o);
+  @Query(
+      """
+  SELECT tru
+  FROM TestResultUpload tru
+  WHERE tru.internalId = :id
+    AND tru.organization = :org
+    AND (tru.piiDeleted IS NULL OR tru.piiDeleted = FALSE)
+  """)
+  Optional<TestResultUpload> findByInternalIdAndOrganization(
+      @Param("id") UUID id, @Param("org") Organization org);
 
   @Query(
-      "SELECT record FROM TestResultUpload record WHERE (record.organization = :org) and"
-          + " (cast(:startDate as date) is null or record.createdAt >= :startDate) and"
-          + " (cast(:endDate as date) is null or record.createdAt <= :endDate) and"
-          + " record.status <> 'FAILURE'")
+      """
+        SELECT record
+        FROM TestResultUpload record
+        WHERE (record.organization = :org)
+            and (cast(:startDate as date) is null or record.createdAt >= :startDate)
+            and (cast(:endDate as date) is null or record.createdAt <= :endDate)
+            and (record.piiDeleted IS NULL OR record.piiDeleted = FALSE)
+            and record.status <> 'FAILURE'
+  """)
   Page<TestResultUpload> findAll(
       @Param("org") Organization org,
       @Param("startDate") Date startDate,
@@ -29,11 +43,11 @@ public interface TestResultUploadRepository extends AuditedEntityRepository<Test
   @Modifying
   @Query(
       """
-      UPDATE TestResultUpload testResultUpload
-          SET testResultUpload.warnings = null,
-          testResultUpload.errors = null,
-          testResultUpload.piiDeleted = true
-          WHERE testResultUpload.updatedAt <= :cutoffDate
-      """)
+  UPDATE TestResultUpload bulkUpload
+      SET bulkUpload.warnings = null,
+      bulkUpload.errors = null,
+      bulkUpload.piiDeleted = true
+      WHERE bulkUpload.updatedAt <= :cutoffDate
+  """)
   void deletePiiForBulkTestResultUploadsLastUpdatedBefore(@Param("cutoffDate") Date cutoffDate);
 }

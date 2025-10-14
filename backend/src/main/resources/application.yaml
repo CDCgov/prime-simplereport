@@ -100,6 +100,10 @@ smarty-streets:
   id: ${SMARTY_AUTH_ID}
   token: ${SMARTY_AUTH_TOKEN}
 simple-report:
+  data-retention:
+    retention-days: 30
+    batch-size: 1000
+    max-execution-time-minutes: 120
   id-verification-reminders:
     enabled: false
   authorization:

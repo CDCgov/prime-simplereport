@@ -482,6 +482,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     public static final String LAST_NAME = "lastName";
     public static final String BIRTH_DATE = "birthDate";
     public static final String POSTAL_CODE = "postalCode";
+    public static final String PII_DELETED = "piiDeleted";
 
     private SpecField() {} // sonarcloud codesmell
   }

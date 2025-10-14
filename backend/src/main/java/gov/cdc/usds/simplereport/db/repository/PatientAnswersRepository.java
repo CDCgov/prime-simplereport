@@ -10,7 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PatientAnswersRepository extends DeletableEntityRepository<PatientAnswers> {
-  List<PatientAnswers> findAllByInternalIdIn(Collection<UUID> internalId);
+
+  @Query(
+      """
+    SELECT pa
+    FROM PatientAnswers pa
+    WHERE pa.internalId IN :internalIds
+      AND (pa.piiDeleted IS NULL OR pa.piiDeleted = FALSE)
+  """)
+  List<PatientAnswers> findAllByInternalIdIn(@Param("internalIds") Collection<UUID> internalIds);
 
   @Modifying
   @Query(

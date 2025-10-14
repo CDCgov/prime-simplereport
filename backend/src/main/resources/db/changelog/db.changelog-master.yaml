@@ -6681,6 +6681,16 @@ databaseChangeLog:
                   defaultValueBoolean: false
                   constraints:
                     nullable: true
+        - addColumn:
+            tableName: report_stream_response
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
       rollback:
         - dropColumn:
             tableName: test_event
@@ -6702,4 +6712,7 @@ databaseChangeLog:
             columnName: pii_deleted
         - dropColumn:
             tableName: phone_number
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: report_stream_response
             columnName: pii_deleted
