@@ -32,8 +32,8 @@ public interface PatientAnswersRepository extends DeletableEntityRepository<Pati
         FROM TestEvent te
         WHERE te.order.patientAnswersId = pa.internalId
           AND te.updatedAt > :cutoffDate
-  )
-""")
+      )
+  """)
   void deletePiiForPatientAnswersIfTestOrderHasNoTestEventsUpdatedAfter(
       @Param("cutoffDate") Date cutoffDate);
 }

@@ -501,7 +501,16 @@ public class TestDataFactory {
     var errors = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
     var upload =
         new TestResultUpload(
-            reportId, UUID.randomUUID(), status, 0, organization, warnings, errors, null, null);
+            reportId,
+            UUID.randomUUID(),
+            status,
+            0,
+            organization,
+            warnings,
+            errors,
+            null,
+            null,
+            false);
     var saved = testResultUploadRepository.save(upload);
     return saved;
   }

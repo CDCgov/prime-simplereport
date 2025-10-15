@@ -239,7 +239,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             universalPipelineUploadError.getWarnings(),
             universalPipelineUploadError.getErrors(),
             Pipeline.UNIVERSAL,
-            null);
+            null,
+            false);
 
     when(dataHubMock.uploadFhir(any(), any())).thenReturn(universalPipelineUploadError);
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
@@ -297,6 +298,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             universalPipelineUploadError.getWarnings(),
             universalPipelineUploadError.getErrors(),
             Pipeline.UNIVERSAL,
+            null,
             null);
 
     when(dataHubMock.uploadFhir(any(), any())).thenReturn(universalPipelineUploadError);
@@ -358,7 +360,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             successfulCsvResponse.getWarnings(),
             successfulCsvResponse.getErrors(),
             Pipeline.UNIVERSAL,
-            null);
+            null,
+            false);
 
     Request req =
         Request.create(Request.HttpMethod.POST, "", new HashMap<>(), null, new RequestTemplate());
