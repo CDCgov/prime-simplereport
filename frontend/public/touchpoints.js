@@ -73,13 +73,17 @@ function FBAform(d) {
       this.dialogEl.setAttribute("role", "dialog");
       this.dialogEl.setAttribute("aria-modal", "true");
       this.dialogEl.innerHTML = touchpointsFormHtmlString;
-      d.querySelector("footer").appendChild(this.dialogEl);
+      var footer = d.querySelector("footer");
+      if (footer) footer.appendChild(this.dialogEl);
 
-      d.querySelector(".fba-modal-close").addEventListener(
-        "click",
-        this.handleDialogClose.bind(this),
-        false
-      );
+      var modalClose = d.querySelector(".fba-modal-close");
+
+      if (modalClose)
+        modalClose.addEventListener(
+          "click",
+          this.handleDialogClose.bind(this),
+          false
+        );
       var otherElements = d.querySelectorAll(".usa-input.other-option");
       for (let i = 0; i < otherElements.length; i++) {
         otherElements[i].addEventListener(
