@@ -15,7 +15,8 @@ public interface ReportStreamResponseRepository extends CrudRepository<ReportStr
       """
       UPDATE ReportStreamResponse reportStreamResponse
           SET reportStreamResponse.details = null,
-          reportStreamResponse.resolutionNote = null
+          reportStreamResponse.resolutionNote = null,
+          reportStreamResponse.piiDeleted = true
           WHERE reportStreamResponse.createdAt <= :cutoffDate
           AND NOT EXISTS (
             SELECT 1

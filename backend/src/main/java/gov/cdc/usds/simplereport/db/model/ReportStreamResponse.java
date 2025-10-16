@@ -29,6 +29,8 @@ public class ReportStreamResponse extends IdentifiedEntity {
 
   private String queueName;
 
+  private Boolean piiDeleted;
+
   @Column(updatable = false)
   @CreatedDate
   private Date createdAt;

@@ -21,7 +21,7 @@ public class DataRetentionController {
     try {
       dataRetentionService.deleteOldPii(dryRun);
     } catch (DryRunException e) {
-      log.info("Dry run");
+      log.info("Dry run to delete PII");
     }
   }
 }
