@@ -285,5 +285,5 @@ tasks.named('test') {
         dependsOn testDbStart
         finalizedBy testDbStop
     }
-    maxHeapSize = "1024m"
+    maxHeapSize = "2048m"
 }
