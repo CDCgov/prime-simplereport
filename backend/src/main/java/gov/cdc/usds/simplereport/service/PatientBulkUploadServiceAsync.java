@@ -243,7 +243,7 @@ public class PatientBulkUploadServiceAsync {
 
   private void logProcessingFailure(String errorMessage, String externalId, UUID facilityId) {
     Map<String, String> customProperties =
-        Map.of("orgId", externalId, "facilityId", String.valueOf(facilityId));
+        Map.of("orgId", externalId, "facilityId", facilityId.toString());
     this.appInsights
         .getTelemetryClient()
         .trackTrace(errorMessage, SeverityLevel.Error, customProperties);
