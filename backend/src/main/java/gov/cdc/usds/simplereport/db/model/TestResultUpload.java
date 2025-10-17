@@ -67,6 +67,8 @@ public class TestResultUpload extends AuditedEntity {
   @OneToMany(mappedBy = "upload")
   List<UploadDiseaseDetails> uploadDiseaseDetails;
 
+  @Column private Boolean piiDeleted;
+
   public TestResultUpload(UploadStatus status) {
     this.status = status;
   }

@@ -147,6 +147,13 @@ public class PersonService {
     return (root, query, cb) -> cb.equal(root.get(SpecField.IS_DELETED), isDeleted);
   }
 
+  private Specification<Person> piiNotDeletedFilter() {
+    return (root, query, cb) ->
+        cb.or(
+            cb.isFalse(root.get(SpecField.PII_DELETED)),
+            cb.isNull(root.get(SpecField.PII_DELETED)));
+  }
+
   // called by List function and Count function
   // assumes whatever method calling this checks permissions to search outside of current org
   protected Specification<Person> buildPersonSearchFilter(
@@ -184,6 +191,8 @@ public class PersonService {
     for (var prefixMatch : namePrefixMatchList) {
       filter = filter.and(nameMatchesFilter(prefixMatch));
     }
+
+    filter = filter.and(piiNotDeletedFilter());
 
     return filter;
   }

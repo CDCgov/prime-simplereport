@@ -9,6 +9,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.util.UUID;
+import lombok.Getter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -34,6 +35,8 @@ public class ResultUploadError extends AuditedEntity {
   @Column private boolean required;
 
   @Column private String message;
+
+  @Column @Getter private Boolean piiDeleted;
 
   protected ResultUploadError() {}
 

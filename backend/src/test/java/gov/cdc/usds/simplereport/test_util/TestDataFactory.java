@@ -501,7 +501,16 @@ public class TestDataFactory {
     var errors = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
     var upload =
         new TestResultUpload(
-            reportId, UUID.randomUUID(), status, 0, organization, warnings, errors, null, null);
+            reportId,
+            UUID.randomUUID(),
+            status,
+            0,
+            organization,
+            warnings,
+            errors,
+            null,
+            null,
+            false);
     var saved = testResultUploadRepository.save(upload);
     return saved;
   }
@@ -561,7 +570,7 @@ public class TestDataFactory {
     List<Result> copiedResults = testOrder.getResults().stream().map(Result::new).toList();
     resultService.addResultsToTestEvent(testEvent, copiedResults);
 
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
     testOrder.markComplete();
     testOrderRepository.save(testOrder);
 
@@ -587,7 +596,7 @@ public class TestDataFactory {
     Result copiedResult = new Result(orderResult);
     resultService.addResultsToTestEvent(e, List.of(copiedResult));
 
-    o.setTestEventRef(e);
+    o.setLatestTestEventRef(e);
     o.markComplete();
     testOrderRepository.save(o);
     return e;
@@ -613,7 +622,7 @@ public class TestDataFactory {
     Result copiedResult = new Result(orderResult);
     resultService.addResultsToTestEvent(e, List.of(copiedResult));
 
-    o.setTestEventRef(e);
+    o.setLatestTestEventRef(e);
     o.markComplete();
     testOrderRepository.save(o);
     return e;
@@ -645,7 +654,7 @@ public class TestDataFactory {
     var copiedResults = order.getResults().stream().map(Result::new).toList();
     resultService.addResultsToTestEvent(event, copiedResults);
 
-    order.setTestEventRef(event);
+    order.setLatestTestEventRef(event);
     order.markComplete();
     testOrderRepository.save(order);
 
@@ -675,7 +684,7 @@ public class TestDataFactory {
     TestOrder order = originalTestEvent.getTestOrder();
     order.setReasonForCorrection(reason);
     order.setCorrectionStatus(correctionStatus);
-    order.setTestEventRef(newRemoveEvent);
+    order.setLatestTestEventRef(newRemoveEvent);
     testOrderRepository.save(order);
 
     Hibernate.initialize(newRemoveEvent.getOrganization());
