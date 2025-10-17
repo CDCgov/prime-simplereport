@@ -1,0 +1,751 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LabReportForm LabResultsFormSection renders test result fields when test order and specimen are selected 1`] = `
+<div>
+  <div
+    class="prime-home flex-1"
+  >
+    <div
+      class="grid-container padding-bottom-10 padding-top-4"
+    >
+      <div
+        aria-label="progress"
+        class="usa-step-indicator"
+        data-testid="step-indicator"
+      >
+        <ol
+          class="usa-step-indicator__segments"
+        >
+          <li
+            class="usa-step-indicator__segment usa-step-indicator__segment--complete"
+          >
+            <span
+              class="usa-step-indicator__segment-label"
+            >
+              Facility information
+               
+              <span
+                class="usa-sr-only"
+              >
+                completed
+              </span>
+            </span>
+          </li>
+          <li
+            class="usa-step-indicator__segment usa-step-indicator__segment--complete"
+          >
+            <span
+              class="usa-step-indicator__segment-label"
+            >
+              Provider information
+               
+              <span
+                class="usa-sr-only"
+              >
+                completed
+              </span>
+            </span>
+          </li>
+          <li
+            class="usa-step-indicator__segment usa-step-indicator__segment--complete"
+          >
+            <span
+              class="usa-step-indicator__segment-label"
+            >
+              Patient information
+               
+              <span
+                class="usa-sr-only"
+              >
+                completed
+              </span>
+            </span>
+          </li>
+          <li
+            aria-current="true"
+            class="usa-step-indicator__segment usa-step-indicator__segment--current"
+          >
+            <span
+              class="usa-step-indicator__segment-label"
+            >
+              Lab results
+               
+            </span>
+          </li>
+          <li
+            class="usa-step-indicator__segment"
+          >
+            <span
+              class="usa-step-indicator__segment-label"
+            >
+              Review and submit
+               
+              <span
+                class="usa-sr-only"
+              >
+                not completed
+              </span>
+            </span>
+          </li>
+        </ol>
+        <div
+          class="usa-step-indicator__header"
+        >
+          <h4
+            class="usa-step-indicator__heading"
+          >
+            <span
+              class="usa-step-indicator__heading-counter"
+            >
+              <span
+                class="usa-sr-only"
+                data-testid="step-text"
+              >
+                Step
+              </span>
+              <span
+                class="usa-step-indicator__current-step"
+              >
+                4
+              </span>
+               
+              <span
+                class="usa-step-indicator__total-steps"
+              >
+                of 5
+              </span>
+               
+            </span>
+            <span
+              class="usa-step-indicator__heading-text"
+            >
+              Lab results
+            </span>
+          </h4>
+        </div>
+      </div>
+      <button
+        class="usa-button usa-button--unstyled margin-right-2 margin-bottom-3"
+        data-testid="button"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-arrow-left margin-left-1"
+          data-icon="arrow-left"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"
+            fill="currentColor"
+          />
+        </svg>
+        Back to 
+        patient information
+      </button>
+      <div
+        class="prime-container card-container"
+      >
+        <div
+          class="usa-card__body"
+        >
+          <div
+            class="grid-row"
+          >
+            <div
+              class="grid-col-auto"
+            >
+              <h3
+                class="margin-bottom-0 margin-top-1"
+              >
+                Test order information
+              </h3>
+              <p>
+                Choose a test order to select specimen type
+              </p>
+            </div>
+          </div>
+          <div
+            class="grid-row grid-gap"
+          >
+            <div
+              class="grid-col-6 grid-col-mobile"
+            >
+              <label
+                class="usa-legend margin-top-0"
+                for="selected-lab"
+              >
+                Test order
+              </label>
+              <div
+                class="usa-combo-box lab-combo-box usa-combo-box--pristine"
+                data-enhanced="true"
+                data-testid="combo-box"
+              >
+                <select
+                  aria-hidden="true"
+                  class="usa-select usa-sr-only usa-combo-box__select"
+                  data-testid="combo-box-select"
+                  name="selected-lab"
+                  tabindex="-1"
+                >
+                  <option
+                    value="8023-4"
+                  >
+                    Saint Louis encephalitis virus Ab [Presence] in Serum by Immunoassay
+                  </option>
+                  <option
+                    value="101289-7"
+                  >
+                    SARS-CoV-2 (COVID-19) RNA [Presence] in Throat by NAA with non-probe detection
+                  </option>
+                </select>
+                <input
+                  aria-activedescendant=""
+                  aria-autocomplete="list"
+                  aria-controls="selected-lab--list"
+                  aria-describedby="selected-lab--assistiveHint"
+                  aria-expanded="false"
+                  aria-owns="selected-lab--list"
+                  autocapitalize="off"
+                  autocomplete="off"
+                  class="usa-combo-box__input"
+                  data-testid="combo-box-input"
+                  id="selected-lab"
+                  role="combobox"
+                  type="text"
+                  value="Saint Louis encephalitis virus Ab [Presence] in Serum by Immunoassay"
+                />
+                <span
+                  class="usa-combo-box__clear-input__wrapper"
+                  tabindex="-1"
+                >
+                  <button
+                    aria-label="Clear the select contents"
+                    class="usa-combo-box__clear-input"
+                    data-testid="combo-box-clear-button"
+                    type="button"
+                  >
+                     
+                  </button>
+                </span>
+                <span
+                  class="usa-combo-box__input-button-separator"
+                >
+                   
+                </span>
+                <span
+                  class="usa-combo-box__toggle-list__wrapper"
+                  tabindex="-1"
+                >
+                  <button
+                    aria-label="Toggle the dropdown list"
+                    class="usa-combo-box__toggle-list"
+                    data-testid="combo-box-toggle"
+                    tabindex="-1"
+                    type="button"
+                  >
+                     
+                  </button>
+                </span>
+                <ul
+                  class="usa-combo-box__list"
+                  data-testid="combo-box-option-list"
+                  hidden=""
+                  id="selected-lab--list"
+                  role="listbox"
+                  tabindex="-1"
+                >
+                  <li
+                    aria-posinset="1"
+                    aria-selected="false"
+                    aria-setsize="2"
+                    class="usa-combo-box__list-option"
+                    data-testid="combo-box-option-8023-4"
+                    data-value="8023-4"
+                    id="selected-lab--list--option-0"
+                    role="option"
+                    tabindex="-1"
+                    value="8023-4"
+                  >
+                    Saint Louis encephalitis virus Ab [Presence] in Serum by Immunoassay
+                  </li>
+                  <li
+                    aria-posinset="2"
+                    aria-selected="false"
+                    aria-setsize="2"
+                    class="usa-combo-box__list-option"
+                    data-testid="combo-box-option-101289-7"
+                    data-value="101289-7"
+                    id="selected-lab--list--option-1"
+                    role="option"
+                    tabindex="-1"
+                    value="101289-7"
+                  >
+                    SARS-CoV-2 (COVID-19) RNA [Presence] in Throat by NAA with non-probe detection
+                  </li>
+                </ul>
+                <div
+                  class="usa-combo-box__status usa-sr-only"
+                  role="status"
+                />
+                <span
+                  class="usa-sr-only"
+                  data-testid="combo-box-assistive-hint"
+                  id="selected-lab--assistiveHint"
+                >
+                  When autocomplete results are available use up and down arrows to review
+           and enter to select. Touch device users, explore by touch or with swipe
+           gestures.
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="grid-row margin-top-2"
+          >
+            <div
+              class="grid-col-auto"
+            >
+              <h3
+                class="margin-bottom-0 margin-top-5"
+              >
+                Specimen information
+              </h3>
+              <p
+                class="margin-bottom-0"
+              >
+                Choose a specimen type to enter test results
+              </p>
+            </div>
+          </div>
+          <div
+            class="grid-row grid-gap"
+          >
+            <div
+              class="grid-col-6 grid-col-mobile"
+            >
+              <div
+                class="usa-form-group prime-dropdown  card-dropdown"
+              >
+                <label
+                  class="usa-label"
+                  for="43"
+                >
+                  Specimen type
+                </label>
+                <select
+                  aria-required="false"
+                  class="usa-select"
+                  id="43"
+                  name="specimen-type"
+                >
+                  <option
+                    value=""
+                  />
+                  <option
+                    aria-selected="true"
+                    value="122591000"
+                  >
+                    Serum specimen from blood product - 122591000
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div
+            class="grid-row grid-gap"
+          >
+            <div
+              class="grid-col-6 grid-col-mobile"
+            >
+              <div
+                class="usa-form-group"
+              >
+                <label
+                  class="usa-label"
+                  for="44"
+                >
+                  Collection date
+                </label>
+                <input
+                  aria-required="false"
+                  class="usa-input"
+                  id="44"
+                  max="2025-09-24"
+                  min="2020-01-01"
+                  name="specimen-collection-date"
+                  type="date"
+                  value="Invalid date"
+                />
+              </div>
+            </div>
+            <div
+              class="grid-col-6 grid-col-mobile"
+            >
+              <div
+                class="usa-form-group"
+              >
+                <label
+                  class="usa-label"
+                  for="45"
+                >
+                  Collection time
+                </label>
+                <input
+                  aria-required="false"
+                  class="usa-input"
+                  id="45"
+                  name="specimen-collection-time"
+                  step="60"
+                  type="time"
+                  value="Invalid date"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class="grid-row grid-gap"
+          >
+            <div
+              class="grid-col-6 grid-col-mobile"
+            >
+              <div
+                class="usa-form-group prime-dropdown  card-dropdown"
+              >
+                <label
+                  class="usa-label"
+                  for="46"
+                >
+                  Specimen site (optional)
+                </label>
+                <select
+                  aria-required="false"
+                  class="usa-select"
+                  id="46"
+                  name="specimen-collection-body-site"
+                >
+                  <option
+                    aria-selected="true"
+                    value=""
+                  >
+                    No collection location available
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div
+              class="grid-col-auto"
+            >
+              <h3
+                class="margin-bottom-0 margin-top-5"
+              >
+                Test result information
+              </h3>
+              <p>
+                The lab order and specimen you selected has one corresponding test result associated with it. Please fill out the test result details below.
+              </p>
+            </div>
+          </div>
+          <div
+            class="margin-top-2"
+          >
+            <div
+              class="grid-row grid-gap flex-justify"
+            >
+              <div
+                class="grid-col-auto"
+              >
+                <h4
+                  class="margin-bottom-0"
+                >
+                  Result 
+                  1
+                   -
+                   
+                  Saint Louis encephalitis virus Ab [Presence] in Serum by Immunoassay
+                </h4>
+              </div>
+            </div>
+            <div
+              class="grid-row grid-gap"
+            >
+              <div
+                class="grid-col-3 grid-col-mobile"
+              >
+                <div
+                  class="usa-form-group"
+                >
+                  <fieldset
+                    class="usa-fieldset prime-radios"
+                    data-testid="test-detail-8023-4-test-result-type"
+                    id="test-detail-8023-4-test-result-type"
+                  >
+                    <legend
+                      class="usa-legend"
+                    >
+                      Test result type
+                    </legend>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          checked=""
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="47-val-ORDINAL"
+                          name="test-detail-8023-4-test-result-type"
+                          type="radio"
+                          value="ORDINAL"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-test-detail-8023-4-test-result-type-ORDINAL"
+                          for="47-val-ORDINAL"
+                        >
+                          ORDINAL
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="47-val-QUANTITATIVE"
+                          name="test-detail-8023-4-test-result-type"
+                          type="radio"
+                          value="QUANTITATIVE"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-test-detail-8023-4-test-result-type-QUANTITATIVE"
+                          for="47-val-QUANTITATIVE"
+                        >
+                          QUANTITATIVE
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="47-val-NOMINAL"
+                          name="test-detail-8023-4-test-result-type"
+                          type="radio"
+                          value="NOMINAL"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-test-detail-8023-4-test-result-type-NOMINAL"
+                          for="47-val-NOMINAL"
+                        >
+                          NOMINAL
+                        </label>
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+              <div
+                class="grid-col-3 grid-col-mobile"
+              >
+                <div
+                  class="usa-form-group"
+                >
+                  <fieldset
+                    class="usa-fieldset prime-radios"
+                    data-testid="test-detail-8023-4-test-result-value"
+                    id="test-detail-8023-4-test-result-value"
+                  >
+                    <legend
+                      class="usa-legend"
+                    >
+                      Test result value
+                    </legend>
+                    <div
+                      class=""
+                    >
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="48-val-260373001"
+                          name="test-detail-8023-4-test-result-value"
+                          type="radio"
+                          value="260373001"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-test-detail-8023-4-test-result-value-260373001"
+                          for="48-val-260373001"
+                        >
+                          Positive (+)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="48-val-260415000"
+                          name="test-detail-8023-4-test-result-value"
+                          type="radio"
+                          value="260415000"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-test-detail-8023-4-test-result-value-260415000"
+                          for="48-val-260415000"
+                        >
+                          Negative (-)
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="48-val-455371000124106"
+                          name="test-detail-8023-4-test-result-value"
+                          type="radio"
+                          value="455371000124106"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          data-cy="radio-group-option-test-detail-8023-4-test-result-value-455371000124106"
+                          for="48-val-455371000124106"
+                        >
+                          Undetermined
+                        </label>
+                      </div>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row grid-gap"
+            >
+              <div
+                class="grid-col-6 grid-col-mobile"
+              >
+                <div
+                  class="usa-form-group"
+                >
+                  <label
+                    class="usa-label"
+                    for="49"
+                  >
+                    Result date
+                  </label>
+                  <input
+                    aria-required="false"
+                    class="usa-input"
+                    id="49"
+                    max="2025-09-24"
+                    min="2020-01-01"
+                    name="test-detail-8023-4-test-result-date"
+                    type="date"
+                    value="Invalid date"
+                  />
+                </div>
+              </div>
+              <div
+                class="grid-col-6 grid-col-mobile"
+              >
+                <div
+                  class="usa-form-group"
+                >
+                  <label
+                    class="usa-label"
+                    for="50"
+                  >
+                    Result time
+                  </label>
+                  <input
+                    aria-required="false"
+                    class="usa-input"
+                    id="50"
+                    name="test-detail-8023-4-test-result-time"
+                    step="60"
+                    type="time"
+                    value="Invalid date"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row grid-gap"
+            >
+              <div
+                class="grid-col-6 grid-col-mobile"
+              >
+                <div
+                  class="usa-form-group"
+                >
+                  <label
+                    class="usa-label"
+                    data-testid="label"
+                    for="test-detail-8023-4-test-result-interpretation"
+                  >
+                    Notes (optional)
+                  </label>
+                  <textarea
+                    class="usa-textarea interpretation-textarea"
+                    data-testid="textarea"
+                    id="test-detail-8023-4-test-result-interpretation"
+                    maxlength="10000"
+                    name="test-detail-8023-4-test-result-interpretation"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="usa-form-group report-form-controls"
+          >
+            <button
+              class="usa-button margin-right-2 margin-top-3"
+              data-testid="button"
+              type="button"
+            >
+              Next: 
+              Review and submit
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-arrow-right "
+                data-icon="arrow-right"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
+                  fill="currentColor"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

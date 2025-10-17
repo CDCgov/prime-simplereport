@@ -6,8 +6,8 @@ query GetConditions {
   }
 }
 
-query GetLabsByConditions($conditionCodes: [String!]) {
-  labs(conditionCodes: $conditionCodes) {
+query GetAllLabs {
+  labs {
     code
     display
     description
