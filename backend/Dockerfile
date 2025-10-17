@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17.0.8_7-jdk as build
+FROM eclipse-temurin:24.0.2_12-jdk as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 WORKDIR /app/
@@ -9,7 +9,7 @@ ADD .git /app/.git
 # compile backend into a jar
 RUN cd backend && ./gradlew clean build -x test -x checkstyleMain -x spotlessCheck
 
-FROM eclipse-temurin:17.0.8_7-jre
+FROM eclipse-temurin:24.0.2_12-jre
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 COPY --from=build /app/backend/build/libs/*.jar app.jar

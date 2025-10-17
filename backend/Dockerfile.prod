@@ -21,7 +21,7 @@ COPY --chown=gradle:gradle ./backend/lombok.config lombok.config
 
 RUN gradle --no-daemon assemble
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 EXPOSE 8080
 COPY --from=build /home/gradle/graphql-api/backend/build/libs/*.jar app.jar
 COPY --from=build  /home/gradle/graphql-api/backend/insights.jar insights.jar
