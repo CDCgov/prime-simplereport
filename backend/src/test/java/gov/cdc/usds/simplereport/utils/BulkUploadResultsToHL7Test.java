@@ -335,7 +335,7 @@ public class BulkUploadResultsToHL7Test {
     Date fixedDate = Date.from(Instant.parse("2023-05-24T19:33:06Z"));
     when(mockedDateGenerator.newDate()).thenReturn(fixedDate);
 
-    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, dateGenerator);
+    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, mockedDateGenerator);
     BulkUploadResultsToHL7 localSut =
         new BulkUploadResultsToHL7(
             hl7Converter, gitProperties, mockedDateGenerator, resultsUploaderCachingService);
