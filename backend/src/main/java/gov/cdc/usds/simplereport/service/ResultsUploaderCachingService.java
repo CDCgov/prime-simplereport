@@ -52,7 +52,7 @@ public class ResultsUploaderCachingService {
           Map.entry("nasal", NASAL_SWAB_SNOMED),
           Map.entry("varied", NASAL_SWAB_SNOMED),
           Map.entry("nasopharyngeal swab", "258500001"),
-          Map.entry("mid-turbinate nasal swab", "871810001"),
+          Map.entry("mid-turbinate nasal swab", "1293160008"),
           Map.entry("anterior nares swab", "697989009"),
           Map.entry("anterior nasal swab", "697989009"),
           Map.entry("nasopharyngeal aspirate", "258411007"),
