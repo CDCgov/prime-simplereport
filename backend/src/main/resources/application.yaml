@@ -102,7 +102,6 @@ smarty-streets:
 simple-report:
   data-retention:
     retention-days: 30
-    batch-size: 1000
     max-execution-time-minutes: 120
   id-verification-reminders:
     enabled: false
