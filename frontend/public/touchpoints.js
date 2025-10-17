@@ -57,7 +57,7 @@ function FBAform(d) {
     },
     loadCss: function () {
       const urlPrefix = String(window.location.href).includes("localhost")
-        ? ""
+        ? "/"
         : "/app/static/";
       let link = document.createElement("link");
       link.rel = "stylesheet";
@@ -761,7 +761,7 @@ var touchpointsFormHtmlString = `
                   <img class="usa-banner__header-flag" src="https://touchpoints.app.cloud.gov/assets/us_flag_small-9c507b1ff21f65c4b8f0c45d0e0d0a10bb5c9864c1a76e07aa3293da574968a1.png" alt="U.S. flag">
                 </div>
                 <div class="grid-col-fill tablet:grid-col-auto">
-                  <p class="usa-banner__header-text">
+                  <p class="usa-banner__header-text text-base">
                     An official form of the United States government.
                     Provided by
                     <a href="https://touchpoints.app.cloud.gov/" target="_blank" rel="noopener">Touchpoints</a>

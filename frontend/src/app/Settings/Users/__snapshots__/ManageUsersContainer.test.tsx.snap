@@ -295,7 +295,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               </div>
               <button
                 aria-disabled="false"
-                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                 type="button"
               >
                 Edit name
@@ -318,7 +318,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               </div>
               <button
                 aria-disabled="false"
-                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                 type="button"
               >
                 Edit email
@@ -351,7 +351,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               </div>
               <button
                 aria-disabled="false"
-                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                 type="button"
               >
                 Send password reset email
@@ -376,7 +376,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               </div>
               <button
                 aria-disabled="false"
-                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                 type="button"
               >
                 Reset MFA
@@ -399,7 +399,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               </div>
               <button
                 aria-disabled="false"
-                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                class="usa-button usa-button--secondary margin-left-auto margin-bottom-1"
                 type="button"
               >
                 Delete user

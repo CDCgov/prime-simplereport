@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
-import siteLogo from "../../img/simplereport-logo-color.svg";
+import siteLogo from "../../img/simplereport-logo-white.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
@@ -321,7 +321,9 @@ const Header: React.FC<{}> = () => {
               alt={process.env.REACT_APP_TITLE}
             />
           </LinkWithQuery>
-          <div className="prime-organization-name">{organization.name}</div>
+          <div className="prime-organization-name margin-left-4">
+            {organization.name}
+          </div>
         </div>
 
         <button

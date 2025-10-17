@@ -1,5 +1,7 @@
+@use "../../scss/settings" as *;
+
 .sr-actions-menu {
-  color: #005ea2;
+  color: $blue-cool-70;
   background: inherit;
   padding: 0;
   border: 0;

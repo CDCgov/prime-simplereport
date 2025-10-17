@@ -1,5 +1,11 @@
+@use "../scss/settings" as *;
+
 @media print {
   .header {
     display: none;
   }
+}
+
+.prime-organization-name {
+  font-size: $size-body-3xs;
 }

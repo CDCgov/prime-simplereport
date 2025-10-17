@@ -34,14 +34,14 @@ const PatientHeader = () => {
             />
             <div className="logo-text margin-left-1 display-flex flex-column">
               <span
-                className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold"
+                className="prime-organization-name margin-left-0 font-body-md text-bold text-base-lighter"
                 data-testid="banner-text"
               >
                 {organizationName &&
                   facilityName &&
                   `${organizationName}, ${facilityName}`}
               </span>
-              <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">
+              <span className="prime-organization-name margin-left-0 margin-top-05 text-base-lighter">
                 {t("header")}
               </span>
             </div>
