@@ -34,7 +34,7 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
           .replaceAll("[\u2028\u2029]", "");
     } catch (IOException e) {
       throw new TestEventSerializationFailureException(
-          testEvent.getInternalId(), e.getCause().getMessage());
+          testEvent.getInternalId(), e.getCause().getMessage(), "Covid");
     }
   }
 }
