@@ -141,7 +141,10 @@ public class PatientBulkUploadServiceAsync {
                         : List.of(extractedData.getEmail().getValue()))
                 .race(convertRaceToDatabaseValue(extractedData.getRace().getValue()))
                 .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
-                .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
+                .gender(
+                    StringUtils.isBlank(extractedData.getSex().getValue())
+                        ? null
+                        : convertSexToDatabaseValue(extractedData.getSex().getValue()))
                 .genderIdentity(
                     StringUtils.isBlank(extractedData.getGenderIdentity().getValue())
                         ? null
