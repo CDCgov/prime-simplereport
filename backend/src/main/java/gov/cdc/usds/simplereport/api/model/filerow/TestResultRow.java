@@ -36,6 +36,7 @@ import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
+import io.micrometer.common.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -130,6 +131,7 @@ public class TestResultRow implements FileRow {
   static final String PATIENT_PHONE_NUMBER = "patient_phone_number";
   static final String PATIENT_DOB = "patient_dob";
   static final String PATIENT_GENDER = "patient_gender";
+  static final String PATIENT_SEX = "patient_sex";
   static final String PATIENT_RACE = "patient_race";
   static final String PATIENT_ETHNICITY = "patient_ethnicity";
   static final String ACCESSION_NUMBER = "accession_number";
@@ -336,7 +338,6 @@ public class TestResultRow implements FileRow {
           PATIENT_COUNTY,
           PATIENT_PHONE_NUMBER,
           PATIENT_DOB,
-          PATIENT_GENDER,
           PATIENT_RACE,
           PATIENT_ETHNICITY,
           ACCESSION_NUMBER,
@@ -385,7 +386,6 @@ public class TestResultRow implements FileRow {
     patientCounty = getValue(rawRow, PATIENT_COUNTY, isRequired(PATIENT_COUNTY));
     patientPhoneNumber = getValue(rawRow, PATIENT_PHONE_NUMBER, isRequired(PATIENT_PHONE_NUMBER));
     patientDob = getValue(rawRow, PATIENT_DOB, isRequired(PATIENT_DOB));
-    patientGender = getValue(rawRow, PATIENT_GENDER, isRequired(PATIENT_GENDER));
     patientRace = getValue(rawRow, PATIENT_RACE, isRequired(PATIENT_RACE));
     patientEthnicity = getValue(rawRow, PATIENT_ETHNICITY, isRequired(PATIENT_ETHNICITY));
     patientPreferredLanguage =
@@ -469,6 +469,17 @@ public class TestResultRow implements FileRow {
     gendersOfSexualPartners =
         getValue(rawRow, GENDERS_OF_SEXUAL_PARTNERS, isRequired(GENDERS_OF_SEXUAL_PARTNERS));
     syphilisHistory = getValue(rawRow, SYPHILIS_HISTORY, isRequired(SYPHILIS_HISTORY));
+
+    boolean isPatientSexRequired = isRequired(PATIENT_GENDER) || isRequired(PATIENT_SEX);
+    ValueOrError tempPatientGender = getValue(rawRow, PATIENT_SEX, isPatientSexRequired);
+
+    // Fallback to legacy header for backwards compatibility
+    if (!tempPatientGender.getError().isEmpty()
+        || StringUtils.isBlank(tempPatientGender.getValue())) {
+      tempPatientGender = getValue(rawRow, PATIENT_GENDER, isPatientSexRequired);
+    }
+
+    patientGender = tempPatientGender;
     patientGenderIdentity =
         getValue(rawRow, PATIENT_GENDER_IDENTITY, isRequired(PATIENT_GENDER_IDENTITY));
   }

@@ -1,2 +1,2 @@
-last_name,first_name,race,date_of_birth,ethnicity,street,state,zip_code,phone_number,phone_number_type,employed_in_healthcare,resident_congregate_setting
-Doe,Jane,black or african american,01/01/90,Not Hispanic or Latino,1 main st,AK,99551,410-867-5309,mobile,Y,n
+last_name,first_name,race,date_of_birth,biological_sex,ethnicity,street,state,zip_code,phone_number,phone_number_type,employed_in_healthcare,resident_congregate_setting
+Doe,Jane,black or african american,01/01/90,female,Not Hispanic or Latino,1 main st,AK,99551,410-867-5309,mobile,Y,n
