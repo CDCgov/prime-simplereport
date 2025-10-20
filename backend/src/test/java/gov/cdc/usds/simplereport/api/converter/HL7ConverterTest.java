@@ -279,10 +279,13 @@ class HL7ConverterTest {
   @Test
   void populateMessageHeader_valid() throws DataTypeException {
     MSH msh = new ORU_R01().getMSH();
+    String facilityName = "Test Facility";
     String clia = "12D1234567";
 
-    hl7Converter.populateMessageHeader(msh, clia, "T", Date.from(STATIC_INSTANT));
+    hl7Converter.populateMessageHeader(msh, facilityName, clia, "T", Date.from(STATIC_INSTANT));
 
+    assertThat(msh.getMsh4_SendingFacility().getHd1_NamespaceID().getValue())
+        .isEqualTo(facilityName);
     assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue()).isEqualTo(clia);
     assertThat(msh.getMsh7_DateTimeOfMessage().getTs1_Time().getValue())
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
@@ -293,12 +296,15 @@ class HL7ConverterTest {
   @Test
   void populateMessageHeader_throwsExceptionFor_invalidProcessingId() {
     MSH msh = new ORU_R01().getMSH();
+    String facilityName = "Test Facility";
     String clia = "12D1234567";
 
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> hl7Converter.populateMessageHeader(msh, clia, "F", Date.from(STATIC_INSTANT)));
+            () ->
+                hl7Converter.populateMessageHeader(
+                    msh, facilityName, clia, "F", Date.from(STATIC_INSTANT)));
     assertThat(exception.getMessage())
         .isEqualTo(
             "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
