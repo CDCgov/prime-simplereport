@@ -143,10 +143,7 @@ public class CsvValidatorUtils {
       Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_SNOMED, DETECTED_SNOMED);
 
   private static final Set<String> TEST_RESULT_GENDER_VALUES =
-      Set.of(
-          "m", MALE_LITERAL,
-          "f", FEMALE_LITERAL,
-          "u", UNKNOWN_LITERAL);
+      Set.of("m", MALE_LITERAL, "f", FEMALE_LITERAL, UNKNOWN_LITERAL);
 
   private static final Set<String> PATIENT_UPLOAD_BIOLOGICAL_SEX_VALUES =
       Set.of(
