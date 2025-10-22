@@ -49,7 +49,6 @@ class TestResultRowTest {
           "date_result_released",
           "patient_email",
           "patient_race",
-          "patient_gender",
           "patient_ethnicity",
           "pregnant",
           "employed_in_healthcare",
@@ -377,7 +376,6 @@ class TestResultRowTest {
     invalidIndividualFields.put("date_result_released", "0/0/00");
     invalidIndividualFields.put("patient_email", "a");
     invalidIndividualFields.put("patient_race", "black");
-    invalidIndividualFields.put("patient_gender", "woman");
     invalidIndividualFields.put("patient_ethnicity", "not hispanic");
     invalidIndividualFields.put("pregnant", "not");
     invalidIndividualFields.put("employed_in_healthcare", "not");
