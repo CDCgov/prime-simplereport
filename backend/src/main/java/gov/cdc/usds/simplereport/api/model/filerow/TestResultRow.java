@@ -36,11 +36,11 @@ import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
-import io.micrometer.common.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 public class TestResultRow implements FileRow {
@@ -471,7 +471,6 @@ public class TestResultRow implements FileRow {
     syphilisHistory = getValue(rawRow, SYPHILIS_HISTORY, isRequired(SYPHILIS_HISTORY));
 
     boolean isPatientGenderRequired = isRequired(PATIENT_GENDER) || isRequired(PATIENT_SEX);
-
     if (rawRow.containsKey(PATIENT_SEX) && !StringUtils.isBlank(rawRow.get(PATIENT_SEX))) {
       patientGender = getGenderValue(rawRow, PATIENT_SEX, isPatientGenderRequired);
     } else {
