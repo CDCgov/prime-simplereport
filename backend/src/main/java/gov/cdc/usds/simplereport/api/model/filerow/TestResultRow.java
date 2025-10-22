@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_B_NAME;
 import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_RNA_NAME;
 import static gov.cdc.usds.simplereport.service.DiseaseService.RSV_NAME;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ITEM_SCOPE;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getGenderValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateClia;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
@@ -18,7 +19,6 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePho
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRequiredFieldsForPositiveResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateResidence;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResult;
@@ -470,16 +470,14 @@ public class TestResultRow implements FileRow {
         getValue(rawRow, GENDERS_OF_SEXUAL_PARTNERS, isRequired(GENDERS_OF_SEXUAL_PARTNERS));
     syphilisHistory = getValue(rawRow, SYPHILIS_HISTORY, isRequired(SYPHILIS_HISTORY));
 
-    boolean isPatientSexRequired = isRequired(PATIENT_GENDER) || isRequired(PATIENT_SEX);
-    ValueOrError tempPatientGender = getValue(rawRow, PATIENT_SEX, isPatientSexRequired);
+    boolean isPatientGenderRequired = isRequired(PATIENT_GENDER) || isRequired(PATIENT_SEX);
 
-    // Fallback to legacy header for backwards compatibility
-    if (!tempPatientGender.getError().isEmpty()
-        || StringUtils.isBlank(tempPatientGender.getValue())) {
-      tempPatientGender = getValue(rawRow, PATIENT_GENDER, isPatientSexRequired);
+    if (rawRow.containsKey(PATIENT_SEX) && !StringUtils.isBlank(rawRow.get(PATIENT_SEX))) {
+      patientGender = getGenderValue(rawRow, PATIENT_SEX, isPatientGenderRequired);
+    } else {
+      patientGender = getGenderValue(rawRow, PATIENT_GENDER, isPatientGenderRequired);
     }
 
-    patientGender = tempPatientGender;
     patientGenderIdentity =
         getValue(rawRow, PATIENT_GENDER_IDENTITY, isRequired(PATIENT_GENDER_IDENTITY));
   }
@@ -653,7 +651,6 @@ public class TestResultRow implements FileRow {
 
     errors.addAll(validateEmail(patientEmail));
     errors.addAll(validateRace(patientRace));
-    errors.addAll(validateSex(patientGender));
     errors.addAll(validateEthnicity(patientEthnicity));
 
     errors.addAll(validateYesNoUnknownAnswer(pregnant));

@@ -50,7 +50,6 @@ class FileValidatorTest {
           "patient_county",
           "patient_phone_number",
           "patient_dob",
-          "patient_gender",
           "patient_race",
           "patient_ethnicity",
           "accession_number",
@@ -384,7 +383,7 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
     List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
-    assertThat(errors).hasSize(67);
+    assertThat(errors).hasSize(65);
     errors.forEach(
         error -> {
           String errorMessage = error.getMessage();

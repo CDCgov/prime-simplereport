@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.model.filerow;
 
 import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.isAddressUnknown;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
@@ -12,7 +13,6 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePho
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumberType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRole;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateState;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoUnknownAnswer;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
@@ -131,7 +131,7 @@ public class PatientUploadRow implements FileRow {
     // demographics
     errors.addAll(validateFlexibleDate(dateOfBirth));
     errors.addAll(validateRace(race));
-    errors.addAll(validateSex(biologicalSex));
+    errors.addAll(validateBiologicalSex(biologicalSex));
     errors.addAll(validateEthnicity(ethnicity));
     errors.addAll(validateGenderIdentity(genderIdentity));
 

@@ -141,7 +141,14 @@ public class CsvValidatorUtils {
   private static final String INVALID_RESULT_LITERAL = "invalid result";
   private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
       Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_SNOMED, DETECTED_SNOMED);
-  private static final Set<String> GENDER_VALUES =
+
+  private static final Set<String> TEST_RESULT_GENDER_VALUES =
+      Set.of(
+          "m", MALE_LITERAL,
+          "f", FEMALE_LITERAL,
+          "u", UNKNOWN_LITERAL);
+
+  private static final Set<String> PATIENT_UPLOAD_BIOLOGICAL_SEX_VALUES =
       Set.of(
           "m", MALE_LITERAL,
           "f", FEMALE_LITERAL,
@@ -342,8 +349,12 @@ public class CsvValidatorUtils {
     return validateInSet(input, RACE_VALUES);
   }
 
-  public static List<FeedbackMessage> validateSex(ValueOrError input) {
-    return validateInSet(input, GENDER_VALUES);
+  public static List<FeedbackMessage> validateGender(ValueOrError input) {
+    return validateInSet(input, TEST_RESULT_GENDER_VALUES);
+  }
+
+  public static List<FeedbackMessage> validateBiologicalSex(ValueOrError input) {
+    return validateInSet(input, PATIENT_UPLOAD_BIOLOGICAL_SEX_VALUES);
   }
 
   public static List<FeedbackMessage> validateGenderIdentity(ValueOrError input) {
@@ -521,6 +532,19 @@ public class CsvValidatorUtils {
     return new ValueOrError(value, name, isRequired);
   }
 
+  public static ValueOrError getGenderValue(
+      Map<String, String> row, String name, boolean isRequired) {
+    ValueOrError patientGender = getValue(row, name, isRequired);
+    List<FeedbackMessage> errors = validateGender(patientGender);
+
+    if (!errors.isEmpty()) {
+      // If there are validation errors, fallback to `unknown` gender
+      return new ValueOrError(UNKNOWN_LITERAL, name, isRequired);
+    }
+
+    return patientGender;
+  }
+
   public static List<FeedbackMessage> hasMissingRequiredHeaders(
       Map<String, String> row, FileRow fileRow) {
     List<FeedbackMessage> errors = new ArrayList<>();
@@ -607,7 +631,7 @@ public class CsvValidatorUtils {
     return displayValueToDatabaseValue.get(race.toLowerCase());
   }
 
-  public static String convertSexToDatabaseValue(String sex) {
+  public static String convertSexToDatabaseValue(String biologicalSex) {
     // fun fact: Map.of() has a limit of 10 key/value pairs
     Map<String, String> displayValueToDatabaseValue =
         Map.ofEntries(
@@ -624,7 +648,7 @@ public class CsvValidatorUtils {
             Map.entry("n", OTHER_LITERAL),
             Map.entry("not applicable", OTHER_LITERAL));
 
-    return displayValueToDatabaseValue.get(sex.toLowerCase());
+    return displayValueToDatabaseValue.get(biologicalSex.toLowerCase());
   }
 
   private static List<FeedbackMessage> validateSpecificValueOrSNOMED(ValueOrError input) {
