@@ -63,7 +63,7 @@ public class TestEvent extends BaseTestInfo {
 
   private Boolean patientHasPriorTests;
 
-  @Column private Boolean piiDeleted;
+  @JsonIgnore @Column private Boolean piiDeleted;
 
   public TestEvent() {}
 

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.api.model.ReportStreamCallbackRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +30,7 @@ public class ReportStreamResponse extends IdentifiedEntity {
 
   private String queueName;
 
-  private Boolean piiDeleted;
+  @Column @JsonIgnore private Boolean piiDeleted;
 
   @Column(updatable = false)
   @CreatedDate

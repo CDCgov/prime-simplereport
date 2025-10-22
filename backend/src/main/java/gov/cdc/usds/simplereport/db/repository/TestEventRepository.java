@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,13 +27,15 @@ import org.springframework.data.repository.query.Param;
 public interface TestEventRepository
     extends AuditedEntityRepository<TestEvent>, JpaSpecificationExecutor<TestEvent> {
 
+  @Override
+  @NotNull
   @Query(
       """
     SELECT te FROM TestEvent te
     WHERE te.internalId = :internalId
       AND (te.piiDeleted IS NULL OR te.piiDeleted = false)
   """)
-  Optional<TestEvent> findById(@Param("internalId") UUID internalId);
+  Optional<TestEvent> findById(@NotNull @Param("internalId") UUID internalId);
 
   // only used in tests?
   @Query(

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -36,7 +37,7 @@ public class ResultUploadError extends AuditedEntity {
 
   @Column private String message;
 
-  @Column @Getter private Boolean piiDeleted;
+  @JsonIgnore @Column @Getter private Boolean piiDeleted;
 
   protected ResultUploadError() {}
 

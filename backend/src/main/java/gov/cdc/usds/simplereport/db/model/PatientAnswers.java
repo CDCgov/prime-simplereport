@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
@@ -13,7 +14,7 @@ public class PatientAnswers extends AuditedEntity {
   @Type(JsonBinaryType.class)
   private AskOnEntrySurvey askOnEntry;
 
-  @Column @Getter private Boolean piiDeleted;
+  @JsonIgnore @Column @Getter private Boolean piiDeleted;
 
   protected PatientAnswers() {
     /* for hibernate */

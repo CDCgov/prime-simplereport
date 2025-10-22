@@ -30,7 +30,7 @@ public class PhoneNumber extends AuditedEntity {
 
   @Column private String number;
 
-  @Column @Getter private Boolean piiDeleted;
+  @JsonIgnore @Column @Getter private Boolean piiDeleted;
 
   public PhoneNumber() {
     /* For Hibernate */

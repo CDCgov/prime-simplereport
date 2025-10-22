@@ -116,7 +116,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @Column(columnDefinition = "TEST_RESULT_DELIVERY")
   private TestResultDeliveryPreference testResultDeliveryPreference;
 
-  @Column @Getter private Boolean piiDeleted;
+  @JsonIgnore @Column @Getter private Boolean piiDeleted;
 
   protected Person() {
     /* for hibernate */

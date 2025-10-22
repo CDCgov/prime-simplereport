@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -18,13 +19,15 @@ import org.springframework.data.repository.query.Param;
 /** Interface specification for fetching and manipulating {@link Person} entities */
 public interface PersonRepository extends EternalAuditedEntityRepository<Person> {
 
+  @Override
+  @NotNull
   @Query(
       """
     SELECT person FROM Person person
     WHERE person.internalId = :internalId
       AND (person.piiDeleted IS NULL OR person.piiDeleted = false)
   """)
-  Optional<Person> findById(@Param("internalId") UUID internalId);
+  Optional<Person> findById(@NotNull @Param("internalId") UUID internalId);
 
   List<Person> findAll(Specification<Person> searchSpec, Pageable p);
 

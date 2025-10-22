@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SupportedDiseaseTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -47,7 +48,7 @@ public class Result extends EternalAuditedEntity {
   @Enumerated(EnumType.STRING)
   private TestResult testResult;
 
-  @Column private Boolean piiDeleted;
+  @JsonIgnore @Column private Boolean piiDeleted;
 
   public Result(SupportedDisease disease, TestResult testResult) {
     this.disease = disease;
