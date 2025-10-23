@@ -1,6 +1,6 @@
 import {
-  Condition,
   FacilityReportInput,
+  Lab,
   PatientReportInput,
   ProviderReportInput,
   ResultScaleType,
@@ -126,14 +126,19 @@ export const ResultScaleTypeOptions: {
   },
 ];
 
-export const buildConditionsOptionList = (conditions: Condition[]) => {
-  const options = conditions.map((condition) => {
-    const fullConditiondisplay = condition.snomedName
-      ? `${condition.display} - ${condition.snomedName} - ${condition.code}`
-      : `${condition.display} - ${condition.code}`;
+export const buildLabDataOptionList = (labs: Lab[]) => {
+  if (labs.length === 0) {
+    return [
+      {
+        value: "",
+        label: "No labs found",
+      },
+    ];
+  }
+  const options = labs.map((lab) => {
     return {
-      value: condition.code,
-      label: fullConditiondisplay,
+      value: lab.code,
+      label: lab.display,
     };
   });
   options.sort((a, b) => a.label.localeCompare(b.label));
