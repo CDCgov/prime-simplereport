@@ -154,7 +154,11 @@ public class HL7Converter {
 
     MSH messageHeader = message.getMSH();
     populateMessageHeader(
-        messageHeader, performingFacility.getClia(), processingId, messageTimestamp);
+        messageHeader,
+        performingFacility.getName(),
+        performingFacility.getClia(),
+        processingId,
+        messageTimestamp);
 
     SFT softwareSegment = message.getSFT();
     populateSoftwareSegment(softwareSegment, gitProperties);
@@ -253,6 +257,7 @@ public class HL7Converter {
    * timestamp, etc. See page 90, HL7 v2.5.1 IG.
    *
    * @param msh the Message Header Segment (MSH) object from the message
+   * @param sendingFacilityName facility name
    * @param sendingFacilityClia CLIA number for the facility sending the lab report
    * @param processingId Indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
@@ -264,7 +269,11 @@ public class HL7Converter {
    *     processing id is not T, D, or P
    */
   void populateMessageHeader(
-      MSH msh, String sendingFacilityClia, String processingId, Date messageTimestamp)
+      MSH msh,
+      String sendingFacilityName,
+      String sendingFacilityClia,
+      String processingId,
+      Date messageTimestamp)
       throws DataTypeException, IllegalArgumentException {
     if (!sendingFacilityClia.matches(CLIA_REGEX)) {
       throw new IllegalArgumentException("Sending facility CLIA number must match CLIA format");
@@ -280,6 +289,7 @@ public class HL7Converter {
     msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
+    msh.getMsh4_SendingFacility().getHd1_NamespaceID().setValue(sendingFacilityName);
     msh.getMsh4_SendingFacility().getHd2_UniversalID().setValue(sendingFacilityClia);
     // CLIA is allowed for MSH-4 even though it is not in the Universal ID Type value set of HL70301
     msh.getMsh4_SendingFacility().getHd3_UniversalIDType().setValue("CLIA");
