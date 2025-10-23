@@ -1595,6 +1595,104 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
             <h5
               class="margin-bottom-2"
               data-testid="header"
+              id="patient_sex"
+            >
+              Patient sex
+              <span
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom"
+              >
+                Optional
+              </span>
+            </h5>
+            <div
+              class="margin-bottom-3"
+              data-testid="subheader"
+            />
+            <div
+              class="grid-row margin-bottom-05"
+              data-testid="column-header"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Column header
+              </div>
+              <div
+                class="grid-col-auto"
+              >
+                <code>
+                  patient_sex
+                </code>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="description"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Description
+              </div>
+              <div
+                class="grid-col-8"
+              >
+                <div>
+                  Biological sex
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="accepted-values"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Accepted values
+              </div>
+              <ul
+                class="grid-col-8 prime-ul margin-top-0"
+              >
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      Female
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      F
+                    </code>
+                  </mark>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <mark>
+                    <code>
+                      Male
+                    </code>
+                  </mark>
+                   or 
+                  <mark>
+                    <code>
+                      M
+                    </code>
+                  </mark>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="rs-documentation__values margin-top-6"
+          >
+            <h5
+              class="margin-bottom-2"
+              data-testid="header"
               id="patient_preferred_language"
             >
               Patient preferred language 
