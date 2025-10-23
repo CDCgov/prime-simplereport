@@ -44,7 +44,7 @@ const DiseaseSpecificUploadContainer = () => {
       uploadResults={FileUploadService.uploadResults}
       uploadType={"Disease Specific"}
       spreadsheetTemplateLocation={
-        "/assets/resources/test_results_example_01-31-2025.csv"
+        "/assets/resources/test_results_example_10-23-2025.csv"
       }
       uploadGuideLocation={"/results/upload/submit/guide"}
     />
