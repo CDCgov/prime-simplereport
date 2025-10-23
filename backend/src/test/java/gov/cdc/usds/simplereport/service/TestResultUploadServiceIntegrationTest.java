@@ -60,7 +60,8 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
             null,
             null,
             Pipeline.COVID,
-            null));
+            null,
+            false));
 
     mockCreationTime("2021-02-17 00:00");
     uploadRepository.save(
@@ -73,6 +74,7 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
             null,
             null,
             Pipeline.UNIVERSAL,
+            null,
             null));
 
     mockCreationTime("2022-02-17 00:00");
@@ -86,6 +88,7 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
             null,
             null,
             Pipeline.COVID,
+            null,
             null));
   }
 
@@ -163,7 +166,8 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
             null,
             null,
             Pipeline.COVID,
-            null));
+            null,
+            false));
 
     // WHEN
     Page<TestResultUpload> uploadSubmissions =

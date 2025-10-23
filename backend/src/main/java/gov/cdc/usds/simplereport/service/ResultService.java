@@ -129,6 +129,13 @@ public class ResultService {
                             testEventJoin.get(AuditedEntity_.createdAt), endDate))));
       }
 
+      p =
+          cb.and(
+              p,
+              cb.or(
+                  cb.isFalse(root.get(Result_.piiDeleted)),
+                  cb.isNull(root.get(Result_.piiDeleted))));
+
       return p;
     };
   }

@@ -201,10 +201,12 @@ simple-report-initialization:
       last-name: "Meade"
       birth-date: "01/01/1980"
       organization-external-id: DIS_ORG
+      pii-deleted: false
     - first-name: "Edward"
       last-name: "Eaves"
       birth-date: "01/01/1980"
       organization-external-id: DIS_ORG
+      pii-deleted: false
   conditions:
     - code: 407152001
       display: "Lead in Blood"

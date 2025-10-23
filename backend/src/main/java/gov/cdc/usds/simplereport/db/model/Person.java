@@ -116,6 +116,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @Column(columnDefinition = "TEST_RESULT_DELIVERY")
   private TestResultDeliveryPreference testResultDeliveryPreference;
 
+  @JsonIgnore @Column @Getter private Boolean piiDeleted;
+
   protected Person() {
     /* for hibernate */
   }
@@ -480,6 +482,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     public static final String LAST_NAME = "lastName";
     public static final String BIRTH_DATE = "birthDate";
     public static final String POSTAL_CODE = "postalCode";
+    public static final String PII_DELETED = "piiDeleted";
 
     private SpecField() {} // sonarcloud codesmell
   }

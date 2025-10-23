@@ -174,6 +174,14 @@ public class TestOrderService {
                         cb.isNull(root.get(BaseTestInfo_.dateTestedBackdate)),
                         cb.lessThanOrEqualTo(root.get(AuditedEntity_.createdAt), endDate))));
       }
+
+      p =
+          cb.and(
+              p,
+              cb.or(
+                  cb.isFalse(root.get(TestEvent_.piiDeleted)),
+                  cb.isNull(root.get(TestEvent_.piiDeleted))));
+
       return p;
     };
   }
@@ -348,7 +356,7 @@ public class TestOrderService {
 
       savedEvent = resultService.addResultsToTestEvent(savedEvent, resultsForTestEvent);
 
-      order.setTestEventRef(savedEvent);
+      order.setLatestTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
     } finally {
       unlockOrder(order.getInternalId());
@@ -583,7 +591,7 @@ public class TestOrderService {
         newRemoveEvent = resultService.addResultsToTestEvent(newRemoveEvent, results);
 
         order.setReasonForCorrection(reasonForCorrection);
-        order.setTestEventRef(newRemoveEvent);
+        order.setLatestTestEventRef(newRemoveEvent);
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
         _testOrderRepo.save(order);
 
