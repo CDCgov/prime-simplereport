@@ -80,7 +80,6 @@ class TestResultRowTest {
     validRowMap.put("patient_county", "Jefferson");
     validRowMap.put("patient_phone_number", "205-999-2800");
     validRowMap.put("patient_dob", "1/20/1962");
-    validRowMap.put("patient_gender", "F");
     validRowMap.put("patient_race", "White");
     validRowMap.put("patient_ethnicity", "Not Hispanic or Latino");
     validRowMap.put("patient_preferred_language", "");
@@ -175,9 +174,6 @@ class TestResultRowTest {
         .returns(
             validRowMap.get("patient_dob"),
             from(TestResultRow::getPatientDob).andThen(ValueOrError::getValue))
-        .returns(
-            validRowMap.get("patient_gender"),
-            from(TestResultRow::getPatientGender).andThen(ValueOrError::getValue))
         .returns(
             validRowMap.get("patient_race"),
             from(TestResultRow::getPatientRace).andThen(ValueOrError::getValue))
@@ -559,6 +555,50 @@ class TestResultRowTest {
             assertThat(message.getMessage())
                 .contains(
                     "This is required because the row contains a positive Chlamydia test result."));
+  }
+
+  @Test
+  void patientGender_shouldPrioritizePatientSexHeader() {
+    Map<String, String> rowMap = validRowMap;
+    rowMap.put("patient_sex", "male");
+    rowMap.put("patient_gender", "female");
+    var row = new TestResultRow(rowMap);
+    assertThat(row.getPatientGender().getValue()).isEqualTo("male");
+  }
+
+  @Test
+  void patientGender_shouldBeOptional() {
+    var row = new TestResultRow(validRowMap); // does not have patient_sex or patient_gender defined
+    assertThat(row.getPatientGender().getValue()).isEqualTo("unknown");
+  }
+
+  @Test
+  void patientGender_shouldFallbackToUnknown() {
+    Map<String, String> rowMap = validRowMap;
+    rowMap.put("patient_sex", "invalid value");
+    rowMap.put("patient_gender", "another invalid value");
+    var row = new TestResultRow(rowMap);
+
+    assertThat(row.getPatientGender().getValue()).isEqualTo("unknown");
+  }
+
+  @Test
+  void patientGender_shouldSupportLegacyHeader() {
+    Map<String, String> rowMap = validRowMap;
+    rowMap.put("patient_gender", "M");
+    var row = new TestResultRow(rowMap);
+
+    assertThat(row.getPatientGender().getValue()).isEqualTo("M");
+  }
+
+  @Test
+  void patientGender_shouldFallbackToLegacyHeader() {
+    Map<String, String> rowMap = validRowMap;
+    rowMap.put("patient_sex", "");
+    rowMap.put("patient_gender", "female");
+    var row = new TestResultRow(rowMap);
+
+    assertThat(row.getPatientGender().getValue()).isEqualTo("female");
   }
 
   @NotNull

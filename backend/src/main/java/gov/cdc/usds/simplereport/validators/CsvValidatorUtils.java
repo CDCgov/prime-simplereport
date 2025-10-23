@@ -534,7 +534,7 @@ public class CsvValidatorUtils {
     ValueOrError patientGender = getValue(row, name, isRequired);
     List<FeedbackMessage> errors = validateGender(patientGender);
 
-    if (!errors.isEmpty()) {
+    if (!errors.isEmpty() || patientGender.getValue() == null) {
       // If there are validation errors, fallback to `unknown` gender
       return new ValueOrError(UNKNOWN_LITERAL, name, isRequired);
     }
