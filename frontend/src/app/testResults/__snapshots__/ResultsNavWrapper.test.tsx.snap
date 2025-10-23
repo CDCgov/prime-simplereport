@@ -9,7 +9,7 @@ exports[`ResultsNav displays the results sub nav when user has the permission 1`
       class="grid-container results-wide-container"
     >
       <div
-        class="usa-alert usa-alert--warning width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
+        class="usa-alert usa-alert--error width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
         role="alert"
       >
         <div
@@ -94,7 +94,7 @@ exports[`ResultsNav doesnt display the results sub nav when user doesnt have the
       class="grid-container results-wide-container"
     >
       <div
-        class="usa-alert usa-alert--warning width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
+        class="usa-alert usa-alert--error width-full margin-bottom-2em margin-top-1em data-retention-limits-alert"
         role="alert"
       >
         <div
