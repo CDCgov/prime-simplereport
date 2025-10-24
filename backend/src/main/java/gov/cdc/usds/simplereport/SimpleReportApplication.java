@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport;
 
+import gov.cdc.usds.simplereport.config.AimsProperties;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.CorsProperties;
@@ -42,7 +43,8 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
   OrderingProviderProperties.class,
   CorsProperties.class,
   AzureStorageQueueReportingProperties.class,
-  SupportEscalationProperties.class
+  SupportEscalationProperties.class,
+  AimsProperties.class
 })
 @EnableAsync
 @EnableScheduling
