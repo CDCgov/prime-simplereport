@@ -293,7 +293,7 @@ public class HL7Converter {
 
     msh.getMsh1_FieldSeparator().setValue("|");
     msh.getMsh2_EncodingCharacters().setValue(ENCODING_CHARS);
-    msh.getMsh3_SendingApplication().getHd1_NamespaceID().setValue("SimpleReport");
+    msh.getMsh3_SendingApplication().getHd1_NamespaceID().setValue(SIMPLE_REPORT_NAME);
     msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
@@ -1190,7 +1190,7 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "FHS",
-                "SimpleReport",
+                SIMPLE_REPORT_NAME,
                 SIMPLE_REPORT_ORG_OID,
                 "ISO",
                 facilityName,
@@ -1209,7 +1209,7 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "BHS",
-                "SimpleReport",
+                SIMPLE_REPORT_NAME,
                 SIMPLE_REPORT_ORG_OID,
                 "ISO",
                 facilityName,

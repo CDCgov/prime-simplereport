@@ -34,7 +34,7 @@ class AimsReportingServiceTest {
   private AimsReportingService aimsReportingService;
 
   @BeforeEach
-  public void setupMocks() {
+  void setupMocks() {
     when(dateGenerator.newDate())
         .thenReturn(Date.from(LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC)));
     when(aimsProperties.getSendingEnvironment()).thenReturn("Test");
@@ -46,7 +46,7 @@ class AimsReportingServiceTest {
   }
 
   @Test
-  public void sendBatchMessageToAims_success() {
+  void sendBatchMessageToAims_success() {
     // GIVEN
     PutObjectResponse putObjectResponse = mock(PutObjectResponse.class, Mockito.RETURNS_DEEP_STUBS);
     when(putObjectResponse.sdkHttpResponse().statusCode()).thenReturn(200);
@@ -62,12 +62,12 @@ class AimsReportingServiceTest {
     // THEN
     assertThat(response.getReportId()).isEqualTo(submissionId);
     assertThat(response.getRecordsCount()).isEqualTo(5);
-    assertThat(response.isSuccess()).isEqualTo(true);
-    assertThat(response.getErrorMessage()).isEqualTo(null);
+    assertThat(response.isSuccess()).isTrue();
+    assertThat(response.getErrorMessage()).isNull();
   }
 
   @Test
-  public void sendBatchMessageToAims_failure() {
+  void sendBatchMessageToAims_failure() {
     // GIVEN
     PutObjectResponse putObjectResponse = mock(PutObjectResponse.class, Mockito.RETURNS_DEEP_STUBS);
     when(putObjectResponse.sdkHttpResponse().statusCode()).thenReturn(500);
@@ -83,13 +83,13 @@ class AimsReportingServiceTest {
     // THEN
     assertThat(response.getReportId()).isEqualTo(submissionId);
     assertThat(response.getRecordsCount()).isEqualTo(5);
-    assertThat(response.isSuccess()).isEqualTo(false);
+    assertThat(response.isSuccess()).isFalse();
     assertThat(response.getErrorMessage())
         .isEqualTo("Status Code %d: Failed to upload submission %s", 500, submissionId);
   }
 
   @Test
-  public void generateFilename_valid() {
+  void generateFilename_valid() {
     // GIVEN
     UUID submissionId = UUID.randomUUID();
 

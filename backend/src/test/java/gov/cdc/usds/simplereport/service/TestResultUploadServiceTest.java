@@ -477,8 +477,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     verify(repoMock, times(2)).save(truCaptor.capture());
     var savedPipelines =
         truCaptor.getAllValues().stream().map(TestResultUpload::getDestination).toList();
-    assertThat(savedPipelines).contains(Pipeline.UNIVERSAL);
-    assertThat(savedPipelines).contains(Pipeline.AIMS);
+    assertThat(savedPipelines).contains(Pipeline.UNIVERSAL).contains(Pipeline.AIMS);
   }
 
   @Test
@@ -560,8 +559,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     verify(repoMock, times(2)).save(truCaptor.capture());
     var savedPipelines =
         truCaptor.getAllValues().stream().map(TestResultUpload::getDestination).toList();
-    assertThat(savedPipelines).contains(Pipeline.UNIVERSAL);
-    assertThat(savedPipelines).contains(Pipeline.AIMS);
+    assertThat(savedPipelines).contains(Pipeline.UNIVERSAL).contains(Pipeline.AIMS);
   }
 
   private InputStream loadCsv(String csvFile) {
