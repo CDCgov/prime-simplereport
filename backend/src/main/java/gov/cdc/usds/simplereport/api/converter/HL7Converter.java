@@ -67,6 +67,22 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
 
+record HeaderSegmentFields(
+    String fieldName,
+    String sendingAppNamespaceId,
+    String sendingAppUniversalId,
+    String sendingAppUniversalIdType,
+    String sendingFacilityNamespaceId,
+    String sendingFacilityUniversalId,
+    String sendingFacilityUniversalIdType,
+    String receivingAppNamespaceId,
+    String receivingAppUniversalId,
+    String receivingAppUniversalIdType,
+    String receivingFacilityNamespaceId,
+    String receivingFacilityUniversalId,
+    String receivingFacilityUniversalIdType,
+    String datetime) {}
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -76,6 +92,7 @@ public class HL7Converter {
   private final UUIDGenerator uuidGenerator;
   // Used for easier mocking of new Date()
   private final DateGenerator dateGenerator;
+  private static final String ENCODING_CHARS = "^~\\&";
 
   /**
    * Creates HL7 message from a single entry TestEvent
@@ -284,8 +301,8 @@ public class HL7Converter {
     }
 
     msh.getMsh1_FieldSeparator().setValue("|");
-    msh.getMsh2_EncodingCharacters().setValue("^~\\&");
-    msh.getMsh3_SendingApplication().getHd1_NamespaceID().setValue("SimpleReport");
+    msh.getMsh2_EncodingCharacters().setValue(ENCODING_CHARS);
+    msh.getMsh3_SendingApplication().getHd1_NamespaceID().setValue(SIMPLE_REPORT_NAME);
     msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
@@ -1120,5 +1137,111 @@ public class HL7Converter {
         .resultDate(resultDate)
         .resultInterpretation(null)
         .build();
+  }
+
+  private String generateHD(String namespaceId, String universalId, String universalIdType) {
+    if (StringUtils.isBlank(universalId) || StringUtils.isBlank(universalIdType)) {
+      throw new IllegalArgumentException("HD requires both universal ID and universal ID type");
+    }
+
+    return String.format("%s^%s^%s", namespaceId, universalId, universalIdType);
+  }
+
+  private String generateHeaderSegment(HeaderSegmentFields fields) {
+    String sendingApplication =
+        generateHD(
+            fields.sendingAppNamespaceId(),
+            fields.sendingAppUniversalId(),
+            fields.sendingAppUniversalIdType());
+
+    String sendingFacility =
+        generateHD(
+            fields.sendingFacilityNamespaceId(),
+            fields.sendingFacilityUniversalId(),
+            fields.sendingFacilityUniversalIdType());
+
+    String receivingApplication =
+        generateHD(
+            fields.receivingAppNamespaceId(),
+            fields.receivingAppUniversalId(),
+            fields.receivingAppUniversalIdType());
+
+    String receivingFacility =
+        generateHD(
+            fields.receivingFacilityNamespaceId(),
+            fields.receivingFacilityUniversalId(),
+            fields.receivingFacilityUniversalIdType());
+
+    return String.join(
+        "|",
+        fields.fieldName(),
+        ENCODING_CHARS,
+        sendingApplication,
+        sendingFacility,
+        receivingApplication,
+        receivingFacility,
+        fields.datetime());
+  }
+
+  private String generateTrailingSegment(String fieldName, int itemCount) {
+    return String.join("|", fieldName, String.valueOf(itemCount));
+  }
+
+  public String createBatchFileString(
+      List<String> encodedMessages,
+      String facilityName,
+      String facilityClia,
+      int batchMessageCount) {
+    String hl7Date = formatToHL7DateTime(dateGenerator.newDate());
+    ArrayList<String> parts = new ArrayList<>();
+
+    // FHS
+    parts.add(
+        generateHeaderSegment(
+            new HeaderSegmentFields(
+                "FHS",
+                SIMPLE_REPORT_NAME,
+                SIMPLE_REPORT_ORG_OID,
+                "ISO",
+                facilityName,
+                facilityClia,
+                "CLIA",
+                "APHL",
+                APHL_ORG_OID,
+                "ISO",
+                "APHL",
+                APHL_ORG_OID,
+                "ISO",
+                hl7Date)));
+
+    // BHS
+    parts.add(
+        generateHeaderSegment(
+            new HeaderSegmentFields(
+                "BHS",
+                SIMPLE_REPORT_NAME,
+                SIMPLE_REPORT_ORG_OID,
+                "ISO",
+                facilityName,
+                facilityClia,
+                "CLIA",
+                "APHL",
+                APHL_ORG_OID,
+                "ISO",
+                "APHL",
+                APHL_ORG_OID,
+                "ISO",
+                hl7Date)));
+
+    // Append test result messages
+    parts.add(String.join("\n", encodedMessages));
+
+    // BTS
+    parts.add(generateTrailingSegment("BTS", batchMessageCount));
+
+    // FTS
+    parts.add(generateTrailingSegment("FTS", 1));
+
+    return String.join("\n", parts);
   }
 }

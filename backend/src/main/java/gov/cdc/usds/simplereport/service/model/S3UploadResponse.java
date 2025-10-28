@@ -16,22 +16,11 @@ public class S3UploadResponse implements GenericResponse {
   private boolean success;
   private String errorMessage;
 
-  private UUID generateId(String objectKey, Date timestamp) {
-    return UUID.nameUUIDFromBytes((objectKey + timestamp.getTime()).getBytes());
-  }
-
-  public S3UploadResponse(String objectKey, int reportItemCount, boolean success) {
+  public S3UploadResponse(UUID submissionId, int reportItemCount, String errorMessage) {
     this.timestamp = new Date();
     this.reportItemCount = reportItemCount;
-    this.id = generateId(objectKey, this.timestamp);
-    this.success = success;
-  }
-
-  public S3UploadResponse(String objectKey, int reportItemCount, String errorMessage) {
-    this.timestamp = new Date();
-    this.reportItemCount = reportItemCount;
-    this.id = generateId(objectKey, this.timestamp);
-    this.success = false;
+    this.id = submissionId;
+    this.success = errorMessage == null;
     this.errorMessage = errorMessage;
   }
 
