@@ -1138,25 +1138,25 @@ public class HL7Converter {
   }
 
   private String generateHeaderSegment(HeaderSegmentFields fields) {
-    var sendingApplication =
+    String sendingApplication =
         generateHD(
             fields.sendingAppNamespaceId(),
             fields.sendingAppUniversalId(),
             fields.sendingAppUniversalIdType());
 
-    var sendingFacility =
+    String sendingFacility =
         generateHD(
             fields.sendingFacilityNamespaceId(),
             fields.sendingFacilityUniversalId(),
             fields.sendingFacilityUniversalIdType());
 
-    var receivingApplication =
+    String receivingApplication =
         generateHD(
             fields.receivingAppNamespaceId(),
             fields.receivingAppUniversalId(),
             fields.receivingAppUniversalIdType());
 
-    var receivingFacility =
+    String receivingFacility =
         generateHD(
             fields.receivingFacilityNamespaceId(),
             fields.receivingFacilityUniversalId(),
