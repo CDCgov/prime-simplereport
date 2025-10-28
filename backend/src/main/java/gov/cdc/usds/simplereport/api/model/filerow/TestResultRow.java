@@ -470,7 +470,7 @@ public class TestResultRow implements FileRow {
         getValue(rawRow, GENDERS_OF_SEXUAL_PARTNERS, isRequired(GENDERS_OF_SEXUAL_PARTNERS));
     syphilisHistory = getValue(rawRow, SYPHILIS_HISTORY, isRequired(SYPHILIS_HISTORY));
 
-    boolean isPatientGenderRequired = isRequired(PATIENT_GENDER) || isRequired(PATIENT_SEX);
+    boolean isPatientGenderRequired = isRequired(PATIENT_SEX);
     if (rawRow.containsKey(PATIENT_SEX) && !StringUtils.isBlank(rawRow.get(PATIENT_SEX))) {
       patientGender = getGenderValue(rawRow, PATIENT_SEX, isPatientGenderRequired);
     } else {
