@@ -131,7 +131,7 @@ public class DataRetentionService {
                 .toInstant());
 
     long testEventStartTime = System.currentTimeMillis();
-    testEventRepository.deletePiiForTestEventIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
+    testEventRepository.deletePiiForTestEvents(cutoffDate);
     long testEventPiiDeletionDuration = System.currentTimeMillis() - testEventStartTime;
     log.info(
         "TestEvent PII deleted successfully in {} ms ({} minutes)",
@@ -139,10 +139,8 @@ public class DataRetentionService {
         testEventPiiDeletionDuration / MILLISECONDS_PER_MINUTE);
 
     long resultStartTime = System.currentTimeMillis();
-    resultRepository.deletePiiForResultTiedToTestEventIfTestOrderHasNoTestEventsUpdatedAfter(
-        cutoffDate);
-    resultRepository.deletePiiForResultTiedToTestOrderIfTestOrderHasNoTestEventsUpdatedAfter(
-        cutoffDate);
+    resultRepository.deletePiiForTestEventResults(cutoffDate);
+    resultRepository.deletePiiForTestOrderResults(cutoffDate);
     long resultPiiDeletionDuration = System.currentTimeMillis() - resultStartTime;
     log.info(
         "Result PII deleted successfully in {} ms ({} minutes)",
@@ -150,8 +148,7 @@ public class DataRetentionService {
         resultPiiDeletionDuration / MILLISECONDS_PER_MINUTE);
 
     long patientAnswersStartTime = System.currentTimeMillis();
-    patientAnswersRepository.deletePiiForPatientAnswersIfTestOrderHasNoTestEventsUpdatedAfter(
-        cutoffDate);
+    patientAnswersRepository.deletePiiForPatientAnswers(cutoffDate);
     long patientAnswersPiiDeletionDuration = System.currentTimeMillis() - patientAnswersStartTime;
     log.info(
         "PatientAnswers PII deleted successfully in {} ms ({} minutes)",
@@ -159,7 +156,7 @@ public class DataRetentionService {
         patientAnswersPiiDeletionDuration / MILLISECONDS_PER_MINUTE);
 
     long personStartTime = System.currentTimeMillis();
-    personRepository.deletePiiForPatientsWhoHaveNoTestEventsAfter(cutoffDate);
+    personRepository.deletePiiForPatients(cutoffDate);
     long personPiiDeletionDuration = System.currentTimeMillis() - personStartTime;
     log.info(
         "Person PII deleted successfully in {} ms ({} minutes)",
@@ -167,8 +164,7 @@ public class DataRetentionService {
         personPiiDeletionDuration / MILLISECONDS_PER_MINUTE);
 
     long phoneNumberStartTime = System.currentTimeMillis();
-    phoneNumberRepository.deletePiiForPhoneNumbersForPatientsCreatedBeforeAndHaveNoTestEventsAfter(
-        cutoffDate);
+    phoneNumberRepository.deletePiiForPhoneNumbers(cutoffDate);
     long phoneNumberPiiDeletionDuration = System.currentTimeMillis() - phoneNumberStartTime;
     log.info(
         "PhoneNumber PII deleted successfully in {} ms ({} minutes)",
@@ -176,7 +172,7 @@ public class DataRetentionService {
         phoneNumberPiiDeletionDuration / MILLISECONDS_PER_MINUTE);
 
     long testResultUploadStartTime = System.currentTimeMillis();
-    testResultUploadRepository.deletePiiForBulkTestResultUploadsLastUpdatedBefore(cutoffDate);
+    testResultUploadRepository.deletePiiForBulkTestResultUploads(cutoffDate);
     long testResultUploadPiiDeletionDuration =
         System.currentTimeMillis() - testResultUploadStartTime;
     log.info(
@@ -185,7 +181,7 @@ public class DataRetentionService {
         testResultUploadPiiDeletionDuration / MILLISECONDS_PER_MINUTE);
 
     long resultUploadErrorStartTime = System.currentTimeMillis();
-    resultUploadErrorRepository.deletePiiForResultUploadErrorsLastUpdatedBefore(
+    resultUploadErrorRepository.deletePiiForResultUploadErrors(
         cutoffDate); // works, but need to populate to test all the way
     long resultUploadErrorPiiDeletionDuration =
         System.currentTimeMillis() - resultUploadErrorStartTime;
@@ -195,8 +191,7 @@ public class DataRetentionService {
         resultUploadErrorPiiDeletionDuration / MILLISECONDS_PER_MINUTE);
 
     long reportStreamResponseStartTime = System.currentTimeMillis();
-    reportStreamResponseRepository
-        .deletePiiForReportStreamResponseIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
+    reportStreamResponseRepository.deletePiiForReportStreamResponses(cutoffDate);
     long reportStreamResponsePiiDeletionDuration =
         System.currentTimeMillis() - reportStreamResponseStartTime;
     log.info(

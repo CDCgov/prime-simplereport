@@ -96,40 +96,44 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
 
   @Modifying
   @Query(
-      "UPDATE Person p "
-          + "SET p.lookupId = '', "
-          + "p.nameInfo.firstName = '',"
-          + "p.nameInfo.middleName = '',"
-          + "p.nameInfo.lastName = '', "
-          + "p.nameInfo.suffix = '', "
-          + "p.birthDate = null, "
-          + "p.address.street = null, "
-          + "p.address.city = null, "
-          + "p.address.county = null, "
-          + "p.address.state = null, "
-          + "p.address.postalCode = null, "
-          + "p.country = null, "
-          + "p.primaryPhone = null, "
-          + "p.email = null, "
-          + "p.emails = null, "
-          + "p.race = null, "
-          + "p.gender = null, "
-          + "p.genderIdentity = null, "
-          + "p.ethnicity = null, "
-          + "p.role = null, "
-          + "p.employedInHealthcare = null, "
-          + "p.residentCongregateSetting = null, "
-          + "p.tribalAffiliation = null, "
-          + "p.preferredLanguage = null, "
-          + "p.notes = null, "
-          + "p.isDeleted = true, "
-          + "p.piiDeleted = true "
-          + "WHERE "
-          + "p.updatedAt <= :cutoffDate "
-          + "AND NOT EXISTS ("
-          + "    SELECT 1 FROM TestEvent te "
-          + "    WHERE te.patient = p "
-          + "      AND te.updatedAt > :cutoffDate"
-          + ")")
-  void deletePiiForPatientsWhoHaveNoTestEventsAfter(@Param("cutoffDate") Date cutoffDate);
+      // deletes pii for patients who have neither been
+      // updated after, nor have test events updated after, the
+      // cutoff date
+      """
+    UPDATE Person p
+    SET p.lookupId = '',
+        p.nameInfo.firstName = '',
+        p.nameInfo.middleName = '',
+        p.nameInfo.lastName = '',
+        p.nameInfo.suffix = '',
+        p.birthDate = null,
+        p.address.street = null,
+        p.address.city = null,
+        p.address.county = null,
+        p.address.state = null,
+        p.address.postalCode = null,
+        p.country = null,
+        p.primaryPhone = null,
+        p.email = null,
+        p.emails = null,
+        p.race = null,
+        p.gender = null,
+        p.genderIdentity = null,
+        p.ethnicity = null,
+        p.role = null,
+        p.employedInHealthcare = null,
+        p.residentCongregateSetting = null,
+        p.tribalAffiliation = null,
+        p.preferredLanguage = null,
+        p.notes = null,
+        p.isDeleted = true,
+        p.piiDeleted = true
+   WHERE p.updatedAt <= :cutoffDate
+     AND NOT EXISTS (
+       SELECT 1 FROM TestEvent te
+       WHERE te.patient = p
+         AND te.updatedAt > :cutoffDate
+     )
+   """)
+  void deletePiiForPatients(@Param("cutoffDate") Date cutoffDate);
 }

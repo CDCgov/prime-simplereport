@@ -59,19 +59,21 @@ public interface PhoneNumberRepository extends AuditedEntityRepository<PhoneNumb
 
   @Modifying
   @Query(
+      // deletes pii for phone numbers where patient was last updated
+      // before the cutoffDate and patient has no test events after
+      // the cutoff date
       """
-      UPDATE PhoneNumber pn
-          SET pn.number = null,
-            pn.piiDeleted = true
-          WHERE pn.number IS NOT NULL
-            AND pn.updatedAt <= :cutoffDate
-            AND pn.person.updatedAt <= :cutoffDate
-            AND NOT EXISTS (
-              SELECT 1 FROM TestEvent te
-              WHERE te.patient = pn.person
-                AND te.updatedAt > :cutoffDate
-          )
-      """)
-  void deletePiiForPhoneNumbersForPatientsCreatedBeforeAndHaveNoTestEventsAfter(
-      @Param("cutoffDate") Date cutoffDate);
+    UPDATE PhoneNumber pn
+    SET pn.number = null,
+        pn.piiDeleted = true
+    WHERE pn.number IS NOT NULL
+      AND pn.updatedAt <= :cutoffDate
+      AND pn.person.updatedAt <= :cutoffDate
+      AND NOT EXISTS (
+        SELECT 1 FROM TestEvent te
+        WHERE te.patient = pn.person
+          AND te.updatedAt > :cutoffDate
+      )
+    """)
+  void deletePiiForPhoneNumbers(@Param("cutoffDate") Date cutoffDate);
 }

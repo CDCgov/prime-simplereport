@@ -37,8 +37,7 @@ class DataRetentionServiceTest extends BaseServiceTest<DataRetentionService> {
     when(featureFlagsConfig.isDataRetentionLimitsEnabled()).thenReturn(false);
     _service.scheduledDeleteOldPii();
 
-    verify(testEventRepository, never())
-        .deletePiiForTestEventIfTestOrderHasNoTestEventsUpdatedAfter(org.mockito.Mockito.any());
+    verify(testEventRepository, never()).deletePiiForTestEvents(org.mockito.Mockito.any());
   }
 
   @Test
@@ -54,22 +53,14 @@ class DataRetentionServiceTest extends BaseServiceTest<DataRetentionService> {
 
     _service.scheduledDeleteOldPii();
 
-    verify(testEventRepository, times(1))
-        .deletePiiForTestEventIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
-    verify(resultRepository, times(1))
-        .deletePiiForResultTiedToTestEventIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
-    verify(resultRepository, times(1))
-        .deletePiiForResultTiedToTestOrderIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
-    verify(patientAnswersRepository, times(1))
-        .deletePiiForPatientAnswersIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
-    verify(personRepository, times(1)).deletePiiForPatientsWhoHaveNoTestEventsAfter(cutoffDate);
-    verify(phoneNumberRepository, times(1))
-        .deletePiiForPhoneNumbersForPatientsCreatedBeforeAndHaveNoTestEventsAfter(cutoffDate);
-    verify(testResultUploadRepository, times(1))
-        .deletePiiForBulkTestResultUploadsLastUpdatedBefore(cutoffDate);
-    verify(resultUploadErrorRepository, times(1))
-        .deletePiiForResultUploadErrorsLastUpdatedBefore(cutoffDate);
-    verify(reportStreamResponseRepository, times(1))
-        .deletePiiForReportStreamResponseIfTestOrderHasNoTestEventsUpdatedAfter(cutoffDate);
+    verify(testEventRepository, times(1)).deletePiiForTestEvents(cutoffDate);
+    verify(resultRepository, times(1)).deletePiiForTestEventResults(cutoffDate);
+    verify(resultRepository, times(1)).deletePiiForTestOrderResults(cutoffDate);
+    verify(patientAnswersRepository, times(1)).deletePiiForPatientAnswers(cutoffDate);
+    verify(personRepository, times(1)).deletePiiForPatients(cutoffDate);
+    verify(phoneNumberRepository, times(1)).deletePiiForPhoneNumbers(cutoffDate);
+    verify(testResultUploadRepository, times(1)).deletePiiForBulkTestResultUploads(cutoffDate);
+    verify(resultUploadErrorRepository, times(1)).deletePiiForResultUploadErrors(cutoffDate);
+    verify(reportStreamResponseRepository, times(1)).deletePiiForReportStreamResponses(cutoffDate);
   }
 }

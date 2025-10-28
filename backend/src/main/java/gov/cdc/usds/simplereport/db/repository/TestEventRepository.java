@@ -160,6 +160,8 @@ public interface TestEventRepository
 
   @Modifying
   @Query(
+      // deletes pii for test events whose parent test order has no
+      // child test events that were last updated after the cutoffDate
       """
     UPDATE TestEvent te
     SET te.patientData = null,
@@ -172,8 +174,7 @@ public interface TestEventRepository
         FROM TestEvent te2
         WHERE te2.order = te.order
           AND te2.updatedAt > :cutoffDate
-        )
-  """)
-  void deletePiiForTestEventIfTestOrderHasNoTestEventsUpdatedAfter(
-      @Param("cutoffDate") Date cutoffDate);
+      )
+    """)
+  void deletePiiForTestEvents(@Param("cutoffDate") Date cutoffDate);
 }

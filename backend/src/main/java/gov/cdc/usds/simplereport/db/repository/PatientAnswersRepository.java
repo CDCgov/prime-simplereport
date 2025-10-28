@@ -22,6 +22,9 @@ public interface PatientAnswersRepository extends DeletableEntityRepository<Pati
 
   @Modifying
   @Query(
+      // this query deletes pii from patient_answers
+      // where the patient_answers' test_order has no
+      // child test_event updated after the cutoffDate
       """
     UPDATE PatientAnswers pa
     SET pa.askOnEntry = null,
@@ -33,7 +36,6 @@ public interface PatientAnswersRepository extends DeletableEntityRepository<Pati
         WHERE te.order.patientAnswersId = pa.internalId
           AND te.updatedAt > :cutoffDate
       )
-  """)
-  void deletePiiForPatientAnswersIfTestOrderHasNoTestEventsUpdatedAfter(
-      @Param("cutoffDate") Date cutoffDate);
+    """)
+  void deletePiiForPatientAnswers(@Param("cutoffDate") Date cutoffDate);
 }

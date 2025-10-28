@@ -76,6 +76,8 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
 
   @Modifying
   @Query(
+      // deletes pii for results tied to test events if that test event's
+      // test order has no child test events updated after the cutoffDate
       """
     UPDATE Result result
     SET result.resultSNOMED = '',
@@ -90,27 +92,27 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
         WHERE testEvent.order = result.testEvent.order
           AND testEvent.updatedAt > :cutoffDate
      )
-  """)
-  void deletePiiForResultTiedToTestEventIfTestOrderHasNoTestEventsUpdatedAfter(
-      @Param("cutoffDate") Date cutoffDate);
+    """)
+  void deletePiiForTestEventResults(@Param("cutoffDate") Date cutoffDate);
 
   @Modifying
   @Query(
+      // deletes pii for results tied to test orders if that test order
+      // has no child test events updated after the cutoffDate
       """
-        UPDATE Result result
-        SET result.resultSNOMED = '',
-            result.testResult = null,
-            result.piiDeleted = true,
-            result.isDeleted = true
-        WHERE result.updatedAt <= :cutoffDate
-          AND result.testOrder IS NOT NULL
-          AND NOT EXISTS (
-            SELECT 1
-            FROM TestEvent testEvent
-            WHERE testEvent.order = result.testOrder
-              AND testEvent.updatedAt > :cutoffDate
-          )
-  """)
-  void deletePiiForResultTiedToTestOrderIfTestOrderHasNoTestEventsUpdatedAfter(
-      @Param("cutoffDate") Date cutoffDate);
+    UPDATE Result result
+    SET result.resultSNOMED = '',
+        result.testResult = null,
+        result.piiDeleted = true,
+        result.isDeleted = true
+    WHERE result.updatedAt <= :cutoffDate
+      AND result.testOrder IS NOT NULL
+      AND NOT EXISTS (
+        SELECT 1
+        FROM TestEvent testEvent
+        WHERE testEvent.order = result.testOrder
+          AND testEvent.updatedAt > :cutoffDate
+      )
+    """)
+  void deletePiiForTestOrderResults(@Param("cutoffDate") Date cutoffDate);
 }
