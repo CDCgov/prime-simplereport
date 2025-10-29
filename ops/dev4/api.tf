@@ -30,8 +30,8 @@ module "simple_report_api" {
 
   app_settings = {
     SPRING_PROFILES_ACTIVE                        = "azure-dev4"
-    SPRING_DATASOURCE_SIMPLEREPORT_HIKARI_JDBCURL = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev4_db_jdbc.id})"
-    SPRING_DATASOURCE_METABASE_HIKARI_JDBCURL     = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.metabase_db_uri.id})"
+    SPRING_DATASOURCE_SIMPLEREPORT_HIKARI_JDBCURL = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev4_db_jdbc_test.id})"
+    SPRING_DATASOURCE_METABASE_HIKARI_JDBCURL     = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.metabase_db_uri_test.id})"
     DB_PASSWORD_NO_PHI                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.db_password_no_phi.id})"
     APPLICATIONINSIGHTS_CONNECTION_STRING         = data.azurerm_application_insights.app_insights.connection_string
     AZ_REPORTING_QUEUE_CXN_STRING                 = data.azurerm_storage_account.app.primary_connection_string
