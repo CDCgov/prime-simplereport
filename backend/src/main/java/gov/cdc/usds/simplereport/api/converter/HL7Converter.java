@@ -444,7 +444,8 @@ public class HL7Converter {
         patientInput.getCountry());
 
     if (StringUtils.isNotBlank(patientInput.getPhone())) {
-      populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone());
+      // PRS for Personal from HL7 0201 Telecommunication Use Code
+      populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone(), "PRS");
     }
 
     if (StringUtils.isNotBlank(patientInput.getEmail())) {
@@ -578,10 +579,11 @@ public class HL7Converter {
    *
    * @param xtn Extended telecommunication number.
    * @param phoneNumber Must contain exactly 10 digits.
+   * @param telecomUseCode Value from HL7 0201 Telecommunication Use Code
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    * @throws IllegalArgumentException if phone number does not have exactly 10 digits
    */
-  void populatePhoneNumber(XTN xtn, String phoneNumber)
+  void populatePhoneNumber(XTN xtn, String phoneNumber, String telecomUseCode)
       throws DataTypeException, IllegalArgumentException {
     if (StringUtils.isBlank(phoneNumber)) {
       return;
@@ -598,6 +600,7 @@ public class HL7Converter {
           "Phone number must have exactly 10 digits to populate XTN.");
     }
     final int localNumberStartIndex = 3;
+    xtn.getXtn2_TelecommunicationUseCode().setValue(telecomUseCode);
     xtn.getXtn6_AreaCityCode().setValue(strippedNumber.substring(0, localNumberStartIndex));
     // If XTN-7 Local Number is present, XTN-4 Email Address must be empty
     xtn.getXtn7_LocalNumber().setValue(strippedNumber.substring(localNumberStartIndex));
@@ -680,7 +683,9 @@ public class HL7Converter {
     populateOrderingProvider(commonOrder.getOrc12_OrderingProvider(0), orderingProvider);
 
     if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
-      populatePhoneNumber(commonOrder.getOrc14_CallBackPhoneNumber(0), orderingProvider.getPhone());
+      // WPN for Work Number from HL7 0201 Telecommunication Use Code
+      populatePhoneNumber(
+          commonOrder.getOrc14_CallBackPhoneNumber(0), orderingProvider.getPhone(), "WPN");
     }
 
     if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
@@ -706,8 +711,9 @@ public class HL7Converter {
         DEFAULT_COUNTRY);
 
     if (StringUtils.isNotBlank(orderingFacility.getPhone())) {
+      // WPN for Work Number from HL7 0201 Telecommunication Use Code
       populatePhoneNumber(
-          commonOrder.getOrc23_OrderingFacilityPhoneNumber(0), orderingFacility.getPhone());
+          commonOrder.getOrc23_OrderingFacilityPhoneNumber(0), orderingFacility.getPhone(), "WPN");
     }
 
     if (StringUtils.isNotBlank(orderingFacility.getEmail())) {
@@ -812,8 +818,11 @@ public class HL7Converter {
     populateOrderingProvider(observationRequest.getObr16_OrderingProvider(0), orderingProvider);
 
     if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
+      // WPN for Work Number from HL7 0201 Telecommunication Use Code
       populatePhoneNumber(
-          observationRequest.getObr17_OrderCallbackPhoneNumber(0), orderingProvider.getPhone());
+          observationRequest.getObr17_OrderCallbackPhoneNumber(0),
+          orderingProvider.getPhone(),
+          "WPN");
     }
 
     if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
