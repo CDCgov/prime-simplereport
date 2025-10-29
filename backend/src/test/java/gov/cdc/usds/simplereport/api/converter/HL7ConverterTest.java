@@ -575,8 +575,9 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
 
-    hl7Converter.populatePhoneNumber(xtn, "(716) 555-1234");
+    hl7Converter.populatePhoneNumber(xtn, "(716) 555-1234", "PRS");
 
+    assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isEqualTo("PRS");
     assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo("716");
     assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo("5551234");
   }
@@ -587,10 +588,11 @@ class HL7ConverterTest {
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
 
     assertThrows(
-        IllegalArgumentException.class, () -> hl7Converter.populatePhoneNumber(xtn, "16-555-1234"));
+        IllegalArgumentException.class,
+        () -> hl7Converter.populatePhoneNumber(xtn, "16-555-1234", "PRS"));
     assertThrows(
         IllegalArgumentException.class,
-        () -> hl7Converter.populatePhoneNumber(xtn, "7716-555-1234"));
+        () -> hl7Converter.populatePhoneNumber(xtn, "7716-555-1234", "PRS"));
   }
 
   @Test
@@ -598,8 +600,9 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
 
-    hl7Converter.populatePhoneNumber(xtn, "");
+    hl7Converter.populatePhoneNumber(xtn, "", "PRS");
 
+    assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isEqualTo(null);
     assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo(null);
     assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo(null);
   }
