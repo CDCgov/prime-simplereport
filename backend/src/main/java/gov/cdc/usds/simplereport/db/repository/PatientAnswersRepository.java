@@ -30,6 +30,7 @@ public interface PatientAnswersRepository extends DeletableEntityRepository<Pati
     SET pa.askOnEntry = null,
         pa.piiDeleted = true
     WHERE pa.updatedAt <= :cutoffDate
+    AND (pa.piiDeleted IS NULL OR pa.piiDeleted = false)
       AND NOT EXISTS (
         SELECT 1
         FROM TestEvent te

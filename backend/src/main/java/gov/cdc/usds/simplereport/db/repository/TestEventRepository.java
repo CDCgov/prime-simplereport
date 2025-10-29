@@ -169,6 +169,7 @@ public interface TestEventRepository
         te.patientHasPriorTests = null,
         te.piiDeleted = true
     WHERE te.updatedAt <= :cutoffDate
+      AND (te.piiDeleted IS NULL OR te.piiDeleted = false)
       AND NOT EXISTS (
         SELECT 1
         FROM TestEvent te2

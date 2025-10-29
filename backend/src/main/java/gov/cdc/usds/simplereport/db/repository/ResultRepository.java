@@ -86,6 +86,7 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
         result.isDeleted = true
     WHERE result.updatedAt <= :cutoffDate
       AND result.testEvent IS NOT NULL
+      AND (result.piiDeleted IS NULL OR result.piiDeleted = false)
       AND NOT EXISTS (
         SELECT 1
         FROM TestEvent testEvent
@@ -107,6 +108,7 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
         result.isDeleted = true
     WHERE result.updatedAt <= :cutoffDate
       AND result.testOrder IS NOT NULL
+      AND (result.piiDeleted IS NULL OR result.piiDeleted = false)
       AND NOT EXISTS (
         SELECT 1
         FROM TestEvent testEvent

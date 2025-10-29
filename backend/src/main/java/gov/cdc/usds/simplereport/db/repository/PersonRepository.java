@@ -129,6 +129,7 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
         p.isDeleted = true,
         p.piiDeleted = true
    WHERE p.updatedAt <= :cutoffDate
+   AND (p.piiDeleted IS NULL OR p.piiDeleted = false)
      AND NOT EXISTS (
        SELECT 1 FROM TestEvent te
        WHERE te.patient = p

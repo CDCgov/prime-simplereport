@@ -6611,6 +6611,8 @@ databaseChangeLog:
       author: david@skylight.digital
       comment: Add PII deleted flag to tables with PII
       changes:
+        - tagDatabase:
+            tag: add-pii-deleted-column-to-pii-tables
         - addColumn:
             tableName: test_event
             columns:
@@ -6716,3 +6718,163 @@ databaseChangeLog:
         - dropColumn:
             tableName: report_stream_response
             columnName: pii_deleted
+  - changeSet:
+      id: add-indexes-for-pii-deletion
+      author: david@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-indexes-for-pii-deletion
+        - createIndex:
+            tableName: person
+            indexName: ix__person__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: test_event
+            indexName: ix__test_event__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__number
+            columns:
+              - column:
+                  name: number
+        - createIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: report_stream_response
+            indexName: ix__report_stream_response__created_at
+            columns:
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: test_event
+            indexName: ix__test_event__test_order_id
+            columns:
+              - column:
+                  name: test_order_id
+        - createIndex:
+            tableName: result
+            indexName: ix__result__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: result_upload_error
+            indexName: ix__result_upload_error__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: upload
+            indexName: ix__upload__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: test_event
+            indexName: idx__test_event__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: result
+            indexName: idx__result__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: patient_answers
+            indexName: idx__patient_answers__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: person
+            indexName: idx__person__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: upload
+            indexName: idx__upload__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: result_upload_error
+            indexName: idx__result_upload_error__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: phone_number
+            indexName: idx__phone_number__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: report_stream_response
+            indexName: idx__report_stream_response__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted          
+      rollback:
+        - dropIndex:
+            tableName: person
+            indexName: ix__person__updated_at
+        - dropIndex:
+            tableName: test_event
+            indexName: ix__test_event__updated_at
+        - dropIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__number
+        - dropIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__updated_at
+        - dropIndex:
+            tableName: report_stream_response
+            indexName: ix__report_stream_response__created_at
+        - dropIndex:
+            tableName: test_event
+            indexName: ix__test_event__test_order_id
+        - dropIndex:
+            tableName: result
+            indexName: ix__result__updated_at
+        - dropIndex:
+            tableName: result_upload_error
+            indexName: ix__result_upload_error__updated_at
+        - dropIndex:
+            tableName: upload
+            indexName: ix__upload__updated_at
+        - dropIndex:
+            tableName: test_event
+            indexName: idx__test_event__pii_deleted
+        - dropIndex:
+            tableName: result
+            indexName: idx__result__pii_deleted
+        - dropIndex:
+            tableName: patient_answers
+            indexName: idx__patient_answers__pii_deleted
+        - dropIndex:
+            tableName: person
+            indexName: idx__person__pii_deleted
+        - dropIndex:
+            tableName: upload
+            indexName: idx__upload__pii_deleted
+        - dropIndex:
+            tableName: result_upload_error
+            indexName: idx__result_upload_error__pii_deleted
+        - dropIndex:
+            tableName: phone_number
+            indexName: idx__phone_number__pii_deleted
+        - dropIndex:
+            tableName: report_stream_response
+            indexName: idx__report_stream_response__pii_deleted

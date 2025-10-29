@@ -17,6 +17,7 @@ public interface ResultUploadErrorRepository extends CrudRepository<ResultUpload
     SET rue.message = null,
         rue.piiDeleted = true
     WHERE rue.updatedAt <= :cutoffDate
+    AND (rue.piiDeleted IS NULL OR rue.piiDeleted = false)
     """)
   void deletePiiForResultUploadErrors(@Param("cutoffDate") Date cutoffDate);
 }

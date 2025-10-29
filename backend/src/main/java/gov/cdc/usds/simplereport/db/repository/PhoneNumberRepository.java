@@ -69,6 +69,7 @@ public interface PhoneNumberRepository extends AuditedEntityRepository<PhoneNumb
     WHERE pn.number IS NOT NULL
       AND pn.updatedAt <= :cutoffDate
       AND pn.person.updatedAt <= :cutoffDate
+      AND (pn.piiDeleted IS NULL OR pn.piiDeleted = false)
       AND NOT EXISTS (
         SELECT 1 FROM TestEvent te
         WHERE te.patient = pn.person

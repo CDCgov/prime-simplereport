@@ -49,6 +49,7 @@ public interface TestResultUploadRepository extends AuditedEntityRepository<Test
         bulkUpload.errors = null,
         bulkUpload.piiDeleted = true
     WHERE bulkUpload.updatedAt <= :cutoffDate
+    AND (bulkUpload.piiDeleted IS NULL OR bulkUpload.piiDeleted = false)
     """)
   void deletePiiForBulkTestResultUploads(@Param("cutoffDate") Date cutoffDate);
 }
