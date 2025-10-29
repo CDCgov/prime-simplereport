@@ -1,4 +1,4 @@
-FROM nginx:1.29.1-alpine as build
+FROM nginx:1.29.3-alpine as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 RUN /bin/ash -c 'set -ex && \
@@ -19,7 +19,7 @@ RUN mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
 RUN mv localhost.simplereport.gov-key.pem localhost.simplereport.gov.key
 
 
-FROM nginx:1.29.1-alpine
+FROM nginx:1.29.3-alpine
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 COPY  ./default.conf /etc/nginx/conf.d/default.conf
