@@ -78,13 +78,13 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
 
         <div id="data-retention-description" className="margin-bottom-3">
           <p className="usa-prose">
-            Beginning November 1st, SimpleReport will only store patient
-            profiles and test results for 30 days. This change may impact how
-            your facility or organization uses SimpleReport.
+            SimpleReport only stores personal information, including patient
+            profiles and test results for 30 days.
           </p>
           <p className="usa-prose">
-            Learn more about data retention limits and our recommendations for
-            managing your workflow.
+            This security update may change how your facility or organization
+            uses SimpleReport. Learn more about data retention limits and our
+            recommendations for managing your workflow.
           </p>
         </div>
 
