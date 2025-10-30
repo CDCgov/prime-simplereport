@@ -45,7 +45,7 @@ describe("DataRetentionModal", () => {
         )
       ).toBeInTheDocument();
       expect(
-        screen.getByText(/Beginning November 1st, SimpleReport will only store/)
+        screen.getByText(/SimpleReport only stores personal information,/)
       ).toBeInTheDocument();
       expect(screen.getByText("Learn more")).toBeInTheDocument();
       expect(screen.getByText("Continue to SimpleReport")).toBeInTheDocument();
