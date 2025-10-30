@@ -20,7 +20,7 @@ import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-class DataRetentionServiceTest extends BaseServiceTest<DataRetentionService> {
+class DeletePiiServiceTest extends BaseServiceTest<DeletePiiService> {
 
   @MockBean private FeatureFlagsConfig featureFlagsConfig;
   @MockBean private PersonRepository personRepository;

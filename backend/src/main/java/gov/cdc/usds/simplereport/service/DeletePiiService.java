@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @Slf4j
-public class DataRetentionService {
+public class DeletePiiService {
 
   private final PersonRepository personRepository;
   private final TestEventRepository testEventRepository;
@@ -41,7 +41,7 @@ public class DataRetentionService {
 
   private static final int MILLISECONDS_PER_MINUTE = 60000;
 
-  public DataRetentionService(
+  public DeletePiiService(
       PersonRepository personRepository,
       TestEventRepository testEventRepository,
       ResultRepository resultRepository,
