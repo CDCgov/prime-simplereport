@@ -39,9 +39,6 @@ public class DataRetentionService {
   @Value("${simple-report.data-retention.retention-days:30}")
   private int retentionDays;
 
-  @Value("${simple-report.data-retention.max-execution-time-minutes:120}")
-  private int maxExecutionTimeMinutes;
-
   private static final int MILLISECONDS_PER_MINUTE = 60000;
 
   public DataRetentionService(
@@ -71,7 +68,7 @@ public class DataRetentionService {
       name = "DataRetentionService_deleteOldData",
       lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT150M")
-  @Transactional
+  @Transactional(timeoutString = "${simple-report.data-retention.max-execution-time-seconds:2700}")
   public void scheduledDeleteOldPii() {
     if (!featureFlagsConfig.isDataRetentionLimitsEnabled()) {
       log.info("Data retention job is disabled - skipping scheduled deletion");
@@ -120,7 +117,7 @@ public class DataRetentionService {
   }
 
   /** Clears PII from database */
-  @Transactional
+  @Transactional(timeoutString = "${simple-report.data-retention.max-execution-time-seconds:2700}")
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public void deleteOldPii(boolean dryRun) {
     Date cutoffDate =
