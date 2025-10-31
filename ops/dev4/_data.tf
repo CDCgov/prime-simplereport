@@ -52,7 +52,6 @@ data "azurerm_key_vault_secret" "sr_dev4_db_jdbc" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-
 data "azurerm_key_vault_secret" "metabase_db_uri" {
   name         = "simple-report-${local.env}-db-metabase-uri"
   key_vault_id = data.azurerm_key_vault.sr_global.id
