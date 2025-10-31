@@ -68,7 +68,7 @@ public class DeletePiiService {
       name = "DataRetentionService_deleteOldData",
       lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT150M")
-  @Transactional(timeoutString = "${simple-report.data-retention.max-execution-time-seconds:2700}")
+  @Transactional(timeoutString = "${simple-report.data-retention.max-execution-time-seconds:14400}")
   public void scheduledDeleteOldPii() {
     if (!featureFlagsConfig.isDataRetentionLimitsEnabled()) {
       log.info("Data retention job is disabled - skipping scheduled deletion");
@@ -117,7 +117,7 @@ public class DeletePiiService {
   }
 
   /** Clears PII from database */
-  @Transactional(timeoutString = "${simple-report.data-retention.max-execution-time-seconds:2700}")
+  @Transactional(timeoutString = "${simple-report.data-retention.max-execution-time-seconds:14400}")
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public void deleteOldPii(boolean dryRun) {
     Date cutoffDate =
@@ -178,8 +178,7 @@ public class DeletePiiService {
         testResultUploadPiiDeletionDuration / MILLISECONDS_PER_MINUTE);
 
     long resultUploadErrorStartTime = System.currentTimeMillis();
-    resultUploadErrorRepository.deletePiiForResultUploadErrors(
-        cutoffDate); // works, but need to populate to test all the way
+    resultUploadErrorRepository.deletePiiForResultUploadErrors(cutoffDate);
     long resultUploadErrorPiiDeletionDuration =
         System.currentTimeMillis() - resultUploadErrorStartTime;
     log.info(

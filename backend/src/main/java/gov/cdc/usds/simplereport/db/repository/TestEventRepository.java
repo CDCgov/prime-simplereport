@@ -55,7 +55,7 @@ public interface TestEventRepository
       AND (te.piiDeleted IS NULL OR te.piiDeleted = false)
     ORDER BY te.createdAt DESC
   """)
-  TestEvent findFirstByPatient(@Param("p") Person p);
+  TestEvent findLatestByPatient(@Param("p") Person p);
 
   @Query(
       value =

@@ -16,6 +16,6 @@ public class TestEventService {
   }
 
   public TestEvent getLastTestResultsForPatient(Person patient) {
-    return _terepo.findFirstByPatient(patient);
+    return _terepo.findLatestByPatient(patient);
   }
 }
