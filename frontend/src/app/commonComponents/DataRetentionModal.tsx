@@ -82,9 +82,8 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
             profiles and test results for 30 days.
           </p>
           <p className="usa-prose">
-            This security update may change how your facility or organization
-            uses SimpleReport. Learn more about data retention limits and our
-            recommendations for managing your workflow.
+            Learn more about data retention limits and our recommendations for
+            managing your workflow.
           </p>
         </div>
 
