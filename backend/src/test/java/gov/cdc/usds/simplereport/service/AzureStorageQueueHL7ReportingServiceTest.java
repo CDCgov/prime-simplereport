@@ -46,7 +46,7 @@ class AzureStorageQueueHL7ReportingServiceTest {
     TestOrder testOrder = testEvent.getTestOrder();
     var testOrderId = UUID.randomUUID();
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
 
     when(queueClient.sendMessage(anyString())).thenReturn(Mono.create(MonoSink::success));
 

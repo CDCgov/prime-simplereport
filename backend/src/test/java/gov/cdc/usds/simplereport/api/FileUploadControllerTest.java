@@ -172,6 +172,7 @@ class FileUploadControllerTest extends BaseFullStackTest {
             null,
             null,
             Pipeline.UNIVERSAL,
+            null,
             null);
     when(testResultUploadService.processResultCSV(any(InputStream.class)))
         .thenReturn(List.of(testResultUpload));
