@@ -6878,3 +6878,137 @@ databaseChangeLog:
         - dropIndex:
             tableName: report_stream_response
             indexName: idx__report_stream_response__pii_deleted
+  - changeSet:
+      id: add-pii-deleted-to-no-phi-views
+      author: david@skylight.digital
+      comment: Add pii_deleted to no-phi views
+      changes:
+        - tagDatabase:
+            tag: add-pii-deleted-to-no-phi-views
+        - dropView:
+            viewName: person_no_phi_view
+        - dropView:
+            viewName: test_event_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT
+                p.internal_id,
+                p.created_at,
+                p.created_by,
+                p.updated_at,
+                p.updated_by,
+                p.is_deleted,
+                p.organization_id,
+                p.facility_id,
+                p.race,
+                p.gender,
+                p.ethnicity,
+                p.county,
+                p.state,
+                p.country,
+                p.employed_in_healthcare,
+                p.role,
+                p.resident_congregate_setting,
+                p.tribal_affiliation,
+                p.lookup_id,
+                get_census_dob_group(p.birth_date) AS census_dob_group,
+                p.preferred_language,
+                p.test_result_delivery_preference,
+                p.pii_deleted
+              FROM ${database.defaultSchemaName}.person p;
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+        - createView:
+            viewName: test_event_no_phi_view
+            remarks: A subset of the test_event table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT 
+                internal_id,
+                created_at,
+                created_by,
+                updated_at,
+                updated_by,
+                patient_id,
+                organization_id,
+                facility_id,
+                specimen_type_id,
+                device_type_id,
+                survey_data,
+                date_tested_backdate,
+                test_order_id,
+                correction_status,
+                prior_corrected_test_event_id,
+                reason_for_correction,
+                pii_deleted
+              FROM ${database.defaultSchemaName}.test_event
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - dropView:
+            viewName: person_no_phi_view
+        - dropView:
+            viewName: test_event_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+                SELECT
+                  p.internal_id,
+                  p.created_at,
+                  p.created_by,
+                  p.updated_at,
+                  p.updated_by,
+                  p.is_deleted,
+                  p.organization_id,
+                  p.facility_id,
+                  p.race,
+                  p.gender,
+                  p.ethnicity,
+                  p.county,
+                  p.state,
+                  p.country,
+                  p.employed_in_healthcare,
+                  p.role,
+                  p.resident_congregate_setting,
+                  p.tribal_affiliation,
+                  p.lookup_id,
+                  get_census_dob_group(p.birth_date) AS census_dob_group,
+                  p.preferred_language,
+                  p.test_result_delivery_preference
+                FROM ${database.defaultSchemaName}.person p
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+        - createView:
+            viewName: test_event_no_phi_view
+            remarks: A subset of the test_event table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT 
+                internal_id,
+                created_at,
+                created_by,
+                updated_at,
+                updated_by,
+                patient_id,
+                organization_id,
+                facility_id,
+                specimen_type_id,
+                device_type_id,
+                survey_data,
+                date_tested_backdate,
+                test_order_id,
+                correction_status,
+                prior_corrected_test_event_id, 
+                reason_for_correction
+              FROM ${database.defaultSchemaName}.test_event
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
