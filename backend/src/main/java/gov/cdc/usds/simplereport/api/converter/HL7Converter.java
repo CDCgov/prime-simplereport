@@ -13,6 +13,8 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFI
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFILE_NAMESPACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFILE_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.NPI_NAMING_SYSTEM_OID;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_NAME;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
@@ -45,6 +47,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.config.HL7Properties;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
@@ -92,6 +95,7 @@ public class HL7Converter {
   private final UUIDGenerator uuidGenerator;
   // Used for easier mocking of new Date()
   private final DateGenerator dateGenerator;
+  private final HL7Properties hl7Properties;
   private static final String ENCODING_CHARS = "^~\\&";
 
   /**
@@ -302,12 +306,21 @@ public class HL7Converter {
 
     msh.getMsh1_FieldSeparator().setValue("|");
     msh.getMsh2_EncodingCharacters().setValue(ENCODING_CHARS);
-    msh.getMsh3_SendingApplication().getHd1_NamespaceID().setValue(SIMPLE_REPORT_NAME);
-    msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
+
+    // Sending application is different between prod and lower environments
+    msh.getMsh3_SendingApplication()
+        .getHd1_NamespaceID()
+        .setValue(hl7Properties.sendingApplicationNamespace);
+    msh.getMsh3_SendingApplication()
+        .getHd2_UniversalID()
+        .setValue(hl7Properties.sendingApplicationOID);
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
-    msh.getMsh4_SendingFacility().getHd1_NamespaceID().setValue(sendingFacilityName);
-    msh.getMsh4_SendingFacility().getHd2_UniversalID().setValue(sendingFacilityClia);
+    // Sending facility is the same for all environments
+    msh.getMsh4_SendingFacility().getHd1_NamespaceID().setValue(SENDING_FACILITY_NAMESPACE);
+    msh.getMsh4_SendingFacility()
+        .getHd2_UniversalID()
+        .setValue(SENDING_FACILITY_FAKE_AGGREGATE_CLIA);
     // CLIA is allowed for MSH-4 even though it is not in the Universal ID Type value set of HL70301
     msh.getMsh4_SendingFacility().getHd3_UniversalIDType().setValue("CLIA");
 
