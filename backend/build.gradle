@@ -5,7 +5,7 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '3.4.11'
+    id 'org.springframework.boot' version '3.5.7'
     id 'org.liquibase.gradle' version '3.0.2'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'java'
@@ -23,7 +23,7 @@ java {
 }
 
 ext {
-    set('springCloudVersion', "2024.0.2")
+    set('springCloudVersion', "2025.0.0")
     set('oktaVersion', "13.0.2")
     set('hibernate.version', '6.6.2.Final')
 }
@@ -37,25 +37,25 @@ jar {
 
 dependencies {
     // core infrastructure
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.5.7'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-actuator'
     implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
     // graphql
-    implementation 'org.springframework.boot:spring-boot-starter-graphql'
-    implementation 'org.springframework.graphql:spring-graphql:1.4.1'
+    implementation 'org.springframework.boot:spring-boot-starter-graphql:3.5.7'
+    implementation 'org.springframework.graphql:spring-graphql:1.4.3'
     implementation 'org.springframework:spring-web:6.2.12'
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
-    implementation 'com.graphql-java:graphql-java:24.1'
+    implementation 'com.graphql-java:graphql-java:24.3'
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:22.0'
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:22.0'
 
 
-    //Feign HTTP Client
+    // Feign HTTP Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.4'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
@@ -70,12 +70,12 @@ dependencies {
      */
     implementation 'com.squareup.okio:okio:3.10.2'
     implementation 'org.springframework:spring-core:6.2.12'
-    implementation 'org.springframework.security:spring-security-core:6.4.12'
-    implementation 'org.springframework.security:spring-security-crypto:6.4.12'
-    implementation 'org.springframework.security:spring-security-oauth2-client:6.4.12'
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.40'
+    implementation 'org.springframework.security:spring-security-core:6.5.6'
+    implementation 'org.springframework.security:spring-security-crypto:6.5.6'
+    implementation 'org.springframework.security:spring-security-oauth2-client:6.5.6'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.48'
     implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:11.0.5'
-    implementation 'org.springframework.security:spring-security-web:6.4.12'
+    implementation 'org.springframework.security:spring-security-web:6.5.6'
 
     // non-pinned security dependencies
     implementation 'org.owasp.encoder:encoder:1.3.1'
@@ -86,7 +86,7 @@ dependencies {
     // this provides additional types for JsonB and for ListArray types in Postgres
     implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.7.6'
     implementation 'org.liquibase:liquibase-core:4.31.1'
-    implementation 'org.postgresql:postgresql:42.7.7'
+    implementation 'org.postgresql:postgresql:42.7.8'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.28'
@@ -164,7 +164,7 @@ dependencies {
     testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.35.2"
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.6.0'
-    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.19.2'
 
     // HL7v2
     implementation 'ca.uhn.hapi:hapi-base:2.5.1'
