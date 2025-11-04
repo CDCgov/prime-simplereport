@@ -94,7 +94,6 @@ dependencies {
 
     // UI layer dependencies
     implementation 'org.json:json:20250517'
-//    implementation 'com.github.openjson:openjson:1.0.13'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -140,18 +139,6 @@ dependencies {
 
     // test/check dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-    //        exclude group: 'com.vaadin.external.google', module: 'android-json'
-    //    }
-    //testImplementation('org.springframework.boot:spring-boot-starter-test') {
-    //    // exclude android-json transitively
-    //    exclude group: 'org.skyscreamer', module: 'jsonassert'
-    //}
-    //// optionally, if you still need jsonassert
-    //testImplementation('org.skyscreamer:jsonassert:1.5.3') {
-    //    exclude group: 'com.vaadin.external.google', module: 'android-json'
-    //}
-
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'net.ttddyy:datasource-proxy:1.10'
 
