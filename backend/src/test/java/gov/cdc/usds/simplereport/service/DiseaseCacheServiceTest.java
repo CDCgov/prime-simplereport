@@ -20,7 +20,7 @@ class DiseaseCacheServiceTest extends BaseServiceTest<DiseaseCacheService> {
 
   @Autowired CachingConfig cacheConfig;
 
-  @Autowired @MockitoSpyBean static SupportedDiseaseRepository repo;
+  @Autowired @MockitoSpyBean SupportedDiseaseRepository repo;
 
   @BeforeEach
   public void setup() {
