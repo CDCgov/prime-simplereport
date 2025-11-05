@@ -41,9 +41,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -53,15 +53,15 @@ class AccountRequestControllerTest extends BaseFullStackTest {
   @Autowired private MockMvc _mockMvc;
   @Autowired private AccountRequestController _controller;
 
-  @MockBean private EmailProvider mockSendGrid;
-  @SpyBean private EmailService emailService;
+  @MockitoBean private EmailProvider mockSendGrid;
+  @MockitoSpyBean private EmailService emailService;
 
-  @MockBean private ApiUserService _apiUserService;
-  @MockBean private DemoOktaRepository _oktaRepo;
-  @MockBean private OrganizationService _orgService;
-  @MockBean private OrganizationQueueService _orgQueueService;
-  @MockBean private DbAuthorizationService _dbAuthService;
-  @MockBean private FeatureFlagsConfig _featureFlagsConfig;
+  @MockitoBean private ApiUserService _apiUserService;
+  @MockitoBean private DemoOktaRepository _oktaRepo;
+  @MockitoBean private OrganizationService _orgService;
+  @MockitoBean private OrganizationQueueService _orgQueueService;
+  @MockitoBean private DbAuthorizationService _dbAuthService;
+  @MockitoBean private FeatureFlagsConfig _featureFlagsConfig;
 
   @Captor private ArgumentCaptor<TemplateVariablesProvider> contentCaptor;
   @Captor private ArgumentCaptor<Mail> mail;

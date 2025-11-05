@@ -44,9 +44,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -54,9 +54,9 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles("test")
 class ConditionServiceTest {
 
-  @MockBean private TerminologyExchangeClient tesClient;
-  @MockBean private ConditionRepository conditionRepository;
-  @MockBean private LoincStagingRepository loincStagingRepository;
+  @MockitoBean private TerminologyExchangeClient tesClient;
+  @MockitoBean private ConditionRepository conditionRepository;
+  @MockitoBean private LoincStagingRepository loincStagingRepository;
 
   private ConditionService conditionService;
   private FhirContext fhirContext;

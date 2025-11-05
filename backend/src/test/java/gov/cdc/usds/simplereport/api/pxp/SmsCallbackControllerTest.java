@@ -36,8 +36,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -49,9 +49,9 @@ class SmsCallbackControllerTest extends BaseFullStackTest {
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private TextMessageSentRepository _textMessageSentRepo;
 
-  @MockBean private WebhookContextHolder contextHolder;
-  @MockBean private CurrentAccountRequestContextHolder accountContextHolder;
-  @MockBean private CurrentPatientContextHolder patientContextHolder;
+  @MockitoBean private WebhookContextHolder contextHolder;
+  @MockitoBean private CurrentAccountRequestContextHolder accountContextHolder;
+  @MockitoBean private CurrentPatientContextHolder patientContextHolder;
 
   @Value("${simple-report.twilio-callback-url:https://simplereport.gov/api/pxp/callback}")
   private String twilioCallbackUrl;

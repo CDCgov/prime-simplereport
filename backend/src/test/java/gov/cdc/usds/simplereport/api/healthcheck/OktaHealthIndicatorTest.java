@@ -12,13 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @RequiredArgsConstructor
 @EnableConfigurationProperties
 class OktaHealthIndicatorTest extends BaseRepositoryTest {
 
-  @SpyBean private OktaRepository mockOktaRepo;
+  @MockitoSpyBean private OktaRepository mockOktaRepo;
 
   @Autowired private OktaHealthIndicator indicator;
 

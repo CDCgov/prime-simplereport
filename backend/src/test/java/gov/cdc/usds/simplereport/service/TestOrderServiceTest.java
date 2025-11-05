@@ -73,32 +73,32 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 @SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
-  @Autowired @SpyBean private OrganizationService _organizationService;
+  @Autowired @MockitoSpyBean private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
   @Autowired private TestEventRepository _testEventRepository;
-  @Autowired @SpyBean private TestOrderRepository _testOrderRepository;
+  @Autowired @MockitoSpyBean private TestOrderRepository _testOrderRepository;
   @Autowired private ResultRepository _resultRepository;
   @Autowired private TestDataFactory _dataFactory;
-  @SpyBean private PatientLinkService patientLinkService;
-  @MockBean private TestResultsDeliveryService testResultsDeliveryService;
+  @MockitoSpyBean private PatientLinkService patientLinkService;
+  @MockitoBean private TestResultsDeliveryService testResultsDeliveryService;
 
-  @MockBean(name = "csvQueueReportingService")
+  @MockitoBean(name = "csvQueueReportingService")
   TestEventReportingService testEventReportingService;
 
-  @MockBean(name = "fhirQueueReportingService")
+  @MockitoBean(name = "fhirQueueReportingService")
   TestEventReportingService fhirQueueReportingService;
 
-  @SpyBean ReportTestEventToRSEventListener reportTestEventToRSEventListener;
+  @MockitoSpyBean ReportTestEventToRSEventListener reportTestEventToRSEventListener;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");

@@ -16,14 +16,14 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @TestConfiguration
 public class SubmitTestResultTestConfig {
-  @MockBean DateGenerator dateGenerator;
+  @MockitoBean DateGenerator dateGenerator;
 
-  @MockBean UUIDGenerator uuidGenerator;
+  @MockitoBean UUIDGenerator uuidGenerator;
 
   @Bean("fhirQueueReportingService")
   TestEventReportingService fhirQueueReportingService(

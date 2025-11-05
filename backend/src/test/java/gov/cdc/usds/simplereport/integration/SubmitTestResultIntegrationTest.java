@@ -23,15 +23,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Mono;
 
 @SliceTestConfiguration.WithSimpleReportStandardUser
 @Import(SubmitTestResultTestConfig.class)
 class SubmitTestResultIntegrationTest extends BaseGraphqlTest {
 
-  @MockBean(name = "mockClient")
+  @MockitoBean(name = "mockClient")
   QueueAsyncClient queueAsyncClient;
 
   @Captor ArgumentCaptor<String> fhirMessageCaptor;

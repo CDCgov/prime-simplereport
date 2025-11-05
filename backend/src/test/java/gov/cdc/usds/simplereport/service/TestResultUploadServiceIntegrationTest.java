@@ -19,11 +19,11 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.domain.Page;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultUploadService> {
 
@@ -31,9 +31,9 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
   public static final UUID REPORT_ID_2 = UUID.randomUUID();
   public static final UUID REPORT_ID_3 = UUID.randomUUID();
   public static final UUID REPORT_ID_4 = UUID.randomUUID();
-  @MockBean DateTimeProvider dateTimeProvider;
+  @MockitoBean DateTimeProvider dateTimeProvider;
 
-  @SpyBean private AuditingHandler handler;
+  @MockitoSpyBean private AuditingHandler handler;
 
   @Autowired private TestResultUploadRepository uploadRepository;
 
