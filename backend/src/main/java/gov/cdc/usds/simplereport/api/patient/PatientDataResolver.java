@@ -48,7 +48,6 @@ public class PatientDataResolver implements PersonNameResolver<Person>, Internal
             (patientIds, batchLoaderEnvironment) -> {
               Map<UUID, List<PhoneNumber>> found =
                   phoneNumberRepository.findAllByPersonInternalIdIn(patientIds).stream()
-                      .flatMap(List::stream)
                       .collect(Collectors.groupingBy(PhoneNumber::getPersonInternalID));
 
               return Mono.just(found);

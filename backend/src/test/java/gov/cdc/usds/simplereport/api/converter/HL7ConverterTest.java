@@ -92,7 +92,7 @@ class HL7ConverterTest {
     TestOrder testOrder = testEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 
@@ -121,7 +121,7 @@ class HL7ConverterTest {
     TestOrder originalTestOrder = originalTestEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(originalTestOrder, "internalId", testOrderId);
-    originalTestOrder.setTestEventRef(originalTestEvent);
+    originalTestOrder.setLatestTestEventRef(originalTestEvent);
 
     Date backdate = Date.from(LocalDate.of(2025, 7, 4).atStartOfDay().toInstant(ZoneOffset.UTC));
     originalTestOrder.setDateTestedBackdate(backdate);
@@ -151,7 +151,7 @@ class HL7ConverterTest {
     TestOrder originalTestOrder = originalTestEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(originalTestOrder, "internalId", testOrderId);
-    originalTestOrder.setTestEventRef(originalTestEvent);
+    originalTestOrder.setLatestTestEventRef(originalTestEvent);
 
     TestEvent correctedTestEvent =
         new TestEvent(originalTestEvent, TestCorrectionStatus.REMOVED, "Incorrect person");
@@ -175,7 +175,7 @@ class HL7ConverterTest {
     TestOrder testOrder = testEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 
@@ -197,7 +197,7 @@ class HL7ConverterTest {
     TestOrder testOrder = testEvent.getTestOrder();
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
 
     ORU_R01 message = hl7Converter.createLabReportMessage(testEvent, gitProperties, "T");
 
@@ -279,10 +279,13 @@ class HL7ConverterTest {
   @Test
   void populateMessageHeader_valid() throws DataTypeException {
     MSH msh = new ORU_R01().getMSH();
+    String facilityName = "Test Facility";
     String clia = "12D1234567";
 
-    hl7Converter.populateMessageHeader(msh, clia, "T", Date.from(STATIC_INSTANT));
+    hl7Converter.populateMessageHeader(msh, facilityName, clia, "T", Date.from(STATIC_INSTANT));
 
+    assertThat(msh.getMsh4_SendingFacility().getHd1_NamespaceID().getValue())
+        .isEqualTo(facilityName);
     assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue()).isEqualTo(clia);
     assertThat(msh.getMsh7_DateTimeOfMessage().getTs1_Time().getValue())
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
@@ -293,12 +296,15 @@ class HL7ConverterTest {
   @Test
   void populateMessageHeader_throwsExceptionFor_invalidProcessingId() {
     MSH msh = new ORU_R01().getMSH();
+    String facilityName = "Test Facility";
     String clia = "12D1234567";
 
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> hl7Converter.populateMessageHeader(msh, clia, "F", Date.from(STATIC_INSTANT)));
+            () ->
+                hl7Converter.populateMessageHeader(
+                    msh, facilityName, clia, "F", Date.from(STATIC_INSTANT)));
     assertThat(exception.getMessage())
         .isEqualTo(
             "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");

@@ -6580,3 +6580,435 @@ databaseChangeLog:
             remarks: Cannot automatically rollback enum value addition
             sql: |
               SELECT 1;
+  - changeSet:
+      id: drop-not-null-constraint_test_result
+      author: david@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraint_test_result
+        - dropNotNullConstraint:
+            tableName: result
+            columnName: test_result
+      rollback:
+        - addNotNullConstraint:
+            tableName: result
+            columnName: test_result
+  - changeSet:
+      id: drop-not-null-constraint_phone_number
+      author: david@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraint_phone_number
+        - dropNotNullConstraint:
+            tableName: phone_number
+            columnName: number
+      rollback:
+        - addNotNullConstraint:
+            tableName: phone_number
+            columnName: number
+  - changeSet:
+      id: add-pii-deleted-to-pii-tables
+      author: david@skylight.digital
+      comment: Add PII deleted flag to tables with PII
+      changes:
+        - tagDatabase:
+            tag: add-pii-deleted-column-to-pii-tables
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: result
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: patient_answers
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: result_upload_error
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: phone_number
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+        - addColumn:
+            tableName: report_stream_response
+            columns:
+              - column:
+                  name: pii_deleted
+                  type: boolean
+                  remarks: Flag for deleting PII
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: true
+      rollback:
+        - dropColumn:
+            tableName: test_event
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: result
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: patient_answers
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: person
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: upload
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: result_upload_error
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: phone_number
+            columnName: pii_deleted
+        - dropColumn:
+            tableName: report_stream_response
+            columnName: pii_deleted
+  - changeSet:
+      id: add-indexes-for-pii-deletion
+      author: david@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: add-indexes-for-pii-deletion
+        - createIndex:
+            tableName: person
+            indexName: ix__person__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: test_event
+            indexName: ix__test_event__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__number
+            columns:
+              - column:
+                  name: number
+        - createIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: report_stream_response
+            indexName: ix__report_stream_response__created_at
+            columns:
+              - column:
+                  name: created_at
+        - createIndex:
+            tableName: test_event
+            indexName: ix__test_event__test_order_id
+            columns:
+              - column:
+                  name: test_order_id
+        - createIndex:
+            tableName: result
+            indexName: ix__result__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: result_upload_error
+            indexName: ix__result_upload_error__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: upload
+            indexName: ix__upload__updated_at
+            columns:
+              - column:
+                  name: updated_at
+        - createIndex:
+            tableName: test_event
+            indexName: idx__test_event__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: result
+            indexName: idx__result__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: patient_answers
+            indexName: idx__patient_answers__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: person
+            indexName: idx__person__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: upload
+            indexName: idx__upload__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: result_upload_error
+            indexName: idx__result_upload_error__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: phone_number
+            indexName: idx__phone_number__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted
+        - createIndex:
+            tableName: report_stream_response
+            indexName: idx__report_stream_response__pii_deleted
+            columns:
+              - column:
+                  name: pii_deleted          
+      rollback:
+        - dropIndex:
+            tableName: person
+            indexName: ix__person__updated_at
+        - dropIndex:
+            tableName: test_event
+            indexName: ix__test_event__updated_at
+        - dropIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__number
+        - dropIndex:
+            tableName: phone_number
+            indexName: ix__phone_number__updated_at
+        - dropIndex:
+            tableName: report_stream_response
+            indexName: ix__report_stream_response__created_at
+        - dropIndex:
+            tableName: test_event
+            indexName: ix__test_event__test_order_id
+        - dropIndex:
+            tableName: result
+            indexName: ix__result__updated_at
+        - dropIndex:
+            tableName: result_upload_error
+            indexName: ix__result_upload_error__updated_at
+        - dropIndex:
+            tableName: upload
+            indexName: ix__upload__updated_at
+        - dropIndex:
+            tableName: test_event
+            indexName: idx__test_event__pii_deleted
+        - dropIndex:
+            tableName: result
+            indexName: idx__result__pii_deleted
+        - dropIndex:
+            tableName: patient_answers
+            indexName: idx__patient_answers__pii_deleted
+        - dropIndex:
+            tableName: person
+            indexName: idx__person__pii_deleted
+        - dropIndex:
+            tableName: upload
+            indexName: idx__upload__pii_deleted
+        - dropIndex:
+            tableName: result_upload_error
+            indexName: idx__result_upload_error__pii_deleted
+        - dropIndex:
+            tableName: phone_number
+            indexName: idx__phone_number__pii_deleted
+        - dropIndex:
+            tableName: report_stream_response
+            indexName: idx__report_stream_response__pii_deleted
+  - changeSet:
+      id: add-pii-deleted-to-no-phi-views
+      author: david@skylight.digital
+      comment: Add pii_deleted to no-phi views
+      changes:
+        - tagDatabase:
+            tag: add-pii-deleted-to-no-phi-views
+        - dropView:
+            viewName: person_no_phi_view
+        - dropView:
+            viewName: test_event_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT
+                p.internal_id,
+                p.created_at,
+                p.created_by,
+                p.updated_at,
+                p.updated_by,
+                p.is_deleted,
+                p.organization_id,
+                p.facility_id,
+                p.race,
+                p.gender,
+                p.ethnicity,
+                p.county,
+                p.state,
+                p.country,
+                p.employed_in_healthcare,
+                p.role,
+                p.resident_congregate_setting,
+                p.tribal_affiliation,
+                p.lookup_id,
+                get_census_dob_group(p.birth_date) AS census_dob_group,
+                p.preferred_language,
+                p.test_result_delivery_preference,
+                p.pii_deleted
+              FROM ${database.defaultSchemaName}.person p;
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+        - createView:
+            viewName: test_event_no_phi_view
+            remarks: A subset of the test_event table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT 
+                internal_id,
+                created_at,
+                created_by,
+                updated_at,
+                updated_by,
+                patient_id,
+                organization_id,
+                facility_id,
+                specimen_type_id,
+                device_type_id,
+                survey_data,
+                date_tested_backdate,
+                test_order_id,
+                correction_status,
+                prior_corrected_test_event_id,
+                reason_for_correction,
+                pii_deleted
+              FROM ${database.defaultSchemaName}.test_event
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - dropView:
+            viewName: person_no_phi_view
+        - dropView:
+            viewName: test_event_no_phi_view
+        - createView:
+            viewName: person_no_phi_view
+            remarks: A subset of the person table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+                SELECT
+                  p.internal_id,
+                  p.created_at,
+                  p.created_by,
+                  p.updated_at,
+                  p.updated_by,
+                  p.is_deleted,
+                  p.organization_id,
+                  p.facility_id,
+                  p.race,
+                  p.gender,
+                  p.ethnicity,
+                  p.county,
+                  p.state,
+                  p.country,
+                  p.employed_in_healthcare,
+                  p.role,
+                  p.resident_congregate_setting,
+                  p.tribal_affiliation,
+                  p.lookup_id,
+                  get_census_dob_group(p.birth_date) AS census_dob_group,
+                  p.preferred_language,
+                  p.test_result_delivery_preference
+                FROM ${database.defaultSchemaName}.person p
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.person_no_phi_view TO ${noPhiUsername};
+        - createView:
+            viewName: test_event_no_phi_view
+            remarks: A subset of the test_event table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: |
+              SELECT 
+                internal_id,
+                created_at,
+                created_by,
+                updated_at,
+                updated_by,
+                patient_id,
+                organization_id,
+                facility_id,
+                specimen_type_id,
+                device_type_id,
+                survey_data,
+                date_tested_backdate,
+                test_order_id,
+                correction_status,
+                prior_corrected_test_event_id, 
+                reason_for_correction
+              FROM ${database.defaultSchemaName}.test_event
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};

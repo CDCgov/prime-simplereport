@@ -100,6 +100,9 @@ smarty-streets:
   id: ${SMARTY_AUTH_ID}
   token: ${SMARTY_AUTH_TOKEN}
 simple-report:
+  data-retention:
+    retention-days: 30
+    max-execution-time-seconds: 14400 # 4 hours
   id-verification-reminders:
     enabled: false
   authorization:
@@ -152,6 +155,8 @@ simple-report:
     exception-webhook-token: ${RS_QUEUE_CALLBACK_TOKEN}
     name: ${AZ_REPORTING_QUEUE_NAME:test-event-publishing}
     fhir-queue-name: ${AZ_FHIR_REPORTING_QUEUE_NAME:fhir-data-publishing}
+    hl7-queue-enabled: false
+    hl7-queue-name: ${AZ_HL7_REPORTING_QUEUE_NAME:hl7v2-data-publishing}
     connection-string: ${AZ_REPORTING_QUEUE_CXN_STRING}
   cors:
     allowed-methods:
@@ -196,9 +201,11 @@ aims:
   access-key-id: ${AIMS_ACCESS_KEY_ID:super-secret-access-key-id}
   secret-access-key: ${AIMS_SECRET_ACCESS_KEY:super-secret-access-key}
   encryption-key: ${AIMS_KMS_ENCRYPTION_KEY:super-secret-encryption-key}
-  s3-bucket-name: ${AIMS_S3_BUCKET_NAME:super-secret-bucket-name}
+  bucket-name: ${AIMS_BUCKET_NAME:super-secret-bucket-name}
   user-id: ${AIMS_USER_ID:super-secret-user-id}
   message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT:super-secret-message-queue-endpoint}
+  sending-environment: ${AIMS_ENVIRONMENT:Test}
+  receiving-environment: ${AIMS_ENVIRONMENT:Test}
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true

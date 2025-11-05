@@ -23,6 +23,7 @@ import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
@@ -98,7 +99,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @MockitoBean(name = "fhirQueueReportingService")
   TestEventReportingService fhirQueueReportingService;
 
+  @MockitoBean(name = "hl7QueueReportingService")
+  TestEventReportingService hl7QueueReportingService;
+
+  @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
+
   @MockitoSpyBean ReportTestEventToRSEventListener reportTestEventToRSEventListener;
+  @MockitoSpyBean ReportToAIMSEventListener reportToAIMSEventListener;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -117,6 +124,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @BeforeEach
   void setupData() {
+    when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(false);
     initSampleData();
   }
 
@@ -189,6 +197,79 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verify(fhirQueueReportingService).report(any());
     // improve fhir verification? test was only asserting csv / covid pipeline values
     // was asserting: patient ids match, test results match
+    verifyNoInteractions(hl7QueueReportingService);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void roundTripToAims() {
+    // GIVEN
+    when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(true);
+
+    Facility facility =
+        _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
+    Person patient =
+        _personService.addPatient(
+            (UUID) null,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            getAddress(),
+            "USA",
+            TestDataFactory.getListOfOnePhoneNumber(),
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            null,
+            null);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+
+    UUID defaultDeviceType = facility.getDefaultDeviceType().getInternalId();
+    UUID defaultSpecimenType = facility.getDefaultSpecimenType().getInternalId();
+
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    assertEquals(1, queue.size());
+
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
+    // WHEN
+    _service.addMultiplexResult(
+        defaultDeviceType,
+        defaultSpecimenType,
+        positiveCovidOnlyResult,
+        patient.getInternalId(),
+        null);
+
+    // THEN
+    queue = _service.getQueue(facility.getInternalId());
+    assertEquals(0, queue.size());
+
+    List<TestEvent> testEvents =
+        _testEventRepository.findAllByPatientAndFacilities(patient, List.of(facility));
+    assertThat(testEvents).hasSize(1);
+    assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
+    verify(patientLinkService).createPatientLink(any());
+
+    // make sure the corrected event is sent to storage queue
+    verify(fhirQueueReportingService).report(any());
+    verify(hl7QueueReportingService).report(any());
   }
 
   @Test
@@ -239,6 +320,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         null);
 
     verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
 
     List<TestEvent> testEvents =
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
@@ -265,6 +347,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
     assertThat(testEvents.get(1).getPatientHasPriorTests()).isTrue();
     verify(fhirQueueReportingService, times(2)).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
   }
 
   @Test
@@ -433,6 +516,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
     verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
   }
 
   @Test
@@ -484,6 +568,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
     verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
   }
 
   @Test
@@ -594,6 +679,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is sent to storage queue
     verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
 
     List<MultiplexResultInput> negativeCovidResult = makeCovidOnlyResult(TestResult.NEGATIVE);
 
@@ -606,6 +692,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the second event is sent to storage queue
     verifyNoInteractions(testEventReportingService);
     verify(fhirQueueReportingService, times(2)).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
   }
 
   @Test
@@ -988,6 +1075,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertTrue(res.getDeliverySuccess());
     verifyNoInteractions(testResultsDeliveryService);
     verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
   }
 
   @Test
@@ -1519,6 +1607,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
     verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
   }
 
   @Test
@@ -2296,6 +2385,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is not sent to storage queue
     verifyNoInteractions(testEventReportingService);
     verifyNoInteractions(fhirQueueReportingService);
+    verifyNoInteractions(hl7QueueReportingService);
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.markAsError(_e.getInternalId(), reasonMsg);
@@ -2303,6 +2393,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facility.getInternalId(), null, null, null, null, null, null, 0, 10);
     // make sure the corrected event is sent to storage queue
     verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(hl7QueueReportingService);
   }
 
   @Test

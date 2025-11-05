@@ -127,7 +127,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
     TestEvent ev = _events.save(new TestEvent(order));
     assertNotNull(ev);
-    order.setTestEventRef(ev);
+    order.setLatestTestEventRef(ev);
     _repo.save(order);
     flush();
 
@@ -195,7 +195,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     resultService.addResultsToTestOrder(order1, List.of(result));
 
     TestEvent didit = _events.save(new TestEvent(order1));
-    order1.setTestEventRef(didit);
+    order1.setLatestTestEventRef(didit);
     order1.markComplete();
     _repo.save(order1);
     flush();
