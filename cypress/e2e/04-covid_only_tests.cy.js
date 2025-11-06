@@ -154,7 +154,7 @@ describe("Reporting a COVID test from:", () => {
     cy.contains("Submit results").click();
     cy.wait("@SubmitQueueItem");
 
-    cy.contains(`Result for ${patientName} was saved and reported.`);
+    cy.contains(`Result for ${patientName} has been sent.`);
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
 
     cy.get("#desktop-results-nav-link").click();

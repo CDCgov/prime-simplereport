@@ -213,7 +213,7 @@ features:
   hepatitisCEnabled: true
   syphilisEnabled: true
   hivEnabled: true
-  dataRetentionLimitsEnabled: false
+  dataRetentionLimitsEnabled: true
   universalReportingEnabled: true
   identityVerificationEnabled: true
   aimsReportingEnabled: true
