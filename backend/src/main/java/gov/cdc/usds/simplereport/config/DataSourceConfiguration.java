@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.util.StringUtils;
 
 @Configuration
 public class DataSourceConfiguration {
@@ -99,11 +100,12 @@ public class DataSourceConfiguration {
     SpringLiquibase liquibase = new SpringLiquibase();
     liquibase.setChangeLog(properties.getChangeLog());
     liquibase.setChangeLogParameters(properties.getParameters());
-    liquibase.setContexts(properties.getContexts());
+    liquibase.setContexts(StringUtils.collectionToCommaDelimitedString(properties.getContexts()));
     liquibase.setDataSource(dataSource);
     liquibase.setDefaultSchema(properties.getDefaultSchema());
     liquibase.setDropFirst(properties.isDropFirst());
-    liquibase.setLabelFilter(properties.getLabelFilter());
+    liquibase.setLabelFilter(
+        StringUtils.collectionToCommaDelimitedString(properties.getLabelFilter()));
     liquibase.setRollbackFile(properties.getRollbackFile());
     liquibase.setShouldRun(properties.isEnabled());
     liquibase.setDatabaseChangeLogTable(properties.getDatabaseChangeLogTable());

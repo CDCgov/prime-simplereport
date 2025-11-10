@@ -22,16 +22,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @TestPropertySource(properties = {"simple-report.id-verification-reminders.enabled=true"})
 class ReminderServiceTest extends BaseServiceTest<ReminderService> {
 
   @Autowired private JdbcTemplate _jdbc;
-  @MockBean private EmailService _emailService;
+  @MockitoBean private EmailService _emailService;
 
   @Test
   void sendAccountReminderEmails_noEmails_success() throws IOException {

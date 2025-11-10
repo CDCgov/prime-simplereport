@@ -14,9 +14,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 @EnableAsync
@@ -25,8 +25,8 @@ import org.springframework.test.context.ActiveProfiles;
 class LoincServiceTest {
   @Autowired private TestDataFactory testDataFactory;
   @Autowired private LabRepository labRepository;
-  @MockBean private LoincFhirClient loincFhirClient;
-  @MockBean private LoincStagingRepository loincStagingRepository;
+  @MockitoBean private LoincFhirClient loincFhirClient;
+  @MockitoBean private LoincStagingRepository loincStagingRepository;
 
   private LoincService loincService;
 

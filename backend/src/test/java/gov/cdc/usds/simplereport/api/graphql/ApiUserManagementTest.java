@@ -39,7 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 class ApiUserManagementTest extends BaseGraphqlTest {
 
@@ -70,7 +70,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   private static final EnumSet<UserPermission> TENANT_DATA_ACCESS_PERMISSIONS =
       EnumSet.allOf(UserPermission.class);
 
-  @SpyBean private OktaRepository _oktaRepo;
+  @MockitoSpyBean private OktaRepository _oktaRepo;
 
   @BeforeEach
   void resetOktaRepo() {

@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 class LoggedInAuthorizationServiceTest extends BaseServiceTest<AuthorizationService> {
   @Autowired TenantDataAccessService tenantDataAccessService;
-  @Autowired @SpyBean ApiUserRepository apiUserRepository;
+  @Autowired @MockitoSpyBean ApiUserRepository apiUserRepository;
   @Autowired OrganizationRoleClaimsTestUtils _orgRoleClaimsTestUtils;
 
   @Test

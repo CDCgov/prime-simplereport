@@ -58,8 +58,8 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
@@ -72,8 +72,8 @@ class HL7ConverterTest {
 
   private final HapiContext hapiContext = HapiContextProvider.get();
   @Mock private GitProperties gitProperties;
-  @MockBean private UUIDGenerator uuidGenerator;
-  @MockBean private DateGenerator dateGenerator;
+  @MockitoBean private UUIDGenerator uuidGenerator;
+  @MockitoBean private DateGenerator dateGenerator;
   @Autowired private HL7Converter hl7Converter;
 
   @BeforeEach

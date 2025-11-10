@@ -39,15 +39,15 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @WithSimpleReportStandardUser // hackedy hack
 class TestResultTest extends BaseGraphqlTest {
 
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;
-  @MockBean private SmsService _smsService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
+  @MockitoBean private SmsService _smsService;
+  @MockitoBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
   private Organization _org;
   private Facility _site;
