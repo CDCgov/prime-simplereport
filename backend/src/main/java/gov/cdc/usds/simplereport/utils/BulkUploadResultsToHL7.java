@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNO
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.SNOMED_REGEX;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
@@ -83,20 +84,9 @@ public class BulkUploadResultsToHL7 {
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
-    String sendingFacilityNamespaceId = null;
-    String sendingFacilityUniversalId = null;
-
     while (valueIterator.hasNext()) {
       final Map<String, String> row = getNextRow(valueIterator);
       TestResultRow fileRow = new TestResultRow(row);
-
-      if (sendingFacilityNamespaceId == null) {
-        sendingFacilityNamespaceId = fileRow.getTestingLabName().getValue();
-      }
-
-      if (sendingFacilityUniversalId == null) {
-        sendingFacilityUniversalId = fileRow.getTestingLabClia().getValue();
-      }
 
       Optional<String> disease =
           getDiseaseFromDeviceSpecs(
@@ -138,7 +128,7 @@ public class BulkUploadResultsToHL7 {
     try {
       batchMessage =
           hl7Converter.createBatchFileString(
-              messages, sendingFacilityNamespaceId, sendingFacilityUniversalId, batchMessageCount);
+              messages, batchMessageCount, formatToHL7DateTime(dateGenerator.newDate()));
     } catch (NullPointerException e) {
       log.error("Encountered an error converting CSV to Batch HL7 Message");
       throw new CsvProcessingException("Unable to generate HL7 Segments");
