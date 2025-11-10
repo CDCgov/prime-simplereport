@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithDate;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithNoCommonTestOrderedLoincDevice;
@@ -279,14 +281,13 @@ class HL7ConverterTest {
   @Test
   void populateMessageHeader_valid() throws DataTypeException {
     MSH msh = new ORU_R01().getMSH();
-    String facilityName = "Test Facility";
-    String clia = "12D1234567";
 
-    hl7Converter.populateMessageHeader(msh, facilityName, clia, "T", Date.from(STATIC_INSTANT));
+    hl7Converter.populateMessageHeader(msh, "T", Date.from(STATIC_INSTANT));
 
     assertThat(msh.getMsh4_SendingFacility().getHd1_NamespaceID().getValue())
-        .isEqualTo(facilityName);
-    assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue()).isEqualTo(clia);
+        .isEqualTo(SENDING_FACILITY_NAMESPACE);
+    assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue())
+        .isEqualTo(SENDING_FACILITY_FAKE_AGGREGATE_CLIA);
     assertThat(msh.getMsh7_DateTimeOfMessage().getTs1_Time().getValue())
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
     assertThat(msh.getMsh10_MessageControlID().getValue()).isEqualTo(STATIC_RANDOM_UUID);
@@ -296,15 +297,11 @@ class HL7ConverterTest {
   @Test
   void populateMessageHeader_throwsExceptionFor_invalidProcessingId() {
     MSH msh = new ORU_R01().getMSH();
-    String facilityName = "Test Facility";
-    String clia = "12D1234567";
 
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () ->
-                hl7Converter.populateMessageHeader(
-                    msh, facilityName, clia, "F", Date.from(STATIC_INSTANT)));
+            () -> hl7Converter.populateMessageHeader(msh, "F", Date.from(STATIC_INSTANT)));
     assertThat(exception.getMessage())
         .isEqualTo(
             "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
@@ -575,9 +572,9 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
 
-    hl7Converter.populatePhoneNumber(xtn, "(716) 555-1234", "PRS");
+    hl7Converter.populatePhoneNumber(xtn, "(716) 555-1234", "PRN");
 
-    assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isEqualTo("PRS");
+    assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isEqualTo("PRN");
     assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo("716");
     assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo("5551234");
   }
@@ -589,10 +586,10 @@ class HL7ConverterTest {
 
     assertThrows(
         IllegalArgumentException.class,
-        () -> hl7Converter.populatePhoneNumber(xtn, "16-555-1234", "PRS"));
+        () -> hl7Converter.populatePhoneNumber(xtn, "16-555-1234", "PRN"));
     assertThrows(
         IllegalArgumentException.class,
-        () -> hl7Converter.populatePhoneNumber(xtn, "7716-555-1234", "PRS"));
+        () -> hl7Converter.populatePhoneNumber(xtn, "7716-555-1234", "PRN"));
   }
 
   @Test
@@ -600,7 +597,7 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
 
-    hl7Converter.populatePhoneNumber(xtn, "", "PRS");
+    hl7Converter.populatePhoneNumber(xtn, "", "PRN");
 
     assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isEqualTo(null);
     assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo(null);

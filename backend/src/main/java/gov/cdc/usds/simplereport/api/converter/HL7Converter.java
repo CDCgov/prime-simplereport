@@ -19,7 +19,6 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.utils.MultiplexUtils.inferMultiplexDeviceTypeDisease;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.CLIA_REGEX;
 
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.datatype.CE;
@@ -174,12 +173,7 @@ public class HL7Converter {
     Date messageTimestamp = dateGenerator.newDate();
 
     MSH messageHeader = message.getMSH();
-    populateMessageHeader(
-        messageHeader,
-        performingFacility.getName(),
-        performingFacility.getClia(),
-        processingId,
-        messageTimestamp);
+    populateMessageHeader(messageHeader, processingId, messageTimestamp);
 
     SFT softwareSegment = message.getSFT();
     populateSoftwareSegment(softwareSegment, gitProperties);
@@ -278,8 +272,6 @@ public class HL7Converter {
    * timestamp, etc. See page 90, HL7 v2.5.1 IG.
    *
    * @param msh the Message Header Segment (MSH) object from the message
-   * @param sendingFacilityName facility name
-   * @param sendingFacilityClia CLIA number for the facility sending the lab report
    * @param processingId Indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
    * @param messageTimestamp Must be greater than or equal to the value of OBR-22 Results
@@ -289,16 +281,8 @@ public class HL7Converter {
    * @throws IllegalArgumentException if facility CLIA number does not match required format, or if
    *     processing id is not T, D, or P
    */
-  void populateMessageHeader(
-      MSH msh,
-      String sendingFacilityName,
-      String sendingFacilityClia,
-      String processingId,
-      Date messageTimestamp)
+  void populateMessageHeader(MSH msh, String processingId, Date messageTimestamp)
       throws DataTypeException, IllegalArgumentException {
-    if (!sendingFacilityClia.matches(CLIA_REGEX)) {
-      throw new IllegalArgumentException("Sending facility CLIA number must match CLIA format");
-    }
     if (!processingId.matches("^[TDP]$")) {
       throw new IllegalArgumentException(
           "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
@@ -324,9 +308,11 @@ public class HL7Converter {
     // CLIA is allowed for MSH-4 even though it is not in the Universal ID Type value set of HL70301
     msh.getMsh4_SendingFacility().getHd3_UniversalIDType().setValue("CLIA");
 
+    msh.getMsh5_ReceivingApplication().getHd1_NamespaceID().setValue("APHL");
     msh.getMsh5_ReceivingApplication().getHd2_UniversalID().setValue(APHL_ORG_OID);
     msh.getMsh5_ReceivingApplication().getHd3_UniversalIDType().setValue("ISO");
 
+    msh.getMsh6_ReceivingFacility().getHd1_NamespaceID().setValue("APHL");
     msh.getMsh6_ReceivingFacility().getHd2_UniversalID().setValue(APHL_ORG_OID);
     msh.getMsh6_ReceivingFacility().getHd3_UniversalIDType().setValue("ISO");
 
@@ -457,8 +443,8 @@ public class HL7Converter {
         patientInput.getCountry());
 
     if (StringUtils.isNotBlank(patientInput.getPhone())) {
-      // PRS for Personal from HL7 0201 Telecommunication Use Code
-      populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone(), "PRS");
+      // PRN for Primary residence number from HL7 0201 Telecommunication Use Code
+      populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone(), "PRN");
     }
 
     if (StringUtils.isNotBlank(patientInput.getEmail())) {
@@ -614,6 +600,7 @@ public class HL7Converter {
     }
     final int localNumberStartIndex = 3;
     xtn.getXtn2_TelecommunicationUseCode().setValue(telecomUseCode);
+    xtn.getXtn3_TelecommunicationEquipmentType().setValue("PH");
     xtn.getXtn6_AreaCityCode().setValue(strippedNumber.substring(0, localNumberStartIndex));
     // If XTN-7 Local Number is present, XTN-4 Email Address must be empty
     xtn.getXtn7_LocalNumber().setValue(strippedNumber.substring(localNumberStartIndex));
@@ -1210,11 +1197,7 @@ public class HL7Converter {
   }
 
   public String createBatchFileString(
-      List<String> encodedMessages,
-      String facilityName,
-      String facilityClia,
-      int batchMessageCount) {
-    String hl7Date = formatToHL7DateTime(dateGenerator.newDate());
+      List<String> encodedMessages, int batchMessageCount, String hl7Date) {
     ArrayList<String> parts = new ArrayList<>();
 
     // FHS
@@ -1222,11 +1205,11 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "FHS",
-                SIMPLE_REPORT_NAME,
-                SIMPLE_REPORT_ORG_OID,
+                hl7Properties.sendingApplicationNamespace,
+                hl7Properties.sendingApplicationOID,
                 "ISO",
-                facilityName,
-                facilityClia,
+                SENDING_FACILITY_NAMESPACE,
+                SENDING_FACILITY_FAKE_AGGREGATE_CLIA,
                 "CLIA",
                 "APHL",
                 APHL_ORG_OID,
@@ -1241,11 +1224,11 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "BHS",
-                SIMPLE_REPORT_NAME,
-                SIMPLE_REPORT_ORG_OID,
+                hl7Properties.sendingApplicationNamespace,
+                hl7Properties.sendingApplicationOID,
                 "ISO",
-                facilityName,
-                facilityClia,
+                SENDING_FACILITY_NAMESPACE,
+                SENDING_FACILITY_FAKE_AGGREGATE_CLIA,
                 "CLIA",
                 "APHL",
                 APHL_ORG_OID,

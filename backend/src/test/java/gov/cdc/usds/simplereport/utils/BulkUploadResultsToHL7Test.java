@@ -10,6 +10,7 @@ import ca.uhn.hl7v2.parser.Parser;
 import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.HL7Converter;
 import gov.cdc.usds.simplereport.api.converter.HapiContextProvider;
+import gov.cdc.usds.simplereport.config.HL7Properties;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
@@ -31,12 +32,14 @@ import org.springframework.boot.info.GitProperties;
 public class BulkUploadResultsToHL7Test {
 
   private static GitProperties gitProperties;
+  private static HL7Properties hl7Properties;
   private static ResultsUploaderCachingService resultsUploaderCachingService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
   private final HapiContext hapiContext = HapiContextProvider.get();
   private final Parser parser = hapiContext.getPipeParser();
   private final UUIDGenerator uuidGenerator = new UUIDGenerator();
   private final DateGenerator dateGenerator = new DateGenerator();
+
   BulkUploadResultsToHL7 sut;
 
   @Mock private HL7Converter hl7Converter;
@@ -46,6 +49,10 @@ public class BulkUploadResultsToHL7Test {
     gitProperties = mock(GitProperties.class);
     when(gitProperties.getCommitTime()).thenReturn(commitTime);
     when(gitProperties.getShortCommitId()).thenReturn("abc123");
+    hl7Properties = mock(HL7Properties.class);
+    when(hl7Properties.getSendingApplicationNamespace()).thenReturn("SIMPLEREPORT.STAG");
+    when(hl7Properties.getSendingApplicationNamespace())
+        .thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
 
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
   }
@@ -76,7 +83,7 @@ public class BulkUploadResultsToHL7Test {
                 "122555007",
                 "Venous blood specimen"));
 
-    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, dateGenerator);
+    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, dateGenerator, hl7Properties);
     sut =
         new BulkUploadResultsToHL7(
             hl7Converter, gitProperties, dateGenerator, resultsUploaderCachingService);
@@ -335,7 +342,7 @@ public class BulkUploadResultsToHL7Test {
     Date fixedDate = Date.from(Instant.parse("2023-05-24T19:33:06Z"));
     when(mockedDateGenerator.newDate()).thenReturn(fixedDate);
 
-    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, mockedDateGenerator);
+    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, mockedDateGenerator, hl7Properties);
     BulkUploadResultsToHL7 localSut =
         new BulkUploadResultsToHL7(
             hl7Converter, gitProperties, mockedDateGenerator, resultsUploaderCachingService);
