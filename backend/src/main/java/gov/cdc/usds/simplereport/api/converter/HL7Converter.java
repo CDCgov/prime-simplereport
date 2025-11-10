@@ -1205,8 +1205,8 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "FHS",
-                hl7Properties.sendingApplicationNamespace,
-                hl7Properties.sendingApplicationOID,
+                hl7Properties.getSendingApplicationNamespace(),
+                hl7Properties.getSendingApplicationOID(),
                 "ISO",
                 SENDING_FACILITY_NAMESPACE,
                 SENDING_FACILITY_FAKE_AGGREGATE_CLIA,
@@ -1224,8 +1224,8 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "BHS",
-                hl7Properties.sendingApplicationNamespace,
-                hl7Properties.sendingApplicationOID,
+                hl7Properties.getSendingApplicationNamespace(),
+                hl7Properties.getSendingApplicationOID(),
                 "ISO",
                 SENDING_FACILITY_NAMESPACE,
                 SENDING_FACILITY_FAKE_AGGREGATE_CLIA,
