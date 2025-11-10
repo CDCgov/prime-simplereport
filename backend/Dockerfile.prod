@@ -1,4 +1,4 @@
-FROM gradle:9.2.0-jdk17 AS build
+FROM gradle:8.14.3-jdk17 AS build
 WORKDIR /home/gradle/graphql-api
 COPY --chown=gradle:gradle .git .git
 WORKDIR /home/gradle/graphql-api/backend
