@@ -58,15 +58,16 @@ class LoincServiceTest {
   }
 
   @Test
-  void getLabsByConditionCodes_filtersResultTypeScaleDisplays() {
+  void getAllLabs_filtersResultTypeScaleDisplaySystemCode() {
     // GIVEN
     initData();
     // WHEN
-    List<Lab> labs = loincService.getLabsByConditionCodes(List.of("C001"));
+    List<Lab> labs = loincService.getAllSupportedLabs();
     // THEN
-    assertEquals(3, labs.size());
+    assertEquals(4, labs.size());
     assertEquals("L001", labs.get(0).getCode());
     assertEquals("L002", labs.get(1).getCode());
     assertEquals("L003", labs.get(2).getCode());
+    assertEquals("L010", labs.get(3).getCode());
   }
 }
