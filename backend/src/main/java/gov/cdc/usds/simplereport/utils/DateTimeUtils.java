@@ -174,7 +174,7 @@ public class DateTimeUtils {
 
   /** Formats the ZonedDateTime to a valid HL7 timestamp string with zone offset */
   public static String formatToHL7DateTime(ZonedDateTime zonedDateTime) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss.SSSSZ");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssZ");
     return zonedDateTime.format(formatter);
   }
 

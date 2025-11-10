@@ -69,7 +69,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 class HL7ConverterTest {
   private static final Instant STATIC_INSTANT =
       LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-  private static final String STATIC_INSTANT_HL7_STRING = "20250701000000.0000+0000";
+  private static final String STATIC_INSTANT_HL7_STRING = "20250701000000+0000";
   private static final String STATIC_RANDOM_UUID = "5db534ea-5e97-4861-ba18-d74acc46db15";
 
   private final HapiContext hapiContext = HapiContextProvider.get();
@@ -104,7 +104,7 @@ class HL7ConverterTest {
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
     assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("F");
     assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
-        .isEqualTo("20250701000000.0000+0000");
+        .isEqualTo("20250701000000+0000");
 
     Parser parser = hapiContext.getPipeParser();
     String encodedMessage = parser.encode(message);
@@ -140,7 +140,7 @@ class HL7ConverterTest {
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
     assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("C");
     assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
-        .isEqualTo("20250704000000.0000+0000");
+        .isEqualTo("20250704000000+0000");
   }
 
   @Test
@@ -706,7 +706,7 @@ class HL7ConverterTest {
 
     Instant specimenCollectionDate =
         LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+    String expectedSpecimenCollectionDate = "20250601000000+0000";
 
     hl7Converter.populateObservationRequest(
         observationRequest,
@@ -760,10 +760,10 @@ class HL7ConverterTest {
 
     Instant specimenCollectionDate =
         LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+    String expectedSpecimenCollectionDate = "20250601000000+0000";
 
     Instant testResultDate = LocalDate.of(2025, 7, 2).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedTestResultDate = "20250702000000.0000+0000";
+    String expectedTestResultDate = "20250702000000+0000";
 
     FacilityReportInput performingFacility = TestDataBuilder.createFacilityReportInput();
     TestDetailsInput testDetail =
@@ -844,11 +844,11 @@ class HL7ConverterTest {
 
     Instant specimenCollectionDate =
         LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+    String expectedSpecimenCollectionDate = "20250601000000+0000";
 
     Instant specimenReceivedDate =
         LocalDate.of(2025, 7, 2).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedSpecimenReceivedDate = "20250702000000.0000+0000";
+    String expectedSpecimenReceivedDate = "20250702000000+0000";
 
     SpecimenInput specimenInput =
         new SpecimenInput(
