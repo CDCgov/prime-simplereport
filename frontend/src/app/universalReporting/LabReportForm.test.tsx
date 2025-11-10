@@ -31,6 +31,7 @@ describe("LabReportForm", () => {
   });
 
   beforeEach(() => {
+    jest.spyOn(Date, "now").mockReturnValue(new Date("2025-09-15").getTime());
     store = mockStore({
       organization: {
         name: "Organization Name",
