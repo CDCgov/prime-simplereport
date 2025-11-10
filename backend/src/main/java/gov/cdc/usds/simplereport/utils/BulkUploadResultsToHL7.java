@@ -84,6 +84,9 @@ public class BulkUploadResultsToHL7 {
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
+    // The dates in FHS and BHS must be earlier or equal to date in MSH
+    String batchDate = formatToHL7DateTime(dateGenerator.newDate());
+
     while (valueIterator.hasNext()) {
       final Map<String, String> row = getNextRow(valueIterator);
       TestResultRow fileRow = new TestResultRow(row);
@@ -126,9 +129,7 @@ public class BulkUploadResultsToHL7 {
             .toList();
 
     try {
-      batchMessage =
-          hl7Converter.createBatchFileString(
-              messages, batchMessageCount, formatToHL7DateTime(dateGenerator.newDate()));
+      batchMessage = hl7Converter.createBatchFileString(messages, batchMessageCount, batchDate);
     } catch (NullPointerException e) {
       log.error("Encountered an error converting CSV to Batch HL7 Message");
       throw new CsvProcessingException("Unable to generate HL7 Segments");

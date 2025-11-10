@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.utils;
 
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -51,8 +53,7 @@ public class BulkUploadResultsToHL7Test {
     when(gitProperties.getShortCommitId()).thenReturn("abc123");
     hl7Properties = mock(HL7Properties.class);
     when(hl7Properties.getSendingApplicationNamespace()).thenReturn("SIMPLEREPORT.STAG");
-    when(hl7Properties.getSendingApplicationNamespace())
-        .thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
+    when(hl7Properties.getSendingApplicationOID()).thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
 
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
   }
@@ -417,12 +418,6 @@ public class BulkUploadResultsToHL7Test {
 
   @Test
   void fhsAndBhs_includeSendingFacilityClia() throws IOException {
-    var mappingIterator =
-        getIteratorForCsv(loadCsv("testResultUpload/test-results-upload-valid.csv"));
-    var csvRow = mappingIterator.next();
-    var facilityName = csvRow.get("testing_lab_name");
-    var facilityClia = csvRow.get("testing_lab_clia");
-
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
@@ -433,7 +428,8 @@ public class BulkUploadResultsToHL7Test {
     assertThat(bhs).isNotNull();
 
     // sending facility is an HD of name^CLIA^CLIA
-    String expectedHdPart = facilityName + "^" + facilityClia + "^CLIA";
+    String expectedHdPart =
+        SENDING_FACILITY_NAMESPACE + "^" + SENDING_FACILITY_FAKE_AGGREGATE_CLIA + "^CLIA";
     assertThat(fhs).contains(expectedHdPart);
     assertThat(bhs).contains(expectedHdPart);
   }
