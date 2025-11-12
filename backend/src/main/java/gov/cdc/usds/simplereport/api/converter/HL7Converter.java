@@ -300,7 +300,9 @@ public class HL7Converter {
         .setValue(hl7Properties.sendingApplicationOID);
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
-    // Sending facility is the same for all environments
+    // Sending facility is the same for ALL environments including local.
+    // However, this is only the case for MSH-4 since the real facility that performed the test is
+    // populated in other segments like OBX-23.10.
     msh.getMsh4_SendingFacility().getHd1_NamespaceID().setValue(SENDING_FACILITY_NAMESPACE);
     msh.getMsh4_SendingFacility()
         .getHd2_UniversalID()
