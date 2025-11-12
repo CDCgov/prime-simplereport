@@ -8,7 +8,10 @@ public class HL7Constants {
   /** Assigned by APHL for use in MSH-4.1 Sending Facility Namespace Id */
   public static final String SENDING_FACILITY_NAMESPACE = "CDC.SimpleReport";
 
-  /** Assigned by APHL for use in MSH-4.2 Sending Facility Universal Id */
+  /**
+   * Assigned by APHL, but we are not currently using this OID itself for MSH-4.2. Instead, we are
+   * using SENDING_FACILITY_FAKE_AGGREGATE_CLIA to populate MSH-4.2
+   */
   public static final String SENDING_FACILITY_OID = "2.16.840.1.113883.3.8589.4.1.231";
 
   /**
