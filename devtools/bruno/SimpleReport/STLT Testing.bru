@@ -1,0 +1,289 @@
+meta {
+  name: STLT Testing
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{env_name}}/aims/test/legacy?dryRun=true
+  body: json
+  auth: inherit
+}
+
+params:query {
+  dryRun: true
+}
+
+body:json {
+  {
+    "deviceSpecimenMappings": [
+      {
+        "deviceTypeId": "89895720-d898-4ffb-b56a-333171388e01",
+        "specimenTypeName": "Nasopharyngeal swab",
+        "specimenTypeCode": "258500001",
+        "specimenCollectionLocationName": "",
+        "specimenCollectionLocationCode": ""
+      }
+    ],
+    "deviceTypeDiseases": [
+      {
+        "internalId": "ead81f7e-2357-41d2-a4a9-cc2f7787390f",
+        "deviceTypeId": "89895720-d898-4ffb-b56a-333171388e01",
+        "testPerformedLoincCode": "94500-6",
+        "testOrderedLoincCode": "95941-1",
+        "testPerformedLoincLongName": "SARS-CoV-2 (COVID-19) RNA [Presence] in Respiratory specimen by NAA with probe detection",
+        "testOrderedLoincLongName": "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"
+      },
+      {
+        "internalId": "33c9e4e7-64f4-4eb6-90ac-1c63bfb86e54",
+        "deviceTypeId": "89895720-d898-4ffb-b56a-333171388e01",
+        "testPerformedLoincCode": "85477-8",
+        "testOrderedLoincCode": "95941-1",
+        "testPerformedLoincLongName": "Influenza virus A RNA [Presence] in Upper respiratory specimen by NAA with probe detection",
+        "testOrderedLoincLongName": "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"
+      },
+      {
+        "internalId": "b929b1fd-8200-4bc4-a5d3-dadf72ec9026",
+        "deviceTypeId": "89895720-d898-4ffb-b56a-333171388e01",
+        "testPerformedLoincCode": "85478-6",
+        "testOrderedLoincCode": "95941-1",
+        "testPerformedLoincLongName": "Influenza virus B RNA [Presence] in Upper respiratory specimen by NAA with probe detection",
+        "testOrderedLoincLongName": "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"
+      },
+      {
+        "internalId": "1c2b49f5-494f-4255-9c3d-45ac9128cc31",
+        "deviceTypeId": "89895720-d898-4ffb-b56a-333171388e01",
+        "testPerformedLoincCode": "85479-4",
+        "testOrderedLoincCode": "95941-1",
+        "testPerformedLoincLongName": "Respiratory syncytial virus RNA [Presence] in Upper respiratory specimen by NAA with probe detection",
+        "testOrderedLoincLongName": "Influenza virus A and B and SARS-CoV-2 (COVID-19) and Respiratory syncytial virus RNA panel - Respiratory specimen by NAA with probe detection"
+      }
+    ],
+    "jurisdictions": [
+      {
+        "state": "AL",
+        "zipcode": "35004"
+      },
+      {
+        "state": "AK",
+        "zipcode": "99501"
+      },
+      {
+        "state": "AZ",
+        "zipcode": "85001"
+      },
+      {
+        "state": "AR",
+        "zipcode": "72201"
+      },
+      {
+        "state": "CA",
+        "zipcode": "90001"
+      },
+      {
+        "state": "CO",
+        "zipcode": "80201"
+      },
+      {
+        "state": "CT",
+        "zipcode": "06101"
+      },
+      {
+        "state": "DE",
+        "zipcode": "19901"
+      },
+      {
+        "state": "FL",
+        "zipcode": "32004"
+      },
+      {
+        "state": "GA",
+        "zipcode": "30301"
+      },
+      {
+        "state": "HI",
+        "zipcode": "96801"
+      },
+      {
+        "state": "ID",
+        "zipcode": "83254"
+      },
+      {
+        "state": "IL",
+        "zipcode": "60007"
+      },
+      {
+        "state": "IN",
+        "zipcode": "46201"
+      },
+      {
+        "state": "IA",
+        "zipcode": "50001"
+      },
+      {
+        "state": "KS",
+        "zipcode": "66002"
+      },
+      {
+        "state": "KY",
+        "zipcode": "40003"
+      },
+      {
+        "state": "LA",
+        "zipcode": "70112"
+      },
+      {
+        "state": "ME",
+        "zipcode": "03901"
+      },
+      {
+        "state": "MD",
+        "zipcode": "20601"
+      },
+      {
+        "state": "MA",
+        "zipcode": "01001"
+      },
+      {
+        "state": "MI",
+        "zipcode": "48001"
+      },
+      {
+        "state": "MN",
+        "zipcode": "55001"
+      },
+      {
+        "state": "MS",
+        "zipcode": "38601"
+      },
+      {
+        "state": "MO",
+        "zipcode": "63001"
+      },
+      {
+        "state": "MT",
+        "zipcode": "59001"
+      },
+      {
+        "state": "NE",
+        "zipcode": "68001"
+      },
+      {
+        "state": "NV",
+        "zipcode": "88901"
+      },
+      {
+        "state": "NH",
+        "zipcode": "03031"
+      },
+      {
+        "state": "NJ",
+        "zipcode": "07001"
+      },
+      {
+        "state": "NM",
+        "zipcode": "87001"
+      },
+      {
+        "state": "NY",
+        "zipcode": "10001"
+      },
+      {
+        "state": "NC",
+        "zipcode": "27501"
+      },
+      {
+        "state": "ND",
+        "zipcode": "58001"
+      },
+      {
+        "state": "OH",
+        "zipcode": "43001"
+      },
+      {
+        "state": "OK",
+        "zipcode": "73001"
+      },
+      {
+        "state": "OR",
+        "zipcode": "97001"
+      },
+      {
+        "state": "PA",
+        "zipcode": "15001"
+      },
+      {
+        "state": "RI",
+        "zipcode": "02801"
+      },
+      {
+        "state": "SC",
+        "zipcode": "29001"
+      },
+      {
+        "state": "SD",
+        "zipcode": "57001"
+      },
+      {
+        "state": "TN",
+        "zipcode": "37010"
+      },
+      {
+        "state": "TX",
+        "zipcode": "77002"
+      },
+      {
+        "state": "UT",
+        "zipcode": "84001"
+      },
+      {
+        "state": "VT",
+        "zipcode": "05001"
+      },
+      {
+        "state": "VA",
+        "zipcode": "20101"
+      },
+      {
+        "state": "WA",
+        "zipcode": "98001"
+      },
+      {
+        "state": "WV",
+        "zipcode": "24701"
+      },
+      {
+        "state": "WI",
+        "zipcode": "53001"
+      },
+      {
+        "state": "WY",
+        "zipcode": "82001"
+      },
+      {
+        "state": "AS",
+        "zipcode": "96799"
+      },
+      {
+        "state": "GU",
+        "zipcode": "96910"
+      },
+      {
+        "state": "MH",
+        "zipcode": "96960"
+      },
+      {
+        "state": "MP",
+        "zipcode": "96950"
+      },
+      {
+        "state": "PR",
+        "zipcode": "00601"
+      },
+      {
+        "state": "VI",
+        "zipcode": "00802"
+      }
+    ]
+  }
+}
