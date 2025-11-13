@@ -294,10 +294,10 @@ public class HL7Converter {
     // Sending application is different between prod and lower environments
     msh.getMsh3_SendingApplication()
         .getHd1_NamespaceID()
-        .setValue(hl7Properties.sendingApplicationNamespace);
+        .setValue(hl7Properties.getSendingApplicationNamespace());
     msh.getMsh3_SendingApplication()
         .getHd2_UniversalID()
-        .setValue(hl7Properties.sendingApplicationOID);
+        .setValue(hl7Properties.getSendingApplicationOID());
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
     // Sending facility is the same for ALL environments including local.

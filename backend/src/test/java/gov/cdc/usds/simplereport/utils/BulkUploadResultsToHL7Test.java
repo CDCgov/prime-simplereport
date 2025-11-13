@@ -417,9 +417,15 @@ public class BulkUploadResultsToHL7Test {
   }
 
   @Test
-  void fhsAndBhs_includeSendingFacilityClia() throws IOException {
+  void fhsAndBhs_includeSendingApplicationAndSendingFacilityClia() throws IOException {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, dateGenerator, hl7Properties);
+    BulkUploadResultsToHL7 localSut =
+        new BulkUploadResultsToHL7(
+            hl7Converter, gitProperties, dateGenerator, resultsUploaderCachingService);
+
+    HL7BatchMessage batchMessage = localSut.convertToHL7BatchMessage(input);
 
     String[] lines = getHL7Lines(batchMessage);
     String fhs = getSegmentLine(lines, "FHS");
@@ -427,11 +433,16 @@ public class BulkUploadResultsToHL7Test {
     assertThat(fhs).isNotNull();
     assertThat(bhs).isNotNull();
 
+    // sending application is an HD of name^oid^ISO
+    String expectedApplicationHdPart = "SIMPLEREPORT.STAG^2.16.840.1.113883.3.8589.4.2.134.2^ISO";
+    assertThat(fhs).contains(expectedApplicationHdPart);
+    assertThat(bhs).contains(expectedApplicationHdPart);
+
     // sending facility is an HD of name^CLIA^CLIA
-    String expectedHdPart =
+    String expectedFacilityHdPart =
         SENDING_FACILITY_NAMESPACE + "^" + SENDING_FACILITY_FAKE_AGGREGATE_CLIA + "^CLIA";
-    assertThat(fhs).contains(expectedHdPart);
-    assertThat(bhs).contains(expectedHdPart);
+    assertThat(fhs).contains(expectedFacilityHdPart);
+    assertThat(bhs).contains(expectedFacilityHdPart);
   }
 
   @Test

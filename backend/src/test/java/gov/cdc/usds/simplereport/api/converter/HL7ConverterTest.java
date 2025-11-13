@@ -37,6 +37,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.config.HL7Properties;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -76,6 +77,7 @@ class HL7ConverterTest {
   @Mock private GitProperties gitProperties;
   @MockitoBean private UUIDGenerator uuidGenerator;
   @MockitoBean private DateGenerator dateGenerator;
+  @MockitoBean private HL7Properties hl7Properties;
   @Autowired private HL7Converter hl7Converter;
 
   @BeforeEach
@@ -84,6 +86,8 @@ class HL7ConverterTest {
     when(gitProperties.getShortCommitId()).thenReturn("1234567");
     when(uuidGenerator.randomUUID()).thenReturn(UUID.fromString(STATIC_RANDOM_UUID));
     when(dateGenerator.newDate()).thenReturn(Date.from(STATIC_INSTANT));
+    when(hl7Properties.getSendingApplicationNamespace()).thenReturn("SIMPLEREPORT.STAG");
+    when(hl7Properties.getSendingApplicationOID()).thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
   }
 
   @Test
@@ -284,10 +288,17 @@ class HL7ConverterTest {
 
     hl7Converter.populateMessageHeader(msh, "T", Date.from(STATIC_INSTANT));
 
+    assertThat(msh.getMsh3_SendingApplication().getHd1_NamespaceID().getValue())
+        .isEqualTo("SIMPLEREPORT.STAG");
+    assertThat(msh.getMsh3_SendingApplication().getHd2_UniversalID().getValue())
+        .isEqualTo("2.16.840.1.113883.3.8589.4.2.134.2");
+    assertThat(msh.getMsh3_SendingApplication().getHd3_UniversalIDType().getValue())
+        .isEqualTo("ISO");
     assertThat(msh.getMsh4_SendingFacility().getHd1_NamespaceID().getValue())
         .isEqualTo(SENDING_FACILITY_NAMESPACE);
     assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue())
         .isEqualTo(SENDING_FACILITY_FAKE_AGGREGATE_CLIA);
+    assertThat(msh.getMsh4_SendingFacility().getHd3_UniversalIDType().getValue()).isEqualTo("CLIA");
     assertThat(msh.getMsh7_DateTimeOfMessage().getTs1_Time().getValue())
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
     assertThat(msh.getMsh10_MessageControlID().getValue()).isEqualTo(STATIC_RANDOM_UUID);
@@ -575,6 +586,7 @@ class HL7ConverterTest {
     hl7Converter.populatePhoneNumber(xtn, "(716) 555-1234", "PRN");
 
     assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isEqualTo("PRN");
+    assertThat(xtn.getXtn3_TelecommunicationEquipmentType().getValue()).isEqualTo("PH");
     assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo("716");
     assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo("5551234");
   }
@@ -599,9 +611,9 @@ class HL7ConverterTest {
 
     hl7Converter.populatePhoneNumber(xtn, "", "PRN");
 
-    assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isEqualTo(null);
-    assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo(null);
-    assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo(null);
+    assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isNull();
+    assertThat(xtn.getXtn6_AreaCityCode().getValue()).isNull();
+    assertThat(xtn.getXtn7_LocalNumber().getValue()).isNull();
   }
 
   @Test
@@ -687,13 +699,35 @@ class HL7ConverterTest {
 
     hl7Converter.populateCommonOrderSegment(orc, orderingFacility, orderingProvider, "123");
 
-    assertThat(orc.getOrc23_OrderingFacilityPhoneNumber(0).getEmailAddress().getValue())
+    assertThat(
+            orc.getOrc23_OrderingFacilityPhoneNumber(0)
+                .getXtn2_TelecommunicationUseCode()
+                .getValue())
+        .isEqualTo("NET");
+    assertThat(
+            orc.getOrc23_OrderingFacilityPhoneNumber(0)
+                .getXtn3_TelecommunicationEquipmentType()
+                .getValue())
+        .isEqualTo("Internet");
+    assertThat(orc.getOrc23_OrderingFacilityPhoneNumber(0).getXtn4_EmailAddress().getValue())
         .isEqualTo("dracula@example.com");
 
     assertThat(orc.getOrc14_CallBackPhoneNumberReps()).isEqualTo(2);
-    assertThat(orc.getOrc14_CallBackPhoneNumber(0).getLocalNumber().getValue())
+
+    assertThat(orc.getOrc14_CallBackPhoneNumber(0).getXtn2_TelecommunicationUseCode().getValue())
+        .isEqualTo("WPN");
+    assertThat(
+            orc.getOrc14_CallBackPhoneNumber(0).getXtn3_TelecommunicationEquipmentType().getValue())
+        .isEqualTo("PH");
+    assertThat(orc.getOrc14_CallBackPhoneNumber(0).getXtn7_LocalNumber().getValue())
         .isEqualTo("5555555");
-    assertThat(orc.getOrc14_CallBackPhoneNumber(1).getEmailAddress().getValue())
+
+    assertThat(orc.getOrc14_CallBackPhoneNumber(1).getXtn2_TelecommunicationUseCode().getValue())
+        .isEqualTo("NET");
+    assertThat(
+            orc.getOrc14_CallBackPhoneNumber(1).getXtn3_TelecommunicationEquipmentType().getValue())
+        .isEqualTo("Internet");
+    assertThat(orc.getOrc14_CallBackPhoneNumber(1).getXtn4_EmailAddress().getValue())
         .isEqualTo("flintstonemedical@example.com");
   }
 
@@ -739,12 +773,38 @@ class HL7ConverterTest {
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
 
     assertThat(observationRequest.getObr17_OrderCallbackPhoneNumberReps()).isEqualTo(2);
+
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(0)
+                .getXtn2_TelecommunicationUseCode()
+                .getValue())
+        .isEqualTo("WPN");
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(0)
+                .getXtn3_TelecommunicationEquipmentType()
+                .getValue())
+        .isEqualTo("PH");
     assertThat(
             observationRequest
                 .getObr17_OrderCallbackPhoneNumber(0)
                 .getXtn7_LocalNumber()
                 .getValue())
         .isEqualTo("5555555");
+
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(1)
+                .getXtn2_TelecommunicationUseCode()
+                .getValue())
+        .isEqualTo("NET");
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(1)
+                .getXtn3_TelecommunicationEquipmentType()
+                .getValue())
+        .isEqualTo("Internet");
     assertThat(
             observationRequest
                 .getObr17_OrderCallbackPhoneNumber(1)

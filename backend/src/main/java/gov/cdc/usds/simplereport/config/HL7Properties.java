@@ -2,10 +2,8 @@ package gov.cdc.usds.simplereport.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * These values were assigned from APHL for use in MSH-3 Sending Application. <br>
@@ -15,13 +13,11 @@ import org.springframework.stereotype.Component;
  *
  * @see gov.cdc.usds.simplereport.api.converter.HL7Constants
  */
-@Component
 @ConfigurationProperties(prefix = "simple-report.hl7")
 @Getter
-@Setter
 @RequiredArgsConstructor
 @Slf4j
-public class HL7Properties {
-  public String sendingApplicationNamespace;
-  public String sendingApplicationOID;
+public final class HL7Properties {
+  private final String sendingApplicationNamespace;
+  private final String sendingApplicationOID;
 }
