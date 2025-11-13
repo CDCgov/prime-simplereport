@@ -265,14 +265,6 @@ spotless {
     }
 }
 
-//gitProperties {
-//    dotGitDirectory = "${project.rootDir}/../.git"
-//}
-
-gitProperties {
-    dotGitDirectory = layout.projectDirectory.dir("../.git")
-}
-
 task testDbStart(type: Exec) {
     environment "SR_DB_PORT", testDbPort
     commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "up", "-d", "db"
