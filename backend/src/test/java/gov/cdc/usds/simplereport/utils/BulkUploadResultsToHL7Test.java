@@ -7,11 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import ca.uhn.hl7v2.HapiContext;
-import ca.uhn.hl7v2.parser.Parser;
 import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.HL7Converter;
-import gov.cdc.usds.simplereport.api.converter.HapiContextProvider;
 import gov.cdc.usds.simplereport.config.HL7Properties;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
@@ -26,7 +23,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.info.GitProperties;
 
@@ -37,14 +33,10 @@ public class BulkUploadResultsToHL7Test {
   private static HL7Properties hl7Properties;
   private static ResultsUploaderCachingService resultsUploaderCachingService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
-  private final HapiContext hapiContext = HapiContextProvider.get();
-  private final Parser parser = hapiContext.getPipeParser();
   private final UUIDGenerator uuidGenerator = new UUIDGenerator();
   private final DateGenerator dateGenerator = new DateGenerator();
 
   BulkUploadResultsToHL7 sut;
-
-  @Mock private HL7Converter hl7Converter;
 
   @BeforeAll
   public static void init() throws SmartyException, IOException, InterruptedException {
@@ -110,7 +102,7 @@ public class BulkUploadResultsToHL7Test {
   }
 
   @Test
-  void convertExistingCsv_TestOrderedCodeMapped() throws IOException {
+  void convertExistingCsv_TestOrderedCodeMapped() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-all-fields.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
