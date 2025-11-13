@@ -12,7 +12,7 @@ plugins {
     id 'checkstyle'
     id 'jacoco'
     id 'org.sonarqube' version '5.1.0.4882'
-    id 'com.gorylenko.gradle-git-properties' version '2.4.2'
+    id 'com.gorylenko.gradle-git-properties' version '2.5.3'
     id "com.diffplug.spotless" version "7.1.0"
 }
 
@@ -211,6 +211,10 @@ jacocoTestReport {
         xml.required = true
     }
     dependsOn test // tests are required to run before generating the report
+}
+
+gitProperties {
+    dotGitDirectory = layout.projectDirectory.dir("../.git")
 }
 
 // Prefer SPRING_DATASOURCE_URL if provided, otherwise assume localhost
