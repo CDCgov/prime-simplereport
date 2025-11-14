@@ -171,6 +171,9 @@ simple-report:
     backend-url: ${SR_PROD_BACKEND_URL:http://localhost:8080}
     devices-token: ${SR_PROD_DEVICES_TOKEN:sr-prod-devices-fake-token}
     device-sync-enabled: true
+  hl7:
+    sending-application-namespace: "SIMPLEREPORT.STAG"
+    sending-application-oid: "2.16.840.1.113883.3.8589.4.2.134.2"
 twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:
