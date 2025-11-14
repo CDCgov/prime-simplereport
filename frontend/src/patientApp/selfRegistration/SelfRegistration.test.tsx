@@ -44,6 +44,18 @@ const store = mockStore({});
 
 const originalConsoleError = console.error;
 
+const filledForm = {
+  "First name": faker.person.firstName(),
+  "Middle name": faker.person.middleName(),
+  "Last name": faker.person.lastName(),
+  "Date of birth": "1970-09-22",
+  "Primary phone number": "7038675309",
+  "Street address 1": faker.location.streetAddress(),
+  City: "Rockville",
+  State: "MD",
+  "ZIP code": "12345",
+};
+
 describe("SelfRegistration", () => {
   const elementToRender = createGQLWrappedMemoryRouterWithDataApis(
     <SelfRegistration />,
@@ -86,10 +98,16 @@ describe("SelfRegistration", () => {
     expect(screen.getByText("Foo Facility")).toBeInTheDocument();
     fireEvent.click(screen.getByText("I agree"));
     expect(screen.getByText("General information")).toBeInTheDocument();
+
+    const mainPage = await screen.findByRole("main");
+
     Object.entries(filledForm).forEach(([field, value]) => {
-      fireEvent.change(screen.getByLabelText(field, { exact: false }), {
-        target: { value },
-      });
+      fireEvent.change(
+        within(mainPage).getByLabelText(field, { exact: false }),
+        {
+          target: { value },
+        }
+      );
     });
     screen.getAllByLabelText("No").forEach(fireEvent.click);
     fireEvent.click(screen.getByLabelText("Mobile"));
@@ -113,10 +131,16 @@ describe("SelfRegistration", () => {
     expect(screen.getByText("Foo Facility")).toBeInTheDocument();
     fireEvent.click(screen.getByText("I agree"));
     expect(screen.getByText("General information")).toBeInTheDocument();
+
+    const mainPage = await screen.findByRole("main");
+
     Object.entries(filledForm).forEach(([field, value]) => {
-      fireEvent.change(screen.getByLabelText(field, { exact: false }), {
-        target: { value },
-      });
+      fireEvent.change(
+        within(mainPage).getByLabelText(field, { exact: false }),
+        {
+          target: { value },
+        }
+      );
     });
     // Change firstName to duplicate value
     const firstNameInput = await screen.findByLabelText("First name", {
@@ -163,15 +187,3 @@ describe("SelfRegistration", () => {
     getAppInsightsSpy.mockRestore();
   });
 });
-
-const filledForm = {
-  "First name": faker.person.firstName(),
-  "Middle name": faker.person.middleName(),
-  "Last name": faker.person.lastName(),
-  "Date of birth": "1970-09-22",
-  "Primary phone number": "7038675309",
-  "Street address 1": faker.location.streetAddress(),
-  City: "Rockville",
-  State: "MD",
-  "ZIP code": "12345",
-};

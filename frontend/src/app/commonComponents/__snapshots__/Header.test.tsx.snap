@@ -22,11 +22,11 @@ exports[`Header displays correctly 1`] = `
             <img
               alt="SimpleReport"
               class="width-card desktop:width-full"
-              src="simplereport-logo-color.svg"
+              src="simplereport-logo-white.svg"
             />
           </a>
           <div
-            class="prime-organization-name"
+            class="prime-organization-name margin-left-4"
           >
             Organization Name
           </div>
@@ -194,7 +194,8 @@ exports[`Header displays correctly 1`] = `
               </div>
             </div>
             <button
-              class="touchpoints-wrapper sr-app-touchpoints-button"
+              class="usa-button touchpoints-wrapper sr-app-touchpoints-button"
+              type="button"
             >
               How can we improve SimpleReport?
             </button>
