@@ -133,7 +133,7 @@ jobs:
 
     - name: Archive cypress failures
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: cypress-results
         path: |
@@ -142,7 +142,7 @@ jobs:
 
     - name: Archive docker logs
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: logs
         path: cypress-run.log
