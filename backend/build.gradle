@@ -164,7 +164,7 @@ dependencies {
     testImplementation "com.github.tomakehurst:wiremock-jre8-standalone:2.35.2"
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:7.6.0'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.19.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.20.1'
 
     // HL7v2
     implementation 'ca.uhn.hapi:hapi-base:2.5.1'
