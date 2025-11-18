@@ -146,7 +146,7 @@ public class BulkUploadResultsToFhir {
                   try {
                     return future.get();
                   } catch (InterruptedException | ExecutionException e) {
-                    log.error("Bulk upload failure to convert to fhir.", e);
+                    log.error("Bulk upload failure to convert to fhir.");
                     Thread.currentThread().interrupt();
                     throw new CsvProcessingException("Unable to process file.");
                   }

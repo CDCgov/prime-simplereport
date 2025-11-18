@@ -132,7 +132,7 @@ public class TestResultUploadService {
             .ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
-      log.error("Error reading test result upload CSV", e);
+      log.error("Error reading test result upload CSV");
       throw new CsvProcessingException("Unable to read csv");
     }
 
@@ -268,7 +268,7 @@ public class TestResultUploadService {
       }
     } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
       log.error(
-          String.format("Error processing submission in bulk result upload for %s", pipeline), e);
+          String.format("Error processing submission in bulk result upload for %s", pipeline));
       Thread.currentThread().interrupt();
       throw e;
     }

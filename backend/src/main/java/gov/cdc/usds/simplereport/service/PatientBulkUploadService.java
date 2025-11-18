@@ -39,7 +39,7 @@ public class PatientBulkUploadService {
     try {
       content = csvStream.readAllBytes();
     } catch (IOException e) {
-      log.error("Error reading patient bulk upload CSV", e);
+      log.error("Error reading patient bulk upload CSV");
       throw new CsvProcessingException("Unable to read csv");
     }
 
@@ -49,7 +49,7 @@ public class PatientBulkUploadService {
     if (!errors.isEmpty()) {
       result.setStatus(UploadStatus.FAILURE);
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
-      log.info("CSV patient bulk upload rejected with the following errors: {}", errors);
+      log.info("CSV patient bulk upload rejected with errors");
       return result;
     }
 

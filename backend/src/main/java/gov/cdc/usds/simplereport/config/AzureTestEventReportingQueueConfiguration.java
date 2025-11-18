@@ -195,6 +195,9 @@ class AzureTestEventReportingQueueConfiguration {
           testEvent.getInternalId());
 
       if (printSerializedTestEvent) {
+        // this NoOpCovidReportingService class is used with a prod profile, so pii could
+        // theoretically get
+        // into logs if printSerializedTestEvent is set to true
         log.info("TestEvent serializes as: {}", toBuffer(testEvent));
       }
       return CompletableFuture.completedFuture(null);
@@ -227,6 +230,9 @@ class AzureTestEventReportingQueueConfiguration {
           testEvent.getInternalId());
 
       if (printSerializedTestEvent) {
+        // this NoOpFHIRReportingService class is used with a prod profile, so pii could
+        // theoretically get
+        // into logs if printSerializedTestEvent is set to true
         log.info("TestEvent bundled as: {}", toBuffer(testEvent));
       }
       return CompletableFuture.completedFuture(null);
@@ -255,6 +261,9 @@ class AzureTestEventReportingQueueConfiguration {
           testEvent.getInternalId());
 
       if (printSerializedTestEvent) {
+        // this NoOpHL7ReportingService class is used with a prod profile, so pii could
+        // theoretically get
+        // into logs if printSerializedTestEvent is set to true
         log.info("TestEvent converted to HL7 as: {}", toHl7Message(testEvent));
       }
       return CompletableFuture.completedFuture(null);

@@ -42,10 +42,10 @@ public class FileUploadController {
       log.error("Invalid facility id passed", e);
       throw new BadRequestException("Invalid facility id");
     } catch (IllegalArgumentException e) {
-      log.error("Patient CSV upload failed", e);
+      log.error("Patient CSV upload failed");
       throw new CsvProcessingException(e.getMessage());
     } catch (IOException e) {
-      log.error("Patient CSV upload failed", e);
+      log.error("Patient CSV upload failed");
       throw new CsvProcessingException("Unable to complete patient CSV upload");
     }
   }
