@@ -1,5 +1,5 @@
 // Override USWDS setting variables to create custom theme
-// src/scss/settings/_dibbs-theme.scss
+// https://designsystem.digital.gov/documentation/settings/
 
 @forward "@uswds/uswds/packages/uswds-core" with (
   // General
@@ -8,7 +8,7 @@
   $theme-image-path: "../../../../../../dist/img",
 
   // Component
-  $theme-step-indicator-min-width: "mobile", // backwards compat
+  $theme-step-indicator-min-width: "mobile",
   $theme-hero-image: "../../../../dist/img/hero.jpg",
   $theme-accordion-button-background-color: "blue-cool-60",
 
@@ -79,5 +79,5 @@
   $theme-font-weight-semibold: 600,
 
   // Utilities
-  $utilities-use-important: true // backwards compat
+  $utilities-use-important: true
 );

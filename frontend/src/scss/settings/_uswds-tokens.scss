@@ -119,3 +119,17 @@ $yellow-50v: color('yellow-50v'); // #947100
 $yellow-60v: color('yellow-60v'); // #776017
 $yellow-70v: color('yellow-70v'); // #5c4809
 $yellow-80v: color('yellow-80v'); // #422d19
+
+// Font sizes
+// https://designsystem.digital.gov/design-tokens/typesetting/font-size/
+$body-3xs: size("body", "3xs"); // 13px
+$body-2xs: size("body", "2xs"); // 14px
+$body-xs: size("body", "xs"); // 15px
+$body-sm: size("body", "sm"); // 16px
+$body-md: size("body", "md"); // 17px
+$body-lg: size("body", "lg"); // 22px
+$body-xl: size("body", "xl"); // 32px
+$body-2xl: size("body", "2xl"); // 40px
+$body-3xl: size("body", "3xl"); // 48px
+
+$body-7: size("body", 7); // 18px

@@ -38,9 +38,6 @@ $drop-shadow: $gray-4;
 $focus-outline: $blue-40v;
 $overlay-background: rgba(0, 0, 0, 0.5);
 
-// Font sizes
-$size-body-3xs: size("body", "3xs");
-
 // Legacy PRIME color variables (for backward compatibility) if you remove these things will start to break
 $theme-color-prime-blue-lightest: $blue-cool-5;
 $theme-color-prime-blue-light: $blue-cool-20;
