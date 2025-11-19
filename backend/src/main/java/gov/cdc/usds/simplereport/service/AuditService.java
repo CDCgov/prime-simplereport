@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,7 +47,7 @@ public class AuditService {
         new ConsoleApiAuditEvent(
             state.getRequestId(),
             state.getHttpDetails(),
-            state.getGraphqlDetails(),
+            state.getGraphqlDetails().getOperationName(),
             errorPaths,
             user,
             permissions,
@@ -58,16 +57,12 @@ public class AuditService {
 
   @Transactional(readOnly = false)
   public void logRestEvent(
-      String requestId,
-      HttpServletRequest request,
-      int responseCode,
-      Organization org,
-      PatientLink patientLink) {
+      String requestId, HttpServletRequest request, int responseCode, Organization org) {
     createEventAuditLog(requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
     auditLoggerService.logEvent(
-        new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));
+        new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org));
   }
 
   @Transactional(readOnly = false)

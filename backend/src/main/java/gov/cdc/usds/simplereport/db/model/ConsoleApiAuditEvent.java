@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,11 +12,10 @@ import org.apache.http.HttpStatus;
 public class ConsoleApiAuditEvent {
   private final String type = "auditLog";
   private HttpRequestDetails httpRequestDetails;
-  private GraphQlInputs graphqlQueryDetails;
+  private String graphqlOperationName;
   private List<String> graphqlErrorPaths;
   private List<String> userPermissions;
   private Organization organization;
-  private PatientLink patientLink;
   private String requestId;
   private int responseCode;
   private boolean isAdminUser;
@@ -30,14 +28,14 @@ public class ConsoleApiAuditEvent {
   public ConsoleApiAuditEvent(
       String requestId,
       HttpRequestDetails httpRequestDetails,
-      GraphQlInputs graphqlQueryDetails,
+      String graphqlOperationName,
       List<String> errorPaths,
       ApiUser apiUser,
       List<UserPermission> permissions,
       boolean isAdmin,
       Organization org) {
     this.responseCode = HttpStatus.SC_OK;
-    this.graphqlQueryDetails = graphqlQueryDetails;
+    this.graphqlOperationName = graphqlOperationName;
     this.graphqlErrorPaths = errorPaths;
     this.userPermissions =
         permissions.stream().map(UserPermission::name).sorted().collect(Collectors.toList());
@@ -54,9 +52,7 @@ public class ConsoleApiAuditEvent {
       HttpRequestDetails httpRequestDetails,
       int responseStatus,
       ApiUser user,
-      Organization organization,
-      PatientLink patientLink) {
-    this.patientLink = patientLink;
+      Organization organization) {
     this.organization = organization;
     this.user = user;
     this.responseCode = responseStatus;

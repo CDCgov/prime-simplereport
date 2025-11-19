@@ -57,7 +57,7 @@ public class RestAuditLogManager {
     try {
       String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
       Organization org = _contextHolder.getOrganization();
-      _auditService.logRestEvent(requestId, request, DEFAULT_SUCCESS, org, patientLink);
+      _auditService.logRestEvent(requestId, request, DEFAULT_SUCCESS, org);
     } catch (Exception e) {
       throw new RestAuditFailureException(e);
     }
