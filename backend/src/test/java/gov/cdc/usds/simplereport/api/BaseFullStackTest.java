@@ -82,7 +82,7 @@ public abstract class BaseFullStackTest {
       List<String> errorPaths) {
     ConsoleApiAuditEvent event = getTimeCheckedEvent();
     assertEquals(username, event.getUser().getLoginEmail());
-    assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());
+    assertEquals(operationName, event.getGraphqlOperationName());
     if (requestId != null) {
       assertEquals(requestId, event.getRequestId());
     }
@@ -103,7 +103,7 @@ public abstract class BaseFullStackTest {
   protected ConsoleApiAuditEvent assertLastAuditEntry(
       HttpStatus status, String requestUri, String requestId) {
     ConsoleApiAuditEvent event = getTimeCheckedEvent();
-    assertNull(event.getGraphqlQueryDetails());
+    assertNull(event.getGraphqlOperationName());
     assertNull(event.getGraphqlErrorPaths());
     HttpRequestDetails requestDetails = event.getHttpRequestDetails();
     if (requestUri != null) {

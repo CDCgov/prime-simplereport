@@ -59,7 +59,7 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
     assertEquals(1L, auditLogCaptor.getAllValues().size());
     assertEquals("ABCDE", saved.getRequestId());
     assertEquals("ftp", saved.getHttpRequestDetails().getForwardedProtocol());
-    assertEquals("A", saved.getGraphqlQueryDetails().getOperationName());
+    assertEquals("A", saved.getGraphqlOperationName());
     assertEquals(
         List.of(
                 UserPermission.SEARCH_PATIENTS,
