@@ -15,30 +15,32 @@
   display: block;
 }
 
-.sr-app-touchpoints-button:hover {
-  border-bottom: 0;
-  text-decoration: none;
-}
+.usa-button {
+  &.sr-app-touchpoints-button {
+    line-height: 0.9;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 0;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0.75rem 1.25rem;
+    text-align: center;
+    text-decoration: none;
 
-.sr-app-touchpoints-button {
-  line-height: 0.9;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-font-smoothing: antialiased;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  border: 0;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  font-weight: 700;
-  padding: 0.75rem 1.25rem;
-  text-align: center;
-  text-decoration: none;
+    &:hover {
+      border-bottom: 0;
+      text-decoration: none;
+    }
 
-  @media (min-width: 1024px) {
-    margin-right: 0.5rem;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    @media (min-width: 1024px) {
+      margin-right: 0.5rem;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
   }
 }
 
