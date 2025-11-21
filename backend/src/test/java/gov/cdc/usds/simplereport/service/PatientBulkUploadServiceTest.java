@@ -14,14 +14,14 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.io.InputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser
 class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadService> {
 
-  @MockBean private PatientBulkUploadServiceAsync mockAsyncService;
-  @MockBean private PersonService mockPersonService;
-  @MockBean protected AddressValidationService addressValidationService;
+  @MockitoBean private PatientBulkUploadServiceAsync mockAsyncService;
+  @MockitoBean private PersonService mockPersonService;
+  @MockitoBean protected AddressValidationService addressValidationService;
 
   @BeforeEach
   void setupData() {

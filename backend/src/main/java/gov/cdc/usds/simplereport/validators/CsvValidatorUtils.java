@@ -141,7 +141,11 @@ public class CsvValidatorUtils {
   private static final String INVALID_RESULT_LITERAL = "invalid result";
   private static final Set<String> POSITIVE_TEST_RESULT_VALUES =
       Set.of(POSITIVE_LITERAL, DETECTED_LITERAL, POSITIVE_SNOMED, DETECTED_SNOMED);
-  private static final Set<String> GENDER_VALUES =
+
+  private static final Set<String> TEST_RESULT_GENDER_VALUES =
+      Set.of("m", MALE_LITERAL, "f", FEMALE_LITERAL, UNKNOWN_LITERAL);
+
+  private static final Set<String> PATIENT_UPLOAD_BIOLOGICAL_SEX_VALUES =
       Set.of(
           "m", MALE_LITERAL,
           "f", FEMALE_LITERAL,
@@ -342,8 +346,12 @@ public class CsvValidatorUtils {
     return validateInSet(input, RACE_VALUES);
   }
 
+  public static List<FeedbackMessage> validateGender(ValueOrError input) {
+    return validateInSet(input, TEST_RESULT_GENDER_VALUES);
+  }
+
   public static List<FeedbackMessage> validateBiologicalSex(ValueOrError input) {
-    return validateInSet(input, GENDER_VALUES);
+    return validateInSet(input, PATIENT_UPLOAD_BIOLOGICAL_SEX_VALUES);
   }
 
   public static List<FeedbackMessage> validateGenderIdentity(ValueOrError input) {
@@ -519,6 +527,19 @@ public class CsvValidatorUtils {
               .build());
     }
     return new ValueOrError(value, name, isRequired);
+  }
+
+  public static ValueOrError getGenderValue(
+      Map<String, String> row, String name, boolean isRequired) {
+    ValueOrError patientGender = getValue(row, name, isRequired);
+    List<FeedbackMessage> errors = validateGender(patientGender);
+
+    if (!errors.isEmpty() || patientGender.getValue() == null) {
+      // If there are validation errors, fallback to `unknown` gender
+      return new ValueOrError(UNKNOWN_LITERAL, name, isRequired);
+    }
+
+    return patientGender;
   }
 
   public static List<FeedbackMessage> hasMissingRequiredHeaders(

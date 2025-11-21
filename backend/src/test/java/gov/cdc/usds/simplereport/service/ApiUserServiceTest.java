@@ -50,21 +50,21 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
-  @Autowired @SpyBean ApiUserRepository _apiUserRepo;
-  @Autowired @SpyBean OktaRepository _oktaRepo;
+  @Autowired @MockitoSpyBean ApiUserRepository _apiUserRepo;
+  @Autowired @MockitoSpyBean OktaRepository _oktaRepo;
   @Autowired OrganizationService _organizationService;
   @Autowired FacilityRepository facilityRepository;
-  @Autowired @SpyBean DbOrgRoleClaimsService _dbOrgRoleClaimsService;
-  @MockBean FeatureFlagsConfig _featureFlagsConfig;
+  @Autowired @MockitoSpyBean DbOrgRoleClaimsService _dbOrgRoleClaimsService;
+  @MockitoBean FeatureFlagsConfig _featureFlagsConfig;
   @Autowired private TestDataFactory _dataFactory;
 
   Set<UUID> emptySet = Collections.emptySet();

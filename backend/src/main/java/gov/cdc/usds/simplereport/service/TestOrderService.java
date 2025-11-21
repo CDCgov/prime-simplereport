@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -79,6 +80,7 @@ public class TestOrderService {
   private final DiseaseService _diseaseService;
 
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -172,6 +174,14 @@ public class TestOrderService {
                         cb.isNull(root.get(BaseTestInfo_.dateTestedBackdate)),
                         cb.lessThanOrEqualTo(root.get(AuditedEntity_.createdAt), endDate))));
       }
+
+      p =
+          cb.and(
+              p,
+              cb.or(
+                  cb.isFalse(root.get(TestEvent_.piiDeleted)),
+                  cb.isNull(root.get(TestEvent_.piiDeleted))));
+
       return p;
     };
   }
@@ -346,7 +356,7 @@ public class TestOrderService {
 
       savedEvent = resultService.addResultsToTestEvent(savedEvent, resultsForTestEvent);
 
-      order.setTestEventRef(savedEvent);
+      order.setLatestTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
     } finally {
       unlockOrder(order.getInternalId());
@@ -372,6 +382,11 @@ public class TestOrderService {
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
 
     applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
+
+    if (featureFlagsConfig.isAimsReportingEnabled()) {
+      applicationEventPublisher.publishEvent(new ReportToAIMSEvent(savedOrder.getTestEvent()));
+    }
+
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
@@ -576,11 +591,15 @@ public class TestOrderService {
         newRemoveEvent = resultService.addResultsToTestEvent(newRemoveEvent, results);
 
         order.setReasonForCorrection(reasonForCorrection);
-        order.setTestEventRef(newRemoveEvent);
+        order.setLatestTestEventRef(newRemoveEvent);
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
         _testOrderRepo.save(order);
 
         applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(newRemoveEvent));
+
+        if (featureFlagsConfig.isAimsReportingEnabled()) {
+          applicationEventPublisher.publishEvent(new ReportToAIMSEvent(newRemoveEvent));
+        }
 
         return newRemoveEvent;
       }

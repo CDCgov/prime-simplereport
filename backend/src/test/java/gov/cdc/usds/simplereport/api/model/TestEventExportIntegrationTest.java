@@ -21,8 +21,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 // added enable_lazy_load_no_trans=true because I couldn't figure out how to make the hibernate
 // session work within a test that also tests our API
@@ -31,7 +31,7 @@ import org.springframework.test.context.TestPropertySource;
 class TestEventExportIntegrationTest extends BaseGraphqlTest {
   @Autowired private TestEventService _testEventService;
   @Autowired private OrganizationService _orgService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
+  @MockitoBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   private TestEvent testEvent;

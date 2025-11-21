@@ -43,11 +43,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -57,15 +57,15 @@ import org.springframework.test.web.servlet.MockMvc;
 class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   @Autowired private MockMvc mockMvc;
 
-  @MockBean private TokenAuthentication _tokenAuth;
+  @MockitoBean private TokenAuthentication _tokenAuth;
 
-  @MockBean private DateGenerator dateGenerator;
+  @MockitoBean private DateGenerator dateGenerator;
 
-  @MockBean private FeatureFlagsConfig featureFlagsConfig;
+  @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
 
-  @MockBean private UUIDGenerator uuidGenerator;
+  @MockitoBean private UUIDGenerator uuidGenerator;
 
-  @SpyBean private BulkUploadResultsToFhir bulkUploadResultsToFhir;
+  @MockitoSpyBean private BulkUploadResultsToFhir bulkUploadResultsToFhir;
 
   @BeforeEach
   void setup() throws IOException {

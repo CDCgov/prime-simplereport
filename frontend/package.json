@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "23"
+    "node": "24"
   },
   "dependencies": {
     "@apollo/client": "^3.8.3",
@@ -193,7 +193,7 @@
     "@types/jest": "^29.5.14",
     "@types/jest-axe": "^3.5.9",
     "@types/lodash": "^4.17.15",
-    "@types/node": "^22.13.1",
+    "@types/node": "^24.9.1",
     "@types/react": "^18.0.27",
     "@types/react-csv": "^1.1.10",
     "@types/react-dom": "^18.2.17",
@@ -203,7 +203,7 @@
     "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
-    "axios": "^1.8.3",
+    "axios": "^1.12.2",
     "babel-jest": "^29.7.0",
     "chromatic": "^10.2.0",
     "dayjs": "^1.10.7",

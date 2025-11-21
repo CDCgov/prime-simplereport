@@ -14,13 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @RequiredArgsConstructor
 @EnableConfigurationProperties
 class BackendAndDatabaseHealthIndicatorTest extends BaseRepositoryTest {
 
-  @SpyBean private FeatureFlagRepository mockFeatureFlagRepo;
+  @MockitoSpyBean private FeatureFlagRepository mockFeatureFlagRepo;
 
   @Autowired private BackendAndDatabaseHealthIndicator indicator;
 
