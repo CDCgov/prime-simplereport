@@ -1,15 +1,15 @@
 package gov.cdc.usds.simplereport.utils;
 
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import ca.uhn.hl7v2.HapiContext;
-import ca.uhn.hl7v2.parser.Parser;
 import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.HL7Converter;
-import gov.cdc.usds.simplereport.api.converter.HapiContextProvider;
+import gov.cdc.usds.simplereport.config.HL7Properties;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.info.GitProperties;
 
@@ -31,21 +30,22 @@ import org.springframework.boot.info.GitProperties;
 public class BulkUploadResultsToHL7Test {
 
   private static GitProperties gitProperties;
+  private static HL7Properties hl7Properties;
   private static ResultsUploaderCachingService resultsUploaderCachingService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
-  private final HapiContext hapiContext = HapiContextProvider.get();
-  private final Parser parser = hapiContext.getPipeParser();
   private final UUIDGenerator uuidGenerator = new UUIDGenerator();
   private final DateGenerator dateGenerator = new DateGenerator();
-  BulkUploadResultsToHL7 sut;
 
-  @Mock private HL7Converter hl7Converter;
+  BulkUploadResultsToHL7 sut;
 
   @BeforeAll
   public static void init() throws SmartyException, IOException, InterruptedException {
     gitProperties = mock(GitProperties.class);
     when(gitProperties.getCommitTime()).thenReturn(commitTime);
     when(gitProperties.getShortCommitId()).thenReturn("abc123");
+    hl7Properties = mock(HL7Properties.class);
+    when(hl7Properties.getSendingApplicationNamespace()).thenReturn("SIMPLEREPORT.STAG");
+    when(hl7Properties.getSendingApplicationOID()).thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
 
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
   }
@@ -76,7 +76,7 @@ public class BulkUploadResultsToHL7Test {
                 "122555007",
                 "Venous blood specimen"));
 
-    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, dateGenerator);
+    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, dateGenerator, hl7Properties);
     sut =
         new BulkUploadResultsToHL7(
             hl7Converter, gitProperties, dateGenerator, resultsUploaderCachingService);
@@ -102,7 +102,7 @@ public class BulkUploadResultsToHL7Test {
   }
 
   @Test
-  void convertExistingCsv_TestOrderedCodeMapped() throws IOException {
+  void convertExistingCsv_TestOrderedCodeMapped() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-all-fields.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
 
@@ -335,7 +335,7 @@ public class BulkUploadResultsToHL7Test {
     Date fixedDate = Date.from(Instant.parse("2023-05-24T19:33:06Z"));
     when(mockedDateGenerator.newDate()).thenReturn(fixedDate);
 
-    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, mockedDateGenerator);
+    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, mockedDateGenerator, hl7Properties);
     BulkUploadResultsToHL7 localSut =
         new BulkUploadResultsToHL7(
             hl7Converter, gitProperties, mockedDateGenerator, resultsUploaderCachingService);
@@ -409,15 +409,15 @@ public class BulkUploadResultsToHL7Test {
   }
 
   @Test
-  void fhsAndBhs_includeSendingFacilityClia() throws IOException {
-    var mappingIterator =
-        getIteratorForCsv(loadCsv("testResultUpload/test-results-upload-valid.csv"));
-    var csvRow = mappingIterator.next();
-    var facilityName = csvRow.get("testing_lab_name");
-    var facilityClia = csvRow.get("testing_lab_clia");
-
+  void fhsAndBhs_includeSendingApplicationAndSendingFacilityClia() throws IOException {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    HL7Converter hl7Converter = new HL7Converter(uuidGenerator, dateGenerator, hl7Properties);
+    BulkUploadResultsToHL7 localSut =
+        new BulkUploadResultsToHL7(
+            hl7Converter, gitProperties, dateGenerator, resultsUploaderCachingService);
+
+    HL7BatchMessage batchMessage = localSut.convertToHL7BatchMessage(input);
 
     String[] lines = getHL7Lines(batchMessage);
     String fhs = getSegmentLine(lines, "FHS");
@@ -425,10 +425,16 @@ public class BulkUploadResultsToHL7Test {
     assertThat(fhs).isNotNull();
     assertThat(bhs).isNotNull();
 
+    // sending application is an HD of name^oid^ISO
+    String expectedApplicationHdPart = "SIMPLEREPORT.STAG^2.16.840.1.113883.3.8589.4.2.134.2^ISO";
+    assertThat(fhs).contains(expectedApplicationHdPart);
+    assertThat(bhs).contains(expectedApplicationHdPart);
+
     // sending facility is an HD of name^CLIA^CLIA
-    String expectedHdPart = facilityName + "^" + facilityClia + "^CLIA";
-    assertThat(fhs).contains(expectedHdPart);
-    assertThat(bhs).contains(expectedHdPart);
+    String expectedFacilityHdPart =
+        SENDING_FACILITY_NAMESPACE + "^" + SENDING_FACILITY_FAKE_AGGREGATE_CLIA + "^CLIA";
+    assertThat(fhs).contains(expectedFacilityHdPart);
+    assertThat(bhs).contains(expectedFacilityHdPart);
   }
 
   @Test
