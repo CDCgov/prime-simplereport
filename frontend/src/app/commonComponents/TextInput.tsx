@@ -138,6 +138,7 @@ export const TextInput = ({
               : null)}
             {...registrationProps}
             id={id}
+            required={required}
           />
         </div>
       )}
