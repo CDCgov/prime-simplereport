@@ -22,13 +22,13 @@ import java.util.Date;
 import java.util.Locale;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class DateTimeScalarTypeTest {
   private final DateTimeScalarCoercion converter = new DateTimeScalarCoercion();
-  @MockBean GraphQLContext graphQLContext;
-  @MockBean Locale locale;
-  @MockBean CoercedVariables coercedVariables;
+  @MockitoBean GraphQLContext graphQLContext;
+  @MockitoBean Locale locale;
+  @MockitoBean CoercedVariables coercedVariables;
 
   Instant thisInstant = Instant.now(); // Gives UTC instant
   DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");

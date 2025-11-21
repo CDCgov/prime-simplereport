@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -16,18 +17,21 @@ import static org.mockito.Mockito.when;
 import feign.FeignException;
 import feign.Request;
 import feign.RequestTemplate;
+import gov.cdc.usds.simplereport.api.model.errors.AimsUploadException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
+import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.db.repository.UploadDiseaseDetailsRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
+import gov.cdc.usds.simplereport.service.model.S3UploadResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
@@ -36,7 +40,6 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToHL7;
-import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -66,7 +69,6 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
@@ -83,9 +85,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
   @Mock private BulkUploadResultsToHL7 bulkUploadHl7ConverterMock;
-  @Mock private DiseaseService diseaseService;
   @Mock private FeatureFlagsConfig featureFlagsConfig;
-  @Mock private DateGenerator dateGenerator;
+  @Mock private AimsReportingService aimsReportingServiceMock;
   // counter to what intellij is telling me these last two mocks are used / necessary
   @Mock private ResultUploadErrorRepository errorRepoMock;
   @Mock private UploadDiseaseDetailsRepository uploadDiseaseDetailsRepository;
@@ -239,7 +240,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             universalPipelineUploadError.getWarnings(),
             universalPipelineUploadError.getErrors(),
             Pipeline.UNIVERSAL,
-            null);
+            null,
+            false);
 
     when(dataHubMock.uploadFhir(any(), any())).thenReturn(universalPipelineUploadError);
     when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
@@ -297,6 +299,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             universalPipelineUploadError.getWarnings(),
             universalPipelineUploadError.getErrors(),
             Pipeline.UNIVERSAL,
+            null,
             null);
 
     when(dataHubMock.uploadFhir(any(), any())).thenReturn(universalPipelineUploadError);
@@ -358,7 +361,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             successfulCsvResponse.getWarnings(),
             successfulCsvResponse.getErrors(),
             Pipeline.UNIVERSAL,
-            null);
+            null,
+            false);
 
     Request req =
         Request.create(Request.HttpMethod.POST, "", new HashMap<>(), null, new RequestTemplate());
@@ -434,19 +438,9 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(true);
 
-    // Set required AIMS fields to avoid NPE during set up
-    ReflectionTestUtils.setField(sut, "aimsAccessKeyId", "test-access-key");
-    ReflectionTestUtils.setField(sut, "aimsSecretAccessKey", "test-secret-key");
-    ReflectionTestUtils.setField(sut, "aimsS3BucketName", "test-bucket");
-    ReflectionTestUtils.setField(sut, "aimsUserId", "test-user");
-
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     Organization org = factory.saveValidOrganization();
     when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
-
-    // Force HL7 conversion to fail to avoid real S3 calls while verifying behavior
-    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any()))
-        .thenThrow(new CsvProcessingException("hl7 conversion failed"));
 
     // Set up FHIR path success
     UploadResponse successfulResponse = buildSuccessfulUploadResponse();
@@ -458,7 +452,13 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
         .thenReturn("fake-rs-sender-token");
     when(dataHubMock.uploadFhir(anyString(), anyString())).thenReturn(successfulResponse);
-    when(dateGenerator.newDate()).thenReturn(new Date());
+
+    // Set up HL7 path success
+    S3UploadResponse successfulAimsResponse = buildSuccessfulS3UploadResponse();
+    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any()))
+        .thenReturn(new HL7BatchMessage("TEST_BATCH_MESSAGE", 1, new HashMap<>()));
+    when(aimsReportingServiceMock.sendBatchMessageToAims(any(), any(), anyInt()))
+        .thenReturn(successfulAimsResponse);
 
     // Capture DB saves
     ArgumentCaptor<TestResultUpload> truCaptor = ArgumentCaptor.forClass(TestResultUpload.class);
@@ -475,11 +475,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
     verify(dataHubMock, never()).uploadCSV(any());
 
+    verify(aimsReportingServiceMock, times(1)).sendBatchMessageToAims(any(), any(), anyInt());
+
     verify(repoMock, times(2)).save(truCaptor.capture());
     var savedPipelines =
         truCaptor.getAllValues().stream().map(TestResultUpload::getDestination).toList();
-    assertThat(savedPipelines).contains(Pipeline.UNIVERSAL);
-    assertThat(savedPipelines).contains(Pipeline.AIMS);
+    assertThat(savedPipelines).contains(Pipeline.UNIVERSAL).contains(Pipeline.AIMS);
   }
 
   @Test
@@ -513,25 +514,16 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void uploadService_processCsv_aimsEnabled_hl7ConversionFailure_returnsSavedResult()
+  void uploadService_processCsv_aimsEnabled_sendToAimsFailure_returnsSavedResult()
       throws Exception {
+    // GIVEN
     when(featureFlagsConfig.isAimsReportingEnabled()).thenReturn(true);
-
-    // Set required AIMS fields to avoid NPE during set up
-    ReflectionTestUtils.setField(sut, "aimsAccessKeyId", "test-access-key");
-    ReflectionTestUtils.setField(sut, "aimsSecretAccessKey", "test-secret-key");
-    ReflectionTestUtils.setField(sut, "aimsS3BucketName", "test-bucket");
-    ReflectionTestUtils.setField(sut, "aimsUserId", "test-user");
 
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     Organization testOrg = factory.saveValidOrganization();
     when(orgServiceMock.getCurrentOrganization()).thenReturn(testOrg);
-    when(dateGenerator.newDate()).thenReturn(new Date());
 
-    // Force HL7 conversion to fail so we can verify error handling path without S3
-    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any()))
-        .thenThrow(new CsvProcessingException("hl7 conversion failed"));
-
+    // Set up FHIR path success
     UploadResponse successfulResponse = buildSuccessfulUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
@@ -542,11 +534,23 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn("fake-rs-sender-token");
     when(dataHubMock.uploadFhir(anyString(), anyString())).thenReturn(successfulResponse);
 
+    // Set up HL7 conversion success
+    when(bulkUploadHl7ConverterMock.convertToHL7BatchMessage(any()))
+        .thenReturn(new HL7BatchMessage("TEST_BATCH_MESSAGE", 1, new HashMap<>()));
+
+    // Encounter error while sending to AIMS
+    when(aimsReportingServiceMock.sendBatchMessageToAims(any(), any(), anyInt()))
+        .thenThrow(new AimsUploadException("Uploading to AIMS failed"));
+
+    // Capture DB saves
+    ArgumentCaptor<TestResultUpload> truCaptor = ArgumentCaptor.forClass(TestResultUpload.class);
     when(repoMock.save(any())).thenReturn(mock(TestResultUpload.class));
 
+    // WHEN
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     List<TestResultUpload> result = sut.processResultCSV(input);
 
+    // THEN
     assertEquals(2, result.size()); // Both AIMS and Universal pipeline results
     verify(bulkUploadHl7ConverterMock, times(1)).convertToHL7BatchMessage(any());
     verify(bulkUploadFhirConverterMock, times(1)).convertToFhirBundles(any(), any());
@@ -554,6 +558,11 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // ensure we did not attempt to call ReportStream CSV path
     verify(dataHubMock, never()).uploadCSV(any());
     verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
+
+    verify(repoMock, times(2)).save(truCaptor.capture());
+    var savedPipelines =
+        truCaptor.getAllValues().stream().map(TestResultUpload::getDestination).toList();
+    assertThat(savedPipelines).contains(Pipeline.UNIVERSAL).contains(Pipeline.AIMS);
   }
 
   private InputStream loadCsv(String csvFile) {
@@ -569,5 +578,10 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     response.setErrors(new FeedbackMessage[] {});
     response.setWarnings(new FeedbackMessage[] {});
     return response;
+  }
+
+  @NotNull
+  private static S3UploadResponse buildSuccessfulS3UploadResponse() {
+    return new S3UploadResponse(UUID.randomUUID(), 3, null);
   }
 }

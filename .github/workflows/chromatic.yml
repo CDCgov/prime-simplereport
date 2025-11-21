@@ -14,7 +14,7 @@ on:
       - "frontend/**"
 
 env:
-  NODE_VERSION: 23
+  NODE_VERSION: 24
 
 jobs:
   chromatic-deployment:
@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 0  # Chromatic wants the history
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 

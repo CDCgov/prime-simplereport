@@ -100,8 +100,8 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
@@ -120,8 +120,8 @@ class FhirConverterTest {
   private static final Date currentDate = Date.from(Instant.parse("2023-07-14T15:52:34.540Z"));
 
   @Mock private GitProperties gitProperties;
-  @MockBean private DateGenerator dateGenerator;
-  @MockBean private UUIDGenerator uuidGenerator;
+  @MockitoBean private DateGenerator dateGenerator;
+  @MockitoBean private UUIDGenerator uuidGenerator;
   @Autowired private FhirConverter fhirConverter;
 
   @BeforeEach

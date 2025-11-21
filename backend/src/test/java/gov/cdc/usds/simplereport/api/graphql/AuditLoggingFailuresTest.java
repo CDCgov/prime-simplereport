@@ -39,12 +39,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
  * Tests around edges of audit logging.
@@ -62,11 +62,11 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
 
   @Autowired private TestRestTemplate _restTemplate;
   @Autowired private OrganizationService _orgService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
+  @MockitoBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
-  @MockBean private AuditLoggerService auditLoggerServiceSpy;
-  @MockBean private TestEventRepository _testEventRepo;
-  @MockBean private TimeOfConsentService _consentService;
+  @MockitoBean private AuditLoggerService auditLoggerServiceSpy;
+  @MockitoBean private TestEventRepository _testEventRepo;
+  @MockitoBean private TimeOfConsentService _consentService;
   @Captor private ArgumentCaptor<ConsoleApiAuditEvent> _eventCaptor;
 
   private Facility facility;

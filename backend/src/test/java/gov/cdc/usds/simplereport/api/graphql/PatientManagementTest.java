@@ -28,14 +28,14 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /** Tests for adding and fetching patients through the API */
 class PatientManagementTest extends BaseGraphqlTest {
 
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
+  @MockitoBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
   @Test
   void queryPatientWithFacility() throws Exception {

@@ -22,16 +22,16 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 class OrganizationFacilityTest extends BaseGraphqlTest {
 
   @Autowired private DeviceTypeService _deviceService;
   @Autowired private OrganizationService _orgService;
-  @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
+  @MockitoBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
 
-  @SpyBean private OktaRepository _oktaRepo;
+  @MockitoSpyBean private OktaRepository _oktaRepo;
 
   @BeforeEach
   void resetOktaRepo() {

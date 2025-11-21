@@ -45,6 +45,7 @@ public class TestOrder extends BaseTestInfo {
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
 
+  // is this @ManyToOne relationship right? I thought it was one test order to many test events
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
@@ -104,8 +105,8 @@ public class TestOrder extends BaseTestInfo {
     orderStatus = OrderStatus.CANCELED;
   }
 
-  public void setTestEventRef(TestEvent testEvent) {
-    this.testEvent = testEvent;
+  public void setLatestTestEventRef(TestEvent latestTestEvent) {
+    this.testEvent = latestTestEvent;
   }
 
   public TestEvent getTestEvent() {

@@ -5,8 +5,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.INVALID_SNOM
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NEGATIVE_SNOMED;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.POSITIVE_SNOMED;
-import static gov.cdc.usds.simplereport.api.converter.HL7Constants.APHL_ORG_OID;
-import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
@@ -46,6 +44,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -54,22 +53,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
-
-record HeaderSegmentFields(
-    String fieldName,
-    String sendingAppNamespaceId,
-    String sendingAppUniversalId,
-    String sendingAppUniversalIdType,
-    String sendingFacilityNamespaceId,
-    String sendingFacilityUniversalId,
-    String sendingFacilityUniversalIdType,
-    String receivingAppNamespaceId,
-    String receivingAppUniversalId,
-    String receivingAppUniversalIdType,
-    String receivingFacilityNamespaceId,
-    String receivingFacilityUniversalId,
-    String receivingFacilityUniversalIdType,
-    String datetime) {}
 
 @Component
 @Slf4j
@@ -81,7 +64,6 @@ public class BulkUploadResultsToHL7 {
   private final Parser parser = hapiContext.getPipeParser();
   private final DateGenerator dateGenerator;
   private final ResultsUploaderCachingService resultsUploaderCachingService;
-  private static final String ENCODING_CHARS = "^~\\&";
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
 
   private final Map<String, String> testResultToSnomedMap =
@@ -95,76 +77,19 @@ public class BulkUploadResultsToHL7 {
   @Value("${simple-report.aims-processing-mode-code:T}")
   private String aimsProcessingModeCode = "T";
 
-  private String generateHD(String namespaceId, String universalId, String universalIdType) {
-    if (StringUtils.isBlank(universalId) || StringUtils.isBlank(universalIdType)) {
-      throw new IllegalArgumentException("HD requires both universal ID and universal ID type");
-    }
-
-    return String.format("%s^%s^%s", namespaceId, universalId, universalIdType);
-  }
-
-  private String generateHeaderSegment(HeaderSegmentFields fields) {
-    var sendingApplication =
-        generateHD(
-            fields.sendingAppNamespaceId(),
-            fields.sendingAppUniversalId(),
-            fields.sendingAppUniversalIdType());
-
-    var sendingFacility =
-        generateHD(
-            fields.sendingFacilityNamespaceId(),
-            fields.sendingFacilityUniversalId(),
-            fields.sendingFacilityUniversalIdType());
-
-    var receivingApplication =
-        generateHD(
-            fields.receivingAppNamespaceId(),
-            fields.receivingAppUniversalId(),
-            fields.receivingAppUniversalIdType());
-
-    var receivingFacility =
-        generateHD(
-            fields.receivingFacilityNamespaceId(),
-            fields.receivingFacilityUniversalId(),
-            fields.receivingFacilityUniversalIdType());
-
-    return String.join(
-        "|",
-        fields.fieldName(),
-        ENCODING_CHARS,
-        sendingApplication,
-        sendingFacility,
-        receivingApplication,
-        receivingFacility,
-        fields.datetime());
-  }
-
-  private String generateTrailingSegment(String fieldName, int itemCount) {
-    return String.join("|", fieldName, String.valueOf(itemCount));
-  }
-
   public HL7BatchMessage convertToHL7BatchMessage(InputStream csvStream) {
     String batchMessage = "";
     int batchMessageCount = 0;
     HashMap<String, Integer> diseasesReported = new HashMap<>();
-    String hl7Date = formatToHL7DateTime(dateGenerator.newDate());
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
-    String sendingFacilityNamespaceId = null;
-    String sendingFacilityUniversalId = null;
+    // The dates in FHS and BHS must be earlier or equal to date in MSH
+    String batchDate = formatToHL7DateTime(dateGenerator.newDate());
 
     while (valueIterator.hasNext()) {
       final Map<String, String> row = getNextRow(valueIterator);
       TestResultRow fileRow = new TestResultRow(row);
-
-      if (sendingFacilityNamespaceId == null) {
-        sendingFacilityNamespaceId = fileRow.getTestingLabName().getValue();
-      }
-
-      if (sendingFacilityUniversalId == null) {
-        sendingFacilityUniversalId = fileRow.getTestingLabClia().getValue();
-      }
 
       Optional<String> disease =
           getDiseaseFromDeviceSpecs(
@@ -181,7 +106,7 @@ public class BulkUploadResultsToHL7 {
                 try {
                   return convertRowToHL7(fileRow);
                 } catch (HL7Exception e) {
-                  throw new RuntimeException(e);
+                  throw new CompletionException(e);
                 }
               });
 
@@ -189,71 +114,22 @@ public class BulkUploadResultsToHL7 {
       batchMessageCount += 1;
     }
 
-    String messages =
+    List<String> messages =
         futureTestEvents.stream()
             .map(
                 future -> {
                   try {
                     return future.get();
-                  } catch (InterruptedException | ExecutionException e) {
+                  } catch (InterruptedException | ExecutionException | CompletionException e) {
                     log.error("Bulk upload failure to convert to HL7.", e);
                     Thread.currentThread().interrupt();
                     throw new CsvProcessingException("Unable to process file.");
                   }
                 })
-            .collect(Collectors.joining("\n"));
+            .toList();
 
     try {
-      ArrayList<String> parts = new ArrayList<>();
-
-      // FHS
-      parts.add(
-          generateHeaderSegment(
-              new HeaderSegmentFields(
-                  "FHS",
-                  "SimpleReport",
-                  SIMPLE_REPORT_ORG_OID,
-                  "ISO",
-                  sendingFacilityNamespaceId,
-                  sendingFacilityUniversalId,
-                  "CLIA",
-                  "APHL",
-                  APHL_ORG_OID,
-                  "ISO",
-                  "APHL",
-                  APHL_ORG_OID,
-                  "ISO",
-                  hl7Date)));
-
-      // BHS
-      parts.add(
-          generateHeaderSegment(
-              new HeaderSegmentFields(
-                  "BHS",
-                  "SimpleReport",
-                  SIMPLE_REPORT_ORG_OID,
-                  "ISO",
-                  sendingFacilityNamespaceId,
-                  sendingFacilityUniversalId,
-                  "CLIA",
-                  "APHL",
-                  APHL_ORG_OID,
-                  "ISO",
-                  "APHL",
-                  APHL_ORG_OID,
-                  "ISO",
-                  hl7Date)));
-
-      // Append test result messages
-      parts.add(messages);
-
-      // BTS
-      parts.add(generateTrailingSegment("BTS", batchMessageCount));
-
-      // FTS
-      parts.add(generateTrailingSegment("FTS", 1));
-
-      batchMessage = String.join("\n", parts);
+      batchMessage = hl7Converter.createBatchFileString(messages, batchMessageCount, batchDate);
     } catch (NullPointerException e) {
       log.error("Encountered an error converting CSV to Batch HL7 Message");
       throw new CsvProcessingException("Unable to generate HL7 Segments");
@@ -276,25 +152,20 @@ public class BulkUploadResultsToHL7 {
             ? TestCorrectionStatus.CORRECTED
             : TestCorrectionStatus.ORIGINAL;
 
-    try {
-      var labReportMessage =
-          hl7Converter.createLabReportMessage(
-              patientInput,
-              providerInput,
-              performingFacility,
-              orderingFacility,
-              specimenInput,
-              testDetailsInputList,
-              gitProperties,
-              aimsProcessingModeCode,
-              testId,
-              testStatus);
+    var labReportMessage =
+        hl7Converter.createLabReportMessage(
+            patientInput,
+            providerInput,
+            performingFacility,
+            orderingFacility,
+            specimenInput,
+            testDetailsInputList,
+            gitProperties,
+            aimsProcessingModeCode,
+            testId,
+            testStatus);
 
-      return parser.encode(labReportMessage);
-    } catch (HL7Exception e) {
-      log.error("Encountered an error converting CSV row to HL7");
-      throw e;
-    }
+    return parser.encode(labReportMessage);
   }
 
   private PatientReportInput getPatientInput(TestResultRow row) {

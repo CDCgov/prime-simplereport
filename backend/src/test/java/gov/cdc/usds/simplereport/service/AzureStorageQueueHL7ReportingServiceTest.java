@@ -19,9 +19,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
@@ -31,8 +31,8 @@ import reactor.core.publisher.MonoSink;
 class AzureStorageQueueHL7ReportingServiceTest {
   @Autowired private GitProperties gitProperties;
   @Autowired private HL7Converter hl7Converter;
-  @SpyBean private HapiContext hapiContext;
-  @MockBean private QueueAsyncClient queueClient;
+  @MockitoSpyBean private HapiContext hapiContext;
+  @MockitoBean private QueueAsyncClient queueClient;
 
   @Test
   void reportAsync_valid() {
@@ -46,7 +46,7 @@ class AzureStorageQueueHL7ReportingServiceTest {
     TestOrder testOrder = testEvent.getTestOrder();
     var testOrderId = UUID.randomUUID();
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
-    testOrder.setTestEventRef(testEvent);
+    testOrder.setLatestTestEventRef(testEvent);
 
     when(queueClient.sendMessage(anyString())).thenReturn(Mono.create(MonoSink::success));
 

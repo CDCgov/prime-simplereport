@@ -16,12 +16,12 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class FeatureFlagsMutationResolverTest extends BaseGraphqlTest {
-  @SpyBean private FeatureFlagRepository featureFlagRepository;
-  @SpyBean private FacilityFeatureFlagRepository facilityFeatureFlagRepository;
+  @MockitoSpyBean private FeatureFlagRepository featureFlagRepository;
+  @MockitoSpyBean private FacilityFeatureFlagRepository facilityFeatureFlagRepository;
 
   @Test
   void updateFeatureFlag_notAuthorizedError() {

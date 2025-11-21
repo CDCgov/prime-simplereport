@@ -25,14 +25,14 @@ import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   @Autowired private PatientLinkRepository patientLinkRepository;
   @Autowired private OrganizationService _organizationService;
   @Autowired private TestDataFactory _dataFactory;
-  @MockBean private CurrentPatientContextHolder _contextHolder;
+  @MockitoBean private CurrentPatientContextHolder _contextHolder;
 
   private Person _person;
   private TestOrder _testOrder;

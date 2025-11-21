@@ -16,13 +16,13 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
 
   @Autowired CachingConfig cacheConfig;
 
-  @Autowired @SpyBean SupportedDiseaseRepository repo;
+  @Autowired @MockitoSpyBean SupportedDiseaseRepository repo;
 
   @Test
   void getCachedDisease_doesntHitRepo() {
