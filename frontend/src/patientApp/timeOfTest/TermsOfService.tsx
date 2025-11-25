@@ -46,13 +46,9 @@ const TermsOfService: React.FunctionComponent<Props> = ({
     >
       <form className="grid-container maxw-tablet usa-prose">
         {asPage ? (
-          <h1 className="font-heading-lg margin-top-3">
-            {t("testResult.tos.header")}
-          </h1>
+          <h1 className="margin-top-3">{t("testResult.tos.header")}</h1>
         ) : (
-          <h2 className="font-heading-lg margin-top-3">
-            {t("testResult.tos.header")}
-          </h2>
+          <h2 className="margin-top-3">{t("testResult.tos.header")}</h2>
         )}
         <Trans
           t={t}

@@ -9,7 +9,6 @@ import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import "./Uploads.scss";
-import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
 import { RootState } from "../../store";
 import SingleFileInput from "../../commonComponents/SingleFileInput";

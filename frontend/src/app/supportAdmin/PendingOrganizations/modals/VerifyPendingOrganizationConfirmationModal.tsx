@@ -25,9 +25,7 @@ const VerifyPendingOrganizationConfirmationModal: React.FC<
       contentLabel="Verify organization"
       onClose={onClose}
     >
-      <Modal.Header
-        styleClassNames={"font-heading-lg margin-top-0 margin-bottom-205"}
-      >
+      <Modal.Header styleClassNames={"margin-top-0 margin-bottom-205"}>
         Verify organization
       </Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>

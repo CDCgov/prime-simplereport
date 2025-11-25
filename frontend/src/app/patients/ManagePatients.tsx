@@ -508,9 +508,7 @@ export const DetachedManagePatients = ({
           <div className="prime-container card-container">
             <div className="usa-card__header" data-cy="manage-patients-header">
               <div className="display-flex flex-align-center">
-                <h1 className="font-sans-lg margin-y-0">
-                  {PATIENT_TERM_PLURAL_CAP}
-                </h1>
+                <h1 className="margin-y-0">{PATIENT_TERM_PLURAL_CAP}</h1>
                 <span className="sr-showing-patients-on-page margin-left-4">
                   {totalEntries === undefined ? (
                     "Loading..."

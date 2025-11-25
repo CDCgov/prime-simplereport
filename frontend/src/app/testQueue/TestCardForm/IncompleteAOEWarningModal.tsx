@@ -21,7 +21,7 @@ export const IncompleteAOEWarningModal: React.FC<
       variant="mobile-lg"
       contentLabel={"Incomplete ask on entry"}
     >
-      <Modal.Header styleClassNames={"font-sans-lg line-height-sans-3"}>
+      <Modal.Header styleClassNames={"line-height-sans-3"}>
         The test questionnaire for {name} has not been completed.
       </Modal.Header>
       <p>Do you want to submit results anyway?</p>

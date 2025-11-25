@@ -99,9 +99,7 @@ const pxpAppResultListItem = (
 ) => {
   return (
     <div key={`${diseaseName}-${result}`}>
-      <h2 className="font-heading-sm">
-        {setDiseaseResultTitle(diseaseName, t, true)}
-      </h2>
+      <h2>{setDiseaseResultTitle(diseaseName, t, true)}</h2>
       <p className="margin-top-05 text-uppercase">
         {setResult(result, t)}
         <span>

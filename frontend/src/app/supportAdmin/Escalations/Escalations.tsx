@@ -19,7 +19,7 @@ export const Escalations = () => {
             <div className="width-full">
               <SupportHomeLink />
               <div className="grid-row width-full margin-top-1">
-                <h1 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0">
+                <h1 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 margin-bottom-0">
                   Escalate to engineering
                 </h1>
               </div>

@@ -52,9 +52,7 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
       contentLabel="Confirm delete facility"
       showModal={showModal}
     >
-      <Modal.Header
-        styleClassNames={"font-heading-lg margin-top-0 margin-bottom-205"}
-      >
+      <Modal.Header styleClassNames={"margin-top-0 margin-bottom-205"}>
         Delete {manageFacilityState.facility?.name}
       </Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
@@ -104,7 +102,7 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
       {manageFacilityState.facility ? (
         <>
           <div className="usa-card__header">
-            <h2 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0">
+            <h2 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 margin-top-0 margin-bottom-0">
               {manageFacilityState.facility.name}
             </h2>
           </div>

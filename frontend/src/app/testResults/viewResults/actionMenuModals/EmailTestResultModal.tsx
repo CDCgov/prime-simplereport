@@ -31,7 +31,7 @@ const DetachedEmailTestResultModal = ({
 
   return (
     <>
-      <h1 className="font-sans-lg margin-top-0 margin-bottom-105 text-normal">
+      <h1 className="margin-top-0 margin-bottom-105 text-normal">
         Email result?
       </h1>
       <div className="body">

@@ -162,7 +162,7 @@ export const Analytics = (props: Props) => {
       <div className="grid-container">
         <div className="prime-container card-container margin-top-2">
           <div className="usa-card__header">
-            <h1 className="font-sans-xl">Dashboard</h1>
+            <h1>Dashboard</h1>
           </div>
           <div id="analytics-page">
             <div className="prime-container padding-3">

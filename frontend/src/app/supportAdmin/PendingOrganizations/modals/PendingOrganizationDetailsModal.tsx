@@ -105,9 +105,7 @@ const PendingOrganizationDetailsModal: React.FC<
       title="Organization details"
       onClose={onClose}
     >
-      <Modal.Header
-        styleClassNames={"font-heading-lg margin-top-0 margin-bottom-205"}
-      >
+      <Modal.Header styleClassNames={"margin-top-0 margin-bottom-205"}>
         Organization details
       </Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>

@@ -27,7 +27,7 @@ export const WhereResultsAreSentModal: React.FC = ({
         onClose={closeModal}
         containerClassName={"margin-1em"}
       >
-        <Modal.Header styleClassNames={"font-sans-lg line-height-sans-3"}>
+        <Modal.Header styleClassNames={"line-height-sans-3"}>
           {modalTitle}
         </Modal.Header>
         <p>

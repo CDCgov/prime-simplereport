@@ -68,7 +68,7 @@ const ProviderFormSection = ({ provider }: ProviderFormSectionProps) => {
     <div className="form-section provider-form">
       <div className="grid-row">
         <div className="grid-col">
-          <h2 className={"font-sans-lg"}>Ordering provider</h2>
+          <h2>Ordering provider</h2>
           <p>Please review the provider information</p>
 
           <Table bordered={false} fullWidth={true}>

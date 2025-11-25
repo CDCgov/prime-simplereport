@@ -26,7 +26,7 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
   children,
 }: CategoryMenuProps) => (
   <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
-    <h2 className="font-heading-md margin-bottom-0 margin-top-2">{heading}</h2>
+    <h2 className="margin-bottom-0 margin-top-2">{heading}</h2>
     <ul className="usa-list padding-left-2">{children}</ul>
   </div>
 );
@@ -39,9 +39,7 @@ const SupportAdmin = () => {
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
-              <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
-                Support admin
-              </h1>
+              <h1 className="margin-top-0 margin-bottom-0">Support admin</h1>
             </div>
             <div className="usa-card__body">
               <div className="grid-row grid-gap">

@@ -30,7 +30,7 @@ export const AddPatientHeader = (props: Props) => {
             </LinkWithQuery>
           </div>
           <div className="prime-edit-patient-heading margin-y-0">
-            <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+            <h1 className="margin-top-1 margin-bottom-0">
               Add new {PATIENT_TERM}
             </h1>
           </div>
