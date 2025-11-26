@@ -42,12 +42,18 @@ public class FileUploadController {
       log.error("Invalid facility id passed", e);
       throw new BadRequestException("Invalid facility id");
     } catch (IllegalArgumentException e) {
-      log.error("Patient CSV upload failed on an IllegalArgumentException");
-      throw new CsvProcessingException(
-          "Unable to complete patient CSV upload due to an invalid input.");
+      CsvProcessingException exceptionWithoutPii =
+          new CsvProcessingException(
+              "Unable to complete patient CSV upload due to an invalid input.");
+      exceptionWithoutPii.setStackTrace(e.getStackTrace());
+      log.error("Patient CSV upload failed on an IllegalArgumentException", exceptionWithoutPii);
+      throw exceptionWithoutPii;
     } catch (IOException e) {
-      log.error("Patient CSV upload failed");
-      throw new CsvProcessingException("Unable to complete patient CSV upload");
+      CsvProcessingException exceptionWithoutPii =
+          new CsvProcessingException("Unable to complete patient CSV upload");
+      exceptionWithoutPii.setStackTrace(e.getStackTrace());
+      log.error("Patient CSV upload failed", exceptionWithoutPii);
+      throw exceptionWithoutPii;
     }
   }
 
@@ -65,8 +71,11 @@ public class FileUploadController {
       // catching every exception here ensures that the user will see an error toast for any bulk
       // upload exception. Removing this could result in silent bulk upload failures.
     } catch (Exception e) {
+      CsvProcessingException exceptionWithoutPii =
+          new CsvProcessingException("Unable to process test result CSV upload");
+      exceptionWithoutPii.setStackTrace(e.getStackTrace());
       log.error("Test result CSV encountered an unexpected error", e);
-      throw new CsvProcessingException("Unable to process test result CSV upload");
+      throw exceptionWithoutPii;
     }
   }
 

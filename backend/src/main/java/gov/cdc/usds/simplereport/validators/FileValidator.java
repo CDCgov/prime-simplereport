@@ -46,7 +46,9 @@ public class FileValidator<T extends FileRow> {
       try {
         row = getNextRow(valueIterator);
       } catch (CsvProcessingException ex) {
-        log.error("Unable to parse csv.");
+        CsvProcessingException exceptionWithoutPii = new CsvProcessingException("");
+        exceptionWithoutPii.setStackTrace(ex.getStackTrace());
+        log.error("Unable to parse csv.", exceptionWithoutPii);
         var rowNumber = ex.getLineNumber();
         if (ex.getMessage().contains("Not enough column values") && valueIterator.hasNext()) {
           rowNumber--;

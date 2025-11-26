@@ -132,8 +132,10 @@ public class TestResultUploadService {
             .ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
-      log.error("Error reading test result upload CSV");
-      throw new CsvProcessingException("Unable to read csv");
+      CsvProcessingException exceptionWithoutPii = new CsvProcessingException("Unable to read csv");
+      exceptionWithoutPii.setStackTrace(e.getStackTrace());
+      log.error("Error reading test result upload CSV", exceptionWithoutPii);
+      throw exceptionWithoutPii;
     }
 
     return uploadSummary;
