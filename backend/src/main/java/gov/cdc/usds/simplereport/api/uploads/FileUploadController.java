@@ -74,7 +74,7 @@ public class FileUploadController {
       CsvProcessingException exceptionWithoutPii =
           new CsvProcessingException("Unable to process test result CSV upload");
       exceptionWithoutPii.setStackTrace(e.getStackTrace());
-      log.error("Test result CSV encountered an unexpected error", e);
+      log.error("Test result CSV encountered an unexpected error", exceptionWithoutPii);
       throw exceptionWithoutPii;
     }
   }
