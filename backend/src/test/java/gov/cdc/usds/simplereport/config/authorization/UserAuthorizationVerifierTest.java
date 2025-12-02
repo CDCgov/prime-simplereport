@@ -20,14 +20,14 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 class UserAuthorizationVerifierTest extends BaseServiceTest<UserAuthorizationVerifier> {
-  @Autowired @SpyBean ApiUserRepository _apiUserRepo;
-  @MockBean FeatureFlagsConfig _featureFlagsConfig;
+  @Autowired @MockitoSpyBean ApiUserRepository _apiUserRepo;
+  @MockitoBean FeatureFlagsConfig _featureFlagsConfig;
 
   @BeforeEach
   public void setup() {

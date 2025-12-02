@@ -18,19 +18,19 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class DeletePiiServiceTest extends BaseServiceTest<DeletePiiService> {
 
-  @MockBean private FeatureFlagsConfig featureFlagsConfig;
-  @MockBean private PersonRepository personRepository;
-  @MockBean private TestEventRepository testEventRepository;
-  @MockBean private ResultRepository resultRepository;
-  @MockBean private PatientAnswersRepository patientAnswersRepository;
-  @MockBean private TestResultUploadRepository testResultUploadRepository;
-  @MockBean private ResultUploadErrorRepository resultUploadErrorRepository;
-  @MockBean private PhoneNumberRepository phoneNumberRepository;
-  @MockBean private ReportStreamResponseRepository reportStreamResponseRepository;
+  @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
+  @MockitoBean private PersonRepository personRepository;
+  @MockitoBean private TestEventRepository testEventRepository;
+  @MockitoBean private ResultRepository resultRepository;
+  @MockitoBean private PatientAnswersRepository patientAnswersRepository;
+  @MockitoBean private TestResultUploadRepository testResultUploadRepository;
+  @MockitoBean private ResultUploadErrorRepository resultUploadErrorRepository;
+  @MockitoBean private PhoneNumberRepository phoneNumberRepository;
+  @MockitoBean private ReportStreamResponseRepository reportStreamResponseRepository;
 
   @Test
   void scheduledDeleteOldPii_disabled_skipsExecution() {

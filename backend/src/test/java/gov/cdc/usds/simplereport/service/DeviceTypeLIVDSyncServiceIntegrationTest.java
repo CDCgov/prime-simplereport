@@ -34,8 +34,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 class DeviceTypeLIVDSyncServiceIntegrationTest extends BaseServiceTest<DeviceTypeLIVDSyncService> {
@@ -45,7 +45,7 @@ class DeviceTypeLIVDSyncServiceIntegrationTest extends BaseServiceTest<DeviceTyp
   @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeRepository;
   @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
-  @MockBean private DataHubClient dataHubClient;
+  @MockitoBean private DataHubClient dataHubClient;
 
   private SpecimenType swab1;
   private SpecimenType swab2;

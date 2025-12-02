@@ -19,14 +19,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class AuditServiceTest extends BaseServiceTest<AuditService> {
 
   @Autowired private ApiUserService _userService;
-  @MockBean AuditLoggerService auditLoggerServiceSpy;
+  @MockitoBean AuditLoggerService auditLoggerServiceSpy;
   @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
 
   @Test

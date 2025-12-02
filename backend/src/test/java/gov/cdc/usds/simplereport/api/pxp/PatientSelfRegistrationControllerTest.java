@@ -27,9 +27,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
   @Autowired private MockMvc _mockMvc;
   @Autowired private PatientSelfRegistrationController _controller;
-  @SpyBean private PersonService personService;
+  @MockitoSpyBean private PersonService personService;
 
   private Organization _org;
   private Facility _site;

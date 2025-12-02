@@ -21,11 +21,11 @@ import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SliceTestConfiguration.WithSimpleReportSiteAdminUser
 class ResultsUploaderCachingServiceTest extends BaseServiceTest<ResultsUploaderCachingService> {
-  @MockBean private AddressValidationService addressValidationService;
+  @MockitoBean private AddressValidationService addressValidationService;
   @Autowired private SpecimenTypeService specimenTypeService;
   @Autowired private DeviceTypeService deviceTypeService;
   @Autowired private DiseaseService diseaseService;

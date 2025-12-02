@@ -21,10 +21,10 @@ import org.junit.jupiter.api.function.Executable;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
  * Base class for service-level integration. Avoids setting up servlet and web security, but sets up
@@ -48,12 +48,12 @@ public abstract class BaseServiceTest<T> {
   @Autowired private OrganizationInitializingService _initService;
   @Autowired protected DiseaseService _diseaseService;
   @Autowired protected SupportedDiseaseRepository _supportedDiseaseRepo;
-  @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
-  @MockBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
+  @MockitoBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
+  @MockitoBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired protected T _service;
-  @MockBean private CurrentOrganizationRolesContextHolder _currentOrganizationRolesContextHolder;
+  @MockitoBean private CurrentOrganizationRolesContextHolder _currentOrganizationRolesContextHolder;
 
   private static final String SPRING_SECURITY_DENIED = "Access Denied";
 

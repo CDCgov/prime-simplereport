@@ -38,11 +38,11 @@ import org.mockito.Captor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class SmsServiceTest extends BaseServiceTest<SmsService> {
-  @MockBean SmsProviderWrapper mockTwilio;
+  @MockitoBean SmsProviderWrapper mockTwilio;
 
   @Autowired DbTruncator _truncator;
 
