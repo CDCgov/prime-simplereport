@@ -99,6 +99,12 @@ a:active {
     &:active {
       background-color: color($theme-color-secondary-darker);
     }
+
+    &:disabled,
+    &:disabled:hover {
+      background-color: color($theme-color-disabled-light);
+      color: color($theme-color-disabled-dark);
+    }
   }
 
   &--secondary {

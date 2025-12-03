@@ -35,7 +35,7 @@ const UndeleteUserModal: React.FC<Props> = ({
       showModal={isOpen}
     >
       <Modal.Header
-        styleClassNames={"font-heading-lg margin-top-0 margin-bottom-205"}
+        styleClassNames={"font-sans-lg margin-top-0 margin-bottom-205"}
       >
         {modalTitle}
       </Modal.Header>

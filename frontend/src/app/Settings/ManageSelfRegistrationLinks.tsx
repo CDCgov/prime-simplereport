@@ -48,7 +48,7 @@ export const ManageSelfRegistrationLinks = ({
     <div className="grid-row position-relative">
       <div className="prime-container card-container settings-tab">
         <div className="usa-card__header">
-          <h1>Patient self-registration</h1>
+          <h1 className="font-heading-lg">Patient self-registration</h1>
         </div>
         <div className="usa-card__body maxw-prose padding-y-3">
           <p>

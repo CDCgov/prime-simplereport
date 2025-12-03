@@ -48,7 +48,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
       <div className="prime-container card-container settings-tab">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="usa-card__header">
-            <h1>Manage organization</h1>
+            <h1 className="font-heading-lg">Manage organization</h1>
             <div className="display-flex flex-gap-1">
               <Button
                 type="submit"

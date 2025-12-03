@@ -35,7 +35,7 @@ const ConfirmDeleteOrgModal: React.FC<ConfirmDeleteOrgModalProps> = ({
       onClose={onClose}
     >
       <Modal.Header
-        styleClassNames={"font-heading-lg margin-top-0 margin-bottom-205"}
+        styleClassNames={"font-sans-lg margin-top-0 margin-bottom-205"}
       >
         Delete this organization?
       </Modal.Header>

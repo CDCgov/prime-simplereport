@@ -120,7 +120,7 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
       showModal={showModal}
     >
       <Modal.Header
-        styleClassNames={"font-heading-lg margin-top-0 margin-bottom-205"}
+        styleClassNames={"font-sans-lg margin-top-0 margin-bottom-205"}
       >
         Organization update
       </Modal.Header>
