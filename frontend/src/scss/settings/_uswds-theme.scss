@@ -1,5 +1,6 @@
 // Override USWDS setting variables to create custom theme
 // https://designsystem.digital.gov/documentation/settings/
+// Adapted from https://github.com/CDCgov/dibbs-design-system/blob/main/sass/_uswds-theme.scss
 
 @forward "@uswds/uswds/packages/uswds-core" with (
   // General
