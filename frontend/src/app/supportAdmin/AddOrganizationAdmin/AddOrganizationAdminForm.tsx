@@ -65,7 +65,7 @@ const AddOrganizationAdminForm = ({
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h1>{addOrgAdminPageTitle}</h1>
+                <h1 className="font-heading-lg">{addOrgAdminPageTitle}</h1>
                 <RequiredMessage />
               </div>
               <div

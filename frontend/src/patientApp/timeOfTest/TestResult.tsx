@@ -48,7 +48,7 @@ const TestResult = () => {
       >
         <div className="grid-container maxw-tablet">
           <div className="card usa-prose">
-            <h1>
+            <h1 className="font-heading-lg">
               {hasMultipleResults(testResult.results)
                 ? t("testResult.multipleResultHeader")
                 : t("testResult.singleResultHeader")}
@@ -61,11 +61,13 @@ const TestResult = () => {
             {}
             <div className="grid-row margin-top-105">
               <div className="grid-col">
-                <h2 className="margin-0">{t("testResult.patient")}</h2>
+                <h2 className="font-heading-sm margin-0">
+                  {t("testResult.patient")}
+                </h2>
                 <p className="margin-top-0">{fullName}</p>
               </div>
               <div className="grid-col usa-prose">
-                <h2>{t("testResult.testDate")}</h2>
+                <h2 className="font-heading-sm">{t("testResult.testDate")}</h2>
                 <p className="margin-top-05">{dateTested}</p>
               </div>
             </div>
@@ -78,11 +80,13 @@ const TestResult = () => {
                 />
               </div>
             </div>
-            <h2>{t("testResult.testDevice")}</h2>
+            <h2 className="font-heading-sm">{t("testResult.testDevice")}</h2>
             <p className="margin-top-05">{deviceType}</p>
             {guidance.length > 0 && (
               <>
-                <h2>{t("testResult.moreInformation")}</h2>
+                <h2 className="font-heading-sm">
+                  {t("testResult.moreInformation")}
+                </h2>
                 <ResultsGuidance
                   guidance={guidance}
                   isPatientApp={isPatientApp}

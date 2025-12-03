@@ -46,7 +46,7 @@ const UnarchivePatientFilters = ({
       <div className="usa-card__header padding-top-2">
         <div className="desktop:display-flex grid-row width-full">
           <div className="desktop:grid-col-6 desktop:display-flex desktop:flex-row flex-align-center">
-            <h1 className="margin-y-0">{unarchivePatientTitle}</h1>
+            <h1 className="font-sans-lg margin-y-0">{unarchivePatientTitle}</h1>
           </div>
           <div className="mobile-lg:display-block mobile-lg:grid-col-6 desktop:display-flex flex-align-end flex-column">
             <Button

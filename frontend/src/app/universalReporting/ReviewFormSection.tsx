@@ -322,7 +322,7 @@ const ReviewFormSection = ({
       {reviewSectionData.map(({ title, keyPrefix, data }) => (
         <div className="grid-row" key={`review-section-${keyPrefix}`}>
           <div className="grid-col">
-            <h2>{title}</h2>
+            <h2 className={"font-sans-lg"}>{title}</h2>
             <Table bordered={false} fullWidth={true}>
               <thead>
                 <tr>

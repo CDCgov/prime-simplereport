@@ -6,7 +6,7 @@ const ReportLandingPage = () => {
   return (
     <div className="prime-home flex-1">
       <div className="grid-container padding-bottom-10 padding-top-4">
-        <h2>Report lab results</h2>
+        <h2 className={"font-sans-xl"}>Report lab results</h2>
         <div className="prime-container">
           <div className="grid-row grid-gap">
             <div className="tablet:grid-col-6 margin-bottom-2">

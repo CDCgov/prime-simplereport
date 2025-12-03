@@ -314,7 +314,7 @@ const EditPatient = (props: Props) => {
           )}
         </div>
         <div className="prime-edit-patient-heading margin-y-0">
-          <h1 className="margin-top-1 margin-bottom-0">
+          <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
             {displayFullName(
               person.firstName,
               person.middleName,

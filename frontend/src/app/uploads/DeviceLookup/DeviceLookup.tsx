@@ -126,7 +126,7 @@ const DeviceLookup = (props: Props) => {
             </LinkWithQuery>
           </div>
           <div>
-            <h1>Device code lookup</h1>
+            <h1 className="font-sans-lg">Device code lookup</h1>
           </div>
         </div>
       </div>

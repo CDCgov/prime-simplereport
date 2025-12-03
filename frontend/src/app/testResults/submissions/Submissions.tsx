@@ -11,6 +11,7 @@ import {
 } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
+import "../HeaderSizeFix.scss";
 
 const getSubmissionsTableRows = (
   submissionsResult: GetUploadSubmissionsQuery | undefined,

@@ -57,7 +57,9 @@ const FacilityInformation: React.FC<Props> = ({
       )}
       <fieldset className="usa-fieldset">
         <legend>
-          <h2 style={{ margin: 0 }}>Testing facility information</h2>
+          <h2 className="font-heading-lg" style={{ margin: 0 }}>
+            Testing facility information
+          </h2>
         </legend>
         <TextInput
           label="Testing facility name"

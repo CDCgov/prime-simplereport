@@ -198,7 +198,7 @@ const DeviceForm = (props: Props) => {
             onSubmit={handleSubmit(onSubmit)}
           >
             <div className="usa-card__header">
-              <h1 className="margin-top-0 margin-bottom-0">
+              <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
                 {props.formTitle}
               </h1>
               <div

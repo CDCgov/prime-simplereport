@@ -49,10 +49,10 @@ export const TrainingNotification: React.FC = () => {
               className="width-10 margin-right-3 margin-top-1"
             />
             <div className="usa-prose">
-              <h1 className="text-normal">
+              <h1 className="font-heading-xl text-normal">
                 Welcome to the SimpleReport training site!
               </h1>
-              <h2 className="text-normal margin-top-105">
+              <h2 className="font-heading-lg text-normal margin-top-105">
                 A few important reminders:
               </h2>
               <ul>

@@ -34,7 +34,7 @@ const OrderingProvider: React.FC<Props> = ({
     <fieldset className="prime-container card-container usa-fieldset">
       <div className="usa-card__header">
         <legend>
-          <h2>Ordering provider</h2>
+          <h2 className="font-heading-lg">Ordering provider</h2>
         </legend>
       </div>
       <div className="usa-form usa-form--large usa-card__body">

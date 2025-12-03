@@ -37,7 +37,7 @@ const ResetUserPasswordModal: React.FC<Props> = ({
     >
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
-          <h1 className="margin-top-05 margin-bottom-0">
+          <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
             Reset{" "}
             {displayFullName(user.firstName, user.middleName, user.lastName)}'s
             password

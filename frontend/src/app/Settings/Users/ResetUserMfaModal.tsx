@@ -33,7 +33,7 @@ const ResetUserMfaModal: React.FC<Props> = ({ onClose, onResetMfa, user }) => {
     >
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
-          <h1 className="margin-top-05 margin-bottom-0">
+          <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
             Reset multi-factor authentication (MFA)
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">

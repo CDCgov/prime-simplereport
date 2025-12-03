@@ -64,7 +64,7 @@ const ManageDevices: React.FC<Props> = ({
   return (
     <div className="prime-container card-container device-settings">
       <div className="usa-card__header">
-        <h2>Manage devices</h2>
+        <h2 className="font-heading-lg">Manage devices</h2>
       </div>
       <div className="usa-card__body">
         {newOrg && (

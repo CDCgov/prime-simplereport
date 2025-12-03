@@ -93,7 +93,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h1>{orgAccessPageTitle}</h1>
+                <h1 className="font-heading-lg">{orgAccessPageTitle}</h1>
                 <p className="text-base">
                   This page allows you to reproduce a specific user's issues by
                   accessing their account. Access automatically expires after an
@@ -127,7 +127,9 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2>Request organization data access</h2>
+                <h2 className="font-heading-lg">
+                  Request organization data access
+                </h2>
               </div>
               <div
                 style={{
@@ -152,7 +154,9 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2>Cancel organization data access</h2>
+                <h2 className="font-heading-lg">
+                  Cancel organization data access
+                </h2>
               </div>
               <div
                 style={{

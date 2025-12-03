@@ -35,7 +35,9 @@ const FacilityAdmin: React.FC<Props> = ({ admin, register, errors }) => {
   return (
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
-        <h2 style={{ margin: 0 }}>Facility Administrator</h2>
+        <h2 className="font-heading-lg" style={{ margin: 0 }}>
+          Facility Administrator
+        </h2>
       </div>
       <div className="usa-card__body usa-form usa-form--large">
         {Object.entries(fields).map(([key, validation]) => {

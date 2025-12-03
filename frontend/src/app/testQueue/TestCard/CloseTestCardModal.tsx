@@ -24,7 +24,7 @@ export const CloseTestCardModal: React.FC<CloseTestCardModalProps> = ({
       contentLabel={"Close test card"}
       variant="mobile-lg"
     >
-      <Modal.Header styleClassNames={"line-height-sans-3"}>
+      <Modal.Header styleClassNames={"font-sans-lg line-height-sans-3"}>
         Are you sure you want to stop {name}'s test?
       </Modal.Header>
       <p>

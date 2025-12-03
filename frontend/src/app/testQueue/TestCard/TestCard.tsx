@@ -167,7 +167,7 @@ export const TestCard = ({
                   });
                 }}
               >
-                <h2 className="margin-y-0">
+                <h2 className={"font-sans-lg margin-y-0"}>
                   <strong>{patientFullName}</strong>
                 </h2>
               </Button>

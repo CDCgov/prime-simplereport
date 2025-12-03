@@ -27,7 +27,7 @@ const FacilityPopup: React.FC<FacilityPopupProps> = ({ children }) => {
                 src={siteLogo}
                 alt="SimpleReport logo"
               />
-              <h1 className="text-primary-darker text-bold">
+              <h1 className="text-primary-darker text-bold font-heading-md">
                 {organization.name}
               </h1>
               <p className="text-bold text-center margin-7">

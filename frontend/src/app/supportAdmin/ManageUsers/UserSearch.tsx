@@ -25,7 +25,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
         <div className="width-full">
           <SupportHomeLink />
           <div className="grid-row width-full margin-top-1">
-            <h1 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 margin-bottom-0">
+            <h1 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0">
               Manage users
             </h1>
             <div className="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0">

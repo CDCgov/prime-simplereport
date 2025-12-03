@@ -342,7 +342,9 @@ const UploadPatients = () => {
         <div className={"card padding-top-5 padding-bottom-7"}>
           <ol className={"prime-ul margin-0"}>
             <li>
-              <h2 className={"margin-0 text-light line-height-225"}>
+              <h2
+                className={"margin-0 font-sans-lg text-light line-height-225"}
+              >
                 1. Set up your spreadsheet
               </h2>
               <div className={"margin-left-3"}>
@@ -389,7 +391,7 @@ const UploadPatients = () => {
             <li>
               <h2
                 className={
-                  "margin-top-7 margin-bottom-1 text-light line-height-225"
+                  "margin-top-7 margin-bottom-1 font-sans-lg text-light line-height-225"
                 }
               >
                 2. Would you like to import these patients to one facility OR
@@ -442,7 +444,7 @@ const UploadPatients = () => {
             <li>
               <h2
                 className={
-                  "margin-top-7 margin-bottom-1 text-light line-height-225"
+                  "margin-top-7 margin-bottom-1 font-sans-lg text-light line-height-225"
                 }
               >
                 3. Upload your spreadsheet

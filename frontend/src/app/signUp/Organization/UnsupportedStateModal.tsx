@@ -26,7 +26,9 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
       contentLabel={"Unsupported State"}
       containerClassName={"unsupported-state-modal"}
     >
-      <Modal.Header styleClassNames={"margin-0 line-height-sans-2"}>
+      <Modal.Header
+        styleClassNames={"margin-0 font-sans-lg line-height-sans-2"}
+      >
         {getStateNameFromCode(state)} isn't connected to SimpleReport yet.
       </Modal.Header>
       <p>

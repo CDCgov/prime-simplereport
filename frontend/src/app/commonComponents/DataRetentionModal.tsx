@@ -69,7 +69,10 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
       aria-describedby="data-retention-description"
     >
       <div className="border-0 card-container">
-        <h2 id="data-retention-title" className="margin-top-05 margin-bottom-2">
+        <h2
+          id="data-retention-title"
+          className="font-heading-lg margin-top-05 margin-bottom-2"
+        >
           New data retention limits are coming to SimpleReport
         </h2>
 

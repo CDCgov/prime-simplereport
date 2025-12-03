@@ -157,7 +157,7 @@ const DOB = () => {
         <div className="grid-container maxw-tablet">
           <div className="prime-container card-container margin-top-2">
             <div className="usa-card__header">
-              <h1>{t("testResult.dob.header")}</h1>
+              <h1 className="font-sans-lg">{t("testResult.dob.header")}</h1>
             </div>
             <div className="prime-container padding-3">
               <Trans t={t} parent="p" i18nKey="testResult.dob.enterDOB2">

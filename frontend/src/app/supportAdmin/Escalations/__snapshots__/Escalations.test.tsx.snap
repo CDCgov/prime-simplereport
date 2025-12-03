@@ -45,7 +45,7 @@ exports[`Escalations Renders the page 1`] = `
               class="grid-row width-full margin-top-1"
             >
               <h1
-                class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 margin-bottom-0"
+                class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
               >
                 Escalate to engineering
               </h1>

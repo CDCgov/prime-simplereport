@@ -348,7 +348,9 @@ const FacilityForm: React.FC<Props> = (props) => {
                   </>
                 )}
               </div>
-              <h1 className="margin-y-1">{facility.name || "Add facility"}</h1>
+              <h1 className="font-heading-lg margin-y-1">
+                {facility.name || "Add facility"}
+              </h1>
             </div>
             <div
               style={{
