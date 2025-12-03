@@ -166,7 +166,6 @@ const generateResultRows = (
                 testResult: r,
               })
             }
-            className="sr-link__primary"
           />
           <span className="display-block text-base font-ui-2xs">
             DOB: {formatDateWithTimeOption(r.patient?.birthDate)}

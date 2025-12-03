@@ -233,10 +233,7 @@ export const DetachedManagePatients = ({
 
       const editUserLink =
         canEditUser && !patient.isDeleted ? (
-          <LinkWithQuery
-            to={`/patient/${patient.internalId}`}
-            className="sr-link__primary"
-          >
+          <LinkWithQuery to={`/patient/${patient.internalId}`}>
             {fullName}
           </LinkWithQuery>
         ) : (

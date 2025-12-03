@@ -58,26 +58,39 @@ h5,
   @include u-font("sans", 5);
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  color: color($theme-text-color);
+}
+
 .usa-button--unstyled,
 a,
 a:visited {
   box-shadow: none;
-  color: color("primary");
+  color: color($theme-link-color);
   background-color: transparent;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .usa-button--unstyled:hover,
 a:hover {
   box-shadow: none;
-  color: color("primary-dark");
+  color: color($theme-link-hover-color);
   background-color: transparent;
+  text-decoration: none;
 }
 
 .usa-button--unstyled:active,
 a:active {
   box-shadow: none;
-  color: color("primary-darker");
+  color: color($theme-link-active-color);
   background-color: transparent;
+  text-decoration: none;
 }
 
 .usa-button {

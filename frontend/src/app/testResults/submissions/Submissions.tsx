@@ -40,7 +40,6 @@ const getSubmissionsTableRows = (
         <td>
           <LinkWithQuery
             to={`/results/upload/submissions/submission/${submission.internalId}`}
-            className="sr-link__primary"
           >
             {submission.reportId}
           </LinkWithQuery>
