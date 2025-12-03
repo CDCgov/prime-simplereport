@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.config;
 
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ public class AimsProperties {
   private String messageQueueEndpoint;
   private String sendingEnvironment;
   private String receivingEnvironment;
+  private Map<String, String> s3Metadata;
 
   @Bean
   public S3Client getS3Client() {
