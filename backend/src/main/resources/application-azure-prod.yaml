@@ -2,6 +2,7 @@ simple-report:
   azure-reporting-queue:
     enabled: true
     fhir-queue-enabled: true
+    hl7-queue-enabled: true
     exception-webhook-enabled: true
   patient-link-url: https://www.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://www.simplereport.gov/api/pxp/callback
@@ -22,6 +23,9 @@ simple-report:
   production:
     device-sync-enabled: false
   aims-processing-mode-code: P
+  hl7:
+    sending-application-namespace: "SIMPLEREPORT.PROD"
+    sending-application-oid: "2.16.840.1.113883.3.8589.4.2.134.1"
 twilio:
   enabled: true
   from-number: "+14045312484"
@@ -33,4 +37,4 @@ features:
   syphilisEnabled: false
   hivEnabled: false
   universalReportingEnabled: false
-  aimsReportingEnabled: false
+  aimsReportingEnabled: true
