@@ -8,9 +8,10 @@ import { QueueClient } from "@azure/storage-queue";
 import { ENV } from "../config";
 import { parseHL7Message } from "./hl7utils";
 import { getTelemetry } from "./telemetry";
+import { DequeuedMessageItem } from "@azure/storage-queue/dist/commonjs/generated/src/models";
 
 interface ProcessMessageOptions {
-  message: any;
+  message: DequeuedMessageItem;
   queueClient: QueueClient;
   s3Client: S3Client;
   context: InvocationContext;
@@ -28,6 +29,7 @@ export async function processMessage({
 
   try {
     const hl7Message = parseHL7Message(message.messageText);
+    console.log(`Parsed HL7 message text is ${hl7Message.content}`);
 
     // Check message size and log if larger than 64KB which might not be processed
     const approxBytes = Buffer.byteLength(message.messageText || "", "utf8");
@@ -181,6 +183,8 @@ async function uploadToS3({
     AIMSPlatformSenderMessageId: messageId,
     Base64Encoded: "False",
   };
+
+  console.log(`HL7 message content is ${hl7Message.content}`);
 
   const uploadParams = {
     Bucket: ENV.AIMS_BUCKET_NAME,

@@ -66,6 +66,7 @@ export async function SendToAIMS(
 
     // Process messages
     for (const message of response.receivedMessageItems) {
+      console.log(`Message text is ${message.messageText}`);
       try {
         await processMessage({
           message,
