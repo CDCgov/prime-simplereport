@@ -8,10 +8,9 @@ import { QueueClient } from "@azure/storage-queue";
 import { ENV } from "../config";
 import { parseHL7Message } from "./hl7utils";
 import { getTelemetry } from "./telemetry";
-import { DequeuedMessageItem } from "@azure/storage-queue/dist/commonjs/generated/src/models";
 
 interface ProcessMessageOptions {
-  message: DequeuedMessageItem;
+  message: any;
   queueClient: QueueClient;
   s3Client: S3Client;
   context: InvocationContext;
