@@ -127,7 +127,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">
+                <h2 className="font-sans-lg">
                   Request organization data access
                 </h2>
               </div>
@@ -154,7 +154,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">
+                <h2 className="font-sans-lg">
                   Cancel organization data access
                 </h2>
               </div>

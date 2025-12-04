@@ -26,7 +26,7 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
   children,
 }: CategoryMenuProps) => (
   <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
-    <h2 className="font-heading-md margin-bottom-0 margin-top-2">{heading}</h2>
+    <h2 className="font-sans-md margin-bottom-0 margin-top-2">{heading}</h2>
     <ul className="usa-list padding-left-2">{children}</ul>
   </div>
 );

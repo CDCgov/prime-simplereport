@@ -115,9 +115,9 @@ export const DetachedTestResultDetailsModal = ({
   return (
     <>
       <div className="display-flex flex-justify flex-align-center">
-        <h1 id="result-detail-title" className="font-heading-lg margin-0">
+        <h2 id="result-detail-title" className="font-sans-lg margin-0">
           Result details
-        </h1>
+        </h2>
         <button
           className="modal__close-button margin-top-0"
           style={{ cursor: "pointer" }}
@@ -127,7 +127,7 @@ export const DetachedTestResultDetailsModal = ({
         </button>
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
-      <h2 className="font-sans-md margin-top-3">Patient</h2>
+      <h3 className="font-sans-md margin-top-3">Patient</h3>
       <div
         className={classnames(containerClasses, "grid-row flex-row padding-0")}
       >
@@ -166,7 +166,7 @@ export const DetachedTestResultDetailsModal = ({
           </span>
         </div>
       </div>
-      <h2 className="font-sans-md margin-top-3">Test information</h2>
+      <h3 className="font-sans-md margin-top-3">Test information</h3>
       <table className={containerClasses}>
         <tbody>
           {results && resultDetailsRows(results)}

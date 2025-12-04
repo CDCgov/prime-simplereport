@@ -104,7 +104,7 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
       {manageFacilityState.facility ? (
         <>
           <div className="usa-card__header">
-            <h2 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0">
+            <h2 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-sans-lg margin-top-0 margin-bottom-0">
               {manageFacilityState.facility.name}
             </h2>
           </div>

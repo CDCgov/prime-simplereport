@@ -54,7 +54,7 @@ const OrganizationComboDropDown: React.FC<Props> = ({
   return (
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
-        <h2 className="font-heading-lg" style={{ margin: 0 }}>
+        <h2 className="font-sans-lg" style={{ margin: 0 }}>
           <label htmlFor="org-dropdown-select">
             <Required label="Organization" />
           </label>
