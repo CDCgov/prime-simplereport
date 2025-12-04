@@ -28,7 +28,7 @@ export async function processMessage({
 
   try {
     const hl7Message = parseHL7Message(message.messageText);
-    console.log(`Parsed HL7 message text is ${hl7Message.content}`);
+    context.log(`Parsed HL7 message text is ${hl7Message.content}`);
 
     // Check message size and log if larger than 64KB which might not be processed
     const approxBytes = Buffer.byteLength(message.messageText || "", "utf8");
@@ -65,6 +65,7 @@ export async function processMessage({
       messageId,
       operationId,
       telemetry,
+      context,
     });
 
     // Delete message from queue only after successful S3 upload
@@ -159,6 +160,7 @@ interface UploadToS3Options {
   messageId: string;
   operationId: string;
   telemetry: any;
+  context: InvocationContext;
 }
 
 async function uploadToS3({
@@ -168,6 +170,7 @@ async function uploadToS3({
   messageId,
   operationId,
   telemetry,
+  context,
 }: UploadToS3Options): Promise<void> {
   const filename = hl7Message.filename;
 
@@ -183,7 +186,7 @@ async function uploadToS3({
     Base64Encoded: "False",
   };
 
-  console.log(`HL7 message content is ${hl7Message.content}`);
+  context.log(`HL7 message content is ${hl7Message.content}`);
 
   const uploadParams = {
     Bucket: ENV.AIMS_BUCKET_NAME,
