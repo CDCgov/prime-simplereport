@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.config;
 
+import java.util.HashMap;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -28,6 +30,8 @@ public class AimsProperties {
   private String messageQueueEndpoint;
   private String sendingEnvironment;
   private String receivingEnvironment;
+
+  @Getter(AccessLevel.NONE)
   private Map<String, String> s3Metadata;
 
   @Bean
@@ -38,5 +42,9 @@ public class AimsProperties {
             StaticCredentialsProvider.create(
                 AwsBasicCredentials.create(accessKeyId, secretAccessKey)))
         .build();
+  }
+
+  public Map<String, String> getS3Metadata() {
+    return (s3Metadata == null) ? null : new HashMap<>(s3Metadata);
   }
 }
