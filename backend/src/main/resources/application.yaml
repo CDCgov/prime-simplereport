@@ -209,13 +209,6 @@ aims:
   message-queue-endpoint: ${AIMS_MESSAGE_QUEUE_ENDPOINT:super-secret-message-queue-endpoint}
   sending-environment: ${AIMS_ENVIRONMENT:Test}
   receiving-environment: ${AIMS_ENVIRONMENT:Test}
-  s3-metadata:
-    AIMSPlatformSender: SimpleReport
-    AIMSPlatformRecipient: AIMSPlatform
-    AIMSPlatformSenderProject: ELR
-    AIMSPlatformSenderProtocol: S3
-    AIMSPlatformSenderEncryptionType: KMS
-    Base64Encoded: "False"
 features:
   oktaMigrationEnabled: false
   chlamydiaEnabled: true

@@ -41,10 +41,16 @@ public class AimsReportingService {
   private PutObjectResponse putObjectInAimsBucket(UUID submissionId, String objectBody) {
     String filename = generateFilename(submissionId);
     String objectKey = aimsProperties.getUserId() + "/SendTo/" + filename;
-
-    Map<String, String> metadata = aimsProperties.getS3Metadata();
-    metadata.put("AIMSPlatformFilename", filename);
-    metadata.put("AIMSPlatformSenderMessageId", submissionId.toString());
+    Map<String, String> metadata =
+        Map.ofEntries(
+            Map.entry("AIMSPlatformSender", "SimpleReport"),
+            Map.entry("AIMSPlatformRecipient", "AIMSPlatform"),
+            Map.entry("AIMSPlatformSenderProject", "ELR"),
+            Map.entry("AIMSPlatformSenderProtocol", "S3"),
+            Map.entry("AIMSPlatformSenderEncryptionType", "KMS"),
+            Map.entry("Base64Encoded", "False"),
+            Map.entry("AIMSPlatformFilename", filename),
+            Map.entry("AIMSPlatformSenderMessageId", submissionId.toString()));
 
     try {
       return s3Client.putObject(
