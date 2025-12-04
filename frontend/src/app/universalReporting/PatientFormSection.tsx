@@ -1,4 +1,4 @@
-import React, { Dispatch } from "react";
+import React, { Dispatch, FormEvent } from "react";
 import moment from "moment/moment";
 import { ComboBox } from "@trussworks/react-uswds";
 
@@ -45,9 +45,15 @@ const PatientFormSection = ({
       !(item.value === "refused" && item.label === "Prefer not to answer")
   );
 
+  const _onSubmit = (evt: FormEvent<HTMLFormElement>) => {
+    debugger;
+    console.log(evt);
+    return false;
+  };
+
   return (
     <div id="patientFormSection" data-testid="patientFormSection">
-      <form onSubmit={() => false}>
+      <form onSubmit={_onSubmit}>
         <div className="grid-row margin-bottom-30">
           <div className="grid-col-auto">
             <h3 className={" margin-bottom-0 margin-top-1"}>
@@ -66,6 +72,7 @@ const PatientFormSection = ({
               }
               value={patient.firstName}
               required={true}
+              useNativeValidation={true}
             ></TextInput>
           </div>
           <div className="grid-col-fill">
@@ -89,6 +96,7 @@ const PatientFormSection = ({
               }
               value={patient.lastName}
               required={true}
+              useNativeValidation={true}
             ></TextInput>
           </div>
         </div>
@@ -108,6 +116,7 @@ const PatientFormSection = ({
                 });
               }}
               required={true}
+              useNativeValidation={true}
             ></TextInput>
           </div>
           <div className="grid-col-mobile grid-col-4">
@@ -201,6 +210,7 @@ const PatientFormSection = ({
                 setPatient({ ...patient, street: e.target.value })
               }
               required={true}
+              useNativeValidation={true}
             ></TextInput>
           </div>
           <div className="grid-col-fill">
@@ -223,6 +233,7 @@ const PatientFormSection = ({
               value={patient.city ?? ""}
               onChange={(e) => setPatient({ ...patient, city: e.target.value })}
               required={true}
+              useNativeValidation={true}
             ></TextInput>
           </div>
           <div className="grid-col-fill">
@@ -302,6 +313,7 @@ const PatientFormSection = ({
                   }
                   pattern={"^d{5}(?:[-s]d{4})?$"}
                   required={true}
+                  useNativeValidation={true}
                 ></TextInput>
               </div>
             </>
