@@ -27,10 +27,14 @@ export async function processMessage({
   const telemetry = getTelemetry();
 
   try {
-    const hl7Message = parseHL7Message(message.messageText);
+    const decodedMessageText = Buffer.from(
+      message.messageText,
+      "base64",
+    ).toString("utf8");
+    const hl7Message = parseHL7Message(decodedMessageText);
 
     // Check message size and log if larger than 64KB which might not be processed
-    const approxBytes = Buffer.byteLength(message.messageText || "", "utf8");
+    const approxBytes = Buffer.byteLength(decodedMessageText || "", "utf8");
     telemetry.trackEvent({
       name: "MessageSizeObserved",
       properties: { bytes: String(approxBytes) },
