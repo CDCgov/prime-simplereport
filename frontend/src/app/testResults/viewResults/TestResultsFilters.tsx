@@ -336,7 +336,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
         </div>
         <div className="usa-form-group date-filter-group">
           <Label htmlFor="start-date">
-            Start date{" "}
+            Start date{/**/}
             <span className={"position-relative top-0125 padding-left-1"}>
               <TextWithTooltip
                 tooltip={"Test results are only stored for 30 days"}
