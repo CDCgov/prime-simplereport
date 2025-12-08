@@ -38,6 +38,7 @@ import {
 } from "../../testQueue/constants";
 import useComponentVisible from "../../commonComponents/ComponentVisible";
 import { useSupportedDiseaseOptionList } from "../../utils/disease";
+import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 
 import { ALL_FACILITIES_ID, DateRangeFilter } from "./TestResultsList";
 import { getTodaysDate } from "./utils";
@@ -81,6 +82,7 @@ interface TestResultsFiltersProps {
   dateRange: DateRangeFilter;
   setDateRange: Dispatch<SetStateAction<DateRangeFilter>>;
 }
+
 const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
   data,
   dateRange,
@@ -333,7 +335,15 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
           />
         </div>
         <div className="usa-form-group date-filter-group">
-          <Label htmlFor="start-date">Date range (start)</Label>
+          <Label htmlFor="start-date">
+            Start date
+            <span className={"position-relative top-0125 padding-left-1"}>
+              <TextWithTooltip
+                tooltip={"Test results are only stored for 30 days"}
+                className={"no-line-break"}
+              />
+            </span>
+          </Label>
           <DateErrorMessage message={startDateError} />
           <input
             id="start-date"
@@ -346,7 +356,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
           />
         </div>
         <div className="usa-form-group date-filter-group">
-          <Label htmlFor="end-date">Date range (end)</Label>
+          <Label htmlFor="end-date">End date</Label>
           <DateErrorMessage message={endDateError} />
           <input
             id="end-date"

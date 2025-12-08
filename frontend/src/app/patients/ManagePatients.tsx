@@ -16,7 +16,6 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { displayFullName } from "../utils";
 import {
   PATIENT_TERM,
-  PATIENT_TERM_CAP,
   PATIENT_TERM_PLURAL,
   PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
@@ -123,6 +122,7 @@ interface Props {
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
 }
+
 const FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER = "focus on search bar on next render";
 type DownloadState = "idle" | "downloading" | "complete";
 const apiClient = new FetchClient();
@@ -527,7 +527,7 @@ export const DetachedManagePatients = ({
             </div>
             <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
               <SearchInput
-                label={PATIENT_TERM_CAP}
+                label={"Search by name"}
                 onInputChange={(e) => {
                   setDebounced(e.target.value);
                 }}
@@ -544,41 +544,66 @@ export const DetachedManagePatients = ({
                 dataCy="manage-patients-search-input"
               />
             </div>
-            <div className="usa-card__body sr-patient-list">
-              <table className="usa-table usa-table--borderless width-full">
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Date of birth</th>
-                    <th scope="col">Role</th>
-                    <th scope="col">Days since last test</th>
-                    <th scope="col">Actions</th>
-                  </tr>
-                </thead>
-                <tbody aria-live="polite">
-                  {data ? (
-                    patientRows(data.patients)
-                  ) : (
-                    <tr>
-                      <td colSpan={5}>Loading...</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
             {data?.patients && data.patients.length > 0 && (
-              <div className="usa-card__footer">
-                {totalEntries && (
-                  <Pagination
-                    baseRoute="/patients"
-                    currentPage={currentPage}
-                    entriesPerPage={entriesPerPage}
-                    totalEntries={totalEntries}
-                  />
-                )}
-              </div>
+              <>
+                <div className="usa-card__body sr-patient-list">
+                  <table className="usa-table usa-table--borderless width-full">
+                    <thead>
+                      <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Date of birth</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Days since last test</th>
+                        <th scope="col">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody aria-live="polite">
+                      {data ? (
+                        patientRows(data.patients)
+                      ) : (
+                        <tr>
+                          <td colSpan={5}>Loading...</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="usa-card__footer">
+                  {totalEntries && (
+                    <Pagination
+                      baseRoute="/patients"
+                      currentPage={currentPage}
+                      entriesPerPage={entriesPerPage}
+                      totalEntries={totalEntries}
+                    />
+                  )}
+                </div>
+              </>
             )}
           </div>
+          {(totalEntries === undefined || totalEntries <= 0) && (
+            <div className={"prime-container margin-top-2"}>
+              <div
+                className={
+                  "display-flex flex-column flex-align-center flex-justify-center"
+                }
+              >
+                <h3 className={"margin-bottom-0"}>No results found</h3>
+                <p>
+                  Please note: patient records are only stored for 30 days due
+                  to our{" "}
+                  <a
+                    href={
+                      "https://www.simplereport.gov/using-simplereport/data-retention-limits/"
+                    }
+                  >
+                    data retention limits
+                  </a>
+                  .
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
