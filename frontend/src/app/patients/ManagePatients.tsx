@@ -599,6 +599,8 @@ export const DetachedManagePatients = ({
                   >
                     data retention limits
                   </a>
+                  {/*
+                   */}
                   .
                 </p>
               </div>
