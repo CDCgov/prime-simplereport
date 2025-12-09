@@ -43,7 +43,10 @@ public class GraphQlInputs {
   }
 
   private Map<String, Object> scrubPiiFromVariables(Map<String, Object> variables) {
-
+    piiJsonVariableNames.forEach(
+        piiJsonVariable -> {
+          variables.replace(piiJsonVariable, "redacted");
+        });
     return variables;
   }
 
@@ -95,5 +98,12 @@ public class GraphQlInputs {
               "dateTested",
               "testOrder",
               "errors",
-              "warnings"));
+              "warnings",
+              "message",
+              "resultValue",
+              "resultDate",
+              "resultInterpretation",
+              "answerList",
+              "result",
+              "testDetailsList"));
 }
