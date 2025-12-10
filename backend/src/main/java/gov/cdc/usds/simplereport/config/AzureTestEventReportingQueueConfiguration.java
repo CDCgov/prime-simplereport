@@ -7,6 +7,7 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
+import com.azure.storage.queue.QueueMessageEncoding;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
@@ -186,6 +187,7 @@ class AzureTestEventReportingQueueConfiguration {
     return new QueueClientBuilder()
         .connectionString(properties.getConnectionString())
         .queueName(properties.getHl7QueueName())
+        .messageEncoding(QueueMessageEncoding.BASE64)
         .buildAsyncClient();
   }
 

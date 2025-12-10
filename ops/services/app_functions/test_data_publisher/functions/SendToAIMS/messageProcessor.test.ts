@@ -63,8 +63,10 @@ describe("messageProcessor", () => {
   const testMessage = {
     messageId: "queue-msg-1",
     popReceipt: "pop-receipt-1",
-    messageText:
+    messageText: Buffer.from(
       "MSH|^~\\&|SimpleReport|Test|AIMS|Prod|20240115103045||ORU^R01|TEST123|T|2.3",
+      "utf8",
+    ).toString("base64"),
   };
 
   const mockHL7Message = {
@@ -90,7 +92,9 @@ describe("messageProcessor", () => {
       operationId: "test-op-id",
     });
 
-    expect(mockParseHL7Message).toHaveBeenCalledWith(testMessage.messageText);
+    expect(mockParseHL7Message).toHaveBeenCalledWith(
+      Buffer.from(testMessage.messageText, "base64").toString("utf8"),
+    );
     expect(mockS3Send).toHaveBeenCalledTimes(1);
     expect(mockQueueClient.deleteMessage).toHaveBeenCalledWith(
       "queue-msg-1",
@@ -115,7 +119,11 @@ describe("messageProcessor", () => {
   it("should track message size and warn for large messages", async () => {
     const largeMessage = {
       ...testMessage,
-      messageText: testMessage.messageText + "A".repeat(70 * 1024),
+      messageText: Buffer.from(
+        Buffer.from(testMessage.messageText, "base64").toString("utf8") +
+          "A".repeat(70 * 1024),
+        "utf8",
+      ).toString("base64"),
     };
 
     await processMessage({
