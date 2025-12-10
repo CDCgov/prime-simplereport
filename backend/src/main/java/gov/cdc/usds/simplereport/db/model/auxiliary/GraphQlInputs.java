@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,11 +44,14 @@ public class GraphQlInputs {
   }
 
   private Map<String, Object> scrubPiiFromVariables(Map<String, Object> variables) {
+    Map<String, Object> variablesWithoutPii = new HashMap<>(variables);
+
     piiJsonVariableNames.forEach(
         piiJsonVariable -> {
-          variables.replace(piiJsonVariable, "redacted");
+          variablesWithoutPii.replace(piiJsonVariable, "redacted");
         });
-    return variables;
+
+    return variablesWithoutPii;
   }
 
   private List<String> piiJsonVariableNames =
