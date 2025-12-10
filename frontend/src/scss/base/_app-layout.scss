@@ -1,58 +1,60 @@
-html,
-body,
-#root,
-.App,
-._loading_overlay_wrapper {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-#main-wrapper,
-.main-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-main {
-  flex: 1;
-}
-
-.usa-breadcrumb {
-  background: transparent;
-}
-
-.prime-edit-patient-heading {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin: 1em 0;
-}
-
-.prime-form-line {
-  display: flex;
-  flex-flow: row wrap;
-
-  > * {
-    margin-right: 2em;
-  }
-}
-
-.usa-form-group {
-  &.sr-width-sm {
-    width: 8em;
+@mixin legacy-app-layout {
+  html,
+  body,
+  #root,
+  .App,
+  ._loading_overlay_wrapper {
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
 
-  &.sr-width-md {
-    width: 10em;
+  #main-wrapper,
+  .main-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
 
-  &.sr-width-lg {
-    width: 20em;
+  main {
+    flex: 1;
   }
 
-  &.sr-width-xl {
-    width: 40em;
+  .usa-breadcrumb {
+    background: transparent;
+  }
+
+  .prime-edit-patient-heading {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 1em 0;
+  }
+
+  .prime-form-line {
+    display: flex;
+    flex-flow: row wrap;
+
+    > * {
+      margin-right: 2em;
+    }
+  }
+
+  .usa-form-group {
+    &.sr-width-sm {
+      width: 8em;
+    }
+
+    &.sr-width-md {
+      width: 10em;
+    }
+
+    &.sr-width-lg {
+      width: 20em;
+    }
+
+    &.sr-width-xl {
+      width: 40em;
+    }
   }
 }

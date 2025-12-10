@@ -104,11 +104,7 @@ export const SelfRegistration = () => {
   return (
     <div className="bg-base-lightest minh-viewport">
       <Page
-        header={
-          <div className="bg-white">
-            <PatientHeader />
-          </div>
-        }
+        header={<PatientHeader />}
         children={
           <div>
             <RegistrationContainer
@@ -152,7 +148,6 @@ export const SelfRegistration = () => {
             </RegistrationContainer>
           </div>
         }
-        isPatientApp={true}
       />
     </div>
   );

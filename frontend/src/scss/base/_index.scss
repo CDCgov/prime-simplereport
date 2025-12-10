@@ -1,4 +1,15 @@
-@forward "app-layout";
 @forward "design-system";
-@forward "prime-styles";
-@forward "utilities";
+
+@use "./app-layout" as layout;
+@use "./prime-styles" as prime;
+@use "./utilities" as utilities;
+
+.sr-legacy-application {
+  @include layout.legacy-app-layout;
+  @include prime.legacy-prime-styles;
+  @include utilities.legacy-utilities;
+}
+
+.sr-pilot-application {
+  // global styles for SR 2.0
+}

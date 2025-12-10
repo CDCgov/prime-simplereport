@@ -15,6 +15,7 @@ import { LinkWithQuery } from "./LinkWithQuery";
 import "./PilotHeader.scss";
 import Button from "./Button/Button";
 import ChangeUser from "./ChangeUser";
+import USAGovBanner from "./USAGovBanner";
 
 const PilotHeader: React.FC<{}> = () => {
   const appInsights = getAppInsights();
@@ -250,63 +251,67 @@ const PilotHeader: React.FC<{}> = () => {
   };
 
   return (
-    <div className="usa-nav-container prime-header">
-      <div className="usa-navbar flex-align-self-center">
-        <div className="usa-logo" id="basic-logo">
-          <LinkWithQuery to={"/pilot/report"} title="Home" aria-label="Home">
-            <img
-              className="width-card desktop:width-full"
-              src={siteLogo}
-              alt={process.env.REACT_APP_TITLE}
-            />
-          </LinkWithQuery>
-        </div>
-        <button
-          onClick={() => setMenuVisible(!menuVisible)}
-          className="usa-menu-btn"
-        >
-          Menu
-        </button>
+    <header className="usa-header usa-header--basic pilot-header">
+      <USAGovBanner />
 
-        <nav
-          aria-label="Primary mobile navigation"
-          className={classNames(
-            "usa-nav",
-            "prime-nav",
-            "desktop:display-none",
-            {
-              "is-visible": menuVisible,
-            },
-            "mobile-nav"
-          )}
-        >
-          <button
-            className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
-            onClick={() => setMenuVisible(false)}
-            title={"close menu"}
-          >
-            <FontAwesomeIcon icon={"window-close"} />
-          </button>
-          {mainNavList("mobile")}
-          <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
-            {secondaryNav("mobile")}
-          </ul>
-          <div className="usa-nav__primary mobile-sublist-container">
-            {secondaryNavSublist("mobile")}
-            <TouchpointsButton />
+      <div className="usa-nav-container prime-header">
+        <div className="usa-navbar flex-align-self-center">
+          <div className="usa-logo" id="basic-logo">
+            <LinkWithQuery to={"/pilot/report"} title="Home" aria-label="Home">
+              <img
+                className="width-card desktop:width-full"
+                src={siteLogo}
+                alt={process.env.REACT_APP_TITLE}
+              />
+            </LinkWithQuery>
           </div>
+          <button
+            onClick={() => setMenuVisible(!menuVisible)}
+            className="usa-menu-btn"
+          >
+            Menu
+          </button>
+
+          <nav
+            aria-label="Primary mobile navigation"
+            className={classNames(
+              "usa-nav",
+              "prime-nav",
+              "desktop:display-none",
+              {
+                "is-visible": menuVisible,
+              },
+              "mobile-nav"
+            )}
+          >
+            <button
+              className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
+              onClick={() => setMenuVisible(false)}
+              title={"close menu"}
+            >
+              <FontAwesomeIcon icon={"window-close"} />
+            </button>
+            {mainNavList("mobile")}
+            <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
+              {secondaryNav("mobile")}
+            </ul>
+            <div className="usa-nav__primary mobile-sublist-container">
+              {secondaryNavSublist("mobile")}
+              <TouchpointsButton />
+            </div>
+          </nav>
+        </div>
+        <nav
+          aria-label="Primary desktop navigation"
+          className="usa-nav prime-nav desktop-nav flex-align-stretch"
+        >
+          {mainNavList("desktop")}
+          <ul className="usa-nav__primary usa-accordion margin-top-0">
+            {secondaryNav("desktop")}
+          </ul>
         </nav>
       </div>
-      <nav
-        aria-label="Primary desktop navigation"
-        className="usa-nav prime-nav desktop-nav flex-align-stretch"
-      >
-        {mainNavList("desktop")}
-        <ul className="usa-nav__primary usa-accordion margin-top-0">
-          {secondaryNav("desktop")}
-        </ul>
-      </nav>
-    </div>
+    </header>
   );
 };
 
