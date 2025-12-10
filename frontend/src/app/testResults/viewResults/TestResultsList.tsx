@@ -258,7 +258,7 @@ const TestResultsList = () => {
               "display-flex flex-column flex-align-center flex-justify-center"
             }
           >
-            <h3 className={"margin-bottom-0"}>No results found</h3>
+            <h2 className={"margin-bottom-0 font-sans-md"}>No results found</h2>
             <p>
               Please note: test results are only stored for 30 days due to our{" "}
               <a
