@@ -47,7 +47,7 @@ public class AuditService {
         new ConsoleApiAuditEvent(
             state.getRequestId(),
             state.getHttpDetails(),
-            state.getGraphqlDetails().getOperationName(),
+            state.getGraphqlDetails(),
             errorPaths,
             user,
             permissions,
