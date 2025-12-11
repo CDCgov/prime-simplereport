@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
@@ -87,6 +88,7 @@ public class ConsoleApiAuditEvent {
         queryDetails.getOperationName(), queryDetails.getQuery(), variablesWithoutPii);
   }
 
+  @JsonIgnore
   private List<String> piiJsonVariableNames =
       new ArrayList<>(
           List.of(
