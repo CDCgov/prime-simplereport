@@ -32,7 +32,8 @@
   },
   "resolutions": {
     "semver": "7.5.2",
-    "undici": "5.26.2"
+    "undici": "5.26.2",
+    "jws": "^3.2.3"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
