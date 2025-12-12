@@ -90,6 +90,8 @@ class AzureTestEventReportingQueueConfiguration {
   @Bean(name = "csvQueueReportingService")
   @ConditionalOnMissingBean(name = "csvQueueReportingService")
   TestEventReportingService noOpCSVReportingService() {
+    // Note: printSerializedTestEvent should always be set to false if using this NoOp service in
+    // prod. This avoids printing any sensitive data.
     return NoOpCovidReportingService.builder().build();
   }
 
@@ -98,6 +100,8 @@ class AzureTestEventReportingQueueConfiguration {
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
   TestEventReportingService noOpFhirReportingService(
       FhirContext context, GitProperties gitProperties, FhirConverter fhirConverter) {
+    // Note: printSerializedTestEvent should always be set to false if using this NoOp service in
+    // prod. This avoids printing any sensitive data.
     return NoOpFHIRReportingService.builder()
         .fhirContext(context)
         .gitProperties(gitProperties)
@@ -110,6 +114,8 @@ class AzureTestEventReportingQueueConfiguration {
   @ConditionalOnMissingBean(name = "hl7QueueReportingService")
   TestEventReportingService noOpHL7ReportingService(
       HapiContext hapiContext, GitProperties gitProperties, HL7Converter hl7Converter) {
+    // Note: printSerializedTestEvent should always be set to false if using this NoOp service in
+    // prod. This avoids printing any sensitive data.
     return NoOpHL7ReportingService.builder()
         .hapiContext(hapiContext)
         .gitProperties(gitProperties)
@@ -188,6 +194,7 @@ class AzureTestEventReportingQueueConfiguration {
   @Builder
   static class NoOpCovidReportingService implements TestEventReportingService {
 
+    // Do not set to true when using the PROD profile to avoid logging sensitive data
     @Builder.Default private boolean printSerializedTestEvent = false;
 
     @Override
@@ -216,6 +223,7 @@ class AzureTestEventReportingQueueConfiguration {
   @Builder
   static class NoOpFHIRReportingService implements TestEventReportingService {
 
+    // Do not set to true when using the PROD profile to avoid logging sensitive data
     @Builder.Default private boolean printSerializedTestEvent = false;
 
     private FhirContext fhirContext;
@@ -244,6 +252,7 @@ class AzureTestEventReportingQueueConfiguration {
   @Builder
   static class NoOpHL7ReportingService implements TestEventReportingService {
 
+    // Do not set to true when using the PROD profile to avoid logging sensitive data
     @Builder.Default private boolean printSerializedTestEvent = false;
 
     private HapiContext hapiContext;
