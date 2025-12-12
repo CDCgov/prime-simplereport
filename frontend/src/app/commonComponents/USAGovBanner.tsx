@@ -25,7 +25,7 @@ const AccordionContent = () => {
             aria-hidden="true"
           />
           <div className="usa-media-block__body">
-            <p>
+            <p className="text-white">
               <strong>{t("banner.dotGov")}</strong>
               <br />
               {t("banner.dotGovHelper")}
@@ -41,7 +41,7 @@ const AccordionContent = () => {
             aria-hidden="true"
           />
           <div className="usa-media-block__body">
-            <p>
+            <p className="text-white">
               <strong>{t("banner.secure")}</strong>
               <br />
               <Trans

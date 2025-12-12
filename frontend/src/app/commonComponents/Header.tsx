@@ -19,6 +19,7 @@ import "./Header.scss";
 import Button from "./Button/Button";
 import ChangeUser from "./ChangeUser";
 import Dropdown from "./Dropdown";
+import USAGovBanner from "./USAGovBanner";
 
 const Header: React.FC<{}> = () => {
   const appInsights = getAppInsights();
@@ -312,6 +313,8 @@ const Header: React.FC<{}> = () => {
 
   return (
     <header className="usa-header usa-header--basic">
+      <USAGovBanner />
+
       <div className="usa-nav-container prime-header">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">

@@ -254,7 +254,7 @@ const PilotHeader: React.FC<{}> = () => {
     <header className="usa-header usa-header--basic pilot-header">
       <USAGovBanner />
 
-      <div className="usa-nav-container prime-header">
+      <div className="usa-nav-container">
         <div className="usa-navbar flex-align-self-center">
           <div className="usa-logo" id="basic-logo">
             <LinkWithQuery to={"/pilot/report"} title="Home" aria-label="Home">

@@ -1,14 +1,40 @@
+@use "../../scss/settings" as *;
+
 .pilot-header {
+  .usa-nav-container {
+    max-width: 1200px;
+
+    .prime-nav-link {
+      position: relative;
+      display: inline-block;
+    }
+  }
+
   .usa-logo {
-    margin-bottom: 0 !important;
+    margin-top: 0;
+    margin-bottom: 0;
   }
 
   .usa-navbar {
     border-bottom: none !important;
+
+    @include at-media("desktop") {
+      width: 13rem !important;
+    }
   }
 
   .usa-menu-btn {
     background-color: #162e51;
+  }
+
+  @include at-media("desktop") {
+    .usa-nav__primary .nav__primary-item-icon > a {
+      padding: 18.5px 1.25rem;
+    }
+
+    .usa-header--basic .usa-nav [data-prefix=fas] {
+      font-size: 2rem;
+    }
   }
 
   .desktop-nav {
@@ -31,5 +57,66 @@
       color: white !important;
       font-size: 1.125rem;
     }
+  }
+
+  .is-prime-staff-infobox-visible {
+    visibility: visible;
+    z-index: 11;
+  }
+
+  .prime-staff-infobox {
+    background-color: #fff;
+    border: 1px solid #dfe1e2;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.161);
+    padding: 1rem;
+    position: absolute;
+    visibility: hidden;
+    width: 13rem;
+    z-index: 10;
+  }
+
+  .prime-staff-infobox li:first-of-type {
+    margin-top: 0;
+  }
+
+  .prime-staff-infobox li {
+    border-top-color: #0000;
+    margin-top: 0.5rem;
+  }
+
+  .span-full-name {
+    font-weight: bolder;
+  }
+
+  .usa-nav-container .role-tag {
+    border-bottom: 1px solid #dfe1e2;
+    color: #71767a;
+    margin-top: 0.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .usa-nav-container .sparkle-icon-mask {
+    background-color: #005ea2;
+    mask: url("../../img/font-awesome-pro-icons/sparkles.svg") no-repeat center;
+  }
+
+  .usa-nav-container .navlink__support {
+    align-items: center;
+    display: flex;
+    margin-top: 0.75rem;
+  }
+
+  .usa-nav-container .navlink__support a {
+    color: #005ea2 !important;
+    font-weight: 500;
+    padding: 0 !important;
+  }
+
+  .usa-nav-container .header-link-icon {
+    color: #005ea2;
+    height: 16px;
+    margin-right: 0.5rem;
+    width: 16px;
   }
 }
