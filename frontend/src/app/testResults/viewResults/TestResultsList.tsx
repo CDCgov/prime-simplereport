@@ -64,6 +64,7 @@ const dateRangeInitialState = {
   startDateError: undefined,
   endDateError: undefined,
 };
+
 export interface ResultsQueryVariables {
   patientId?: string | null;
   facilityId: string | null;
@@ -220,30 +221,60 @@ const TestResultsList = () => {
             setDateRange={setDateRangeFilter}
             activeFacilityId={activeFacilityId}
           />
-          <table
-            className="usa-table usa-table--borderless width-full"
-            aria-hidden="true"
-          >
-            <thead>{generateTableHeaders(displayFacilityColumn)}</thead>
-          </table>
-        </div>
-        <ResultsTable
-          results={testResults as Result[]}
-          hasFacility={displayFacilityColumn}
-        />
-        <div className="usa-card__footer">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <Pagination
-              baseRoute="/results"
-              currentPage={pageNumber}
-              entriesPerPage={entriesPerPage}
-              totalEntries={totalEntries}
-            />
+          {totalEntries > 0 && (
+            <table
+              className="usa-table usa-table--borderless width-full"
+              aria-hidden="true"
+            >
+              <thead>{generateTableHeaders(displayFacilityColumn)}</thead>
+            </table>
           )}
         </div>
+        {totalEntries > 0 && (
+          <>
+            <ResultsTable
+              results={testResults as Result[]}
+              hasFacility={displayFacilityColumn}
+            />
+            <div className="usa-card__footer">
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <Pagination
+                  baseRoute="/results"
+                  currentPage={pageNumber}
+                  entriesPerPage={entriesPerPage}
+                  totalEntries={totalEntries}
+                />
+              )}
+            </div>
+          </>
+        )}
       </div>
+      {totalEntries <= 0 && !loading && (
+        <div className={"prime-container margin-top-2"}>
+          <div
+            className={
+              "display-flex flex-column flex-align-center flex-justify-center"
+            }
+          >
+            <h2 className={"margin-bottom-0 font-sans-md"}>No results found</h2>
+            <p>
+              Please note: test results are only stored for 30 days due to our{" "}
+              <a
+                href={
+                  "https://www.simplereport.gov/using-simplereport/data-retention-limits/"
+                }
+              >
+                data retention limits
+              </a>
+              {/*
+               */}
+              .
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

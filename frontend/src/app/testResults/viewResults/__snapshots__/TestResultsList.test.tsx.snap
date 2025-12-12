@@ -133,7 +133,53 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 data-testid="label"
                 for="start-date"
               >
-                Date range (start)
+                Start date
+                <span
+                  class="position-relative top-0125 padding-left-1"
+                >
+                  <span
+                    class="usa-tooltip usa-text-with-tooltip"
+                    data-testid="tooltipWrapper"
+                  >
+                    <button
+                      aria-describedby="tooltip-1000000"
+                      aria-label=""
+                      class="usa-button usa-button--unstyled usa-tooltip__trigger no-line-break"
+                      data-testid="triggerElement"
+                      position="top"
+                      tabindex="0"
+                      title=""
+                      wrapperclasses="usa-text-with-tooltip"
+                    >
+                      <svg
+                        alt-text="info"
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-circle-info info-circle-icon"
+                        data-icon="circle-info"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                    <span
+                      aria-hidden="true"
+                      class="usa-tooltip__body"
+                      data-testid="tooltipBody"
+                      id="tooltip-1000000"
+                      role="tooltip"
+                      title="Test results are only stored for 30 days"
+                    >
+                      Test results are only stored for 30 days
+                    </span>
+                  </span>
+                </span>
               </label>
               <input
                 class="usa-input"
@@ -152,7 +198,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 data-testid="label"
                 for="end-date"
               >
-                Date range (end)
+                End date
               </label>
               <input
                 class="usa-input"
