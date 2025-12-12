@@ -64,7 +64,7 @@ jobs:
           path: backend/build/**
           key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive failed test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: backend-test-report
@@ -116,7 +116,7 @@ jobs:
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
           key: ${{ runner.os }}-rs-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive function coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: rs-function-coverage
           path: ops/services/app_functions/report_stream_batched_publisher/functions/coverage
@@ -141,7 +141,7 @@ jobs:
             ops/services/app_functions/test_data_publisher/functions/coverage/**
           key: ${{ runner.os }}-data-publisher-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Archive function coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: data-publisher-function-coverage
           path: ops/services/app_functions/test_data_publisher/functions/coverage
