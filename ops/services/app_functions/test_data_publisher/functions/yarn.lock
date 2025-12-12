@@ -698,6 +698,11 @@
     fast-xml-parser "^5.0.7"
     tslib "^2.8.1"
 
+"@azure/functions-extensions-base@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@azure/functions-extensions-base/-/functions-extensions-base-0.2.0.tgz#33bf691ba6da4259a28343992825c3af3c0ed06e"
+  integrity sha512-ncCkHBNQYJa93dBIh+toH0v1iSgCzSo9tr94s6SMBe7DPWREkaWh8cq33A5P4rPSFX1g5W+3SPvIzDr/6/VOWQ==
+
 "@azure/functions-old@npm:@azure/functions@3.5.1":
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-3.5.1.tgz#98ac5c18f84835fd5821de404c52abbd458871f6"
@@ -707,14 +712,15 @@
     long "^4.0.0"
     uuid "^8.3.0"
 
-"@azure/functions@^4.6.0", "@azure/functions@^4.7.2":
-  version "4.7.3"
-  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.7.3.tgz#f54fe543e099d38058bc1c7d553cb8246f95aead"
-  integrity sha512-NwizjL8qcujVq+Yl3iL6TvtEC9v4CWZgipd0UPa5PvM2a5Uiqd1Uk8wGCYPhfskGy+1YpBLyQje1SRdlLzB6Jw==
+"@azure/functions@^4.10.0", "@azure/functions@^4.6.0":
+  version "4.10.0"
+  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.10.0.tgz#6c753ec4471246c14ec0575e0d023e00d81bf0a5"
+  integrity sha512-hJ58IrZ4vyzcD/2FXTAoBr9iJO1gtb7jUbdU0lCOYOIeQNezVjNXaqLjECuP0GMGVq12RsqZoDfTRNo8xqcLYg==
   dependencies:
+    "@azure/functions-extensions-base" "0.2.0"
     cookie "^0.7.0"
     long "^4.0.0"
-    undici "^7.10.0"
+    undici "^5.29.0"
 
 "@azure/identity@^4.6.0":
   version "4.11.1"
@@ -1255,6 +1261,11 @@
   version "8.57.1"
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.1.tgz#de633db3ec2ef6a3c89e2f19038063e8a122e2c2"
   integrity sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==
+
+"@fastify/busboy@^2.0.0":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.1.1.tgz#b9da6a878a371829a0502c9b6c1c143ef6663f4d"
+  integrity sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==
 
 "@grpc/grpc-js@^1.7.1":
   version "1.13.4"
@@ -5761,10 +5772,12 @@ undici-types@~7.10.0:
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.10.0.tgz#4ac2e058ce56b462b056e629cc6a02393d3ff350"
   integrity sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag==
 
-undici@^7.10.0:
-  version "7.13.0"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-7.13.0.tgz#9331f99fc42970dcbdf54199e6604755ba54433a"
-  integrity sha512-l+zSMssRqrzDcb3fjMkjjLGmuiiK2pMIcV++mJaAc9vhjSGpvM7h43QgP+OAMb1GImHmbPyG2tBXeuyG5iY4gA==
+undici@^5.29.0:
+  version "5.29.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-5.29.0.tgz#419595449ae3f2cdcba3580a2e8903399bd1f5a3"
+  integrity sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==
+  dependencies:
+    "@fastify/busboy" "^2.0.0"
 
 universalify@^0.2.0:
   version "0.2.0"
