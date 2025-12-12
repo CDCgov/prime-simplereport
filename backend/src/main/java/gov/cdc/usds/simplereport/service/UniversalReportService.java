@@ -58,7 +58,8 @@ public class UniversalReportService {
               gitProperties,
               aimsProcessingModeCode,
               String.valueOf(UUID.randomUUID()),
-              TestCorrectionStatus.ORIGINAL);
+              TestCorrectionStatus.ORIGINAL,
+              false);
       return parser.encode(message);
     } catch (HL7Exception e) {
       log.error("Encountered an error converting the form data to HL7");

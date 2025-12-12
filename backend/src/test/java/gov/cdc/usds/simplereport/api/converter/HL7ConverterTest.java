@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
@@ -245,7 +247,8 @@ class HL7ConverterTest {
                   gitProperties,
                   "T",
                   uuidGenerator.randomUUID().toString(),
-                  TestCorrectionStatus.ORIGINAL);
+                  TestCorrectionStatus.ORIGINAL,
+                  true);
 
           Parser parser = hapiContext.getPipeParser();
           parser.encode(message);
@@ -272,7 +275,8 @@ class HL7ConverterTest {
             gitProperties,
             "T",
             uuidGenerator.randomUUID().toString(),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            true);
 
     EI commonOrderFillerOrderNumber =
         message.getPATIENT_RESULT().getORDER_OBSERVATION().getORC().getOrc3_FillerOrderNumber();
@@ -834,7 +838,7 @@ class HL7ConverterTest {
             "87949-4",
             "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
             ResultScaleType.ORDINAL,
-            "260373001",
+            DETECTED_SNOMED,
             Date.from(testResultDate),
             "");
 
@@ -844,7 +848,8 @@ class HL7ConverterTest {
         performingFacility,
         Date.from(specimenCollectionDate),
         testDetail,
-        TestCorrectionStatus.ORIGINAL);
+        TestCorrectionStatus.ORIGINAL,
+        false);
 
     assertThat(observationResult.getObx3_ObservationIdentifier().getCe1_Identifier().getValue())
         .isEqualTo(testDetail.getTestOrderLoinc());
@@ -862,6 +867,68 @@ class HL7ConverterTest {
 
     assertThat(observationResult.getObx19_DateTimeOfTheAnalysis().getTs1_Time().getValue())
         .isEqualTo(expectedTestResultDate);
+  }
+
+  @Test
+  void populateObservationResult_legacyReport_abnormalFlagFor_positiveResults()
+      throws DataTypeException {
+    OBX observationResult =
+        new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getOBSERVATION().getOBX();
+
+    FacilityReportInput performingFacility = TestDataBuilder.createFacilityReportInput();
+    TestDetailsInput testDetail =
+        new TestDetailsInput(
+            "105629000",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            ResultScaleType.ORDINAL,
+            DETECTED_SNOMED,
+            new Date(),
+            "");
+
+    hl7Converter.populateObservationResult(
+        observationResult,
+        1,
+        performingFacility,
+        new Date(),
+        testDetail,
+        TestCorrectionStatus.ORIGINAL,
+        true);
+
+    assertThat(observationResult.getObx8_AbnormalFlags(0).getValue()).isEqualTo("A");
+  }
+
+  @Test
+  void populateObservationResult_legacyReport_normalFlagFor_nonPositiveResults()
+      throws DataTypeException {
+    OBX observationResult =
+        new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getOBSERVATION().getOBX();
+
+    FacilityReportInput performingFacility = TestDataBuilder.createFacilityReportInput();
+    TestDetailsInput testDetail =
+        new TestDetailsInput(
+            "105629000",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            ResultScaleType.ORDINAL,
+            NOT_DETECTED_SNOMED,
+            new Date(),
+            "");
+
+    hl7Converter.populateObservationResult(
+        observationResult,
+        1,
+        performingFacility,
+        new Date(),
+        testDetail,
+        TestCorrectionStatus.ORIGINAL,
+        true);
+
+    assertThat(observationResult.getObx8_AbnormalFlags(0).getValue()).isEqualTo("N");
   }
 
   @Test
@@ -892,7 +959,8 @@ class HL7ConverterTest {
                     performingFacility,
                     Date.from(STATIC_INSTANT),
                     testDetail,
-                    TestCorrectionStatus.ORIGINAL));
+                    TestCorrectionStatus.ORIGINAL,
+                    true));
     assertThat(exception.getMessage())
         .isEqualTo("Non-ordinal result types are not currently supported");
   }
