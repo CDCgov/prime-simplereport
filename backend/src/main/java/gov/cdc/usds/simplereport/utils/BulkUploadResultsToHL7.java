@@ -163,7 +163,8 @@ public class BulkUploadResultsToHL7 {
             gitProperties,
             aimsProcessingModeCode,
             testId,
-            testStatus);
+            testStatus,
+            true);
 
     return parser.encode(labReportMessage);
   }
