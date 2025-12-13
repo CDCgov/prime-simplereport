@@ -130,7 +130,9 @@ const routes = createRoutesFromElements(
       path="/pxp/*"
       element={
         <MaintenanceBannerWrapper>
-          <PatientApp />
+          <LegacyApplication>
+            <PatientApp />
+          </LegacyApplication>
         </MaintenanceBannerWrapper>
       }
     />
@@ -139,7 +141,9 @@ const routes = createRoutesFromElements(
       path="/sign-up/*"
       element={
         <MaintenanceBannerWrapper>
-          <SignUpApp />
+          <LegacyApplication>
+            <SignUpApp />
+          </LegacyApplication>
         </MaintenanceBannerWrapper>
       }
     />
@@ -155,7 +159,9 @@ const routes = createRoutesFromElements(
       path="/register/:registrationLink"
       element={
         <MaintenanceBannerWrapper>
-          <SelfRegistration />
+          <LegacyApplication>
+            <SelfRegistration />
+          </LegacyApplication>
         </MaintenanceBannerWrapper>
       }
     />
@@ -165,7 +171,9 @@ const routes = createRoutesFromElements(
       path="/*"
       element={
         <MaintenanceBannerWrapper>
-          <ReportingApp />{" "}
+          <LegacyApplication>
+            <ReportingApp />{" "}
+          </LegacyApplication>
         </MaintenanceBannerWrapper>
       }
     />
@@ -196,4 +204,8 @@ function AppRouterShell() {
       </PrimeErrorBoundary>
     </TelemetryProvider>
   );
+}
+
+function LegacyApplication({ children }: { children: React.ReactNode }) {
+  return <div className="sr-legacy-application">{children}</div>;
 }

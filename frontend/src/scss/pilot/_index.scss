@@ -1,0 +1,5 @@
+@use "./design-system" as ds;
+
+.sr-pilot-application {
+  @include ds.design-system;
+}

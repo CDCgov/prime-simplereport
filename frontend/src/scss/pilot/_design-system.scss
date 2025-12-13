@@ -1,0 +1,340 @@
+@use "@uswds/uswds/packages/uswds-core" as *;
+@use "./uswds-tokens" as *;
+
+// Styles adapted from https://github.com/CDCgov/dibbs-design-system/blob/main/sass/design_system.scss
+
+@mixin design-system {
+  html,
+  body {
+    height: 100%;
+  }
+
+  html {
+    scroll-behavior: auto;
+    box-sizing: border-box;
+  }
+
+  body {
+    @include u-font("sans", 5);
+    line-height: 1.4;
+    background-color: $background;
+  }
+
+  .main-body {
+    background-color: $background;
+    display: flex;
+    flex: 1 1 auto;
+  }
+
+  .application-container {
+    display: flex;
+    flex-flow: column;
+    min-height: 100%;
+  }
+
+  .usa-footer {
+    padding: 1rem 5rem;
+    margin: 0;
+    background-color: color("primary-darker");
+  }
+
+  h1,
+  .usa-prose > h1 {
+    @include u-font("serif", 12);
+  }
+
+  h2,
+  .usa-prose > h2 {
+    @include u-font("sans", 11);
+  }
+
+  h3,
+  .usa-prose > h3 {
+    @include u-font("sans", 8);
+  }
+
+  h4,
+  .usa-prose > h4,
+  h5,
+  .usa-prose > h5 {
+    @include u-font("sans", 5);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  p {
+    color: color($theme-text-color);
+  }
+
+  .usa-button--unstyled,
+  a,
+  a:visited {
+    box-shadow: none;
+    color: color($theme-link-color);
+    background-color: transparent;
+    text-decoration: none;
+    font-weight: bold;
+  }
+
+  .usa-button--unstyled:hover,
+  a:hover {
+    box-shadow: none;
+    color: color($theme-link-hover-color);
+    background-color: transparent;
+    text-decoration: none;
+  }
+
+  .usa-button--unstyled:active,
+  a:active {
+    box-shadow: none;
+    color: color($theme-link-active-color);
+    background-color: transparent;
+    text-decoration: none;
+  }
+
+  .usa-button {
+    &:not(
+    .usa-button--unstyled,
+    .usa-button--secondary,
+    .usa-button--accent-cool,
+    .usa-button--accent-warm,
+    .usa-button--outline,
+    .usa-button--inverse) {
+      // Primary Button Styles
+      color: color("white");
+      background-color: color($theme-color-secondary);
+
+      &:hover {
+        background-color: color($theme-color-secondary-dark);
+      }
+
+      &:active {
+        background-color: color($theme-color-secondary-darker);
+      }
+
+      &:disabled,
+      &:disabled:hover {
+        background-color: color($theme-color-disabled-light);
+        color: color($theme-color-disabled-dark);
+      }
+    }
+
+    &--secondary {
+      background-color: color("white");
+      color: color($theme-color-secondary);
+      box-shadow: inset 0 0 0 2px color($theme-color-secondary);
+    }
+
+    &--secondary:hover {
+      background-color: color("white");
+      color: color($theme-color-secondary-dark);
+      box-shadow: inset 0 0 0 2px color($theme-color-secondary-dark);
+    }
+
+    &--secondary:active {
+      background-color: color("white");
+      color: color($theme-color-secondary-darker);
+      box-shadow: inset 0 0 0 2px color($theme-color-secondary-darker);
+    }
+
+    &--secondary:disabled,
+    &--secondary:disabled:hover {
+      background-color: color("white");
+      color: color($theme-color-disabled-dark);
+      box-shadow: inset 0 0 0 2px color($theme-color-disabled-light);
+    }
+
+    &--outline {
+      color: color($theme-link-color);
+      box-shadow: inset 0 0 0 2px color($theme-link-color);
+    }
+
+    &--outline:hover {
+      color: color($theme-color-primary);
+      box-shadow: inset 0 0 0 2px color($theme-color-primary);
+    }
+
+    &--outline:active {
+      color: color($theme-color-primary-dark);
+      box-shadow: inset 0 0 0 2px color($theme-color-primary-dark);
+    }
+  }
+
+  .usa-alert--success {
+    outline: 3px solid color($theme-color-success);
+
+    .usa-alert__body::before {
+      background-color: color($theme-color-success-dark);
+    }
+  }
+
+  .usa-alert--info {
+    .usa-alert__body::before {
+      background-color: color($theme-color-info-dark);
+    }
+  }
+
+  .usa-alert--warning {
+    .usa-alert__body::before {
+      background-color: color($theme-color-warning-dark);
+    }
+  }
+
+  .usa-alert--error {
+    .usa-alert__body::before {
+      background-color: color($theme-color-error-dark);
+    }
+  }
+
+  .usa-step-indicator__segment::before {
+    box-shadow:
+      0 0 0 0.25rem white,
+      0 0 0 0 white !important;
+  }
+
+  .usa-step-indicator__segment-label,
+  .usa-step-indicator__segment::before {
+    color: $text-inactive-dark;
+  }
+
+  .usa-step-indicator__segment--current .usa-step-indicator__segment-label {
+    color: $brand-primary;
+  }
+
+  .usa-step-indicator__segment--current::before,
+  .usa-step-indicator__segment--current::after {
+    background-color: $brand-primary;
+    color: $brand-primary;
+    box-shadow:
+      0 0 0 0.25rem white,
+      0 0 0 0 white !important;
+  }
+
+  .usa-modal__close {
+    background-color: white;
+
+    &:active,
+    &:hover {
+      background-color: white;
+    }
+  }
+
+  .usa-accordion {
+    border-radius: 4px;
+    padding: 0;
+  }
+
+  .usa-step-indicator__segment-label {
+    padding-right: 0;
+  }
+
+  .usa-sidenav__item a:not(.usa-sidenav__sublist a) {
+    font-weight: bold;
+  }
+
+  .usa-step-indicator__current-step {
+    background-color: $brand-primary;
+    margin-right: 0.5rem;
+    padding: 0;
+    height: 2.75rem;
+    width: 2.75rem;
+  }
+
+  .usa-step-indicator__total-steps {
+    color: $brand-primary;
+  }
+
+  .usa-step-indicator__total-steps,
+  .usa-step-indicator__current-step {
+    font-size: 2rem;
+  }
+
+  .usa-pagination .usa-current {
+    background-color: white;
+    border-radius: 0.25rem;
+    border: 1px solid $border-dark !important;
+    color: $accent-dark !important;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 140%;
+    margin: 0;
+    text-decoration: underline;
+  }
+
+  .usa-pagination__button:hover,
+  .usa-pagination__button:focus,
+  .usa-pagination__button:active,
+  .usa-pagination__link:hover,
+  .usa-pagination__link:focus,
+  .usa-pagination__link:active {
+    color: $accent-darker !important;
+  }
+
+  .usa-pagination__page-no > .usa-pagination__button {
+    &:hover,
+    &:focus,
+    &:active {
+      border: 1px solid $border;
+      background-color: $hover-neutral;
+    }
+  }
+
+  .usa-pagination__button,
+  .usa-pagination__link {
+    color: $accent-primary;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 140%;
+    margin: 0;
+    text-decoration: none;
+  }
+
+  .usa-pagination__overflow {
+    align-self: center;
+  }
+
+  .usa-alert__heading {
+    &.h1 {
+      font-size: 2.125rem;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    &.h2 {
+      font-size: 1.875rem;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    &.h3 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    &.h4 {
+      font-size: 1.25rem;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+    &.h5 {
+      font-size: 1.125rem;
+      font-weight: bold;
+      line-height: 1.2;
+    }
+
+    &.h6 {
+      font-size: 1rem;
+      font-weight: bold;
+      line-height: 1.2;
+    }
+  }
+
+  .usa-alert__text {
+    font-size: 0.875rem;
+  }
+}

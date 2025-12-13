@@ -114,13 +114,12 @@ const PilotApp = () => {
   }
 
   return (
-    <>
+    <div className="sr-pilot-application">
       <VersionEnforcer />
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}
       <Page
-        isPilotApp={true}
         header={<PilotHeader />}
         children={
           <Routes>
@@ -147,7 +146,7 @@ const PilotApp = () => {
           </Routes>
         }
       />
-    </>
+    </div>
   );
 };
 

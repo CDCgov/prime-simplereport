@@ -57,7 +57,7 @@ function FBAform(d) {
     },
     loadCss: function () {
       const urlPrefix = String(window.location.href).includes("localhost")
-        ? ""
+        ? "/"
         : "/app/static/";
       let link = document.createElement("link");
       link.rel = "stylesheet";
