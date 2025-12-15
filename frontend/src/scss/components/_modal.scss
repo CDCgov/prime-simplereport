@@ -1,0 +1,268 @@
+@use "@uswds/uswds/packages/uswds-core" as *;
+
+// the background behind the modal
+.prime-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.modal--basic {
+  .ReactModal__Content {
+    max-height: 90vh;
+    width: 700px;
+
+    .usa-button--unstyled {
+      box-shadow: none;
+      color: #005ea2;
+      background-color: transparent;
+      text-decoration: underline;
+    }
+
+    .usa-button--unstyled:hover {
+      box-shadow: none;
+      color: #1a4480;
+      background-color: transparent;
+      text-decoration: underline;
+    }
+
+    .usa-button--unstyled:active {
+      box-shadow: none;
+      color: #162e51;
+      background-color: transparent;
+      text-decoration: underline;
+    }
+
+    .usa-button {
+      &:not(
+      .usa-button--unstyled,
+      .usa-button--secondary,
+      .usa-button--accent-cool,
+      .usa-button--accent-warm,
+      .usa-button--outline,
+      .usa-button--inverse) {
+        // Primary Button Styles
+        color: color("white");
+        background-color: #005ea2;
+
+        &:hover {
+          background-color: #1a4480;
+        }
+
+        &:active {
+          background-color: #162e51;
+        }
+
+        &:disabled,
+        &:disabled:hover {
+          background-color: #c9c9c9;
+          color: #454545;
+        }
+      }
+
+      &--outline {
+        color: #005ea2;
+        box-shadow: inset 0 0 0 2px #005ea2;
+      }
+
+      &--outline:hover {
+        color: #1a4480;
+        box-shadow: inset 0 0 0 2px #1a4480;
+      }
+
+      &--outline:active {
+        color: #162e51;
+        box-shadow: inset 0 0 0 2px #162e51;
+      }
+    }
+
+    @media (max-width: 48rem) {
+      width: units("mobile-lg");
+    }
+  }
+
+  .modal__container {
+    position: relative;
+  }
+
+  .modal__close-button {
+    position: absolute;
+    right: 0;
+  }
+
+  .modal__heading {
+    margin-right: units(3);
+  }
+
+  .modal__variant {
+    h3 {
+      margin: 0.3125rem 0 0 0;
+      font-size: 1.375rem;
+      line-height: 1.62rem;
+    }
+
+    .modal__content {
+      padding: 2rem 1.875rem;
+
+      p {
+        margin: 0.75rem 0 0 0;
+      }
+    }
+
+    .modal__footer {
+      display: flex;
+      justify-content: flex-start;
+      margin: 1.5rem 0 0 0;
+    }
+  }
+
+  .modal__footer {
+    display: flex;
+    justify-content: flex-end;
+
+    > *:not(:first-child) {
+      margin-left: units(2);
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.modal__close-button {
+  @include button-unstyled;
+  @include u-square($size-touch-target);
+
+  display: block;
+  margin-bottom: 0;
+  margin-right: 0;
+  margin-top: 0;
+  text-align: center;
+}
+
+.modal__close-img {
+  width: units(4);
+}
+
+.ReactModal__Content {
+  max-height: 90vh;
+  width: 700px;
+
+  .patient-header {
+    justify-content: space-between;
+  }
+
+  .usa-button--unstyled {
+    box-shadow: none;
+    color: #005ea2;
+    background-color: transparent;
+    text-decoration: underline;
+  }
+
+  .usa-button--unstyled:hover {
+    box-shadow: none;
+    color: #1a4480;
+    background-color: transparent;
+    text-decoration: underline;
+  }
+
+  .usa-button--unstyled:active {
+    box-shadow: none;
+    color: #162e51;
+    background-color: transparent;
+    text-decoration: underline;
+  }
+
+  .usa-button {
+    &:not(
+    .usa-button--unstyled,
+    .usa-button--secondary,
+    .usa-button--accent-cool,
+    .usa-button--accent-warm,
+    .usa-button--outline,
+    .usa-button--inverse) {
+      // Primary Button Styles
+      color: color("white");
+      background-color: #005ea2;
+
+      &:hover {
+        background-color: #1a4480;
+      }
+
+      &:active {
+        background-color: #162e51;
+      }
+
+      &:disabled,
+      &:disabled:hover {
+        background-color: #c9c9c9;
+        color: #454545;
+      }
+    }
+
+    &--outline {
+      color: #005ea2;
+      box-shadow: inset 0 0 0 2px #005ea2;
+    }
+
+    &--outline:hover {
+      color: #1a4480;
+      box-shadow: inset 0 0 0 2px #1a4480;
+    }
+
+    &--outline:active {
+      color: #162e51;
+      box-shadow: inset 0 0 0 2px #162e51;
+    }
+  }
+
+  @media (max-width: 48rem) {
+    width: units("mobile-lg");
+  }
+}
+
+.modal__footer--sticky {
+  z-index: 1;
+  position: sticky;
+  width: calc(100% + 40px);
+  bottom: 0;
+  padding: units(2) units(2.5);
+  box-shadow: 0 units(-0.5) units(1) 0 rgba(0, 0, 0, 0.1);
+  background: color("white");
+  transform: translateX(-20px) translateY(20px);
+
+  @include at-media("tablet") {
+    transform: translateX(-20px);
+  }
+}
+
+.aoe-modal__submit-container {
+  z-index: 1;
+  position: absolute;
+  width: 100%;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: units(2) units(2.5);
+  background: color("white");
+
+  @include at-media("tablet") {
+    box-shadow: unset;
+    margin: 0 units(-2.5);
+    position: unset;
+    width: unset;
+  }
+}
+
+.aoe-modal__qr-container {
+  padding-bottom: units(10);
+
+  @include at-media("tablet") {
+    padding-bottom: unset;
+  }
+}

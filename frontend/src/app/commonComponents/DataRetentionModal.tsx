@@ -62,7 +62,7 @@ const DataRetentionModal = ({ isOpen, onClose }: DataRetentionModalProps) => {
       isOpen={isOpen}
       shouldCloseOnOverlayClick={false}
       shouldCloseOnEsc={false}
-      className="sr-data-retention-modal-content"
+      className="sr-data-retention-modal-content sr-legacy-application"
       overlayClassName="sr-data-retention-modal-overlay"
       contentLabel="Data retention notification"
       aria-labelledby="data-retention-title"

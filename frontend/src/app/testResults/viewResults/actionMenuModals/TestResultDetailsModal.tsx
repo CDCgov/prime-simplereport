@@ -115,7 +115,7 @@ export const DetachedTestResultDetailsModal = ({
   return (
     <>
       <div className="display-flex flex-justify flex-align-center">
-        <h1 id="result-detail-title" className="font-heading-lg margin-0">
+        <h1 id="result-detail-title" className="font-sans-lg margin-0">
           Result details
         </h1>
         <button
