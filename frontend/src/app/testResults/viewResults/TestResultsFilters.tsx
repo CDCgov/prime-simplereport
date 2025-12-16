@@ -413,6 +413,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
             options={facilityOptions}
             onChange={setFilterParams("filterFacilityId")}
             selectClassName={"usa-select-narrow"}
+            className={"width-card padding-right-2"}
           />
         ) : null}
       </div>

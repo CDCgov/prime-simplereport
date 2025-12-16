@@ -84,7 +84,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
             class="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2"
           >
             <div
-              class="person-search"
+              class="person-search padding-right-0"
             >
               <div
                 class="prime-search-container usa-form-group search-input_without_submit_button"
@@ -348,7 +348,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
               </select>
             </div>
             <div
-              class="usa-form-group prime-dropdown "
+              class="usa-form-group prime-dropdown  width-card padding-right-2"
             >
               <label
                 class="usa-label"
