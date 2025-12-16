@@ -314,7 +314,7 @@ const TestResultsFilters: React.FC<TestResultsFiltersProps> = ({
       role="search"
     >
       <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
-        <div className="person-search">
+        <div className="person-search padding-right-0">
           <SearchInput
             onSearchClick={(e) => e.preventDefault()}
             onInputChange={handlePatientInputChange}
