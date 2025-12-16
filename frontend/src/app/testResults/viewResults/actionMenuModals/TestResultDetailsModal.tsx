@@ -250,7 +250,7 @@ const TestResultDetailsModal = (props: TestResultDetailsModalProps) => (
         position: "initial",
       },
     }}
-    overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+    overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
     contentLabel={`Result details for ${
       props.testResult?.patient
         ? displayFullName(

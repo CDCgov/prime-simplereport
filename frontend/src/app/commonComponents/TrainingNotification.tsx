@@ -37,7 +37,7 @@ export const TrainingNotification: React.FC = () => {
             position: "initial",
           },
         }}
-        overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+        overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
         contentLabel="SimpleReport training site"
         ariaHideApp={process.env.NODE_ENV !== "test"}
       >

@@ -153,74 +153,6 @@
   max-height: 90vh;
   width: 700px;
 
-  .patient-header {
-    justify-content: space-between;
-  }
-
-  .usa-button--unstyled {
-    box-shadow: none;
-    color: #005ea2;
-    background-color: transparent;
-    text-decoration: underline;
-  }
-
-  .usa-button--unstyled:hover {
-    box-shadow: none;
-    color: #1a4480;
-    background-color: transparent;
-    text-decoration: underline;
-  }
-
-  .usa-button--unstyled:active {
-    box-shadow: none;
-    color: #162e51;
-    background-color: transparent;
-    text-decoration: underline;
-  }
-
-  .usa-button {
-    &:not(
-    .usa-button--unstyled,
-    .usa-button--secondary,
-    .usa-button--accent-cool,
-    .usa-button--accent-warm,
-    .usa-button--outline,
-    .usa-button--inverse) {
-      // Primary Button Styles
-      color: color("white");
-      background-color: #005ea2;
-
-      &:hover {
-        background-color: #1a4480;
-      }
-
-      &:active {
-        background-color: #162e51;
-      }
-
-      &:disabled,
-      &:disabled:hover {
-        background-color: #c9c9c9;
-        color: #454545;
-      }
-    }
-
-    &--outline {
-      color: #005ea2;
-      box-shadow: inset 0 0 0 2px #005ea2;
-    }
-
-    &--outline:hover {
-      color: #1a4480;
-      box-shadow: inset 0 0 0 2px #1a4480;
-    }
-
-    &--outline:active {
-      color: #162e51;
-      box-shadow: inset 0 0 0 2px #162e51;
-    }
-  }
-
   @media (max-width: 48rem) {
     width: units("mobile-lg");
   }
@@ -265,4 +197,11 @@
   @include at-media("tablet") {
     padding-bottom: unset;
   }
+}
+
+.close-button {
+  display: block;
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }

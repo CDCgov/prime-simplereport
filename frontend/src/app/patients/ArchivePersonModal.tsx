@@ -52,7 +52,7 @@ const ArchivePersonModal = ({ person, closeModal }: Props) => {
     <Modal
       isOpen={true}
       className="sr-archive-person-modal-content"
-      overlayClassName="sr-archive-person-modal-overlay"
+      overlayClassName="sr-archive-person-modal-overlay sr-legacy-application"
       contentLabel="Archive record"
       onRequestClose={closeModal}
     >

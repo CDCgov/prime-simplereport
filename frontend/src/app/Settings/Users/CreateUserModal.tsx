@@ -27,7 +27,7 @@ const CreateUserModal: React.FC<Props> = ({
           position: "initial",
         },
       }}
-      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application sr-legacy-application"
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
       onRequestClose={onClose}
