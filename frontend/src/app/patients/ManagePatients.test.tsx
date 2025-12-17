@@ -11,7 +11,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
-import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
+import { PATIENT_TERM } from "../../config/constants";
 import { ArchivedStatus } from "../../generated/graphql";
 
 import ManagePatients, {
@@ -51,6 +51,18 @@ const TestContainer = () => (
   </MockedProvider>
 );
 
+const EmptyTestContainer = () => (
+  <MockedProvider mocks={noResultsMocks}>
+    <MemoryRouter initialEntries={["/patients/1"]}>
+      <Routes>
+        <Route path="/patients">
+          <Route path=":pageNumber" element={<PageNumberContainer />} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  </MockedProvider>
+);
+
 describe("ManagePatients", () => {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -66,13 +78,32 @@ describe("ManagePatients", () => {
   it("filters a list of patients", async () => {
     const { user } = renderWithUser();
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
-    const input = await screen.findByLabelText(PATIENT_TERM_CAP);
+    const input = await screen.findByLabelText("Search by name");
     await user.type(input, "Al");
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Abramcik", { exact: false })
     );
     expect(await screen.findByText(patients[1].lastName, { exact: false }));
     expect(await screen.findByText(patients[2].lastName, { exact: false }));
+  });
+
+  it("shows data retention reminder when no results are found", async () => {
+    render(<EmptyTestContainer />);
+
+    expect(await screen.findByText("No results found", { exact: false }));
+    expect(
+      await screen.findByText(
+        "Please note: patient records are only stored for 30 days",
+        {
+          exact: false,
+        }
+      )
+    );
+    expect(
+      await screen.findByText("data retention limits", {
+        exact: false,
+      })
+    );
   });
 
   it("can go to page 2", async () => {
@@ -525,6 +556,40 @@ const mocks: MockedProviderProps["mocks"] = [
     },
     result: {
       data: { patients: patients.slice(0, 20) },
+    },
+  },
+];
+
+const noResultsMocks: MockedProviderProps["mocks"] = [
+  // Initial load queries
+  {
+    request: {
+      query: patientsCountQuery,
+      variables: {
+        facilityId: "a1",
+        archivedStatus: ArchivedStatus.Unarchived,
+        namePrefixMatch: null,
+      },
+    },
+    result: {
+      data: {
+        patientsCount: 0,
+      },
+    },
+  },
+  {
+    request: {
+      query: patientQuery,
+      variables: {
+        facilityId: "a1",
+        pageNumber: 0,
+        pageSize: 20,
+        archivedStatus: ArchivedStatus.Unarchived,
+        namePrefixMatch: null,
+      },
+    },
+    result: {
+      data: { patients: [] },
     },
   },
 ];

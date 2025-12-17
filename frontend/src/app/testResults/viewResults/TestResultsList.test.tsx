@@ -11,7 +11,10 @@ import {
   mocksWithMultiplex,
   mockWithFacilityAndPositiveResult,
 } from "../mocks/queries.mock";
-import { GetAllFacilitiesDocument } from "../../../generated/graphql";
+import {
+  GetAllFacilitiesDocument,
+  GetResultsMultiplexWithCountDocument,
+} from "../../../generated/graphql";
 import { facilities } from "../mocks/facilities.mock";
 
 import TestResultsList, { ALL_FACILITIES_ID } from "./TestResultsList";
@@ -66,6 +69,10 @@ describe("TestResultsList", () => {
   });
 
   it("should render a list of tests", async () => {
+    // need to mock Math.random used by Trussworks USWDS Tooltip so that the tooltip id is deterministic for the snapshot
+    // React.useId within the Trussworks Tooltip could not be mocked correctly
+    const mathRandomSpy = jest.spyOn(global.Math, "random").mockReturnValue(1);
+
     const { container } = render(
       <WithRouter>
         <Provider store={store}>
@@ -77,7 +84,7 @@ describe("TestResultsList", () => {
     );
 
     expect(
-      await screen.findByText("Test Results", { exact: false })
+      await screen.findByText("Test Results", { selector: "h1", exact: false })
     ).toBeInTheDocument();
     expect(
       await screen.findByText("Cragell, Barb Whitaker")
@@ -85,6 +92,8 @@ describe("TestResultsList", () => {
     expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
     expect(await screen.findByText(/Testing facility/i));
     expect(container).toMatchSnapshot();
+
+    mathRandomSpy.mockRestore();
   });
   it("should be able to load filter params from url", async () => {
     const search = new URLSearchParams({
@@ -110,10 +119,15 @@ describe("TestResultsList", () => {
     );
 
     expect(await screen.findByText("Showing results for 1-1 of 1 tests"));
-    expect(await screen.findByLabelText("Date range (start)"));
+    expect(
+      await screen.findByLabelText("Start date", {
+        selector: "input",
+        exact: false,
+      })
+    );
     expect(await screen.findByDisplayValue("2021-03-18"));
 
-    expect(await screen.findByLabelText("Date range (end)"));
+    expect(await screen.findByLabelText("End date"));
     expect(await screen.findByDisplayValue("2021-03-19"));
 
     const roleSelect = (await screen.findByLabelText(
@@ -251,13 +265,18 @@ describe("TestResultsList", () => {
 
     it("should call appropriate gql endpoints for pagination", async () => {
       renderWithUser();
-      expect(await screen.findByText("Test Results", { exact: false }));
+      expect(
+        await screen.findByText("Test Results", {
+          selector: "h1",
+          exact: false,
+        })
+      );
       expect(await screen.findByText("Cragell, Barb Whitaker"));
     });
 
     it("should be able to filter by patient", async () => {
       const { user } = renderWithUser();
-      await screen.findByText("Test Results", { exact: false });
+      await screen.findByText("Test Results", { selector: "h1", exact: false });
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -278,7 +297,10 @@ describe("TestResultsList", () => {
     it("should be able to filter by condition value", async () => {
       const { user } = renderWithUser();
       expect(
-        await screen.findByText("Test Results", { exact: false })
+        await screen.findByText("Test Results", {
+          selector: "h1",
+          exact: false,
+        })
       ).toBeInTheDocument();
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
@@ -296,7 +318,10 @@ describe("TestResultsList", () => {
     it("should be able to filter by result value", async () => {
       const { user } = renderWithUser();
       expect(
-        await screen.findByText("Test Results", { exact: false })
+        await screen.findByText("Test Results", {
+          selector: "h1",
+          exact: false,
+        })
       ).toBeInTheDocument();
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
@@ -317,7 +342,10 @@ describe("TestResultsList", () => {
     it("should be able to filter by role", async () => {
       const { user } = renderWithUser();
       expect(
-        await screen.findByText("Test Results", { exact: false })
+        await screen.findByText("Test Results", {
+          selector: "h1",
+          exact: false,
+        })
       ).toBeInTheDocument();
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
@@ -335,7 +363,10 @@ describe("TestResultsList", () => {
     it("should be able to filter by facility", async () => {
       const { user } = renderWithUser();
       expect(
-        await screen.findByText("Test Results", { exact: false })
+        await screen.findByText("Test Results", {
+          selector: "h1",
+          exact: false,
+        })
       ).toBeInTheDocument();
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
@@ -356,7 +387,10 @@ describe("TestResultsList", () => {
     it("should be able to filter by all facilities", async () => {
       const { user } = renderWithUser();
       expect(
-        await screen.findByText("Test Results", { exact: false })
+        await screen.findByText("Test Results", {
+          selector: "h1",
+          exact: false,
+        })
       ).toBeInTheDocument();
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
@@ -377,15 +411,23 @@ describe("TestResultsList", () => {
 
     it("should be able to filter by date", async () => {
       const { user } = renderWithUser();
-      expect(await screen.findByText("Test Results", { exact: false }));
+      expect(
+        await screen.findByText("Test Results", {
+          selector: "h1",
+          exact: false,
+        })
+      );
       expect(await screen.findByText("Cragell, Barb Whitaker"));
       expect(await screen.findByText("Colleer, Barde X"));
       expect(await screen.findByText("Gerard, Sam G"));
-      expect(await screen.findByText("Date range (start)"));
-      expect(await screen.findByText("Date range (end)"));
+      expect(await screen.findByText("Start date"));
+      expect(await screen.findByText("End date"));
 
       await user.type(
-        screen.getByLabelText(/date range \(start\)/i),
+        screen.getByLabelText("start date", {
+          selector: "input",
+          exact: false,
+        }),
         "2021-03-18"
       );
 
@@ -398,7 +440,7 @@ describe("TestResultsList", () => {
         ).not.toBeInTheDocument()
       );
       await user.type(
-        screen.getByLabelText(/date range \(end\)/i),
+        screen.getByLabelText("end date", { selector: "input", exact: false }),
         "2021-03-18"
       );
 
@@ -415,7 +457,7 @@ describe("TestResultsList", () => {
     });
     it("should be able to clear patient filter", async () => {
       const { user } = renderWithUser();
-      await screen.findByText("Test Results", { exact: false });
+      await screen.findByText("Test Results", { selector: "h1", exact: false });
 
       // Apply filter
       expect(await screen.findByText("Search by name")).toBeInTheDocument();
@@ -452,7 +494,10 @@ describe("TestResultsList", () => {
       const { user } = renderWithUser();
       // Apply filter
       await user.type(
-        screen.getByLabelText(/date range \(start\)/i),
+        screen.getByLabelText("Start date", {
+          selector: "input",
+          exact: false,
+        }),
         "2021-03-18"
       );
 
@@ -465,9 +510,9 @@ describe("TestResultsList", () => {
         ).not.toBeInTheDocument();
       });
 
-      expect(screen.getByLabelText("Date range (start)")).toHaveValue(
-        "2021-03-18"
-      );
+      expect(
+        screen.getByLabelText("Start date", { selector: "input", exact: false })
+      ).toHaveValue("2021-03-18");
       // Clear filter
       expect(await screen.findByText("Clear filters")).toBeInTheDocument();
       await user.click(screen.getByText("Clear filters"));
@@ -478,7 +523,9 @@ describe("TestResultsList", () => {
       });
 
       // Date picker no longer displays the selected date
-      expect(screen.getByLabelText("Date range (start)")).toHaveValue("");
+      expect(
+        screen.getByLabelText("Start date", { selector: "input", exact: false })
+      ).toHaveValue("");
     });
 
     it("opens the test detail modal from the patient's name", async () => {
@@ -501,7 +548,10 @@ describe("TestResultsList", () => {
         await screen.findByText("Showing results for 1-3 of 3 tests")
       ).toBeInTheDocument();
       expect(
-        await screen.findByText("Test Results", { exact: false })
+        await screen.findByText("Test Results", {
+          selector: "h1",
+          exact: false,
+        })
       ).toBeInTheDocument();
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
@@ -517,7 +567,7 @@ describe("TestResultsList", () => {
       const { user } = renderWithUser();
       expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
       expect(
-        screen.getByText("Test Results", { exact: false })
+        screen.getByText("Test Results", { selector: "h1", exact: false })
       ).toBeInTheDocument();
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
@@ -573,7 +623,7 @@ describe("TestResultsList", () => {
       const { user } = renderWithUser();
       expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
       expect(
-        screen.getByText("Test Results", { exact: false })
+        screen.getByText("Test Results", { selector: "h1", exact: false })
       ).toBeInTheDocument();
       const downloadButton = screen.getByText("Download results", {
         exact: false,
@@ -593,7 +643,7 @@ describe("TestResultsList", () => {
       const { user } = renderWithUser();
       expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
       expect(
-        screen.getByText("Test Results", { exact: false })
+        screen.getByText("Test Results", { selector: "h1", exact: false })
       ).toBeInTheDocument();
 
       await user.selectOptions(screen.getByLabelText("Test result"), [
@@ -622,7 +672,7 @@ describe("TestResultsList", () => {
         const { user } = renderWithUser();
         expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
         expect(
-          screen.getByText("Test Results", { exact: false })
+          screen.getByText("Test Results", { selector: "h1", exact: false })
         ).toBeInTheDocument();
         const moreActions = within(screen.getByRole("table")).getAllByRole(
           "button"
@@ -643,6 +693,62 @@ describe("TestResultsList", () => {
         </MemoryRouter>
       );
       expect(await screen.findByText("No facility selected", { exact: false }));
+    });
+
+    it("shows data retention reminder when no results are found", async () => {
+      const localMocks = [
+        {
+          request: {
+            query: GetResultsMultiplexWithCountDocument,
+            variables: {
+              facilityId: "1",
+              pageNumber: 0,
+              pageSize: 20,
+            },
+          },
+          result: {
+            data: {
+              resultsPage: {
+                content: [],
+                totalElements: 0,
+              },
+            },
+          },
+        },
+      ];
+
+      const search = new URLSearchParams({
+        facility: "1",
+      });
+
+      render(
+        <MemoryRouter
+          initialEntries={[
+            { pathname: "/results/1", search: search.toString() },
+          ]}
+        >
+          <Provider store={store}>
+            <MockedProvider mocks={localMocks}>
+              <TestResultsList />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+
+      expect(await screen.findByText("No results found", { exact: false }));
+      expect(
+        await screen.findByText(
+          "Please note: test results are only stored for 30 days",
+          {
+            exact: false,
+          }
+        )
+      );
+      expect(
+        await screen.findByText("data retention limits", {
+          exact: false,
+        })
+      );
     });
 
     it("should not display Flu result columns if all rows with multiplex results are filtered", async () => {
@@ -728,7 +834,10 @@ describe("TestResultsList", () => {
       );
 
       expect(
-        await screen.findByText("Test results", { exact: false })
+        await screen.findByText("Test results", {
+          selector: "h1",
+          exact: false,
+        })
       ).toBeInTheDocument();
 
       const paginationText = await screen.findByText(
@@ -846,11 +955,17 @@ describe("TestResultsList", () => {
       endDate = "2021-03-18"
     ) => {
       await user.type(
-        screen.getByLabelText(/date range \(start\)/i),
+        screen.getByLabelText("start date", {
+          selector: "input",
+          exact: false,
+        }),
         startDate
       );
 
-      await user.type(screen.getByLabelText(/date range \(start\)/i), endDate);
+      await user.type(
+        screen.getByLabelText("end date", { selector: "input", exact: false }),
+        endDate
+      );
     };
     it("should display error if end date is before the start date", async () => {
       const { user } = renderWithUser();
