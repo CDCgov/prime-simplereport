@@ -51,7 +51,7 @@ jobs:
             exit 1
           fi
       - name: Archive git diff
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         if: failure()
         with:
           name: files changed
