@@ -39,8 +39,10 @@ public class PatientBulkUploadService {
     try {
       content = csvStream.readAllBytes();
     } catch (IOException e) {
-      log.error("Error reading patient bulk upload CSV", e);
-      throw new CsvProcessingException("Unable to read csv");
+      CsvProcessingException exceptionWithoutPii = new CsvProcessingException("Unable to read csv");
+      exceptionWithoutPii.setStackTrace(e.getStackTrace());
+      log.error("Error reading patient bulk upload CSV", exceptionWithoutPii);
+      throw exceptionWithoutPii;
     }
 
     List<FeedbackMessage> errors =
@@ -49,7 +51,7 @@ public class PatientBulkUploadService {
     if (!errors.isEmpty()) {
       result.setStatus(UploadStatus.FAILURE);
       result.setErrors(errors.toArray(FeedbackMessage[]::new));
-      log.info("CSV patient bulk upload rejected with the following errors: {}", errors);
+      log.info("CSV patient bulk upload rejected with errors");
       return result;
     }
 
