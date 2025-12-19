@@ -249,9 +249,9 @@ public class HL7Converter {
       // in a message as long as each specimen is associated with only one observation request (aka
       // test ordered LOINC). With how the app currently works, we will only ever have one specimen
       // in the entire HL7 message. That is only due to how the app is currently designed, not a
-      // constraint of HL7.
+      // constraint of HL7. This SPM segment should be attached to the last order group.
       // See page 83, HL7 v2.5.1 IG
-      if (orderObservationIndex == 0) {
+      if (orderObservationIndex == testOrderLoincToTestDetailsMap.size() - 1) {
         SPM specimen = orderGroup.getSPECIMEN().getSPM();
         populateSpecimen(specimen, 1, specimenId, specimenInput);
       }
