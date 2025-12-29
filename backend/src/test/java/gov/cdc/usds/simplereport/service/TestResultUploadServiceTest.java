@@ -31,7 +31,6 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToHL7;
-import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -45,7 +44,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,13 +57,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @AutoConfigureWireMock(port = 9561)
 class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadService> {
   @Autowired private TestDataFactory factory;
-  @Captor private ArgumentCaptor<UUID> reportIdCaptor;
-  @Captor private ArgumentCaptor<String> accessTokenCaptor;
   @Mock private DataHubClient dataHubMock;
   @Mock private TestResultUploadRepository repoMock;
   @Mock private OrganizationService orgServiceMock;
-  @Mock private ResultsUploaderCachingService resultsUploaderCachingServiceMock;
-  @Mock private TokenAuthentication tokenAuthMock;
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
   @Mock private BulkUploadResultsToHL7 bulkUploadHl7ConverterMock;
@@ -111,50 +105,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     assertThrows(InvalidBulkTestResultUploadException.class, () -> sut.getUploadSubmission(uuid));
   }
-
-  // TODO: This test should be cleaned up now that ReportStream is disabled
-  //  @Test
-  //  @DirtiesContext
-  //  @SliceTestConfiguration.WithSimpleReportStandardUser
-  //  void uploadService_getUploadSubmission_rsClientOk() {
-  //    UUID reportId = UUID.randomUUID();
-  //
-  //    // GIVEN
-  //    when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
-  //    Organization org = factory.saveValidOrganization();
-  //    when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
-  //    var testResultUpload = factory.createTestResultUpload(reportId, UploadStatus.PENDING, org);
-  //
-  //    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
-  //        .thenReturn("fake-rs-sender-token");
-  //    var dbResponse = Optional.of(testResultUpload);
-  //    when(repoMock.findByInternalIdAndOrganization(any(), any())).thenReturn(dbResponse);
-  //    var tokenResponse = new TokenResponse();
-  //    tokenResponse.setAccessToken("fake-rs-access-token");
-  //    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
-  //    var uploadResponse = new UploadResponse();
-  //    uploadResponse.setId(testResultUpload.getReportId());
-  //    uploadResponse.setOverallStatus(ReportStreamStatus.WAITING_TO_DELIVER);
-  //    uploadResponse.setTimestamp(testResultUpload.getCreatedAt());
-  //    uploadResponse.setReportItemCount(testResultUpload.getRecordsCount());
-  //    uploadResponse.setErrors(testResultUpload.getErrors());
-  //    uploadResponse.setWarnings(testResultUpload.getWarnings());
-  //
-  //    when(dataHubMock.getSubmission(any(UUID.class), anyString())).thenReturn(uploadResponse);
-  //
-  //    // WHEN
-  //    UploadResponse result = sut.getUploadSubmission(testResultUpload.getInternalId());
-  //
-  //    // THEN
-  //    verify(dataHubMock).getSubmission(reportIdCaptor.capture(), accessTokenCaptor.capture());
-  //    assertEquals(reportId, reportIdCaptor.getValue());
-  //    assertEquals("fake-rs-access-token", accessTokenCaptor.getValue());
-  //
-  //    assertEquals(testResultUpload.getReportId(), result.getReportId());
-  //    assertEquals(testResultUpload.getStatus(), result.getStatus());
-  //    assertEquals(testResultUpload.getCreatedAt(), result.getCreatedAt());
-  //    assertEquals(testResultUpload.getRecordsCount(), result.getRecordsCount());
-  //  }
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
