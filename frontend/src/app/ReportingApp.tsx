@@ -31,7 +31,6 @@ import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { Analytics } from "./analytics/Analytics";
 import Schema from "./testResults/uploads/CsvSchemaDocumentation";
-import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
@@ -288,20 +287,6 @@ const ReportingApp = () => {
                     element={
                       <ResultsNavWrapper>
                         <DeviceLookupContainer />
-                      </ResultsNavWrapper>
-                    }
-                  />
-                }
-              />
-              <Route
-                path="results/upload/submissions/submission/:id"
-                element={
-                  <ProtectedRoute
-                    requiredPermissions={canViewResults}
-                    userPermissions={data.whoami.permissions}
-                    element={
-                      <ResultsNavWrapper>
-                        <Submission />
                       </ResultsNavWrapper>
                     }
                   />
