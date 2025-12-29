@@ -9,7 +9,6 @@ import {
   GetUploadSubmissionsQuery,
   useGetUploadSubmissionsQuery,
 } from "../../../generated/graphql";
-import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../../utils/hooks";
 import "../HeaderSizeFix.scss";
 
@@ -37,14 +36,7 @@ const getSubmissionsTableRows = (
   return submissionsResult.uploadSubmissions.content.map((submission) => {
     return (
       <tr key={submission.internalId}>
-        <td>
-          <LinkWithQuery
-            to={`/results/upload/submissions/submission/${submission.internalId}`}
-            className="sr-link__primary"
-          >
-            {submission.reportId}
-          </LinkWithQuery>
-        </td>
+        <td>{submission.reportId}</td>
         <td>{formatDateWithTimeOption(submission.createdAt, true)}</td>
         <td>{submission.recordsCount}</td>
       </tr>
