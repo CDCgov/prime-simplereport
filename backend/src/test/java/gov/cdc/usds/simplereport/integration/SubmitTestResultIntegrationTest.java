@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.integration;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.azure.storage.queue.QueueAsyncClient;
@@ -27,7 +26,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Mono;
@@ -67,14 +65,15 @@ class SubmitTestResultIntegrationTest extends BaseGraphqlTest {
     addPatientToQueue(facility, patient);
     submitTestResult(facility, patient);
 
-    verify(queueAsyncClient).sendMessage(fhirMessageCaptor.capture());
-    String queuedFhirMessage = maskUUIDs(fhirMessageCaptor.getValue());
+    // TODO: This test should be cleaned up now that ReportStream is disabled
+    // verify(queueAsyncClient).sendMessage(fhirMessageCaptor.capture());
+    // String queuedFhirMessage = maskUUIDs(fhirMessageCaptor.getValue());
 
     // This assertion checks that the structure of the FHIR message (JSON structure)
     // matches the structure a correct fhir bundle. Unique Ids have been replaced
     // to make the assertion easier. Because a fhir bundle contains multiple array properties
     // whose children can be appended in any order we use JSONAssert for the checks.
-    JSONAssert.assertEquals(sampleFhirMessage, queuedFhirMessage, false);
+    // JSONAssert.assertEquals(sampleFhirMessage, queuedFhirMessage, false);
   }
 
   private void addPatientToQueue(Facility facility, Person patient) {

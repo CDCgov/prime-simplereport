@@ -1,22 +1,11 @@
 package gov.cdc.usds.simplereport.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.reset;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static gov.cdc.usds.simplereport.api.uploads.FileUploadController.TEXT_CSV_CONTENT_TYPE;
-import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
@@ -33,19 +22,16 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -115,165 +101,166 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
     reset();
   }
 
-  @Test
-  void CSVUpload_ToUniversalPipeline_Succeeds() throws Exception {
-    var sampleFhirMessage =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
-            StandardCharsets.UTF_8);
-
-    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
-    var file =
-        new MockMultipartFile(
-            "file",
-            "test-results-upload-integration.csv",
-            TEXT_CSV_CONTENT_TYPE,
-            input.readAllBytes());
-
-    var universalJsonMatch =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream(
-                        "testResultUpload/upload-test-results-universal-partial-match.txt")),
-            StandardCharsets.UTF_8);
-
-    mockMvc
-        .perform(multipart(RESULT_UPLOAD).file(file))
-        .andExpect(status().isOk())
-        .andExpect(content().string(containsString(universalJsonMatch)));
-
-    verify(
-        exactly(1),
-        postRequestedFor(urlEqualTo("/api/waters"))
-            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
-    verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
-  }
-
-  @Test
-  void CSVUpload_Returns200_WhenFailsUniversalPipelineWith_ParseableFailure() throws Exception {
-    var responseFile =
-        getClass()
-            .getClassLoader()
-            .getResourceAsStream("responses/datahub-parseable-error-response.json");
-
-    var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
-
-    // submits the FHIR bundles to universal pipeline
-    stubFor(
-        WireMock.post(urlEqualTo("/api/waters"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(HttpStatus.BAD_REQUEST.value())
-                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody(mockResponse)));
-
-    var sampleFhirMessage =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
-            StandardCharsets.UTF_8);
-
-    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
-    var file =
-        new MockMultipartFile(
-            "file",
-            "test-results-upload-integration.csv",
-            TEXT_CSV_CONTENT_TYPE,
-            input.readAllBytes());
-
-    mockMvc
-        .perform(multipart(RESULT_UPLOAD).file(file))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].status").value("FAILURE"))
-        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].recordsCount").value(0))
-        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].errors.length()").value(6));
-
-    verify(
-        exactly(1),
-        postRequestedFor(urlEqualTo("/api/waters"))
-            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
-    verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
-  }
-
-  @Test
-  void CSVUpload_Returns200_WhenSucceedsUniversalPipeline() throws Exception {
-
-    var sampleFhirMessage =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
-            StandardCharsets.UTF_8);
-
-    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
-    var file =
-        new MockMultipartFile(
-            "file",
-            "test-results-upload-integration.csv",
-            TEXT_CSV_CONTENT_TYPE,
-            input.readAllBytes());
-
-    mockMvc
-        .perform(multipart(RESULT_UPLOAD).file(file))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].status").value("PENDING"))
-        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].recordsCount").value(14))
-        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].errors.length()").value(0));
-
-    verify(
-        exactly(1),
-        postRequestedFor(urlEqualTo("/api/waters"))
-            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
-    verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
-  }
-
-  @Test
-  void CSVUpload_Returns400_FailsUniversalPipelineWith_UnparseableFailure() throws Exception {
-
-    // submits the FHIR bundles to universal pipeline
-    stubFor(
-        WireMock.post(urlEqualTo("/api/waters"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(HttpStatus.BAD_REQUEST.value())
-                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                    .withBody("this is unparseable")));
-
-    var sampleFhirMessage =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
-            StandardCharsets.UTF_8);
-
-    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
-    var file =
-        new MockMultipartFile(
-            "file",
-            "test-results-upload-integration.csv",
-            TEXT_CSV_CONTENT_TYPE,
-            input.readAllBytes());
-
-    mockMvc
-        .perform(multipart(RESULT_UPLOAD).file(file))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().string(""));
-
-    verify(
-        exactly(1),
-        postRequestedFor(urlEqualTo("/api/waters"))
-            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
-    verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
-  }
+  // TODO: These tests should be cleaned up now that ReportStream is disabled
+  //  @Test
+  //  void CSVUpload_ToUniversalPipeline_Succeeds() throws Exception {
+  //    var sampleFhirMessage =
+  //        IOUtils.toString(
+  //            Objects.requireNonNull(
+  //                getClass()
+  //                    .getClassLoader()
+  //                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
+  //            StandardCharsets.UTF_8);
+  //
+  //    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
+  //    var file =
+  //        new MockMultipartFile(
+  //            "file",
+  //            "test-results-upload-integration.csv",
+  //            TEXT_CSV_CONTENT_TYPE,
+  //            input.readAllBytes());
+  //
+  //    var universalJsonMatch =
+  //        IOUtils.toString(
+  //            Objects.requireNonNull(
+  //                getClass()
+  //                    .getClassLoader()
+  //                    .getResourceAsStream(
+  //                        "testResultUpload/upload-test-results-universal-partial-match.txt")),
+  //            StandardCharsets.UTF_8);
+  //
+  //    mockMvc
+  //        .perform(multipart(RESULT_UPLOAD).file(file))
+  //        .andExpect(status().isOk())
+  //        .andExpect(content().string(containsString(universalJsonMatch)));
+  //
+  //    verify(
+  //        exactly(1),
+  //        postRequestedFor(urlEqualTo("/api/waters"))
+  //            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
+  //    verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
+  //  }
+  //
+  //  @Test
+  //  void CSVUpload_Returns200_WhenFailsUniversalPipelineWith_ParseableFailure() throws Exception {
+  //    var responseFile =
+  //        getClass()
+  //            .getClassLoader()
+  //            .getResourceAsStream("responses/datahub-parseable-error-response.json");
+  //
+  //    var mockResponse = IOUtils.toString(responseFile, StandardCharsets.UTF_8);
+  //
+  //    // submits the FHIR bundles to universal pipeline
+  //    stubFor(
+  //        WireMock.post(urlEqualTo("/api/waters"))
+  //            .willReturn(
+  //                WireMock.aResponse()
+  //                    .withStatus(HttpStatus.BAD_REQUEST.value())
+  //                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+  //                    .withBody(mockResponse)));
+  //
+  //    var sampleFhirMessage =
+  //        IOUtils.toString(
+  //            Objects.requireNonNull(
+  //                getClass()
+  //                    .getClassLoader()
+  //                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
+  //            StandardCharsets.UTF_8);
+  //
+  //    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
+  //    var file =
+  //        new MockMultipartFile(
+  //            "file",
+  //            "test-results-upload-integration.csv",
+  //            TEXT_CSV_CONTENT_TYPE,
+  //            input.readAllBytes());
+  //
+  //    mockMvc
+  //        .perform(multipart(RESULT_UPLOAD).file(file))
+  //        .andExpect(status().isOk())
+  //        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].status").value("FAILURE"))
+  //        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].recordsCount").value(0))
+  //        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].errors.length()").value(6));
+  //
+  //    verify(
+  //        exactly(1),
+  //        postRequestedFor(urlEqualTo("/api/waters"))
+  //            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
+  //    verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
+  //  }
+  //
+  //  @Test
+  //  void CSVUpload_Returns200_WhenSucceedsUniversalPipeline() throws Exception {
+  //
+  //    var sampleFhirMessage =
+  //        IOUtils.toString(
+  //            Objects.requireNonNull(
+  //                getClass()
+  //                    .getClassLoader()
+  //                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
+  //            StandardCharsets.UTF_8);
+  //
+  //    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
+  //    var file =
+  //        new MockMultipartFile(
+  //            "file",
+  //            "test-results-upload-integration.csv",
+  //            TEXT_CSV_CONTENT_TYPE,
+  //            input.readAllBytes());
+  //
+  //    mockMvc
+  //        .perform(multipart(RESULT_UPLOAD).file(file))
+  //        .andExpect(status().isOk())
+  //        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].status").value("PENDING"))
+  //        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].recordsCount").value(14))
+  //        .andExpect(jsonPath("$[?(@.destination == 'UNIVERSAL')].errors.length()").value(0));
+  //
+  //    verify(
+  //        exactly(1),
+  //        postRequestedFor(urlEqualTo("/api/waters"))
+  //            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
+  //    verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
+  //  }
+  //
+  //  @Test
+  //  void CSVUpload_Returns400_FailsUniversalPipelineWith_UnparseableFailure() throws Exception {
+  //
+  //    // submits the FHIR bundles to universal pipeline
+  //    stubFor(
+  //        WireMock.post(urlEqualTo("/api/waters"))
+  //            .willReturn(
+  //                WireMock.aResponse()
+  //                    .withStatus(HttpStatus.BAD_REQUEST.value())
+  //                    .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+  //                    .withBody("this is unparseable")));
+  //
+  //    var sampleFhirMessage =
+  //        IOUtils.toString(
+  //            Objects.requireNonNull(
+  //                getClass()
+  //                    .getClassLoader()
+  //                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
+  //            StandardCharsets.UTF_8);
+  //
+  //    InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
+  //    var file =
+  //        new MockMultipartFile(
+  //            "file",
+  //            "test-results-upload-integration.csv",
+  //            TEXT_CSV_CONTENT_TYPE,
+  //            input.readAllBytes());
+  //
+  //    mockMvc
+  //        .perform(multipart(RESULT_UPLOAD).file(file))
+  //        .andExpect(status().isBadRequest())
+  //        .andExpect(content().string(""));
+  //
+  //    verify(
+  //        exactly(1),
+  //        postRequestedFor(urlEqualTo("/api/waters"))
+  //            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
+  //    verify(exactly(0), postRequestedFor(urlEqualTo("/api/reports?processing=async")));
+  //  }
 
   private InputStream loadCsv(String csvFile) {
     return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(csvFile);
