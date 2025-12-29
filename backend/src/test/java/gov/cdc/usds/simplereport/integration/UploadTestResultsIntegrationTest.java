@@ -40,6 +40,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @SliceTestConfiguration.WithSimpleReportStandardUser
 @AutoConfigureWireMock(port = 9561)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SuppressWarnings({"checkstyle:TodoComment"})
 class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   @Autowired private MockMvc mockMvc;
 

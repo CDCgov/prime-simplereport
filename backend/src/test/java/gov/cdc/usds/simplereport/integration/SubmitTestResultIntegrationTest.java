@@ -32,6 +32,7 @@ import reactor.core.publisher.Mono;
 
 @SliceTestConfiguration.WithSimpleReportStandardUser
 @Import(SubmitTestResultTestConfig.class)
+@SuppressWarnings({"checkstyle:TodoComment"})
 class SubmitTestResultIntegrationTest extends BaseGraphqlTest {
 
   @MockitoBean(name = "mockClient")
