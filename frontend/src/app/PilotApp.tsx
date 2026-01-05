@@ -15,7 +15,7 @@ import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import LabReportForm from "./universalReporting/LabReportForm";
-import PilotHeader from "./commonComponents/PilotHeader";
+import PilotHeader from "./universalReporting/PilotHeader";
 import ReportLandingPage from "./universalReporting/ReportLandingPage";
 import PageNotFound from "./commonComponents/PageNotFound";
 import { checkOktaLoginStatus } from "./ReportingApp";

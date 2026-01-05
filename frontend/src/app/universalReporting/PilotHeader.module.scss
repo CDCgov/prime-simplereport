@@ -1,0 +1,136 @@
+@use "@uswds/uswds/packages/uswds-core" as *;
+@use "../../scss/pilot" as *;
+
+.pilotHeader {
+  background-color: $blue-cool-80;
+
+  :global {
+    .usa-nav-container {
+      max-width: 1200px;
+
+      .usa-navbar {
+        border-bottom: none !important;
+
+        @include at-media("desktop") {
+          width: 13rem !important;
+        }
+      }
+
+      .usa-logo {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      .usa-menu-btn {
+        background-color: $blue-cool-80;
+      }
+
+      .prime-nav-link {
+        position: relative;
+        display: inline-block;
+      }
+
+      @include at-media("desktop") {
+        height: 5.5rem;
+        align-items: center !important;
+      }
+    }
+
+    @include at-media("desktop") {
+      nav.prime-nav {
+        padding: 0;
+      }
+
+      .usa-nav__primary .nav__primary-item-icon > a {
+        padding: 18.5px 1.25rem;
+      }
+
+      .usa-header--basic .usa-nav [data-prefix=fas] {
+        font-size: 2rem;
+      }
+    }
+
+    .desktop-nav {
+      .usa-nav__primary .usa-nav__primary-item > a {
+        border-left: none !important;
+        border-right: none !important;
+      }
+
+      a.active-nav-item {
+        padding-bottom: 1.15rem !important;
+        font-weight: 400 !important;
+      }
+
+      a.active-nav-item > span {
+        border-bottom: 3px solid #00bde3;
+        padding-bottom: 0.25rem;
+      }
+
+      .prime-nav-link {
+        color: white !important;
+        font-size: 1.125rem;
+      }
+    }
+
+    .is-prime-staff-infobox-visible {
+      visibility: visible;
+      z-index: 11;
+    }
+
+    .prime-staff-infobox {
+      background-color: white;
+      border: 1px solid #dfe1e2;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.161);
+      padding: 1rem;
+      position: absolute;
+      visibility: hidden;
+      width: 13rem;
+      z-index: 10;
+    }
+
+    .prime-staff-infobox li:first-of-type {
+      margin-top: 0;
+    }
+
+    .prime-staff-infobox li {
+      border-top-color: #0000;
+      margin-top: 0.5rem;
+    }
+
+    .span-full-name {
+      font-weight: bolder;
+    }
+
+    .usa-nav-container .role-tag {
+      border-bottom: 1px solid #dfe1e2;
+      color: #71767a;
+      margin-top: 0.5rem;
+      padding-bottom: 1rem;
+    }
+
+    .usa-nav-container .sparkle-icon-mask {
+      background-color: $blue-60v;
+      mask: url("../../img/font-awesome-pro-icons/sparkles.svg") no-repeat center;
+    }
+
+    .usa-nav-container .navlink__support {
+      align-items: center;
+      display: flex;
+      margin-top: 0.75rem;
+    }
+
+    .usa-nav-container .navlink__support a {
+      color: $blue-60v !important;
+      font-weight: 500;
+      padding: 0 !important;
+    }
+
+    .usa-nav-container .header-link-icon {
+      color: $blue-60v;
+      height: 16px;
+      margin-right: 0.5rem;
+      width: 16px;
+    }
+  }
+}

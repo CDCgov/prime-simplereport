@@ -75,7 +75,7 @@ class USAGovBanner extends React.Component<Props, State> {
 
   render() {
     return (
-      <div className="usa-banner usa-banner__header">
+      <div className="usa-banner usa-banner__header legacy-usa-banner">
         <div className="usa-accordion">
           <div className="usa-banner__inner">
             <div className="grid-col-auto">

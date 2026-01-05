@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useSelector, connect } from "react-redux";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
-import siteLogo from "../../img/simplereport-logo-color.svg";
+import siteLogo from "../../img/simplereport-logo-black.svg";
 import { hasPermission, appPermissions } from "../permissions";
 import { RootState } from "../store";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
@@ -19,6 +19,7 @@ import "./Header.scss";
 import Button from "./Button/Button";
 import ChangeUser from "./ChangeUser";
 import Dropdown from "./Dropdown";
+import USAGovBanner from "./USAGovBanner";
 
 const Header: React.FC<{}> = () => {
   const appInsights = getAppInsights();
@@ -311,95 +312,101 @@ const Header: React.FC<{}> = () => {
   };
 
   return (
-    <div className="usa-nav-container prime-header">
-      <div className="usa-navbar">
-        <div className="usa-logo" id="basic-logo">
-          <LinkWithQuery to={siteLogoLinkPath} title="Home" aria-label="Home">
-            <img
-              className="width-card desktop:width-full"
-              src={siteLogo}
-              alt={process.env.REACT_APP_TITLE}
-            />
-          </LinkWithQuery>
-          <div className="prime-organization-name">{organization.name}</div>
+    <header className="usa-header usa-header--basic">
+      <USAGovBanner />
+
+      <div className="usa-nav-container prime-header">
+        <div className="usa-navbar">
+          <div className="usa-logo" id="basic-logo">
+            <LinkWithQuery to={siteLogoLinkPath} title="Home" aria-label="Home">
+              <img
+                className="width-card desktop:width-full"
+                src={siteLogo}
+                alt={process.env.REACT_APP_TITLE}
+              />
+            </LinkWithQuery>
+            <div className="prime-organization-name margin-left-4">
+              {organization.name}
+            </div>
+          </div>
+
+          <button
+            onClick={() => setMenuVisible(!menuVisible)}
+            className="usa-menu-btn"
+          >
+            Menu
+          </button>
+
+          <nav
+            aria-label="Primary mobile navigation"
+            className={classNames(
+              "usa-nav",
+              "prime-nav",
+              "desktop:display-none",
+              {
+                "is-visible": menuVisible,
+              },
+              "mobile-nav"
+            )}
+          >
+            <button
+              className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
+              onClick={() => setMenuVisible(false)}
+              title={"close menu"}
+            >
+              <FontAwesomeIcon icon={"window-close"} />
+            </button>
+            {mainNavList("mobile")}
+            <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
+              {secondaryNav("mobile")}
+            </ul>
+            <div className="usa-nav__primary mobile-sublist-container">
+              {secondaryNavSublist("mobile")}
+              <label id="mobile-facility-label" className="usa-label ">
+                Facility
+              </label>
+              <div className="prime-facility-select facility-select-mobile-container">
+                <Dropdown
+                  ariaLabel="Select testing facility"
+                  selectedValue={facility.id}
+                  onChange={onFacilitySelect}
+                  className={"mobile-facility-select"}
+                  options={facilities.map(({ name, id }) => ({
+                    label: name,
+                    value: id,
+                  }))}
+                />
+              </div>
+
+              <TouchpointsButton />
+            </div>
+          </nav>
         </div>
 
-        <button
-          onClick={() => setMenuVisible(!menuVisible)}
-          className="usa-menu-btn"
-        >
-          Menu
-        </button>
-
         <nav
-          aria-label="Primary mobile navigation"
-          className={classNames(
-            "usa-nav",
-            "prime-nav",
-            "desktop:display-none",
-            {
-              "is-visible": menuVisible,
-            },
-            "mobile-nav"
-          )}
+          aria-label="Primary desktop navigation"
+          className="usa-nav prime-nav desktop-nav"
         >
-          <button
-            className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
-            onClick={() => setMenuVisible(false)}
-            title={"close menu"}
-          >
-            <FontAwesomeIcon icon={"window-close"} />
-          </button>
-          {mainNavList("mobile")}
-          <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
-            {secondaryNav("mobile")}
-          </ul>
-          <div className="usa-nav__primary mobile-sublist-container">
-            {secondaryNavSublist("mobile")}
-            <label id="mobile-facility-label" className="usa-label ">
-              Facility
-            </label>
-            <div className="prime-facility-select facility-select-mobile-container">
+          {mainNavList("desktop")}
+          {facilities && facilities.length > 0 ? (
+            <div className="prime-facility-select">
               <Dropdown
                 ariaLabel="Select testing facility"
                 selectedValue={facility.id}
                 onChange={onFacilitySelect}
-                className={"mobile-facility-select"}
                 options={facilities.map(({ name, id }) => ({
                   label: name,
                   value: id,
                 }))}
               />
             </div>
-
-            <TouchpointsButton />
-          </div>
+          ) : null}
+          <ul className="usa-nav__primary usa-accordion">
+            {secondaryNav("desktop")}
+          </ul>
         </nav>
       </div>
-
-      <nav
-        aria-label="Primary desktop navigation"
-        className="usa-nav prime-nav desktop-nav"
-      >
-        {mainNavList("desktop")}
-        {facilities && facilities.length > 0 ? (
-          <div className="prime-facility-select">
-            <Dropdown
-              ariaLabel="Select testing facility"
-              selectedValue={facility.id}
-              onChange={onFacilitySelect}
-              options={facilities.map(({ name, id }) => ({
-                label: name,
-                value: id,
-              }))}
-            />
-          </div>
-        ) : null}
-        <ul className="usa-nav__primary usa-accordion">
-          {secondaryNav("desktop")}
-        </ul>
-      </nav>
-    </div>
+    </header>
   );
 };
 

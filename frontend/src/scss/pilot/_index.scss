@@ -1,5 +1,7 @@
 @use "./design-system" as ds;
 
+@forward "uswds-tokens";
+
 .sr-pilot-application {
   @include ds.design-system;
 }
