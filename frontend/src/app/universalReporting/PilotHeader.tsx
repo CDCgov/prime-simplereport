@@ -278,7 +278,6 @@ const PilotHeader: React.FC<{}> = () => {
             aria-label="Primary mobile navigation"
             className={classNames(
               "usa-nav",
-              "prime-nav",
               "desktop:display-none",
               {
                 "is-visible": menuVisible,
@@ -305,7 +304,7 @@ const PilotHeader: React.FC<{}> = () => {
         </div>
         <nav
           aria-label="Primary desktop navigation"
-          className="usa-nav prime-nav desktop-nav flex-align-stretch"
+          className="usa-nav desktop-nav flex-align-stretch"
         >
           {mainNavList("desktop")}
           <ul className="usa-nav__primary usa-accordion margin-top-0">

@@ -6,10 +6,6 @@
 
   :global {
     @include at-media("desktop") {
-      nav.prime-nav {
-        padding: 0;
-      }
-
       .usa-nav__primary .nav__primary-item-icon > a {
         padding: 18.5px 1.25rem;
       }
@@ -31,50 +27,99 @@
         align-items: center !important;
       }
 
-      .desktop-nav {
-        .usa-nav__primary {
-          .usa-nav__primary-item > a {
-            border-left: none !important;
-            border-right: none !important;
+      nav {
+        padding: 0;
 
-            &.prime-nav-link {
-              color: white !important;
-              font-size: 1.125rem;
+        &.mobile-nav {
+          justify-content: left;
+          transition: .2s ease-in-out;
+
+          > .prime-nav-close-button {
+            margin: 0 0 0 auto;
+          }
+
+          ul.usa-nav__primary {
+            + ul.usa-nav__primary {
+              margin-top: 0;
             }
 
-            &.active-nav-item {
-              padding-bottom: 1.15rem !important;
-              font-weight: 400 !important;
+            li.usa-nav__primary-item {
+              > a.prime-nav-link {
+                padding: .75rem 1rem;
+                font-size: 1.2rem;
+                align-items: center;
+                display: flex !important;
+                height: 100%;
+                white-space: nowrap;
 
-              > span {
-                border-bottom: 3px solid #00bde3;
-                padding-bottom: 0.25rem;
+                &.active-nav-item {
+                  background-color: $blue-cool-80;
+                  color: white;
+                }
+              }
+
+              &:last-child {
+                border-bottom: 1px solid $gray-cool-10;
               }
             }
           }
 
-          .prime-staff-infobox {
-            background-color: white;
-            border: 1px solid #dfe1e2;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.161);
-            padding: 1rem;
-            position: absolute;
-            visibility: hidden;
-            width: 13rem;
-            z-index: 10;
+          .mobile-sublist-container {
+            margin-top: 0;
+            padding: .5rem 1rem;
 
-            &.is-prime-staff-infobox-visible {
-              visibility: visible;
-              z-index: 11;
+            li, li.usa-sidenav__item {
+              border-top: none;
+              margin-top: 0.5rem;
+            }
+          }
+        }
+
+        &.desktop-nav {
+          .usa-nav__primary {
+            .usa-nav__primary-item > a {
+              border-left: none !important;
+              border-right: none !important;
+
+              &.prime-nav-link {
+                color: white !important;
+                font-size: 1.125rem;
+              }
+
+              &.active-nav-item {
+                padding-bottom: 1.15rem !important;
+                font-weight: 400 !important;
+
+                > span {
+                  border-bottom: 3px solid #00bde3;
+                  padding-bottom: 0.25rem;
+                }
+              }
             }
 
-            li {
-              border-top-color: #0000;
-              margin-top: 0.5rem;
+            .prime-staff-infobox {
+              background-color: white;
+              border: 1px solid #dfe1e2;
+              border-radius: 0.5rem;
+              box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.161);
+              padding: 1rem;
+              position: absolute;
+              visibility: hidden;
+              width: 13rem;
+              z-index: 10;
 
-              &:first-of-type {
-                margin-top: 0;
+              &.is-prime-staff-infobox-visible {
+                visibility: visible;
+                z-index: 11;
+              }
+
+              li {
+                border-top-color: #0000;
+                margin-top: 0.5rem;
+
+                &:first-of-type {
+                  margin-top: 0;
+                }
               }
             }
           }
@@ -112,7 +157,7 @@
 
       .sparkle-icon-mask {
         background-color: $blue-60v;
-        mask: url("../../img/font-awesome-pro-icons/sparkles.svg") no-repeat center;        
+        mask: url("../../img/font-awesome-pro-icons/sparkles.svg") no-repeat center;
       }
 
       .header-link-icon {
@@ -127,7 +172,8 @@
         display: flex;
         margin-top: 0.75rem;
 
-        a, button {
+        a,
+        button {
           padding: 0 !important;
           font-size: 0.94rem;
         }
