@@ -22,3 +22,7 @@
     vertical-align: -0.125em !important;
   }
 }
+
+.no-line-break ~ span {
+  min-width: max-content !important;
+}
