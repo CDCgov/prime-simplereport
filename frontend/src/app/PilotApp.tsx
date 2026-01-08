@@ -114,7 +114,7 @@ const PilotApp = () => {
   }
 
   return (
-    <div className="sr-pilot-application">
+    <div className="sr-pilot-application application-container">
       <VersionEnforcer />
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />

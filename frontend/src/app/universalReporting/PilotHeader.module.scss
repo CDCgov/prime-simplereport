@@ -32,7 +32,7 @@
 
         &.mobile-nav {
           justify-content: left;
-          transition: .2s ease-in-out;
+          transition: 0.2s ease-in-out;
 
           > .prime-nav-close-button {
             margin: 0 0 0 auto;
@@ -45,7 +45,7 @@
 
             li.usa-nav__primary-item {
               > a.prime-nav-link {
-                padding: .75rem 1rem;
+                padding: 0.75rem 1rem;
                 font-size: 1.2rem;
                 align-items: center;
                 display: flex !important;
@@ -66,9 +66,10 @@
 
           .mobile-sublist-container {
             margin-top: 0;
-            padding: .5rem 1rem;
+            padding: 0.5rem 1rem;
 
-            li, li.usa-sidenav__item {
+            li,
+            li.usa-sidenav__item {
               border-top: none;
               margin-top: 0.5rem;
             }

@@ -26,10 +26,15 @@
     flex: 1 1 auto;
   }
 
-  .application-container {
+  .application-container,
+  &.application-container {
     display: flex;
     flex-flow: column;
-    min-height: 100%;
+    // min-height: 100%;
+
+    // for 1.0 compatibility
+    min-height: 100vh;
+    background-color: $background;
   }
 
   .usa-footer {
@@ -189,6 +194,10 @@
     }
   }
 
+  .usa-step-indicator {
+    background-color: $background;
+  }
+
   .usa-step-indicator__segment::before {
     box-shadow:
       0 0 0 0.25rem white,
@@ -209,9 +218,31 @@
     background-color: $brand-primary;
     color: $brand-primary;
     box-shadow:
-      0 0 0 0.25rem white,
-      0 0 0 0 white !important;
+      0 0 0 0.25rem $background,
+      0 0 0 0 $background !important;
   }
+
+  .usa-step-indicator__segment-label {
+    padding-right: 0;
+  }
+
+
+  .usa-step-indicator__current-step {
+    background-color: $brand-primary;
+    // margin-right: 0.5rem;
+    // padding: 0;
+    // height: 2.75rem;
+    // width: 2.75rem;
+  }
+
+  .usa-step-indicator__total-steps {
+    color: $brand-primary;
+  }
+
+  // .usa-step-indicator__total-steps,
+  // .usa-step-indicator__current-step {
+  //   font-size: $body-lg;
+  // }
 
   .usa-modal__close {
     background-color: white;
@@ -227,29 +258,8 @@
     padding: 0;
   }
 
-  .usa-step-indicator__segment-label {
-    padding-right: 0;
-  }
-
   .usa-sidenav__item a:not(.usa-sidenav__sublist a) {
     font-weight: bold;
-  }
-
-  .usa-step-indicator__current-step {
-    background-color: $brand-primary;
-    margin-right: 0.5rem;
-    padding: 0;
-    height: 2.75rem;
-    width: 2.75rem;
-  }
-
-  .usa-step-indicator__total-steps {
-    color: $brand-primary;
-  }
-
-  .usa-step-indicator__total-steps,
-  .usa-step-indicator__current-step {
-    font-size: 2rem;
   }
 
   .usa-pagination .usa-current {
