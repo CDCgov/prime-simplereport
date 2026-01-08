@@ -7,15 +7,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,9 +94,6 @@ public class ConsoleApiAuditEvent {
     Map<String, Object> variablesWithoutPii = new HashMap<>(queryDetails.getVariables());
     variablesWithoutPii.replaceAll((key, value) -> redactPiiField(key, value, "redacted"));
 
-    //    piiJsonVariableNames.forEach(
-    //        piiJsonVariable -> variablesWithoutPii.replace(piiJsonVariable, "redacted"));
-
     return new GraphQlInputs(
         queryDetails.getOperationName(), queryDetails.getQuery(), variablesWithoutPii);
   }
@@ -104,7 +101,7 @@ public class ConsoleApiAuditEvent {
   public Object redactPiiField(String variableName, Object variableValue, String replacement) {
     if (variableValue == null) return variableValue;
 
-    Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+    Set<Object> visited = new HashSet<>();
     return depthFirstSearchRedact(variableName, variableValue, replacement, visited);
   }
 
@@ -115,15 +112,20 @@ public class ConsoleApiAuditEvent {
     }
     visited.add(variableValue);
 
-    // early return if match found, regardless of variableName's object type
+    // early return if match found, ignoring variableValue's object type
     if (piiJsonVariableNames.contains(variableName)) {
       return replacement;
     }
 
     // Map
-    if (variableValue instanceof Map<?, ?> map) {
-      for (Object value : map.values()) {
-        depthFirstSearchRedact(variableName, value, replacement, visited);
+    if (variableValue instanceof Map<?, ?> rawMap) {
+      Map<Object, Object> map = (Map<Object, Object>) rawMap;
+      for (Map.Entry<Object, Object> entry : map.entrySet()) {
+        String nestedVariableName = entry.getKey().toString();
+        Object nestedVariableValue = entry.getValue();
+        Object redactedEntryValue =
+            depthFirstSearchRedact(nestedVariableName, nestedVariableValue, replacement, visited);
+        entry.setValue(redactedEntryValue);
       }
       return variableValue;
     }
@@ -131,18 +133,28 @@ public class ConsoleApiAuditEvent {
     // Iterable
     if (variableValue instanceof Iterable<?> iterable) {
       for (Object element : iterable) {
-        depthFirstSearchRedact(variableName, element, replacement, visited);
+        depthFirstSearchRedact(element.getClass().getName(), element, replacement, visited);
       }
       return variableValue;
     }
 
     // Array
     if (variableValue.getClass().isArray()) {
-      int length = java.lang.reflect.Array.getLength(variableValue);
-      for (int i = 0; i < length; i++) {
-        Object element = java.lang.reflect.Array.get(variableValue, i);
-        depthFirstSearchRedact(variableName, element, replacement, visited);
+      if (variableValue.getClass().getComponentType().isPrimitive()) {
+        return variableValue; // Can't put a String replacement in to a primitive int array, for
+        // example. Rely on the variableName for redacting the whole array
+        // instead of modifying the primitive values within the array
       }
+
+      int length = Array.getLength(variableValue);
+      for (int i = 0; i < length; i++) {
+        Object element = Array.get(variableValue, i);
+        Object redactedElement =
+            depthFirstSearchRedact(variableName + "[" + i + "]", element, replacement, visited);
+
+        Array.set(variableValue, i, redactedElement);
+      }
+
       return variableValue;
     }
 
@@ -151,25 +163,16 @@ public class ConsoleApiAuditEvent {
       return variableValue;
     } else {
       Class<?> cls = variableValue.getClass();
-
-      //      while (cls != null && cls != Object.class) {
       for (Field f : cls.getDeclaredFields()) {
         f.setAccessible(true);
         log.info("the CURRENT field name is: " + f.getName());
         try {
-          //            if (piiJsonVariableNames.contains(f.getName()) && f.getType() ==
-          // String.class) {
-          //              f.set(variableValue, replacement); // e.g. "redacted"
-          //            } else {
           Object child = f.get(variableValue);
           log.info("the CHILD field name is: " + child.getClass().getName());
           depthFirstSearchRedact(child.getClass().getName(), child, replacement, visited);
-          //            }
         } catch (IllegalAccessException e) {
-          // ignore or log
+          log.info(e.getMessage());
         }
-        //        }
-        //        cls = cls.getSuperclass();
       }
       return variableValue;
     }
@@ -177,10 +180,9 @@ public class ConsoleApiAuditEvent {
 
   /**
    * Treat "primitive-like" objects as leaves: don't recurse into them. This avoids reflecting into
-   * things like String/Integer/UUID/etc.
+   * basic classes like String/Integer/UUID/etc. that have fields we don't need to look at.
    */
   private static boolean isLeaf(Object o) {
-    //    Class<?> c = o.getClass();
 
     // common leaf types
     if (o instanceof String) return true;
@@ -199,6 +201,7 @@ public class ConsoleApiAuditEvent {
 
   @JsonIgnore
   private final List<String> piiJsonVariableNames =
+      // these are taken from pii-containing field names in main.graphqls
       new ArrayList<>(
           List.of(
               "name",
@@ -229,9 +232,7 @@ public class ConsoleApiAuditEvent {
               "residentCongregateSetting",
               "employedInHealthcare",
               "preferredLanguage",
-              "testResultDelivery",
               "notes",
-              "lastTest",
               "patient",
               "pregnancy",
               "syphilisHistory",
@@ -239,19 +240,18 @@ public class ConsoleApiAuditEvent {
               "symptoms",
               "symptomOnset",
               "genderOfSexualPartners",
-              "results",
-              "patientLink",
               "surveyData",
-              "testResult",
-              "dateTested",
-              "testOrder",
+              "disease",
+              "diseaseName",
+              "testResult", // needed for MultiplexResult and MultiplexResultInput graphql types.
+              // "testResult" there is a String that defines the actual outcome of a
+              // test.
               "errors",
               "warnings",
               "message",
               "resultValue",
-              "resultDate",
               "resultInterpretation",
               "answerList",
-              "result",
-              "testDetailsList"));
+              "result" // used in testResultsPage graphql and others
+              ));
 }
