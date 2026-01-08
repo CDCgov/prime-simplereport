@@ -9,8 +9,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -193,8 +191,6 @@ public class ConsoleApiAuditEvent {
     if (o instanceof UUID) return true;
     if (o instanceof Date) return true;
     if (o instanceof Temporal) return true; // java.time types
-    if (o instanceof BigInteger) return true;
-    if (o instanceof BigDecimal) return true;
 
     return false;
   }
