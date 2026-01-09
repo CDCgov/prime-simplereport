@@ -100,11 +100,24 @@ public class ConsoleApiAuditEvent {
     if (variableValue == null) return variableValue;
 
     Set<Object> visited = new HashSet<>();
-    return depthFirstSearchRedact(variableName, variableValue, replacement, visited);
+    Set<Object> redacted = new HashSet<>();
+    return depthFirstSearchRedact(variableName, variableValue, replacement, visited, redacted);
   }
 
   private Object depthFirstSearchRedact(
-      String variableName, Object variableValue, String replacement, Set<Object> visited) {
+      String variableName,
+      Object variableValue,
+      String replacement,
+      Set<Object> visited,
+      Set<Object> redacted) {
+    // scenario like multiplex, for example, where you can have the variableValue of "POSITIVE"
+    // visited and redacted for one disease but also need it redacted for any "POSITIVE" subsequent
+    // disease results. Checking against the "visited" Set prior to this check would make it so any
+    // subsequent "POSITIVE" variableValues are not redacted.
+    if (redacted.contains(variableValue)) {
+      return replacement;
+    }
+
     if (variableValue == null || visited.contains(variableValue)) {
       return variableValue;
     }
@@ -112,6 +125,7 @@ public class ConsoleApiAuditEvent {
 
     // early return if match found, ignoring variableValue's object type
     if (piiJsonVariableNames.contains(variableName)) {
+      redacted.add(variableValue);
       return replacement;
     }
 
@@ -122,7 +136,8 @@ public class ConsoleApiAuditEvent {
         String nestedVariableName = entry.getKey().toString();
         Object nestedVariableValue = entry.getValue();
         Object redactedEntryValue =
-            depthFirstSearchRedact(nestedVariableName, nestedVariableValue, replacement, visited);
+            depthFirstSearchRedact(
+                nestedVariableName, nestedVariableValue, replacement, visited, redacted);
         entry.setValue(redactedEntryValue);
       }
       return variableValue;
@@ -131,7 +146,8 @@ public class ConsoleApiAuditEvent {
     // Iterable
     if (variableValue instanceof Iterable<?> iterable) {
       for (Object element : iterable) {
-        depthFirstSearchRedact(element.getClass().getName(), element, replacement, visited);
+        depthFirstSearchRedact(
+            element.getClass().getName(), element, replacement, visited, redacted);
       }
       return variableValue;
     }
@@ -148,7 +164,8 @@ public class ConsoleApiAuditEvent {
       for (int i = 0; i < length; i++) {
         Object element = Array.get(variableValue, i);
         Object redactedElement =
-            depthFirstSearchRedact(variableName + "[" + i + "]", element, replacement, visited);
+            depthFirstSearchRedact(
+                variableName + "[" + i + "]", element, replacement, visited, redacted);
 
         Array.set(variableValue, i, redactedElement);
       }
@@ -167,7 +184,7 @@ public class ConsoleApiAuditEvent {
         try {
           Object child = f.get(variableValue);
           log.info("the CHILD field name is: " + child.getClass().getName());
-          depthFirstSearchRedact(child.getClass().getName(), child, replacement, visited);
+          depthFirstSearchRedact(child.getClass().getName(), child, replacement, visited, redacted);
         } catch (IllegalAccessException e) {
           log.info(e.getMessage());
         }
@@ -241,7 +258,7 @@ public class ConsoleApiAuditEvent {
               "diseaseName",
               "testResult", // needed for MultiplexResult and MultiplexResultInput graphql types.
               // "testResult" there is a String that defines the actual outcome of a
-              // test.
+              // test e.g. positive/negative
               "errors",
               "warnings",
               "message",
