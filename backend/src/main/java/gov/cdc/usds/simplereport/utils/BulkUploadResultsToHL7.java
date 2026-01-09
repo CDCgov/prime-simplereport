@@ -163,7 +163,8 @@ public class BulkUploadResultsToHL7 {
             gitProperties,
             aimsProcessingModeCode,
             testId,
-            testStatus);
+            testStatus,
+            true);
 
     return parser.encode(labReportMessage);
   }
@@ -217,21 +218,49 @@ public class BulkUploadResultsToHL7 {
         .build();
   }
 
+  /**
+   * Uses legacy logic from sending FHIR for populating empty ordering facility fields with testing
+   * lab fields. This isn't ideal, so we'll need to decide on a more thorough approach in the
+   * future.
+   */
   private FacilityReportInput getOrderingFacilityInput(TestResultRow row) {
-    String orderingFacilityPhoneNumber = row.getOrderingFacilityPhoneNumber().getValue();
+    String orderingFacilityStreet =
+        StringUtils.defaultIfEmpty(
+            row.getOrderingFacilityStreet().getValue(), row.getTestingLabStreet().getValue());
 
-    if (StringUtils.isEmpty(orderingFacilityPhoneNumber)) {
-      orderingFacilityPhoneNumber = row.getTestingLabPhoneNumber().getValue();
-    }
+    String orderingFacilityStreet2 =
+        StringUtils.defaultIfEmpty(
+            row.getOrderingFacilityStreet2().getValue(), row.getTestingLabStreet2().getValue());
+
+    String orderingFacilityCity =
+        StringUtils.defaultIfEmpty(
+            row.getOrderingFacilityCity().getValue(), row.getTestingLabCity().getValue());
+
+    String orderingFacilityState =
+        StringUtils.defaultIfEmpty(
+            row.getOrderingFacilityState().getValue(), row.getTestingLabState().getValue());
+
+    String orderingFacilityZipCode =
+        StringUtils.defaultIfEmpty(
+            row.getOrderingFacilityZipCode().getValue(), row.getTestingLabZipCode().getValue());
+
+    String orderingFacilityName =
+        StringUtils.defaultIfEmpty(
+            row.getOrderingFacilityName().getValue(), row.getTestingLabName().getValue());
+
+    String orderingFacilityPhoneNumber =
+        StringUtils.defaultIfEmpty(
+            row.getOrderingFacilityPhoneNumber().getValue(),
+            row.getTestingLabPhoneNumber().getValue());
 
     return FacilityReportInput.builder()
-        .name(row.getOrderingFacilityName().getValue())
+        .name(orderingFacilityName)
         .clia(row.getTestingLabClia().getValue())
-        .street(row.getOrderingFacilityStreet().getValue())
-        .streetTwo(row.getOrderingFacilityStreet2().getValue())
-        .city(row.getOrderingFacilityCity().getValue())
-        .state(row.getOrderingFacilityState().getValue())
-        .zipCode(row.getOrderingFacilityZipCode().getValue())
+        .street(orderingFacilityStreet)
+        .streetTwo(orderingFacilityStreet2)
+        .city(orderingFacilityCity)
+        .state(orderingFacilityState)
+        .zipCode(orderingFacilityZipCode)
         .phone(orderingFacilityPhoneNumber)
         .build();
   }
