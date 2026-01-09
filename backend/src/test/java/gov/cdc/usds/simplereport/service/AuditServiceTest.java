@@ -36,7 +36,8 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
     UserInfo userInfo = _userService.getCurrentUserInfo();
     GraphqlQueryState state = new GraphqlQueryState();
     state.setRequestId("ABCDE");
-    state.setGraphqlDetails(new GraphQlInputs("A", "B", Map.of()));
+    state.setGraphqlDetails(
+        new GraphQlInputs("A", "B", Map.of("disease", "COVID-19", "non-pii key", "non-pii value")));
     state.setHttpDetails(
         new HttpRequestDetails(
             "foo.com",
@@ -60,6 +61,9 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
     assertEquals("ABCDE", saved.getRequestId());
     assertEquals("ftp", saved.getHttpRequestDetails().getForwardedProtocol());
     assertEquals("A", saved.getGraphqlQueryDetails().getOperationName());
+    assertEquals(
+        Map.of("disease", "redacted", "non-pii key", "non-pii value"),
+        saved.getGraphqlQueryDetails().getVariables());
     assertEquals(
         List.of(
                 UserPermission.SEARCH_PATIENTS,

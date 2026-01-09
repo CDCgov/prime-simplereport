@@ -180,10 +180,8 @@ public class ConsoleApiAuditEvent {
       Class<?> cls = variableValue.getClass();
       for (Field f : cls.getDeclaredFields()) {
         f.setAccessible(true);
-        log.info("the CURRENT field name is: " + f.getName());
         try {
           Object child = f.get(variableValue);
-          log.info("the CHILD field name is: " + child.getClass().getName());
           depthFirstSearchRedact(child.getClass().getName(), child, replacement, visited, redacted);
         } catch (IllegalAccessException e) {
           log.info(e.getMessage());
