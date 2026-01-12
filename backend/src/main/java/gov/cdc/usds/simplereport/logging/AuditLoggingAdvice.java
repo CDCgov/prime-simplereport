@@ -53,7 +53,7 @@ public class AuditLoggingAdvice {
           patientLink.getInternalId(),
           org.getInternalId());
       String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
-      _auditService.logRestEvent(requestId, request, responseCode, org);
+      _auditService.logRestEvent(requestId, request, responseCode, org, patientLink);
     } else {
       log.trace("No patient link found: no audit entry needed");
     }

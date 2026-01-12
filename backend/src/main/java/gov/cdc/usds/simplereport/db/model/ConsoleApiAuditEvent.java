@@ -30,6 +30,7 @@ public class ConsoleApiAuditEvent {
   private List<String> graphqlErrorPaths;
   private List<String> userPermissions;
   private Organization organization;
+  private PatientLink patientLink;
   private String requestId;
   private int responseCode;
   private boolean isAdminUser;
@@ -66,7 +67,9 @@ public class ConsoleApiAuditEvent {
       HttpRequestDetails httpRequestDetails,
       int responseStatus,
       ApiUser user,
-      Organization organization) {
+      Organization organization,
+      PatientLink patientLink) {
+    this.patientLink = patientLink;
     this.organization = organization;
     this.user = user;
     this.responseCode = responseStatus;

@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,8 +37,42 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
     UserInfo userInfo = _userService.getCurrentUserInfo();
     GraphqlQueryState state = new GraphqlQueryState();
     state.setRequestId("ABCDE");
+
+    LinkedHashMap<String, String> covid19Result = new LinkedHashMap<>();
+    covid19Result.put("diseaseName", "COVID-19");
+    covid19Result.put("testResult", "POSITIVE");
+    LinkedHashMap<String, String> covid19RedactedResult = new LinkedHashMap<>();
+    covid19RedactedResult.put("diseaseName", "redacted");
+    covid19RedactedResult.put("testResult", "redacted");
+    LinkedHashMap<String, String> fluAResult = new LinkedHashMap<>();
+    fluAResult.put("diseaseName", "redacted");
+    fluAResult.put("testResult", "redacted");
+    LinkedHashMap<String, String> fluARedactedResult = new LinkedHashMap<>();
+    fluARedactedResult.put("diseaseName", "redacted");
+    fluARedactedResult.put("testResult", "redacted");
+    LinkedHashMap<String, String> fluBResult = new LinkedHashMap<>();
+    fluBResult.put("diseaseName", "Flu B");
+    fluBResult.put("testResult", "NEGATIVE");
+    LinkedHashMap<String, String> fluBRedactedResult = new LinkedHashMap<>();
+    fluBRedactedResult.put("diseaseName", "redacted");
+    fluBRedactedResult.put("testResult", "redacted");
+
+    List<LinkedHashMap<String, String>> multiplexResults =
+        List.of(covid19Result, fluAResult, fluBResult);
+    List<LinkedHashMap<String, String>> redactedMultiplexResults =
+        List.of(covid19RedactedResult, fluARedactedResult, fluBRedactedResult);
+
     state.setGraphqlDetails(
-        new GraphQlInputs("A", "B", Map.of("disease", "COVID-19", "non-pii key", "non-pii value")));
+        new GraphQlInputs(
+            "A",
+            "B",
+            Map.of(
+                "disease",
+                "COVID-19",
+                "non-pii key",
+                "non-pii value",
+                "results",
+                multiplexResults)));
     state.setHttpDetails(
         new HttpRequestDetails(
             "foo.com",
@@ -62,7 +97,13 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
     assertEquals("ftp", saved.getHttpRequestDetails().getForwardedProtocol());
     assertEquals("A", saved.getGraphqlQueryDetails().getOperationName());
     assertEquals(
-        Map.of("disease", "redacted", "non-pii key", "non-pii value"),
+        Map.of(
+            "disease",
+            "redacted",
+            "results",
+            redactedMultiplexResults,
+            "non-pii key",
+            "non-pii value"),
         saved.getGraphqlQueryDetails().getVariables());
     assertEquals(
         List.of(

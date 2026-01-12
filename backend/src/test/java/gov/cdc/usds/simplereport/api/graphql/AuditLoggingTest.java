@@ -132,6 +132,7 @@ class AuditLoggingTest extends BaseGraphqlTest {
 
     ConsoleApiAuditEvent event =
         assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, null);
+    assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
     assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
 
     HttpRequestDetails httpDetails = event.getHttpRequestDetails(); // we already checked requestUri
@@ -175,6 +176,7 @@ class AuditLoggingTest extends BaseGraphqlTest {
 
     ConsoleApiAuditEvent event =
         assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK_V2, null);
+    assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
     assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
 
     HttpRequestDetails httpDetails = event.getHttpRequestDetails(); // we already checked requestUri
