@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -127,7 +128,7 @@ public class ConsoleApiAuditEvent {
     visited.add(variableValue);
 
     // early return if match found, ignoring variableValue's object type
-    if (piiJsonVariableNames.contains(variableName)) {
+    if (piiVariableNames.contains(variableName)) {
       redacted.add(variableValue);
       return replacement;
     }
@@ -166,11 +167,13 @@ public class ConsoleApiAuditEvent {
       int length = Array.getLength(variableValue);
       for (int i = 0; i < length; i++) {
         Object element = Array.get(variableValue, i);
-        Object redactedElement =
-            depthFirstSearchRedact(
-                variableName + "[" + i + "]", element, replacement, visited, redacted);
+        if (element != null) {
+          Object redactedElement =
+              depthFirstSearchRedact(
+                  element.getClass().getName(), element, replacement, visited, redacted);
 
-        Array.set(variableValue, i, redactedElement);
+          Array.set(variableValue, i, redactedElement);
+        }
       }
 
       return variableValue;
@@ -181,11 +184,30 @@ public class ConsoleApiAuditEvent {
       return variableValue;
     } else {
       Class<?> cls = variableValue.getClass();
-      for (Field f : cls.getDeclaredFields()) {
-        f.setAccessible(true);
+      for (Field field : cls.getDeclaredFields()) {
+        if (Modifier.isStatic(field.getModifiers())) {
+          continue;
+        }
+        field.setAccessible(true);
         try {
-          Object child = f.get(variableValue);
-          depthFirstSearchRedact(child.getClass().getName(), child, replacement, visited, redacted);
+          String childVariableName = field.getName();
+          Object childVariableValue = field.get(variableValue);
+          Object depthFirstSearchReplacementValue =
+              depthFirstSearchRedact(
+                  childVariableName, childVariableValue, replacement, visited, redacted);
+
+          if (depthFirstSearchReplacementValue.equals(replacement)) {
+            if (field.getType() == String.class) {
+              field.set(variableValue, replacement);
+            } else {
+              field.set(
+                  variableValue,
+                  null); // cannot assign the string value "redacted" to a non-string field, so
+              // setting to null instead
+            }
+          } else {
+            field.set(variableValue, depthFirstSearchReplacementValue);
+          }
         } catch (IllegalAccessException e) {
           log.info(e.getMessage());
         }
@@ -214,7 +236,7 @@ public class ConsoleApiAuditEvent {
   }
 
   @JsonIgnore
-  private final List<String> piiJsonVariableNames =
+  private final List<String> piiVariableNames =
       // these are taken from pii-containing field names in main.graphqls
       new ArrayList<>(
           List.of(
@@ -231,7 +253,9 @@ public class ConsoleApiAuditEvent {
               "state",
               "zipCode",
               "telephone",
+              "number",
               "phoneNumbers",
+              "primaryPhone",
               "role",
               "lookupId",
               "email",

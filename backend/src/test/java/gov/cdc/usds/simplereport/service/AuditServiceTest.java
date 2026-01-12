@@ -7,11 +7,17 @@ import static org.mockito.Mockito.verify;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ConsoleApiAuditEvent;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +33,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 class AuditServiceTest extends BaseServiceTest<AuditService> {
 
   @Autowired private ApiUserService _userService;
+  @Autowired private TestDataFactory testDataFactory;
   @MockitoBean AuditLoggerService auditLoggerServiceSpy;
   @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;
 
@@ -62,6 +69,14 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
     List<LinkedHashMap<String, String>> redactedMultiplexResults =
         List.of(covid19RedactedResult, fluARedactedResult, fluBRedactedResult);
 
+    int[] unredactablePrimitiveArray = new int[3];
+    TestEvent[] redactableTestEventArray = new TestEvent[3];
+    Organization org = testDataFactory.saveValidOrganization();
+    Facility facility = testDataFactory.createValidFacility(org);
+    Person patient = testDataFactory.createFullPerson(org);
+    TestOrder testOrder = testDataFactory.createTestOrder(patient, facility);
+    redactableTestEventArray[0] = new TestEvent(testOrder);
+
     state.setGraphqlDetails(
         new GraphQlInputs(
             "A",
@@ -72,7 +87,11 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
                 "non-pii key",
                 "non-pii value",
                 "results",
-                multiplexResults)));
+                multiplexResults,
+                "unredactablePrimitiveArray",
+                unredactablePrimitiveArray,
+                "redactableTestEventArray",
+                redactableTestEventArray)));
     state.setHttpDetails(
         new HttpRequestDetails(
             "foo.com",
@@ -91,6 +110,7 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
 
     verify(auditLoggerServiceSpy, atLeastOnce()).logEvent(auditLogCaptor.capture());
     ConsoleApiAuditEvent saved = auditLogCaptor.getValue();
+    Map<String, Object> graphQlVariables = saved.getGraphqlQueryDetails().getVariables();
 
     assertEquals(1L, auditLogCaptor.getAllValues().size());
     assertEquals("ABCDE", saved.getRequestId());
@@ -102,9 +122,19 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
             "redacted",
             "results",
             redactedMultiplexResults,
+            "unredactablePrimitiveArray",
+            unredactablePrimitiveArray,
+            "redactableTestEventArray",
+            redactableTestEventArray,
             "non-pii key",
             "non-pii value"),
-        saved.getGraphqlQueryDetails().getVariables());
+        graphQlVariables);
+
+    TestEvent[] redactableTestEventArrayResult =
+        (TestEvent[]) graphQlVariables.get("redactableTestEventArray");
+    assertEquals("redacted", redactableTestEventArrayResult[0].getPatientData().getCountry());
+    assertEquals("redacted", redactableTestEventArrayResult[0].getPatientData().getRace());
+    assertEquals("redacted", redactableTestEventArrayResult[0].getPatientData().getLookupId());
     assertEquals(
         List.of(
                 UserPermission.SEARCH_PATIENTS,
