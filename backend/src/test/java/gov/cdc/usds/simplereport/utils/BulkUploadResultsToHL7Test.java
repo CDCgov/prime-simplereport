@@ -458,6 +458,24 @@ public class BulkUploadResultsToHL7Test {
   }
 
   @Test
+  void orc_orderingFacilityPopulated_withTestingLab_whenOrderingFacilityEmpty() {
+    InputStream input =
+        loadCsv("testResultUpload/test-results-upload-valid-without-ordering-facility.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    String[] lines = getHL7Lines(batchMessage);
+    String orc = getSegmentLine(lines, "ORC");
+    assertThat(orc).isNotNull();
+
+    String[] orcFields = orc.split("\\|");
+    assertThat(orcFields.length).isGreaterThan(23);
+
+    assertThat(orcFields[21]).contains("My Testing Lab");
+    assertThat(orcFields[22]).contains("300 North Street", "Birmingham", "AL", "35228");
+    assertThat(orcFields[23]).contains("205", "8882000");
+  }
+
+  @Test
   void spm_datesPopulated_whenInputDatesBlank() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-blank-dates.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
