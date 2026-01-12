@@ -5,6 +5,19 @@
 
 @mixin legacy-prime-styles {
   // theme overrides
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Public Sans Web', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol' !important;
+  }
+
+  .font-heading-lg {
+    font-size: 1.38rem !important;
+  }
+
   .text-primary {
     color: #005ea2 !important;
   }
@@ -1186,5 +1199,49 @@
     &:hover {
       background-color: #1a4480;
     }
+  }
+
+  .usa-card__header > :only-child,
+  .usa-card__body > :only-child {
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+
+  .usa-combo-box__list-option--selected {
+    background-color: #005ea2 !important;
+    border-color: #005ea2 !important;
+    color: #fff !important;
+  }
+
+  .usa-combo-box__list-option--focused {
+    outline: 2px solid #162e51 !important;
+    outline-offset: -2px;
+    position: relative;
+    z-index: 100;
+  }
+
+  [contentEditable=true]:focus,
+  [href]:focus,
+  [tabindex]:focus,
+  button:not([disabled]):focus,
+  iframe:focus,
+  input:not([disabled]):focus,
+  select:not([disabled]):focus,
+  textarea:not([disabled]):focus {
+    outline: 0.25rem solid #2491ff !important;
+    outline-offset: 0;
+  }
+
+  .usa-combo-box__list-option--focused:focus {
+    outline-offset: -4px;
+  }
+
+  .usa-combo-box__list-option {
+    border-bottom: 1px solid #dfe1e2 !important;
+    cursor: pointer;
+    display: block;
+    padding: 0.5rem;
   }
 }

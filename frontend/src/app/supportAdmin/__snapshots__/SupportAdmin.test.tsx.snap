@@ -18,7 +18,7 @@ exports[`SupportAdmin loads menu categories 1`] = `
             class="usa-card__header"
           >
             <h1
-              class="font-heading-lg margin-top-0 margin-bottom-0"
+              class="font-sans-lg margin-top-0 margin-bottom-0"
             >
               Support admin
             </h1>
@@ -33,7 +33,7 @@ exports[`SupportAdmin loads menu categories 1`] = `
                 class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
               >
                 <h2
-                  class="font-heading-md margin-bottom-0 margin-top-2"
+                  class="font-sans-md margin-bottom-0 margin-top-2"
                 >
                   Organizations & facilities
                 </h2>
@@ -86,7 +86,7 @@ exports[`SupportAdmin loads menu categories 1`] = `
                 class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
               >
                 <h2
-                  class="font-heading-md margin-bottom-0 margin-top-2"
+                  class="font-sans-md margin-bottom-0 margin-top-2"
                 >
                   Devices
                 </h2>
@@ -115,7 +115,7 @@ exports[`SupportAdmin loads menu categories 1`] = `
                 class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
               >
                 <h2
-                  class="font-heading-md margin-bottom-0 margin-top-2"
+                  class="font-sans-md margin-bottom-0 margin-top-2"
                 >
                   Users & patients
                 </h2>
