@@ -196,7 +196,7 @@ public class ConsoleApiAuditEvent {
               depthFirstSearchRedact(
                   childVariableName, childVariableValue, replacement, visited, redacted);
 
-          if (depthFirstSearchReplacementValue.equals(replacement)) {
+          if (replacement.equals(depthFirstSearchReplacementValue)) {
             if (field.getType() == String.class) {
               field.set(variableValue, replacement);
             } else {
