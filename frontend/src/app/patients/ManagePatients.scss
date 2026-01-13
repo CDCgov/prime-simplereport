@@ -28,3 +28,14 @@
 .patient-form-deletion-field {
   width: calc(100% + 2.5rem);
 }
+
+.prime-container.sr-results-message {
+  a {
+    color: #005ea2 !important;
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: #54278f !important;
+  }
+}

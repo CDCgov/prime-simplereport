@@ -18,9 +18,9 @@
     text-decoration: none;
 
     &.is-active {
-      background-color: #0071bc; //$color-primary;
+      background-color: #0071bc !important; //$color-primary;
       border-radius: 100%;
-      color: white;
+      color: white !important;
     }
   }
 

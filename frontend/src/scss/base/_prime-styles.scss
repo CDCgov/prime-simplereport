@@ -1291,4 +1291,13 @@
       top: auto;
     }
   }
+
+  .usa-alert--error .usa-alert__body {
+    background-color: #f4e3db !important;
+  }
+
+  .usa-alert--error {
+    background-color: #f4e3db !important;
+    border-left-color: #d54309 !important;
+  }
 }
