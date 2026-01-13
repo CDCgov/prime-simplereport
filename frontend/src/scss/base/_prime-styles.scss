@@ -1300,4 +1300,15 @@
     background-color: #f4e3db !important;
     border-left-color: #d54309 !important;
   }
+
+  .patient-app {
+    a {
+      color: #005ea2 !important;
+      text-decoration: underline;
+    }
+
+    &:visited {
+      color: #54278f !important;
+    }
+  }
 }

@@ -47,7 +47,7 @@ const PatientHeader = () => {
                     facilityName &&
                     `${organizationName}, ${facilityName}`}
                 </span>
-                <span className="prime-organization-name margin-left-0 margin-top-05 text-base-lighter">
+                <span className="prime-organization-name margin-left-0 margin-top-05">
                   {t("header")}
                 </span>
               </div>
