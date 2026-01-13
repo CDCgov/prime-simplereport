@@ -1234,6 +1234,10 @@
     outline-offset: 0;
   }
 
+  .ReactModal__Content:focus {
+    outline: none !important;
+  }
+
   .usa-combo-box__list-option--focused:focus {
     outline-offset: -4px;
   }
