@@ -1,4 +1,13 @@
 .organization-form {
+  a {
+    color: #005ea2 !important;
+    text-decoration: underline;
+
+    &:visited {
+      color: #54278f !important;
+    }
+  }
+
   .usa-hint {
     font-size: 14px;
   }
