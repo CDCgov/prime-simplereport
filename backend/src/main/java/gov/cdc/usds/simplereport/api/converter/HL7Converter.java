@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.Translators.ABNORMAL_SNOMEDS;
+import static gov.cdc.usds.simplereport.api.Translators.NORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.APHL_ORG_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.CLIA_NAMING_SYSTEM_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.DEFAULT_COUNTRY;
@@ -66,6 +68,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.owasp.encoder.Encode;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
 
@@ -119,7 +122,8 @@ public class HL7Converter {
         gitProperties,
         processingId,
         testEvent.getTestOrderId().toString(),
-        testEvent.getCorrectionStatus());
+        testEvent.getCorrectionStatus(),
+        true);
   }
 
   /**
@@ -143,6 +147,8 @@ public class HL7Converter {
    *     parameter is not the same as the message control id in MSH-10 which is randomly generated.
    * @param correctionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
    *     Status
+   * @param isLegacyReport identifies lab reports from legacy SimpleReport 1.0 which can safely
+   *     assume values for abnormal flags in OBX-8
    * @return ORU_R01 message
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
@@ -158,7 +164,8 @@ public class HL7Converter {
       GitProperties gitProperties,
       String processingId,
       String orderId,
-      TestCorrectionStatus correctionStatus)
+      TestCorrectionStatus correctionStatus,
+      boolean isLegacyReport)
       throws DataTypeException, IllegalArgumentException {
     // Lab reports from single entry and bulk upload should always have order id already populated.
     // Single entry would use the test event's TestOrderId which is always required. Bulk upload
@@ -234,7 +241,8 @@ public class HL7Converter {
             performingFacility,
             specimenInput.getCollectionDate(),
             obxTestDetails.get(obxIndex),
-            correctionStatus);
+            correctionStatus,
+            isLegacyReport);
       }
 
       // "Only a single specimen can be associated with the OBR." HL7 allows for multiple specimens
@@ -864,6 +872,8 @@ public class HL7Converter {
    * @param specimenCollectionDate Used to populate the time of the observation
    * @param testDetail The test result data
    * @param testCorrectionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
+   * @param isLegacyReport identifies lab reports from legacy SimpleReport 1.0 which can safely
+   *     assume values for abnormal flags in OBX-8
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    * @throws IllegalArgumentException if non-ordinal result type is provided
    */
@@ -873,7 +883,8 @@ public class HL7Converter {
       FacilityReportInput performingFacility,
       Date specimenCollectionDate,
       TestDetailsInput testDetail,
-      TestCorrectionStatus testCorrectionStatus)
+      TestCorrectionStatus testCorrectionStatus,
+      boolean isLegacyReport)
       throws DataTypeException, IllegalArgumentException {
     obx.getObx1_SetIDOBX().setValue(String.valueOf(sequenceNumber));
 
@@ -898,7 +909,23 @@ public class HL7Converter {
       throw new IllegalArgumentException("Non-ordinal result types are not currently supported");
     }
 
-    // TODO: determine how we should programmatically set OBX 8 - Abnormal flags
+    // TODO: determine how we should programmatically set OBX 8 - Abnormal flags for SR 2.0
+    if (isLegacyReport && testDetail.getResultType() == ResultScaleType.ORDINAL) {
+      String resultValueSnomed = testDetail.getResultValue();
+
+      // HL7 implementation guide indicates OBX-8 should be a CWE data type (Coded with Exceptions),
+      // but the HAPI dependency handles it as an IS data type (Coded Value for User-Defined Tables)
+      IS abnormalFlag = obx.getObx8_AbnormalFlags(0);
+
+      // HL7 table 0078 Abnormal flags
+      if (ABNORMAL_SNOMEDS.containsKey(resultValueSnomed)) {
+        abnormalFlag.setValue("A"); // abnormal for non-numeric results
+      } else if (NORMAL_SNOMEDS.containsKey(resultValueSnomed)) {
+        abnormalFlag.setValue("N"); // normal for non-numeric results
+      } else {
+        log.info("Unsupported SNOMED result code for OBX-8: {}", Encode.forJava(resultValueSnomed));
+      }
+    }
 
     // OBX-11 uses HL7 table 0085 Observation result status codes interpretation
     String resultStatus;
