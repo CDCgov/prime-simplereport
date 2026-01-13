@@ -12,7 +12,9 @@ const ReportLandingPage = () => {
             <div className="tablet:grid-col-6 margin-bottom-2">
               <div className="card-container">
                 <div className="usa-card__body">
-                  <h2 className="font-sans-lg">I want to enter results individually</h2>
+                  <h2 className="font-sans-lg">
+                    I want to enter results individually
+                  </h2>
                   <p>
                     This option works well if you just have a few results to
                     report
@@ -29,7 +31,9 @@ const ReportLandingPage = () => {
             <div className="tablet:grid-col-6">
               <div className="card-container">
                 <div className="usa-card__body">
-                  <h2 className="font-sans-lg">I want to upload multiple results</h2>
+                  <h2 className="font-sans-lg">
+                    I want to upload multiple results
+                  </h2>
                   <p>
                     This option works well if you have many results to report
                   </p>

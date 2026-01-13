@@ -30,9 +30,10 @@
   &.application-container {
     display: flex;
     flex-flow: column;
+    // TODO: uncomment once _prime-styles.scss is no longer used
     // min-height: 100%;
 
-    // for 1.0 compatibility
+    // TODO: for 1.0 compatibility; remove once _prime-styles.scss is no longer used
     min-height: 100vh;
     background-color: $background;
   }
@@ -226,9 +227,9 @@
     padding-right: 0;
   }
 
-
   .usa-step-indicator__current-step {
     background-color: $brand-primary;
+    // TODO: uncomment once _prime-styles.scss is no longer used
     // margin-right: 0.5rem;
     // padding: 0;
     // height: 2.75rem;
@@ -239,6 +240,7 @@
     color: $brand-primary;
   }
 
+  // TODO: uncomment once _prime-styles.scss is no longer used
   // .usa-step-indicator__total-steps,
   // .usa-step-indicator__current-step {
   //   font-size: $body-lg;
