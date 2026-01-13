@@ -1244,8 +1244,37 @@
     display: block;
     padding: 0.5rem;
   }
-}
 
-.top-0125 {
-  top: 0.125rem;
+  .top-0125 {
+    top: 0.125rem;
+  }
+
+  .usa-step-indicator__segment--current::after {
+    background-color: #005ea2;
+  }
+
+  .usa-step-indicator__segment--current .usa-step-indicator__segment-label {
+    color: #005ea2;
+    font-weight: 700;
+  }
+
+  .usa-step-indicator__current-step {
+    font-feature-settings: "tnum" 1, "kern" 1;
+    background-color: #005ea2;
+    border-radius: 99rem;
+    color: #fff;
+    display: inline-block;
+    font-weight: 400;
+    height: 2.5rem;
+    padding: calc(1.25rem - 1.2ex);
+    text-align: center;
+    width: 2.5rem;
+  }
+
+  .usa-step-indicator__total-steps {
+    font-feature-settings: "tnum" 1, "kern" 1;
+    color: #005ea2;
+    font-weight: 400;
+    margin-right: 0.5rem;
+  }
 }
