@@ -1277,4 +1277,18 @@
     font-weight: 400;
     margin-right: 0.5rem;
   }
+
+  @media (min-width: 40em) {
+    .usa-banner__button {
+      bottom: auto;
+      color: #005ea2 !important;
+      display: inline;
+      left: auto;
+      margin-left: 0.5rem;
+      position: static;
+      position: relative;
+      right: auto;
+      top: auto;
+    }
+  }
 }
