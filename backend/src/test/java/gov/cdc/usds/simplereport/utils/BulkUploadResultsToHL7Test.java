@@ -102,6 +102,25 @@ public class BulkUploadResultsToHL7Test {
   }
 
   @Test
+  void requiredFieldsOnlyCsv_success() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-required-only.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    assertThat(batchMessage.message()).isNotEmpty();
+    assertThat(batchMessage.recordsCount()).isEqualTo(2);
+    assertThat(batchMessage.reportedDiseases()).isNotNull();
+
+    String[] lines = getHL7Lines(batchMessage);
+    assertThat(lines).isNotEmpty();
+
+    assertThat(hasSegment(lines, "FHS")).isTrue();
+    assertThat(hasSegment(lines, "BHS")).isTrue();
+    assertThat(hasSegment(lines, "MSH")).isTrue();
+    assertThat(hasSegment(lines, "BTS")).isTrue();
+    assertThat(hasSegment(lines, "FTS")).isTrue();
+  }
+
+  @Test
   void convertExistingCsv_TestOrderedCodeMapped() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-all-fields.csv");
     HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
