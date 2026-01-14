@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseS
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
+import static gov.cdc.usds.simplereport.utils.ResultUtils.mapTestResultStatusToSRValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.SNOMED_REGEX;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
@@ -31,7 +32,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -147,10 +147,7 @@ public class BulkUploadResultsToHL7 {
     var orderingFacility = getOrderingFacilityInput(row);
     var specimenInput = getSpecimenInput(row);
     var testDetailsInputList = List.of(getTestDetailsInput(row));
-    var testStatus =
-        row.getTestResultStatus().getValue().equals("C")
-            ? TestCorrectionStatus.CORRECTED
-            : TestCorrectionStatus.ORIGINAL;
+    var testStatus = mapTestResultStatusToSRValue(row.getTestResultStatus().getValue());
 
     var labReportMessage =
         hl7Converter.createLabReportMessage(
@@ -214,7 +211,10 @@ public class BulkUploadResultsToHL7 {
         .city(row.getTestingLabCity().getValue())
         .state(row.getTestingLabState().getValue())
         .zipCode(row.getTestingLabZipCode().getValue())
-        .phone(row.getTestingLabPhoneNumber().getValue())
+        .phone(
+            StringUtils.defaultIfEmpty(
+                row.getTestingLabPhoneNumber().getValue(),
+                row.getOrderingProviderPhoneNumber().getValue()))
         .build();
   }
 
@@ -251,7 +251,9 @@ public class BulkUploadResultsToHL7 {
     String orderingFacilityPhoneNumber =
         StringUtils.defaultIfEmpty(
             row.getOrderingFacilityPhoneNumber().getValue(),
-            row.getTestingLabPhoneNumber().getValue());
+            StringUtils.defaultIfEmpty(
+                row.getTestingLabPhoneNumber().getValue(),
+                row.getOrderingProviderPhoneNumber().getValue()));
 
     return FacilityReportInput.builder()
         .name(orderingFacilityName)
