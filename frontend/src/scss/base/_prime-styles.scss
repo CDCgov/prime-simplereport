@@ -1315,4 +1315,15 @@
       color: #54278f !important;
     }
   }
+
+  @media (min-width: 64em) {
+    .prime-nav.desktop-nav.usa-header--basic .usa-nav {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end !important;
+      padding: 0 0 0.25rem 0.5rem;
+      width: 100%;
+    }
+  }
 }
