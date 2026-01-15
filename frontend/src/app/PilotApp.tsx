@@ -119,33 +119,30 @@ const PilotApp = () => {
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}
-      <Page
-        header={<PilotHeader />}
-        children={
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Navigate
-                  to={{ pathname: homepagePath, search: location.search }}
-                />
-              }
-            />
-            <Route path="report" element={<ReportLandingPage />} />
-            <Route
-              path="report/lab"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewResults}
-                  userPermissions={data?.whoami.permissions}
-                  element={<LabReportForm />}
-                />
-              }
-            />
-            <Route path="settings/*" element={<Navigate to={"/pilot"} />} />
-          </Routes>
-        }
-      />
+      <Page header={<PilotHeader />}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Navigate
+                to={{ pathname: homepagePath, search: location.search }}
+              />
+            }
+          />
+          <Route path="report" element={<ReportLandingPage />} />
+          <Route
+            path="report/lab"
+            element={
+              <ProtectedRoute
+                requiredPermissions={canViewResults}
+                userPermissions={data?.whoami.permissions}
+                element={<LabReportForm />}
+              />
+            }
+          />
+          <Route path="settings/*" element={<Navigate to={"/pilot"} />} />
+        </Routes>
+      </Page>
     </div>
   );
 };

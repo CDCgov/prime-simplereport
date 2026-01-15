@@ -1,7 +1,12 @@
 @use "./design-system" as ds;
+@use "./uswds-tokens" as tokens;
 
 @forward "uswds-tokens";
 
 .sr-pilot-application {
+  // TODO: SRToastContainer is coupled with the Page component; ideally, these tokens should be used in SRToastContainer.scss
+  --bg-color-toast-error: #{tokens.$red-5v};
+  --bg-color-toast-success: #{tokens.$blue-cool-5};
+
   @include ds.design-system;
 }

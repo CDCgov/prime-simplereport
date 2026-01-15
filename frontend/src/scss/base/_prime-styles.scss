@@ -90,6 +90,24 @@
       color: #757575;
       box-shadow: inset 0 0 0 2px #c9c9c9;
     }
+
+    &--secondary {
+      background-color: #d83933 !important;
+      color: #fff !important;
+
+      &:active {
+        background-color: #8b0a03 !important;
+      }
+
+      &:hover {
+        background-color: #b50909 !important;
+      }
+    }
+  }
+
+  .usa-button:not([disabled]).usa-focus,
+  .usa-button:not([disabled]):focus {
+    outline-offset: 0.25rem !important;
   }
 
   .usa-card__body {
@@ -1305,6 +1323,16 @@
     border-left-color: #d54309 !important;
   }
 
+  .usa-alert--warning {
+    background-color: #faf3d1 !important;
+    border-left-color: #ffbe2e !important;
+  }
+
+  .usa-alert--warning .usa-alert__body {
+    background-color: #faf3d1 !important;
+    color: #1b1b1b !important;
+  }
+
   .patient-app {
     a {
       color: #005ea2 !important;
@@ -1314,6 +1342,12 @@
     &:visited {
       color: #54278f !important;
     }
+  }
+
+  .usa-card__body > :first-child,
+  .usa-card__header > :first-child {
+    margin-top: 0;
+    padding-top: 0;
   }
 
   @media (min-width: 64em) {

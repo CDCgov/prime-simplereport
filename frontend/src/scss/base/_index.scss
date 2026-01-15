@@ -3,6 +3,9 @@
 @use "./utilities" as utilities;
 
 .sr-legacy-application {
+  --bg-color-toast-error: #f4e3db;
+  --bg-color-toast-success: #ecf3ec;
+
   @include layout.legacy-app-layout;
   @include prime.legacy-prime-styles;
   @include utilities.legacy-utilities;
