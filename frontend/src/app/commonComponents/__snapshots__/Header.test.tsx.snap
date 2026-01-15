@@ -75,7 +75,7 @@ exports[`Header displays correctly 1`] = `
               <img
                 alt="SimpleReport"
                 class="width-card desktop:width-full"
-                src="simplereport-logo-black.svg"
+                src="simplereport-logo-color.svg"
               />
             </a>
             <div
