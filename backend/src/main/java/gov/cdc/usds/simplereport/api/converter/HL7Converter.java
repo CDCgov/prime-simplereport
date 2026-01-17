@@ -18,7 +18,6 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.NPI_NAMING_SY
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_NAME;
-import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.utils.MultiplexUtils.inferMultiplexDeviceTypeDisease;
 
@@ -187,7 +186,10 @@ public class HL7Converter {
 
     PID patientIdentificationSegment = message.getPATIENT_RESULT().getPATIENT().getPID();
     populatePatientIdentification(
-        patientIdentificationSegment, patientInput, performingFacility.getClia());
+        patientIdentificationSegment,
+        patientInput,
+        performingFacility.getName(),
+        performingFacility.getClia());
 
     String specimenId = String.valueOf(uuidGenerator.randomUUID());
 
@@ -392,13 +394,18 @@ public class HL7Converter {
    *
    * @param pid the PID object from the message's PATIENT_RESULT.PATIENT group
    * @param patientInput the input containing the form values for patient
-   * @param performingFacilityClia used to populate namespace ID for the assigning authority on a
+   * @param performingFacilityName used to populate namespace ID for the assigning authority on a
+   *     patient external id if present
+   * @param performingFacilityClia used to populate universal ID for the assigning authority on a
    *     patient external id if present
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
    */
   void populatePatientIdentification(
-      PID pid, PatientReportInput patientInput, String performingFacilityClia)
+      PID pid,
+      PatientReportInput patientInput,
+      String performingFacilityName,
+      String performingFacilityClia)
       throws DataTypeException {
     // PID Sequence 1 is "Set ID - PID" which is used to identify repetitions.
     // Since the ORU^R01 message only allows one Patient per message, the HL7 IG says this must be
@@ -414,7 +421,13 @@ public class HL7Converter {
             : uuidGenerator.randomUUID().toString();
     CX patientInternalIdEntry = pid.getPid3_PatientIdentifierList(0);
     // PI is the value for Patient internal identifier on HL7 table 0203 Identifier type
-    populatePatientIdentifierEntry(patientInternalIdEntry, internalId, "PI", null);
+    populatePatientIdentifierEntry(
+        patientInternalIdEntry,
+        internalId,
+        "PI",
+        hl7Properties.getSendingApplicationNamespace(),
+        hl7Properties.getSendingApplicationOID(),
+        "ISO");
 
     // ID used by the facility, such as a medical record number
     String externalId = patientInput.getPatientExternalId();
@@ -422,7 +435,12 @@ public class HL7Converter {
       CX patientExternalIdEntry = pid.getPid3_PatientIdentifierList(1);
       // PT is the value for Patient external identifier on HL7 table 0203 Identifier type
       populatePatientIdentifierEntry(
-          patientExternalIdEntry, externalId, "PT", performingFacilityClia);
+          patientExternalIdEntry,
+          externalId,
+          "PT",
+          performingFacilityName,
+          performingFacilityClia,
+          "CLIA");
     }
 
     populateName(
@@ -471,19 +489,35 @@ public class HL7Converter {
   }
 
   void populatePatientIdentifierEntry(
-      CX identifierEntry, String id, String identifierTypeCode, String namespaceId)
+      CX identifierEntry,
+      String id,
+      String identifierTypeCode,
+      String assigningAuthorityNamespaceId,
+      String assigningAuthorityUniversalId,
+      String idType)
       throws DataTypeException {
     identifierEntry.getCx1_IDNumber().setValue(id);
+
+    identifierEntry
+        .getCx4_AssigningAuthority()
+        .getHd1_NamespaceID()
+        .setValue(assigningAuthorityNamespaceId);
     identifierEntry
         .getCx4_AssigningAuthority()
         .getHd2_UniversalID()
-        .setValue(SIMPLE_REPORT_ORG_OID);
-    identifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
+        .setValue(assigningAuthorityUniversalId);
+    identifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue(idType);
+
     identifierEntry.getCx5_IdentifierTypeCode().setValue(identifierTypeCode);
 
-    if (StringUtils.isNotBlank(namespaceId)) {
-      identifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().setValue(namespaceId);
-    }
+    identifierEntry
+        .getCx6_AssigningFacility()
+        .getHd1_NamespaceID()
+        .setValue(assigningAuthorityNamespaceId);
+    identifierEntry
+        .getCx6_AssigningFacility()
+        .getHd2_UniversalID()
+        .setValue(assigningAuthorityUniversalId);
   }
 
   /** Populates the Extended Person Name (XPN) object */
@@ -750,9 +784,10 @@ public class HL7Converter {
    */
   void populateEntityIdentifierOID(EI entityIdentifier, String id) throws DataTypeException {
     entityIdentifier.getEi1_EntityIdentifier().setValue(id);
+    entityIdentifier.getEi2_NamespaceID().setValue(hl7Properties.getSendingApplicationNamespace());
     // EI-3 contains the universal ID for the assigning authority,
     // not the universal ID for the entity itself
-    entityIdentifier.getEi3_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
+    entityIdentifier.getEi3_UniversalID().setValue(hl7Properties.getSendingApplicationOID());
     entityIdentifier.getEi4_UniversalIDType().setValue("ISO");
   }
 
