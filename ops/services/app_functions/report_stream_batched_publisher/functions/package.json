@@ -23,7 +23,7 @@
   },
   "main": "dist/**/index.js",
   "dependencies": {
-    "@azure/functions": "^4.7.2",
+    "@azure/functions": "^4.10.0",
     "@azure/storage-queue": "^12.26.0",
     "applicationinsights": "^3.7.0",
     "csv-stringify": "^6.6.0",
