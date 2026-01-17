@@ -42,14 +42,14 @@ const ReactivateUserModal: React.FC<Props> = ({
           position: "initial",
         },
       }}
-      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
       contentLabel="Confirm reactivate user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
       onRequestClose={onClose}
     >
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
-          <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+          <h1 className="font-sans-lg margin-top-05 margin-bottom-0">
             Reactivate account:{" "}
             {displayFullName(user.firstName, user.middleName, user.lastName)}
           </h1>

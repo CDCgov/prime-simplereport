@@ -108,7 +108,7 @@ const TestResultTextModal = (
   <Modal
     isOpen={props.isOpen}
     className="sr-test-correction-modal-content"
-    overlayClassName="sr-test-correction-modal-overlay"
+    overlayClassName="sr-test-correction-modal-overlay sr-legacy-application"
     contentLabel="Printable test result"
     onRequestClose={props.closeModal}
   >

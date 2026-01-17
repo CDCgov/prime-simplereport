@@ -1,0 +1,38 @@
+// @use "@uswds/uswds/packages/uswds-core" as *;
+@use "../../scss/pilot" as *;
+
+.usaGovBanner {
+  background-color: $gray-90 !important;
+
+  @media print {
+    display: none;
+  }
+
+  :global {
+    .usa-banner__inner {
+      max-width: $page-max-width;
+    }
+
+    .usa-banner__header-text {
+      color: white;
+    }
+
+    .usa-banner__header-action {
+      color: $gray-20;
+    }
+
+    .usa-accordion__button {
+      .usa-banner__button-text {
+        color: $gray-20;
+
+        &:hover {
+          color: white;
+        }
+      }
+    }
+
+    .usa-banner__content {
+      color: white;
+    }
+  }
+}

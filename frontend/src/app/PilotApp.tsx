@@ -15,7 +15,7 @@ import { getAppInsights } from "./TelemetryService";
 import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import LabReportForm from "./universalReporting/LabReportForm";
-import PilotHeader from "./commonComponents/PilotHeader";
+import PilotHeader from "./universalReporting/PilotHeader";
 import ReportLandingPage from "./universalReporting/ReportLandingPage";
 import PageNotFound from "./commonComponents/PageNotFound";
 import { checkOktaLoginStatus } from "./ReportingApp";
@@ -114,40 +114,36 @@ const PilotApp = () => {
   }
 
   return (
-    <>
+    <div className="sr-pilot-application application-container">
       <VersionEnforcer />
       {process.env.REACT_APP_IS_TRAINING_SITE === "true" && (
         <TrainingNotification />
       )}
-      <Page
-        isPilotApp={true}
-        header={<PilotHeader />}
-        children={
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Navigate
-                  to={{ pathname: homepagePath, search: location.search }}
-                />
-              }
-            />
-            <Route path="report" element={<ReportLandingPage />} />
-            <Route
-              path="report/lab"
-              element={
-                <ProtectedRoute
-                  requiredPermissions={canViewResults}
-                  userPermissions={data?.whoami.permissions}
-                  element={<LabReportForm />}
-                />
-              }
-            />
-            <Route path="settings/*" element={<Navigate to={"/pilot"} />} />
-          </Routes>
-        }
-      />
-    </>
+      <Page header={<PilotHeader />}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Navigate
+                to={{ pathname: homepagePath, search: location.search }}
+              />
+            }
+          />
+          <Route path="report" element={<ReportLandingPage />} />
+          <Route
+            path="report/lab"
+            element={
+              <ProtectedRoute
+                requiredPermissions={canViewResults}
+                userPermissions={data?.whoami.permissions}
+                element={<LabReportForm />}
+              />
+            }
+          />
+          <Route path="settings/*" element={<Navigate to={"/pilot"} />} />
+        </Routes>
+      </Page>
+    </div>
   );
 };
 

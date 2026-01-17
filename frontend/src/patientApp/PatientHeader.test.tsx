@@ -31,7 +31,9 @@ describe("PatientHeader", () => {
       );
 
       expect(screen.getByText("Español")).toBeInTheDocument();
-      expect(screen.getByRole("button")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Español" })
+      ).toBeInTheDocument();
     });
 
     it("language toggler switches display language when clicked", async () => {
@@ -45,7 +47,7 @@ describe("PatientHeader", () => {
       const user = userEvent.setup();
       expect(screen.getByText("Español")).toBeInTheDocument();
 
-      await user.click(screen.getByRole("button"));
+      await user.click(screen.getByRole("button", { name: "Español" }));
 
       expect(screen.queryByText("Español")).not.toBeInTheDocument();
       expect(screen.getByText("English")).toBeInTheDocument();

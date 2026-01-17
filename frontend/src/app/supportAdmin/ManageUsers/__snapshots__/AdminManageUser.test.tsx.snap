@@ -756,7 +756,7 @@ exports[`Admin manage users Undelete user 2`] = `
     class="modal--basic"
   >
     <div
-      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
     >
       <div
         aria-label="Undelete Barnes, Ben Billy"

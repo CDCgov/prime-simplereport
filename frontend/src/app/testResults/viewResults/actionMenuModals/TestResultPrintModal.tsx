@@ -256,7 +256,7 @@ const TestResultPrintModal = (props: TestResultPrintModalProps) => (
   <Modal
     isOpen={props.isOpen}
     className="sr-test-results-modal-content"
-    overlayClassName="sr-test-results-modal-overlay"
+    overlayClassName="sr-test-results-modal-overlay sr-legacy-application"
     contentLabel="Printable test result"
     onRequestClose={props.closeModal}
   >

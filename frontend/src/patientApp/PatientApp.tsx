@@ -82,7 +82,6 @@ const PatientApp = () => {
             />
           </div>
         }
-        isPatientApp={true}
       />
     );
   }

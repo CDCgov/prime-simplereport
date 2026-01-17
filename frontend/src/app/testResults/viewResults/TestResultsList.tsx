@@ -252,7 +252,7 @@ const TestResultsList = () => {
         )}
       </div>
       {totalEntries <= 0 && !loading && (
-        <div className={"prime-container margin-top-2"}>
+        <div className={"prime-container margin-top-2 sr-test-results-message"}>
           <div
             className={
               "display-flex flex-column flex-align-center flex-justify-center"
