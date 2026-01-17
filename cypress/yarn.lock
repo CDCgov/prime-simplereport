@@ -112,10 +112,10 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
-"@faker-js/faker@^9.8.0":
-  version "9.8.0"
-  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-9.8.0.tgz#3344284028d1c9dc98dee2479f82939310370d88"
-  integrity sha512-U9wpuSrJC93jZBxx/Qq2wPjCuYISBueyVUGK7qqdmj7r/nxaxwW8AQDCLeRO7wZnjj94sh3p246cAYjUKuqgfg==
+"@faker-js/faker@^10.2.0":
+  version "10.2.0"
+  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-10.2.0.tgz#91028d4086969825795de331c305e8b91414bcb7"
+  integrity sha512-rTXwAsIxpCqzUnZvrxVh3L0QA0NzToqWBLAhV+zDV3MIIwiQhAZHMdPCIaj5n/yADu/tyk12wIPgL6YHGXJP+g==
 
 "@humanfs/core@^0.19.1":
   version "0.19.1"
