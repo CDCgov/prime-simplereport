@@ -146,9 +146,12 @@ public class BulkUploadResultsToFhir {
                   try {
                     return future.get();
                   } catch (InterruptedException | ExecutionException e) {
-                    log.error("Bulk upload failure to convert to fhir.", e);
+                    CsvProcessingException exceptionWithoutPii =
+                        new CsvProcessingException("Unable to process file.");
+                    exceptionWithoutPii.setStackTrace(e.getStackTrace());
+                    log.error("Bulk upload failure to convert to fhir.", exceptionWithoutPii);
                     Thread.currentThread().interrupt();
-                    throw new CsvProcessingException("Unable to process file.");
+                    throw exceptionWithoutPii;
                   }
                 })
             .map(line -> line.replace(System.getProperty("line.separator"), " "))
