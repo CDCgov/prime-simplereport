@@ -240,7 +240,7 @@ public class FhirConverter {
 
       number = formattedWithDash.replace("-", " ");
     } catch (NumberParseException exception) {
-      log.debug("Error parsing number: " + exception);
+      log.debug("Error parsing phone number");
     }
 
     return convertToContactPoint(contactPointUse, ContactPointSystem.PHONE, number);
