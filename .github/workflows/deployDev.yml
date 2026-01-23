@@ -29,7 +29,7 @@ jobs:
   build_docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build and Push backend
         uses: ./.github/actions/build-and-push
         with:
@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.deploy_env }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/build-frontend
         name: Build front-end application
         with:
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build_frontend, build_docker]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/tf-deploy
         name: Deploy with Terraform
         with:
@@ -87,7 +87,7 @@ jobs:
       url: https://${{ inputs.deploy_env }}.simplereport.gov
     needs: [prerelease_backend]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Promote and deploy
         uses: ./.github/actions/deploy-application
         with:
@@ -100,7 +100,7 @@ jobs:
     environment: ${{ inputs.deploy_env }}
     needs: [deploy]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Smoke test the env
         uses: ./.github/actions/post-deploy-smoke-test
         with:
@@ -111,7 +111,7 @@ jobs:
     if: ${{ always() && needs.smoke_test_front_and_back_end.result == 'failure' }}
     needs: [ smoke_test_front_and_back_end ]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Send alert to Slack
         uses: ./.github/actions/slack-message
         with:
