@@ -16,7 +16,7 @@ inputs:
   default_github_user:
     description: Default GitHub user to use if the user is not found in the map
     required: false
-    default: "alismx"
+    default: "default"
 
 runs:
   using: composite
