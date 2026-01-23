@@ -304,10 +304,10 @@ public class HL7Converter {
     // Sending application is different between prod and lower environments
     msh.getMsh3_SendingApplication()
         .getHd1_NamespaceID()
-        .setValue(hl7Properties.getSendingApplicationNamespace());
+        .setValue(hl7Properties.getSimpleReportNamespace());
     msh.getMsh3_SendingApplication()
         .getHd2_UniversalID()
-        .setValue(hl7Properties.getSendingApplicationOID());
+        .setValue(hl7Properties.getSimpleReportOid());
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
     // Sending facility is the same for ALL environments including local.
@@ -425,8 +425,8 @@ public class HL7Converter {
         patientInternalIdEntry,
         internalId,
         "PI",
-        hl7Properties.getSendingApplicationNamespace(),
-        hl7Properties.getSendingApplicationOID(),
+        hl7Properties.getSimpleReportNamespace(),
+        hl7Properties.getSimpleReportOid(),
         "ISO");
 
     // ID used by the facility, such as a medical record number
@@ -784,10 +784,10 @@ public class HL7Converter {
    */
   void populateEntityIdentifierOID(EI entityIdentifier, String id) throws DataTypeException {
     entityIdentifier.getEi1_EntityIdentifier().setValue(id);
-    entityIdentifier.getEi2_NamespaceID().setValue(hl7Properties.getSendingApplicationNamespace());
+    entityIdentifier.getEi2_NamespaceID().setValue(hl7Properties.getSimpleReportNamespace());
     // EI-3 contains the universal ID for the assigning authority,
     // not the universal ID for the entity itself
-    entityIdentifier.getEi3_UniversalID().setValue(hl7Properties.getSendingApplicationOID());
+    entityIdentifier.getEi3_UniversalID().setValue(hl7Properties.getSimpleReportOid());
     entityIdentifier.getEi4_UniversalIDType().setValue("ISO");
   }
 
@@ -1269,8 +1269,8 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "FHS",
-                hl7Properties.getSendingApplicationNamespace(),
-                hl7Properties.getSendingApplicationOID(),
+                hl7Properties.getSimpleReportNamespace(),
+                hl7Properties.getSimpleReportOid(),
                 "ISO",
                 SENDING_FACILITY_NAMESPACE,
                 SENDING_FACILITY_FAKE_AGGREGATE_CLIA,
@@ -1288,8 +1288,8 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "BHS",
-                hl7Properties.getSendingApplicationNamespace(),
-                hl7Properties.getSendingApplicationOID(),
+                hl7Properties.getSimpleReportNamespace(),
+                hl7Properties.getSimpleReportOid(),
                 "ISO",
                 SENDING_FACILITY_NAMESPACE,
                 SENDING_FACILITY_FAKE_AGGREGATE_CLIA,
