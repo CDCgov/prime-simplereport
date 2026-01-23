@@ -492,32 +492,20 @@ public class HL7Converter {
       CX identifierEntry,
       String id,
       String identifierTypeCode,
-      String assigningAuthorityNamespaceId,
-      String assigningAuthorityUniversalId,
+      String namespaceId,
+      String universalId,
       String idType)
       throws DataTypeException {
     identifierEntry.getCx1_IDNumber().setValue(id);
 
-    identifierEntry
-        .getCx4_AssigningAuthority()
-        .getHd1_NamespaceID()
-        .setValue(assigningAuthorityNamespaceId);
-    identifierEntry
-        .getCx4_AssigningAuthority()
-        .getHd2_UniversalID()
-        .setValue(assigningAuthorityUniversalId);
+    identifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().setValue(namespaceId);
+    identifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().setValue(universalId);
     identifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue(idType);
 
     identifierEntry.getCx5_IdentifierTypeCode().setValue(identifierTypeCode);
 
-    identifierEntry
-        .getCx6_AssigningFacility()
-        .getHd1_NamespaceID()
-        .setValue(assigningAuthorityNamespaceId);
-    identifierEntry
-        .getCx6_AssigningFacility()
-        .getHd2_UniversalID()
-        .setValue(assigningAuthorityUniversalId);
+    identifierEntry.getCx6_AssigningFacility().getHd1_NamespaceID().setValue(namespaceId);
+    identifierEntry.getCx6_AssigningFacility().getHd2_UniversalID().setValue(universalId);
   }
 
   /** Populates the Extended Person Name (XPN) object */
