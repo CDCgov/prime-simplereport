@@ -44,8 +44,8 @@ public class BulkUploadResultsToHL7Test {
     when(gitProperties.getCommitTime()).thenReturn(commitTime);
     when(gitProperties.getShortCommitId()).thenReturn("abc123");
     hl7Properties = mock(HL7Properties.class);
-    when(hl7Properties.getSendingApplicationNamespace()).thenReturn("SIMPLEREPORT.STAG");
-    when(hl7Properties.getSendingApplicationOID()).thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
+    when(hl7Properties.getSimpleReportNamespace()).thenReturn("SIMPLEREPORT.STAG");
+    when(hl7Properties.getSimpleReportOid()).thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
 
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
   }

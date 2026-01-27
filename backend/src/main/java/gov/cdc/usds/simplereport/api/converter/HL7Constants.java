@@ -28,9 +28,6 @@ public class HL7Constants {
 
   public static final String SIMPLE_REPORT_NAME = "SimpleReport";
 
-  /** Note: this is the CDC OID for now until we get a SimpleReport OID registered */
-  public static final String SIMPLE_REPORT_ORG_OID = "2.16.840.1.114222.4";
-
   public static final String APHL_ORG_OID = "2.16.840.1.113883.3.8589";
   public static final String HL7_VERSION_ID = "2.5.1";
 
