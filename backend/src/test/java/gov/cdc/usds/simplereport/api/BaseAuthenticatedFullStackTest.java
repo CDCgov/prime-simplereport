@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /** Base class for non-graphQL full stack tests that require authentication. */
 @Slf4j
@@ -29,7 +29,7 @@ public abstract class BaseAuthenticatedFullStackTest extends BaseFullStackTest {
   @Autowired private OrganizationInitializingService organizationInitializingService;
   @Autowired private DemoOktaRepository oktaRepository;
   @Autowired private DemoUserConfiguration userConfiguration;
-  @MockBean private AddressValidationService addressValidationService;
+  @MockitoBean private AddressValidationService addressValidationService;
 
   @Getter @Setter private String username = null;
 

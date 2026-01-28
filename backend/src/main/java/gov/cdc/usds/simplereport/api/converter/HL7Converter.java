@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.Translators.ABNORMAL_SNOMEDS;
+import static gov.cdc.usds.simplereport.api.Translators.NORMAL_SNOMEDS;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.APHL_ORG_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.CLIA_NAMING_SYSTEM_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.DEFAULT_COUNTRY;
@@ -13,11 +15,11 @@ import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFI
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFILE_NAMESPACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.MESSAGE_PROFILE_OID;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.NPI_NAMING_SYSTEM_OID;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_NAME;
-import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.formatToHL7DateTime;
 import static gov.cdc.usds.simplereport.utils.MultiplexUtils.inferMultiplexDeviceTypeDisease;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.CLIA_REGEX;
 
 import ca.uhn.hl7v2.model.DataTypeException;
 import ca.uhn.hl7v2.model.v251.datatype.CE;
@@ -45,6 +47,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.config.HL7Properties;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
@@ -64,6 +67,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.owasp.encoder.Encode;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
 
@@ -92,6 +96,7 @@ public class HL7Converter {
   private final UUIDGenerator uuidGenerator;
   // Used for easier mocking of new Date()
   private final DateGenerator dateGenerator;
+  private final HL7Properties hl7Properties;
   private static final String ENCODING_CHARS = "^~\\&";
 
   /**
@@ -116,7 +121,8 @@ public class HL7Converter {
         gitProperties,
         processingId,
         testEvent.getTestOrderId().toString(),
-        testEvent.getCorrectionStatus());
+        testEvent.getCorrectionStatus(),
+        true);
   }
 
   /**
@@ -140,6 +146,8 @@ public class HL7Converter {
    *     parameter is not the same as the message control id in MSH-10 which is randomly generated.
    * @param correctionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
    *     Status
+   * @param isLegacyReport identifies lab reports from legacy SimpleReport 1.0 which can safely
+   *     assume values for abnormal flags in OBX-8
    * @return ORU_R01 message
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
@@ -155,7 +163,8 @@ public class HL7Converter {
       GitProperties gitProperties,
       String processingId,
       String orderId,
-      TestCorrectionStatus correctionStatus)
+      TestCorrectionStatus correctionStatus,
+      boolean isLegacyReport)
       throws DataTypeException, IllegalArgumentException {
     // Lab reports from single entry and bulk upload should always have order id already populated.
     // Single entry would use the test event's TestOrderId which is always required. Bulk upload
@@ -170,19 +179,17 @@ public class HL7Converter {
     Date messageTimestamp = dateGenerator.newDate();
 
     MSH messageHeader = message.getMSH();
-    populateMessageHeader(
-        messageHeader,
-        performingFacility.getName(),
-        performingFacility.getClia(),
-        processingId,
-        messageTimestamp);
+    populateMessageHeader(messageHeader, processingId, messageTimestamp);
 
     SFT softwareSegment = message.getSFT();
     populateSoftwareSegment(softwareSegment, gitProperties);
 
     PID patientIdentificationSegment = message.getPATIENT_RESULT().getPATIENT().getPID();
     populatePatientIdentification(
-        patientIdentificationSegment, patientInput, performingFacility.getClia());
+        patientIdentificationSegment,
+        patientInput,
+        performingFacility.getName(),
+        performingFacility.getClia());
 
     String specimenId = String.valueOf(uuidGenerator.randomUUID());
 
@@ -236,7 +243,8 @@ public class HL7Converter {
             performingFacility,
             specimenInput.getCollectionDate(),
             obxTestDetails.get(obxIndex),
-            correctionStatus);
+            correctionStatus,
+            isLegacyReport);
       }
 
       // "Only a single specimen can be associated with the OBR." HL7 allows for multiple specimens
@@ -274,8 +282,6 @@ public class HL7Converter {
    * timestamp, etc. See page 90, HL7 v2.5.1 IG.
    *
    * @param msh the Message Header Segment (MSH) object from the message
-   * @param sendingFacilityName facility name
-   * @param sendingFacilityClia CLIA number for the facility sending the lab report
    * @param processingId Indicates intent for processing. Must be either T for training, D for
    *     debugging, or P for production (see HL7 table 0103)
    * @param messageTimestamp Must be greater than or equal to the value of OBR-22 Results
@@ -285,16 +291,8 @@ public class HL7Converter {
    * @throws IllegalArgumentException if facility CLIA number does not match required format, or if
    *     processing id is not T, D, or P
    */
-  void populateMessageHeader(
-      MSH msh,
-      String sendingFacilityName,
-      String sendingFacilityClia,
-      String processingId,
-      Date messageTimestamp)
+  void populateMessageHeader(MSH msh, String processingId, Date messageTimestamp)
       throws DataTypeException, IllegalArgumentException {
-    if (!sendingFacilityClia.matches(CLIA_REGEX)) {
-      throw new IllegalArgumentException("Sending facility CLIA number must match CLIA format");
-    }
     if (!processingId.matches("^[TDP]$")) {
       throw new IllegalArgumentException(
           "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
@@ -302,18 +300,31 @@ public class HL7Converter {
 
     msh.getMsh1_FieldSeparator().setValue("|");
     msh.getMsh2_EncodingCharacters().setValue(ENCODING_CHARS);
-    msh.getMsh3_SendingApplication().getHd1_NamespaceID().setValue(SIMPLE_REPORT_NAME);
-    msh.getMsh3_SendingApplication().getHd2_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
+
+    // Sending application is different between prod and lower environments
+    msh.getMsh3_SendingApplication()
+        .getHd1_NamespaceID()
+        .setValue(hl7Properties.getSimpleReportNamespace());
+    msh.getMsh3_SendingApplication()
+        .getHd2_UniversalID()
+        .setValue(hl7Properties.getSimpleReportOid());
     msh.getMsh3_SendingApplication().getHd3_UniversalIDType().setValue("ISO");
 
-    msh.getMsh4_SendingFacility().getHd1_NamespaceID().setValue(sendingFacilityName);
-    msh.getMsh4_SendingFacility().getHd2_UniversalID().setValue(sendingFacilityClia);
+    // Sending facility is the same for ALL environments including local.
+    // However, this is only the case for MSH-4 since the real facility that performed the test is
+    // populated in other segments like OBX-23.10.
+    msh.getMsh4_SendingFacility().getHd1_NamespaceID().setValue(SENDING_FACILITY_NAMESPACE);
+    msh.getMsh4_SendingFacility()
+        .getHd2_UniversalID()
+        .setValue(SENDING_FACILITY_FAKE_AGGREGATE_CLIA);
     // CLIA is allowed for MSH-4 even though it is not in the Universal ID Type value set of HL70301
     msh.getMsh4_SendingFacility().getHd3_UniversalIDType().setValue("CLIA");
 
+    msh.getMsh5_ReceivingApplication().getHd1_NamespaceID().setValue("APHL");
     msh.getMsh5_ReceivingApplication().getHd2_UniversalID().setValue(APHL_ORG_OID);
     msh.getMsh5_ReceivingApplication().getHd3_UniversalIDType().setValue("ISO");
 
+    msh.getMsh6_ReceivingFacility().getHd1_NamespaceID().setValue("APHL");
     msh.getMsh6_ReceivingFacility().getHd2_UniversalID().setValue(APHL_ORG_OID);
     msh.getMsh6_ReceivingFacility().getHd3_UniversalIDType().setValue("ISO");
 
@@ -383,13 +394,18 @@ public class HL7Converter {
    *
    * @param pid the PID object from the message's PATIENT_RESULT.PATIENT group
    * @param patientInput the input containing the form values for patient
-   * @param performingFacilityClia used to populate namespace ID for the assigning authority on a
+   * @param performingFacilityName used to populate namespace ID for the assigning authority on a
+   *     patient external id if present
+   * @param performingFacilityClia used to populate universal ID for the assigning authority on a
    *     patient external id if present
    * @throws DataTypeException if the HAPI package encounters a problem with the validity of a
    *     primitive data type
    */
   void populatePatientIdentification(
-      PID pid, PatientReportInput patientInput, String performingFacilityClia)
+      PID pid,
+      PatientReportInput patientInput,
+      String performingFacilityName,
+      String performingFacilityClia)
       throws DataTypeException {
     // PID Sequence 1 is "Set ID - PID" which is used to identify repetitions.
     // Since the ORU^R01 message only allows one Patient per message, the HL7 IG says this must be
@@ -405,7 +421,13 @@ public class HL7Converter {
             : uuidGenerator.randomUUID().toString();
     CX patientInternalIdEntry = pid.getPid3_PatientIdentifierList(0);
     // PI is the value for Patient internal identifier on HL7 table 0203 Identifier type
-    populatePatientIdentifierEntry(patientInternalIdEntry, internalId, "PI", null);
+    populatePatientIdentifierEntry(
+        patientInternalIdEntry,
+        internalId,
+        "PI",
+        hl7Properties.getSimpleReportNamespace(),
+        hl7Properties.getSimpleReportOid(),
+        "ISO");
 
     // ID used by the facility, such as a medical record number
     String externalId = patientInput.getPatientExternalId();
@@ -413,7 +435,12 @@ public class HL7Converter {
       CX patientExternalIdEntry = pid.getPid3_PatientIdentifierList(1);
       // PT is the value for Patient external identifier on HL7 table 0203 Identifier type
       populatePatientIdentifierEntry(
-          patientExternalIdEntry, externalId, "PT", performingFacilityClia);
+          patientExternalIdEntry,
+          externalId,
+          "PT",
+          performingFacilityName,
+          performingFacilityClia,
+          "CLIA");
     }
 
     populateName(
@@ -444,7 +471,8 @@ public class HL7Converter {
         patientInput.getCountry());
 
     if (StringUtils.isNotBlank(patientInput.getPhone())) {
-      populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone());
+      // PRN for Primary residence number from HL7 0201 Telecommunication Use Code
+      populatePhoneNumber(pid.getPid13_PhoneNumberHome(0), patientInput.getPhone(), "PRN");
     }
 
     if (StringUtils.isNotBlank(patientInput.getEmail())) {
@@ -461,19 +489,23 @@ public class HL7Converter {
   }
 
   void populatePatientIdentifierEntry(
-      CX identifierEntry, String id, String identifierTypeCode, String namespaceId)
+      CX identifierEntry,
+      String id,
+      String identifierTypeCode,
+      String namespaceId,
+      String universalId,
+      String idType)
       throws DataTypeException {
     identifierEntry.getCx1_IDNumber().setValue(id);
-    identifierEntry
-        .getCx4_AssigningAuthority()
-        .getHd2_UniversalID()
-        .setValue(SIMPLE_REPORT_ORG_OID);
-    identifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue("ISO");
+
+    identifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().setValue(namespaceId);
+    identifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().setValue(universalId);
+    identifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().setValue(idType);
+
     identifierEntry.getCx5_IdentifierTypeCode().setValue(identifierTypeCode);
 
-    if (StringUtils.isNotBlank(namespaceId)) {
-      identifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().setValue(namespaceId);
-    }
+    identifierEntry.getCx6_AssigningFacility().getHd1_NamespaceID().setValue(namespaceId);
+    identifierEntry.getCx6_AssigningFacility().getHd2_UniversalID().setValue(universalId);
   }
 
   /** Populates the Extended Person Name (XPN) object */
@@ -578,10 +610,11 @@ public class HL7Converter {
    *
    * @param xtn Extended telecommunication number.
    * @param phoneNumber Must contain exactly 10 digits.
+   * @param telecomUseCode Value from HL7 0201 Telecommunication Use Code
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    * @throws IllegalArgumentException if phone number does not have exactly 10 digits
    */
-  void populatePhoneNumber(XTN xtn, String phoneNumber)
+  void populatePhoneNumber(XTN xtn, String phoneNumber, String telecomUseCode)
       throws DataTypeException, IllegalArgumentException {
     if (StringUtils.isBlank(phoneNumber)) {
       return;
@@ -598,6 +631,8 @@ public class HL7Converter {
           "Phone number must have exactly 10 digits to populate XTN.");
     }
     final int localNumberStartIndex = 3;
+    xtn.getXtn2_TelecommunicationUseCode().setValue(telecomUseCode);
+    xtn.getXtn3_TelecommunicationEquipmentType().setValue("PH");
     xtn.getXtn6_AreaCityCode().setValue(strippedNumber.substring(0, localNumberStartIndex));
     // If XTN-7 Local Number is present, XTN-4 Email Address must be empty
     xtn.getXtn7_LocalNumber().setValue(strippedNumber.substring(localNumberStartIndex));
@@ -680,7 +715,9 @@ public class HL7Converter {
     populateOrderingProvider(commonOrder.getOrc12_OrderingProvider(0), orderingProvider);
 
     if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
-      populatePhoneNumber(commonOrder.getOrc14_CallBackPhoneNumber(0), orderingProvider.getPhone());
+      // WPN for Work Number from HL7 0201 Telecommunication Use Code
+      populatePhoneNumber(
+          commonOrder.getOrc14_CallBackPhoneNumber(0), orderingProvider.getPhone(), "WPN");
     }
 
     if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
@@ -706,8 +743,9 @@ public class HL7Converter {
         DEFAULT_COUNTRY);
 
     if (StringUtils.isNotBlank(orderingFacility.getPhone())) {
+      // WPN for Work Number from HL7 0201 Telecommunication Use Code
       populatePhoneNumber(
-          commonOrder.getOrc23_OrderingFacilityPhoneNumber(0), orderingFacility.getPhone());
+          commonOrder.getOrc23_OrderingFacilityPhoneNumber(0), orderingFacility.getPhone(), "WPN");
     }
 
     if (StringUtils.isNotBlank(orderingFacility.getEmail())) {
@@ -734,9 +772,10 @@ public class HL7Converter {
    */
   void populateEntityIdentifierOID(EI entityIdentifier, String id) throws DataTypeException {
     entityIdentifier.getEi1_EntityIdentifier().setValue(id);
+    entityIdentifier.getEi2_NamespaceID().setValue(hl7Properties.getSimpleReportNamespace());
     // EI-3 contains the universal ID for the assigning authority,
     // not the universal ID for the entity itself
-    entityIdentifier.getEi3_UniversalID().setValue(SIMPLE_REPORT_ORG_OID);
+    entityIdentifier.getEi3_UniversalID().setValue(hl7Properties.getSimpleReportOid());
     entityIdentifier.getEi4_UniversalIDType().setValue("ISO");
   }
 
@@ -812,8 +851,11 @@ public class HL7Converter {
     populateOrderingProvider(observationRequest.getObr16_OrderingProvider(0), orderingProvider);
 
     if (StringUtils.isNotBlank(orderingProvider.getPhone())) {
+      // WPN for Work Number from HL7 0201 Telecommunication Use Code
       populatePhoneNumber(
-          observationRequest.getObr17_OrderCallbackPhoneNumber(0), orderingProvider.getPhone());
+          observationRequest.getObr17_OrderCallbackPhoneNumber(0),
+          orderingProvider.getPhone(),
+          "WPN");
     }
 
     if (StringUtils.isNotBlank(orderingProvider.getEmail())) {
@@ -853,6 +895,8 @@ public class HL7Converter {
    * @param specimenCollectionDate Used to populate the time of the observation
    * @param testDetail The test result data
    * @param testCorrectionStatus used to populate OBR-25 Result Status and OBX-11 Observation Result
+   * @param isLegacyReport identifies lab reports from legacy SimpleReport 1.0 which can safely
+   *     assume values for abnormal flags in OBX-8
    * @throws DataTypeException if the HL7 package encounters a primitive validity error in setValue
    * @throws IllegalArgumentException if non-ordinal result type is provided
    */
@@ -862,7 +906,8 @@ public class HL7Converter {
       FacilityReportInput performingFacility,
       Date specimenCollectionDate,
       TestDetailsInput testDetail,
-      TestCorrectionStatus testCorrectionStatus)
+      TestCorrectionStatus testCorrectionStatus,
+      boolean isLegacyReport)
       throws DataTypeException, IllegalArgumentException {
     obx.getObx1_SetIDOBX().setValue(String.valueOf(sequenceNumber));
 
@@ -887,7 +932,23 @@ public class HL7Converter {
       throw new IllegalArgumentException("Non-ordinal result types are not currently supported");
     }
 
-    // TODO: determine how we should programmatically set OBX 8 - Abnormal flags
+    // TODO: determine how we should programmatically set OBX 8 - Abnormal flags for SR 2.0
+    if (isLegacyReport && testDetail.getResultType() == ResultScaleType.ORDINAL) {
+      String resultValueSnomed = testDetail.getResultValue();
+
+      // HL7 implementation guide indicates OBX-8 should be a CWE data type (Coded with Exceptions),
+      // but the HAPI dependency handles it as an IS data type (Coded Value for User-Defined Tables)
+      IS abnormalFlag = obx.getObx8_AbnormalFlags(0);
+
+      // HL7 table 0078 Abnormal flags
+      if (ABNORMAL_SNOMEDS.containsKey(resultValueSnomed)) {
+        abnormalFlag.setValue("A"); // abnormal for non-numeric results
+      } else if (NORMAL_SNOMEDS.containsKey(resultValueSnomed)) {
+        abnormalFlag.setValue("N"); // normal for non-numeric results
+      } else {
+        log.info("Unsupported SNOMED result code for OBX-8: {}", Encode.forJava(resultValueSnomed));
+      }
+    }
 
     // OBX-11 uses HL7 table 0085 Observation result status codes interpretation
     String resultStatus;
@@ -1188,11 +1249,7 @@ public class HL7Converter {
   }
 
   public String createBatchFileString(
-      List<String> encodedMessages,
-      String facilityName,
-      String facilityClia,
-      int batchMessageCount) {
-    String hl7Date = formatToHL7DateTime(dateGenerator.newDate());
+      List<String> encodedMessages, int batchMessageCount, String hl7Date) {
     ArrayList<String> parts = new ArrayList<>();
 
     // FHS
@@ -1200,11 +1257,11 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "FHS",
-                SIMPLE_REPORT_NAME,
-                SIMPLE_REPORT_ORG_OID,
+                hl7Properties.getSimpleReportNamespace(),
+                hl7Properties.getSimpleReportOid(),
                 "ISO",
-                facilityName,
-                facilityClia,
+                SENDING_FACILITY_NAMESPACE,
+                SENDING_FACILITY_FAKE_AGGREGATE_CLIA,
                 "CLIA",
                 "APHL",
                 APHL_ORG_OID,
@@ -1219,11 +1276,11 @@ public class HL7Converter {
         generateHeaderSegment(
             new HeaderSegmentFields(
                 "BHS",
-                SIMPLE_REPORT_NAME,
-                SIMPLE_REPORT_ORG_OID,
+                hl7Properties.getSimpleReportNamespace(),
+                hl7Properties.getSimpleReportOid(),
                 "ISO",
-                facilityName,
-                facilityClia,
+                SENDING_FACILITY_NAMESPACE,
+                SENDING_FACILITY_FAKE_AGGREGATE_CLIA,
                 "CLIA",
                 "APHL",
                 APHL_ORG_OID,

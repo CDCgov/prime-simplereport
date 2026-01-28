@@ -15,15 +15,15 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.data.auditing.DateTimeProvider;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 class PatientLinkRepositoryTest extends BaseRepositoryTest {
-  @MockBean DateTimeProvider dateTimeProvider;
+  @MockitoBean DateTimeProvider dateTimeProvider;
 
-  @SpyBean private AuditingHandler handler;
+  @MockitoSpyBean private AuditingHandler handler;
 
   @Autowired private TestDataFactory testDataFactory;
 

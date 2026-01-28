@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @TestPropertySource(properties = {"spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"})
 class DbOrgRoleClaimsServiceTest extends BaseServiceTest<DbOrgRoleClaimsService> {
   @Autowired OrganizationRoleClaimsTestUtils _orgRoleClaimsTestUtils;
   @Autowired OrganizationService _organizationService;
-  @SpyBean ApiUserRepository _apiUserRepoSpy;
+  @MockitoSpyBean ApiUserRepository _apiUserRepoSpy;
 
   @Test
   void getOrganizationRoleClaims_withEmail_success() {

@@ -126,21 +126,20 @@ public class DateTimeUtilsTest {
   void formatToHL7DateTime_zonedDateTime() {
     LocalDateTime localDateTime = LocalDateTime.of(2025, 7, 1, 8, 0, 0);
     ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("US/Pacific"));
-    assertThat(formatToHL7DateTime(zonedDateTime)).isEqualTo("20250701080000.0000-0700");
+    assertThat(formatToHL7DateTime(zonedDateTime)).isEqualTo("20250701080000-0700");
   }
 
   @Test
   void formatToHL7DateTime_instant() {
     LocalDateTime localDateTime = LocalDateTime.of(2025, 7, 1, 8, 0, 0);
     ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneOffset.UTC);
-    assertThat(formatToHL7DateTime(zonedDateTime.toInstant()))
-        .isEqualTo("20250701080000.0000+0000");
+    assertThat(formatToHL7DateTime(zonedDateTime.toInstant())).isEqualTo("20250701080000+0000");
   }
 
   @Test
   void formatToHL7DateTime_date() {
     LocalDateTime localDateTime = LocalDateTime.of(2025, 7, 1, 8, 0, 0);
     Date date = Date.from(localDateTime.atZone(ZoneOffset.UTC).toInstant());
-    assertThat(formatToHL7DateTime(date)).isEqualTo("20250701080000.0000+0000");
+    assertThat(formatToHL7DateTime(date)).isEqualTo("20250701080000+0000");
   }
 }

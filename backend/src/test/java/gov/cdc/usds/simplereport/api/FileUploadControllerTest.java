@@ -31,17 +31,17 @@ import java.util.UUID;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 class FileUploadControllerTest extends BaseFullStackTest {
 
   @Autowired private MockMvc mockMvc;
-  @MockBean private PatientBulkUploadService patientBulkUploadService;
-  @MockBean private TestResultUploadService testResultUploadService;
-  @MockBean private FeatureFlagsConfig _featureFlagsConfig;
+  @MockitoBean private PatientBulkUploadService patientBulkUploadService;
+  @MockitoBean private TestResultUploadService testResultUploadService;
+  @MockitoBean private FeatureFlagsConfig _featureFlagsConfig;
 
   @Test
   void patientsUploadTest_happy() throws Exception {
@@ -76,7 +76,10 @@ class FileUploadControllerTest extends BaseFullStackTest {
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof CsvProcessingException))
         .andExpect(
-            result -> assertEquals("Invalid csv", result.getResolvedException().getMessage()));
+            result ->
+                assertEquals(
+                    "Unable to complete patient CSV upload due to an invalid input.",
+                    result.getResolvedException().getMessage()));
   }
 
   @Test

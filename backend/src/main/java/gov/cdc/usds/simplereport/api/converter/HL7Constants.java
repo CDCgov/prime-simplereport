@@ -5,10 +5,28 @@ public class HL7Constants {
     throw new IllegalStateException("Utility class");
   }
 
-  public static final String SIMPLE_REPORT_NAME = "SimpleReport";
+  /** Assigned by APHL for use in MSH-4.1 Sending Facility Namespace Id */
+  public static final String SENDING_FACILITY_NAMESPACE = "CDC.SimpleReport";
 
-  /** Note: this is the CDC OID for now until we get a SimpleReport OID registered */
-  public static final String SIMPLE_REPORT_ORG_OID = "2.16.840.1.114222.4";
+  /**
+   * Assigned by APHL, but we are not currently using this OID itself for MSH-4.2. Instead, we are
+   * using SENDING_FACILITY_FAKE_AGGREGATE_CLIA to populate MSH-4.2
+   */
+  public static final String SENDING_FACILITY_OID = "2.16.840.1.113883.3.8589.4.1.231";
+
+  /**
+   * A fake aggregate CLIA was assigned to SimpleReport by APHL so that STLTs can more easily
+   * process HL7 messages based on MSH-4 Sending Facility. If we populated MSH-4 with the real
+   * facility CLIA instead of SimpleReport's fake CLIA, then many STLTs would need to frequently
+   * reconfigure their systems with a long list of possible facility CLIAs to accept. To make this
+   * easier for STLTs, APHL assigns a fake CLIA to "aggregate senders" like SimpleReport. <br>
+   * <br>
+   * Note that for the real facility submitting the lab report, their CLIA number is still sent in
+   * other segments like OBX-23.10 to identify the performing organization.
+   */
+  public static final String SENDING_FACILITY_FAKE_AGGREGATE_CLIA = "00Z0000064";
+
+  public static final String SIMPLE_REPORT_NAME = "SimpleReport";
 
   public static final String APHL_ORG_OID = "2.16.840.1.113883.3.8589";
   public static final String HL7_VERSION_ID = "2.5.1";

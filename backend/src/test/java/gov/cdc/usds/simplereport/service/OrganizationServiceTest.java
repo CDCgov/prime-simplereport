@@ -62,26 +62,26 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @EnableAsync
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
-  @SpyBean private FacilityRepository facilityRepository;
-  @SpyBean private FacilityLabRepository facilityLabRepository;
-  @SpyBean private OrganizationRepository organizationRepository;
-  @SpyBean private SpecimenRepository specimenRepository;
+  @MockitoSpyBean private FacilityRepository facilityRepository;
+  @MockitoSpyBean private FacilityLabRepository facilityLabRepository;
+  @MockitoSpyBean private OrganizationRepository organizationRepository;
+  @MockitoSpyBean private SpecimenRepository specimenRepository;
   @Autowired private DeviceTypeRepository deviceTypeRepository;
-  @SpyBean private OktaRepository oktaRepository;
-  @SpyBean private PersonRepository personRepository;
+  @MockitoSpyBean private OktaRepository oktaRepository;
+  @MockitoSpyBean private PersonRepository personRepository;
   @Autowired ApiUserRepository _apiUserRepo;
-  @MockBean private EmailService emailService;
-  @SpyBean private DbAuthorizationService dbAuthorizationService;
-  @MockBean private FeatureFlagsConfig featureFlagsConfig;
+  @MockitoBean private EmailService emailService;
+  @MockitoSpyBean private DbAuthorizationService dbAuthorizationService;
+  @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
 
   @BeforeEach
   void setupData() {

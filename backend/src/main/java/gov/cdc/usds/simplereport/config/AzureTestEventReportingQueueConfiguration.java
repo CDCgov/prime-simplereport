@@ -7,6 +7,7 @@ import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
+import com.azure.storage.queue.QueueMessageEncoding;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.converter.FhirContextProvider;
@@ -89,6 +90,8 @@ class AzureTestEventReportingQueueConfiguration {
   @Bean(name = "csvQueueReportingService")
   @ConditionalOnMissingBean(name = "csvQueueReportingService")
   TestEventReportingService noOpCSVReportingService() {
+    // Note: printSerializedTestEvent should always be set to false if using this NoOp service in
+    // prod. This avoids printing any sensitive data.
     return NoOpCovidReportingService.builder().build();
   }
 
@@ -97,6 +100,8 @@ class AzureTestEventReportingQueueConfiguration {
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
   TestEventReportingService noOpFhirReportingService(
       FhirContext context, GitProperties gitProperties, FhirConverter fhirConverter) {
+    // Note: printSerializedTestEvent should always be set to false if using this NoOp service in
+    // prod. This avoids printing any sensitive data.
     return NoOpFHIRReportingService.builder()
         .fhirContext(context)
         .gitProperties(gitProperties)
@@ -109,6 +114,8 @@ class AzureTestEventReportingQueueConfiguration {
   @ConditionalOnMissingBean(name = "hl7QueueReportingService")
   TestEventReportingService noOpHL7ReportingService(
       HapiContext hapiContext, GitProperties gitProperties, HL7Converter hl7Converter) {
+    // Note: printSerializedTestEvent should always be set to false if using this NoOp service in
+    // prod. This avoids printing any sensitive data.
     return NoOpHL7ReportingService.builder()
         .hapiContext(hapiContext)
         .gitProperties(gitProperties)
@@ -180,12 +187,14 @@ class AzureTestEventReportingQueueConfiguration {
     return new QueueClientBuilder()
         .connectionString(properties.getConnectionString())
         .queueName(properties.getHl7QueueName())
+        .messageEncoding(QueueMessageEncoding.BASE64)
         .buildAsyncClient();
   }
 
   @Builder
   static class NoOpCovidReportingService implements TestEventReportingService {
 
+    // Do not set to true when using the PROD profile to avoid logging sensitive data
     @Builder.Default private boolean printSerializedTestEvent = false;
 
     @Override
@@ -214,6 +223,7 @@ class AzureTestEventReportingQueueConfiguration {
   @Builder
   static class NoOpFHIRReportingService implements TestEventReportingService {
 
+    // Do not set to true when using the PROD profile to avoid logging sensitive data
     @Builder.Default private boolean printSerializedTestEvent = false;
 
     private FhirContext fhirContext;
@@ -242,6 +252,7 @@ class AzureTestEventReportingQueueConfiguration {
   @Builder
   static class NoOpHL7ReportingService implements TestEventReportingService {
 
+    // Do not set to true when using the PROD profile to avoid logging sensitive data
     @Builder.Default private boolean printSerializedTestEvent = false;
 
     private HapiContext hapiContext;

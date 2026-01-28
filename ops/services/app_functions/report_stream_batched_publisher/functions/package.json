@@ -32,14 +32,15 @@
   },
   "resolutions": {
     "semver": "7.5.2",
-    "undici": "5.26.2"
+    "undici": "5.26.2",
+    "jws": "^3.2.3"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^24.1.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "azure-functions-core-tools": "^4.0.7317",
+    "azure-functions-core-tools": "^4.3.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.1",
     "jest": "^29.7.0",

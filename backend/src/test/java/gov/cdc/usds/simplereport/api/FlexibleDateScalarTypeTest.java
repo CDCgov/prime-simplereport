@@ -13,13 +13,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 class FlexibleDateScalarTypeTest {
   private final FlexibleDateCoercion converter = new FlexibleDateCoercion();
-  @MockBean GraphQLContext graphQLContext;
-  @MockBean Locale locale;
-  @MockBean CoercedVariables coercedVariables;
+  @MockitoBean GraphQLContext graphQLContext;
+  @MockitoBean Locale locale;
+  @MockitoBean CoercedVariables coercedVariables;
 
   @Test
   void convertImpl_succeeds() {

@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 0  # Chromatic wants the history
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
 
@@ -58,7 +58,7 @@ jobs:
 
       - name: Artifact Chromatic logs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: logs
           path: frontend/*.log

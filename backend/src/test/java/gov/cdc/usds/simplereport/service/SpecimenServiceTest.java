@@ -35,12 +35,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @Slf4j
@@ -49,11 +49,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ActiveProfiles("test")
 class SpecimenServiceTest {
 
-  @MockBean private SpecimenRepository specimenRepository;
+  @MockitoBean private SpecimenRepository specimenRepository;
 
-  @MockBean private SpecimenBodySiteRepository specimenBodySiteRepository;
+  @MockitoBean private SpecimenBodySiteRepository specimenBodySiteRepository;
 
-  @MockBean private LabRepository labRepository;
+  @MockitoBean private LabRepository labRepository;
 
   private SpecimenService specimenService;
   private HttpClient mockHttpClient;

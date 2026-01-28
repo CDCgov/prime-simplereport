@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
+import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithDate;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithNoCommonTestOrderedLoincDevice;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createSingleCovidTestEventOnMultiplexDevice;
@@ -35,6 +38,7 @@ import gov.cdc.usds.simplereport.api.model.universalreporting.ProviderReportInpu
 import gov.cdc.usds.simplereport.api.model.universalreporting.ResultScaleType;
 import gov.cdc.usds.simplereport.api.model.universalreporting.SpecimenInput;
 import gov.cdc.usds.simplereport.api.model.universalreporting.TestDetailsInput;
+import gov.cdc.usds.simplereport.config.HL7Properties;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -58,8 +62,8 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
@@ -67,13 +71,17 @@ import org.springframework.test.util.ReflectionTestUtils;
 class HL7ConverterTest {
   private static final Instant STATIC_INSTANT =
       LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-  private static final String STATIC_INSTANT_HL7_STRING = "20250701000000.0000+0000";
+  private static final String STATIC_INSTANT_HL7_STRING = "20250701000000+0000";
   private static final String STATIC_RANDOM_UUID = "5db534ea-5e97-4861-ba18-d74acc46db15";
+  private static final String SIMPLE_REPORT_SENDING_APPLICATION_OID =
+      "2.16.840.1.113883.3.8589.4.2.134.2";
+  private static final String SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE = "SIMPLEREPORT.STAG";
 
   private final HapiContext hapiContext = HapiContextProvider.get();
   @Mock private GitProperties gitProperties;
-  @MockBean private UUIDGenerator uuidGenerator;
-  @MockBean private DateGenerator dateGenerator;
+  @MockitoBean private UUIDGenerator uuidGenerator;
+  @MockitoBean private DateGenerator dateGenerator;
+  @Autowired private HL7Properties hl7Properties;
   @Autowired private HL7Converter hl7Converter;
 
   @BeforeEach
@@ -102,7 +110,7 @@ class HL7ConverterTest {
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
     assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("F");
     assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
-        .isEqualTo("20250701000000.0000+0000");
+        .isEqualTo("20250701000000+0000");
 
     Parser parser = hapiContext.getPipeParser();
     String encodedMessage = parser.encode(message);
@@ -138,7 +146,7 @@ class HL7ConverterTest {
     OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION().getOBX();
     assertThat(obx.getObx11_ObservationResultStatus().getValue()).isEqualTo("C");
     assertThat(obx.getObx14_DateTimeOfTheObservation().getTs1_Time().getValue())
-        .isEqualTo("20250704000000.0000+0000");
+        .isEqualTo("20250704000000+0000");
   }
 
   @Test
@@ -239,7 +247,8 @@ class HL7ConverterTest {
                   gitProperties,
                   "T",
                   uuidGenerator.randomUUID().toString(),
-                  TestCorrectionStatus.ORIGINAL);
+                  TestCorrectionStatus.ORIGINAL,
+                  true);
 
           Parser parser = hapiContext.getPipeParser();
           parser.encode(message);
@@ -266,27 +275,41 @@ class HL7ConverterTest {
             gitProperties,
             "T",
             uuidGenerator.randomUUID().toString(),
-            TestCorrectionStatus.ORIGINAL);
+            TestCorrectionStatus.ORIGINAL,
+            true);
 
     EI commonOrderFillerOrderNumber =
         message.getPATIENT_RESULT().getORDER_OBSERVATION().getORC().getOrc3_FillerOrderNumber();
     EI observationRequestFillerOrderNumber =
         message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR().getObr3_FillerOrderNumber();
     assertThat(commonOrderFillerOrderNumber.getEi1_EntityIdentifier().getValue())
-        .isEqualTo(observationRequestFillerOrderNumber.getEi1_EntityIdentifier().getValue());
+        .isEqualTo(observationRequestFillerOrderNumber.getEi1_EntityIdentifier().getValue())
+        .isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(commonOrderFillerOrderNumber.getEi2_NamespaceID().getValue())
+        .isEqualTo(observationRequestFillerOrderNumber.getEi2_NamespaceID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
+    assertThat(commonOrderFillerOrderNumber.getEi3_UniversalID().getValue())
+        .isEqualTo(observationRequestFillerOrderNumber.getEi3_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
   }
 
   @Test
   void populateMessageHeader_valid() throws DataTypeException {
     MSH msh = new ORU_R01().getMSH();
-    String facilityName = "Test Facility";
-    String clia = "12D1234567";
 
-    hl7Converter.populateMessageHeader(msh, facilityName, clia, "T", Date.from(STATIC_INSTANT));
+    hl7Converter.populateMessageHeader(msh, "T", Date.from(STATIC_INSTANT));
 
+    assertThat(msh.getMsh3_SendingApplication().getHd1_NamespaceID().getValue())
+        .isEqualTo("SIMPLEREPORT.STAG");
+    assertThat(msh.getMsh3_SendingApplication().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
+    assertThat(msh.getMsh3_SendingApplication().getHd3_UniversalIDType().getValue())
+        .isEqualTo("ISO");
     assertThat(msh.getMsh4_SendingFacility().getHd1_NamespaceID().getValue())
-        .isEqualTo(facilityName);
-    assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue()).isEqualTo(clia);
+        .isEqualTo(SENDING_FACILITY_NAMESPACE);
+    assertThat(msh.getMsh4_SendingFacility().getHd2_UniversalID().getValue())
+        .isEqualTo(SENDING_FACILITY_FAKE_AGGREGATE_CLIA);
+    assertThat(msh.getMsh4_SendingFacility().getHd3_UniversalIDType().getValue()).isEqualTo("CLIA");
     assertThat(msh.getMsh7_DateTimeOfMessage().getTs1_Time().getValue())
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
     assertThat(msh.getMsh10_MessageControlID().getValue()).isEqualTo(STATIC_RANDOM_UUID);
@@ -296,15 +319,11 @@ class HL7ConverterTest {
   @Test
   void populateMessageHeader_throwsExceptionFor_invalidProcessingId() {
     MSH msh = new ORU_R01().getMSH();
-    String facilityName = "Test Facility";
-    String clia = "12D1234567";
 
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () ->
-                hl7Converter.populateMessageHeader(
-                    msh, facilityName, clia, "F", Date.from(STATIC_INSTANT)));
+            () -> hl7Converter.populateMessageHeader(msh, "F", Date.from(STATIC_INSTANT)));
     assertThat(exception.getMessage())
         .isEqualTo(
             "Processing id must be one of 'T' for testing, 'D' for debugging, or 'P' for production");
@@ -331,14 +350,24 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+    hl7Converter.populatePatientIdentification(
+        pid, patientReportInput, "facilityName", "facilityCLIA");
 
     var patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
 
     assertThat(patientIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(patientIdentifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
     assertThat(patientIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
-        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
+    assertThat(
+            patientIdentifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().getValue())
+        .isEqualTo("ISO");
     assertThat(patientIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
+    assertThat(patientIdentifierEntry.getCx6_AssigningFacility().getHd1_NamespaceID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
+    assertThat(patientIdentifierEntry.getCx6_AssigningFacility().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
   }
 
   @Test
@@ -372,8 +401,9 @@ class HL7ConverterTest {
             patientInternalId);
 
     String clia = "12D1234567";
+    String facilityName = "facilityName";
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, clia);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, facilityName, clia);
 
     assertThat(pid.getPid3_PatientIdentifierListReps()).isEqualTo(2);
 
@@ -381,17 +411,24 @@ class HL7ConverterTest {
 
     assertThat(internalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(patientInternalId);
     assertThat(internalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
-        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
     assertThat(internalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
 
     var externalIdentifierEntry = pid.getPid3_PatientIdentifierList(1);
 
     assertThat(externalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(patientExternalId);
     assertThat(externalIdentifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().getValue())
-        .isEqualTo(clia);
+        .isEqualTo(facilityName);
     assertThat(externalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
-        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+        .isEqualTo(clia);
+    assertThat(
+            externalIdentifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().getValue())
+        .isEqualTo("CLIA");
     assertThat(externalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PT");
+    assertThat(externalIdentifierEntry.getCx6_AssigningFacility().getHd1_NamespaceID().getValue())
+        .isEqualTo(facilityName);
+    assertThat(externalIdentifierEntry.getCx6_AssigningFacility().getHd2_UniversalID().getValue())
+        .isEqualTo(clia);
   }
 
   @Test
@@ -422,7 +459,8 @@ class HL7ConverterTest {
             null,
             null);
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+    hl7Converter.populatePatientIdentification(
+        pid, patientReportInput, "facilityName", "facilityCLIA");
 
     assertThat(pid.getPid3_PatientIdentifierListReps()).isEqualTo(1);
 
@@ -430,7 +468,7 @@ class HL7ConverterTest {
 
     assertThat(internalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(STATIC_RANDOM_UUID);
     assertThat(internalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
-        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
     assertThat(internalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
   }
 
@@ -439,7 +477,8 @@ class HL7ConverterTest {
     PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+    hl7Converter.populatePatientIdentification(
+        pid, patientReportInput, "facilityName", "facilityCLIA");
 
     assertThat(pid.getPid7_DateTimeOfBirth().getTs1_Time().getValue()).isEqualTo("19900101");
   }
@@ -471,7 +510,8 @@ class HL7ConverterTest {
             null,
             null);
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+    hl7Converter.populatePatientIdentification(
+        pid, patientReportInput, "facilityName", "facilityCLIA");
 
     assertThat(pid.getPid13_PhoneNumberHome(0).getXtn4_EmailAddress().getValue())
         .isEqualTo("john@example.com");
@@ -575,8 +615,10 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
 
-    hl7Converter.populatePhoneNumber(xtn, "(716) 555-1234");
+    hl7Converter.populatePhoneNumber(xtn, "(716) 555-1234", "PRN");
 
+    assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isEqualTo("PRN");
+    assertThat(xtn.getXtn3_TelecommunicationEquipmentType().getValue()).isEqualTo("PH");
     assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo("716");
     assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo("5551234");
   }
@@ -587,10 +629,11 @@ class HL7ConverterTest {
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
 
     assertThrows(
-        IllegalArgumentException.class, () -> hl7Converter.populatePhoneNumber(xtn, "16-555-1234"));
+        IllegalArgumentException.class,
+        () -> hl7Converter.populatePhoneNumber(xtn, "16-555-1234", "PRN"));
     assertThrows(
         IllegalArgumentException.class,
-        () -> hl7Converter.populatePhoneNumber(xtn, "7716-555-1234"));
+        () -> hl7Converter.populatePhoneNumber(xtn, "7716-555-1234", "PRN"));
   }
 
   @Test
@@ -598,10 +641,11 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     XTN xtn = pid.getPid13_PhoneNumberHome(0);
 
-    hl7Converter.populatePhoneNumber(xtn, "");
+    hl7Converter.populatePhoneNumber(xtn, "", "PRN");
 
-    assertThat(xtn.getXtn6_AreaCityCode().getValue()).isEqualTo(null);
-    assertThat(xtn.getXtn7_LocalNumber().getValue()).isEqualTo(null);
+    assertThat(xtn.getXtn2_TelecommunicationUseCode().getValue()).isNull();
+    assertThat(xtn.getXtn6_AreaCityCode().getValue()).isNull();
+    assertThat(xtn.getXtn7_LocalNumber().getValue()).isNull();
   }
 
   @Test
@@ -687,13 +731,35 @@ class HL7ConverterTest {
 
     hl7Converter.populateCommonOrderSegment(orc, orderingFacility, orderingProvider, "123");
 
-    assertThat(orc.getOrc23_OrderingFacilityPhoneNumber(0).getEmailAddress().getValue())
+    assertThat(
+            orc.getOrc23_OrderingFacilityPhoneNumber(0)
+                .getXtn2_TelecommunicationUseCode()
+                .getValue())
+        .isEqualTo("NET");
+    assertThat(
+            orc.getOrc23_OrderingFacilityPhoneNumber(0)
+                .getXtn3_TelecommunicationEquipmentType()
+                .getValue())
+        .isEqualTo("Internet");
+    assertThat(orc.getOrc23_OrderingFacilityPhoneNumber(0).getXtn4_EmailAddress().getValue())
         .isEqualTo("dracula@example.com");
 
     assertThat(orc.getOrc14_CallBackPhoneNumberReps()).isEqualTo(2);
-    assertThat(orc.getOrc14_CallBackPhoneNumber(0).getLocalNumber().getValue())
+
+    assertThat(orc.getOrc14_CallBackPhoneNumber(0).getXtn2_TelecommunicationUseCode().getValue())
+        .isEqualTo("WPN");
+    assertThat(
+            orc.getOrc14_CallBackPhoneNumber(0).getXtn3_TelecommunicationEquipmentType().getValue())
+        .isEqualTo("PH");
+    assertThat(orc.getOrc14_CallBackPhoneNumber(0).getXtn7_LocalNumber().getValue())
         .isEqualTo("5555555");
-    assertThat(orc.getOrc14_CallBackPhoneNumber(1).getEmailAddress().getValue())
+
+    assertThat(orc.getOrc14_CallBackPhoneNumber(1).getXtn2_TelecommunicationUseCode().getValue())
+        .isEqualTo("NET");
+    assertThat(
+            orc.getOrc14_CallBackPhoneNumber(1).getXtn3_TelecommunicationEquipmentType().getValue())
+        .isEqualTo("Internet");
+    assertThat(orc.getOrc14_CallBackPhoneNumber(1).getXtn4_EmailAddress().getValue())
         .isEqualTo("flintstonemedical@example.com");
   }
 
@@ -706,7 +772,7 @@ class HL7ConverterTest {
 
     Instant specimenCollectionDate =
         LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+    String expectedSpecimenCollectionDate = "20250601000000+0000";
 
     hl7Converter.populateObservationRequest(
         observationRequest,
@@ -719,6 +785,10 @@ class HL7ConverterTest {
         TestCorrectionStatus.ORIGINAL,
         Date.from(STATIC_INSTANT));
 
+    assertThat(observationRequest.getObr3_FillerOrderNumber().getEi2_NamespaceID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
+    assertThat(observationRequest.getObr3_FillerOrderNumber().getEi3_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
     assertThat(
             observationRequest.getObr4_UniversalServiceIdentifier().getCe1_Identifier().getValue())
         .isEqualTo(testOrderLoinc);
@@ -739,12 +809,38 @@ class HL7ConverterTest {
         .isEqualTo(STATIC_INSTANT_HL7_STRING);
 
     assertThat(observationRequest.getObr17_OrderCallbackPhoneNumberReps()).isEqualTo(2);
+
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(0)
+                .getXtn2_TelecommunicationUseCode()
+                .getValue())
+        .isEqualTo("WPN");
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(0)
+                .getXtn3_TelecommunicationEquipmentType()
+                .getValue())
+        .isEqualTo("PH");
     assertThat(
             observationRequest
                 .getObr17_OrderCallbackPhoneNumber(0)
                 .getXtn7_LocalNumber()
                 .getValue())
         .isEqualTo("5555555");
+
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(1)
+                .getXtn2_TelecommunicationUseCode()
+                .getValue())
+        .isEqualTo("NET");
+    assertThat(
+            observationRequest
+                .getObr17_OrderCallbackPhoneNumber(1)
+                .getXtn3_TelecommunicationEquipmentType()
+                .getValue())
+        .isEqualTo("Internet");
     assertThat(
             observationRequest
                 .getObr17_OrderCallbackPhoneNumber(1)
@@ -760,10 +856,10 @@ class HL7ConverterTest {
 
     Instant specimenCollectionDate =
         LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+    String expectedSpecimenCollectionDate = "20250601000000+0000";
 
     Instant testResultDate = LocalDate.of(2025, 7, 2).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedTestResultDate = "20250702000000.0000+0000";
+    String expectedTestResultDate = "20250702000000+0000";
 
     FacilityReportInput performingFacility = TestDataBuilder.createFacilityReportInput();
     TestDetailsInput testDetail =
@@ -774,7 +870,7 @@ class HL7ConverterTest {
             "87949-4",
             "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
             ResultScaleType.ORDINAL,
-            "260373001",
+            DETECTED_SNOMED,
             Date.from(testResultDate),
             "");
 
@@ -784,7 +880,8 @@ class HL7ConverterTest {
         performingFacility,
         Date.from(specimenCollectionDate),
         testDetail,
-        TestCorrectionStatus.ORIGINAL);
+        TestCorrectionStatus.ORIGINAL,
+        false);
 
     assertThat(observationResult.getObx3_ObservationIdentifier().getCe1_Identifier().getValue())
         .isEqualTo(testDetail.getTestOrderLoinc());
@@ -802,6 +899,68 @@ class HL7ConverterTest {
 
     assertThat(observationResult.getObx19_DateTimeOfTheAnalysis().getTs1_Time().getValue())
         .isEqualTo(expectedTestResultDate);
+  }
+
+  @Test
+  void populateObservationResult_legacyReport_abnormalFlagFor_positiveResults()
+      throws DataTypeException {
+    OBX observationResult =
+        new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getOBSERVATION().getOBX();
+
+    FacilityReportInput performingFacility = TestDataBuilder.createFacilityReportInput();
+    TestDetailsInput testDetail =
+        new TestDetailsInput(
+            "105629000",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            ResultScaleType.ORDINAL,
+            DETECTED_SNOMED,
+            new Date(),
+            "");
+
+    hl7Converter.populateObservationResult(
+        observationResult,
+        1,
+        performingFacility,
+        new Date(),
+        testDetail,
+        TestCorrectionStatus.ORIGINAL,
+        true);
+
+    assertThat(observationResult.getObx8_AbnormalFlags(0).getValue()).isEqualTo("A");
+  }
+
+  @Test
+  void populateObservationResult_legacyReport_normalFlagFor_nonPositiveResults()
+      throws DataTypeException {
+    OBX observationResult =
+        new ORU_R01().getPATIENT_RESULT().getORDER_OBSERVATION(0).getOBSERVATION().getOBX();
+
+    FacilityReportInput performingFacility = TestDataBuilder.createFacilityReportInput();
+    TestDetailsInput testDetail =
+        new TestDetailsInput(
+            "105629000",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            "87949-4",
+            "Chlamydia trachomatis DNA [Presence] in Tissue by NAA with probe detection",
+            ResultScaleType.ORDINAL,
+            NOT_DETECTED_SNOMED,
+            new Date(),
+            "");
+
+    hl7Converter.populateObservationResult(
+        observationResult,
+        1,
+        performingFacility,
+        new Date(),
+        testDetail,
+        TestCorrectionStatus.ORIGINAL,
+        true);
+
+    assertThat(observationResult.getObx8_AbnormalFlags(0).getValue()).isEqualTo("N");
   }
 
   @Test
@@ -832,7 +991,8 @@ class HL7ConverterTest {
                     performingFacility,
                     Date.from(STATIC_INSTANT),
                     testDetail,
-                    TestCorrectionStatus.ORIGINAL));
+                    TestCorrectionStatus.ORIGINAL,
+                    true));
     assertThat(exception.getMessage())
         .isEqualTo("Non-ordinal result types are not currently supported");
   }
@@ -844,11 +1004,11 @@ class HL7ConverterTest {
 
     Instant specimenCollectionDate =
         LocalDate.of(2025, 6, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedSpecimenCollectionDate = "20250601000000.0000+0000";
+    String expectedSpecimenCollectionDate = "20250601000000+0000";
 
     Instant specimenReceivedDate =
         LocalDate.of(2025, 7, 2).atStartOfDay().toInstant(ZoneOffset.UTC);
-    String expectedSpecimenReceivedDate = "20250702000000.0000+0000";
+    String expectedSpecimenReceivedDate = "20250702000000+0000";
 
     SpecimenInput specimenInput =
         new SpecimenInput(
@@ -875,6 +1035,20 @@ class HL7ConverterTest {
                 .getEi1_EntityIdentifier()
                 .getValue())
         .isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(
+            specimen
+                .getSpm2_SpecimenID()
+                .getEip2_FillerAssignedIdentifier()
+                .getEi2_NamespaceID()
+                .getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
+    assertThat(
+            specimen
+                .getSpm2_SpecimenID()
+                .getEip2_FillerAssignedIdentifier()
+                .getEi3_UniversalID()
+                .getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
 
     assertThat(
             specimen

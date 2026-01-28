@@ -16,7 +16,7 @@ import java.util.Random;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SliceTestConfiguration.WithSimpleReportSiteAdminUser
 class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCachingService> {
@@ -26,7 +26,7 @@ class ResultsUploaderDeviceServiceTest extends BaseServiceTest<ResultsUploaderCa
   @Autowired private ResultsUploaderDeviceService deviceService;
   @Autowired private ResultsUploaderCachingService cachingService;
 
-  @Autowired @MockBean private FeatureFlagsConfig featureFlagsConfig;
+  @Autowired @MockitoBean private FeatureFlagsConfig featureFlagsConfig;
 
   private final Random random = new Random();
 

@@ -39,11 +39,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -69,8 +69,8 @@ class IdentityVerificationControllerTest extends BaseNonSpringBootTestConfigurat
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private DemoExperianService _experianService;
-  @MockBean private EmailService _emailService;
-  @MockBean private OrganizationQueueService _orgQueueService;
+  @MockitoBean private EmailService _emailService;
+  @MockitoBean private OrganizationQueueService _orgQueueService;
 
   private static final String FAKE_ORG_EXTERNAL_ID = "FAKE_ORG_EXTERNAL_ID";
   private static final String FAKE_ORG_EXTERNAL_ID_DOES_NOT_EXIST = "DOES_NOT_EXIST";

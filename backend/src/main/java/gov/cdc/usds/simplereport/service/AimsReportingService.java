@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.errors.AimsUploadException;
 import gov.cdc.usds.simplereport.config.AimsProperties;
 import gov.cdc.usds.simplereport.service.model.S3UploadResponse;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +38,27 @@ public class AimsReportingService {
         submissionId);
   }
 
-  private PutObjectResponse putObjectInAimsBucket(String objectKey, String objectBody) {
+  private PutObjectResponse putObjectInAimsBucket(UUID submissionId, String objectBody) {
+    String filename = generateFilename(submissionId);
+    String objectKey = aimsProperties.getUserId() + "/SendTo/" + filename;
+    Map<String, String> metadata =
+        Map.ofEntries(
+            Map.entry("AIMSPlatformSender", "SimpleReport"),
+            Map.entry("AIMSPlatformRecipient", "AIMSPlatform"),
+            Map.entry("AIMSPlatformSenderProject", "ELR"),
+            Map.entry("AIMSPlatformSenderProtocol", "S3"),
+            Map.entry("AIMSPlatformSenderEncryptionType", "KMS"),
+            Map.entry("Base64Encoded", "False"),
+            Map.entry("AIMSPlatformFilename", filename),
+            Map.entry("AIMSPlatformSenderMessageId", submissionId.toString()));
+
     try {
       return s3Client.putObject(
           PutObjectRequest.builder()
               .serverSideEncryption(ServerSideEncryption.AWS_KMS)
               .bucket(aimsProperties.getBucketName())
               .ssekmsKeyId(aimsProperties.getEncryptionKey())
+              .metadata(metadata)
               .key(objectKey)
               .contentType("text/plain")
               .build(),
@@ -55,10 +70,7 @@ public class AimsReportingService {
 
   public S3UploadResponse sendBatchMessageToAims(
       UUID submissionId, String batchMessage, int recordsCount) throws AimsUploadException {
-    String filename = generateFilename(submissionId);
-    String objectKey = aimsProperties.getUserId() + "/SendTo/" + filename;
-    PutObjectResponse putResponse = putObjectInAimsBucket(objectKey, batchMessage);
-
+    PutObjectResponse putResponse = putObjectInAimsBucket(submissionId, batchMessage);
     int statusCode = putResponse.sdkHttpResponse().statusCode();
 
     String errorMessage = null;

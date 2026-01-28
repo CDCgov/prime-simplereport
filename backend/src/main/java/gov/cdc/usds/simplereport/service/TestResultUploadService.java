@@ -17,12 +17,10 @@ import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.UploadDiseaseDetails;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AimsSubmissionSummary;
-import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HL7BatchMessage;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SubmissionSummary;
-import gov.cdc.usds.simplereport.db.model.auxiliary.UniversalSubmissionSummary;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -117,23 +115,17 @@ public class TestResultUploadService {
       }
 
       if (content.length > 0) {
-        if (featureFlagsConfig.isAimsReportingEnabled()) {
-          CompletableFuture<AimsSubmissionSummary> aimsSubmission =
-              submitResultsToAIMS(new ByteArrayInputStream(content), org, submissionId);
+        CompletableFuture<AimsSubmissionSummary> aimsSubmission =
+            submitResultsToAIMS(new ByteArrayInputStream(content), org, submissionId);
 
-          processUniversalPipelineResponse(aimsSubmission, Pipeline.AIMS)
-              .ifPresent(uploadSummary::add);
-        }
-
-        CompletableFuture<UniversalSubmissionSummary> universalSubmission =
-            submitResultsToUniversalPipeline(new ByteArrayInputStream(content), org, submissionId);
-
-        processUniversalPipelineResponse(universalSubmission, Pipeline.UNIVERSAL)
+        processUniversalPipelineResponse(aimsSubmission, Pipeline.AIMS)
             .ifPresent(uploadSummary::add);
       }
     } catch (IOException e) {
-      log.error("Error reading test result upload CSV", e);
-      throw new CsvProcessingException("Unable to read csv");
+      CsvProcessingException exceptionWithoutPii = new CsvProcessingException("Unable to read csv");
+      exceptionWithoutPii.setStackTrace(e.getStackTrace());
+      log.error("Error reading test result upload CSV", exceptionWithoutPii);
+      throw exceptionWithoutPii;
     }
 
     return uploadSummary;
@@ -202,30 +194,6 @@ public class TestResultUploadService {
     return _client.fetchAccessToken(requestBody);
   }
 
-  private CompletableFuture<UniversalSubmissionSummary> submitResultsToUniversalPipeline(
-      ByteArrayInputStream content, Organization org, UUID submissionId)
-      throws CsvProcessingException {
-    // send to report stream
-    return CompletableFuture.supplyAsync(
-        withMDC(
-            () -> {
-              long start = System.currentTimeMillis();
-              // convert csv to fhir and serialize to json
-              FHIRBundleRecord fhirBundleWithMeta =
-                  fhirConverter.convertToFhirBundles(content, org.getInternalId());
-              UploadResponse response;
-              try {
-                response = uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
-              } catch (JsonProcessingException e) {
-                throw new CsvProcessingException("Unable to parse Report Stream response.");
-              }
-              log.info("FHIR submitted in {} milliseconds", System.currentTimeMillis() - start);
-
-              return new UniversalSubmissionSummary(
-                  submissionId, org, response, fhirBundleWithMeta.metadata());
-            }));
-  }
-
   private CompletableFuture<AimsSubmissionSummary> submitResultsToAIMS(
       ByteArrayInputStream content, Organization org, UUID submissionId)
       throws CsvProcessingException {
@@ -268,7 +236,7 @@ public class TestResultUploadService {
       }
     } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
       log.error(
-          String.format("Error processing submission in bulk result upload for %s", pipeline), e);
+          String.format("Error processing submission in bulk result upload for %s", pipeline));
       Thread.currentThread().interrupt();
       throw e;
     }

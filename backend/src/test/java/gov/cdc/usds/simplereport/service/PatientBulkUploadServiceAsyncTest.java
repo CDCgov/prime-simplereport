@@ -40,10 +40,10 @@ import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 /*
  * We can't use the standard BaseServiceTest here because this service is async and requires a request context to operate.
@@ -55,11 +55,11 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
 
   @Autowired PatientBulkUploadServiceAsync _service;
 
-  @SpyBean PersonService _personService;
+  @MockitoSpyBean PersonService _personService;
   @Autowired PhoneNumberRepository phoneNumberRepository;
 
-  @MockBean private EmailService _emailService;
-  @SpyBean private PersonRepository personRepository;
+  @MockitoBean private EmailService _emailService;
+  @MockitoSpyBean private PersonRepository personRepository;
 
   public static final int PATIENT_PAGE_OFFSET = 0;
   public static final int PATIENT_PAGE_SIZE = 1000;

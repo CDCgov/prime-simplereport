@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.config.AimsProperties;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.CorsProperties;
+import gov.cdc.usds.simplereport.config.HL7Properties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties;
@@ -44,7 +45,8 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
   CorsProperties.class,
   AzureStorageQueueReportingProperties.class,
   SupportEscalationProperties.class,
-  AimsProperties.class
+  AimsProperties.class,
+  HL7Properties.class
 })
 @EnableAsync
 @EnableScheduling

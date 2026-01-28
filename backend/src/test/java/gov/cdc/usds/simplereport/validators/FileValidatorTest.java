@@ -50,7 +50,6 @@ class FileValidatorTest {
           "patient_county",
           "patient_phone_number",
           "patient_dob",
-          "patient_gender",
           "patient_race",
           "patient_ethnicity",
           "accession_number",
@@ -384,7 +383,7 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
     List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
-    assertThat(errors).hasSize(67);
+    assertThat(errors).hasSize(65);
     errors.forEach(
         error -> {
           String errorMessage = error.getMessage();
@@ -411,7 +410,7 @@ class FileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(35);
+    assertThat(errors).hasSize(34);
 
     List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     List<List<Integer>> indices = errors.stream().map(FeedbackMessage::getIndices).toList();
@@ -439,7 +438,6 @@ class FileValidatorTest {
             "x is not an acceptable value for the patient_email column.",
             "x is not an acceptable value for the testing_lab_clia column.",
             "x is not an acceptable value for the patient_race column.",
-            "x is not an acceptable value for the patient_gender column.",
             "x is not an acceptable value for the patient_ethnicity column.",
             "x is not an acceptable value for the pregnant column.",
             "x is not an acceptable value for the employed_in_healthcare column.",

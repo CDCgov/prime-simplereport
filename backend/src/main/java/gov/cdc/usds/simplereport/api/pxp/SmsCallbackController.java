@@ -43,7 +43,7 @@ public class SmsCallbackController {
     try {
       statusService.saveTextMessageStatus(body.getMessageSid(), body.getMessageStatus());
     } catch (InvalidTwilioMessageIdentifierException e) {
-      log.info("InvalidTwilioMessageIdentifierException with request:" + paramMap.toString());
+      log.info("InvalidTwilioMessageIdentifierException with MessageSid:" + body.getMessageSid());
       throw e;
     }
 
