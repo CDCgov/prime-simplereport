@@ -9,7 +9,7 @@ Object {
         class="display-flex flex-justify flex-align-center"
       >
         <h1
-          class="font-heading-lg margin-0"
+          class="font-sans-lg margin-0"
           id="result-detail-title"
         >
           Result details
@@ -157,7 +157,7 @@ Object {
       class="display-flex flex-justify flex-align-center"
     >
       <h1
-        class="font-heading-lg margin-0"
+        class="font-sans-lg margin-0"
         id="result-detail-title"
       >
         Result details
@@ -362,7 +362,7 @@ Object {
         class="display-flex flex-justify flex-align-center"
       >
         <h1
-          class="font-heading-lg margin-0"
+          class="font-sans-lg margin-0"
           id="result-detail-title"
         >
           Result details
@@ -546,7 +546,7 @@ Object {
       class="display-flex flex-justify flex-align-center"
     >
       <h1
-        class="font-heading-lg margin-0"
+        class="font-sans-lg margin-0"
         id="result-detail-title"
       >
         Result details
@@ -787,7 +787,7 @@ Object {
         class="display-flex flex-justify flex-align-center"
       >
         <h1
-          class="font-heading-lg margin-0"
+          class="font-sans-lg margin-0"
           id="result-detail-title"
         >
           Result details
@@ -983,7 +983,7 @@ Object {
       class="display-flex flex-justify flex-align-center"
     >
       <h1
-        class="font-heading-lg margin-0"
+        class="font-sans-lg margin-0"
         id="result-detail-title"
       >
         Result details
@@ -1236,7 +1236,7 @@ Object {
         class="display-flex flex-justify flex-align-center"
       >
         <h1
-          class="font-heading-lg margin-0"
+          class="font-sans-lg margin-0"
           id="result-detail-title"
         >
           Result details
@@ -1396,7 +1396,7 @@ Object {
       class="display-flex flex-justify flex-align-center"
     >
       <h1
-        class="font-heading-lg margin-0"
+        class="font-sans-lg margin-0"
         id="result-detail-title"
       >
         Result details

@@ -115,7 +115,7 @@ export const DetachedTestResultDetailsModal = ({
   return (
     <>
       <div className="display-flex flex-justify flex-align-center">
-        <h1 id="result-detail-title" className="font-heading-lg margin-0">
+        <h1 id="result-detail-title" className="font-sans-lg margin-0">
           Result details
         </h1>
         <button
@@ -250,7 +250,7 @@ const TestResultDetailsModal = (props: TestResultDetailsModalProps) => (
         position: "initial",
       },
     }}
-    overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+    overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
     contentLabel={`Result details for ${
       props.testResult?.patient
         ? displayFullName(

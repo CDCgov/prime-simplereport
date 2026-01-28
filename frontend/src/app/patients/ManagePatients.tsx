@@ -582,7 +582,7 @@ export const DetachedManagePatients = ({
             )}
           </div>
           {(totalEntries === undefined || totalEntries <= 0) && (
-            <div className={"prime-container margin-top-2"}>
+            <div className={"prime-container margin-top-2 sr-results-message"}>
               <div
                 className={
                   "display-flex flex-column flex-align-center flex-justify-center"

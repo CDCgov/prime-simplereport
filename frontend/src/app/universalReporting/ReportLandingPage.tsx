@@ -6,13 +6,15 @@ const ReportLandingPage = () => {
   return (
     <div className="prime-home flex-1">
       <div className="grid-container padding-bottom-10 padding-top-4">
-        <h2 className={"font-sans-xl"}>Report lab results</h2>
+        <h1>Report lab results</h1>
         <div className="prime-container">
           <div className="grid-row grid-gap">
             <div className="tablet:grid-col-6 margin-bottom-2">
               <div className="card-container">
                 <div className="usa-card__body">
-                  <h3>I want to enter results individually</h3>
+                  <h2 className="font-sans-lg">
+                    I want to enter results individually
+                  </h2>
                   <p>
                     This option works well if you just have a few results to
                     report
@@ -29,7 +31,9 @@ const ReportLandingPage = () => {
             <div className="tablet:grid-col-6">
               <div className="card-container">
                 <div className="usa-card__body">
-                  <h3>I want to upload multiple results</h3>
+                  <h2 className="font-sans-lg">
+                    I want to upload multiple results
+                  </h2>
                   <p>
                     This option works well if you have many results to report
                   </p>

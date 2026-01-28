@@ -13,7 +13,7 @@ Object {
     />
     <div>
       <div
-        class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+        class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
       >
         <div
           aria-label="Download test results"
@@ -30,7 +30,7 @@ Object {
               class="display-flex flex-justify"
             >
               <h1
-                class="font-heading-lg margin-top-05 margin-bottom-0"
+                class="font-sans-lg margin-top-05 margin-bottom-0"
               >
                 Download test results
               </h1>
@@ -144,7 +144,7 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
     >
       <div
         aria-label="Download test results"
@@ -161,7 +161,7 @@ Object {
             class="display-flex flex-justify"
           >
             <h1
-              class="font-heading-lg margin-top-05 margin-bottom-0"
+              class="font-sans-lg margin-top-05 margin-bottom-0"
             >
               Download test results
             </h1>
@@ -331,7 +331,7 @@ Object {
     />
     <div>
       <div
-        class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+        class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
       >
         <div
           aria-label="Download test results"
@@ -348,7 +348,7 @@ Object {
               class="display-flex flex-justify"
             >
               <h1
-                class="font-heading-lg margin-top-05 margin-bottom-0"
+                class="font-sans-lg margin-top-05 margin-bottom-0"
               >
                 Download test results
               </h1>
@@ -462,7 +462,7 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
     >
       <div
         aria-label="Download test results"
@@ -479,7 +479,7 @@ Object {
             class="display-flex flex-justify"
           >
             <h1
-              class="font-heading-lg margin-top-05 margin-bottom-0"
+              class="font-sans-lg margin-top-05 margin-bottom-0"
             >
               Download test results
             </h1>
