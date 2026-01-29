@@ -57,7 +57,7 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
   WHERE p.organization = :organization
     AND p.isDeleted = :isDeleted
     AND (p.piiDeleted IS NULL OR p.piiDeleted = FALSE)
-""")
+  """)
   List<Person> findAllByOrganizationAndIsDeleted(
       @Param("organization") Organization organization,
       @Param("isDeleted") boolean isDeleted,
