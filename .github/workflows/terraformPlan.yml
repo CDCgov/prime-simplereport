@@ -36,7 +36,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set_matrix.outputs.matrix }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - id: set_matrix
       run: |
         if [[ "${{ inputs.env }}" == "all_environments" ]]; then
@@ -55,7 +55,7 @@ jobs:
       run:
         working-directory: ./ops
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}

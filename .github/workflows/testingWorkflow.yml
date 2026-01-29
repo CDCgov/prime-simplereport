@@ -71,7 +71,7 @@ jobs:
     outputs:
       version: ${{ steps.set_backend_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Backend Image
         id: set_backend_version
         uses: ./.github/actions/docker-buildx
@@ -96,7 +96,7 @@ jobs:
     outputs:
       version: ${{ steps.set_cypress_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Cypress Image
         id: set_cypress_version
         uses: ./.github/actions/docker-buildx
@@ -121,7 +121,7 @@ jobs:
     outputs:
       version: ${{ steps.set_database_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Database Image
         id: set_database_version
         uses: ./.github/actions/docker-buildx
@@ -146,7 +146,7 @@ jobs:
     outputs:
       version: ${{ steps.set_frontend_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Frontend Image
         id: set_frontend_version
         uses: ./.github/actions/docker-buildx
@@ -179,7 +179,7 @@ jobs:
     outputs:
       version: ${{ steps.set_frontend_lighthouse_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Frontend Lighthouse Image
         id: set_frontend_lighthouse_version
         uses: ./.github/actions/docker-buildx
@@ -210,7 +210,7 @@ jobs:
     outputs:
       version: ${{ steps.set_nginx_version.outputs.version }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Nginx Image
         id: set_nginx_version
         uses: ./.github/actions/docker-buildx
