@@ -1,33 +1,35 @@
-// -------------------------------------
-// Typography
+@mixin legacy-utilities {
+  // -------------------------------------
+  // Typography
 
-.maxw-prose {
-  max-width: 68ex;
-}
+  .maxw-prose {
+    max-width: 68ex;
+  }
 
-// -------------------------------------
-// Color
+  // -------------------------------------
+  // Color
 
-// Text color
+  // Text color
 
-.text-success {
-  color: color("success");
-}
+  .text-success {
+    color: color("success");
+  }
 
-.text-error {
-  color: color("error");
-}
+  .text-error {
+    color: color("error");
+  }
 
-// Background color
+  // Background color
 
-.bg-success {
-  background-color: color("success");
-}
+  .bg-success {
+    background-color: color("success");
+  }
 
-.bg-error {
-  background-color: color("error");
-}
+  .bg-error {
+    background-color: color("error");
+  }
 
-.width-fit-content {
-  width: fit-content;
+  .width-fit-content {
+    width: fit-content;
+  }
 }

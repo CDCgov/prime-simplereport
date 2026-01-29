@@ -1,12 +1,12 @@
 @use "../../scss/settings";
 
 @media print {
-  .usa-banner {
+  .usa-banner.legacy-usa-banner {
     display: none;
   }
 }
 
-.usa-banner {
+.usa-banner.legacy-usa-banner {
   .usa-banner__inner {
     max-width: settings.$site-max-width;
   }

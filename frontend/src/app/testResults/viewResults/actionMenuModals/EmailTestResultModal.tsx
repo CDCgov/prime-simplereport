@@ -82,7 +82,7 @@ const EmailTestResultModal = (props: EmailTestResultModalProps) => (
   <Modal
     isOpen={props.isOpen}
     className="email-test-result-modal-content"
-    overlayClassName="sr-test-correction-modal-overlay"
+    overlayClassName="sr-test-correction-modal-overlay sr-legacy-application"
     contentLabel="Printable test result"
     onRequestClose={props.closeModal}
   >

@@ -239,46 +239,48 @@ const LabReportForm = () => {
             Back to {stepperData[currentStep - 1].label.toLowerCase()}
           </Button>
         )}
-        <div className="prime-container card-container">
-          <div className="usa-card__body">
-            {currentStep === 0 && <FacilityFormSection facility={facility} />}
-            {currentStep === 1 && <ProviderFormSection provider={provider} />}
-            {currentStep === 2 && (
-              <PatientFormSection patient={patient} setPatient={setPatient} />
-            )}
-            {currentStep === 3 && (
-              <LabResultsFormSection
-                specimen={specimen}
-                setSpecimen={setSpecimen}
-                testDetailList={testDetailList}
-                setTestDetailList={setTestDetailList}
-              />
-            )}
-            {currentStep === 4 && (
-              <ReviewFormSection
-                facility={facility}
-                provider={provider}
-                patient={patient}
-                specimen={specimen}
-                testDetailsList={testDetailList}
-              />
-            )}
-            <div className="usa-form-group report-form-controls">
-              {currentStep === 4 ? (
-                <Button onClick={() => submitForm()} type={"button"}>
-                  Submit
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => nextStep()}
-                  disabled={currentStep === stepperData.length - 1}
-                  type={"button"}
-                  className={"margin-right-2 margin-top-3"}
-                >
-                  Next: {stepperData[currentStep + 1].label}
-                  <FontAwesomeIcon icon={faArrowRight} className="" />
-                </Button>
+        <div className="usa-card">
+          <div className="usa-card__container">
+            <div className="usa-card__body">
+              {currentStep === 0 && <FacilityFormSection facility={facility} />}
+              {currentStep === 1 && <ProviderFormSection provider={provider} />}
+              {currentStep === 2 && (
+                <PatientFormSection patient={patient} setPatient={setPatient} />
               )}
+              {currentStep === 3 && (
+                <LabResultsFormSection
+                  specimen={specimen}
+                  setSpecimen={setSpecimen}
+                  testDetailList={testDetailList}
+                  setTestDetailList={setTestDetailList}
+                />
+              )}
+              {currentStep === 4 && (
+                <ReviewFormSection
+                  facility={facility}
+                  provider={provider}
+                  patient={patient}
+                  specimen={specimen}
+                  testDetailsList={testDetailList}
+                />
+              )}
+              <div className="usa-form-group report-form-controls">
+                {currentStep === 4 ? (
+                  <Button onClick={() => submitForm()} type={"button"}>
+                    Submit
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => nextStep()}
+                    disabled={currentStep === stepperData.length - 1}
+                    type={"button"}
+                    className={"margin-right-2 margin-top-3"}
+                  >
+                    Next: {stepperData[currentStep + 1].label}
+                    <FontAwesomeIcon icon={faArrowRight} className="" />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>

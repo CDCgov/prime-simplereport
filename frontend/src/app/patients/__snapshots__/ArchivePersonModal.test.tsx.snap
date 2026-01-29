@@ -14,7 +14,7 @@ Object {
     />
     <div>
       <div
-        class="ReactModal__Overlay sr-archive-person-modal-overlay"
+        class="ReactModal__Overlay sr-archive-person-modal-overlay sr-legacy-application"
       >
         <div
           aria-label="Archive record"
@@ -61,7 +61,7 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="ReactModal__Overlay sr-archive-person-modal-overlay"
+      class="ReactModal__Overlay sr-archive-person-modal-overlay sr-legacy-application"
     >
       <div
         aria-label="Archive record"
