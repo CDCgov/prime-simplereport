@@ -45,6 +45,7 @@ import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
 import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
 import MaintenanceBannerWrapper from "./MaintenanceBannerWrapper";
+import LegacyApplication from "./app/LegacyApplicationWrapper";
 
 // Initialize telemetry early
 ai.initialize();
@@ -136,7 +137,14 @@ const routes = createRoutesFromElements(
         </MaintenanceBannerWrapper>
       }
     />
-    <Route path="/uac/*" element={<AccountCreationApp />} />
+    <Route
+      path="/uac/*"
+      element={
+        <LegacyApplication>
+          <AccountCreationApp />
+        </LegacyApplication>
+      }
+    />
     <Route
       path="/sign-up/*"
       element={
@@ -204,8 +212,4 @@ function AppRouterShell() {
       </PrimeErrorBoundary>
     </TelemetryProvider>
   );
-}
-
-function LegacyApplication({ children }: { children: React.ReactNode }) {
-  return <div className="sr-legacy-application">{children}</div>;
 }

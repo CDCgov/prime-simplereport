@@ -2,6 +2,8 @@ import { StoryFn, Meta } from "@storybook/react-webpack5";
 import React from "react";
 import { userEvent, within } from "@storybook/testing-library";
 
+import LegacyApplication from "../../../LegacyApplicationWrapper";
+
 import ManageDevices from "./ManageDevices";
 
 export default {
@@ -13,9 +15,9 @@ export default {
 type Props = React.ComponentProps<typeof ManageDevices>;
 
 const Template: StoryFn<Props> = (args) => (
-  <>
+  <LegacyApplication>
     <ManageDevices {...args} />
-  </>
+  </LegacyApplication>
 );
 
 export const Default = Template.bind({});

@@ -9,11 +9,15 @@ import {
 import createMockStore from "redux-mock-store";
 import React from "react";
 
+import LegacyApplication from "../../app/LegacyApplicationWrapper";
+
 import { SelfRegistration } from "./SelfRegistration";
 
 const element = (
   <Provider store={createMockStore()({})}>
-    <SelfRegistration />
+    <LegacyApplication>
+      <SelfRegistration />
+    </LegacyApplication>
   </Provider>
 );
 export default {

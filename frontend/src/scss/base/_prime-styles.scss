@@ -1314,8 +1314,17 @@
     }
   }
 
+  .usa-alert--info .usa-alert__body {
+    background-color: #e7f6f8 !important;
+  }
+
   .usa-alert--error .usa-alert__body {
     background-color: #f4e3db !important;
+  }
+
+  .usa-alert--info {
+    background-color: #e7f6f8 !important;
+    border-left-color: #00bde3 !important;
   }
 
   .usa-alert--error {
