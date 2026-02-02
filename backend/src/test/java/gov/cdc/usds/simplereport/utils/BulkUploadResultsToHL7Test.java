@@ -44,8 +44,8 @@ public class BulkUploadResultsToHL7Test {
     when(gitProperties.getCommitTime()).thenReturn(commitTime);
     when(gitProperties.getShortCommitId()).thenReturn("abc123");
     hl7Properties = mock(HL7Properties.class);
-    when(hl7Properties.getSendingApplicationNamespace()).thenReturn("SIMPLEREPORT.STAG");
-    when(hl7Properties.getSendingApplicationOID()).thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
+    when(hl7Properties.getSimpleReportNamespace()).thenReturn("SIMPLEREPORT.STAG");
+    when(hl7Properties.getSimpleReportOid()).thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
 
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
   }
@@ -89,6 +89,25 @@ public class BulkUploadResultsToHL7Test {
 
     assertThat(batchMessage.message()).isNotEmpty();
     assertThat(batchMessage.recordsCount()).isEqualTo(1);
+    assertThat(batchMessage.reportedDiseases()).isNotNull();
+
+    String[] lines = getHL7Lines(batchMessage);
+    assertThat(lines).isNotEmpty();
+
+    assertThat(hasSegment(lines, "FHS")).isTrue();
+    assertThat(hasSegment(lines, "BHS")).isTrue();
+    assertThat(hasSegment(lines, "MSH")).isTrue();
+    assertThat(hasSegment(lines, "BTS")).isTrue();
+    assertThat(hasSegment(lines, "FTS")).isTrue();
+  }
+
+  @Test
+  void requiredFieldsOnlyCsv_success() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-required-only.csv");
+    HL7BatchMessage batchMessage = sut.convertToHL7BatchMessage(input);
+
+    assertThat(batchMessage.message()).isNotEmpty();
+    assertThat(batchMessage.recordsCount()).isEqualTo(2);
     assertThat(batchMessage.reportedDiseases()).isNotNull();
 
     String[] lines = getHL7Lines(batchMessage);

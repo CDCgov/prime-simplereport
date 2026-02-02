@@ -24,8 +24,8 @@ simple-report:
     device-sync-enabled: false
   aims-processing-mode-code: P
   hl7:
-    sending-application-namespace: "SIMPLEREPORT.PROD"
-    sending-application-oid: "2.16.840.1.113883.3.8589.4.2.134.1"
+    simple-report-namespace: "SIMPLEREPORT.PROD"
+    simple-report-oid: "2.16.840.1.113883.3.8589.4.2.134.1"
 twilio:
   enabled: true
   from-number: "+14045312484"

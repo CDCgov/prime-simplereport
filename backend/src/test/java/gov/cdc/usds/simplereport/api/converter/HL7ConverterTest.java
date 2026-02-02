@@ -4,7 +4,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DETECTED_SNO
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOT_DETECTED_SNOMED;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_FAKE_AGGREGATE_CLIA;
 import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SENDING_FACILITY_NAMESPACE;
-import static gov.cdc.usds.simplereport.api.converter.HL7Constants.SIMPLE_REPORT_ORG_OID;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithDate;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createMultiplexTestEventWithNoCommonTestOrderedLoincDevice;
 import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.createSingleCovidTestEventOnMultiplexDevice;
@@ -74,12 +73,15 @@ class HL7ConverterTest {
       LocalDate.of(2025, 7, 1).atStartOfDay().toInstant(ZoneOffset.UTC);
   private static final String STATIC_INSTANT_HL7_STRING = "20250701000000+0000";
   private static final String STATIC_RANDOM_UUID = "5db534ea-5e97-4861-ba18-d74acc46db15";
+  private static final String SIMPLE_REPORT_SENDING_APPLICATION_OID =
+      "2.16.840.1.113883.3.8589.4.2.134.2";
+  private static final String SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE = "SIMPLEREPORT.STAG";
 
   private final HapiContext hapiContext = HapiContextProvider.get();
   @Mock private GitProperties gitProperties;
   @MockitoBean private UUIDGenerator uuidGenerator;
   @MockitoBean private DateGenerator dateGenerator;
-  @MockitoBean private HL7Properties hl7Properties;
+  @Autowired private HL7Properties hl7Properties;
   @Autowired private HL7Converter hl7Converter;
 
   @BeforeEach
@@ -88,8 +90,6 @@ class HL7ConverterTest {
     when(gitProperties.getShortCommitId()).thenReturn("1234567");
     when(uuidGenerator.randomUUID()).thenReturn(UUID.fromString(STATIC_RANDOM_UUID));
     when(dateGenerator.newDate()).thenReturn(Date.from(STATIC_INSTANT));
-    when(hl7Properties.getSendingApplicationNamespace()).thenReturn("SIMPLEREPORT.STAG");
-    when(hl7Properties.getSendingApplicationOID()).thenReturn("2.16.840.1.113883.3.8589.4.2.134.2");
   }
 
   @Test
@@ -283,7 +283,14 @@ class HL7ConverterTest {
     EI observationRequestFillerOrderNumber =
         message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR().getObr3_FillerOrderNumber();
     assertThat(commonOrderFillerOrderNumber.getEi1_EntityIdentifier().getValue())
-        .isEqualTo(observationRequestFillerOrderNumber.getEi1_EntityIdentifier().getValue());
+        .isEqualTo(observationRequestFillerOrderNumber.getEi1_EntityIdentifier().getValue())
+        .isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(commonOrderFillerOrderNumber.getEi2_NamespaceID().getValue())
+        .isEqualTo(observationRequestFillerOrderNumber.getEi2_NamespaceID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
+    assertThat(commonOrderFillerOrderNumber.getEi3_UniversalID().getValue())
+        .isEqualTo(observationRequestFillerOrderNumber.getEi3_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
   }
 
   @Test
@@ -295,7 +302,7 @@ class HL7ConverterTest {
     assertThat(msh.getMsh3_SendingApplication().getHd1_NamespaceID().getValue())
         .isEqualTo("SIMPLEREPORT.STAG");
     assertThat(msh.getMsh3_SendingApplication().getHd2_UniversalID().getValue())
-        .isEqualTo("2.16.840.1.113883.3.8589.4.2.134.2");
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
     assertThat(msh.getMsh3_SendingApplication().getHd3_UniversalIDType().getValue())
         .isEqualTo("ISO");
     assertThat(msh.getMsh4_SendingFacility().getHd1_NamespaceID().getValue())
@@ -343,14 +350,24 @@ class HL7ConverterTest {
     PID pid = TestDataBuilder.createPatientIdentificationSegment();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+    hl7Converter.populatePatientIdentification(
+        pid, patientReportInput, "facilityName", "facilityCLIA");
 
     var patientIdentifierEntry = pid.getPid3_PatientIdentifierList(0);
 
     assertThat(patientIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(patientIdentifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
     assertThat(patientIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
-        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
+    assertThat(
+            patientIdentifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().getValue())
+        .isEqualTo("ISO");
     assertThat(patientIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
+    assertThat(patientIdentifierEntry.getCx6_AssigningFacility().getHd1_NamespaceID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
+    assertThat(patientIdentifierEntry.getCx6_AssigningFacility().getHd2_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
   }
 
   @Test
@@ -384,8 +401,9 @@ class HL7ConverterTest {
             patientInternalId);
 
     String clia = "12D1234567";
+    String facilityName = "facilityName";
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, clia);
+    hl7Converter.populatePatientIdentification(pid, patientReportInput, facilityName, clia);
 
     assertThat(pid.getPid3_PatientIdentifierListReps()).isEqualTo(2);
 
@@ -393,17 +411,24 @@ class HL7ConverterTest {
 
     assertThat(internalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(patientInternalId);
     assertThat(internalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
-        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
     assertThat(internalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
 
     var externalIdentifierEntry = pid.getPid3_PatientIdentifierList(1);
 
     assertThat(externalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(patientExternalId);
     assertThat(externalIdentifierEntry.getCx4_AssigningAuthority().getHd1_NamespaceID().getValue())
-        .isEqualTo(clia);
+        .isEqualTo(facilityName);
     assertThat(externalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
-        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+        .isEqualTo(clia);
+    assertThat(
+            externalIdentifierEntry.getCx4_AssigningAuthority().getHd3_UniversalIDType().getValue())
+        .isEqualTo("CLIA");
     assertThat(externalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PT");
+    assertThat(externalIdentifierEntry.getCx6_AssigningFacility().getHd1_NamespaceID().getValue())
+        .isEqualTo(facilityName);
+    assertThat(externalIdentifierEntry.getCx6_AssigningFacility().getHd2_UniversalID().getValue())
+        .isEqualTo(clia);
   }
 
   @Test
@@ -434,7 +459,8 @@ class HL7ConverterTest {
             null,
             null);
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+    hl7Converter.populatePatientIdentification(
+        pid, patientReportInput, "facilityName", "facilityCLIA");
 
     assertThat(pid.getPid3_PatientIdentifierListReps()).isEqualTo(1);
 
@@ -442,7 +468,7 @@ class HL7ConverterTest {
 
     assertThat(internalIdentifierEntry.getCx1_IDNumber().getValue()).isEqualTo(STATIC_RANDOM_UUID);
     assertThat(internalIdentifierEntry.getCx4_AssigningAuthority().getHd2_UniversalID().getValue())
-        .isEqualTo(SIMPLE_REPORT_ORG_OID);
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
     assertThat(internalIdentifierEntry.getCx5_IdentifierTypeCode().getValue()).isEqualTo("PI");
   }
 
@@ -451,7 +477,8 @@ class HL7ConverterTest {
     PID pid = new ORU_R01().getPATIENT_RESULT().getPATIENT().getPID();
     PatientReportInput patientReportInput = TestDataBuilder.createPatientReportInput();
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+    hl7Converter.populatePatientIdentification(
+        pid, patientReportInput, "facilityName", "facilityCLIA");
 
     assertThat(pid.getPid7_DateTimeOfBirth().getTs1_Time().getValue()).isEqualTo("19900101");
   }
@@ -483,7 +510,8 @@ class HL7ConverterTest {
             null,
             null);
 
-    hl7Converter.populatePatientIdentification(pid, patientReportInput, null);
+    hl7Converter.populatePatientIdentification(
+        pid, patientReportInput, "facilityName", "facilityCLIA");
 
     assertThat(pid.getPid13_PhoneNumberHome(0).getXtn4_EmailAddress().getValue())
         .isEqualTo("john@example.com");
@@ -757,6 +785,10 @@ class HL7ConverterTest {
         TestCorrectionStatus.ORIGINAL,
         Date.from(STATIC_INSTANT));
 
+    assertThat(observationRequest.getObr3_FillerOrderNumber().getEi2_NamespaceID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
+    assertThat(observationRequest.getObr3_FillerOrderNumber().getEi3_UniversalID().getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
     assertThat(
             observationRequest.getObr4_UniversalServiceIdentifier().getCe1_Identifier().getValue())
         .isEqualTo(testOrderLoinc);
@@ -1003,6 +1035,20 @@ class HL7ConverterTest {
                 .getEi1_EntityIdentifier()
                 .getValue())
         .isEqualTo(STATIC_RANDOM_UUID);
+    assertThat(
+            specimen
+                .getSpm2_SpecimenID()
+                .getEip2_FillerAssignedIdentifier()
+                .getEi2_NamespaceID()
+                .getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_NAMESPACE);
+    assertThat(
+            specimen
+                .getSpm2_SpecimenID()
+                .getEip2_FillerAssignedIdentifier()
+                .getEi3_UniversalID()
+                .getValue())
+        .isEqualTo(SIMPLE_REPORT_SENDING_APPLICATION_OID);
 
     assertThat(
             specimen

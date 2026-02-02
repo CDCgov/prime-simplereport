@@ -76,7 +76,10 @@ class FileUploadControllerTest extends BaseFullStackTest {
         .andExpect(
             result -> assertTrue(result.getResolvedException() instanceof CsvProcessingException))
         .andExpect(
-            result -> assertEquals("Invalid csv", result.getResolvedException().getMessage()));
+            result ->
+                assertEquals(
+                    "Unable to complete patient CSV upload due to an invalid input.",
+                    result.getResolvedException().getMessage()));
   }
 
   @Test
