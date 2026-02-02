@@ -9,6 +9,7 @@ import {
 import createMockStore from "redux-mock-store";
 import React from "react";
 
+// test
 import LegacyApplication from "../../app/LegacyApplicationWrapper";
 
 import { SelfRegistration } from "./SelfRegistration";
