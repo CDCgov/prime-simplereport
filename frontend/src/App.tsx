@@ -173,7 +173,14 @@ const routes = createRoutesFromElements(
         </MaintenanceBannerWrapper>
       }
     />
-    <Route path="/session-timeout" element={<SessionTimeout />} />
+    <Route
+      path="/session-timeout"
+      element={
+        <LegacyApplication>
+          <SessionTimeout />
+        </LegacyApplication>
+      }
+    />
     <Route path="/reload-app" element={<Navigate to="/" />} />
     <Route
       path="/*"
