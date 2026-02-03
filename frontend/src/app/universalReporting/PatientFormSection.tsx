@@ -1,6 +1,7 @@
 import React, { Dispatch, FormEvent } from "react";
 import moment from "moment/moment";
 import { ComboBox } from "@trussworks/react-uswds";
+import { Controller, useForm } from "react-hook-form";
 
 import TextInput from "../commonComponents/TextInput";
 import { PatientReportInput } from "../../generated/graphql";
@@ -43,6 +44,15 @@ const PatientFormSection = ({
       !(item.value === "refused" && item.label === "Prefer not to answer")
   );
 
+  const form = useForm({
+    // resolver: yupResolver(formSchema),
+    mode: "onBlur", // validate when leaving the field
+    reValidateMode: "onChange", // re-validate when value changes (e.g., user deletes)
+    defaultValues: {
+      patientFirstName: "",
+    },
+  });
+
   const _onSubmit = (evt: FormEvent<HTMLFormElement>) => {
     debugger;
     console.log(evt);
@@ -61,17 +71,33 @@ const PatientFormSection = ({
         </div>
         <div className="grid-row grid-gap margin-top-0">
           <div className="grid-col-fill">
-            <TextInput
-              name={"patient-first-name"}
-              type={"text"}
-              label={"First name"}
-              onChange={(e) =>
-                setPatient({ ...patient, firstName: e.target.value })
-              }
-              value={patient.firstName}
-              required={true}
-              useNativeValidation={true}
-            ></TextInput>
+            <Controller
+              name={"patientFirstName"}
+              rules={{
+                required: "First name is required",
+                validate: (v) =>
+                  v?.trim().length > 0 || "First name is required",
+              }}
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <TextInput
+                  {...field}
+                  name="patient-first-name"
+                  type="text"
+                  label="First name"
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    field.onChange(next);
+                    setPatient({ ...patient, firstName: e.target.value });
+                  }}
+                  value={patient.firstName}
+                  onBlur={field.onBlur}
+                  required={true}
+                  validationStatus={fieldState.invalid ? "error" : undefined}
+                  // useNativeValidation={true}
+                ></TextInput>
+              )}
+            />
           </div>
           <div className="grid-col-fill">
             <TextInput
@@ -94,7 +120,7 @@ const PatientFormSection = ({
               }
               value={patient.lastName}
               required={true}
-              useNativeValidation={true}
+              // useNativeValidation={true}
             ></TextInput>
           </div>
         </div>
@@ -114,7 +140,7 @@ const PatientFormSection = ({
                 });
               }}
               required={true}
-              useNativeValidation={true}
+              // useNativeValidation={true}
             ></TextInput>
           </div>
           <div className="grid-col-mobile grid-col-4">
@@ -208,7 +234,7 @@ const PatientFormSection = ({
                 setPatient({ ...patient, street: e.target.value })
               }
               required={true}
-              useNativeValidation={true}
+              // useNativeValidation={true}
             ></TextInput>
           </div>
           <div className="grid-col-fill">
@@ -231,7 +257,7 @@ const PatientFormSection = ({
               value={patient.city ?? ""}
               onChange={(e) => setPatient({ ...patient, city: e.target.value })}
               required={true}
-              useNativeValidation={true}
+              // useNativeValidation={true}
             ></TextInput>
           </div>
           <div className="grid-col-fill">
@@ -311,7 +337,7 @@ const PatientFormSection = ({
                   }
                   pattern={"^d{5}(?:[-s]d{4})?$"}
                   required={true}
-                  useNativeValidation={true}
+                  // useNativeValidation={true}
                 ></TextInput>
               </div>
             </>

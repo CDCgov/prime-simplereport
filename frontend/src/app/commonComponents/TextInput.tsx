@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import classnames from "classnames";
 import { UIDConsumer } from "react-uid";
 import { UseFormRegisterReturn } from "react-hook-form";
@@ -46,7 +46,7 @@ interface Props {
   max?: number | string;
   dataCy?: string;
   registrationProps?: UseFormRegisterReturn<any>;
-  useNativeValidation?: boolean;
+  // useNativeValidation?: boolean;
 }
 
 type InputProps = JSX.IntrinsicElements["input"];
@@ -78,20 +78,20 @@ export const TextInput = ({
   max,
   dataCy,
   registrationProps,
-  useNativeValidation,
+  // useNativeValidation,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
-  const _inputRef = useRef<HTMLInputElement>(null);
-  inputRef = inputRef || _inputRef;
-  if (
-    useNativeValidation &&
-    inputRef.current &&
-    inputRef.current.matches(":user-invalid")
-  ) {
-    validationStatus =
-      inputRef.current.validationMessage.length === 0 ? "success" : "error";
-    errorMessage = inputRef.current.validationMessage;
-  }
+  // const _inputRef = useRef<HTMLInputElement>(null);
+  // inputRef = inputRef || _inputRef;
+  // if (
+  //   useNativeValidation &&
+  //   inputRef.current &&
+  //   inputRef.current.matches(":user-invalid")
+  // ) {
+  //   validationStatus =
+  //     inputRef.current.validationMessage.length === 0 ? "success" : "error";
+  //   errorMessage = inputRef.current.validationMessage;
+  // }
   return (
     <UIDConsumer>
       {(id) => (
