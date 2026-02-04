@@ -145,3 +145,14 @@
 .grid-container.results-wide-container {
   max-width: settings.$site-max-width;
 }
+
+.prime-container.sr-test-results-message {
+  a {
+    color: #005ea2 !important;
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: #54278f !important;
+  }
+}

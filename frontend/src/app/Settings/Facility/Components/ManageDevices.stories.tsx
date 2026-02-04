@@ -12,11 +12,7 @@ export default {
 
 type Props = React.ComponentProps<typeof ManageDevices>;
 
-const Template: StoryFn<Props> = (args) => (
-  <>
-    <ManageDevices {...args} />
-  </>
-);
+const Template: StoryFn<Props> = (args) => <ManageDevices {...args} />;
 
 export const Default = Template.bind({});
 export const Empty = Template.bind({});

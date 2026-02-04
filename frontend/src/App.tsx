@@ -45,6 +45,7 @@ import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";
 import { getBody, getHeader } from "./app/utils/srGraphQLErrorMessage";
 import MaintenanceBannerWrapper from "./MaintenanceBannerWrapper";
+import LegacyApplication from "./app/LegacyApplicationWrapper";
 
 // Initialize telemetry early
 ai.initialize();
@@ -130,16 +131,27 @@ const routes = createRoutesFromElements(
       path="/pxp/*"
       element={
         <MaintenanceBannerWrapper>
-          <PatientApp />
+          <LegacyApplication>
+            <PatientApp />
+          </LegacyApplication>
         </MaintenanceBannerWrapper>
       }
     />
-    <Route path="/uac/*" element={<AccountCreationApp />} />
+    <Route
+      path="/uac/*"
+      element={
+        <LegacyApplication>
+          <AccountCreationApp />
+        </LegacyApplication>
+      }
+    />
     <Route
       path="/sign-up/*"
       element={
         <MaintenanceBannerWrapper>
-          <SignUpApp />
+          <LegacyApplication>
+            <SignUpApp />
+          </LegacyApplication>
         </MaintenanceBannerWrapper>
       }
     />
@@ -155,17 +167,28 @@ const routes = createRoutesFromElements(
       path="/register/:registrationLink"
       element={
         <MaintenanceBannerWrapper>
-          <SelfRegistration />
+          <LegacyApplication>
+            <SelfRegistration />
+          </LegacyApplication>
         </MaintenanceBannerWrapper>
       }
     />
-    <Route path="/session-timeout" element={<SessionTimeout />} />
+    <Route
+      path="/session-timeout"
+      element={
+        <LegacyApplication>
+          <SessionTimeout />
+        </LegacyApplication>
+      }
+    />
     <Route path="/reload-app" element={<Navigate to="/" />} />
     <Route
       path="/*"
       element={
         <MaintenanceBannerWrapper>
-          <ReportingApp />{" "}
+          <LegacyApplication>
+            <ReportingApp />{" "}
+          </LegacyApplication>
         </MaintenanceBannerWrapper>
       }
     />

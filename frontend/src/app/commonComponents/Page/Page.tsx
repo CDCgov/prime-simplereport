@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
 
 import { getUrl } from "../../utils/url";
-import USAGovBanner from "../USAGovBanner";
 import SRToastContainer from "../SRToastContainer";
 import TouchpointsButton from "../../analytics/TouchpointsButton";
-import "./Page.scss";
 
 declare global {
   interface Window {
@@ -15,16 +13,9 @@ declare global {
 interface Props {
   header?: React.ReactNode;
   children?: React.ReactNode;
-  isPatientApp?: boolean;
-  isPilotApp?: boolean;
 }
 
-const Page: React.FC<Props> = ({
-  header,
-  children,
-  isPatientApp,
-  isPilotApp,
-}) => {
+const Page: React.FC<Props> = ({ header, children }) => {
   // load touchpoints script
   useEffect(() => {
     // don't load script when running in cypress
@@ -42,24 +33,12 @@ const Page: React.FC<Props> = ({
     }
   }, []);
 
-  let headerClassName = "usa-header usa-header--basic";
-
-  if (isPatientApp) {
-    headerClassName = "header border-bottom border-base-lighter";
-  }
-  if (isPilotApp) {
-    headerClassName = "usa-header usa-header--basic pilot-header";
-  }
-
   return (
     <div className="App">
       <a className="usa-skipnav" href="#main-wrapper">
         Skip to main content
       </a>
-      <header className={headerClassName}>
-        <USAGovBanner />
-        {header}
-      </header>
+      {header}
       <main id="main-wrapper">
         {children}
         <SRToastContainer />

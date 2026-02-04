@@ -108,7 +108,7 @@ const Modal = ({
           ...getVariantModalStyles(variant),
         },
       }}
-      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center sr-legacy-application"
       ariaHideApp={process.env.NODE_ENV !== "test"}
       contentLabel={contentLabel}
     >

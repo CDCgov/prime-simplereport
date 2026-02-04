@@ -152,7 +152,6 @@ export const SelfRegistration = () => {
             </RegistrationContainer>
           </div>
         }
-        isPatientApp={true}
       />
     </div>
   );

@@ -1,25 +1,25 @@
+const Link = ({ email = "", name = "" }) => (
+  <li>
+    <a
+      className="ghost-user-link"
+      href={`/#access_token=SR-DEMO-LOGIN%20${email}`}
+    >
+      Login as {name}
+    </a>
+  </li>
+);
+
 const ChangeUser = () => {
   if (process.env.NODE_ENV !== "development") {
     return null;
   }
 
-  const getLink = (email: string, name: string) => (
-    <li>
-      <a
-        className="ghost-user-link"
-        href={`/#access_token=SR-DEMO-LOGIN%20${email}`}
-      >
-        Login as {name}
-      </a>
-    </li>
-  );
-
   return (
     <>
-      {getLink("jamar@example.com", "Jamar (Entry Only)")}
-      {getLink("ruby@example.com", "Ruby (Basic User)")}
-      {getLink("sarah@example.com", "Sarah (Admin)")}
-      {getLink("bob@example.com", "Bob (Support Admin)")}
+      <Link email="jamar@example.com" name="Jamar (Entry Only)" />
+      <Link email="ruby@example.com" name="Ruby (Basic User)" />
+      <Link email="sarah@example.com" name="Sarah (Admin)" />
+      <Link email="bob@example.com" name="Bob (Support Admin)" />
     </>
   );
 };

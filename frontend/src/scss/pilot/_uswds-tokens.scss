@@ -1,0 +1,173 @@
+@use "@uswds/uswds/packages/uswds-core" as *;
+
+// Color Tokens
+// https://designsystem.digital.gov/design-tokens/color/system-tokens/
+
+$violet-warm-60: color('violet-warm-60'); // #864381
+$violet-warm-70: color('violet-warm-70'); // #5c395a
+$violet-warm-80: color('violet-warm-80'); // #382936
+
+$blue-cool-5: color('blue-cool-5'); // #e7f2f5
+$blue-cool-10: color('blue-cool-10'); // #dae9ee
+$blue-cool-20: color('blue-cool-20'); // #adcfdc
+$blue-cool-30: color('blue-cool-30'); // #82b4c9
+$blue-cool-40: color('blue-cool-40'); // #6499af
+$blue-cool-50: color('blue-cool-50'); // #3a7d95
+$blue-cool-60: color('blue-cool-60'); // #2e6276
+$blue-cool-70: color('blue-cool-70'); // #224a58
+$blue-cool-80: color('blue-cool-80'); // #14333d
+$blue-cool-90: color('blue-cool-90'); // #0f191c
+
+$blue-5v: color('blue-5v'); // #e8f5ff
+$blue-10v: color('blue-10v'); // #cfe8ff
+$blue-20v: color('blue-20v'); // #a1d3ff
+$blue-30v: color('blue-30v'); // #58b4ff
+$blue-40v: color('blue-40v'); // #2491ff
+$blue-50v: color('blue-50v'); // #0076d6
+$blue-60v: color('blue-60v'); // #005ea2
+$blue-70v: color('blue-70v'); // #0b4778
+$blue-80v: color('blue-80v'); // #112f4e
+
+$gray-1: color('gray-1'); // #fcfcfc
+$gray-2: color('gray-2'); // #f9f9f9
+$gray-3: color('gray-3'); // #f6f6f6
+$gray-4: color('gray-4'); // #f3f3f3
+$gray-5: color('gray-5'); // #f0f0f0
+$gray-10: color('gray-10'); // #e6e6e6
+$gray-20: color('gray-20'); // #c9c9c9
+$gray-30: color('gray-30'); // #adadad
+$gray-40: color('gray-40'); // #919191
+$gray-50: color('gray-50'); // #757575
+$gray-60: color('gray-60'); // #5c5c5c
+$gray-70: color('gray-70'); // #454545
+$gray-80: color('gray-80'); // #2e2e2e
+$gray-90: color('gray-90'); // #1b1b1b
+
+$gray-cool-1: color('gray-cool-1'); // #fbfcfd
+$gray-cool-2: color('gray-cool-2'); // #f7f9fa
+$gray-cool-3: color('gray-cool-3'); // #f5f6f7
+$gray-cool-4: color('gray-cool-4'); // #f1f3f6
+$gray-cool-5: color('gray-cool-5'); // #edeff0
+$gray-cool-10: color('gray-cool-10'); // #dfe1e2
+$gray-cool-20: color('gray-cool-20'); // #c6cace
+$gray-cool-30: color('gray-cool-30'); // #a9aeb1
+$gray-cool-40: color('gray-cool-40'); // #8d9297
+$gray-cool-50: color('gray-cool-50'); // #71767a
+$gray-cool-60: color('gray-cool-60'); // #565c65
+$gray-cool-70: color('gray-cool-70'); // #3d4551
+$gray-cool-80: color('gray-cool-80'); // #2d2e2f
+$gray-cool-90: color('gray-cool-90'); // #1c1d1f
+
+$red-5: color('red-5'); // #f9eeee
+$red-10: color('red-10'); // #f8e1de
+$red-20: color('red-20'); // #f7bbb1
+$red-30: color('red-30'); // #f2938c
+$red-40: color('red-40'); // #e9695f
+$red-50: color('red-50'); // #d83933
+$red-60: color('red-60'); // #a23737
+$red-70: color('red-70'); // #6f3331
+$red-80: color('red-80'); // #3e2927
+$red-90: color('red-90'); // #1b1616
+
+$red-5v: color('red-5v'); // #fff3f2;
+$red-10v: color('red-10v'); // #fde0db;
+$red-20v: color('red-20v'); // #fdb8ae;
+$red-30v: color('red-30v'); // #ff8d7b;
+$red-40v: color('red-40v'); // #fb5a47;
+$red-50v: color('red-50v'); // #e52207;
+$red-60v: color('red-60v'); // #b50909;
+$red-70v: color('red-70v'); // #8b0a03;
+$red-80v: color('red-80v'); // #5c1111;
+
+$red-warm-5v: color('red-warm-5v'); // #fff5ee
+$red-warm-10v: color('red-warm-10v'); // #fce1d4
+$red-warm-20v: color('red-warm-20v'); // #f6bd9c
+$red-warm-30v: color('red-warm-30v'); // #f39268
+$red-warm-40v: color('red-warm-40v'); // #ef5e25
+$red-warm-50v: color('red-warm-50v'); // #d54309
+$red-warm-60v: color('red-warm-60v'); // #9c3d10
+$red-warm-70v: color('red-warm-70v'); // #63340f
+$red-warm-80v: color('red-warm-80v'); // #3e2a1e
+
+$green-cool-5: color('green-cool-5'); // #ecf3ec
+$green-cool-10: color('green-cool-10'); // #dbebde
+$green-cool-20: color('green-cool-20'); // #b4d0b9
+$green-cool-30: color('green-cool-30'); // #86b98e
+$green-cool-40: color('green-cool-40'); // #5e9f69
+$green-cool-50: color('green-cool-50'); // #4d8055
+$green-cool-60: color('green-cool-60'); // #446443
+$green-cool-70: color('green-cool-70'); // #37493b
+$green-cool-80: color('green-cool-80'); // #28312a
+$green-cool-90: color('green-cool-90'); // #1a1f1a
+
+$green-cool-5v: color('green-cool-5v'); // #e3f5e1
+$green-cool-10v: color('green-cool-10v'); // #b7f5bd
+$green-cool-20v: color('green-cool-20v'); // #70e17b
+$green-cool-30v: color('green-cool-30v'); // #21c834
+$green-cool-40v: color('green-cool-40v'); // #00a91c
+$green-cool-50v: color('green-cool-50v'); // #008817
+$green-cool-60v: color('green-cool-60v'); // #216e1f
+$green-cool-70v: color('green-cool-70v'); // #154c21
+$green-cool-80v: color('green-cool-80v'); // #19311e
+
+$yellow-5v: color('yellow-5v'); // #fff5c2
+$yellow-10v: color('yellow-10v'); // #fee685
+$yellow-20v: color('yellow-20v'); // #face00
+$yellow-30v: color('yellow-30v'); // #ddaa01
+$yellow-40v: color('yellow-40v'); // #b38c00
+$yellow-50v: color('yellow-50v'); // #947100
+$yellow-60v: color('yellow-60v'); // #776017
+$yellow-70v: color('yellow-70v'); // #5c4809
+$yellow-80v: color('yellow-80v'); // #422d19
+
+// Font sizes
+// https://designsystem.digital.gov/design-tokens/typesetting/font-size/
+
+$body-3xs: size("body", "3xs"); // 13px
+$body-2xs: size("body", "2xs"); // 14px
+$body-xs: size("body", "xs"); // 15px
+$body-sm: size("body", "sm"); // 16px
+$body-md: size("body", "md"); // 17px
+$body-lg: size("body", "lg"); // 22px
+$body-xl: size("body", "xl"); // 32px
+$body-2xl: size("body", "2xl"); // 40px
+$body-3xl: size("body", "3xl"); // 48px
+
+$body-7: size("body", 7); // 18px
+
+// Semantic tokens
+$page-max-width: 1200px;
+
+$text-primary: black;
+$text-secondary: $gray-40;
+$text-inactive: $gray-20;
+$text-inactive-dark: $gray-60;
+
+$brand-primary: $blue-cool-50; // branded text color
+$brand-light: $blue-cool-20;
+$brand-lighter: $blue-cool-10; // tertiary link text color
+$brand-lightest: $blue-cool-5; // secondary button background
+$brand-dark: $blue-cool-70;
+$brand-darker: $blue-cool-80;
+
+$accent-primary: $violet-warm-60; // primary CTA / info color
+$accent-dark: $violet-warm-70; // CTA hover
+$accent-darker: $violet-warm-80; // CTA active
+
+$destructive-primary: $red-warm-50v; // primary error / info color
+$destructive-dark: #b51d09; // error hover
+$destructive-darker: $red-70; // error active
+
+$background: $gray-cool-3;
+$background-dark: $gray-4;
+$background-darker: $gray-5;
+$background-darkest: $gray-40;
+
+$border: $gray-cool-10;
+$border-light: $gray-5;
+$border-dark: $gray-40;
+
+$hover-neutral: $gray-4;
+$drop-shadow: $gray-4;
+$focus-outline: $blue-40v;
+$overlay-background: rgba(0, 0, 0, 0.5);
