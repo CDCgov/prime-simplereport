@@ -223,6 +223,10 @@ class HL7ConverterTest {
     Parser parser = hapiContext.getPipeParser();
     String encodedMessage = parser.encode(message);
     assertThat(StringUtils.countMatches(encodedMessage, "OBR|")).isEqualTo(2);
+
+    assertThat(StringUtils.countMatches(encodedMessage, "SPM|")).isEqualTo(1);
+    String[] lines = encodedMessage.replace("\r", "\n").split("\n");
+    assertThat(lines[lines.length - 1]).contains("SPM|");
   }
 
   @Test
