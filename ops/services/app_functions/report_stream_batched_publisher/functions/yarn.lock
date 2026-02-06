@@ -97,6 +97,11 @@
     fast-xml-parser "^4.4.1"
     tslib "^2.6.2"
 
+"@azure/functions-extensions-base@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@azure/functions-extensions-base/-/functions-extensions-base-0.2.0.tgz#33bf691ba6da4259a28343992825c3af3c0ed06e"
+  integrity sha512-ncCkHBNQYJa93dBIh+toH0v1iSgCzSo9tr94s6SMBe7DPWREkaWh8cq33A5P4rPSFX1g5W+3SPvIzDr/6/VOWQ==
+
 "@azure/functions-old@npm:@azure/functions@3.5.1":
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-3.5.1.tgz#98ac5c18f84835fd5821de404c52abbd458871f6"
@@ -106,14 +111,14 @@
     long "^4.0.0"
     uuid "^8.3.0"
 
-"@azure/functions@^4.6.0", "@azure/functions@^4.7.2":
-  version "4.7.2"
-  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.7.2.tgz#0872c7530bc4356183514035f0c71c566a575f89"
-  integrity sha512-5ps8yz4gn6oZSzeQbpUreWHFYl/YS03F1Sk/pz7YJphfctRcHuLF5tcrdm9AyRiYzja4Bkd63bju+g/E27opPQ==
+"@azure/functions@^4.11.0", "@azure/functions@^4.6.0":
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-4.11.0.tgz#205bf4dac422bba65de31884982eb170312bb7d5"
+  integrity sha512-J0We2gav3YZFLO9pJlXDKUSOT0r/DzkUaJTaruhm8pwoSMbi4zjsS5N6fARrTel+IBCm77hlD0IgZSKSWvVpUw==
   dependencies:
+    "@azure/functions-extensions-base" "0.2.0"
     cookie "^0.7.0"
     long "^4.0.0"
-    undici "^5.29.0"
 
 "@azure/identity@^4.6.0":
   version "4.9.0"
@@ -4378,7 +4383,7 @@ undici-types@~7.8.0:
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-7.8.0.tgz#de00b85b710c54122e44fbfd911f8d70174cd294"
   integrity sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==
 
-undici@5.26.2, undici@^5.29.0:
+undici@5.26.2:
   version "5.26.2"
   resolved "https://registry.yarnpkg.com/undici/-/undici-5.26.2.tgz#fa61bfe40f732540d15e58b0c1271872d8e3c995"
   integrity sha512-a4PDLQgLTPHVzOK+x3F79/M4GtyYPl+aX9AAK7aQxpwxDwCqkeZCScy7Gk5kWT3JtdFq1uhO3uZJdLtHI4dK9A==
