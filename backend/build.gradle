@@ -89,7 +89,7 @@ dependencies {
     implementation 'org.postgresql:postgresql:42.7.8'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.28'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:9.0.23'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.18.4'
 
     // UI layer dependencies
