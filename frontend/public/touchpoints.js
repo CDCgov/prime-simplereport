@@ -54,6 +54,9 @@ function FBAform(d) {
       d.addEventListener("click", function (event) {
         self.handleClick(event);
       });
+      d.addEventListener("keydown", function (event) {
+        self.handleTrapFocus(event);
+      });
     },
     loadCss: function () {
       const urlPrefix = String(window.location.href).includes("localhost")
@@ -450,6 +453,30 @@ function FBAform(d) {
       this.resetFormDisplay();
       this.activatedButton.focus();
       this.dialogOpen = false;
+      d.removeEventListener("keydown", function (event) {
+        this.handleTrapFocus(event);
+      });
+    },
+    handleTrapFocus: function (e) {
+      const isTabPressed = e.keyCode === 9;
+      if (!isTabPressed) {
+        return;
+      }
+
+      const firstFocusableElement = d.querySelector(".fba-modal-close");
+      const lastFocusableElement = d.querySelector(
+        "#touchpoints-external-link"
+      );
+
+      if (e.shiftKey) {
+        if (d.activeElement === firstFocusableElement) {
+          lastFocusableElement.focus();
+          e.preventDefault();
+        }
+      } else if (d.activeElement === lastFocusableElement) {
+        firstFocusableElement.focus();
+        e.preventDefault();
+      }
     },
     sendFeedback: function () {
       var form = this.formElement();
@@ -662,7 +689,7 @@ var touchpointsFormHtmlString = `
           <h2 class="justify-vertical word-break fba-modal-title">
             Help improve SimpleReport
           </h2>
-          <a class="fba-modal-close" type="button" href="#">×</a>
+          <a class="fba-modal-close" type="button" href="#" aria-label="Close dialog">×</a>
           <p class="fba-instructions">
             If you need immediate help with an issue, please contact 
             <a href="mailto:support@simplereport.gov">
@@ -706,7 +733,7 @@ var touchpointsFormHtmlString = `
                         <label class="usa-label" for="answer_01">
                           What do you think about SimpleReport? Please share feedback on anything you like, or how we can improve.
                         </label>
-                        <textarea name="answer_01" id="answer_01" class="usa-textarea" required="required" maxlength="100000"></textarea>
+                        <textarea name="answer_01" id="answer_01" class="usa-textarea" required maxlength="100000"></textarea>
                       </div>
                     </div>
                     <div class="question white-bg">
@@ -764,7 +791,7 @@ var touchpointsFormHtmlString = `
                   <p class="usa-banner__header-text">
                     An official form of the United States government.
                     Provided by
-                    <a href="https://touchpoints.app.cloud.gov/" target="_blank" rel="noopener">Touchpoints</a>
+                    <a id="touchpoints-external-link" href="https://touchpoints.app.cloud.gov/" target="_blank" rel="noopener">Touchpoints</a>
                     <br>
                   </p>
                 </div>
