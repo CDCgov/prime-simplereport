@@ -1,3 +1,5 @@
+[![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/CDCgov/prime-simplereport)
+
 ![SimpleReport Logo](/.meta/SimpleReportLogo.svg)
 
 https://www.simplereport.gov/
