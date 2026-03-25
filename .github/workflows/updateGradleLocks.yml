@@ -1,7 +1,7 @@
 name: Dependabot Gradle Helper
 on:
-  pull_request_target:
-    paths: 
+  pull_request:
+    paths:
       - backend/build.gradle
 
 env:
