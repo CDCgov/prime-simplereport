@@ -20,7 +20,7 @@ jobs:
 
   update_locks:
     # Run when manually requested or when dependabot creates/updates a PR
-    # if: github.event.pull_request.user.login  == 'dependabot[bot]'
+    if: github.event.pull_request.user.login  == 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
