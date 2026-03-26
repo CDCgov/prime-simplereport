@@ -10,33 +10,6 @@ const organization = generateOrganization();
 const user = generateUser();
 
 describe("Organization sign up", () => {
-  it("navigates to the sign up form", () => {
-    cy.visit("/sign-up");
-    cy.injectSRAxe();
-    cy.checkAccessibility(); // Sign up page
-
-    cy.contains("Sign up for SimpleReport");
-    cy.contains("My organization is new to SimpleReport").click();
-    cy.contains("Continue").click();
-
-    cy.contains("Sign up for SimpleReport in three steps");
-    cy.checkAccessibility(); // Sign up form
-
-    // fills out the org info form
-    cy.get('input[name="name"]').type(organization.name);
-    cy.get('select[name="state"]').select("CA");
-    cy.get('select[name="type"]').select("Camp");
-    cy.get('input[name="firstName"]').type("Greg");
-    cy.get('input[name="lastName"]').type("McTester");
-    cy.get('input[name="email"]').type(user.email);
-    cy.get('input[name="workPhoneNumber"]').type("5308675309");
-
-    // submits successfully
-    cy.get("button.submit-button").click();
-    cy.contains("Identity verification consent");
-    cy.checkAccessibility(); // Identity verification page
-  });
-
   it("navigates to the support pending org table and verifies the org", () => {
     loginHooks();
     cy.removeOrganizationAccess();

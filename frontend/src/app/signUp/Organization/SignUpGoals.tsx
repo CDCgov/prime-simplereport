@@ -52,12 +52,6 @@ const SignUpGoals = () => {
                 label: "My organization is already using SimpleReport",
               },
               {
-                value: "newOrg",
-                label: "My organization is new to SimpleReport",
-                labelDescription:
-                  "Create a SimpleReport account for your organization or workplace.",
-              },
-              {
                 value: "testResult",
                 label: "I’m trying to get my test results",
                 labelDescription: "No sign-up needed.",
