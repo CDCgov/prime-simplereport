@@ -21,7 +21,7 @@
     "@azure/functions": "^4.7.2",
     "applicationinsights": "^3.7.0",
     "@azure/storage-queue": "^12.24.0",
-    "@aws-sdk/client-s3": "^3.500.0"
+    "@aws-sdk/client-s3": "^3.1021.0"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
