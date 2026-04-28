@@ -1,5 +1,9 @@
 @use "../../scss/settings";
 
+.sunset-alert-body {
+  max-width: settings.$site-max-width !important;
+}
+
 .usa-nav-container.prime-header {
   max-width: settings.$site-max-width;
 
