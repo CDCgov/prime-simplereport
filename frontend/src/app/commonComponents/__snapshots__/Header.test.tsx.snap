@@ -61,7 +61,7 @@ exports[`Header displays correctly 1`] = `
       >
         <div
           class="usa-alert usa-alert--warning margin-left-auto margin-right-auto"
-          id="3cbe3e54-2383-4e28-8c70-8552ad489e9d"
+          id="12345"
           role="alert"
         >
           <div
@@ -69,7 +69,7 @@ exports[`Header displays correctly 1`] = `
           >
             <div
               class="usa-alert__text"
-              id="596be4a5-c981-48c1-8c96-a220a0df4841"
+              id="12345"
             >
               SimpleReport is being sunset and service will end at 5:00 pm (ET) on August 31, 2026. For more information, see
                

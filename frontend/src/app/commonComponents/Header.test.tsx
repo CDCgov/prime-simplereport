@@ -39,6 +39,8 @@ jest.mock("react-router-dom", () => {
   };
 });
 
+jest.mock("uuid", () => ({ v4: () => "12345" }));
+
 describe("Header", () => {
   it("displays correctly", async () => {
     render(
