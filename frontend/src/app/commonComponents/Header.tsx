@@ -20,6 +20,7 @@ import Button from "./Button/Button";
 import ChangeUser from "./ChangeUser";
 import Dropdown from "./Dropdown";
 import USAGovBanner from "./USAGovBanner";
+import Alert from "./Alert";
 
 const Header: React.FC<{}> = () => {
   const appInsights = getAppInsights();
@@ -314,6 +315,22 @@ const Header: React.FC<{}> = () => {
   return (
     <header className="usa-header usa-header--basic">
       <USAGovBanner />
+
+      <div className="border-top border-base-lighter">
+        <Alert
+          type="warning"
+          role="alert"
+          className={"margin-left-auto margin-right-auto"}
+          bodyClassName={"sunset-alert-body"}
+        >
+          SimpleReport is being sunset and service will end at 5:00 pm (ET) on
+          August 31, 2026. For more information, see{" "}
+          <a href={"https://www.simplereport.gov/sunset"}>
+            simplereport.gov/sunset
+          </a>
+          .
+        </Alert>
+      </div>
 
       <div className="usa-nav-container prime-header">
         <div className="usa-navbar">

@@ -8,6 +8,7 @@ import siteLogo from "../img/simplereport-logomark-color.svg";
 import { RootState } from "../app/store";
 import { Patient } from "../app/patients/ManagePatients";
 import USAGovBanner from "../app/commonComponents/USAGovBanner";
+import Alert from "../app/commonComponents/Alert";
 
 import LanguageToggler from "./LanguageToggler";
 
@@ -25,6 +26,22 @@ const PatientHeader = () => {
   return (
     <header className="header border-bottom border-base-lighter">
       <USAGovBanner />
+
+      <div className="border-top border-base-lighter">
+        <Alert
+          type="warning"
+          role="alert"
+          className={"margin-left-auto margin-right-auto"}
+          bodyClassName={"sunset-alert-body"}
+        >
+          SimpleReport is being sunset and service will end at 5:00 pm (ET) on
+          August 31, 2026. For more information, see{" "}
+          <a href={"https://www.simplereport.gov/sunset"}>
+            simplereport.gov/sunset
+          </a>
+          .
+        </Alert>
+      </div>
 
       <div className="display-flex flex-align-center maxw-tablet grid-container patient-header">
         <div className="padding-y-1">

@@ -57,6 +57,33 @@ exports[`Header displays correctly 1`] = `
         </div>
       </div>
       <div
+        class="border-top border-base-lighter"
+      >
+        <div
+          class="usa-alert usa-alert--warning margin-left-auto margin-right-auto"
+          id="12345"
+          role="alert"
+        >
+          <div
+            class="usa-alert__body sunset-alert-body"
+          >
+            <div
+              class="usa-alert__text"
+              id="12345"
+            >
+              SimpleReport is being sunset and service will end at 5:00 pm (ET) on August 31, 2026. For more information, see
+               
+              <a
+                href="https://www.simplereport.gov/sunset"
+              >
+                simplereport.gov/sunset
+              </a>
+              .
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
         class="usa-nav-container prime-header"
       >
         <div
