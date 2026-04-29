@@ -237,7 +237,7 @@
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
     "typescript": "^5.3.2",
-    "webpack": "^5.94.0"
+    "webpack": "^5.104.1"
   },
   "resolutions": {
     "http-cache-semantics": "4.1.1",
