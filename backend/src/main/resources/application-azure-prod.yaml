@@ -1,15 +1,15 @@
 simple-report:
   azure-reporting-queue:
-    enabled: true
-    fhir-queue-enabled: true
-    hl7-queue-enabled: true
-    exception-webhook-enabled: true
+    enabled: false
+    fhir-queue-enabled: false
+    hl7-queue-enabled: false
+    exception-webhook-enabled: false
   patient-link-url: https://www.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://www.simplereport.gov/api/pxp/callback
   id-verification-reminders:
-    enabled: true
+    enabled: false
   sendgrid:
-    enabled: true
+    enabled: false
   cors:
     allowed-origins:
       - https://simple-report-api-prod.azurewebsites.net
@@ -17,9 +17,9 @@ simple-report:
       - https://www.simplereport.gov
       - https://simplereport.gov
   experian:
-    enabled: true
+    enabled: false
   support-escalation:
-    enabled: true
+    enabled: false
   production:
     device-sync-enabled: false
   aims-processing-mode-code: P
@@ -27,7 +27,7 @@ simple-report:
     simple-report-namespace: "SIMPLEREPORT.PROD"
     simple-report-oid: "2.16.840.1.113883.3.8589.4.2.134.1"
 twilio:
-  enabled: true
+  enabled: false
   from-number: "+14045312484"
 features:
   oktaMigrationEnabled: false
